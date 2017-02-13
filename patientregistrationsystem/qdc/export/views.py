@@ -624,27 +624,30 @@ def export_view(request, template_name="export/export_data.html"):
 
     surveys = Questionnaires()
 
-    # if 'group_selected_list' in request.session:
-    #     group_list = request.session['group_selected_list']
-    #     for group_id in group_list:
-    #         group = get_object_or_404(Group, pk=group_id)
-    #         # subject_of_group = get_object_or_404(SubjectOfGroup, group_id=group_id)
-    #
-    #         if group.experimental_protocol is not None:
-    #             questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(subject_of_group__group=group).\
-    #                 distinct('data_configuration_tree')
-    #             for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
-    #                 questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
-    #                 questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
-    #                 questionnaire_id = questionnaire.survey.lime_survey_id
-    #                 token = surveys.get_participant_properties(questionnaire_id, questionnaire_response[0].token_id,
-    #                                                            "token")
-    #                 if token:
-    #                     questionnaire_dic = {
-    #                         'questionnaire': questionnaire,
-    #                         'token': token
-    #                     }
-    #                     questionnaires_experiment_list_final.append(questionnaire_dic)
+    if 'group_selected_list' in request.session:
+        group_list = request.session['group_selected_list']
+        for group_id in group_list:
+            group = get_object_or_404(Group, pk=group_id)
+            # subject_of_group = get_object_or_404(SubjectOfGroup, group_id=group_id)
+
+            if group.experimental_protocol is not None:
+                questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(subject_of_group__group=group).\
+                    distinct('data_configuration_tree')
+                for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
+                    questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
+                    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+                    questionnaire_id = questionnaire.survey.lime_survey_id
+                    token = surveys.get_participant_properties(questionnaire_id, questionnaire_response[0].token_id,
+                                                               "token")
+                    if token:
+                        questionnaire_dic = {
+                            'questionnaire': questionnaire,
+                            'token': token
+                        }
+                        questionnaires_experiment_list_final.append(questionnaire_dic)
+
+        questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
+            questionnaires_experiment_list_final,request.LANGUAGE_CODE)
 
                         # responses_string = surveys.get_header_response(questionnaire_id, token, language_new="pt-BR")
                         # questionnaire_title = surveys.get_survey_title(questionnaire_id, language_new="pt-BR")
@@ -670,9 +673,6 @@ def export_view(request, template_name="export/export_data.html"):
     surveys.release_session_key()
 
     questionnaires_list_final = []
-    questionnaires_experiment_fields_list = []
-    # questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(questionnaires_experiment_list_final,
-    #                                                                             request.LANGUAGE_CODE)
 
     # removing surveys that are not entrance evaluation
     # entrance_evaluation_questionnaires = QuestionnaireResponse.objects.all()
@@ -718,14 +718,6 @@ def export_view(request, template_name="export/export_data.html"):
             if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
                 output_list["selected"] = True
 
-    index = 0
-    # for questionnaire in questionnaires_experiment_fields_list:
-    #     questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
-    #     questionnaire["index"] = index
-    #     index += 1
-    #     for output_list in questionnaire["output_list"]:
-    #         if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
-    #             output_list["selected"] = True
 
     context = {
 

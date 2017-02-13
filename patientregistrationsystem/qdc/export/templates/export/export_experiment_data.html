@@ -1,0 +1,72 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
+{% block activeExport %}class="active"{% endblock %}
+
+{% block header %}
+    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
+     <script src="{% static 'quiz/js/questionnaire_export.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="export_form" method="post" data-toggle="validator">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/export">{% trans "Export" %}</a></li>
+                <li class="active">{% trans "Structure and fields selection" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-content">
+        {% if messages %}
+            {% for message in messages %}
+
+                {% if message.tags == "success" %}
+                    <script>showSuccessMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "warning" %}
+                    <script>showWarningMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "error" %}
+                    <script>showErrorMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "info" %}
+                    <script>showInfoMessage('{{ message }}')</script>
+                {% endif %}
+
+            {% endfor %}
+        {% endif %}
+
+        {% if export_form.errors %}
+            <script type="text/javascript">
+                showErrorMessage(gettext('Please, correct the highlighted fields.'))
+            </script>
+        {% endif %}
+
+    </div>
+{% endblock %}
+
+{% block end_form %}
+
+    </form>
+    </div>
+{% endblock %}
