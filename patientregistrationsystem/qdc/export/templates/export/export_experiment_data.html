@@ -23,16 +23,6 @@
 
 {% block content %}
 
-    <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
-        <div class="col-md-10">
-            <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/export">{% trans "Export" %}</a></li>
-                <li class="active">{% trans "Structure and fields selection" %}</li>
-            </ol>
-        </div>
-    </div>
-
     <div class="tab-content">
         {% if messages %}
             {% for message in messages %}
@@ -61,6 +51,177 @@
                 showErrorMessage(gettext('Please, correct the highlighted fields.'))
             </script>
         {% endif %}
+
+        <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
+            <div class="col-md-10">
+                <ol class="breadcrumb">
+                    <li><a href="/home">{% trans "Home" %}</a></li>
+                    <li><a href="/export">{% trans "Export" %}</a></li>
+                    <li class="active">{% trans "Structure and fields selection" %}</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="tab-pane fade in active" id="menuUserTab">
+            <div class="col-md-10">
+
+                <h4>{% trans "Structure and fields selection for exportation" %}</h4>
+
+                <ul class="nav nav-tabs">
+
+                    {% if creating or editing %}
+                        <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Questionnaire from entrance evaluation" %}</a></li>
+                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Questionnaires from experiments" %}</a></li>
+                        <li {% if tab == '3' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Participants and Diagnosis" %}</a></li>
+                    {% else %}
+                        <li {% if tab == '1' %}class="active"{% endif %}>
+                            <a data-toggle="tab" href="#questionnaire_from_entrance_evaluation">{% trans "Questionnaire from entrance evaluation" %}</a>
+                        </li>
+                        <li {% if tab == '2' %}class="active"{% endif %}>
+                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#questionnaires_from_experiments">{% trans "Questionnaires from experiments" %}</a>
+                        </li>
+                        <li {% if tab == '3' %}class="active"{% endif %}>
+                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#participants_and_diagnosis">{% trans "Participants and Diagnosis" %}</a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+
+                <div class="tab-content">
+                    <div id="questionnaire_from_entrance_evaluation" {% if tab == '1' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                        {% if perms.patient.export_patient %}
+                                {% if questionnaires_fields_list %}
+                                     <div class="container span6 offset3 well ">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-12">
+                                                <h4>{% trans "General Information" %}</h4>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-7">
+                                                <label data-toggle="tooltip" data-placement="auto left"
+                                                       title="{% trans "At least one option must be selected" %}" for="directory_structure"
+                                                       class="control-label">{% trans "Directory Structure" %} </label>
+
+                                                <div class="form-group {% if export_form.errors.per_participant %}has-error{% endif %}">
+
+                                                    <div class="checkbox">
+                                                        {{ export_form.per_participant }}
+                                                        <label for="per_participant"
+                                                               class="control-label">{% trans "Per participant" %}</label>
+                                                         <div class="help-block with-errors"> </div>
+                                                    </div>
+
+                                                        <div class="checkbox">
+                                                            {{ export_form.per_questionnaire }}
+                                                            <label for="per_questionnaire"
+                                                                   class="control-label">{% trans "Per questionnaire" %}</label>
+                                                        </div>
+
+                                                    <div class="help-block with-errors">
+                                                        {% for error in export_form.errors.per_questionnaire %}
+                                                            <div>{{ error }}</div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6">
+                                                    <label for="headings"
+                                                        class="control-label">{% trans "Headings" %}</label>
+
+                                               <div class="form-group {% if export_form.errors.headings %}has-error{% endif %}">
+                                                   {% for radio in export_form.headings %}
+                                                       <div class="radio">
+                                                           {{ radio }}
+                                                       </div>
+                                                   {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6 col-sm-6">
+                                                    <label>{% trans "Responses" %}</label>
+
+                                                    <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">
+                                                            {% for check in export_form.responses %}
+                                                                <div class="checkbox">
+                                                                    {{ check }}
+                                                                </div>
+                                                            {% endfor %}
+                                                    </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="container span6 offset3 well ">
+                                        <h4>{% trans "Questionnaire information" %}</h4>
+
+                                    </div>
+
+                                {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <div id="questionnaires_from_experiments" {% if tab == '2' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+
+
+                    </div>
+
+                    <div id="participants_and_diagnosis" {% if tab == '3' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
+                        <div class="container span6 offset3 well ">
+                            {% if perms.patient.export_patient %}
+                                <h4>{% trans "Participants" %}</h4>
+
+
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Participant fields" %} </label>
+                                            <select class="form-control" size="13" id="patient_selected" name="patient_selected"
+                                                    multiple="multiple"
+                                                    data-error={% trans "Please, select a patient field from the list." %}>
+                                                {% for field in patient_fields %}
+                                                    <option {% if field.field in selected_participant %}selected{% endif %}
+                                                            value="{{ field.field }}*{{ field.header }}"> {{ field.description }} </option>
+                                                {% endfor %}
+                                            </select>
+                                             <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="container span6 offset3 well ">
+                            {% if perms.patient.export_medicalrecorddata and diagnosis_fields %}
+                                <h4>{% trans "Diagnosis" %}</h4>
+
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Diagnosis fields" %} </label>
+                                            <select class="form-control" size="13" id="diagnosis_selected" name="diagnosis_selected"
+                                                    multiple="multiple"
+                                                    data-error={% trans "Please, select a diagnosis field from the list." %}>
+                                                {% for field in diagnosis_fields %}
+                                                    <option {% if field.field in selected_diagnosis %}selected{% endif %}
+                                                            value="{{ field.field }}*{{ field.header }}"> {{ field.description }} </option>
+                                                {% endfor %}
+                                            </select>
+                                            <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
 
     </div>
 {% endblock %}

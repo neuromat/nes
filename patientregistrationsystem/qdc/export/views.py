@@ -492,6 +492,7 @@ def export_view(request, template_name="export/export_data.html"):
     selected_participant = []
     selected_diagnosis = []
     questionnaires_experiment_list_final = []
+    questionnaires_experiment_fields_list = []
 
     if request.method == "POST":
 
@@ -624,6 +625,7 @@ def export_view(request, template_name="export/export_data.html"):
 
     surveys = Questionnaires()
 
+
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
         for group_id in group_list:
@@ -648,19 +650,6 @@ def export_view(request, template_name="export/export_data.html"):
 
         questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
             questionnaires_experiment_list_final,request.LANGUAGE_CODE)
-
-                        # responses_string = surveys.get_header_response(questionnaire_id, token, language_new="pt-BR")
-                        # questionnaire_title = surveys.get_survey_title(questionnaire_id, language_new="pt-BR")
-
-    # if 'group_selected_list' in request.session:
-    #     for survey_item in survey_experiment_list:
-    #         for questionnaire in questionnaires_list:
-    #             questionnaire_sid = questionnaire['sid']
-    #             survey = Survey.objects.filter(lime_survey_id=questionnaire_sid)
-    #             # res = QuestionnaireResponse.objects.filter(survey=survey)
-    #             if questionnaire_sid == survey_item:
-    #                 questionnaires_experiment_list_final.append(questionnaire)
-    #                 break
 
 
     limesurvey_available = check_limesurvey_access(request, surveys)
@@ -718,13 +707,9 @@ def export_view(request, template_name="export/export_data.html"):
             if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
                 output_list["selected"] = True
 
-
     context = {
 
-        # "limesurvey_available": limesurvey_available,
         "export_form": export_form,
-        # "questionnaires_list": questionnaires_list_final,
-        # "contacts": contacts,
         "patient_fields": patient_fields,
         "diagnosis_fields": diagnosis_fields,
         "questionnaires_fields_list": questionnaires_fields_list,
@@ -734,9 +719,10 @@ def export_view(request, template_name="export/export_data.html"):
         "selected_diagnosis": selected_diagnosis,
     }
 
-    # elif page == 2:
-
-    return render(request, template_name, context)
+    if 'group_selected_list' in request.session:
+        return render(request, "export/export_experiment_data.html", context)
+    else:
+        return render(request, template_name, context)
 
 
 def update_questionnaire_list(questionnaire_list, heading_type, current_language="pt-BR"):
@@ -1036,7 +1022,7 @@ def export_menu(request, template_name="export/export_menu.html"):
             'href': reverse("experiment_selection", args=()),
         },
     ]
-    if 'study_selected_list' in request.session.keys():
+    if 'group_selected_list' in request.session.keys():
         del request.session['group_selected_list']
 
     context = {
