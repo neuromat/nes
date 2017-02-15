@@ -717,6 +717,7 @@ def export_view(request, template_name="export/export_data.html"):
         "selected_ev_quest": selected_ev_quest,
         "selected_participant": selected_participant,
         "selected_diagnosis": selected_diagnosis,
+        "tab": '1',
     }
 
     if 'group_selected_list' in request.session:
