@@ -64,7 +64,7 @@
 
         <div class="tab-pane fade in active" id="menuUserTab">
             <div class="col-md-10">
-                {#            {% ifequal contacts.number 1 %}#}
+
             {% if perms.patient.export_patient %}
                 {% if questionnaires_fields_list %}
                 <div class="container span6 offset3 well ">
@@ -109,20 +109,12 @@
                                     <label for="headings"
                                         class="control-label">{% trans "Headings" %}</label>
 
-{#                                  <label for="per_participant"#}
-{#                                           class="control-label">{% trans "Per participant" %}</label>#}
-{#  #}
                                <div class="form-group {% if export_form.errors.headings %}has-error{% endif %}">
-
-{#                                    <div class="form-group">#}
-{#                                        <div class="radio">#}
-                                            {% for radio in export_form.headings %}
-                                                <div class="radio">
-                                                    {{ radio }}
-                                                </div>
-                                            {% endfor %}
-{#                                        </div>#}
-{#                                    </div>#}
+                                   {% for radio in export_form.headings %}
+                                       <div class="radio">
+                                           {{ radio }}
+                                       </div>
+                                   {% endfor %}
                                 </div>
                             </div>
                             <div class="col-xs-6 col-sm-6">
@@ -135,7 +127,6 @@
                                                 </div>
                                             {% endfor %}
                                     </div>
-
                             </div>
                         </div>
                 </div>
@@ -143,9 +134,8 @@
                     <div class="container span6 offset3 well ">
                     <h4>{% trans "Questionnaire information" %}</h4>
 
-
                         <div class="row">
-                            {#                        <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} </label>#}
+                        <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} </label>
 
                             <div class="panel-group" id="accordion">
                                 {% for survey in questionnaires_fields_list %}
@@ -184,7 +174,6 @@
 
                                                     </div>
                                                 </div>
-
 
                                                 <div class="col-md-2 col-sm-2">
                                                     <button type="button" id="multiselect_{{ survey.index }}_rightAll"

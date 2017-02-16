@@ -6,8 +6,9 @@
 $(document).ready(function () {
     var select_research_project = $("#id_research_projects");
     var select_experiments = $("#id_experiments");
-    var select_groups = $("#id_groups");
+    var select_groups = $("#group_selected");
     // var values = $('#id_research_projects').val();
+    select_groups.prop('disabled', true);
 
     select_research_project.click(function () {
         var study_id = $(this).val();
@@ -38,13 +39,13 @@ $(document).ready(function () {
         var url = "/export/get_groups_by_experiment/" + experiment_id;
 
         $.getJSON(url, function (group_list) {
-           var options = '<option value="" selected="selected">---------</option>';
+           var options = ""; //'<option value="" selected="selected"></option>';
            for (var i = 0; i < group_list.length; i++) {
                 options += '<option value="' + group_list[i].pk + '">' + group_list[i].fields['title'] + '</option>';
             }
 
             select_groups.html(options);
-            // select_groups.change();
+            select_groups.prop('disabled', false);
         });
     });
 
