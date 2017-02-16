@@ -1054,6 +1054,7 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
                         subject_list.append(patient.id)
 
             participants_list = participants_list.filter(pk__in=subject_list)
+            request.session['filtered_participant_data'] = [item.id for item in participants_list]
 
             context = {
                 "total_of_participants": len(participants_list),
