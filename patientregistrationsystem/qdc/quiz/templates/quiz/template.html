@@ -61,6 +61,8 @@
 
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
 
+    <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.6.3/css/font-awesome.min.css' %}">
+
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
 
     <style type="text/css">
@@ -165,8 +167,8 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown dropdown-user dropdown-menu" role="menu">
-                        <li><a href="/password_change">{% trans "Change password" %}</a></li>
-                        <li><a href="/logout">{% trans "Logout" %}</a></li>
+                        <li><a href="/password_change"><span class="fa fa-key"></span> {% trans "Change password" %}</a></li>
+                        <li><a href="/logout"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
                     </ul>
 
                 </li>
@@ -202,7 +204,8 @@
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
                         <a href="/experiment/research_project/list/">
-                            <span class="glyphicon glyphicon-book"></span>
+{#                            <span class="glyphicon glyphicon-book"></span>#}
+                            <span class="fa fa-graduation-cap"></span>
                             {% trans "Studies" %}
                         </a>
                     </li>
@@ -226,6 +229,15 @@
                     </li>
                 {% endif %}
 
+                {% if perms.team.change_team %}
+                    <li {% block activeTeam %}{% endblock %}>
+                        <a href="/team/registers/">
+                            <span class="fa fa-users"></span>
+                            {% trans "Teams" %}
+                        </a>
+                    </li>
+                {% endif %}
+
                 {% if perms.patient.export_patient or perms.patient.export_questionnaireresponse or perms.patient.export_medicalrecorddata %}
                     <li {% block activeExport %}{% endblock %}>
                         <a href="/export/">
@@ -243,98 +255,6 @@
                         </a>
                     </li>
                 {% endif %}
-{#                {% if perms.experiment.register_equipment %}#}
-{#                    <li {% block activeEquipment %}{% endblock %}>#}
-{#                        <a  data-toggle="collapse" href="#collapseEquipment">#}
-{#                            <span class="glyphicon glyphicon-wrench"></span>#}
-{#                            {% trans "Equipment" %}#}
-{#                        </a>#}
-{##}
-{#                        <div class="collapse" id="collapseEquipment">#}
-{#                            <div class="col-md-1"></div>#}
-{#                            <div class="col-md-11" style="padding-right: 0px">#}
-{#                                <ul class="nav">#}
-{##}
-{#                                    <li {% block activeManufacturer %}{% endblock %}>#}
-{#                                        <a href="/experiment/manufacturer/list/">#}
-{#                                            {% trans "Manufacturer" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeEEGMachine %}{% endblock %}>#}
-{#                                        <a class="nav-link" href="/experiment/eegmachine/list/">#}
-{#                                            {% trans "EEG machine" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeAmplifier %}{% endblock %}>#}
-{#                                        <a href="/experiment/amplifier/list/">#}
-{#                                            {% trans "Amplifier" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeSolution %}{% endblock %}>#}
-{#                                        <a href="/experiment/eegsolution/list/">#}
-{#                                            {% trans "Solution" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeFilterType %}{% endblock %}>#}
-{#                                        <a href="/experiment/filtertype/list/">#}
-{#                                            {% trans "Filter Type" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeElectrodeLocalizationSystem %}{% endblock %}>#}
-{#                                        <a href="/experiment/eeg_electrode_localization_system/list/">#}
-{#                                            {% trans "EEG Electrode Localization System" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeElectrodeModel %}{% endblock %}>#}
-{#                                        <a href="/experiment/electrodemodel/list/">#}
-{#                                            {% trans "Electrode Model" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeMaterial %}{% endblock %}>#}
-{#                                        <a href="/experiment/material/list/">#}
-{#                                            {% trans "Material" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeElectrodeNet %}{% endblock %}>#}
-{#                                        <a href="/experiment/eegelectrodenet/list/">#}
-{#                                            {% trans "Electrode Net" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeADconverter %}{% endblock %}>#}
-{#                                        <a href="/experiment/ad_converter/list/">#}
-{#                                            {% trans "A/D converter" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeSoftware %}{% endblock %}>#}
-{#                                        <a href="/experiment/software/list/">#}
-{#                                            {% trans "Software" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeStandardizationSystem %}{% endblock %}>#}
-{#                                        <a href="/experiment/standardization_system/list/">#}
-{#                                            {% trans "EMG electrode placement system" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeMuscle %}{% endblock %}>#}
-{#                                        <a href="/experiment/muscle/list/">#}
-{#                                            {% trans "Muscle" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeTMSDevice %}{% endblock %}>#}
-{#                                        <a class="nav-link" href="/experiment/tmsdevice/list/">#}
-{#                                            {% trans "TMS Device" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                    <li {% block activeCoilModel %}{% endblock %}>#}
-{#                                        <a class="nav-link" href="/experiment/coil/list/">#}
-{#                                            {% trans "Coil model" %}#}
-{#                                        </a>#}
-{#                                    </li>#}
-{#                                </ul>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </li>#}
-{#                {% endif %}#}
 
             </ul>
         </div>

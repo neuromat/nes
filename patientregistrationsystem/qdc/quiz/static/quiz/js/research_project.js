@@ -36,3 +36,19 @@ function showDialogAndEnableRemoveButton () {
 function disableRemoveButton() {
     $('#remove_button').prop('disabled', true);
 }
+
+function show_modal_remove_collaborator(collaborator_id) {
+    var  modal_remove = document.getElementById('removeCollaborator');
+    modal_remove.setAttribute("value", 'remove_collaborator-' + collaborator_id);
+
+
+    $('#modalCollaboratorRemove').modal('show');
+}
+
+function show_modal_alter_coll_is_coordinator(collaborator_id) {
+    var modal_change_coll_is_coordinator = document.getElementById('changeCollIsCoordinator');
+    modal_change_coll_is_coordinator.setAttribute("value", 'change_collaborator-' + collaborator_id);
+
+    $('#modalComponent_coll_Is_coordinator').modal('show');
+}
+

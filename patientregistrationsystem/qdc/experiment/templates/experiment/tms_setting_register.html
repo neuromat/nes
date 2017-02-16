@@ -121,8 +121,10 @@
                                             </a>
                                             <blockquote>
                                                 <i><h6>
-                                                    {% trans "Coil name" %}: {{ tms_setting.tms_device_setting.tms_device.coil_model.name }}<br/>
-                                                    {% trans "Coil shape" %}: {{ tms_setting.tms_device_setting.tms_device.coil_model.coil_shape.name }}
+                                                    {% trans "Manufacturer" %}: {{ tms_setting.tms_device_setting.tms_device.manufacturer.name }}<br/>
+                                                    {% trans "TMS device" %}: {{ tms_setting.tms_device_setting.tms_device.identification }}<br/>
+                                                    {% trans "Coil model" %}: {{ tms_setting.tms_device_setting.coil_model.name }}<br/>
+                                                    {% trans "Pulse type" %}: {{ tms_setting.tms_device_setting.pulse_stimulus_type }}
                                                 </h6></i>
                                             </blockquote>
 

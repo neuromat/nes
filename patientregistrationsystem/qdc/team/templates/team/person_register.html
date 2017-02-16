@@ -1,0 +1,308 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
+{% block activeTeam %}class="active"{% endblock %}
+
+{% block header %}
+    <script src="{% static 'quiz/js/person_register.js' %}"></script>
+    <script type="text/javascript">
+
+        function Validate(){
+           if(!validateForm()){
+                showErrorMessage(gettext('You have to choose at least one user profile!'));
+                return false;
+           }
+           return true;
+        }
+
+        function validateForm()
+        {
+           var c=document.getElementsByName('groups');
+           for (var i = 0; i<c.length; i++){
+               if (c[i].type=='checkbox') {
+                    if (c[i].checked){return true}
+               }
+           }
+           return false;
+        }
+    </script>
+
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" onsubmit="return Validate()" data-toggle="validator">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if person_form.errors %}
+        <script type="text/javascript">
+            showErrorMessage(gettext('Please, correct fields highlighted.'))
+        </script>
+    {% endif %}
+    <div class="tab-pane fade in active" id="equipmentBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/team/registers">{% trans "Teams" %}</a></li>
+                <li><a href="/team/person/list">{% trans "Persons" %}</a></li>
+                {% if creating %}
+                    <li class="active">{% trans "New" %}</li>
+                {% else %}
+                    {% if editing %}
+                        <li><a href="/team/person/{{ person.id }}">{{ person_form.first_name.value }} {{ person_form.last_name.value }}</a></li>
+                        <li class="active">{% trans "Editing" %}</li>
+                    {% else %}
+                        <li class="active"> {{ person_form.first_name.value }} {{ person_form.last_name.value }}</li>
+                    {% endif %}
+                {% endif %}
+            </ol>
+        </div>
+    </div>
+    <div class="tab-pane fade in active" id="menuUserTab" >
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+
+                <h4>{% trans "Person" %}</h4>
+
+                <div class="container">
+
+                <input type="text" id="operation" value="{% if creating %}creating{% else %}{% if editing %}editing{% else %}viewing{% endif %}{% endif %}" hidden="hidden">
+
+                {% if creating and can_change %}
+
+                    <div class="row">
+                        <p>{%  trans "Is this person allowed to login on the system?" %}</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="radio-inline">
+                                <input type="radio" value="1" id="optradio1" name="optradio">{% trans "No." %}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="radio-inline">
+                                <input type="radio" value="2" id="optradio2" name="optradio">{% trans "Yes, a new login should be created." %}
+                            </label>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group {% if user_form.username.errors %}has-error{% endif %}">
+                                {{ user_form.username }}
+                                <div class="help-block with-errors">
+                                    {% for error in user_form.username.errors %}
+                                        {{ error }}<br/>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "First name" %} <b style="color: red;">*</b></label>
+                            {{ person_form.first_name }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Last name" %} <b style="color: red;">*</b></label>
+                            {{ person_form.last_name }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group {% if person_form.email.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "E-mail" %} <b style="color: red;">*</b></label>
+                            {{ person_form.email }}
+                            <div class="help-block with-errors">
+                                {% for error in person_form.email.errors %}
+                                    {{ error }}<br/>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row collapse" id="user_name_div">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group ">
+                            <label class="control-label">Login</label>
+                            {{ user_form.username }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row collapse" id="update_password">
+                    <div class="form-group">
+                        <input type="checkbox" id="password_flag" name="password_flag_name" {% if creating %}   {% endif %}> <b>{% trans "Update password" %}</b> </input>
+                    </div>
+                </div>
+                <div class="container span6 offset3 well collapse" id="div_password">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left"
+                                title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >
+                            <div class="form-group {% if user_form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
+                                <label for="name" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
+                                <div class="input-group input-group-sm right-inner-addon">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                    <div id="show"></div>
+                                    {{ user_form.password }}
+                                </div>
+                                <div class="help-block with-errors">
+                                    {% for error in form.errors.password %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6">
+                            <div class="form-group {% if user_form.errors.password %}has-error{% endif %} collapse" id="id_new_password2_form_group">
+                                <label for="name" class="control-label">{% trans "Please confirm password" %}<b style="color: red;">*</b></label>
+                                <div class="input-group input-group-sm has-feedback">
+                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                    <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
+                                           type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
+                                </div>
+                                <div class="help-block with-errors">
+                                    {% for error in form.errors.password %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                    <div id="message"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+
+                {% if editing and not creating %}
+                    {% if person.user %}
+                        <div class="col-md-12" style="text-align: right">
+                            <a onclick="showDialogAndEnableDeactiveteUserButton({{ person.id }});" style="color: indianred"><span class="glyphicon glyphicon-minus-sign"></span> {% trans "Deactivate login" %}</a>
+                        </div>
+                    {% else %}
+                        <div class="row col-md-12 " style="text-align: right" id="div_add_login">
+                            <a onclick="add_user({{ person.id }});"><span class="glyphicon glyphicon-plus-sign"></span> {% trans "Add login" %}</a>
+                        </div>
+                        <div class="row col-md-12 " style="text-align: right" id="div_cancel_add_login">
+                            <a onclick="cancel_add_user({{ person.id }});"><span class="glyphicon glyphicon-remove-sign"></span> {% trans "Cancel add login" %}</a>
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                <div class="container span6 offset3 well collapse" id="profiles">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <h4>{% trans "Profiles" %}</h4>
+                            <div class="form-group">
+                                <div id="text_profiles" class="collapse">
+                                    <label class="control-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
+                                </div>
+                                <div class="input-group  input-group-sm">
+                                    {% for group_permission in group_permissions %}
+                                        <div class="myradio">
+                                            <label>
+                                                {% if group_permission.checked == True %}
+                                                    <input name="groups" {% if not editing %} disabled="disabled"{% endif %} type="checkbox" checked="checked" value={{ group_permission.group.pk }}> {%  trans group_permission.group.name %}
+                                                {% else %}
+                                                    <input name="groups" {% if not editing %} disabled="disabled"{% endif %} type="checkbox" value={{ group_permission.group.pk }}> {%  trans group_permission.group.name %}
+                                                {% endif %}
+
+                                            </label>
+                                            <h5><small>(
+                                            {% for permission in group_permission.group.permissions.all %}
+                                                {%  trans permission.name %}.
+                                            {% endfor %}
+                                            )</small></h5>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if not editing and can_change %}
+                    <div class="btn-group pull-left">
+                        <a href="/team/person/edit/{{ person.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="btn-toolbar">
+        <div class="btn-group pull-left">
+            <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
+        </div>
+        {% if editing %}
+            <div class="btn-group pull-right">
+                <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+            </div>
+            <div class="btn-group pull-right">
+                <a href="/team/person/{% if creating %}list{% else %}{{ person.id }}{% endif %}"
+                   class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+            </div>
+        {% else %}
+            <div class="btn-group pull-right">
+                <a href="/team/person/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="modal fade" id="modalRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "Are you sure you want to delete person?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove" disabled name="action">{% trans "Delete" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalDeactivate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "Are you sure you want to deactivate the user?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableDeactivateButton()">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger" id="deactivate_button" value="deactivate" disabled name="action">{% trans "Deactivate" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

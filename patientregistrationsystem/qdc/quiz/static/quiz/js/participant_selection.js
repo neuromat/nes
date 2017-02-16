@@ -32,6 +32,7 @@ $(document).ready(function () {
         get_diseases.prop('disabled', true);
         participants_filter_div.prop('disabled', false);
         participants_filter_div.css('visibility', 'visible');
+        participants_filter_div.collapse('show')
     });
 
     all_participants_radio.click(function () {
@@ -43,6 +44,7 @@ $(document).ready(function () {
         if (location_checkbox.is(":checked")) {location_checkbox.click();}
 
         participants_filter_div.css('visibility', 'hidden');
+        participants_filter_div.collapse('hide');
     });
 
     gender_checkbox.click(function() {

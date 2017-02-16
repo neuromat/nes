@@ -153,7 +153,71 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group {% if equipment_form.number_of_channels.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Maximum number of channels" %}</label>
+                            {{ equipment_form.number_of_channels }}
+                            <div class="help-block with-errors">
+                                {% for error in equipment_form.number_of_channels.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group {% if equipment_form.common_mode_rejection_ratio.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Minimum Common-mode Rejection (CMR) (dB)" %}</label>
+                            {{ equipment_form.common_mode_rejection_ratio }}
+                            <div class="help-block with-errors">
+                                {% for error in equipment_form.common_mode_rejection_ratio.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if equipment_form.input_impedance.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Input Impedance" %}</label>
+                            {{ equipment_form.input_impedance }}
+                            <div class="help-block with-errors">
+                                {% for error in equipment_form.input_impedance.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Unit" %}</label>
+                            {{ equipment_form.input_impedance_unit }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Tethering system" %} </label>
+                            {{ equipment_form.tethering_system }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Amplifier detection type" %} </label>
+                            {{ equipment_form.amplifier_detection_type }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
                         <a href="/experiment/amplifier/edit/{{ equipment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>

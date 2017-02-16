@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-22 10:26-0300\n"
+"POT-Creation-Date: 2016-10-06 11:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Formula"
 msgstr ""
 
-#: survey/views.py:583 survey/views.py:601 survey/views.py:627
+#: survey/views.py:583 survey/views.py:599 survey/views.py:627
 msgid "No answer"
 msgstr ""
 
