@@ -89,7 +89,7 @@
                     <a class="thumbnail" href="{{ institution_config.url }}">
 
                     {% if institution_config.logo %}
-                        <img class="img-responsive" src="media/{{ institution_config.logo }}" alt="Logo do {{ institution_config.name }}">
+                        <img class="img-responsive" src="/media/{{ institution_config.logo }}" alt="Logo do {{ institution_config.name }}">
                     {% else %}
                         <img class="img-responsive" src="{{STATIC_URL}}quiz/imgs/{{ logo_institution }}" alt="Logo do {{ institution_config.name }}">
                     {% endif %}
