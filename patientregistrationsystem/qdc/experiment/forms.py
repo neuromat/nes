@@ -1277,7 +1277,7 @@ class ContextTreeForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
-            'setting_text': Textarea(attrs={'class': 'form-control', 'rows': '4'})
+            'setting_text': Textarea(attrs={'class': 'form-control', 'rows': '6'})
         }
 
 
@@ -1285,7 +1285,8 @@ class DigitalGamePhaseDataForm(ModelForm):
     class Meta:
         model = DigitalGamePhaseData
 
-        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description']
+        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description',
+                  'sequence_used_in_context_tree']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -1301,6 +1302,7 @@ class DigitalGamePhaseDataForm(ModelForm):
             'file_format_description': Textarea(attrs={'class': 'form-control',
                                                        'rows': '4', 'required': "",
                                                        'data-error': _('File format description must be filled.')}),
+            'sequence_used_in_context_tree': Textarea(attrs={'class': 'form-control', 'rows': '4'})
             # It is not possible to set the 'required' attribute because it affects the edit screen
             # 'file': FileInput(attrs={'required': ""})
         }

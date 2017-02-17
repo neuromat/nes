@@ -290,6 +290,16 @@
 
                         <div class="row">
                             <div class="col-xs-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="control-label">{% trans "Sequence used in context tree" %}</label>
+                                    {{ digital_game_phase_data_form.sequence_used_in_context_tree }}
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
                                 <div class="form-group {% if digital_game_phase_data_form.errors.file %}has-error{% endif %}">
                                     <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
                                     <br/>
