@@ -658,10 +658,8 @@ msgid "EEG electrode net system setting created sucessfully."
 msgstr "Configuração de sistema de rede de eletrodo EEG criada com sucesso."
 
 #: experiment/views.py:1045
-#, fuzzy
-#| msgid "EMG Amplifier setting updated successfully."
 msgid "EEG Amplifier setting updated successfully."
-msgstr "Configuração de amplificador de EMG atualizada com sucesso."
+msgstr "Configuração de amplificador de EEG atualizada com sucesso."
 
 #: experiment/views.py:1063
 msgid "EEG amplifier setting updated sucessfully."

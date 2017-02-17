@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-27 09:50-0200\n"
+"POT-Creation-Date: 2017-02-16 15:14-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,17 +18,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: quiz/templates/quiz/contato.html:35 quiz/templates/quiz/template.html:11
+#: quiz/templates/quiz/contato.html:41 quiz/templates/quiz/template.html:11
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociencia - NES"
-
-#: quiz/templates/quiz/contato.html:37
-msgid "System Registration and Socio-Demographic and Clinical Data Query"
-msgstr "Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos"
-
-#: quiz/templates/quiz/contato.html:38
-msgid "Doubts and Suggestions"
-msgstr "Dúvidas e Sugestões"
 
 #: quiz/templates/quiz/template.html:130
 msgid "NES"
@@ -73,6 +65,13 @@ msgstr "Exportar"
 #: quiz/templates/quiz/template.html:254
 msgid "Set up"
 msgstr ""
+
+#~ msgid "System Registration and Socio-Demographic and Clinical Data Query"
+#~ msgstr ""
+#~ "Sistema de Cadastro e Consulta de Dados Sociodemográficos e Clínicos"
+
+#~ msgid "Doubts and Suggestions"
+#~ msgstr "Dúvidas e Sugestões"
 
 #~ msgid "Equipment"
 #~ msgstr "Equipamento"

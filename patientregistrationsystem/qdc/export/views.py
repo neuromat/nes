@@ -1014,10 +1014,12 @@ def export_menu(request, template_name="export/export_menu.html"):
         {
             'item': _('Per participant'),
             'href': reverse("filter_participants", args=()),
+            'enabled': True
         },
         {
             'item': _('Per experiments'),
             'href': reverse("experiment_selection", args=()),
+            'enabled': False
         },
     ]
     if 'group_selected_list' in request.session.keys():
