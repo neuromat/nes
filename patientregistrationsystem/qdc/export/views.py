@@ -491,6 +491,7 @@ def export_view(request, template_name="export/export_data.html"):
     selected_ev_quest = []
     selected_participant = []
     selected_diagnosis = []
+    selected_ev_quest_experiments = []
     questionnaires_experiment_list_final = []
     questionnaires_experiment_fields_list = []
 
@@ -625,12 +626,10 @@ def export_view(request, template_name="export/export_data.html"):
 
     surveys = Questionnaires()
 
-
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
-            # subject_of_group = get_object_or_404(SubjectOfGroup, group_id=group_id)
 
             if group.experimental_protocol is not None:
                 questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(subject_of_group__group=group).\
@@ -651,7 +650,6 @@ def export_view(request, template_name="export/export_data.html"):
         questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
             questionnaires_experiment_list_final,request.LANGUAGE_CODE)
 
-
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     questionnaires_list = []
@@ -663,33 +661,16 @@ def export_view(request, template_name="export/export_data.html"):
 
     questionnaires_list_final = []
 
-    # removing surveys that are not entrance evaluation
-    # entrance_evaluation_questionnaires = QuestionnaireResponse.objects.all()
     entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
                                                                                                flat=True))
-
-    # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
     surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list).\
         values('lime_survey_id')
 
     for survey in surveys_with_ev_list:
         for questionnaire in questionnaires_list:
-            # if survey.lime_survey_id == questionnaire['sid']:
             if survey['lime_survey_id'] == questionnaire['sid']:
                 questionnaires_list_final.append(questionnaire)
                 break
-
-
-
-    # questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(questionnaires_experiment_list_final,
-    #                                                                             request.LANGUAGE_CODE)
-
-    # page 2 fields
-
-    # entrance evaluation questionnarie fields
-
-    # if len(language_code) > 2:
-    #     language_code = "{}-{}".format(language_code[:2],language_code[-2:].upper())
 
     questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
 
@@ -707,6 +688,21 @@ def export_view(request, template_name="export/export_data.html"):
             if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
                 output_list["selected"] = True
 
+    if 'group_selected_list' in request.session:
+        if len(selected_ev_quest_experiments):
+            questionnaire_ids, field_id = zip(*selected_ev_quest_experiments)
+        else:
+            questionnaire_ids = ()
+
+        # index = 0
+        for questionnaire in questionnaires_experiment_fields_list:
+            questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+            questionnaire["index"] = index
+            index += 1
+            for output_list in questionnaire["output_list"]:
+                if (questionnaire["sid"], output_list["field"]) in selected_ev_quest_experiments:
+                    output_list["selected"] = True
+
     context = {
 
         "export_form": export_form,
@@ -714,7 +710,8 @@ def export_view(request, template_name="export/export_data.html"):
         "diagnosis_fields": diagnosis_fields,
         "questionnaires_fields_list": questionnaires_fields_list,
         "questionnaires_experiment_fields_list": questionnaires_experiment_fields_list,
-        "selected_ev_quest": selected_ev_quest,
+        # "selected_ev_quest": selected_ev_quest,
+        # "selected_ev_quest_experiments": selected_ev_quest_experiments,
         "selected_participant": selected_participant,
         "selected_diagnosis": selected_diagnosis,
         "tab": '1',
@@ -1057,6 +1054,7 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
                         subject_list.append(patient.id)
 
             participants_list = participants_list.filter(pk__in=subject_list)
+            request.session['filtered_participant_data'] = [item.id for item in participants_list]
 
             context = {
                 "total_of_participants": len(participants_list),
