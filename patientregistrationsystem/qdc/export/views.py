@@ -1016,13 +1016,11 @@ def export_menu(request, template_name="export/export_menu.html"):
     export_type_list = [
         {
             'item': _('Per participant'),
-            'href': reverse("filter_participants", args=()),
-            'enabled': True
+            'href': reverse("filter_participants", args=())
         },
         {
             'item': _('Per experiments'),
-            'href': reverse("experiment_selection", args=()),
-            'enabled': False
+            'href': reverse("experiment_selection", args=())
         },
     ]
     if 'group_selected_list' in request.session.keys():
