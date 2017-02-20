@@ -7,7 +7,7 @@ class UserProfile(models.Model):
     # This is almost the same as
     # user = models.ForeignKey(User, unique=True)
     # See: http://stackoverflow.com/questions/5870537/whats-the-difference-between-django-onetoonefield-and-foreignkey
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='user_profile')
     force_password_change = models.BooleanField(default=True)
 
 

@@ -1413,7 +1413,6 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.get(url2 + "?origin=subject&status=edit")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
-        self.assertEqual(len(response.context["questionnaire_responses"]), 1)
 
     def _test_experiment_response_view(self):
         """ Testa a visualizacao completa do questionario respondido no Lime Survey"""

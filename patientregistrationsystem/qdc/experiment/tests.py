@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from .models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
-    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, EEGMachine, Manufacturer, Tag, Amplifier, \
+    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, Manufacturer, Tag, Amplifier, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
@@ -187,16 +187,6 @@ class ObjectsFactory(object):
         )
         manufacturer.save()
         return manufacturer
-
-    @staticmethod
-    def create_eeg_machine(manufacturer):
-        eeg_machine = EEGMachine.objects.create(
-            manufacturer=manufacturer,
-            equipment_type="eeg_machine",
-            identification="EEG machine identification"
-        )
-        eeg_machine.save()
-        return eeg_machine
 
     @staticmethod
     def create_amplifier(manufacturer):
@@ -1926,40 +1916,40 @@ class EEGSettingTest(TestCase):
         response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
 
-    def test_eeg_setting_eeg_machine(self):
-
-        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
-
-        manufacturer = ObjectsFactory.create_manufacturer()
-        eeg_machine = ObjectsFactory.create_eeg_machine(manufacturer)
-
-        # screen to an (unexisting) eeg_machine_setting
-        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
-        self.assertEqual(response.status_code, 200)
-
-        # create an eeg_machine_setting
-        self.data = {'action': 'save', 'equipment_selection': eeg_machine.id, 'number_of_channels_used': "2"}
-        response = self.client.post(reverse("view_eeg_setting_type",
-                                            args=(eeg_setting.id, 'eeg_machine')), self.data)
-        self.assertEqual(response.status_code, 302)
-
-        # screen to view the eeg_machine_setting
-        response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
-        self.assertEqual(response.status_code, 200)
-
-        # update the eeg_machine_setting
-        response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
-        self.assertEqual(response.status_code, 200)
-
-        self.data = {'action': 'save', 'equipment_selection': eeg_machine.id, 'number_of_channels_used': "3"}
-        response = self.client.post(reverse("edit_eeg_setting_type",
-                                            args=(eeg_setting.id, 'eeg_machine')), self.data)
-        self.assertEqual(response.status_code, 302)
-
-        # remove an eeg_machine_setting
-        self.data = {'action': 'remove-eeg_machine'}
-        response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
-        self.assertEqual(response.status_code, 302)
+    # def test_eeg_setting_eeg_machine(self):
+    #
+    #     eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+    #
+    #     manufacturer = ObjectsFactory.create_manufacturer()
+    #     eeg_machine = ObjectsFactory.create_eeg_machine(manufacturer)
+    #
+    #     # screen to an (unexisting) eeg_machine_setting
+    #     response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     # create an eeg_machine_setting
+    #     self.data = {'action': 'save', 'equipment_selection': eeg_machine.id, 'number_of_channels_used': "2"}
+    #     response = self.client.post(reverse("view_eeg_setting_type",
+    #                                         args=(eeg_setting.id, 'eeg_machine')), self.data)
+    #     self.assertEqual(response.status_code, 302)
+    #
+    #     # screen to view the eeg_machine_setting
+    #     response = self.client.get(reverse("view_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     # update the eeg_machine_setting
+    #     response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'eeg_machine')))
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     self.data = {'action': 'save', 'equipment_selection': eeg_machine.id, 'number_of_channels_used': "3"}
+    #     response = self.client.post(reverse("edit_eeg_setting_type",
+    #                                         args=(eeg_setting.id, 'eeg_machine')), self.data)
+    #     self.assertEqual(response.status_code, 302)
+    #
+    #     # remove an eeg_machine_setting
+    #     self.data = {'action': 'remove-eeg_machine'}
+    #     response = self.client.post(reverse("eeg_setting_view", args=(eeg_setting.id,)), self.data)
+    #     self.assertEqual(response.status_code, 302)
 
     def test_eeg_setting_amplifier(self):
         eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
@@ -1972,7 +1962,8 @@ class EEGSettingTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # create an eeg_amplifier_setting
-        self.data = {'action': 'save', 'equipment_selection': eeg_amplifier.id, 'gain': "10"}
+        self.data = {'action': 'save', 'equipment_selection': eeg_amplifier.id, 'gain': "10",
+                     'number_of_channels_used': "2"}
         response = self.client.post(reverse("view_eeg_setting_type",
                                             args=(eeg_setting.id, 'amplifier')), self.data)
         self.assertEqual(response.status_code, 302)
@@ -1985,7 +1976,8 @@ class EEGSettingTest(TestCase):
         response = self.client.get(reverse("edit_eeg_setting_type", args=(eeg_setting.id, 'amplifier')))
         self.assertEqual(response.status_code, 200)
 
-        self.data = {'action': 'save', 'equipment_selection': eeg_amplifier.id, 'gain': "20"}
+        self.data = {'action': 'save', 'equipment_selection': eeg_amplifier.id, 'gain': "20",
+                     'number_of_channels_used': "3"}
         response = self.client.post(reverse("edit_eeg_setting_type",
                                             args=(eeg_setting.id, 'amplifier')), self.data)
         self.assertEqual(response.status_code, 302)
@@ -2198,54 +2190,54 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Manufacturer.objects.all().count(), 0)
 
-    def test_eeg_machine_register(self):
-        manufacturer = ObjectsFactory.create_manufacturer()
-
-        # list
-        response = self.client.get(reverse("eegmachine_list", args=()))
-        self.assertEqual(response.status_code, 200)
-
-        # create
-        response = self.client.get(reverse("eegmachine_new", args=()))
-        self.assertEqual(response.status_code, 200)
-
-        identification = 'Identification'
-        self.data = {'action': 'save',
-                     'manufacturer': str(manufacturer.id),
-                     'identification': identification}
-
-        response = self.client.post(reverse("eegmachine_new", args=()), self.data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(EEGMachine.objects.all().count(), 1)
-
-        # view
-        eeg_machine = EEGMachine.objects.all().first()
-
-        response = self.client.get(reverse("eegmachine_view", args=(eeg_machine.id,)))
-        self.assertEqual(response.status_code, 200)
-
-        # update
-        response = self.client.get(reverse("eegmachine_edit", args=(eeg_machine.id,)))
-        self.assertEqual(response.status_code, 200)
-
-        self.data = {'action': 'save',
-                     'manufacturer': str(manufacturer.id),
-                     'identification': identification}
-        response = self.client.post(reverse("eegmachine_edit", args=(eeg_machine.id,)), self.data)
-        self.assertEqual(response.status_code, 302)
-
-        identification = 'Identification changed'
-        self.data = {'action': 'save',
-                     'manufacturer': str(manufacturer.id),
-                     'identification': identification}
-        response = self.client.post(reverse("eegmachine_edit", args=(eeg_machine.id,)), self.data)
-        self.assertEqual(response.status_code, 302)
-
-        # remove
-        self.data = {'action': 'remove'}
-        response = self.client.post(reverse("eegmachine_view", args=(eeg_machine.id,)), self.data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(EEGMachine.objects.all().count(), 0)
+    # def test_eeg_machine_register(self):
+    #     manufacturer = ObjectsFactory.create_manufacturer()
+    #
+    #     # list
+    #     response = self.client.get(reverse("eegmachine_list", args=()))
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     # create
+    #     response = self.client.get(reverse("eegmachine_new", args=()))
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     identification = 'Identification'
+    #     self.data = {'action': 'save',
+    #                  'manufacturer': str(manufacturer.id),
+    #                  'identification': identification}
+    #
+    #     response = self.client.post(reverse("eegmachine_new", args=()), self.data)
+    #     self.assertEqual(response.status_code, 302)
+    #     self.assertEqual(EEGMachine.objects.all().count(), 1)
+    #
+    #     # view
+    #     eeg_machine = EEGMachine.objects.all().first()
+    #
+    #     response = self.client.get(reverse("eegmachine_view", args=(eeg_machine.id,)))
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     # update
+    #     response = self.client.get(reverse("eegmachine_edit", args=(eeg_machine.id,)))
+    #     self.assertEqual(response.status_code, 200)
+    #
+    #     self.data = {'action': 'save',
+    #                  'manufacturer': str(manufacturer.id),
+    #                  'identification': identification}
+    #     response = self.client.post(reverse("eegmachine_edit", args=(eeg_machine.id,)), self.data)
+    #     self.assertEqual(response.status_code, 302)
+    #
+    #     identification = 'Identification changed'
+    #     self.data = {'action': 'save',
+    #                  'manufacturer': str(manufacturer.id),
+    #                  'identification': identification}
+    #     response = self.client.post(reverse("eegmachine_edit", args=(eeg_machine.id,)), self.data)
+    #     self.assertEqual(response.status_code, 302)
+    #
+    #     # remove
+    #     self.data = {'action': 'remove'}
+    #     response = self.client.post(reverse("eegmachine_view", args=(eeg_machine.id,)), self.data)
+    #     self.assertEqual(response.status_code, 302)
+    #     self.assertEqual(EEGMachine.objects.all().count(), 0)
 
     def test_amplifier_register(self):
         manufacturer = ObjectsFactory.create_manufacturer()

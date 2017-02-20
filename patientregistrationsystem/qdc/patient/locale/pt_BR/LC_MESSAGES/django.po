@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-22 10:28-0300\n"
+"POT-Creation-Date: 2017-02-16 15:14-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,12 +23,12 @@ msgstr ""
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
-#: patient/forms.py:31 patient/forms.py:134 patient/forms.py:159
+#: patient/forms.py:31 patient/forms.py:135 patient/forms.py:160
 #: patient/views.py:715 patient/views.py:1226
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: patient/forms.py:32 patient/forms.py:135 patient/forms.py:160
+#: patient/forms.py:32 patient/forms.py:136 patient/forms.py:161
 msgid "mm/dd/yyyy"
 msgstr "dd/mm/aaaa"
 
@@ -44,67 +44,67 @@ msgstr "Sexo deve ser preenchido"
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
-#: patient/forms.py:71 patient/forms.py:105 patient/forms.py:109
-#: patient/forms.py:113
+#: patient/forms.py:71 patient/forms.py:106 patient/forms.py:110
+#: patient/forms.py:114
 msgid "Yes"
 msgstr "Sim"
 
-#: patient/forms.py:71 patient/forms.py:105 patient/forms.py:109
-#: patient/forms.py:113
+#: patient/forms.py:71 patient/forms.py:106 patient/forms.py:110
+#: patient/forms.py:114
 msgid "No"
 msgstr "Não"
 
-#: patient/forms.py:86
+#: patient/forms.py:87
 msgid "Type in profession"
 msgstr "Entrar profissão"
 
-#: patient/forms.py:87
+#: patient/forms.py:88
 msgid "Inform occupation"
 msgstr "Entrar ocupação"
 
-#: patient/forms.py:89 patient/forms.py:90 patient/forms.py:91
-#: patient/forms.py:92 patient/forms.py:93 patient/forms.py:94
-#: patient/forms.py:95 patient/forms.py:96 patient/forms.py:97
+#: patient/forms.py:90 patient/forms.py:91 patient/forms.py:92
+#: patient/forms.py:93 patient/forms.py:94 patient/forms.py:95
+#: patient/forms.py:96 patient/forms.py:97 patient/forms.py:98
 msgid "4 or +"
 msgstr "4 ou +"
 
-#: patient/forms.py:124
+#: patient/forms.py:125
 msgid "Have already used"
 msgstr "Já fez"
 
-#: patient/forms.py:124
+#: patient/forms.py:125
 msgid "It is using"
 msgstr "Faz"
 
-#: patient/forms.py:125
+#: patient/forms.py:126
 msgid "Have never used"
 msgstr "Nunca fez"
 
-#: patient/forms.py:136
+#: patient/forms.py:137
 msgid "Date must be completed"
 msgstr "Data deve ser preenchida"
 
-#: patient/forms.py:137
+#: patient/forms.py:138
 msgid "Description"
 msgstr "Descrição"
 
-#: patient/forms.py:138
+#: patient/forms.py:139
 msgid "Description must be filled in"
 msgstr "Descrição deve ser preenchida"
 
-#: patient/forms.py:139
+#: patient/forms.py:140
 msgid "Doctor"
 msgstr "Médico"
 
-#: patient/forms.py:140 patient/templates/patient/exams.html:140
+#: patient/forms.py:141 patient/templates/patient/exams.html:140
 msgid "CRM"
 msgstr ""
 
-#: patient/forms.py:141
+#: patient/forms.py:142
 msgid "Place of execution"
 msgstr "Local de realização"
 
-#: patient/forms.py:162
+#: patient/forms.py:163
 msgid "Fill date must be filled"
 msgstr "Data de preenchimento deve ser preenchida"
 
@@ -153,7 +153,15 @@ msgstr ""
 msgid "Other"
 msgstr "Outros"
 
-#: patient/models.py:393
+#: patient/models.py:213
+msgid "Schooling of the patient"
+msgstr "Escolaridade do participante"
+
+#: patient/models.py:215
+msgid "Schooling of the householder"
+msgstr "Escolaridade do chefe de família"
+
+#: patient/models.py:396
 msgid "token id: "
 msgstr ""
 
@@ -668,59 +676,63 @@ msgstr "Religião (IBGE)"
 msgid "Flesh tone"
 msgstr "Cor da pele (IBGE)"
 
-#: patient/templates/patient/register_socialdemographic_data.html:107
+#: patient/templates/patient/register_socialdemographic_data.html:106
+msgid "Level of education (schooling)"
+msgstr "Grau de instrução (escolaridade)"
+
+#: patient/templates/patient/register_socialdemographic_data.html:116
 msgid "Social class"
 msgstr "Classe social"
 
-#: patient/templates/patient/register_socialdemographic_data.html:112
-msgid "Schooling"
+#: patient/templates/patient/register_socialdemographic_data.html:122
+msgid "Level of education of the householder - Criterion Brazil 2013"
 msgstr "Grau de instrução do chefe de família - Critério Brasil 2013"
 
-#: patient/templates/patient/register_socialdemographic_data.html:123
+#: patient/templates/patient/register_socialdemographic_data.html:133
 msgid "Amount of familiar comfort items - Brazil 2013 criteria"
 msgstr "Quantidade de itens de conforto familiar - Critério Brasil 2013"
 
-#: patient/templates/patient/register_socialdemographic_data.html:126
+#: patient/templates/patient/register_socialdemographic_data.html:136
 msgid "TV"
 msgstr "Televisores em cores"
 
-#: patient/templates/patient/register_socialdemographic_data.html:137
+#: patient/templates/patient/register_socialdemographic_data.html:147
 msgid "DVD"
 msgstr "Videocassete/DVD"
 
-#: patient/templates/patient/register_socialdemographic_data.html:148
+#: patient/templates/patient/register_socialdemographic_data.html:158
 msgid "Radio"
 msgstr "Rádios"
 
-#: patient/templates/patient/register_socialdemographic_data.html:159
+#: patient/templates/patient/register_socialdemographic_data.html:169
 msgid "Bath"
 msgstr "Bath"
 
-#: patient/templates/patient/register_socialdemographic_data.html:170
+#: patient/templates/patient/register_socialdemographic_data.html:180
 msgid "Automobile"
 msgstr "Automóveis"
 
-#: patient/templates/patient/register_socialdemographic_data.html:181
+#: patient/templates/patient/register_socialdemographic_data.html:191
 msgid "Employed salaried"
 msgstr "Empregadas mensalistas"
 
-#: patient/templates/patient/register_socialdemographic_data.html:192
+#: patient/templates/patient/register_socialdemographic_data.html:202
 msgid "Wash machine"
 msgstr "Máquinas de lavar"
 
-#: patient/templates/patient/register_socialdemographic_data.html:203
+#: patient/templates/patient/register_socialdemographic_data.html:213
 msgid "Refrigerator"
 msgstr "Geladeiras"
 
-#: patient/templates/patient/register_socialdemographic_data.html:214
+#: patient/templates/patient/register_socialdemographic_data.html:224
 msgid "Freezer*"
 msgstr ""
 
-#: patient/templates/patient/register_socialdemographic_data.html:229
+#: patient/templates/patient/register_socialdemographic_data.html:239
 msgid "*Independent unit or part of the fridge-freezer"
 msgstr "*Aparelho independente ou parte da geladeira duplex."
 
-#: patient/templates/patient/register_socialdemographic_data.html:236
+#: patient/templates/patient/register_socialdemographic_data.html:246
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
@@ -840,6 +852,9 @@ msgid ""
 msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
+
+#~ msgid "Schooling"
+#~ msgstr "Grau de instrução do chefe de família - Critério Brasil 2013"
 
 #~ msgid "exams/%(patient)s/%(exam)s/%(filename)s"
 #~ msgstr "exames/%(patient)s/%(exam)s/%(filename)s"
@@ -977,9 +992,6 @@ msgstr ""
 
 #~ msgid "Can add patient"
 #~ msgstr "Pode adicionar paciente"
-
-#~ msgid "Can change patient"
-#~ msgstr "Pode alterar paciente"
 
 #~ msgid "Can add medical record data"
 #~ msgstr "Pode adicionar dados de prontuário"

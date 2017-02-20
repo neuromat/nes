@@ -104,7 +104,8 @@
                                                         <td>{{ eeg_data_file.file.size|filesizeformat }}</td>
                                                         <td><a href="{{ eeg_data_file.file.url }}" data-toggle="tooltip" data-placement="top" title="{% trans "Download file" %}"><span class="glyphicon glyphicon-download"></span></a></td>
                                                         <td>
-                                                            {% if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading and eeg_data_file.eeg_setting.eeg_machine_setting and eeg_data_file.eeg_setting.eeg_machine_setting.number_of_channels_used %}
+{#                                                            {% if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading and eeg_data_file.eeg_setting.eeg_amplifier_setting and eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used %}#}
+                                                            {% if eeg_data_file.can_export_to_nwb %}
                                                                 <a onclick="handle_processing();" href="/experiment/eeg_data/{{ eeg_data_file.id }}/export_nwb/{{ eeg_collection.eeg_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}" data-toggle="tooltip" data-placement="top" title="{% trans "Export nwb file format" %}">
                                                                     <span class="glyphicon glyphicon-export"></span>
                                                                 </a>

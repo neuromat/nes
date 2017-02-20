@@ -75,11 +75,12 @@ class SocialDemographicDataForm(ModelForm):
         model = SocialDemographicData
         fields = ['natural_of', 'citizenship', 'profession', 'occupation', 'tv', 'dvd', 'radio', 'bath',
                   'automobile', 'wash_machine', 'refrigerator', 'freezer', 'house_maid',
-                  'religion', 'payment', 'flesh_tone', 'schooling', 'benefit_government',
+                  'religion', 'payment', 'flesh_tone', 'patient_schooling', 'schooling', 'benefit_government',
                   'social_class']
         widgets = {
             'natural_of': TextInput(attrs={'class': 'form-control'}),
             'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'patient_schooling': Select(attrs={'class': 'form-control'}),
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),
             'religion': Select(attrs={'class': 'form-control'}),

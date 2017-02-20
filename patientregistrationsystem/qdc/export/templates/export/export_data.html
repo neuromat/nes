@@ -27,7 +27,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/home">{% trans "Export" %}</a></li>
+                <li><a href="/export">{% trans "Export" %}</a></li>
                 <li class="active">{% trans "Structure and fields selection" %}</li>
             </ol>
         </div>
@@ -64,7 +64,7 @@
 
         <div class="tab-pane fade in active" id="menuUserTab">
             <div class="col-md-10">
-                {#            {% ifequal contacts.number 1 %}#}
+
             {% if perms.patient.export_patient %}
                 {% if questionnaires_fields_list %}
                 <div class="container span6 offset3 well ">
@@ -109,20 +109,12 @@
                                     <label for="headings"
                                         class="control-label">{% trans "Headings" %}</label>
 
-{#                                  <label for="per_participant"#}
-{#                                           class="control-label">{% trans "Per participant" %}</label>#}
-{#  #}
                                <div class="form-group {% if export_form.errors.headings %}has-error{% endif %}">
-
-{#                                    <div class="form-group">#}
-{#                                        <div class="radio">#}
-                                            {% for radio in export_form.headings %}
-                                                <div class="radio">
-                                                    {{ radio }}
-                                                </div>
-                                            {% endfor %}
-{#                                        </div>#}
-{#                                    </div>#}
+                                   {% for radio in export_form.headings %}
+                                       <div class="radio">
+                                           {{ radio }}
+                                       </div>
+                                   {% endfor %}
                                 </div>
                             </div>
                             <div class="col-xs-6 col-sm-6">
@@ -135,7 +127,6 @@
                                                 </div>
                                             {% endfor %}
                                     </div>
-
                             </div>
                         </div>
                 </div>
@@ -143,9 +134,8 @@
                     <div class="container span6 offset3 well ">
                     <h4>{% trans "Questionnaire information" %}</h4>
 
-
                         <div class="row">
-                            {#                        <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} </label>#}
+                        <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} </label>
 
                             <div class="panel-group" id="accordion">
                                 {% for survey in questionnaires_fields_list %}
@@ -153,13 +143,13 @@
                                         <div class="panel-heading">
                                             <h9 class="panel-title">
                                                 <a data-toggle="collapse" data-parent="#accordion"
-                                                   href="#collapse_{{ survey.sid }}">
-                                                <span style="background-color: #428bca" id="badge_{{ survey.sid }}"
+                                                   href="#collapse_{{ survey.index }}">
+                                                <span style="background-color: #428bca" id="badge_{{ survey.index }}"
                                                       class="badge">{{ survey.selected_counter }} </span> {{ survey.sid }}
                                                     - {{ survey.title }} </a>
                                             </h9>
                                         </div>
-                                        <div id="collapse_{{ survey.sid }}" class="panel-collapse collapse">
+                                        <div id="collapse_{{ survey.index }}" class="panel-collapse collapse">
                                             <div class="panel-body">
 
                                                 <div class="col-md-5 col-sm-12">
@@ -167,14 +157,14 @@
                                                         <label class="control-label">{% trans "Fields available:" %} </label>
 
                                                         <select class="form-control" size="13"
-                                                                id="multiselect_{{ survey.sid }}"
+                                                                id="multiselect_{{ survey.index }}"
                                                                 name="from[]" multiple="multiple"
                                                                 data-error={% trans "Please, select a questionnaire from the list." %}>
                                                             {% for field in survey.output_list %}
                                                                 {#                                            {% if selected_ev_quest %}#}
                                                                 {% if not field.selected %}
                                                                     <option title="{{ field.description }}"
-                                                                            value="{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
+                                                                            value="{{ survey.index }}*{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
                                                                         [{{ field.field }}] {{ field.description }}
                                                                     </option>
                                                                 {% endif %}
@@ -185,18 +175,17 @@
                                                     </div>
                                                 </div>
 
-
                                                 <div class="col-md-2 col-sm-2">
-                                                    <button type="button" id="multiselect_{{ survey.sid }}_rightAll"
+                                                    <button type="button" id="multiselect_{{ survey.index }}_rightAll"
                                                             class="btn btn-block"><i
                                                             class="glyphicon glyphicon-forward"></i></button>
-                                                    <button type="button" id="multiselect_{{ survey.sid }}_rightSelected"
+                                                    <button type="button" id="multiselect_{{ survey.index }}_rightSelected"
                                                             class="btn btn-block"><i
                                                             class="glyphicon glyphicon-chevron-right"></i></button>
-                                                    <button type="button" id="multiselect_{{ survey.sid }}_leftSelected"
+                                                    <button type="button" id="multiselect_{{ survey.index }}_leftSelected"
                                                             class="btn btn-block"><i
                                                             class="glyphicon glyphicon-chevron-left"></i></button>
-                                                    <button type="button" id="multiselect_{{ survey.sid }}_leftAll"
+                                                    <button type="button" id="multiselect_{{ survey.index }}_leftAll"
                                                             class="btn btn-block"><i
                                                             class="glyphicon glyphicon-backward"></i></button>
                                                 </div>
@@ -204,13 +193,13 @@
                                                 <div class="col-md-5 col-sm-10">
                                                     <label class="control-label">{% trans "Fields chosen:" %} </label>
 
-                                                    <select name="to[]" id="multiselect_{{ survey.sid }}_to"
+                                                    <select name="to[]" id="multiselect_{{ survey.index }}_to"
                                                             class="form-control" size="13"
                                                             multiple="multiple">
                                                         {% for field in survey.output_list %}
                                                             {% if field.selected %}
                                                                 <option title="{{ field.description }}"
-                                                                        value="{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
+                                                                        value="{{ survey.index }}*{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
                                                                     [{{ field.field }}] {{ field.description }}
                                                                 </option>
                                                             {% endif %}
@@ -256,7 +245,7 @@
                     {% endif %}
                 </div>
                 <div class="container span6 offset3 well ">
-                    {% if perms.patient.export_medicalrecorddata %}
+                    {% if perms.patient.export_medicalrecorddata and diagnosis_fields %}
                         <h4>{% trans "Diagnosis" %}</h4>
 
                         <div class="row">

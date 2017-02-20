@@ -14,3 +14,4 @@ h5py==2.6.0
 mne==0.13.1
 pydot==1.2.3
 matplotlib==1.5.3
+django-solo==1.1.2

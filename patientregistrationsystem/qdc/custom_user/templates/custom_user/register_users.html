@@ -25,7 +25,6 @@
 
     <script type="text/javascript">
 
-
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
             $( "form" ).submit(function( event ) {
@@ -48,7 +47,7 @@
 
         function validateForm()
         {
-           var c=document.getElementsByTagName('input');
+           var c=document.getElementsByName('groups');
            for (var i = 0; i<c.length; i++){
                if (c[i].type=='checkbox') {
                     if (c[i].checked){return true}
@@ -71,21 +70,6 @@
                 }
             })
         });
-{#       $(function(){#}
-{#            $("[data-toggle=tooltip]").tooltip();#}
-{#            $( "form" ).submit(function( event ) {#}
-{#                var password1 = $('#id_new_password1').val();#}
-{#                if(beginCheckPassword1 || password1)#}
-{#                    if (checkPass())#}
-{#                        event.preventDefault();#}
-{#                if(!$('#email').val()){#}
-{#                    showErrorMessage(gettext("E-mail have to be filled!"));#}
-{#                    $('#mailDivId').addClass('has-error');#}
-{#                    event.preventDefault();#}
-{#                }#}
-{#            })#}
-{#        });#}
-
 
     </script>
 {% endblock %}
@@ -184,14 +168,14 @@
                         </div>
                     </div>
                 </div>
-{#                <div class="row">#}
-                                            <div class="row">
-                                    <div class="col-xs-12 col-sm-12">
-                                        <div class="form-group">
-                                            <input type="checkbox" id="password_flag" name="password_flag" {% if creating %}checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
-                                        </div>
-                                    </div>
-                                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <input type="checkbox" id="password_flag" name="password_flag" {% if creating %}checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="row" id="div_password">
                     <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left"
@@ -217,7 +201,6 @@
                                 <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                 <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
                                        placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
-{#                                       placeholder="{% trans "Type password" %}" type="password" >#}
                             </div>
                             <div class="help-block with-errors">
                                 {% for error in form.errors.password %}

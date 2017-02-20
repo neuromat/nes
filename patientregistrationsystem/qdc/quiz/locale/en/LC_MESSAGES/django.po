@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-22 10:28-0300\n"
+"POT-Creation-Date: 2017-02-16 15:14-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,55 +17,51 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: quiz/templates/quiz/contato.html:35 quiz/templates/quiz/template.html:11
+#: quiz/templates/quiz/contato.html:41 quiz/templates/quiz/template.html:11
 msgid "Neuroscience Experiments System - NES"
 msgstr ""
 
-#: quiz/templates/quiz/contato.html:37
-msgid "System Registration and Socio-Demographic and Clinical Data Query"
-msgstr ""
-
-#: quiz/templates/quiz/contato.html:38
-msgid "Doubts and Suggestions"
-msgstr ""
-
-#: quiz/templates/quiz/template.html:128
+#: quiz/templates/quiz/template.html:130
 msgid "NES"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:168
+#: quiz/templates/quiz/template.html:170
 msgid "Change password"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:169
+#: quiz/templates/quiz/template.html:171
 msgid "Logout"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:189
+#: quiz/templates/quiz/template.html:191
 msgid "Home"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:197
+#: quiz/templates/quiz/template.html:199
 msgid "Participants"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:206
+#: quiz/templates/quiz/template.html:209
 msgid "Studies"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:215
+#: quiz/templates/quiz/template.html:218
 msgid "Questionnaires"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:224
+#: quiz/templates/quiz/template.html:227
 msgid "Users"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:233
+#: quiz/templates/quiz/template.html:236
+msgid "Teams"
+msgstr ""
+
+#: quiz/templates/quiz/template.html:245
 msgid "Export"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:242
+#: quiz/templates/quiz/template.html:254
 msgid "Set up"
 msgstr ""
 

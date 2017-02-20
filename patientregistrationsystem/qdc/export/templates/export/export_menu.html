@@ -10,7 +10,7 @@
     </script>
 {% endblock %}
 
-{% block activeSetup %}class="active"{% endblock %}
+{% block activeExport %}class="active"{% endblock %}
 
 {% block content %}
 
@@ -55,10 +55,14 @@
                         {% for export_type in export_type_list %}
                             <tr>
                                 <td>
-                                    <a data-toggle="tooltip" data-placement="left" title="{% trans "List view" %}"
-                                       href="{{ export_type.href }}">
-                                        {{ export_type.item }}
-                                    </a>
+                                    {% if export_type.enabled %}
+                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "List view" %}"
+                                           href="{{ export_type.href }}">
+                                            {{ export_type.item }}
+                                        </a>
+                                    {% else %}
+                                        {{ export_type.item }} {% trans "(disabled)" %}
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}

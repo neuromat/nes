@@ -4,6 +4,18 @@
 
 {% block header %}
     {% load static %}
+    <script xmlns="http://www.w3.org/1999/html">
+    $(function () {
+{#        $("#get_diagnosis").autocomplete({#}
+{#            source: "/export/get_diagnoses",#}
+{#            minLength: 2,#}
+{#            select: function (event, ui) {#}
+{#                add_disease(ui.item.id, ui.item.value);#}
+{#            }#}
+{#        });#}
+
+    });
+    </script>
     <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
 
     {% block specific_header %}
@@ -32,7 +44,7 @@
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
-            <div class="container span6 offset3 well ">
+            <div id="participants_container" class="container span6 offset3 well ">
                 <h4>{% trans "Participants selection" %}</h4>
 
                 <div class="form-group">
@@ -42,6 +54,7 @@
                             {% trans "All participants" %}
                         </input>
                     </div>
+
                     <div class="radio">
                         <input id="id_type_of_selection_radio_1" name="type_of_selection_radio" type="radio" value="selected">
                             {% trans "Selected participants" %}
@@ -49,7 +62,7 @@
                     </div>
 
                     <div class="col-md-1"></div>
-                    <div class="col-md-11" id="participants_filter_div" style="visibility: hidden">
+                    <div class="col-md-11 collapse" id="participants_filter_div" style="visibility: hidden">
 
                         <div class="form-group">
                             <input id="id_gender_checkbox" name="gender_checkbox" type="checkbox" value="gender_selected">
@@ -74,24 +87,96 @@
                         </div>
 
                         <div class="form-group">
+                            <input id="id_location_checkbox" name="location_checkbox" type="checkbox" value="location_selected">
+                                {% trans "Locations" %}
+                            </input>
+                        </div>
+
+                        <div id="id_locations" class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-body" style="background-color: whitesmoke">
+
+                                <div class="row">
+                                    <div id="div-search-locations" class="col-xs-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                                            <div class="ui-widget">
+                                              <input id="get_location" placeholder="{% trans "Enter a city" %}" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <ul id="search-results-locations" style="list-style: none;">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div id="localization_list" class="form-group">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input id="id_diagnosis_checkbox" name="diagnosis_checkbox" type="checkbox" value="diagnosis_selected">
+                                {% trans "Diagnosis" %}
+                            </input>
+                        </div>
+
+                        <div id="id_diagnosis" class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-body" style="background-color: whitesmoke">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                                            <div class="ui-widget">
+                                              <input id="get_diagnosis" placeholder="{% trans "Enter a diagnosis" %}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <ul id="search-results-locations" style="list-style: none;">
+                                        </ul>
+
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12">
+                                        <div id="diagnosis_list" class="form-group">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
                             <input id="id_age_checkbox" name="age_checkbox" type="checkbox" value="age_selected">
                                 {% trans "Age" %}
                             </input>
                         </div>
 
-                        <div class="col-xs-6 col-sm-2">
-                            <div class="form-group">
-                                {{ age_interval_form.min_age }}
+                        <div id="id_age" class="panel panel-default" style="border:1px solid lightgray;">
+                            <div class="panel-body" style="background-color: whitesmoke">
+                                <div class="col-xs-6 col-sm-2">
+                                    <div class="form-group">
+                                        {{ age_interval_form.min_age }}
+                                    </div>
+                                </div>
+                                <div class="col-xs-1">
+                                    <span>{% trans "to" %}</span>
+                                </div>
+                                <div class="col-xs-6 col-sm-2">
+                                    <div class="form-group">
+                                        {{ age_interval_form.max_age }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-xs-1">
-                            <span>{% trans "to" %}</span>
-                        </div>
-                        <div class="col-xs-6 col-sm-2">
-                            <div class="form-group">
-                                {{ age_interval_form.max_age }}
-                            </div>
-                        </div>
+
+
                     </div>
 
                 </div>

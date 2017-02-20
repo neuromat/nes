@@ -1,0 +1,19 @@
+{% load i18n %}
+
+{% block header %}
+    {% load static %}
+    <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
+
+    {% block specific_header %}
+    {% endblock %}
+{% endblock %}
+
+<ul id="ul-diagnosis-list" style="list-style-type: none; padding: 0; margin: 0;">
+    {% if classification_of_diseases_list.count > 0 %}
+        {% for classification_of_disease in classification_of_diseases_list %}
+            <li><a href="#" onclick="add_disease('{{ classification_of_diseases }}', '{{ classification_of_diseases__abbreviated_description }}'); return false;">{{ classification_of_diseases }} - {{ classification_of_diseases__abbreviated_description }}</a></li>
+        {% endfor %}
+    {% else %}
+        <li>{% trans "No diagnosis found!" %}</li>
+    {% endif %}
+</ul>

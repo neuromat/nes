@@ -210,7 +210,10 @@ class SocialDemographicData(models.Model):
     benefit_government = models.NullBooleanField(blank=True)
     payment = models.ForeignKey(Payment, null=True, blank=True)
     flesh_tone = models.ForeignKey(FleshTone, null=True, blank=True)
-    schooling = models.ForeignKey(Schooling, null=True, blank=True)
+    patient_schooling = models.ForeignKey(Schooling, verbose_name=_('Schooling of the patient'),
+                                          null=True, blank=True, related_name='patient_schooling_set')
+    schooling = models.ForeignKey(Schooling, verbose_name=_('Schooling of the householder'),
+                                  null=True, blank=True)
     tv = models.IntegerField(null=True, blank=True, )
     dvd = models.IntegerField(null=True, blank=True, )
     radio = models.IntegerField(null=True, blank=True, )

@@ -1,6 +1,6 @@
 # coding=utf-8
 import re
-import datetime
+# import datetime
 import json
 import random
 
@@ -15,7 +15,8 @@ from nwb.nwbco import *
 # v1.5
 import mne
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+from dateutil.relativedelta import relativedelta
 from functools import partial
 
 from operator import itemgetter
@@ -42,13 +43,15 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
     FilterType, EEGSolution, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, EEGElectrodePositionSetting, \
     ElectrodeModel, EEGElectrodePositionCollectionStatus, EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, \
-    Material, AdditionalData, Tag, CoilModel, TMS, \
+    Material, AdditionalData, Tag, CoilModel, \
     EMGData, EMGSetting, SoftwareVersion, EMGDigitalFilterSetting, EMGADConverterSetting, \
     EMGElectrodeSetting, EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, \
     ADConverter, StandardizationSystem, Muscle, MuscleSubdivision, MuscleSide, \
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
-    EMGElectrodePlacementSetting, TMSData, CoilOrientation, ResearchProjectCollaboration, TMSLocalizationSystem, HotSpot
+    EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
+    DigitalGamePhase, ContextTree, DigitalGamePhaseData
+
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
@@ -66,11 +69,13 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm, CollaborationForm
+    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm
 
 from export.export import create_directory
 
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData, \
+    Diagnosis
+from export.forms import ParticipantsSelectionForm, AgeIntervalForm
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -90,7 +95,8 @@ icon_class = {
     'eeg': 'glyphicon glyphicon-flash',
     'emg': 'glyphicon glyphicon-stats',
     'tms': 'glyphicon glyphicon-magnet',
-    'experimental_protocol': 'glyphicon glyphicon-tasks'
+    'experimental_protocol': 'glyphicon glyphicon-tasks',
+    'digital_game_phase': 'glyphicon glyphicon-play-circle'
 }
 
 delimiter = "-"
@@ -181,7 +187,7 @@ def research_project_view(request, research_project_id, template_name="experimen
                 collaborator.save()
                 messages.success(request, _('Is coordinator status successfully changed.'))
             except ProtectedError:
-                messages.error(request, _("Error trying to the status of the coordinator."))
+                messages.error(request, _("Error trying to change the status of the coordinator."))
             redirect_url = reverse("research_project_view", args=(research_project_id,))
             return HttpResponseRedirect(redirect_url)
 
@@ -406,6 +412,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     eeg_setting_list = EEGSetting.objects.filter(experiment=experiment)
     emg_setting_list = EMGSetting.objects.filter(experiment=experiment)
     tms_setting_list = TMSSetting.objects.filter(experiment=experiment)
+    context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     for field in experiment_form.fields:
@@ -452,6 +459,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                "eeg_setting_list": eeg_setting_list,
                "emg_setting_list": emg_setting_list,
                "tms_setting_list": tms_setting_list,
+               "context_tree_list": context_tree_list,
                "research_project": experiment.research_project}
 
     return render(request, template_name, context)
@@ -640,8 +648,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
         experimental_protocol_description = get_experimental_protocol_description(
             group.experimental_protocol, request.LANGUAGE_CODE)
 
-        # experimental_protocol_image = get_experimental_protocol_image(
-        #     group.experimental_protocol, request.LANGUAGE_CODE)
+        experimental_protocol_image = get_experimental_protocol_image(
+            group.experimental_protocol, request.LANGUAGE_CODE)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -3747,9 +3755,14 @@ def search_cid10_ajax(request):
 
         if search_text:
             cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text))
+                                                                  Q(description__icontains=search_text) |
+                                                                  Q(code__icontains=search_text))
 
-        return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
+        if group_id:
+            return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
+        else:
+            return render_to_response('export/diagnoses.html',
+                                      {'classification_of_diseases_list': cid_10_list})
 
 
 @login_required
@@ -3861,7 +3874,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     experimental_protocol_info = {'number_of_questionnaires': 0,
                                   'number_of_eeg_data': 0,
                                   'number_of_emg_data': 0,
-                                  'number_of_tms_data': 0}
+                                  'number_of_tms_data': 0,
+                                  'number_of_digital_game_phase_data': 0}
 
     group = get_object_or_404(Group, id=group_id)
 
@@ -3888,11 +3902,15 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
         list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
         list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
+        list_of_digital_game_phase_configuration = create_list_of_trees(group.experimental_protocol,
+                                                                        "digital_game_phase")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
                                       'number_of_eeg_data': len(list_of_eeg_configuration),
                                       'number_of_emg_data': len(list_of_emg_configuration),
-                                      'number_of_tms_data': len(list_of_tms_configuration)}
+                                      'number_of_tms_data': len(list_of_tms_configuration),
+                                      'number_of_digital_game_phase_data':
+                                          len(list_of_digital_game_phase_configuration)}
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -3998,11 +4016,30 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 percentage_of_tms_data_files_uploaded = \
                     100 * number_of_tms_data_files_uploaded / len(list_of_tms_configuration)
 
-            # If any questionnaire has responses or any eeg/emg/tms data file was uploaded,
+            # Digital game phase data files
+            number_of_digital_game_phase_data_files_uploaded = 0
+            # for each component_configuration of tms...
+            for digital_game_phase_configuration in list_of_digital_game_phase_configuration:
+                path = [item[0] for item in digital_game_phase_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
+                digital_game_phase_data_files = \
+                    DigitalGamePhaseData.objects.filter(subject_of_group=subject_of_group,
+                                                        data_configuration_tree_id=data_configuration_tree_id)
+                if len(digital_game_phase_data_files):
+                    number_of_digital_game_phase_data_files_uploaded += 1
+
+            percentage_of_digital_game_phase_data_files_uploaded = 0
+            if len(list_of_digital_game_phase_configuration) > 0:
+                percentage_of_digital_game_phase_data_files_uploaded = \
+                    100 * number_of_digital_game_phase_data_files_uploaded / \
+                    len(list_of_digital_game_phase_configuration)
+
+            # If any questionnaire has responses or any eeg/emg/tms/digital_game_phase data file was uploaded,
             # the subject can't be removed from the group.
             if number_of_eeg_data_files_uploaded or \
                     number_of_emg_data_files_uploaded or \
                     number_of_tms_data_files_uploaded or \
+                    number_of_digital_game_phase_data_files_uploaded or \
                     number_of_questionnaires_filled:
                 can_remove = False
 
@@ -4023,6 +4060,11 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'number_of_tms_data_files_uploaded': number_of_tms_data_files_uploaded,
                  'total_of_tms_data_files': len(list_of_tms_configuration),
                  'percentage_of_tms_data_files_uploaded': int(percentage_of_tms_data_files_uploaded),
+
+                 'number_of_digital_game_phase_data_files_uploaded': number_of_digital_game_phase_data_files_uploaded,
+                 'total_of_digital_game_phase_data_files': len(list_of_digital_game_phase_configuration),
+                 'percentage_of_digital_game_phase_data_files_uploaded':
+                     int(percentage_of_digital_game_phase_data_files_uploaded),
 
                  'number_of_additional_data_uploaded':
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
@@ -4060,6 +4102,145 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                'subject_list': subject_list_with_status,
                "limesurvey_available": limesurvey_available,
                "experimental_protocol_info": experimental_protocol_info}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def search_subjects(request, group_id, template_name="experiment/search_subjects.html"):
+
+    experimental_protocol_info = {'number_of_questionnaires': 0,
+                                  'number_of_eeg_data': 0,
+                                  'number_of_emg_data': 0,
+                                  'number_of_tms_data': 0}
+
+    group = get_object_or_404(Group, id=group_id)
+
+    subject_id = None
+
+    participant_selection_form = ParticipantsSelectionForm(None)
+    age_interval_form = AgeIntervalForm(None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "next-step-1":
+
+            participants_list = Patient.objects.filter(removed=False)
+            # selecting participants according the study/experiment/group
+            if 'study_selected_list' in request.session:
+                subject_list = []
+                study_selected_list = request.session['study_selected_list'][0]
+                for study in study_selected_list:
+                    group_id = study.split('-')[2]
+                    subject_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+
+                    for subject in subject_of_group:
+                        patient = subject.subject.patient
+                        if patient.id not in subject_list:
+                            subject_list.append(patient.id)
+
+                participants_list = participants_list.filter(pk__in=subject_list)
+
+            if request.POST['type_of_selection_radio'] == 'selected':
+
+                # selecting participants according the filters
+                if "gender_checkbox" in request.POST and 'gender' in request.POST:
+                    gender_list = request.POST.getlist('gender')
+                    participants_list = participants_list.filter(gender__id__in=gender_list)
+
+                if "marital_status_checkbox" in request.POST and 'marital_status' in request.POST:
+                    marital_status_list = request.POST.getlist('marital_status')
+                    participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
+
+                if "age_checkbox" in request.POST and 'max_age' in request.POST and 'min_age' in request.POST:
+                    date_birth_min = datetime.now() - relativedelta(years=int(request.POST['max_age']))
+                    date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
+                    participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
+
+                if "location_checkbox" in request.POST:
+                    if 'selected_locals' in request.POST:
+                        locations_selected = request.POST.getlist('selected_locals')
+                        participants_list = participants_list.filter(city__in=locations_selected)
+
+                if "diagnosis_checkbox" in request.POST:
+                    classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
+
+                    participants_list = participants_list.filter(
+                        medicalrecorddata__diagnosis__classification_of_diseases__in=classification_of_diseases_list). \
+                        distinct()
+
+            # putting the list of participants in the user session
+            request.session['filtered_participant_data'] = [item.id for item in participants_list]
+
+            context = {
+                "total_of_participants": len(participants_list),
+                "participants_list": participants_list,
+                "group": group,
+            }
+            return render(request, "experiment/show_selected_participants.html", context)
+
+            # else:
+            #
+            #     context = {
+            #         "total_of_participants": len(participants_list),
+            #         "participants_list": participants_list,
+            #         "group": group,
+            #     }
+            #     return render(request, "experiment/show_selected_participants.html", context)
+
+        if request.POST['action'] == 'previous-step-2':
+            context = {
+                "participant_selection_form": participant_selection_form,
+                "age_interval_form": age_interval_form,
+                "group": group,
+            }
+
+            return render(request, "experiment/search_subjects.html", context)
+
+        if request.POST['action'] == 'next-step-2':
+            participants_list = request.session['filtered_participant_data']
+            for participant in participants_list:
+                patient = get_object_or_404(Patient, pk=participant)
+
+                subject = Subject()
+
+                try:
+                    subject = Subject.objects.get(patient=patient)
+                except subject.DoesNotExist:
+                    subject.patient = patient
+                    subject.save()
+
+                if not SubjectOfGroup.objects.all().filter(group=group, subject=subject):
+                    SubjectOfGroup(subject=subject, group=group).save()
+                else:
+                    messages.warning(request, _('Participant has already been inserted in this group.'))
+
+            redirect_url = reverse("subjects", args=(group_id,))
+            return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'][:7] == 'remove-':
+            action_parts = request.POST['action'].split(delimiter)
+            participants_list = request.session['filtered_participant_data']
+            participants_list.remove(int(action_parts[1]))
+            participants_list = Patient.objects.filter(pk__in=participants_list)
+
+            context = {
+                "total_of_participants": len(participants_list),
+                "participants_list": participants_list,
+                "group": group,
+            }
+            return render(request, "experiment/show_selected_participants.html", context)
+
+    context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        'group': group,
+        'subject_id': subject_id,
+        # "limesurvey_available": limesurvey_available,
+        "experimental_protocol_info": experimental_protocol_info,
+        "participant_selection_form": participant_selection_form,
+        "age_interval_form": age_interval_form
+    }
 
     return render(request, template_name, context)
 
@@ -4106,7 +4287,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.component_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
-        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
+        questionnaire_response.date = datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
@@ -4521,7 +4702,7 @@ def subject_eeg_view(request, group_id, subject_id,
 
             # v1.5
             # can export to nwb?
-            if eeg_data_file.eeg_reading.file_format:
+            if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading:
                 if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
                         hasattr(eeg_data_file.eeg_setting, 'eeg_amplifier_setting') and \
                         eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
@@ -4669,7 +4850,6 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                 messages.info(request, _('Now you can configure each electrode position'))
 
                 redirect_url = reverse("eeg_data_view", args=(eeg_data_added.id, 1))
-                                                              # 2 if has_position_status else 1))
                 return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": True,
@@ -4700,7 +4880,7 @@ def reading_for_eeg_validation(eeg_data_added, request):
 def get_sensors_position(eeg_data):
     # Geração da imagem de localização dos electrodos
     # Validate if EGI
-    #raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
+    # raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
     reading = eeg_data_reading(eeg_data, preload=False)
     file_path = None
     raw = reading.reading
@@ -5464,7 +5644,7 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
     tms_data_form = TMSDataForm(None, initial={'experiment': group.experiment,
                                                'tms_setting': tms_step.tms_setting_id})
 
-    tms_setting = get_object_or_404(TMSSetting,id=tms_step.tms_setting_id)
+    tms_setting = get_object_or_404(TMSSetting, id=tms_step.tms_setting_id)
 
     pulse_stimulus = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
 
@@ -5630,7 +5810,6 @@ def tms_data_edit(request, tms_data_id, tab):
                 hotspot_form = HotSpotForm(request.POST or None)
                 localization_system_selected = None
 
-
     context = {"group": tms_data.subject_of_group.group,
                "subject": tms_data.subject_of_group.subject,
                "tms_data_form": tms_data_form,
@@ -5645,6 +5824,192 @@ def tms_data_edit(request, tms_data_id, tab):
                }
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_digital_game_phase_view(request, group_id, subject_id,
+                                    template_name="experiment/subject_digital_game_phase_collection_list.html"):
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    digital_game_phase_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for path in list_of_paths:
+
+        digital_game_phase_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = \
+            list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
+
+        digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(
+            subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
+
+        digital_game_phase_collections.append(
+            {'digital_game_phase_configuration': digital_game_phase_configuration,
+             'path': path,
+             'digital_game_phase_data_files': digital_game_phase_data_files}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'digital_game_phase_collections': digital_game_phase_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_digital_game_phase_data_create(request, group_id, subject_id, digital_game_phase_configuration_id,
+                                           template_name="experiment/subject_digital_game_phase_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in digital_game_phase_configuration_id.split('-')]
+    digital_game_phase_configuration_id = list_of_path[-1]
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    digital_game_phase_configuration = get_object_or_404(ComponentConfiguration, id=digital_game_phase_configuration_id)
+
+    redirect_url = None
+    digital_game_phase_data_id = None
+
+    digital_game_phase_data_form = DigitalGamePhaseDataForm(None, initial={'experiment': group.experiment})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            digital_game_phase_data_form = DigitalGamePhaseDataForm(request.POST, request.FILES)
+
+            if digital_game_phase_data_form.is_valid():
+
+                data_configuration_tree_id = list_data_configuration_tree(digital_game_phase_configuration_id,
+                                                                          list_of_path)
+                if not data_configuration_tree_id:
+                    data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                subject = get_object_or_404(Subject, pk=subject_id)
+                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                digital_game_phase_data_added = digital_game_phase_data_form.save(commit=False)
+                digital_game_phase_data_added.subject_of_group = subject_of_group
+                digital_game_phase_data_added.component_configuration = digital_game_phase_configuration
+                digital_game_phase_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                # the following error 'DigitalGamePhaseData' object has no attribute 'group'
+                digital_game_phase_data_added.group = group
+                digital_game_phase_data_added.subject = subject
+
+                digital_game_phase_data_added.save()
+
+                messages.success(request, _('Digital game phase data collection created successfully.'))
+
+                redirect_url = reverse("digital_game_phase_data_view", args=(digital_game_phase_data_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "creating": True,
+               "editing": True,
+               "group": group,
+               "digital_game_phase_configuration": digital_game_phase_configuration,
+               "digital_game_phase_data_form": digital_game_phase_data_form,
+               "digital_game_phase_data_id": digital_game_phase_data_id,
+               "subject": get_object_or_404(Subject, pk=subject_id),
+               "URL": redirect_url
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def digital_game_phase_data_view(request, digital_game_phase_data_id,
+                                 template_name="experiment/subject_digital_game_phase_data_form.html"):
+
+    digital_game_phase_data = get_object_or_404(
+        DigitalGamePhaseData,
+        pk=digital_game_phase_data_id)
+
+    digital_game_phase_data_form = DigitalGamePhaseDataForm(request.POST or None, instance=digital_game_phase_data)
+
+    for field in digital_game_phase_data_form.fields:
+        digital_game_phase_data_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            check_can_change(request.user, digital_game_phase_data.subject_of_group.group.experiment.research_project)
+
+            subject_of_group = digital_game_phase_data.subject_of_group
+            digital_game_phase_data.delete()
+            messages.success(request, _('Digital game phase data removed successfully.'))
+            return redirect('subject_digital_game_phase_view',
+                            group_id=subject_of_group.group_id,
+                            subject_id=subject_of_group.subject_id)
+
+    context = {"can_change": get_can_change(request.user,
+                                            digital_game_phase_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": digital_game_phase_data.subject_of_group.group,
+               "subject": digital_game_phase_data.subject_of_group.subject,
+               "digital_game_phase_data_form": digital_game_phase_data_form,
+               "digital_game_phase_data": digital_game_phase_data
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def digital_game_phase_data_edit(request, digital_game_phase_data_id):
+
+    digital_game_phase_data = get_object_or_404(
+        DigitalGamePhaseData, pk=digital_game_phase_data_id)
+
+    check_can_change(request.user, digital_game_phase_data.subject_of_group.group.experiment.research_project)
+
+    if request.method == "POST" and request.POST['action'] == "save":
+
+        digital_game_phase_data_form = DigitalGamePhaseDataForm(request.POST, request.FILES,
+                                                                instance=digital_game_phase_data)
+        if digital_game_phase_data_form.is_valid() and digital_game_phase_data_form.has_changed():
+
+            digital_game_phase_data_to_update = digital_game_phase_data_form.save(commit=False)
+            digital_game_phase_data_to_update.group = digital_game_phase_data.subject_of_group.group
+            digital_game_phase_data_to_update.subject = digital_game_phase_data.subject_of_group.subject
+            digital_game_phase_data_to_update.save()
+
+            messages.success(request, _('Digital game phase data updated successfully.'))
+        else:
+            messages.success(request, _('There is no changes to save.'))
+
+        redirect_url = reverse("digital_game_phase_data_view", args=(digital_game_phase_data_id,))
+
+        return HttpResponseRedirect(redirect_url)
+
+    else:
+
+        digital_game_phase_data_form = DigitalGamePhaseDataForm(
+            request.POST or None,
+            instance=digital_game_phase_data,
+            initial={'experiment': digital_game_phase_data.subject_of_group.group.experiment})
+
+    context = {"group": digital_game_phase_data.subject_of_group.group,
+               "subject": digital_game_phase_data.subject_of_group.subject,
+               "digital_game_phase_data_form": digital_game_phase_data_form,
+               "digital_game_phase_data": digital_game_phase_data,
+               "editing": True
+               }
+
+    return render(request, "experiment/subject_digital_game_phase_data_form.html", context)
 
 
 def get_pulse_stimulus_name(pulse_stimulus_type):
@@ -5698,7 +6063,7 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
                     hotspot_to_update.tms_localization_system = localization_system
                     hotspot_to_update.tms_data = tms_data
                     hotspot_to_update.save()
-                        # Se der erro aqui, como fazer reverse de tms_position????
+                    # Se der erro aqui, como fazer reverse de tms_position????
 
                     messages.success(request, _('TMS position updated successfully.'))
 
@@ -6113,11 +6478,13 @@ def get_subgraph(block: Block, node_identifier=""):
                 color_node = "#f1cbff"
             elif component.component_type == "tms":
                 color_node = "#fe8181"
+            elif component.component_type == "digital_game_phase":
+                color_node = "#80ced6"
 
             new_node = pydot.Node(
                 'node_' + node_identifier + '_' + str(component_configuration.id),
                 label=split_node_identification_for_graph(component.identification + ' (' +
-                                                                get_component_name(component.component_type) + ')'),
+                                                          get_component_name(component.component_type) + ')'),
                 style="filled", fillcolor=color_node, shape='rectangle')
 
             subgraph.add_node(new_node)
@@ -6284,6 +6651,8 @@ def get_component_attributes(component, language_code):
         specific_attributes = []
     elif component.component_type == 'tms':
         specific_attributes = []
+    elif component.component_type == 'digital_game_phase':
+        specific_attributes = []
 
     for attribute in specific_attributes:
         attributes.append(attribute)
@@ -6362,7 +6731,7 @@ def get_component_configuration_attributes(configuration):
     attributes.append({
         _('Position in the set of steps '): _('Random') if configuration.random_position else _('Fixed')})
     attributes.append({
-        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No') })
+        _('Requires start and end datetime'): _('Yes') if configuration.requires_start_and_end_datetime else _('No')})
 
     return attributes
 
@@ -6904,6 +7273,8 @@ def component_create(request, experiment_id, component_type):
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         # component_form.fields['duration_value'].widget.attrs['disabled'] = True
         # component_form.fields['duration_unit'].widget.attrs['disabled'] = True
+    elif component_type == 'digital_game_phase':
+        specific_form = DigitalGamePhaseForm(request.POST or None, initial={'experiment': experiment})
 
     if request.method == "POST":
         new_specific_component = None
@@ -7549,6 +7920,10 @@ def create_component(component, new_experiment):
     elif component_type == 'task_experiment':
         clone = TaskForTheExperimenter()
 
+    elif component_type == 'digital_game_phase':
+        digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
+        clone = DigitalGamePhase(context_tree_id=digital_game_phase.context_tree_id)
+
     else:
         clone = Component()
 
@@ -7813,6 +8188,10 @@ def component_update(request, path_of_the_components):
         duration_value, has_unlimited = calculate_block_duration(block)
         # Criate a string converting to appropriate units
         duration_string = convert_to_string(duration_value)
+    elif component_type == 'digital_game_phase':
+        digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
+        specific_form = DigitalGamePhaseForm(request.POST or None, instance=digital_game_phase,
+                                             initial={'experiment': experiment})
 
     can_change = get_can_change(request.user, experiment.research_project)
 
@@ -7896,7 +8275,7 @@ def component_update(request, path_of_the_components):
         if limesurvey_available:
             questionnaire_title = surveys.get_survey_title(
                 questionnaire.survey.lime_survey_id,
-                get_questionnaire_language(surveys,questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE))
+                get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE))
 
         surveys.release_session_key()
 
@@ -8061,6 +8440,8 @@ def component_add_new(request, path_of_the_components, component_type):
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         duration_string = "0"
+    elif component_type == 'digital_game_phase':
+        specific_form = DigitalGamePhaseForm(request.POST or None)
 
     if request.method == "POST":
         new_specific_component = None
@@ -8223,6 +8604,11 @@ def component_reuse(request, path_of_the_components, component_id):
         duration_value, has_unlimited = calculate_block_duration(sub_block)
         # Create a string converting to appropriate units
         duration_string = convert_to_string(duration_value)
+
+    elif component_type == 'digital_game_phase':
+        digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component_to_add.id)
+        specific_form = DigitalGamePhaseForm(request.POST or None, instance=digital_game_phase,
+                                             initial={'experiment': experiment})
 
     if component_type == 'questionnaire':
         for field in component_form.fields:
@@ -9374,8 +9760,8 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
     if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
 
         emg_preamplifier_filter_setting = emg_electrode_setting.emg_preamplifier_setting.emg_preamplifier_filter_setting
-        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None,
-                                                                    instance=emg_preamplifier_filter_setting)
+        emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(
+            request.POST or None, instance=emg_preamplifier_filter_setting)
     else:
         emg_preamplifier_filter_setting_form = EMGPreamplifierFilterSettingForm(request.POST or None)
 
@@ -9390,7 +9776,8 @@ def emg_electrode_setting_preamplifier_edit(request, emg_electrode_setting_id,
                     emg_preamplifier_setting_form.save()
                     changed = True
 
-                if emg_preamplifier_filter_setting_form.has_changed() or emg_preamplifier_filter_setting_form.has_changed():
+                if emg_preamplifier_filter_setting_form.has_changed() or \
+                        emg_preamplifier_filter_setting_form.has_changed():
 
                     if hasattr(emg_preamplifier_setting, 'emg_preamplifier_filter_setting'):
                         emg_preamplifier_filter_setting_form.save()
@@ -9896,8 +10283,7 @@ def tms_localization_system_view(
                 return redirect('tms_localization_system_list')
             except ProtectedError:
                 messages.error(request, _("Error trying to delete localization system."))
-                redirect_url = reverse("tms_localization_system_view",
-                                           args=(tms_localization_system_id,))
+                redirect_url = reverse("tms_localization_system_view", args=(tms_localization_system_id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": True,
@@ -10051,6 +10437,105 @@ def tms_localization_system_update(
 #                "editing": False}
 #
 #     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_subject')
+def context_tree_create(request, experiment_id, template_name="experiment/context_tree_register.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    context_tree_form = ContextTreeForm(request.POST or None, request.FILES)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if context_tree_form.is_valid():
+                context_tree_added = context_tree_form.save(commit=False)
+                context_tree_added.experiment_id = experiment_id
+                context_tree_added.save()
+
+                messages.success(request, _('Context tree included successfully.'))
+
+                redirect_url = reverse("context_tree_view", args=(context_tree_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"context_tree_form": context_tree_form,
+               "creating": True,
+               "editing": True,
+               "experiment": experiment
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def context_tree_view(request, context_tree_id, template_name="experiment/context_tree_register.html"):
+
+    context_tree = get_object_or_404(ContextTree, pk=context_tree_id)
+    context_tree_form = ContextTreeForm(request.POST or None, instance=context_tree)
+
+    for field in context_tree_form.fields:
+        context_tree_form.fields[field].widget.attrs['disabled'] = True
+
+    can_change = get_can_change(request.user, context_tree.experiment.research_project)
+
+    if request.method == "POST":
+        if can_change:
+            if request.POST['action'] == "remove":
+
+                experiment_id = context_tree.experiment_id
+
+                context_tree.delete()
+
+                messages.success(request, _('Context tree was removed successfully.'))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": can_change,
+               "context_tree_form": context_tree_form,
+               "experiment": context_tree.experiment,
+               "context_tree": context_tree,
+               "editing": False
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def context_tree_update(request, context_tree_id, template_name="experiment/context_tree_register.html"):
+    context_tree = get_object_or_404(ContextTree, pk=context_tree_id)
+
+    check_can_change(request.user, context_tree.experiment.research_project)
+
+    if request.method == "POST":
+
+        context_tree_form = ContextTreeForm(request.POST, request.FILES, instance=context_tree)
+
+        if request.POST['action'] == "save":
+            if context_tree_form.is_valid():
+
+                if context_tree_form.has_changed():
+                    context_tree_form.save()
+                    messages.success(request, _('Context tree updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("context_tree_view", args=(context_tree_id,))
+                return HttpResponseRedirect(redirect_url)
+    else:
+        context_tree_form = ContextTreeForm(request.POST or None, instance=context_tree)
+
+    context = {"context_tree_form": context_tree_form,
+               "editing": True,
+               "experiment": context_tree.experiment,
+               "context_tree": context_tree
+               }
+
+    return render(request, template_name, context)
 
 
 @login_required

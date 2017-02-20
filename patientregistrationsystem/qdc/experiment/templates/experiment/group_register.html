@@ -6,6 +6,23 @@
 
 {% block header %}
     <script src="{% static 'quiz/js/group_register.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'quiz/magnific-popup/magnific-popup.css' %}">
+    <script src="{% static 'quiz/magnific-popup/jquery.magnific-popup.js' %}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.experimental-protocol-image-popup-link').magnificPopup({
+                type: 'image',
+                closeBtnInside: false,
+                closeOnContentClick: false,
+                image: {
+                    verticalFit: false
+                }
+            });
+        });
+    </script>
+
 {% endblock %}
 
 {% block form %}
@@ -241,7 +258,8 @@
                                     {% trans "No participants recorded" %}
                                 </div>
                                 {% if perms.experiment.add_subject and can_change %}
-                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">
+{#                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">#}
+                                    <a href="/experiment/group/{{ group.id }}/search_subjects" class="btn btn-primary">
                                         {% trans "Register" %}
                                     </a>
                                 {% endif %}
@@ -290,6 +308,27 @@
                                             </tr>
                                         </tbody>
                                     </table>
+
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <label class="control-label">{% trans "Textual description" %}</label>
+                                            <textarea class="form-control" rows="25" disabled>{{ experimental_protocol_description }}</textarea>
+                                        </div>
+                                        <div class="col-md-5">
+
+                                            {% if experimental_protocol_image %}
+
+                                                <label class="control-label">{% trans "Graph representation" %}</label>
+
+                                                <a class="experimental-protocol-image-popup-link" href="{{ experimental_protocol_image }}">
+                                                    <img src="{{ experimental_protocol_image }}" style="width: 100%" />
+                                                </a>
+
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+
                                 </div>
                             {% else %}
                                 <div style="margin-bottom: 1em">
@@ -393,6 +432,20 @@
             </div>
         </div>
     </div>
+
+
+</a>
+
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" data-dismiss="modal">
+        <div class="modal-content"  >
+            <div class="modal-body modal-lg">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <img src="" class="imagepreview" style="width: 100%;" >
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 

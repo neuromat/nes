@@ -1,0 +1,142 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% load i18n admin_static %}
+{% load subjects_tags %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="subject_form" method="post">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="subjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+                <li class="active">{% get_name_or_code subject.patient.id %}</li>
+                <li class="active">{% trans "Digital game phase data files" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>{% trans "Digital game phase path" %}</th>
+                                <th>{% trans "Digital game phase data file" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if not digital_game_phase_collections %}
+                                <tr>
+                                    <td>{% trans "(No digital game phase collection)" %}</td>
+                                    <td></td>
+                                </tr>
+                            {% else %}
+                                {% for digital_game_phase_collection in digital_game_phase_collections %}
+                                    <tr>
+                                        <td>
+
+                                            <b>{{ digital_game_phase_collection.digital_game_phase_configuration.component.identification }}</b>
+                                             <blockquote>
+                                                <i><h6>
+                                                    {% for item in digital_game_phase_collection.path %}
+                                                        {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
+                                                    {% endfor %}
+                                                </h6></i>
+                                             </blockquote>
+
+                                        </td>
+                                        <td>
+                                            <table>
+                                                {% for digital_game_phase_data_file in digital_game_phase_collection.digital_game_phase_data_files %}
+                                                    <tr>
+                                                        <td>
+                                                            <a href="/experiment/digital_game_phase_data/{{ digital_game_phase_data_file.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                                {{ digital_game_phase_data_file.description }}
+                                                            </a>
+                                                        </td>
+                                                        <td>{{ digital_game_phase_data_file.date }}</td>
+                                                        <td>{{ digital_game_phase_data_file.file_format.name }}</td>
+                                                        <td>{{ digital_game_phase_data_file.file.size|filesizeformat }}</td>
+                                                        <td><a href="{{ digital_game_phase_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                    </tr>
+                                                {% endfor %}
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/digital_game_phase/{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_digital_game_phase_data">
+                                                        <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            {% trans "New digital game phase data file" %}
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar">
+                <div class="btn-group pull-right">
+                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

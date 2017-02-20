@@ -126,12 +126,24 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group {% if emg_digital_filter_setting_form.band_pass.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Band pass (Hz)" %} </label>
-                            {{ emg_digital_filter_setting_form.band_pass }}
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if emg_digital_filter_setting_form.low_band_pass.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Low band pass (Hz)" %}</label>
+                            {{ emg_digital_filter_setting_form.low_band_pass }}
                             <div class="help-block with-errors">
-                                {% for error in emg_digital_filter_setting_form.band_pass.errors %}
+                                {% for error in emg_digital_filter_setting_form.low_band_pass.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if emg_digital_filter_setting_form.high_band_pass.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "High band pass (Hz)" %}</label>
+                            {{ emg_digital_filter_setting_form.high_band_pass }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_digital_filter_setting_form.high_band_pass.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>
@@ -140,12 +152,24 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group {% if emg_digital_filter_setting_form.notch.errors %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Notch (Hz)" %} </label>
-                            {{ emg_digital_filter_setting_form.notch }}
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if emg_digital_filter_setting_form.low_notch.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Low notch (Hz)" %}</label>
+                            {{ emg_digital_filter_setting_form.low_notch }}
                             <div class="help-block with-errors">
-                                {% for error in emg_digital_filter_setting_form.notch.errors %}
+                                {% for error in emg_digital_filter_setting_form.low_notch.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if emg_digital_filter_setting_form.high_notch.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "High notch (Hz)" %}</label>
+                            {{ emg_digital_filter_setting_form.high_notch }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_digital_filter_setting_form.high_notch.errors %}
                                     {{ error }}
                                 {% endfor %}
                             </div>

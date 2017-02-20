@@ -1348,8 +1348,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
-    survey_title, questionnaire_responses = get_questionnaire_responses(language_code, lime_survey_id, token_id,
-                                                                        request)
+    survey_title, groups_of_questions = get_questionnaire_responses(language_code, lime_survey_id, token_id, request)
 
     context = {
         "questionnaire_response_form": questionnaire_response_form,
@@ -1362,7 +1361,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "origin": origin,
         "patient": questionnaire_response.patient,
         "questionnaire": questionnaire_response.survey,
-        "questionnaire_responses": questionnaire_responses,
+        "groups_of_questions": groups_of_questions,
         "questionnaire_title": survey_title,
         "showing": showing,
         "updating": True,
@@ -1371,30 +1370,3 @@ def questionnaire_response_view(request, questionnaire_response_id,
     }
 
     return render(request, template_name, context)
-
-
-# def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_code):
-#
-#     language = "pt-BR"
-#     # defining language to be showed
-#     languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
-#
-#     # language = languages['language']
-#
-#     # language to be showed can be the base language, or...
-#     if "language" in languages:
-#
-#         language = languages['language']
-#
-#         # ...can be one of the additional languages
-#         if language.lower() != language_code.lower() and languages['additional_languages']:
-#
-#             # search for the right language in addional languages,
-#             # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
-#             additional_languages_list = languages['additional_languages'].split(' ')
-#             additional_languages_list_lower = [item.lower() for item in additional_languages_list]
-#             if language_code.lower() in additional_languages_list_lower:
-#                 index = additional_languages_list_lower.index(language_code.lower())
-#                 language = additional_languages_list[index]
-#
-#     return language
