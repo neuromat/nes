@@ -1109,6 +1109,7 @@ class EMGData(DataFile, DataCollection):
 
 
 class DigitalGamePhaseData(DataFile, DataCollection):
+    sequence_used_in_context_tree = models.TextField(null=True, blank=True)
 
     # Audit trail - Simple History
     history = HistoricalRecords()

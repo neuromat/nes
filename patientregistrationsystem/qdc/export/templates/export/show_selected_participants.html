@@ -57,7 +57,13 @@
                             <tbody>
                             {% for participant in participants_list %}
                                 <tr>
-                                    <td>{{ participant.code }}</td>
+                                    <td>
+                                        {% if perms.patient.view_patient %}
+                                            <a href="/patient/{{ participant.id }}" target="_blank">{{ participant.code }}</a>
+                                        {% else %}
+                                            {{ participant.code }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ participant.date_birth|timesince }}</td>
                                     <td>{{ participant.gender }}</td>
                                     <td>{{ participant.country }}</td>
