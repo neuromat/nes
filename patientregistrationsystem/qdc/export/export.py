@@ -701,21 +701,21 @@ class ExportExecution:
         path_per_questionnaire = ''
 
         # and save per_participant data
-        if self.get_input_data("export_per_questionnaire"):
-            per_questionnaire_directory = self.get_input_data("per_questionnaire_directory")
+        if self.get_input_data("export_per_experiment"):
+            per_questionnaire_directory = self.get_input_data("per_experiment_questionnaire_directory")
             error_msg, path_per_questionnaire = create_directory(self.get_export_directory(),
                                                                  per_questionnaire_directory)
             if error_msg != "":
                 return error_msg
 
             export_per_questionnaire_directory = path.join(self.get_input_data("base_directory"),
-                                                           self.get_input_data("per_questionnaire_directory"))
+                                                           self.get_input_data("per_experiment_questionnaire_directory"))
 
             export_metadata_directory = path.join(self.get_input_data("base_directory"), metadata_directory)
 
         questionnaire_lime_survey = Questionnaires()
 
-        for questionnaire in self.get_input_data("questionnaires"):
+        for questionnaire in self.get_input_data("questionnaires_from_experiments"):
 
             questionnaire_id = questionnaire["id"]
             language = questionnaire["language"]
@@ -726,7 +726,7 @@ class ExportExecution:
             fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
 
             # create directory for questionnaire: <per_questionnaire>/<q_code_title>
-            if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
+            if self.get_input_data("export_per_experiment") and (len(fields_description) > 1):
                 # path_questionnaire = str(questionnaire_id)
 
                 questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
