@@ -38,6 +38,7 @@ from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup
     QuestionnaireResponse as ExperimentQuestionnaireResponse
 
 JSON_FILENAME = "json_export.json"
+JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
 EXPORT_DIRECTORY = "export"
 
 # patient_fields = [
@@ -379,7 +380,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # ### gady ##################
         error_msg = export.process_per_questionnaire()
-        if error_msg != "":
+        error_exp_msg = export.process_per_experiment_questionnaire()
+        if error_msg != "" or error_exp_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
         ##################################################
@@ -498,34 +500,48 @@ def export_view(request, template_name="export/export_data.html"):
     if request.method == "POST":
 
         questionnaires_selected_list = request.POST.getlist('to[]')
+        experiment_questionnaires_selected_list = []
 
         questionnaires_list = []
+        experiment_questionnaires_list = []
 
-        # fields = {}
-
-        # previous_questionnaire_id = 0
+        # for entrance questionnaires
         previous_questionnaire_id = -1
         output_list = []
         for questionnaire in questionnaires_selected_list:
             index, sid, title, field, header = questionnaire.split("*")
 
             sid = int(sid)    # transform to integer
-            #
-            # if sid not in fields:
-            #     fields[sid] = []
-            # fields[sid].append(field)
 
-            # if sid != previous_questionnaire_id:
             if index != previous_questionnaire_id:
                 if previous_questionnaire_id != 0:
                     output_list = []
 
                 questionnaires_list.append([index, sid, title, output_list])
 
-                # previous_questionnaire_id = sid
                 previous_questionnaire_id = index
 
             output_list.append((field, header))
+
+        # for experiment questionnaires
+        if 'group_selected_list' in request.session:
+            experiment_questionnaires_selected_list = request.POST.getlist('to_experiment[]')
+            previous_questionnaire_id = -1
+            output_list = []
+            for questionnaire in experiment_questionnaires_selected_list:
+                index, sid, title, field, header = questionnaire.split("*")
+
+                sid = int(sid)  # transform to integer
+
+                if index != previous_questionnaire_id:
+                    if previous_questionnaire_id != 0:
+                        output_list = []
+
+                        experiment_questionnaires_list.append([index, sid, title, output_list])
+
+                    previous_questionnaire_id = index
+
+                output_list.append((field, header))
 
         # get participants list
         participant_selected_list = request.POST.getlist('patient_selected')
@@ -543,26 +559,28 @@ def export_view(request, template_name="export/export_data.html"):
         for diagnosis in diagnosis_selected_list:
             diagnosis_list.append(diagnosis.split("*"))
 
-        selected_data_available = (len(questionnaires_selected_list) or
+        selected_data_available = (len(questionnaires_selected_list) or len(experiment_questionnaires_selected_list) or
                                    len(participant_selected_list) or len(diagnosis_selected_list))
-
-        # selected_data_available = (len(participant_selected_list) or len(diagnosis_selected_list))
 
         if selected_data_available:
 
             if export_form.is_valid():
                 print("valid data")
 
-                if questionnaires_selected_list:
+                if questionnaires_selected_list or experiment_questionnaires_selected_list:
                     per_participant = export_form.cleaned_data['per_participant']
                     per_questionnaire = export_form.cleaned_data['per_questionnaire']
                     heading_type = export_form.cleaned_data['headings']
                     responses_type = export_form.cleaned_data['responses']
                     questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
                                                                     request.LANGUAGE_CODE)
+                    experiment_questionnaires_list = update_questionnaire_list(experiment_questionnaires_list,
+                                                                               heading_type, request.LANGUAGE_CODE)
                     # insert participation_code
                     update_participants_list(participants_list, heading_type)
                     update_diagnosis_list(diagnosis_list, heading_type)
+                # if experiment_questionnaires_list:
+                #     per_questionnaire = export_form.cleaned_data['per_participant']
                 else:
                     per_participant = True
                     per_questionnaire = False
@@ -588,16 +606,38 @@ def export_view(request, template_name="export/export_data.html"):
 
                 # copy data to .../media/export/<user_id>/<export_id>/
                 input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
+
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
-                build_complete_export_structure(per_participant, per_questionnaire,
-                                                participants_list, diagnosis_list,
-                                                questionnaires_list, responses_type, heading_type,
-                                                input_filename, request.LANGUAGE_CODE)
+                build_complete_export_structure(per_participant, per_questionnaire, participants_list, diagnosis_list,
+                                                questionnaires_list, responses_type, heading_type,input_filename,
+                                                request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
+                complete_experiment_filename = True
 
-                if complete_filename:
+                if 'group_selected_list' in request.session:
+                    # export_instance = create_export_instance(request.user)
+
+                    input_export_file = path.join(EXPORT_DIRECTORY, path.join(str(request.user.id),
+                                                                              path.join(str(export_instance.id),
+                                                                                        str(JSON_EXPERIMENT_FILENAME))))
+
+                    # copy data to .../media/export/<user_id>/<export_id>/
+                    input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
+
+                    create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
+
+                    experiment_input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
+
+                    build_complete_export_structure(per_participant, per_questionnaire, participants_list,
+                                                    diagnosis_list,
+                                                    experiment_questionnaires_list, responses_type, heading_type,
+                                                    experiment_input_filename, request.LANGUAGE_CODE)
+
+                    complete_experiment_filename = export_create(request, export_instance.id, input_filename)
+
+                if complete_filename and complete_experiment_filename:
 
                     messages.success(request, _("Export was finished correctly"))
 
@@ -1019,7 +1059,7 @@ def export_menu(request, template_name="export/export_menu.html"):
         {
             'item': _('Per experiments'),
             'href': reverse("experiment_selection", args=()),
-            'enabled': False
+            'enabled': True
         },
     ]
     if 'group_selected_list' in request.session.keys():
