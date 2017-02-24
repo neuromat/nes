@@ -17,6 +17,11 @@ urlpatterns = patterns(
     url(r'^research_project/edit/(?P<research_project_id>\d+)/$', 'research_project_update',
         name='research_project_edit'),
 
+    # publication
+    url(r'^publication/new/$', 'publication_create', name='publication_new'),
+    url(r'^publication/(?P<publication_id>\d+)/$', 'publication_view', name='publication_view'),
+    url(r'^publication/edit/(?P<publication_id>\d+)/$', 'publication_update', name='publication_edit'),
+
     # collaborator
     url(r'^research_project/(?P<research_project_id>\d+)/new_collaborator/$',
         'collaborator_create', name='collaborator_new'),

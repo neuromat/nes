@@ -50,7 +50,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
     EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
-    DigitalGamePhase, ContextTree, DigitalGamePhaseData
+    DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication
 
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -69,7 +69,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm
+    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm
 
 from export.export import create_directory
 
@@ -110,11 +110,30 @@ class EEGReading:
     reading = None
 
 
+def get_current_tab(request):
+    current_tab = '0'
+
+    if request.method == "POST":
+        if 'currentTab' in request.POST:
+            current_tab = request.POST['currentTab']
+    else:
+        if 'currentTab' in request.GET:
+            current_tab = request.GET['currentTab']
+
+    return current_tab
+
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def research_project_list(request, template_name="experiment/research_project_list.html"):
     research_projects = ResearchProject.objects.order_by('start_date')
-    context = {"research_projects": research_projects}
+    publications = Publication.objects.all().order_by('title')
+    current_tab = get_current_tab(request)
+    context = {
+        "research_projects": research_projects,
+        "publications": publications,
+        "current_tab": current_tab
+    }
 
     return render(request, template_name, context)
 
@@ -346,6 +365,94 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
     redirect_url = reverse("research_project_view", args=(research_project_id,))
     return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.add_researchproject')
+def publication_create(request, template_name="experiment/publication_register.html"):
+
+    publication_form = PublicationForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if publication_form.is_valid():
+
+                publication_added = publication_form.save()
+
+                messages.success(request, _('Publication created successfully.'))
+                redirect_url = reverse("publication_view", args=(publication_added.id,))
+                # redirect_url = reverse("research_project_list", args=())
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"publication_form": publication_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def publication_view(request, publication_id, template_name="experiment/publication_register.html"):
+    publication = get_object_or_404(Publication, pk=publication_id)
+
+    publication_form = PublicationForm(request.POST or None, instance=publication)
+
+    for field in publication_form.fields:
+        publication_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "remove":
+            try:
+                publication.delete()
+                messages.success(request, _('Publication removed successfully.'))
+                redirect_url = reverse("research_project_list", args=())
+                return HttpResponseRedirect(redirect_url + "?currentTab=1")
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete publication."))
+                redirect_url = reverse("publication_view", args=(publication_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "publication": publication,
+               "publication_form": publication_form}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_researchproject')
+def publication_update(request, publication_id, template_name="experiment/publication_register.html"):
+    publication = get_object_or_404(Publication, pk=publication_id)
+
+    publication_form = PublicationForm(request.POST or None, instance=publication)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if publication_form.is_valid():
+                if publication_form.has_changed():
+                    publication_form.save()
+                    messages.success(request, _('Publication updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("publication_view", args=(publication.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"publication": publication,
+               "publication_form": publication_form,
+               "editing": True}
+
+    return render(request, template_name, context)
 
 
 @login_required

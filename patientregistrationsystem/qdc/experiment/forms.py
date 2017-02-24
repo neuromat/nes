@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput
+    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput, URLInput, CheckboxSelectMultiple
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,7 +16,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    ResearchProjectCollaboration, TMSLocalizationSystem, DigitalGamePhase, ContextTree, DigitalGamePhaseData
+    ResearchProjectCollaboration, TMSLocalizationSystem, DigitalGamePhase, ContextTree, DigitalGamePhaseData, \
+    Publication
 
 
 class ExperimentForm(ModelForm):
@@ -315,6 +316,22 @@ class ResearchProjectForm(ModelForm):
             del cleaned_data["start_date"]
 
         return cleaned_data
+
+
+class PublicationForm(ModelForm):
+    class Meta:
+        model = Publication
+        fields = ['title', 'citation', 'url', 'experiments']
+
+        widgets = {
+            'title': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '2',
+                                     'data-error': _('Title must be filled.'),
+                                     'autofocus': ''}),
+            'citation': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '6',
+                                        'data-error': _('Citation must be filled.')}),
+            'url': URLInput(attrs={'class': 'form-control'}),
+            'experiments': CheckboxSelectMultiple()
+        }
 
 
 class NumberOfUsesToInsertForm(Form):

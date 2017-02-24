@@ -47,50 +47,116 @@
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
-            <div class="container span6 offset3 well ">
-                <h4>{% trans "Studies List" %}</h4>
-                <div class="form-group">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>{% trans "Title" %}</th>
-                                <th>{% trans "Term" %}</th>
-                                <th>{% trans "Responsible" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for research_project in research_projects %}
-                            <tr>
-                                <td>{% if perms.experiment.view_researchproject %}
-                                        <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
-                                           href="/experiment/research_project/{{ research_project.id }}">
-                                            {{ research_project.title }}
-                                        </a>
-                                    {% else %}
-                                        {{ research_project.title }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if research_project.end_date %}
-                                        {{ research_project.start_date }}
-                                        <br>{% trans "to" %}<br>
-                                        {{ research_project.end_date }}
-                                    {% else %}
-                                        {% trans "From" %}<br>{{ research_project.start_date }}
-                                    {% endif %}
-                                </td>
-                                <td>{{ research_project.owner.first_name }} {{ research_project.owner.last_name }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% if perms.experiment.add_researchproject %}
-                    <div class="btn-group pull-left">
-                        <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Insert new study" %}</a>
+
+            <ul class="nav nav-tabs">
+                <!-- Link to the header of the Studies -->
+                <li {% if current_tab == '0' %}class="active"{% endif %}>
+                    <a data-toggle="tab" href="#research-project">{% trans "Studies" %} <span class="badge">{{ research_projects|length }}</span></a>
+                </li>
+
+                <!-- Link to the header of the Publication -->
+                <li {% if current_tab == '1' %}class="active"{% endif %}>
+                    <a data-toggle="tab" href="#publication">{% trans "Publication" %} <span class="badge">{{ publications|length }}</span></a>
+                </li>
+
+            </ul>
+
+            <div class="tab-content">
+
+                <div id="research-project" class="tab-pane fade {% if current_tab == '0' %}in active{% endif %}">
+
+                    <div class="container span6 offset3 well ">
+                        <h4>{% trans "Studies list" %}</h4>
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Title" %}</th>
+                                        <th>{% trans "Term" %}</th>
+                                        <th>{% trans "Responsible" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for research_project in research_projects %}
+                                    <tr>
+                                        <td>{% if perms.experiment.view_researchproject %}
+                                                <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                                   href="/experiment/research_project/{{ research_project.id }}">
+                                                    {{ research_project.title }}
+                                                </a>
+                                            {% else %}
+                                                {{ research_project.title }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if research_project.end_date %}
+                                                {{ research_project.start_date }}
+                                                <br>{% trans "to" %}<br>
+                                                {{ research_project.end_date }}
+                                            {% else %}
+                                                {% trans "From" %}<br>{{ research_project.start_date }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ research_project.owner.first_name }} {{ research_project.owner.last_name }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if perms.experiment.add_researchproject %}
+                            <div class="btn-group pull-left">
+                                <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Insert new study" %}</a>
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
+
+                </div>
+
+                <div id="publication" class="tab-pane fade {% if current_tab == '1' %}in active{% endif %}">
+
+                    <div class="container span6 offset3 well ">
+                        <h4>{% trans "Publication list" %}</h4>
+                        <div class="form-group">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Title" %}</th>
+                                        <th>{% trans "Citation" %}</th>
+                                        <th>{% trans "URL" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for publication in publications %}
+                                    <tr>
+                                        <td>{% if perms.experiment.view_researchproject %}
+                                                <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
+                                                   href="/experiment/publication/{{ publication.id }}">
+                                                    {{ publication.title }}
+                                                </a>
+                                            {% else %}
+                                                {{ publication.title }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ publication.citation }}
+                                        </td>
+                                        <td>{{ publication.url }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if perms.experiment.add_researchproject %}
+                            <div class="btn-group pull-left">
+                                <a href="/experiment/publication/new/" class="btn btn-primary">{% trans "Insert new publication" %}</a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
     </div>
 

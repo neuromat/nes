@@ -104,6 +104,13 @@ class Experiment(models.Model):
         self.changed_by = value
 
 
+class Publication(models.Model):
+    title = models.CharField(max_length=255)
+    citation = models.TextField()
+    url = models.URLField(null=True, blank=True)
+    experiments = models.ManyToManyField(Experiment)
+
+
 class Manufacturer(models.Model):
     name = models.CharField(max_length=50)
 
