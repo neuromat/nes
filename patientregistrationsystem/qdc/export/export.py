@@ -1013,8 +1013,9 @@ class ExportExecution:
                 # include new fieldsm
 
                 # if 'group_selected_list' in request.session:
-                #     patient_id = SubjectOfGroup.objects.filter(pk=questionnaire_response.values('subject_of_group_id'))\
-                #         .values('subject__patient_id')[0]['subject__patient_id']
+                #     patient_id = SubjectOfGroup.objects.filter(
+                #         pk=questionnaire_response.values(
+                #             'subject_of_group_id')).values('subject__patient_id')[0]['subject__patient_id']
                 #     survey = Survey.objects.filter(lime_survey_id=questionnaire_id)
                 #     survey_code = survey.values('code')[0]['code']
                 #     lime_survey_id = survey.values('lime_survey_id')[0]['lime_survey_id']
