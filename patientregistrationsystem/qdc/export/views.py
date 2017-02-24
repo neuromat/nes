@@ -618,7 +618,7 @@ def export_view(request, template_name="export/export_data.html"):
 
                 build_complete_export_structure(per_participant, per_questionnaire, per_experiment, participants_list,
                                                 diagnosis_list, questionnaires_list, experiment_questionnaires_list,
-                                                responses_type, heading_type,input_filename, request.LANGUAGE_CODE)
+                                                responses_type, heading_type, input_filename, request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
                 complete_experiment_filename = True
@@ -696,7 +696,7 @@ def export_view(request, template_name="export/export_data.html"):
                         questionnaires_experiment_list_final.append(questionnaire_dic)
 
         questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
-            questionnaires_experiment_list_final,request.LANGUAGE_CODE)
+            questionnaires_experiment_list_final, request.LANGUAGE_CODE)
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
@@ -1326,22 +1326,23 @@ def search_locations(request):
         search_text = request.GET.get('term', '')
 
         if search_text:
-            location_list = Patient.objects.filter(city__icontains=search_text).exclude(removed=True).values('id', 'city').distinct('city');
+            location_list = \
+                Patient.objects.filter(
+                    city__icontains=search_text).exclude(removed=True).values('id', 'city').distinct('city')
 
             results = []
             for location in location_list:
                 location_dict = {
                     'id': location['city'],
                     'label': location['city'],
-                    'value': location['city']
-                }
+                    'value': location['city']}
                 results.append(location_dict)
 
             data = json.dumps(results)
         else:
             data = 'fail'
 
-        mimetype='application/json'
+        mimetype = 'application/json'
 
         return HttpResponse(data, mimetype)
 
@@ -1356,7 +1357,7 @@ def search_diagnoses(request):
                 Q(classification_of_diseases__description__icontains=search_text) |
                 Q(classification_of_diseases__description__icontains=search_text) |
                 Q(classification_of_diseases__code__icontains=search_text)).values(
-                'classification_of_diseases_id','classification_of_diseases__abbreviated_description',
+                'classification_of_diseases_id', 'classification_of_diseases__abbreviated_description',
                 'classification_of_diseases__code').distinct()
 
             results = []
