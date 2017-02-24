@@ -687,7 +687,7 @@ class ExportExecution:
 
                 save_to_csv(complete_filename, questionnaire_fields)
 
-                self.files_to_zip_list.append([complete_filename, export_directory])
+                # self.files_to_zip_list.append([complete_filename, export_directory])
 
         questionnaire_lime_survey.release_session_key()
 
@@ -703,6 +703,7 @@ class ExportExecution:
         # and save per_participant data
         if self.get_input_data("export_per_experiment"):
             per_questionnaire_directory = self.get_input_data("per_experiment_questionnaire_directory")
+            #cria directorio /Per_experiment
             error_msg, path_per_questionnaire = create_directory(self.get_export_directory(),
                                                                  per_questionnaire_directory)
             if error_msg != "":
@@ -719,6 +720,18 @@ class ExportExecution:
 
             questionnaire_id = questionnaire["id"]
             language = questionnaire["language"]
+            group_id = questionnaire["group_id"]
+            group = get_object_or_404(Group, pk=group_id)
+            path_group = "group_" + group.title
+            error_msg, export_path = create_directory(path_per_questionnaire, path_group)
+            if error_msg != "":
+                return error_msg
+            path_per_questionnaire = path.join(path_per_questionnaire, path_group)
+            error_msg, export_path = create_directory(path_per_questionnaire, "Per_questionnaire")
+            if error_msg != "":
+                return error_msg
+            path_per_questionnaire = path.join(path_per_questionnaire, "Per_questionnaire")
+            export_metadata_directory = path_per_questionnaire
 
             print(questionnaire_id)
 
@@ -738,7 +751,7 @@ class ExportExecution:
 
                 export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code))
 
-                export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
+                export_directory = path.join(path_per_questionnaire, path_questionnaire)
 
                 complete_filename = path.join(export_path, export_filename)
 

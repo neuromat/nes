@@ -90,13 +90,13 @@ class InputExport:
             # print("questionnaire from experiments")
             self.data["questionnaires_from_experiments"] = []
 
-            for index, sid, title, field_header_list in questionnaire_list:
+            for index, group_id, sid, title, field_header_list in questionnaire_list:
                 language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
 
                 self.data["questionnaires_from_experiments"].\
-                    append({"id": sid, "language": language, "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
-                            "questionnaire_name": title, "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
-                            "output_list": []})
+                    append({"group_id": group_id,"id": sid, "language": language,
+                            "prefix_filename_fields": PREFIX_FILENAME_FIELDS, "questionnaire_name": title,
+                            "prefix_filename_responses": PREFIX_FILENAME_RESPONSES, "output_list": []})
                 for header, field in field_header_list:
                     output_data = {"header": header, "field": field}
                     self.data["questionnaires_from_experiments"][-1]["output_list"].append(output_data)

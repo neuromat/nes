@@ -288,7 +288,7 @@
                                                                                     {#                                            {% if selected_ev_quest %}#}
                                                                                     {% if not field.selected %}
                                                                                         <option title="{{ field.description }}"
-                                                                                                value="{{ survey.index }}*{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
+                                                                                                value="{{ survey.index }}*{{ survey.group_id }}*{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
                                                                                             [{{ field.field }}] {{ field.description }}
                                                                                         </option>
                                                                                     {% endif %}
