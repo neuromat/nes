@@ -94,7 +94,7 @@ class InputExport:
                 language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
 
                 self.data["questionnaires_from_experiments"].\
-                    append({"group_id": group_id,"id": sid, "language": language,
+                    append({"group_id": group_id, "id": sid, "language": language,
                             "prefix_filename_fields": PREFIX_FILENAME_FIELDS, "questionnaire_name": title,
                             "prefix_filename_responses": PREFIX_FILENAME_RESPONSES, "output_list": []})
                 for header, field in field_header_list:

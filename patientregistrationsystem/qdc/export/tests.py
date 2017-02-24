@@ -321,7 +321,10 @@ class ExportQuestionnaireTest(TestCase):
     #     # create mock patient, questionnaire
     #     patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
     #     survey_mock = self.util.create_survey_mock(TEST_QUESTIONNAIRE, True)
-    #     response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, token_id=36)
+    #     response_survey_mock = self.util.create_response_survey_mock(self.user,
+    #                                                                  patient_mock,
+    #                                                                  survey_mock,
+    #                                                                  token_id=36)
     #
     #     response = self.client.get(reverse('export_view'))
     #     self.assertEqual(response.status_code, 200)
@@ -486,7 +489,7 @@ class InputExportTest(TestCase):
 
         self.assertNotIn("questionnaires", input_data.data)
 
-        input_data.build_questionnaire(questionnaire_list,"pt-BR", entrance_questionnaire=True)
+        input_data.build_questionnaire(questionnaire_list, "pt-BR", entrance_questionnaire=True)
 
         self.assertIn("questionnaires", input_data.data)
 
@@ -514,17 +517,23 @@ class InputExportTest(TestCase):
         # (export_per_participant, export_per_questionnaire, participant_field_header_list,
         #                             diagnosis_field_header_list, questionnaires_list, response_type, heading_type,
         #                             output_filename, language=DEFAULT_LANGUAGE)
-        experiment_questionnaires_list=[]
-        build_complete_export_structure(0, 1, 0, participant_field_header_list,
-                                        diagnosis_field_header_list, questionnaires_list,experiment_questionnaires_list,
+        experiment_questionnaires_list = []
+        build_complete_export_structure(0, 1, 0,
+                                        participant_field_header_list,
+                                        diagnosis_field_header_list,
+                                        questionnaires_list,
+                                        experiment_questionnaires_list,
                                         ["short"], "full", output_filename, "pt-BR")
 
         self.assertTrue(path.isfile(output_filename))
 
         remove(output_filename)
         experiment_questionnaires_list = []
-        build_complete_export_structure(1, 0, 0,participant_field_header_list,
-                                        diagnosis_field_header_list, questionnaires_list,experiment_questionnaires_list,
+        build_complete_export_structure(1, 0, 0,
+                                        participant_field_header_list,
+                                        diagnosis_field_header_list,
+                                        questionnaires_list,
+                                        experiment_questionnaires_list,
                                         ["short", "long"], "full",
                                         output_filename, "en")
 
