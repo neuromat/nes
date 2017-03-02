@@ -15,8 +15,8 @@ from .models import Experiment, Group, Subject, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape
-from .views import experiment_update, upload_file, research_project_update
+    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication
+from .views import experiment_update, upload_file, research_project_update, publication_update
 
 from patient.models import ClassificationOfDiseases
 from patient.tests import UtilTests
@@ -69,6 +69,21 @@ class ObjectsFactory(object):
                                                description="Descricao do Experimento-Update")
         experiment.save()
         return experiment
+
+    @staticmethod
+    def create_publication(list_of_experiments):
+        """
+        Create a publication to be used in the test
+        :param list_of_experiments: list of experiments
+        :return: publication
+        """
+
+        publication = Publication.objects.create(title="Publication-Update",
+                                                 citation="Citation-Update")
+        publication.save()
+        for experiment in list_of_experiments:
+            publication.experiments.add(experiment)
+        return publication
 
     @staticmethod
     def create_eeg_setting(experiment):
@@ -4044,3 +4059,107 @@ class EMGSettingTest(TestCase):
         response = self.client.post(reverse("emg_electrode_setting_view",
                                             args=(emg_electrode_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
+
+
+class ContextTreeTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+    def test_publication_list(self):
+        # Check if list of publications is empty before inserting any.
+        response = self.client.get(reverse('research_project_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['publications']), 0)
+
+        research_project = ObjectsFactory.create_research_project()
+
+        Publication.objects.create(title="Publication title", citation="Publication citation")
+
+        # Check if list of publications returns one item after inserting one.
+        response = self.client.get(reverse('research_project_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['publications']), 1)
+
+    def test_publication_create(self):
+        # Request the publication register screen
+        response = self.client.get(reverse('publication_new'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing "wrong" action
+        self.data = {'action': 'wrong', 'title': 'Publication title', 'citation': 'Publication citation'}
+        response = self.client.post(reverse('publication_new'), self.data)
+        self.assertEqual(Publication.objects.all().count(), 0)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Action not available.'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse('publication_new'), self.data)
+        self.assertEqual(Publication.objects.all().count(), 0)
+        self.assertGreaterEqual(len(response.context['publication_form'].errors), 1)
+        # self.assertTrue('title' in response.context['research_project_form'].errors)
+        # self.assertTrue('start_date' in response.context['research_project_form'].errors)
+        # self.assertTrue('description' in response.context['research_project_form'].errors)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
+        self.assertEqual(response.status_code, 200)
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Set publication data
+        self.data = {'action': 'save', 'title': 'Publication title', 'citation': 'Publication citation',
+                     'experiments': str(experiment.id)}
+
+        # Count the number of publication currently in database
+        count_before_insert = Publication.objects.all().count()
+
+        # Add the new publication
+        response = self.client.post(reverse('publication_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # Count the number of publication currently in database
+        count_after_insert = Publication.objects.all().count()
+
+        # Check if it has increased
+        self.assertEqual(count_after_insert, count_before_insert + 1)
+
+    def test_publication_update(self):
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        publication = ObjectsFactory.create_publication([experiment])
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('publication_edit', args=[publication.pk, ]))
+        request.user = self.user
+
+        response = publication_update(request, publication_id=publication.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Update
+        self.data = {'action': 'save', 'title': 'New publication title',
+                     'citation': ['New citation'],
+                     'experiments': str(experiment.id)}
+        response = self.client.post(reverse('publication_edit', args=(publication.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_publication_remove(self):
+        # Create a publication to be used in the test
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        publication = ObjectsFactory.create_publication([experiment])
+
+        # Save current number of publications
+        count = Publication.objects.all().count()
+
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse('publication_view', args=(publication.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if numeber of reserch projets decreased by 1
+        self.assertEqual(Publication.objects.all().count(), count - 1)

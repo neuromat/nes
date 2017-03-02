@@ -383,7 +383,6 @@ def publication_create(request, template_name="experiment/publication_register.h
 
                 messages.success(request, _('Publication created successfully.'))
                 redirect_url = reverse("publication_view", args=(publication_added.id,))
-                # redirect_url = reverse("research_project_list", args=())
                 return HttpResponseRedirect(redirect_url)
 
             else:
