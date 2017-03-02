@@ -411,15 +411,10 @@ def publication_view(request, publication_id, template_name="experiment/publicat
     if request.method == "POST":
 
         if request.POST['action'] == "remove":
-            try:
-                publication.delete()
-                messages.success(request, _('Publication removed successfully.'))
-                redirect_url = reverse("research_project_list", args=())
-                return HttpResponseRedirect(redirect_url + "?currentTab=1")
-            except ProtectedError:
-                messages.error(request, _("Error trying to delete publication."))
-                redirect_url = reverse("publication_view", args=(publication_id,))
-                return HttpResponseRedirect(redirect_url)
+            publication.delete()
+            messages.success(request, _('Publication removed successfully.'))
+            redirect_url = reverse("research_project_list", args=())
+            return HttpResponseRedirect(redirect_url + "?currentTab=1")
 
     context = {"can_change": True,
                "publication": publication,

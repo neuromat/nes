@@ -4061,7 +4061,7 @@ class EMGSettingTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class ContextTreeTest(TestCase):
+class PublicationTest(TestCase):
 
     data = {}
 
@@ -4075,7 +4075,7 @@ class ContextTreeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['publications']), 0)
 
-        research_project = ObjectsFactory.create_research_project()
+        ObjectsFactory.create_research_project()
 
         Publication.objects.create(title="Publication title", citation="Publication citation")
 
@@ -4100,10 +4100,10 @@ class ContextTreeTest(TestCase):
         self.data = {'action': 'save'}
         response = self.client.post(reverse('publication_new'), self.data)
         self.assertEqual(Publication.objects.all().count(), 0)
-        self.assertGreaterEqual(len(response.context['publication_form'].errors), 1)
-        # self.assertTrue('title' in response.context['research_project_form'].errors)
-        # self.assertTrue('start_date' in response.context['research_project_form'].errors)
-        # self.assertTrue('description' in response.context['research_project_form'].errors)
+        self.assertGreaterEqual(len(response.context['publication_form'].errors), 3)
+        self.assertTrue('title' in response.context['publication_form'].errors)
+        self.assertTrue('citation' in response.context['publication_form'].errors)
+        self.assertTrue('experiments' in response.context['publication_form'].errors)
         self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
         self.assertEqual(response.status_code, 200)
 
@@ -4140,11 +4140,17 @@ class ContextTreeTest(TestCase):
         response = publication_update(request, publication_id=publication.pk)
         self.assertEqual(response.status_code, 200)
 
-        # Update
+        # Update with changes
         self.data = {'action': 'save', 'title': 'New publication title',
-                     'citation': ['New citation'],
+                     'citation': 'New citation',
                      'experiments': str(experiment.id)}
         response = self.client.post(reverse('publication_edit', args=(publication.pk,)), self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Publication updated successfully.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Update with no changes
+        response = self.client.post(reverse('publication_edit', args=(publication.pk,)), self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('There is no changes to save.'))
         self.assertEqual(response.status_code, 200)
 
     def test_publication_remove(self):
