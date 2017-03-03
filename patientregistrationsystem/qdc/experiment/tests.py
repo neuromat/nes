@@ -15,8 +15,8 @@ from .models import Experiment, Group, Subject, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication
-from .views import experiment_update, upload_file, research_project_update, publication_update
+    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree
+from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update
 
 from patient.models import ClassificationOfDiseases
 from patient.tests import UtilTests
@@ -84,6 +84,19 @@ class ObjectsFactory(object):
         for experiment in list_of_experiments:
             publication.experiments.add(experiment)
         return publication
+
+    @staticmethod
+    def create_context_tree(experiment):
+        """
+        Create a context tree for an experiment
+        :param experiment: experiment
+        :return: new context tree
+        """
+
+        context_tree = ContextTree.objects.create(
+            experiment=experiment, name="Context tree name", description="Context tree description")
+        context_tree.save()
+        return context_tree
 
     @staticmethod
     def create_eeg_setting(experiment):
@@ -4167,5 +4180,115 @@ class PublicationTest(TestCase):
                                     self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-        # Check if numeber of reserch projets decreased by 1
+        # Check if number of publications decreased by 1
         self.assertEqual(Publication.objects.all().count(), count - 1)
+
+
+class ContextTreeTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+    def test_context_tree_list(self):
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Check if list of context trees is empty before inserting any.
+        response = self.client.get(reverse('experiment_view', args=[experiment.pk, ]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['context_tree_list']), 0)
+
+        ContextTree.objects.create(experiment=experiment, name='Context name', description='Context description')
+
+        # Check if list of context trees returns one item after inserting one.
+        response = self.client.get(reverse('experiment_view', args=[experiment.pk, ]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['context_tree_list']), 1)
+
+    def test_context_tree_create(self):
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Request the context tree register screen
+        response = self.client.get(reverse('context_tree_new', args=[experiment.pk, ]))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing "wrong" action
+        self.data = {'action': 'wrong', 'name': 'Context tree name', 'description': 'Context tree description'}
+        response = self.client.post(reverse('context_tree_new', args=[experiment.pk, ]), self.data)
+        self.assertEqual(ContextTree.objects.all().count(), 0)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Action not available.'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse('context_tree_new', args=[experiment.pk, ]), self.data)
+        self.assertEqual(ContextTree.objects.all().count(), 0)
+        self.assertGreaterEqual(len(response.context['context_tree_form'].errors), 2)
+        self.assertTrue('name' in response.context['context_tree_form'].errors)
+        self.assertTrue('description' in response.context['context_tree_form'].errors)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Set context tree data
+        self.data = {'action': 'save', 'name': 'Context tree name', 'description': 'Context tree description'}
+
+        # Count the number of context tree currently in database
+        count_before_insert = ContextTree.objects.all().count()
+
+        # Add the new context tree
+        response = self.client.post(reverse('context_tree_new', args=[experiment.pk, ]), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # Count the number of context tree currently in database
+        count_after_insert = ContextTree.objects.all().count()
+
+        # Check if it has increased
+        self.assertEqual(count_after_insert, count_before_insert + 1)
+
+    def test_context_tree_update(self):
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('context_tree_edit', args=[context_tree.pk, ]))
+        request.user = self.user
+
+        response = context_tree_update(request, context_tree_id=context_tree.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Update with changes
+        self.data = {'action': 'save', 'name': 'New context tree name',
+                     'description': 'New context tree description'}
+        response = self.client.post(reverse('context_tree_edit', args=(context_tree.pk,)), self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Context tree updated successfully.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Update with no changes
+        response = self.client.post(reverse('context_tree_edit', args=(context_tree.pk,)), self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('There is no changes to save.'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_context_tree_remove(self):
+        # Create a context tree to be used in the test
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+
+        # Save current number of context trees
+        count = ContextTree.objects.all().count()
+
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse('context_tree_view', args=(context_tree.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if number of context trees decreased by 1
+        self.assertEqual(ContextTree.objects.all().count(), count - 1)

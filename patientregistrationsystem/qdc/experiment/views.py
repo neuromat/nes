@@ -10561,6 +10561,11 @@ def context_tree_create(request, experiment_id, template_name="experiment/contex
                 redirect_url = reverse("context_tree_view", args=(context_tree_added.id,))
                 return HttpResponseRedirect(redirect_url)
 
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
     context = {"context_tree_form": context_tree_form,
                "creating": True,
                "editing": True,
