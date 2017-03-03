@@ -42,15 +42,15 @@ class InputExport:
         with open(output_filename.encode('utf-8'), 'w', encoding='UTF-8') as outfile:
             dump(self.data, outfile)
 
-    def build_header(self):
+    def build_header(self, export_per_experiment):
         print("header")
         self.data["base_directory"] = BASE_DIRECTORY
         self.data["per_participant_directory"] = PER_PARTICIPANT_DIRECTORY
         self.data["per_questionnaire_directory"] = PER_QUESTIONNAIRE_DIRECTORY
-        # self.data["per_experiment_questionnaire_directory"] = PER_EXPERIMENT_QUESTIONNAIRE_DIRECTORY
         self.data["export_filename"] = EXPORT_FILENAME
-        # if export_per_experiment:
-        #     self.data["per_questionnaire_directory"] = PER_QUESTIONNAIRE_DIRECTORY
+        if export_per_experiment:
+            self.data["per_experiment_questionnaire_directory"] = PER_EXPERIMENT_QUESTIONNAIRE_DIRECTORY
+            self.data["per_questionnaire_directory"] = PER_QUESTIONNAIRE_DIRECTORY
 
     def build_dynamic_header(self, variable_name, variable_data):
         self.data[variable_name] = variable_data
@@ -118,22 +118,20 @@ def build_partial_export_structure(export_per_participant, participant_field_hea
     json_data.write(output_filename)
 
 
-def build_complete_export_structure(export_per_participant, export_per_questionnaire,
+def build_complete_export_structure(export_per_participant, export_per_questionnaire, export_per_experiment,
                                     participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
-                                    response_type, heading_type, output_filename,
+                                    experiment_questionnaires_list, response_type, heading_type, output_filename,
                                     language=DEFAULT_LANGUAGE):
 
     json_data = InputExport()
 
-    # json_data.build_header(export_per_experiment)
-
-    json_data.build_header()
+    json_data.build_header(export_per_experiment)
 
     json_data.build_dynamic_header("export_per_participant", export_per_participant)
 
     json_data.build_dynamic_header("export_per_questionnaire", export_per_questionnaire)
 
-    # json_data.build_dynamic_header("export_per_experiment", export_per_experiment)
+    json_data.build_dynamic_header("export_per_experiment", export_per_experiment)
 
     json_data.build_dynamic_header("response_type", response_type)
 
@@ -145,6 +143,11 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
 
     json_data.build_questionnaire(questionnaires_list, language, entrance_questionnaire=True)
 
-    # json_data.build_questionnaire(experiment_questionnaires_list, language, entrance_questionnaire=False)
+    json_data.build_questionnaire(experiment_questionnaires_list, language, entrance_questionnaire=False)
+
+    if export_per_experiment:
+        json_data.build_header(export_per_experiment)
+        json_data.build_dynamic_header("export_per_experiment", export_per_experiment)
+        json_data.build_questionnaire(experiment_questionnaires_list, language, entrance_questionnaire=False)
 
     json_data.write(output_filename)

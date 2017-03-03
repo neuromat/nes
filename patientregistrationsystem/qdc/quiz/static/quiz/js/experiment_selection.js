@@ -10,7 +10,7 @@ $(document).ready(function () {
     // var values = $('#id_research_projects').val();
     select_groups.prop('disabled', true);
 
-    select_research_project.click(function () {
+    select_research_project.change(function () {
         var study_id = $(this).val();
         if (study_id == "") {
             study_id = "0";

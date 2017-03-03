@@ -382,11 +382,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # ### gady ##################
         error_msg = export.process_per_questionnaire()
+        error_exp_msg = ""
+        if 'group_selected_list' in request.session:
+            error_exp_msg = export.process_per_experiment_questionnaire()
 
-        # if 'group_selected_list' in request.session:
-        #     error_exp_msg = export.process_per_experiment_questionnaire()
-
-        if error_msg != "":
+        if error_msg != "" or error_exp_msg !="":
             messages.error(request, error_msg)
             return render(request, template_name)
         ##################################################
@@ -615,13 +615,13 @@ def export_view(request, template_name="export/export_data.html"):
 
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
-                build_complete_export_structure(per_participant, per_questionnaire, participants_list, diagnosis_list,
-                                                questionnaires_list, responses_type, heading_type, input_filename,
-                                                request.LANGUAGE_CODE)
+                # build_complete_export_structure(per_participant, per_questionnaire, participants_list, diagnosis_list,
+                #                                 questionnaires_list, responses_type, heading_type, input_filename,
+                #                                 request.LANGUAGE_CODE)
 
-                # build_complete_export_structure(per_participant, per_questionnaire, per_experiment, participants_list,
-                #                                 diagnosis_list, questionnaires_list, experiment_questionnaires_list,
-                #                                 responses_type, heading_type, input_filename, request.LANGUAGE_CODE)
+                build_complete_export_structure(per_participant, per_questionnaire, per_experiment, participants_list,
+                                                diagnosis_list, questionnaires_list, experiment_questionnaires_list,
+                                                responses_type, heading_type, input_filename, request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
                 complete_experiment_filename = True
