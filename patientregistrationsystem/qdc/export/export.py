@@ -733,6 +733,7 @@ class ExportExecution:
                 return error_msg
             path_per_questionnaire = path.join(path_per_questionnaire, "Per_questionnaire")
             export_metadata_directory = path_per_questionnaire
+            export_directory = path.join(export_per_questionnaire_directory, path_group)
 
             print(questionnaire_id)
 
@@ -752,7 +753,7 @@ class ExportExecution:
 
                 export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code))
 
-                export_directory = path.join(path_per_questionnaire, path_questionnaire)
+                export_directory = path.join(export_directory, path_questionnaire)
 
                 complete_filename = path.join(export_path, export_filename)
 

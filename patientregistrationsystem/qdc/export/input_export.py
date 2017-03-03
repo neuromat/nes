@@ -50,7 +50,6 @@ class InputExport:
         self.data["export_filename"] = EXPORT_FILENAME
         if export_per_experiment:
             self.data["per_experiment_questionnaire_directory"] = PER_EXPERIMENT_QUESTIONNAIRE_DIRECTORY
-            self.data["per_questionnaire_directory"] = PER_QUESTIONNAIRE_DIRECTORY
 
     def build_dynamic_header(self, variable_name, variable_data):
         self.data[variable_name] = variable_data
@@ -131,8 +130,6 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
 
     json_data.build_dynamic_header("export_per_questionnaire", export_per_questionnaire)
 
-    json_data.build_dynamic_header("export_per_experiment", export_per_experiment)
-
     json_data.build_dynamic_header("response_type", response_type)
 
     json_data.build_dynamic_header("heading_type", heading_type)
@@ -143,10 +140,7 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
 
     json_data.build_questionnaire(questionnaires_list, language, entrance_questionnaire=True)
 
-    json_data.build_questionnaire(experiment_questionnaires_list, language, entrance_questionnaire=False)
-
     if export_per_experiment:
-        json_data.build_header(export_per_experiment)
         json_data.build_dynamic_header("export_per_experiment", export_per_experiment)
         json_data.build_questionnaire(experiment_questionnaires_list, language, entrance_questionnaire=False)
 
