@@ -381,10 +381,14 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # process per questionnaire data
 
         # ### gady ##################
-        error_msg = export.process_per_questionnaire()
-        error_exp_msg = ""
+        # error_msg = export.process_per_questionnaire()
+
         if 'group_selected_list' in request.session:
+            error_msg = export.process_per_entrance_questionnaire()
             error_exp_msg = export.process_per_experiment_questionnaire()
+        else:
+            error_msg = export.process_per_questionnaire()
+            error_exp_msg = ""
 
         if error_msg != "" or error_exp_msg !="":
             messages.error(request, error_msg)
@@ -392,55 +396,107 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         ##################################################
 
         # process per participant data
-        error_msg = export.process_per_participant()
-        if error_msg != "":
+        if 'group_selected_list' in request.session:
+            error_msg = export.process_per_participant_per_entrance_questionnaire()
+            # error_exp_msg = export.process_per_participant_per_experiment()
+            error_exp_msg = ""
+        else:
+            error_msg = export.process_per_participant()
+            error_exp_msg = ""
+
+        if error_msg != "" or error_exp_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
 
         # process participants
         # only participants that were used in questionnaire: export.get_per_participant_data().keys()
-        participants_list = (export.get_participants_filtered_data())
-        # participants_list = (export.get_per_participant_data().keys())
-        participants_input_data = export.get_input_data("participants")
+        if 'group_selected_list' in request.session:
+            participants_list = (export.get_participants_filtered_data())
+            # participants_list = (export.get_per_participant_data().keys())
+            participants_input_data = export.get_input_data("participants")
 
-        if participants_input_data[0]["output_list"] and participants_list:
+            if participants_input_data[0]["output_list"] and participants_list:
 
-            export_rows_participants = process_participant_data(participants_input_data, participants_list)
+                export_rows_participants = process_participant_data(participants_input_data, participants_list)
 
-            export_filename = "%s.csv" % export.get_input_data('participants')[0]["output_filename"]  # "export.csv"
+                export_filename = "%s.csv" % export.get_input_data('participants')[0]["output_filename"]  # "export.csv"
 
-            base_export_directory = export.get_export_directory()
-            base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
+                base_export_directory = path.join(export.get_export_directory(), "Per_participant")
+                # /NES_EXPORT/Per_participant
+                base_directory = path.join(export.get_input_data("base_directory"), "Per_participant")
 
-            complete_filename = path.join(base_export_directory, export_filename)
+                complete_filename = path.join(base_export_directory, export_filename)
 
-            export.files_to_zip_list.append([complete_filename, base_directory])
+                export.files_to_zip_list.append([complete_filename, base_directory])
 
-            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-                export_writer = writer(csv_file)
-                for row in export_rows_participants:
-                    export_writer.writerow(row)
+                with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+                    export_writer = writer(csv_file)
+                    for row in export_rows_participants:
+                        export_writer.writerow(row)
 
-        # process  diagnosis file
-        diagnosis_input_data = export.get_input_data("diagnosis")
+            # process  diagnosis file
+            diagnosis_input_data = export.get_input_data("diagnosis")
 
-        if diagnosis_input_data[0]['output_list'] and participants_list:
-            export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
+            if diagnosis_input_data[0]['output_list'] and participants_list:
+                export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
 
-            export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
+                export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
+                # /NES_EXPORT/Per_particpant
+                base_directory = path.join(export.get_input_data("base_directory"), "Per_participant")
+                base_export_directory = path.join(export.get_export_directory(), "Per_participant")
 
-            base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
-            base_export_directory = export.get_export_directory()
+                complete_filename = path.join(base_export_directory, export_filename)
 
-            complete_filename = path.join(base_export_directory, export_filename)
+                # files_to_zip_list.append(complete_filename)
+                export.files_to_zip_list.append([complete_filename, base_directory])
 
-            # files_to_zip_list.append(complete_filename)
-            export.files_to_zip_list.append([complete_filename, base_directory])
+                with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+                    export_writer = writer(csv_file)
+                    for row in export_rows_diagnosis:
+                        export_writer.writerow(row)
+        else:
+            participants_list = (export.get_participants_filtered_data())
+            # participants_list = (export.get_per_participant_data().keys())
+            participants_input_data = export.get_input_data("participants")
 
-            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-                export_writer = writer(csv_file)
-                for row in export_rows_diagnosis:
-                    export_writer.writerow(row)
+            if participants_input_data[0]["output_list"] and participants_list:
+
+                export_rows_participants = process_participant_data(participants_input_data, participants_list)
+
+                export_filename = "%s.csv" % export.get_input_data('participants')[0]["output_filename"]  # "export.csv"
+
+                base_export_directory = export.get_export_directory()
+                base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
+
+                complete_filename = path.join(base_export_directory, export_filename)
+
+                export.files_to_zip_list.append([complete_filename, base_directory])
+
+                with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+                    export_writer = writer(csv_file)
+                    for row in export_rows_participants:
+                        export_writer.writerow(row)
+
+            # process  diagnosis file
+            diagnosis_input_data = export.get_input_data("diagnosis")
+
+            if diagnosis_input_data[0]['output_list'] and participants_list:
+                export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
+
+                export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
+
+                base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
+                base_export_directory = export.get_export_directory()
+
+                complete_filename = path.join(base_export_directory, export_filename)
+
+                # files_to_zip_list.append(complete_filename)
+                export.files_to_zip_list.append([complete_filename, base_directory])
+
+                with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+                    export_writer = writer(csv_file)
+                    for row in export_rows_diagnosis:
+                        export_writer.writerow(row)
 
         # create zip file and include files
         export_complete_filename = ""
@@ -682,13 +738,13 @@ def export_view(request, template_name="export/export_data.html"):
             group = get_object_or_404(Group, pk=group_id)
 
             if group.experimental_protocol is not None:
-                questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(subject_of_group__group=group).\
-                    distinct('data_configuration_tree')
+                questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(subject_of_group__group=group)[0]
+                    # .distinct('data_configuration_tree')
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
                     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     questionnaire_id = questionnaire.survey.lime_survey_id
-                    token = surveys.get_participant_properties(questionnaire_id, questionnaire_response[0].token_id,
+                    token = surveys.get_participant_properties(questionnaire_id, questionnaire_response.token_id,
                                                                "token")
                     if token:
                         questionnaire_dic = {
