@@ -15,8 +15,8 @@ from .models import Experiment, Group, Subject, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape
-from .views import experiment_update, upload_file, research_project_update
+    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree
+from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update
 
 from patient.models import ClassificationOfDiseases
 from patient.tests import UtilTests
@@ -69,6 +69,34 @@ class ObjectsFactory(object):
                                                description="Descricao do Experimento-Update")
         experiment.save()
         return experiment
+
+    @staticmethod
+    def create_publication(list_of_experiments):
+        """
+        Create a publication to be used in the test
+        :param list_of_experiments: list of experiments
+        :return: publication
+        """
+
+        publication = Publication.objects.create(title="Publication-Update",
+                                                 citation="Citation-Update")
+        publication.save()
+        for experiment in list_of_experiments:
+            publication.experiments.add(experiment)
+        return publication
+
+    @staticmethod
+    def create_context_tree(experiment):
+        """
+        Create a context tree for an experiment
+        :param experiment: experiment
+        :return: new context tree
+        """
+
+        context_tree = ContextTree.objects.create(
+            experiment=experiment, name="Context tree name", description="Context tree description")
+        context_tree.save()
+        return context_tree
 
     @staticmethod
     def create_eeg_setting(experiment):
@@ -4044,3 +4072,223 @@ class EMGSettingTest(TestCase):
         response = self.client.post(reverse("emg_electrode_setting_view",
                                             args=(emg_electrode_setting.id,)), self.data)
         self.assertEqual(response.status_code, 302)
+
+
+class PublicationTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+    def test_publication_list(self):
+        # Check if list of publications is empty before inserting any.
+        response = self.client.get(reverse('research_project_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['publications']), 0)
+
+        ObjectsFactory.create_research_project()
+
+        Publication.objects.create(title="Publication title", citation="Publication citation")
+
+        # Check if list of publications returns one item after inserting one.
+        response = self.client.get(reverse('research_project_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['publications']), 1)
+
+    def test_publication_create(self):
+        # Request the publication register screen
+        response = self.client.get(reverse('publication_new'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing "wrong" action
+        self.data = {'action': 'wrong', 'title': 'Publication title', 'citation': 'Publication citation'}
+        response = self.client.post(reverse('publication_new'), self.data)
+        self.assertEqual(Publication.objects.all().count(), 0)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Action not available.'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse('publication_new'), self.data)
+        self.assertEqual(Publication.objects.all().count(), 0)
+        self.assertGreaterEqual(len(response.context['publication_form'].errors), 3)
+        self.assertTrue('title' in response.context['publication_form'].errors)
+        self.assertTrue('citation' in response.context['publication_form'].errors)
+        self.assertTrue('experiments' in response.context['publication_form'].errors)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
+        self.assertEqual(response.status_code, 200)
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Set publication data
+        self.data = {'action': 'save', 'title': 'Publication title', 'citation': 'Publication citation',
+                     'experiments': str(experiment.id)}
+
+        # Count the number of publication currently in database
+        count_before_insert = Publication.objects.all().count()
+
+        # Add the new publication
+        response = self.client.post(reverse('publication_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # Count the number of publication currently in database
+        count_after_insert = Publication.objects.all().count()
+
+        # Check if it has increased
+        self.assertEqual(count_after_insert, count_before_insert + 1)
+
+    def test_publication_update(self):
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        publication = ObjectsFactory.create_publication([experiment])
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('publication_edit', args=[publication.pk, ]))
+        request.user = self.user
+
+        response = publication_update(request, publication_id=publication.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Update with changes
+        self.data = {'action': 'save', 'title': 'New publication title',
+                     'citation': 'New citation',
+                     'experiments': str(experiment.id)}
+        response = self.client.post(reverse('publication_edit', args=(publication.pk,)), self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Publication updated successfully.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Update with no changes
+        response = self.client.post(reverse('publication_edit', args=(publication.pk,)), self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('There is no changes to save.'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_publication_remove(self):
+        # Create a publication to be used in the test
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        publication = ObjectsFactory.create_publication([experiment])
+
+        # Save current number of publications
+        count = Publication.objects.all().count()
+
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse('publication_view', args=(publication.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if number of publications decreased by 1
+        self.assertEqual(Publication.objects.all().count(), count - 1)
+
+
+class ContextTreeTest(TestCase):
+
+    data = {}
+
+    def setUp(self):
+        logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
+        self.assertEqual(logged, True)
+
+    def test_context_tree_list(self):
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Check if list of context trees is empty before inserting any.
+        response = self.client.get(reverse('experiment_view', args=[experiment.pk, ]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['context_tree_list']), 0)
+
+        ContextTree.objects.create(experiment=experiment, name='Context name', description='Context description')
+
+        # Check if list of context trees returns one item after inserting one.
+        response = self.client.get(reverse('experiment_view', args=[experiment.pk, ]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['context_tree_list']), 1)
+
+    def test_context_tree_create(self):
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Request the context tree register screen
+        response = self.client.get(reverse('context_tree_new', args=[experiment.pk, ]))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing "wrong" action
+        self.data = {'action': 'wrong', 'name': 'Context tree name', 'description': 'Context tree description'}
+        response = self.client.post(reverse('context_tree_new', args=[experiment.pk, ]), self.data)
+        self.assertEqual(ContextTree.objects.all().count(), 0)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Action not available.'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing missing information
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse('context_tree_new', args=[experiment.pk, ]), self.data)
+        self.assertEqual(ContextTree.objects.all().count(), 0)
+        self.assertGreaterEqual(len(response.context['context_tree_form'].errors), 2)
+        self.assertTrue('name' in response.context['context_tree_form'].errors)
+        self.assertTrue('description' in response.context['context_tree_form'].errors)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Set context tree data
+        self.data = {'action': 'save', 'name': 'Context tree name', 'description': 'Context tree description'}
+
+        # Count the number of context tree currently in database
+        count_before_insert = ContextTree.objects.all().count()
+
+        # Add the new context tree
+        response = self.client.post(reverse('context_tree_new', args=[experiment.pk, ]), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # Count the number of context tree currently in database
+        count_after_insert = ContextTree.objects.all().count()
+
+        # Check if it has increased
+        self.assertEqual(count_after_insert, count_before_insert + 1)
+
+    def test_context_tree_update(self):
+
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('context_tree_edit', args=[context_tree.pk, ]))
+        request.user = self.user
+
+        response = context_tree_update(request, context_tree_id=context_tree.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Update with changes
+        self.data = {'action': 'save', 'name': 'New context tree name',
+                     'description': 'New context tree description'}
+        response = self.client.post(reverse('context_tree_edit', args=(context_tree.pk,)), self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Context tree updated successfully.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Update with no changes
+        response = self.client.post(reverse('context_tree_edit', args=(context_tree.pk,)), self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('There is no changes to save.'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_context_tree_remove(self):
+        # Create a context tree to be used in the test
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+
+        # Save current number of context trees
+        count = ContextTree.objects.all().count()
+
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse('context_tree_view', args=(context_tree.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if number of context trees decreased by 1
+        self.assertEqual(ContextTree.objects.all().count(), count - 1)
