@@ -836,7 +836,19 @@ class ExportExecution:
 
                 questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
                 # questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
-                questionnaire_title = questionnaire['questionnaire_name']
+                title = questionnaire['questionnaire_name']
+                reduced_title = ''
+                if title:
+                    title = re.sub(r'[^\w]', ' ', title)
+                    title = title.split(" ")
+
+                    for part in title:
+                        if len(part):
+                            reduced_title += part + "-"
+
+                    reduced_title = reduced_title[:-1]
+                    reduced_title = reduced_title[:30]
+                questionnaire_title = reduced_title
                 path_questionnaire = "%s_%s" % (str(questionnaire_code), questionnaire_title)
                 error_msg, export_path = create_directory(export_path_group_per_questionnaire, path_questionnaire)
                 if error_msg != "":
@@ -965,28 +977,28 @@ class ExportExecution:
                     # print(participant, questionnaire)
 
                     questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
+                    # seleciona os participantes dos quesntionnarios de entrada
+                    for questionnaire in self.get_input_data("questionnaires"):
+                        if questionnaire_id == questionnaire['id']:
+                            title = self.get_title_reduced(questionnaire_id=questionnaire_id)
+                            export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code), title)
 
-                    title = self.get_title_reduced(questionnaire_id=questionnaire_id)
+                            header = self.get_header_questionnaire(questionnaire_id)
 
-                    export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code), title)
+                            per_participant_rows = [header]
 
-                    header = self.get_header_questionnaire(questionnaire_id)
+                            fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
 
-                    per_participant_rows = [header]
+                            for fields in fields_rows:
+                                per_participant_rows.append(fields)
 
-                    fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
+                            complete_filename = path.join(participant_path, export_filename)
 
-                    for fields in fields_rows:
-                        per_participant_rows.append(fields)
+                            save_to_csv(complete_filename, per_participant_rows)
 
-                    complete_filename = path.join(participant_path, export_filename)
+                            export_directory = path.join(export_directory_base, path_participant)
 
-                    save_to_csv(complete_filename, per_participant_rows)
-
-                    export_directory = path.join(export_directory_base, path_participant)
-                    # export_directory = path.join(export_directory, path_questionnaire)
-
-                    self.files_to_zip_list.append([complete_filename, export_directory])
+                            self.files_to_zip_list.append([complete_filename, export_directory])
 
         return error_msg
 
@@ -995,24 +1007,16 @@ class ExportExecution:
         error_msg = ''
 
         if self.get_input_data("export_per_participant"):
-
-            per_participant_directory = self.get_input_data("per_participant_directory")
-
-            error_msg, path_per_participant = create_directory(self.get_export_directory(), per_participant_directory)
-            if error_msg != "":
-                return error_msg
-
+            # path: Per_experiment/
+            per_experiment_directory = self.get_input_data("per_experiment_questionnaire_directory")
             prefix_filename_participant = "Participant_"
-            export_directory_base = path.join(self.get_input_data("base_directory"),
-                                              self.get_input_data("per_participant_directory"))
+            # path: NES_EXPORT/Per_experiment
+            export_directory_base = path.join(self.get_input_data("base_directory"), per_experiment_directory)
             # path_questionnaire = "Questionnaires"
 
             for participant_code in self.get_per_participant_data():
-
+                # ex. Participant_P22667
                 path_participant = prefix_filename_participant + str(participant_code)
-                error_msg, participant_path = create_directory(path_per_participant, path_participant)
-                if error_msg != "":
-                    return error_msg
 
                 # error_msg, questionnaire_path = create_directory(participant_path, path_questionnaire)
                 # if error_msg != "":
@@ -1020,30 +1024,65 @@ class ExportExecution:
 
                 for questionnaire_code in self.get_per_participant_data(participant_code):
                     # print(participant, questionnaire)
-
                     questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
+                    # seleciona os participantes dos questionnarios de experimentos
+                    for questionnaire in self.get_input_data('questionnaires_from_experiments'):
+                        if questionnaire_id == questionnaire['id']:
+                            title = questionnaire['questionnaire_name']
+                            reduced_title = ''
+                            if title:
+                                title = re.sub(r'[^\w]', ' ', title)
+                                title = title.split(" ")
 
-                    title = self.get_title_reduced(questionnaire_id=questionnaire_id)
+                                for part in title:
+                                    if len(part):
+                                        reduced_title += part + "-"
 
-                    export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code), title)
+                                reduced_title = reduced_title[:-1]
+                                reduced_title = reduced_title[:30]
+                            questionnaire_title = reduced_title
+                            group_id = questionnaire['group_id']
+                            group = get_object_or_404(Group, pk=group_id)
+                            group_title = 'Group_' + group.title
+                            # path: NES_EXPORT/Per_experiment/Group_XXX
+                            group_directory = path.join(export_directory_base, group_title)
+                            # path: C:/.../NES_EXPORT/Per_Experiment/Group_XXX/
+                            path_group_directory = path.join(self.base_export_directory, per_experiment_directory)
+                            path_group_directory = path.join(path_group_directory, group_title)
+                            # criando a pasta Per_participant
+                            error_msg, group_participant_path = create_directory(
+                                path_group_directory, self.get_input_data("per_participant_directory"))
+                            if error_msg != "":
+                                return error_msg
 
-                    header = self.get_header_questionnaire(questionnaire_id)
+                            # path: NES_EXPORT/Per_experiment/Group_XXX/Per_participant
+                            group_per_participant_directory = path.join(
+                                group_directory, self.get_input_data("per_participant_directory"))
+                            # criando a pasta Participant_PXXXX
+                            error_msg, participant_path = create_directory(group_participant_path, path_participant)
+                            if error_msg != "":
+                                return error_msg
 
-                    per_participant_rows = [header]
+                            export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code),
+                                                                questionnaire_title)
 
-                    fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
+                            header = self.get_header_questionnaire(questionnaire_id)
 
-                    for fields in fields_rows:
-                        per_participant_rows.append(fields)
+                            per_participant_rows = [header]
 
-                    complete_filename = path.join(participant_path, export_filename)
+                            fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
 
-                    save_to_csv(complete_filename, per_participant_rows)
+                            for fields in fields_rows:
+                                per_participant_rows.append(fields)
 
-                    export_directory = path.join(export_directory_base, path_participant)
-                    # export_directory = path.join(export_directory, path_questionnaire)
+                            complete_filename = path.join(participant_path, export_filename)
 
-                    self.files_to_zip_list.append([complete_filename, export_directory])
+                            save_to_csv(complete_filename, per_participant_rows)
+
+                            export_directory = path.join(group_per_participant_directory, path_participant)
+                            # export_directory = path.join(export_directory, path_questionnaire)
+
+                            self.files_to_zip_list.append([complete_filename, export_directory])
 
         return error_msg
     #

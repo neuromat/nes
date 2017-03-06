@@ -398,8 +398,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # process per participant data
         if 'group_selected_list' in request.session:
             error_msg = export.process_per_participant_per_entrance_questionnaire()
-            # error_exp_msg = export.process_per_participant_per_experiment()
-            error_exp_msg = ""
+            error_exp_msg = export.process_per_participant_per_experiment()
         else:
             error_msg = export.process_per_participant()
             error_exp_msg = ""
