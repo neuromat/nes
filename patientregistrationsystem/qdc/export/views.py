@@ -640,24 +640,12 @@ def export_view(request, template_name="export/export_data.html"):
                     questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
                                                                     request.LANGUAGE_CODE)
 
-                    # insert participation_code
                     update_participants_list(participants_list, heading_type)
                     update_diagnosis_list(diagnosis_list, heading_type)
                 if experiment_questionnaires_list:
                     experiment_questionnaires_list = update_questionnaire_list(experiment_questionnaires_list,
                                                                                heading_type, request.LANGUAGE_CODE)
                     per_experiment = True
-
-
-                # heading_type = export_form.cleaned_data['headings']
-                # responses_type = export_form.cleaned_data['responses']
-
-                # questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
-                #                                                 request.LANGUAGE_CODE)
-
-                # insert participation_code
-                # update_participants_list(participants_list, heading_type)
-                # update_diagnosis_list(diagnosis_list, heading_type)
 
                 export_instance = create_export_instance(request.user)
 
@@ -670,37 +658,12 @@ def export_view(request, template_name="export/export_data.html"):
 
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
-                # build_complete_export_structure(per_participant, per_questionnaire, participants_list, diagnosis_list,
-                #                                 questionnaires_list, responses_type, heading_type, input_filename,
-                #                                 request.LANGUAGE_CODE)
-
                 build_complete_export_structure(per_participant, per_questionnaire, per_experiment, participants_list,
                                                 diagnosis_list, questionnaires_list, experiment_questionnaires_list,
                                                 responses_type, heading_type, input_filename, request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
                 complete_experiment_filename = True
-
-                # if 'group_selected_list' in request.session:
-                #     # export_instance = create_export_instance(request.user)
-                #
-                #     input_export_file = path.join(EXPORT_DIRECTORY, path.join(str(request.user.id),
-                #                                                               path.join(str(export_instance.id),
-                #                                                                         str(JSON_EXPERIMENT_FILENAME))))
-                #
-                #     # copy data to .../media/export/<user_id>/<export_id>/
-                #     input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
-                #
-                #     create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
-                #
-                #     experiment_input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
-                #
-                #     build_complete_export_structure(per_participant, per_questionnaire, participants_list,
-                #                                     diagnosis_list,
-                #                                     experiment_questionnaires_list, responses_type, heading_type,
-                #                                     experiment_input_filename, request.LANGUAGE_CODE)
-                #
-                #     complete_experiment_filename = export_create(request, export_instance.id, input_filename)
 
                 if complete_filename and complete_experiment_filename:
 
@@ -733,33 +696,53 @@ def export_view(request, template_name="export/export_data.html"):
 
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
+        questionnaires_experiment_list_final = []
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
 
             if group.experimental_protocol is not None:
-                questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(subject_of_group__group=group)[0]
-                    # .distinct('data_configuration_tree')
+                questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                    subject_of_group__group=group).distinct('data_configuration_tree')
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
                     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     questionnaire_id = questionnaire.survey.lime_survey_id
-                    token = surveys.get_participant_properties(questionnaire_id, questionnaire_response.token_id,
-                                                               "token")
-                    if token:
-                        questionnaire_dic = {
-                            'questionnaire': questionnaire,
-                            'token': token,
-                            'group_id': group_id
-                        }
-                        questionnaires_experiment_list_final.append(questionnaire_dic)
+                    for questionnaire_response in questionnaire_response_list:
+                        completed = surveys.get_participant_properties(questionnaire_id,
+                                                                       questionnaire_response.token_id, "completed")
+                        if completed:
+                            questionnaire_dic = {
+                                'questionnaire': questionnaire,
+                                'token': str(questionnaire_response.token_id),
+                                'group_id': group_id
+                            }
+                            questionnaires_experiment_list_final.append(questionnaire_dic)
 
         questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
             questionnaires_experiment_list_final, request.LANGUAGE_CODE)
 
+    # obter a lista de participantes selecionados que tem questionnarios de entrada preenchidos
+    patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
+        patient_id__in=request.session['filtered_participant_data'])
+    # questionnaires_list_final_temp = []
+    surveys_with_ev_list_temp = []
+    # verificar se os questionnarios estão completos
+    for patient_questionnaire_response in patient_questionnaire_response_list:
+        # limesurvey_id = patient_questionnaire_response.survey.lime_survey_id
+        # response_result = surveys.get_participant_properties(
+        #     limesurvey_id, patient_questionnaire_response.token_id, "completed")
+        # if response_result:
+        questionnaire = Survey.objects.filter(id=patient_questionnaire_response.survey_id).values('lime_survey_id')
+        completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
+                                                       patient_questionnaire_response.token_id, "completed")
+        if completed:
+            surveys_with_ev_list_temp.append(questionnaire)
+
+    # Check if limesurveyDB is available
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     questionnaires_list = []
-
+    #If available get all the questionnaires
     if limesurvey_available:
         questionnaires_list = surveys.find_all_active_questionnaires()
 
@@ -767,17 +750,25 @@ def export_view(request, template_name="export/export_data.html"):
 
     questionnaires_list_final = []
 
-    entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
-                                                                                               flat=True))
-    surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list).\
-        values('lime_survey_id')
+    # entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
+    #                                                                                            flat=True))
+    # surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list).\
+    #     values('lime_survey_id')
 
-    for survey in surveys_with_ev_list:
+    # load the questionnaires_list_final with the lime_survey_id
+    for survey in surveys_with_ev_list_temp:
         for questionnaire in questionnaires_list:
-            if survey['lime_survey_id'] == questionnaire['sid']:
+            if survey[0]['lime_survey_id'] == questionnaire['sid']:
                 questionnaires_list_final.append(questionnaire)
                 break
 
+    # for survey in surveys_with_ev_list:
+    #     for questionnaire in questionnaires_list:
+    #         if survey['lime_survey_id'] == questionnaire['sid']:
+    #             questionnaires_list_final.append(questionnaire)
+    #             break
+
+    # get the questionnaire fields from the questionnaires_list_final and show them for selection
     questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
 
     if len(selected_ev_quest):

@@ -833,7 +833,6 @@ class ExportExecution:
             # create directory for questionnaire: <per_questionnaire>/<q_code_title>
             if self.get_input_data("export_per_experiment") and (len(fields_description) > 0):
                 # path_questionnaire = str(questionnaire_id)
-
                 questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
                 # questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
                 title = questionnaire['questionnaire_name']
@@ -1188,35 +1187,15 @@ class ExportExecution:
             group = get_object_or_404(Group, pk=group_id)
 
             if group.experimental_protocol is not None:
-                questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(subject_of_group__group=group)[0]
-                if questionnaire_response:
-                    questionnaire_responses.append(questionnaire_response)
-                # .distinct('data_configuration_tree')
-                # for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
-                #     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
-                #     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
-                #     questionnaire_id = questionnaire.survey.lime_survey_id
-                #     token = surveys.get_participant_properties(questionnaire_id, questionnaire_response.token_id,
-                #                                                "token")
-                #     if token:
-                #         questionnaire_dic = {
-                #             'questionnaire': questionnaire,
-                #             'token': token,
-                #             'group_id': group_id
-                #         }
-                #         questionnaires_experiment_list_final.append(questionnaire_dic)
+                questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                    subject_of_group__group=group).distinct('data_configuration_tree')
+                for questionnaire_response in questionnaire_response_list:
+                    completed = questionnaire_lime_survey.get_participant_properties(
+                        questionnaire_id, questionnaire_response.token_id, "completed")
 
-        # if 'group_selected_list' in request.session:
-        #     questionnaire_exists = True
-        #     group_list = request.session['group_selected_list']
-        #     questionnaire_responses = []
-        #     for group_id in group_list:
-        #         group = get_object_or_404(Group, pk=group_id)
-        #         if group.experimental_protocol is not None:
-        #             questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(
-        #                 subject_of_group__group=group)
-        #             if questionnaire_response:
-        #                 questionnaire_responses.append(questionnaire_response)
+                    if completed:
+                        questionnaire_responses.append(questionnaire_response)
+
         else:
             questionnaire_exists = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id).exists()
             # filter data (participants)
