@@ -238,9 +238,19 @@ def process_participant_data(participants, participants_list):
 
         # transform data
         for record in db_data:
-            export_rows_participants.append([smart_str(field) if field is not None else '' for field in record])
+            export_rows_participants.append([handle_exported_field(field) for field in record])
 
     return export_rows_participants
+
+
+def handle_exported_field(field):
+    if field is None:
+        result = ''
+    elif isinstance(field, bool):
+        result = _('Yes') if field else _('No')
+    else:
+        result = smart_str(field)
+    return result
 
 
 def create_export_instance(user):
