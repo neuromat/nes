@@ -323,11 +323,14 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         export = ExportExecution(export_instance.user.id, export_instance.id)
 
         # update data from advanced search
-        if 'filtered_participant_data' in request.session:
-            participants_filtered_list = request.session['filtered_participant_data']
+        if 'group_selected_list' in request.session:
+            participants_filtered_list = []
         else:
-            participants_filtered_list = Patient.objects.filter(removed=False)
-        export.set_participants_filtered_data(participants_filtered_list)
+            if 'filtered_participant_data' in request.session:
+                participants_filtered_list = request.session['filtered_participant_data']
+            else:
+                participants_filtered_list = Patient.objects.filter(removed=False)
+            export.set_participants_filtered_data(participants_filtered_list)
 
         # files_to_zip_list = []
 
@@ -382,9 +385,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # ### gady ##################
         # error_msg = export.process_per_questionnaire()
-
+        # process per questionnaire data
         if 'group_selected_list' in request.session:
+            participants_filtered_list = request.session['participants_from_entrance_questionnaire']
+            export.set_participants_filtered_data(participants_filtered_list)
             error_msg = export.process_per_entrance_questionnaire()
+            participants_filtered_list = request.session['participants_from_experiment_questionnaire']
+            export.set_participants_filtered_data(participants_filtered_list)
             error_exp_msg = export.process_per_experiment_questionnaire()
         else:
             error_msg = export.process_per_questionnaire()
@@ -397,7 +404,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # process per participant data
         if 'group_selected_list' in request.session:
+            participants_filtered_list = request.session['participants_from_entrance_questionnaire']
+            export.set_participants_filtered_data(participants_filtered_list)
             error_msg = export.process_per_participant_per_entrance_questionnaire()
+            participants_filtered_list = request.session['participants_from_experiment_questionnaire']
+            export.set_participants_filtered_data(participants_filtered_list)
             error_exp_msg = export.process_per_participant_per_experiment()
         else:
             error_msg = export.process_per_participant()
