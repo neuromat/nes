@@ -410,7 +410,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # process participants
         # only participants that were used in questionnaire: export.get_per_participant_data().keys()
         if 'group_selected_list' in request.session:
-            participants_list = (export.get_participants_filtered_data())
+            # participants_list = (export.get_participants_filtered_data())
+            participants_list = request.session['participants_from_entrance_questionnaire']
+            # seleciona somente os participantes de questionnarios de entrada
+            # patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
+            #     patient_id__in=export.get_participants_filtered_data())
+            # for patient_questionnaire in patient_questionnaire_response_list:
+            #     participants_list.append(patient_questionnaire.patient_id)
             # participants_list = (export.get_per_participant_data().keys())
             participants_input_data = export.get_input_data("participants")
 
@@ -420,9 +426,9 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
                 export_filename = "%s.csv" % export.get_input_data('participants')[0]["output_filename"]  # "export.csv"
 
-                base_export_directory = path.join(export.get_export_directory(), "Per_participant")
+                base_export_directory = path.join(export.get_export_directory(), "Per_Participant")
                 # /NES_EXPORT/Per_participant
-                base_directory = path.join(export.get_input_data("base_directory"), "Per_participant")
+                base_directory = path.join(export.get_input_data("base_directory"), "Per_Participant")
 
                 complete_filename = path.join(base_export_directory, export_filename)
 
@@ -441,8 +447,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
                 export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
                 # /NES_EXPORT/Per_particpant
-                base_directory = path.join(export.get_input_data("base_directory"), "Per_participant")
-                base_export_directory = path.join(export.get_export_directory(), "Per_participant")
+                base_directory = path.join(export.get_input_data("base_directory"), "Per_Participant")
+                base_export_directory = path.join(export.get_export_directory(), "Per_Participant")
 
                 complete_filename = path.join(base_export_directory, export_filename)
 
@@ -453,6 +459,15 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     export_writer = writer(csv_file)
                     for row in export_rows_diagnosis:
                         export_writer.writerow(row)
+
+                # participants_list = []
+                # patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
+                #     patient_id__in=request.session['filtered_participant_data'])
+                # for patient in patient_questionnaire_response_list:
+                #     participants_list.append(patient.patient_id)
+
+
+
         else:
             participants_list = (export.get_participants_filtered_data())
             # participants_list = (export.get_per_participant_data().keys())
@@ -697,6 +712,7 @@ def export_view(request, template_name="export/export_data.html"):
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
         questionnaires_experiment_list_final = []
+        participants_list_from_experiment_questionnaire = []
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
 
@@ -717,7 +733,10 @@ def export_view(request, template_name="export/export_data.html"):
                                 'group_id': group_id
                             }
                             questionnaires_experiment_list_final.append(questionnaire_dic)
+                            participants_list_from_experiment_questionnaire.append(
+                                questionnaire_response.subject_of_group.subject.patient_id)
 
+        request.session['participants_from_experiment_questionnaire'] = participants_list_from_experiment_questionnaire
         questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
             questionnaires_experiment_list_final, request.LANGUAGE_CODE)
 
@@ -726,18 +745,18 @@ def export_view(request, template_name="export/export_data.html"):
         patient_id__in=request.session['filtered_participant_data'])
     # questionnaires_list_final_temp = []
     surveys_with_ev_list_temp = []
+    participants_list_from_entrance_questionnaire = []
     # verificar se os questionnarios estão completos
     for patient_questionnaire_response in patient_questionnaire_response_list:
-        # limesurvey_id = patient_questionnaire_response.survey.lime_survey_id
-        # response_result = surveys.get_participant_properties(
-        #     limesurvey_id, patient_questionnaire_response.token_id, "completed")
-        # if response_result:
+
         questionnaire = Survey.objects.filter(id=patient_questionnaire_response.survey_id).values('lime_survey_id')
         completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
                                                        patient_questionnaire_response.token_id, "completed")
         if completed:
             surveys_with_ev_list_temp.append(questionnaire)
+            participants_list_from_entrance_questionnaire.append(patient_questionnaire_response.patient_id)
 
+    request.session['participants_from_entrance_questionnaire'] = participants_list_from_entrance_questionnaire
     # Check if limesurveyDB is available
     limesurvey_available = check_limesurvey_access(request, surveys)
 
@@ -761,12 +780,6 @@ def export_view(request, template_name="export/export_data.html"):
             if survey[0]['lime_survey_id'] == questionnaire['sid']:
                 questionnaires_list_final.append(questionnaire)
                 break
-
-    # for survey in surveys_with_ev_list:
-    #     for questionnaire in questionnaires_list:
-    #         if survey['lime_survey_id'] == questionnaire['sid']:
-    #             questionnaires_list_final.append(questionnaire)
-    #             break
 
     # get the questionnaire fields from the questionnaires_list_final and show them for selection
     questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
