@@ -382,11 +382,11 @@ def patient_view_social_demographic_data(request, patient, context):
     except SocialDemographicData.DoesNotExist:
         social_demographic_form = SocialDemographicDataForm()
 
-    social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
-
     for field in social_demographic_form.fields:
         social_demographic_form.fields[field].widget.attrs['disabled'] = True
+
+    social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
+        attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
     context.update({
         'social_demographic_form': social_demographic_form})
