@@ -35,7 +35,7 @@ from survey.views import get_questionnaire_language
 
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases
 
 JSON_FILENAME = "json_export.json"
 JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
@@ -1421,21 +1421,21 @@ def search_diagnoses(request):
         search_text = request.GET.get('term', '')
 
         if search_text:
-            classification_of_diseases_list = Diagnosis.objects.filter(
-                Q(classification_of_diseases__description__icontains=search_text) |
-                Q(classification_of_diseases__description__icontains=search_text) |
-                Q(classification_of_diseases__code__icontains=search_text)).values(
-                'classification_of_diseases_id', 'classification_of_diseases__abbreviated_description',
-                'classification_of_diseases__code').distinct()
+
+            classification_of_diseases_list = ClassificationOfDiseases.objects.filter(diagnosis__isnull=False).filter(
+                Q(abbreviated_description__icontains=search_text) |
+                Q(description__icontains=search_text) |
+                Q(code__icontains=search_text)).distinct().order_by("code")
 
             results = []
             for classification_of_diseases in classification_of_diseases_list:
-                label = classification_of_diseases['classification_of_diseases__code'] + ' - ' + \
-                        classification_of_diseases['classification_of_diseases__abbreviated_description']
+                label = classification_of_diseases.code + ' - ' + \
+                        classification_of_diseases.abbreviated_description
                 diseases_dict = \
-                    {'id': classification_of_diseases['classification_of_diseases_id'],
+                    {'id': classification_of_diseases.id,
                      'label': label,
-                     'value': classification_of_diseases['classification_of_diseases__abbreviated_description']}
+                     'value': classification_of_diseases.abbreviated_description}
+
                 results.append(diseases_dict)
             data = json.dumps(results)
         else:
