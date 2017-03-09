@@ -35,7 +35,7 @@ from survey.views import get_questionnaire_language
 
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases
 
 JSON_FILENAME = "json_export.json"
 JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
@@ -90,14 +90,14 @@ patient_fields = [
     # {"field": 'name', "header": 'name', "description": _("Full name")},
     {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
-    {"field": 'marital_status', "header": 'marital_status', "description": _("Marital status")},
+    {"field": 'marital_status__name', "header": 'marital_status', "description": _("Marital status")},
     {"field": 'origin', "header": 'origin', "description": _("Origin")},
     {"field": 'city', "header": 'city', "description": _("City")},
     {"field": 'state', "header": 'state', "description": _("State")},
     {"field": 'country', "header": 'country', "description": _("Country")},
     {"field": 'socialdemographicdata__natural_of', "header": 'natural_of', "description": _("Natural of")},
-    {"field": 'socialdemographicdata__schooling', "header": 'schooling', "description": _("Schooling")},
-    {"field": 'socialdemographicdata__patient_schooling', "header": 'patient_schooling',
+    {"field": 'socialdemographicdata__schooling__name', "header": 'schooling', "description": _("Schooling")},
+    {"field": 'socialdemographicdata__patient_schooling__name', "header": 'patient_schooling',
      "description": _("Schooling of the patient")},
     {"field": 'socialdemographicdata__profession', "header": 'profession', "description": _("Profession")},
     {"field": 'socialdemographicdata__social_class', "header": 'social_class',
@@ -105,18 +105,18 @@ patient_fields = [
     {"field": 'socialdemographicdata__occupation', "header": 'occupation', "description": _("Occupation")},
     {"field": 'socialdemographicdata__benefit_government', "header": 'benefit_government',
      "description": _("Do you receive some benefit from the municipal level, state or federal government?")},
-    {"field": 'socialdemographicdata__religion', "header": 'religion', "description": _("Religion")},
-    {"field": 'socialdemographicdata__flesh_tone', "header": 'flesh_tone', "description": _("Flesh tone")},
+    {"field": 'socialdemographicdata__religion__name', "header": 'religion', "description": _("Religion")},
+    {"field": 'socialdemographicdata__flesh_tone__name', "header": 'flesh_tone', "description": _("Flesh tone")},
     {"field": 'socialdemographicdata__citizenship', "header": 'citizenship', "description": _("Citizenship")},
-    {"field": 'socialdemographicdata__payment', "header": 'payment',
+    {"field": 'socialdemographicdata__payment__name', "header": 'payment',
      "description": _("What form of payment of the treatment performed")},
     {"field": 'socialhistorydata__smoker', "header": 'smoker', "description": _("Smoker")},
-    {"field": 'socialhistorydata__amount_cigarettes', "header": 'amount_cigarettes',
+    {"field": 'socialhistorydata__amount_cigarettes__name', "header": 'amount_cigarettes',
      "description": _("Cigarretes/Day")},
     {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker', "description": _("Former smoker")},
     {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic', "description": _("Alcoholic")},
-    {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency', "description": _("Frequency")},
-    {"field": 'socialhistorydata__alcohol_period', "header": 'alcohol_period', "description": _("Period")},
+    {"field": 'socialhistorydata__alcohol_frequency__name', "header": 'alcohol_frequency', "description": _("Frequency")},
+    {"field": 'socialhistorydata__alcohol_period__name', "header": 'alcohol_period', "description": _("Period")},
     {"field": 'socialhistorydata__drugs', "header": 'drugs', "description": _("Drugs")},
 ]
 
@@ -238,9 +238,19 @@ def process_participant_data(participants, participants_list):
 
         # transform data
         for record in db_data:
-            export_rows_participants.append([smart_str(field) if field is not None else '' for field in record])
+            export_rows_participants.append([handle_exported_field(field) for field in record])
 
     return export_rows_participants
+
+
+def handle_exported_field(field):
+    if field is None:
+        result = ''
+    elif isinstance(field, bool):
+        result = _('Yes') if field else _('No')
+    else:
+        result = smart_str(field)
+    return result
 
 
 def create_export_instance(user):
@@ -1461,21 +1471,21 @@ def search_diagnoses(request):
         search_text = request.GET.get('term', '')
 
         if search_text:
-            classification_of_diseases_list = Diagnosis.objects.filter(
-                Q(classification_of_diseases__description__icontains=search_text) |
-                Q(classification_of_diseases__description__icontains=search_text) |
-                Q(classification_of_diseases__code__icontains=search_text)).values(
-                'classification_of_diseases_id', 'classification_of_diseases__abbreviated_description',
-                'classification_of_diseases__code').distinct()
+
+            classification_of_diseases_list = ClassificationOfDiseases.objects.filter(diagnosis__isnull=False).filter(
+                Q(abbreviated_description__icontains=search_text) |
+                Q(description__icontains=search_text) |
+                Q(code__icontains=search_text)).distinct().order_by("code")
 
             results = []
             for classification_of_diseases in classification_of_diseases_list:
-                label = classification_of_diseases['classification_of_diseases__code'] + ' - ' + \
-                        classification_of_diseases['classification_of_diseases__abbreviated_description']
+                label = classification_of_diseases.code + ' - ' + \
+                        classification_of_diseases.abbreviated_description
                 diseases_dict = \
-                    {'id': classification_of_diseases['classification_of_diseases_id'],
+                    {'id': classification_of_diseases.id,
                      'label': label,
-                     'value': classification_of_diseases['classification_of_diseases__abbreviated_description']}
+                     'value': classification_of_diseases.abbreviated_description}
+
                 results.append(diseases_dict)
             data = json.dumps(results)
         else:
