@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-06 11:11-0300\n"
+"POT-Creation-Date: 2017-03-10 10:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -837,6 +837,10 @@ msgstr "Show"
 msgid "Hide"
 msgstr "Hide"
 
+#: team/forms.py:28
+msgid "Type a new username"
+msgstr ""
+
 #: team/models.py:7
 msgid "first name"
 msgstr ""
@@ -849,7 +853,11 @@ msgstr ""
 msgid "email address"
 msgstr ""
 
-#: team/templates/team/person_register.html:43
+#: team/templates/team/person_register.html:13
+msgid "You have to choose at least one user profile!"
+msgstr ""
+
+#: team/templates/team/person_register.html:61
 #: team/templates/team/team_person_register.html:43
 #: team/templates/team/team_register.html:43
 msgid "Please, correct fields highlighted."
@@ -863,63 +871,84 @@ msgstr ""
 msgid "Teams"
 msgstr ""
 
-#: team/views.py:63
-msgid "Person created successfully."
+#: team/views.py:79
+msgid "E-mail already exists."
 msgstr ""
 
-#: team/views.py:68 team/views.py:181 team/views.py:285
+#: team/views.py:82 team/views.py:106 team/views.py:302 team/views.py:417
 msgid "Information not saved."
 msgstr ""
 
-#: team/views.py:71 team/views.py:184 team/views.py:288
+#: team/views.py:101
+msgid "Person created successfully."
+msgstr ""
+
+#: team/views.py:109 team/views.py:304 team/views.py:419
 msgid "Action not available."
 msgstr ""
 
-#: team/views.py:95
+#: team/views.py:171
 msgid "Person removed successfully."
 msgstr ""
 
-#: team/views.py:98
+#: team/views.py:174
 msgid "Error trying to delete person."
 msgstr ""
 
-#: team/views.py:121
+#: team/views.py:236
 msgid "Person updated successfully."
 msgstr ""
 
-#: team/views.py:123 team/views.py:247
+#: team/views.py:238 team/views.py:390
 msgid "There is no changes to save."
 msgstr ""
 
-#: team/views.py:175
+#: team/views.py:250
+msgid "User deactivated successfully."
+msgstr ""
+
+#: team/views.py:298
 msgid "Team created successfully."
 msgstr ""
 
-#: team/views.py:209
+#: team/views.py:332
+msgid "Is coordinator status successfully changed."
+msgstr ""
+
+#: team/views.py:334
+msgid "Error trying to the status of the coordinator."
+msgstr ""
+
+#: team/views.py:342
+msgid "Person removed successfully from the Team."
+msgstr ""
+
+#: team/views.py:344
+msgid "Error trying to delete a persom from the team."
+msgstr ""
+
+#: team/views.py:352
 msgid "Team removed successfully."
 msgstr ""
 
-#: team/views.py:212
+#: team/views.py:355
 msgid "Error trying to delete a team."
 msgstr ""
 
-#: team/views.py:221
+#: team/views.py:364
 msgid "Person added to the team successfully."
 msgstr ""
 
-#: team/views.py:245
+#: team/views.py:388
 msgid "Team updated successfully."
 msgstr ""
 
-#: team/views.py:279
+#: team/views.py:413
 msgid "Team person created successfully."
 msgstr ""
 
-#: templates/registration/change_password_custom.html:35
-msgid "Invalid password. Please, try again."
-msgstr "Invalid password. Please, try again."
-
-#: templates/registration/login.html:118
+#: templates/registration/change_password_custom.html:162
+#: templates/registration/login.html:117
 msgid "{{ error }}"
 msgstr ""
 
@@ -934,6 +963,9 @@ msgstr "Password incompatible with defined standard."
 #: templates/registration/password_reset_confirm.html:163
 msgid "Invalid fill. Make sure the passwords entered are the same"
 msgstr "Invalid fill. Make sure the passwords entered are the same"
+
+#~ msgid "Invalid password. Please, try again."
+#~ msgstr "Invalid password. Please, try again."
 
 #~ msgid "Invalid user or password."
 #~ msgstr "Invalid user or password."

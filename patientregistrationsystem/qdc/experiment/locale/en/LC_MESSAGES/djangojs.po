@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-06 11:11-0300\n"
+"POT-Creation-Date: 2017-03-10 10:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,438 +17,465 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: experiment/forms.py:31 experiment/forms.py:49 experiment/forms.py:259
+#: experiment/forms.py:33 experiment/forms.py:62 experiment/forms.py:292
+#: experiment/forms.py:328
 msgid "Title must be filled."
 msgstr ""
 
-#: experiment/forms.py:35 experiment/forms.py:53 experiment/forms.py:264
-#: experiment/forms.py:317 experiment/forms.py:363 experiment/forms.py:854
-#: experiment/forms.py:894 experiment/forms.py:934 experiment/forms.py:1087
-#: experiment/forms.py:1144
+#: experiment/forms.py:37 experiment/forms.py:66 experiment/forms.py:297
+#: experiment/forms.py:366 experiment/forms.py:412 experiment/forms.py:898
+#: experiment/forms.py:938 experiment/forms.py:978 experiment/forms.py:1133
+#: experiment/forms.py:1207 experiment/forms.py:1252 experiment/forms.py:1296
+#: experiment/forms.py:1318
 msgid "Description must be filled."
 msgstr ""
 
-#: experiment/forms.py:65 experiment/forms.py:265 experiment/forms.py:268
-#: experiment/forms.py:304 experiment/forms.py:843 experiment/forms.py:886
-#: experiment/forms.py:910 experiment/forms.py:914 experiment/views.py:4014
+#: experiment/forms.py:78 experiment/forms.py:298 experiment/forms.py:301
+#: experiment/forms.py:353 experiment/forms.py:887 experiment/forms.py:930
+#: experiment/forms.py:954 experiment/forms.py:958 experiment/forms.py:1187
+#: experiment/forms.py:1309 experiment/views.py:4391
 msgid "%m/%d/%Y"
 msgstr ""
 
-#: experiment/forms.py:66 experiment/forms.py:266 experiment/forms.py:269
-#: experiment/forms.py:305 experiment/forms.py:844 experiment/forms.py:887
-#: experiment/forms.py:911 experiment/forms.py:915
+#: experiment/forms.py:79 experiment/forms.py:299 experiment/forms.py:302
+#: experiment/forms.py:354 experiment/forms.py:888 experiment/forms.py:931
+#: experiment/forms.py:955 experiment/forms.py:959 experiment/forms.py:1188
+#: experiment/forms.py:1310
 msgid "mm/dd/yyyy"
 msgstr ""
 
-#: experiment/forms.py:68 experiment/forms.py:307 experiment/forms.py:846
-#: experiment/forms.py:889
+#: experiment/forms.py:81 experiment/forms.py:356 experiment/forms.py:890
+#: experiment/forms.py:933 experiment/forms.py:1190 experiment/forms.py:1312
 msgid "Fill date must be filled."
 msgstr ""
 
-#: experiment/forms.py:93 experiment/forms.py:498 experiment/forms.py:520
-#: experiment/forms.py:628 experiment/forms.py:646 experiment/forms.py:697
+#: experiment/forms.py:106 experiment/forms.py:564 experiment/forms.py:672
+#: experiment/forms.py:690 experiment/forms.py:741
 msgid "Identification must be filled."
 msgstr ""
 
-#: experiment/forms.py:98 experiment/forms.py:146
+#: experiment/forms.py:111 experiment/forms.py:159
 msgid "Time"
 msgstr ""
 
-#: experiment/forms.py:106
+#: experiment/forms.py:119
 msgid "Duration time must be filled in."
 msgstr ""
 
-#: experiment/forms.py:114
+#: experiment/forms.py:127
 msgid "Duration unit must be filled in."
 msgstr ""
 
-#: experiment/forms.py:123
+#: experiment/forms.py:136 experiment/views.py:6833
 msgid "Fixed"
 msgstr ""
 
-#: experiment/forms.py:123
+#: experiment/forms.py:136 experiment/views.py:6833
 msgid "Random"
 msgstr ""
 
-#: experiment/forms.py:143
+#: experiment/forms.py:156
 msgid "Quantity of repetitions must be filled."
 msgstr ""
 
-#: experiment/forms.py:145
+#: experiment/forms.py:158
 msgid "Interval must be filled."
 msgstr ""
 
-#: experiment/forms.py:150
+#: experiment/forms.py:163
 msgid "Interval unit must be filled."
 msgstr ""
 
-#: experiment/forms.py:161
+#: experiment/forms.py:174
 msgid "Instruction must be filled."
 msgstr ""
 
-#: experiment/forms.py:172
+#: experiment/forms.py:185
 msgid "Stimulus type must be filled."
 msgstr ""
 
-#: experiment/forms.py:184 experiment/forms.py:310
+#: experiment/forms.py:197 experiment/forms.py:359
 msgid "EEG setting type must be filled."
 msgstr ""
 
-#: experiment/forms.py:202 experiment/forms.py:849
+#: experiment/forms.py:215 experiment/forms.py:893
 msgid "EMG setting type must be filled."
 msgstr ""
 
-#: experiment/forms.py:220
+#: experiment/forms.py:233 experiment/forms.py:1193
 msgid "TMS setting type must be filled."
 msgstr ""
 
-#: experiment/forms.py:233
+#: experiment/forms.py:250
+msgid "Software version must be filled."
+msgstr ""
+
+#: experiment/forms.py:252
+msgid "Context tree must be filled."
+msgstr ""
+
+#: experiment/forms.py:266 experiment/models.py:800
 msgid "Sequence"
 msgstr ""
 
-#: experiment/forms.py:234
+#: experiment/forms.py:267 experiment/models.py:800
 msgid "Parallel"
 msgstr ""
 
-#: experiment/forms.py:236
+#: experiment/forms.py:269
 msgid "Organization type must be filled in."
 msgstr ""
 
-#: experiment/forms.py:244 experiment/forms.py:293
+#: experiment/forms.py:277 experiment/forms.py:342
 msgid "Quantity must be filled."
 msgstr ""
 
-#: experiment/forms.py:249
+#: experiment/forms.py:282
 msgid "Responsible"
 msgstr ""
 
-#: experiment/forms.py:267
+#: experiment/forms.py:300
 msgid "Initial date must be filled."
 msgstr ""
 
-#: experiment/forms.py:312
+#: experiment/forms.py:331
+msgid "Citation must be filled."
+msgstr ""
+
+#: experiment/forms.py:361
 msgid "Cap size type must be filled."
 msgstr ""
 
-#: experiment/forms.py:314 experiment/forms.py:851 experiment/forms.py:891
+#: experiment/forms.py:363 experiment/forms.py:895 experiment/forms.py:935
+#: experiment/forms.py:1315
 msgid "File format must be chosen."
 msgstr ""
 
-#: experiment/forms.py:320 experiment/forms.py:857 experiment/forms.py:897
+#: experiment/forms.py:369 experiment/forms.py:901 experiment/forms.py:941
+#: experiment/forms.py:1321
 msgid "File format description must be filled."
 msgstr ""
 
-#: experiment/forms.py:324 experiment/forms.py:861
+#: experiment/forms.py:373 experiment/forms.py:905
 msgid "Reason for change must be filled."
 msgstr ""
 
-#: experiment/forms.py:359 experiment/forms.py:483 experiment/forms.py:542
-#: experiment/forms.py:560 experiment/forms.py:575 experiment/forms.py:594
-#: experiment/forms.py:608 experiment/forms.py:715 experiment/forms.py:777
-#: experiment/forms.py:789 experiment/forms.py:804 experiment/forms.py:818
-#: experiment/forms.py:831 experiment/forms.py:930 experiment/forms.py:1084
-#: experiment/forms.py:1140
+#: experiment/forms.py:408 experiment/forms.py:546 experiment/forms.py:586
+#: experiment/forms.py:604 experiment/forms.py:619 experiment/forms.py:638
+#: experiment/forms.py:652 experiment/forms.py:759 experiment/forms.py:821
+#: experiment/forms.py:833 experiment/forms.py:848 experiment/forms.py:862
+#: experiment/forms.py:875 experiment/forms.py:974 experiment/forms.py:1130
+#: experiment/forms.py:1248 experiment/forms.py:1292
 msgid "Name must be filled."
 msgstr ""
 
-#: experiment/forms.py:404
+#: experiment/forms.py:453
 msgid ""
 "Number of channels should be between 0 and the number of channels of the EEG "
 "machine."
 msgstr ""
 
-#: experiment/forms.py:454 experiment/forms.py:468
+#: experiment/forms.py:503 experiment/forms.py:516 experiment/forms.py:531
 msgid "Name field must be filled."
 msgstr ""
 
-#: experiment/forms.py:496 experiment/forms.py:518 experiment/forms.py:547
-#: experiment/forms.py:626 experiment/forms.py:644 experiment/forms.py:695
-#: experiment/forms.py:815
+#: experiment/forms.py:562 experiment/forms.py:591 experiment/forms.py:670
+#: experiment/forms.py:688 experiment/forms.py:739 experiment/forms.py:859
 msgid "Manufacturer must be filled."
 msgstr ""
 
-#: experiment/forms.py:582 experiment/forms.py:1089
+#: experiment/forms.py:626 experiment/forms.py:1135
 msgid "Electrode type is required"
 msgstr ""
 
-#: experiment/forms.py:613
+#: experiment/forms.py:657
 msgid "Coil shape must be filled."
 msgstr ""
 
-#: experiment/forms.py:631
+#: experiment/forms.py:675
 msgid "Coil model must be filled."
 msgstr ""
 
-#: experiment/forms.py:650
+#: experiment/forms.py:694
 msgid "Electrode model default must be filled in."
 msgstr ""
 
-#: experiment/forms.py:666
+#: experiment/forms.py:710
 msgid "Material must be filled."
 msgstr ""
 
-#: experiment/forms.py:679
+#: experiment/forms.py:723
 msgid "Size must be filled."
 msgstr ""
 
-#: experiment/forms.py:682
+#: experiment/forms.py:726
 msgid "Electrode adjacent distance must be filled."
 msgstr ""
 
-#: experiment/forms.py:730 experiment/forms.py:748 experiment/forms.py:763
+#: experiment/forms.py:774 experiment/forms.py:792 experiment/forms.py:807
 msgid "Muscle subdivision is required."
 msgstr ""
 
-#: experiment/forms.py:912
+#: experiment/forms.py:956
 msgid "Start date must be filled."
 msgstr ""
 
-#: experiment/forms.py:916
+#: experiment/forms.py:960
 msgid "End date must be filled."
 msgstr ""
 
-#: experiment/forms.py:946
+#: experiment/forms.py:992
 msgid "Filter type is required"
 msgstr ""
 
-#: experiment/forms.py:965
+#: experiment/forms.py:1011
 msgid "AD converter is required"
 msgstr ""
 
-#: experiment/forms.py:978
+#: experiment/forms.py:1024
 msgid "Electrode is required"
 msgstr ""
 
-#: experiment/forms.py:995
+#: experiment/forms.py:1041
 msgid "Electrode placement is required"
 msgstr ""
 
-#: experiment/forms.py:998
+#: experiment/forms.py:1044
 msgid "Muscle side is required"
 msgstr ""
 
-#: experiment/forms.py:1010 experiment/forms.py:1047
+#: experiment/forms.py:1056 experiment/forms.py:1093
 msgid "Amplifier is required"
 msgstr ""
 
-#: experiment/forms.py:1156
+#: experiment/forms.py:1232 experiment/forms.py:1235
+msgid "The coordinate must be filled."
+msgstr ""
+
+#: experiment/forms.py:1264
 msgid "TMS device is required"
 msgstr ""
 
-#: experiment/forms.py:1158
+#: experiment/forms.py:1266
 msgid "Coil model is required"
 msgstr ""
 
-#: experiment/models.py:17
+#: experiment/models.py:19
 msgid "milisecond(s)"
 msgstr ""
 
-#: experiment/models.py:18
+#: experiment/models.py:20
 msgid "second(s)"
 msgstr ""
 
-#: experiment/models.py:19
+#: experiment/models.py:21
 msgid "minute(s)"
 msgstr ""
 
-#: experiment/models.py:20
+#: experiment/models.py:22
 msgid "hour(s)"
 msgstr ""
 
-#: experiment/models.py:21
+#: experiment/models.py:23
 msgid "day(s)"
 msgstr ""
 
-#: experiment/models.py:22
+#: experiment/models.py:24
 msgid "week(s)"
 msgstr ""
 
-#: experiment/models.py:23
+#: experiment/models.py:25
 msgid "month(s)"
 msgstr ""
 
-#: experiment/models.py:24
+#: experiment/models.py:26
 msgid "year(s)"
 msgstr ""
 
-#: experiment/models.py:28
+#: experiment/models.py:30
 msgid "Ohm(s)"
 msgstr ""
 
-#: experiment/models.py:29
+#: experiment/models.py:31
 msgid "Kilohm(s)"
 msgstr ""
 
-#: experiment/models.py:30
+#: experiment/models.py:32
 msgid "Megaohm(s)"
 msgstr ""
 
-#: experiment/models.py:31
+#: experiment/models.py:33
 msgid "Gigaohm(s)"
 msgstr ""
 
-#: experiment/models.py:37 experiment/tests.py:1566
+#: experiment/models.py:39 experiment/tests.py:1594
 msgid "Date cannot be greater than today's date."
 msgstr ""
 
-#: experiment/models.py:113
+#: experiment/models.py:130
 msgid "EEG Machine"
 msgstr ""
 
-#: experiment/models.py:114 experiment/views.py:8981
+#: experiment/models.py:131 experiment/views.py:10702
 msgid "Amplifier"
 msgstr ""
 
-#: experiment/models.py:115
+#: experiment/models.py:132
 msgid "EEG Solution"
 msgstr ""
 
-#: experiment/models.py:116
+#: experiment/models.py:133
 msgid "Filter"
 msgstr ""
 
-#: experiment/models.py:117
+#: experiment/models.py:134
 msgid "EEG Electrode Net"
 msgstr ""
 
-#: experiment/models.py:118
+#: experiment/models.py:135
 msgid "A/D Converter"
 msgstr ""
 
-#: experiment/models.py:119 experiment/views.py:9006
+#: experiment/models.py:136 experiment/views.py:10727
 msgid "TMS device"
 msgstr ""
 
-#: experiment/models.py:132 experiment/models.py:133
+#: experiment/models.py:149 experiment/models.py:150
 msgid "Equipment"
 msgstr ""
 
-#: experiment/models.py:196
+#: experiment/models.py:213
 msgid "Disposable"
 msgstr ""
 
-#: experiment/models.py:197
+#: experiment/models.py:214
 msgid "Reusable"
 msgstr ""
 
-#: experiment/models.py:200 experiment/models.py:519
+#: experiment/models.py:217 experiment/models.py:536
 msgid "Surface"
 msgstr ""
 
-#: experiment/models.py:201 experiment/models.py:520
+#: experiment/models.py:218 experiment/models.py:537
 msgid "Intramuscular"
 msgstr ""
 
-#: experiment/models.py:202 experiment/models.py:521
+#: experiment/models.py:219 experiment/models.py:538
 msgid "Needle"
 msgstr ""
 
-#: experiment/models.py:205 experiment/models.py:286
+#: experiment/models.py:222 experiment/models.py:303
 msgid "millimeter(s)"
 msgstr ""
 
-#: experiment/models.py:206 experiment/models.py:287
+#: experiment/models.py:223 experiment/models.py:304
 msgid "centimeter(s)"
 msgstr ""
 
-#: experiment/models.py:250
+#: experiment/models.py:267
 msgid "Gelled"
 msgstr ""
 
-#: experiment/models.py:251
+#: experiment/models.py:268
 msgid "Dry"
 msgstr ""
 
-#: experiment/models.py:254
+#: experiment/models.py:271
 msgid "Active"
 msgstr ""
 
-#: experiment/models.py:255
+#: experiment/models.py:272
 msgid "Passive"
 msgstr ""
 
-#: experiment/models.py:273
+#: experiment/models.py:290
 msgid "Single"
 msgstr ""
 
-#: experiment/models.py:274
+#: experiment/models.py:291
 msgid "Multi"
 msgstr ""
 
-#: experiment/models.py:378
+#: experiment/models.py:395
 msgid "Air core coil"
 msgstr ""
 
-#: experiment/models.py:379
+#: experiment/models.py:396
 msgid "Solid core coil"
 msgstr ""
 
-#: experiment/models.py:393
+#: experiment/models.py:410
 msgid "Monophase"
 msgstr ""
 
-#: experiment/models.py:394
+#: experiment/models.py:411
 msgid "Biphase"
 msgstr ""
 
-#: experiment/models.py:649
+#: experiment/models.py:666
 msgid "Single pulse"
 msgstr ""
 
-#: experiment/models.py:650
+#: experiment/models.py:667
 msgid "Paired pulse"
 msgstr ""
 
-#: experiment/models.py:651
+#: experiment/models.py:668
 msgid "Repetitive pulse"
 msgstr ""
 
-#: experiment/models.py:661
+#: experiment/models.py:734
 msgid "Set of steps"
 msgstr ""
 
-#: experiment/models.py:662
+#: experiment/models.py:735
 msgid "Instruction"
 msgstr ""
 
-#: experiment/models.py:663
+#: experiment/models.py:736
 msgid "Pause"
 msgstr ""
 
-#: experiment/models.py:664
+#: experiment/models.py:737
 msgid "Questionnaire"
 msgstr ""
 
-#: experiment/models.py:665
+#: experiment/models.py:738
 msgid "Stimulus"
 msgstr ""
 
-#: experiment/models.py:666
+#: experiment/models.py:739
 msgid "Task for participant"
 msgstr ""
 
-#: experiment/models.py:667
+#: experiment/models.py:740
 msgid "Task for experimenter"
 msgstr ""
 
-#: experiment/models.py:668
+#: experiment/models.py:741
 msgid "EEG"
 msgstr ""
 
-#: experiment/models.py:669
+#: experiment/models.py:742
 msgid "EMG"
 msgstr ""
 
-#: experiment/models.py:670
+#: experiment/models.py:743
 msgid "TMS"
+msgstr ""
+
+#: experiment/models.py:744
+msgid "Digital game phase"
 msgstr ""
 
 #: experiment/templates/experiment/ad_converter_register.html:43
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:46
 #: experiment/templates/experiment/amplifier_register.html:43
 #: experiment/templates/experiment/coil_register.html:43
+#: experiment/templates/experiment/collaborator_register.html:41
 #: experiment/templates/experiment/component_list.html:41
 #: experiment/templates/experiment/component_template.html:46
+#: experiment/templates/experiment/context_tree_register.html:43
 #: experiment/templates/experiment/eeg_electrode_cap_coordinates_register.html:41
 #: experiment/templates/experiment/eeg_electrode_localization_system_register.html:43
 #: experiment/templates/experiment/eeg_electrode_position_register.html:43
@@ -468,21 +495,27 @@ msgstr ""
 #: experiment/templates/experiment/emg_setting_register.html:43
 #: experiment/templates/experiment/experiment_register.html:41
 #: experiment/templates/experiment/filtertype_register.html:43
-#: experiment/templates/experiment/group_register.html:43
+#: experiment/templates/experiment/group_register.html:60
 #: experiment/templates/experiment/manufacturer_register.html:43
 #: experiment/templates/experiment/material_register.html:43
 #: experiment/templates/experiment/muscle_register.html:43
 #: experiment/templates/experiment/muscle_side_register.html:43
 #: experiment/templates/experiment/muscle_subdivision_register.html:43
+#: experiment/templates/experiment/publication_register.html:49
 #: experiment/templates/experiment/questionnaire_view.html:48
 #: experiment/templates/experiment/research_project_register.html:43
 #: experiment/templates/experiment/software_register.html:43
 #: experiment/templates/experiment/software_version_register.html:43
 #: experiment/templates/experiment/standardization_system_register.html:43
 #: experiment/templates/experiment/subject_additional_data_form.html:158
+#: experiment/templates/experiment/subject_digital_game_phase_data_form.html:221
 #: experiment/templates/experiment/subject_eeg_data_form.html:221
 #: experiment/templates/experiment/subject_emg_data_form.html:185
 #: experiment/templates/experiment/subject_step_data_form.html:64
+#: experiment/templates/experiment/subject_tms_data_form.html:161
+#: experiment/templates/experiment/subject_tms_data_form_template.html:219
+#: experiment/templates/experiment/tms_localization_system_position.html:43
+#: experiment/templates/experiment/tms_localization_system_register.html:43
 #: experiment/templates/experiment/tms_setting_coil_model.html:45
 #: experiment/templates/experiment/tms_setting_register.html:43
 #: experiment/templates/experiment/tms_setting_tms_device.html:45
@@ -499,957 +532,1154 @@ msgstr ""
 "It was not possible to open the questionnaire. Please, enable pop-ups for "
 "this site."
 
-#: experiment/tests.py:1731 experiment/tests.py:2277 experiment/tests.py:2397
-#: experiment/tests.py:2465 experiment/tests.py:2542 experiment/tests.py:2619
-#: experiment/tests.py:2696 experiment/tests.py:2769 experiment/tests.py:2839
-#: experiment/tests.py:2909 experiment/tests.py:2982 experiment/tests.py:3054
-#: experiment/tests.py:3124 experiment/tests.py:3192 experiment/tests.py:3264
-#: experiment/tests.py:3392 experiment/tests.py:3465 experiment/tests.py:3537
-#: experiment/tests.py:3612 experiment/tests.py:3684 experiment/tests.py:3763
-#: experiment/views.py:136 experiment/views.py:1588 experiment/views.py:1763
-#: experiment/views.py:1867 experiment/views.py:1970 experiment/views.py:2077
-#: experiment/views.py:2154 experiment/views.py:2336 experiment/views.py:2438
-#: experiment/views.py:2540 experiment/views.py:2644 experiment/views.py:2742
-#: experiment/views.py:2850 experiment/views.py:2956 experiment/views.py:3051
-#: experiment/views.py:3145 experiment/views.py:3269 experiment/views.py:3501
-#: experiment/views.py:3601 experiment/views.py:7432 experiment/views.py:7655
+#: experiment/tests.py:1759 experiment/tests.py:2305 experiment/tests.py:2425
+#: experiment/tests.py:2493 experiment/tests.py:2570 experiment/tests.py:2647
+#: experiment/tests.py:2724 experiment/tests.py:2797 experiment/tests.py:2867
+#: experiment/tests.py:2937 experiment/tests.py:3010 experiment/tests.py:3082
+#: experiment/tests.py:3152 experiment/tests.py:3220 experiment/tests.py:3292
+#: experiment/tests.py:3420 experiment/tests.py:3493 experiment/tests.py:3565
+#: experiment/tests.py:3640 experiment/tests.py:3712 experiment/tests.py:3791
+#: experiment/tests.py:4109 experiment/tests.py:4225 experiment/views.py:166
+#: experiment/views.py:392 experiment/views.py:1766 experiment/views.py:1942
+#: experiment/views.py:2046 experiment/views.py:2149 experiment/views.py:2256
+#: experiment/views.py:2333 experiment/views.py:2515 experiment/views.py:2617
+#: experiment/views.py:2719 experiment/views.py:2823 experiment/views.py:2921
+#: experiment/views.py:3029 experiment/views.py:3135 experiment/views.py:3230
+#: experiment/views.py:3324 experiment/views.py:3448 experiment/views.py:3680
+#: experiment/views.py:3780 experiment/views.py:8818 experiment/views.py:9041
+#: experiment/views.py:10355 experiment/views.py:10461
+#: experiment/views.py:10567
 msgid "Action not available."
 msgstr ""
 
-#: experiment/tests.py:1742 experiment/tests.py:2269 experiment/tests.py:2389
-#: experiment/tests.py:2457 experiment/tests.py:2533 experiment/tests.py:2610
-#: experiment/tests.py:2687 experiment/tests.py:2761 experiment/tests.py:2831
-#: experiment/tests.py:2901 experiment/tests.py:2974 experiment/tests.py:3046
-#: experiment/tests.py:3116 experiment/tests.py:3184 experiment/tests.py:3256
-#: experiment/tests.py:3384 experiment/tests.py:3457 experiment/tests.py:3529
-#: experiment/tests.py:3604 experiment/tests.py:3676 experiment/tests.py:3754
-#: experiment/views.py:133 experiment/views.py:1585 experiment/views.py:1760
-#: experiment/views.py:1864 experiment/views.py:1967 experiment/views.py:2074
-#: experiment/views.py:2151 experiment/views.py:2333 experiment/views.py:2435
-#: experiment/views.py:2537 experiment/views.py:2641 experiment/views.py:2739
-#: experiment/views.py:2847 experiment/views.py:2953 experiment/views.py:3048
-#: experiment/views.py:3142 experiment/views.py:3266 experiment/views.py:3498
-#: experiment/views.py:3598 experiment/views.py:7430 experiment/views.py:7653
+#: experiment/tests.py:1770 experiment/tests.py:2297 experiment/tests.py:2417
+#: experiment/tests.py:2485 experiment/tests.py:2561 experiment/tests.py:2638
+#: experiment/tests.py:2715 experiment/tests.py:2789 experiment/tests.py:2859
+#: experiment/tests.py:2929 experiment/tests.py:3002 experiment/tests.py:3074
+#: experiment/tests.py:3144 experiment/tests.py:3212 experiment/tests.py:3284
+#: experiment/tests.py:3412 experiment/tests.py:3485 experiment/tests.py:3557
+#: experiment/tests.py:3632 experiment/tests.py:3704 experiment/tests.py:3782
+#: experiment/tests.py:4120 experiment/tests.py:4235 experiment/views.py:163
+#: experiment/views.py:389 experiment/views.py:1763 experiment/views.py:1939
+#: experiment/views.py:2043 experiment/views.py:2146 experiment/views.py:2253
+#: experiment/views.py:2330 experiment/views.py:2512 experiment/views.py:2614
+#: experiment/views.py:2716 experiment/views.py:2820 experiment/views.py:2918
+#: experiment/views.py:3026 experiment/views.py:3132 experiment/views.py:3227
+#: experiment/views.py:3321 experiment/views.py:3445 experiment/views.py:3677
+#: experiment/views.py:3777 experiment/views.py:8816 experiment/views.py:9039
+#: experiment/views.py:10353 experiment/views.py:10458
+#: experiment/views.py:10565
 msgid "Information not saved."
 msgstr ""
 
-#: experiment/views.py:128
+#: experiment/tests.py:4161 experiment/views.py:438
+msgid "Publication updated successfully."
+msgstr ""
+
+#: experiment/tests.py:4166 experiment/tests.py:4276 experiment/views.py:276
+#: experiment/views.py:440 experiment/views.py:586 experiment/views.py:794
+#: experiment/views.py:913 experiment/views.py:1789 experiment/views.py:1969
+#: experiment/views.py:2071 experiment/views.py:2178 experiment/views.py:2284
+#: experiment/views.py:2436 experiment/views.py:2543 experiment/views.py:2680
+#: experiment/views.py:2782 experiment/views.py:2882 experiment/views.py:2980
+#: experiment/views.py:3057 experiment/views.py:3188 experiment/views.py:3283
+#: experiment/views.py:3348 experiment/views.py:3549 experiment/views.py:3707
+#: experiment/views.py:3807 experiment/views.py:5203 experiment/views.py:5868
+#: experiment/views.py:6093 experiment/views.py:6172 experiment/views.py:6430
+#: experiment/views.py:6964 experiment/views.py:7059 experiment/views.py:8311
+#: experiment/views.py:8340 experiment/views.py:8350 experiment/views.py:8951
+#: experiment/views.py:9117 experiment/views.py:9250 experiment/views.py:9350
+#: experiment/views.py:9451 experiment/views.py:9823 experiment/views.py:9895
+#: experiment/views.py:9982 experiment/views.py:10055 experiment/views.py:10175
+#: experiment/views.py:10304 experiment/views.py:10421
+#: experiment/views.py:10491 experiment/views.py:10631
+msgid "There is no changes to save."
+msgstr ""
+
+#: experiment/tests.py:4271 experiment/views.py:10629
+msgid "Context tree updated successfully."
+msgstr ""
+
+#: experiment/views.py:158
 msgid "Study created successfully."
 msgstr ""
 
-#: experiment/views.py:180 experiment/views.py:7519
+#: experiment/views.py:207
+msgid "Is coordinator status successfully changed."
+msgstr ""
+
+#: experiment/views.py:209
+msgid "Error trying to change the status of the coordinator."
+msgstr ""
+
+#: experiment/views.py:217
+msgid "Collaborator removed successfully from the Research Project."
+msgstr ""
+
+#: experiment/views.py:219
+msgid "Error trying to delete a collaborator from the Research Project."
+msgstr ""
+
+#: experiment/views.py:232 experiment/views.py:8905 experiment/views.py:10383
 msgid "Study removed successfully."
 msgstr ""
 
-#: experiment/views.py:183
+#: experiment/views.py:235
 msgid "Error trying to delete research."
 msgstr ""
 
-#: experiment/views.py:189 experiment/views.py:387
+#: experiment/views.py:241 experiment/views.py:552
 msgid ""
 "Impossible to delete group because there is (are) questionnaire(s) answered."
 msgstr ""
 
-#: experiment/views.py:221
+#: experiment/views.py:274
 msgid "Research updated successfully."
 msgstr ""
 
-#: experiment/views.py:223 experiment/views.py:420 experiment/views.py:616
-#: experiment/views.py:735 experiment/views.py:1611 experiment/views.py:1790
-#: experiment/views.py:1892 experiment/views.py:1999 experiment/views.py:2105
-#: experiment/views.py:2257 experiment/views.py:2364 experiment/views.py:2501
-#: experiment/views.py:2603 experiment/views.py:2703 experiment/views.py:2801
-#: experiment/views.py:2878 experiment/views.py:3009 experiment/views.py:3104
-#: experiment/views.py:3169 experiment/views.py:3370 experiment/views.py:3528
-#: experiment/views.py:3628 experiment/views.py:4732 experiment/views.py:5395
-#: experiment/views.py:5595 experiment/views.py:5690 experiment/views.py:6932
-#: experiment/views.py:6961 experiment/views.py:6971 experiment/views.py:7565
-#: experiment/views.py:7731 experiment/views.py:7864 experiment/views.py:7964
-#: experiment/views.py:8065 experiment/views.py:8437 experiment/views.py:8508
-#: experiment/views.py:8595 experiment/views.py:8668 experiment/views.py:8788
-#: experiment/views.py:8914
-msgid "There is no changes to save."
+#: experiment/views.py:384
+msgid "Publication created successfully."
 msgstr ""
 
-#: experiment/views.py:331
+#: experiment/views.py:415
+msgid "Publication removed successfully."
+msgstr ""
+
+#: experiment/views.py:468
+msgid "Collaborator created successfully."
+msgstr ""
+
+#: experiment/views.py:495
 msgid "Experiment created successfully."
 msgstr ""
 
-#: experiment/views.py:371 experiment/views.py:6361
+#: experiment/views.py:536 experiment/views.py:7732
 msgid ""
 "It was not possible to exclude because there is data collection associated."
 msgstr ""
 
-#: experiment/views.py:377
+#: experiment/views.py:542
 msgid "Experiment removed successfully."
 msgstr ""
 
-#: experiment/views.py:381
+#: experiment/views.py:546
 msgid "It was not possible to delete experiment, "
 msgstr ""
 
-#: experiment/views.py:418
+#: experiment/views.py:584
 msgid "Experiment updated successfully."
 msgstr ""
 
-#: experiment/views.py:450
+#: experiment/views.py:616
 msgid "Group included successfully."
 msgstr ""
 
-#: experiment/views.py:554
+#: experiment/views.py:720
 msgid "Group removed successfully."
 msgstr ""
 
-#: experiment/views.py:558
+#: experiment/views.py:724
 msgid "Impossible to delete group, because there are dependencies."
 msgstr ""
 
-#: experiment/views.py:563
+#: experiment/views.py:729
 msgid ""
 "Impossible to delete group because there is (are) data collection associated."
 msgstr ""
 
-#: experiment/views.py:573 experiment/views.py:5846 experiment/views.py:6737
-#: experiment/views.py:6982
+#: experiment/views.py:739 experiment/views.py:7215 experiment/views.py:8112
+#: experiment/views.py:8361
 msgid "The experiment was copied."
 msgstr ""
 
-#: experiment/views.py:614
+#: experiment/views.py:792
 msgid "Group updated successfully."
 msgstr ""
 
-#: experiment/views.py:645
+#: experiment/views.py:823
 msgid "EEG setting included successfully."
 msgstr ""
 
-#: experiment/views.py:681
+#: experiment/views.py:859
 msgid "EEG setting was removed successfully."
 msgstr ""
 
-#: experiment/views.py:705 experiment/views.py:7821 experiment/views.py:8296
-#: experiment/views.py:8756
+#: experiment/views.py:883 experiment/views.py:9207 experiment/views.py:9682
+#: experiment/views.py:10143
 msgid "Setting was removed successfully."
 msgstr ""
 
-#: experiment/views.py:733
+#: experiment/views.py:911
 msgid "EEG setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:797
+#: experiment/views.py:975
 msgid "EEG amplifier setting created sucessfully."
 msgstr ""
 
-#: experiment/views.py:811
+#: experiment/views.py:989
 msgid "EEG solution setting created sucessfully."
 msgstr ""
 
-#: experiment/views.py:829
+#: experiment/views.py:1007
 msgid "EEG filter setting created sucessfully."
 msgstr ""
 
-#: experiment/views.py:863
+#: experiment/views.py:1041
 msgid "Now you can set each electrode position."
 msgstr ""
 
-#: experiment/views.py:865
+#: experiment/views.py:1043
 msgid "EEG electrode net system setting created sucessfully."
 msgstr ""
 
-#: experiment/views.py:1045
+#: experiment/views.py:1223
 msgid "EEG Amplifier setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:1063
+#: experiment/views.py:1241
 msgid "EEG amplifier setting updated sucessfully."
 msgstr ""
 
-#: experiment/views.py:1077
+#: experiment/views.py:1255
 msgid "EEG solution setting updated sucessfully."
 msgstr ""
 
-#: experiment/views.py:1102
+#: experiment/views.py:1280
 msgid "EEG filter setting updated sucessfully."
 msgstr ""
 
-#: experiment/views.py:1151
+#: experiment/views.py:1329
 msgid "EEG electrode net system setting updated sucessfully."
 msgstr ""
 
-#: experiment/views.py:1417 experiment/views.py:1470 experiment/views.py:4828
+#: experiment/views.py:1595 experiment/views.py:1648 experiment/views.py:5299
 msgid "Setting saved successfully."
 msgstr ""
 
-#: experiment/views.py:1580
+#: experiment/views.py:1758
 msgid "Manufacturer created successfully."
 msgstr ""
 
-#: experiment/views.py:1609
+#: experiment/views.py:1787
 msgid "Manufacturer updated successfully."
 msgstr ""
 
-#: experiment/views.py:1638
+#: experiment/views.py:1817
 msgid "Manufacturer removed successfully."
 msgstr ""
 
-#: experiment/views.py:1641
+#: experiment/views.py:1820
 msgid "Error trying to delete manufacturer."
 msgstr ""
 
-#: experiment/views.py:1755
+#: experiment/views.py:1934
 msgid "Amplifier created successfully."
 msgstr ""
 
-#: experiment/views.py:1788
+#: experiment/views.py:1967
 msgid "Amplifier updated successfully."
 msgstr ""
 
-#: experiment/views.py:1820
+#: experiment/views.py:1999
 msgid "Amplifier removed successfully."
 msgstr ""
 
-#: experiment/views.py:1823
+#: experiment/views.py:2002
 msgid "Error trying to delete amplifier."
 msgstr ""
 
-#: experiment/views.py:1859
+#: experiment/views.py:2038
 msgid "EEG solution created successfully."
 msgstr ""
 
-#: experiment/views.py:1890
+#: experiment/views.py:2069
 msgid "EEG solution updated successfully."
 msgstr ""
 
-#: experiment/views.py:1919
+#: experiment/views.py:2098
 msgid "EEG solution removed successfully."
 msgstr ""
 
-#: experiment/views.py:1922
+#: experiment/views.py:2101
 msgid "Error trying to delete eegsolution."
 msgstr ""
 
-#: experiment/views.py:1962
+#: experiment/views.py:2141
 msgid "Filter type created successfully."
 msgstr ""
 
-#: experiment/views.py:1997
+#: experiment/views.py:2176
 msgid "Filter type updated successfully."
 msgstr ""
 
-#: experiment/views.py:2030
+#: experiment/views.py:2209
 msgid "Filter type removed successfully."
 msgstr ""
 
-#: experiment/views.py:2033
+#: experiment/views.py:2212
 msgid "Error trying to delete filter type."
 msgstr ""
 
-#: experiment/views.py:2069
+#: experiment/views.py:2248
 msgid "Standardization system created successfully."
 msgstr ""
 
-#: experiment/views.py:2103
+#: experiment/views.py:2282
 msgid "Standardization system updated successfully."
 msgstr ""
 
-#: experiment/views.py:2146
+#: experiment/views.py:2325
 msgid "Electrode placement subdivision created successfully."
 msgstr ""
 
-#: experiment/views.py:2198
+#: experiment/views.py:2377
 msgid "EMG electrode placement removed successfully."
 msgstr ""
 
-#: experiment/views.py:2202
+#: experiment/views.py:2381
 msgid "Error trying to delete EMG electrode placement."
 msgstr ""
 
-#: experiment/views.py:2255
+#: experiment/views.py:2434
 msgid "EMG electrode placement was updated successfully."
 msgstr ""
 
-#: experiment/views.py:2287
+#: experiment/views.py:2466
 msgid "Standardization system removed successfully."
 msgstr ""
 
-#: experiment/views.py:2290
+#: experiment/views.py:2469
 msgid "Error trying to delete standardization system."
 msgstr ""
 
-#: experiment/views.py:2328
+#: experiment/views.py:2507
 msgid "Muscle created successfully."
 msgstr ""
 
-#: experiment/views.py:2362
+#: experiment/views.py:2541
 msgid "Muscle updated successfully."
 msgstr ""
 
-#: experiment/views.py:2395
+#: experiment/views.py:2574
 msgid "Muscle removed successfully."
 msgstr ""
 
-#: experiment/views.py:2398
+#: experiment/views.py:2577
 msgid "Error trying to delete muscle."
 msgstr ""
 
-#: experiment/views.py:2430
+#: experiment/views.py:2609
 msgid "Muscle subdivision created successfully."
 msgstr ""
 
-#: experiment/views.py:2466
+#: experiment/views.py:2645
 msgid "Muscle subdivision removed successfully."
 msgstr ""
 
-#: experiment/views.py:2470
+#: experiment/views.py:2649
 msgid "Error trying to delete muscle subdivision."
 msgstr ""
 
-#: experiment/views.py:2499
+#: experiment/views.py:2678
 msgid "Muscle subdivision updated successfully."
 msgstr ""
 
-#: experiment/views.py:2532
+#: experiment/views.py:2711
 msgid "Muscle side created successfully."
 msgstr ""
 
-#: experiment/views.py:2568
+#: experiment/views.py:2747
 msgid "Muscle side removed successfully."
 msgstr ""
 
-#: experiment/views.py:2572
+#: experiment/views.py:2751
 msgid "Error trying to delete muscle side."
 msgstr ""
 
-#: experiment/views.py:2601
+#: experiment/views.py:2780
 msgid "Muscle side updated successfully."
 msgstr ""
 
-#: experiment/views.py:2636
+#: experiment/views.py:2815
 msgid "Software created successfully."
 msgstr ""
 
-#: experiment/views.py:2671
+#: experiment/views.py:2850
 msgid "Software removed successfully."
 msgstr ""
 
-#: experiment/views.py:2674
+#: experiment/views.py:2853
 msgid "Error trying to delete software."
 msgstr ""
 
-#: experiment/views.py:2701
+#: experiment/views.py:2880
 msgid "Software updated successfully."
 msgstr ""
 
-#: experiment/views.py:2733
+#: experiment/views.py:2912
 msgid "Software version created successfully."
 msgstr ""
 
-#: experiment/views.py:2769
+#: experiment/views.py:2948
 msgid "Software version removed successfully."
 msgstr ""
 
-#: experiment/views.py:2773
+#: experiment/views.py:2952
 msgid "Error trying to delete software version."
 msgstr ""
 
-#: experiment/views.py:2799
+#: experiment/views.py:2978
 msgid "Software version updated successfully."
 msgstr ""
 
-#: experiment/views.py:2842
+#: experiment/views.py:3021
 msgid "Electrode model created successfully."
 msgstr ""
 
-#: experiment/views.py:2876
+#: experiment/views.py:3055
 msgid "Electrode model updated successfully."
 msgstr ""
 
-#: experiment/views.py:2909
+#: experiment/views.py:3088
 msgid "Electrode model removed successfully."
 msgstr ""
 
-#: experiment/views.py:2912
+#: experiment/views.py:3091
 msgid "Error trying to delete electrode model."
 msgstr ""
 
-#: experiment/views.py:2948
+#: experiment/views.py:3127
 msgid "Coil Model created successfully."
 msgstr ""
 
-#: experiment/views.py:2980
+#: experiment/views.py:3159
 msgid "Coil model removed successfully."
 msgstr ""
 
-#: experiment/views.py:2983
+#: experiment/views.py:3162
 msgid "Error trying to delete coil model."
 msgstr ""
 
-#: experiment/views.py:3007
+#: experiment/views.py:3186
 msgid "Coil Model updated successfully."
 msgstr ""
 
-#: experiment/views.py:3043
+#: experiment/views.py:3222
 msgid "TMS device created successfully."
 msgstr ""
 
-#: experiment/views.py:3075
+#: experiment/views.py:3254
 msgid "TMS device removed successfully."
 msgstr ""
 
-#: experiment/views.py:3078
+#: experiment/views.py:3257
 msgid "Error trying to delete TMS device."
 msgstr ""
 
-#: experiment/views.py:3102
+#: experiment/views.py:3281
 msgid "TMS device updated successfully."
 msgstr ""
 
-#: experiment/views.py:3137
+#: experiment/views.py:3316
 msgid "Material created successfully."
 msgstr ""
 
-#: experiment/views.py:3167
+#: experiment/views.py:3346
 msgid "Material updated successfully."
 msgstr ""
 
-#: experiment/views.py:3196
+#: experiment/views.py:3375
 msgid "Material removed successfully."
 msgstr ""
 
-#: experiment/views.py:3199
+#: experiment/views.py:3378
 msgid "Error trying to delete material."
 msgstr ""
 
-#: experiment/views.py:3261
+#: experiment/views.py:3440
 msgid "EEG electrode net created successfully."
 msgstr ""
 
-#: experiment/views.py:3368
+#: experiment/views.py:3547
 msgid "EEG electrode net updated successfully."
 msgstr ""
 
-#: experiment/views.py:3428
+#: experiment/views.py:3607
 msgid ""
 "EEG electrode net cannot be removed because it is used in EEG electrode "
 "system."
 msgstr ""
 
-#: experiment/views.py:3438
+#: experiment/views.py:3617
 msgid "EEG electrode net cannot be removed because "
 msgstr ""
 
-#: experiment/views.py:3446
+#: experiment/views.py:3625
 msgid "EEG electrode net removed successfully."
 msgstr ""
 
-#: experiment/views.py:3449
+#: experiment/views.py:3628
 msgid "Error trying to delete EEG Electrode Net."
 msgstr ""
 
-#: experiment/views.py:3493
+#: experiment/views.py:3672
 msgid "EEG cap size created successfully."
 msgstr ""
 
-#: experiment/views.py:3526
+#: experiment/views.py:3705
 msgid "Cap size updated successfully."
 msgstr ""
 
-#: experiment/views.py:3557
+#: experiment/views.py:3736
 msgid "Cap size removed successfully."
 msgstr ""
 
-#: experiment/views.py:3561
+#: experiment/views.py:3740
 msgid "Error trying to delete cap size."
 msgstr ""
 
-#: experiment/views.py:3593
+#: experiment/views.py:3772
 msgid "A/D converter created successfully."
 msgstr ""
 
-#: experiment/views.py:3626
+#: experiment/views.py:3805
 msgid "A/D converter updated successfully."
 msgstr ""
 
-#: experiment/views.py:3656
+#: experiment/views.py:3835
 msgid "A/D converter removed successfully."
 msgstr ""
 
-#: experiment/views.py:3659
+#: experiment/views.py:3838
 msgid "Error trying to delete A/D converter."
 msgstr ""
 
-#: experiment/views.py:3955
+#: experiment/views.py:4193
 msgid "Participant deleted from experiment."
 msgstr ""
 
-#: experiment/views.py:3957
+#: experiment/views.py:4195
 msgid "It was not possible to delete participant, "
 msgstr ""
 
-#: experiment/views.py:3989
+#: experiment/views.py:4318 experiment/views.py:7128
+msgid "Participant has already been inserted in this group."
+msgstr ""
+
+#: experiment/views.py:4366
 msgid "Fill not available - Table of tokens was not started."
 msgstr ""
 
-#: experiment/views.py:3993
+#: experiment/views.py:4370
 msgid "Fill not available - Questionnaire is not activated."
 msgstr ""
 
-#: experiment/views.py:3997
+#: experiment/views.py:4374
 msgid "Fill not available - Questionnaire does not contain standard fields."
 msgstr ""
 
-#: experiment/views.py:4006
+#: experiment/views.py:4383
 msgid "Fail trying to generate token to answer questionnaire. "
 msgstr ""
 
-#: experiment/views.py:4133
+#: experiment/views.py:4510
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr ""
 
-#: experiment/views.py:4155 experiment/views.py:4310
+#: experiment/views.py:4532 experiment/views.py:4686
 msgid "Fill deleted successfully."
 msgstr ""
 
-#: experiment/views.py:4157 experiment/views.py:4312
+#: experiment/views.py:4534 experiment/views.py:4688
 msgid "Error trying to delete fill"
 msgstr ""
 
-#: experiment/views.py:4560
+#: experiment/views.py:4950
 msgid "EEG data collection created successfully."
 msgstr ""
 
-#: experiment/views.py:4561
+#: experiment/views.py:4951
 msgid "Now you can configure each electrode position"
 msgstr ""
 
-#: experiment/views.py:4586
+#: experiment/views.py:4975
 msgid "EEG data file format validated."
 msgstr ""
 
-#: experiment/views.py:4588
+#: experiment/views.py:4977
 msgid "Not valid EEG file format."
 msgstr ""
 
-#: experiment/views.py:4656
+#: experiment/views.py:5126
 msgid "EEG data removed successfully."
 msgstr ""
 
-#: experiment/views.py:4730
+#: experiment/views.py:5201
 msgid "EEG data updated successfully."
 msgstr ""
 
-#: experiment/views.py:4739 experiment/views.py:4746
+#: experiment/views.py:5210 experiment/views.py:5217
 msgid "EEG position data updated successfully."
 msgstr ""
 
-#: experiment/views.py:4848
+#: experiment/views.py:5319
 msgid "Waiting for status"
 msgstr ""
 
-#: experiment/views.py:4873
+#: experiment/views.py:5344
 msgid "Reading source file"
 msgstr ""
 
-#: experiment/views.py:4891 experiment/views.py:5158
+#: experiment/views.py:5375 experiment/views.py:5628
 msgid "Finished"
 msgstr ""
 
-#: experiment/views.py:4895
+#: experiment/views.py:5379
 msgid ""
 "It was not possible to open the data file. Check if the number of channels "
 "configured is correct."
 msgstr ""
 
-#: experiment/views.py:4952
+#: experiment/views.py:5435
 msgid "Reading metadata"
 msgstr ""
 
-#: experiment/views.py:4984
+#: experiment/views.py:5469
 msgid "Reading device data"
 msgstr ""
 
-#: experiment/views.py:4989
+#: experiment/views.py:5474
 msgid "Device type: Amplifier; "
 msgstr ""
 
-#: experiment/views.py:4992 experiment/views.py:5021 experiment/views.py:5054
+#: experiment/views.py:5477 experiment/views.py:5505 experiment/views.py:5530
 msgid "Description: "
 msgstr ""
 
-#: experiment/views.py:4996 experiment/views.py:5025 experiment/views.py:5058
+#: experiment/views.py:5481 experiment/views.py:5508 experiment/views.py:5532
 msgid "Manufacturer: "
 msgstr ""
 
-#: experiment/views.py:4999
+#: experiment/views.py:5483
 msgid "Gain: "
 msgstr ""
 
-#: experiment/views.py:5003
+#: experiment/views.py:5487
 msgid "Impedance: "
 msgstr ""
 
-#: experiment/views.py:5008
+#: experiment/views.py:5492
 msgid "Common mode rejection ratio: "
 msgstr ""
 
-#: experiment/views.py:5017
+#: experiment/views.py:5501
 msgid "Device type: EEG Amplifier; "
 msgstr ""
 
-#: experiment/views.py:5029
+#: experiment/views.py:5511
 msgid "Number of used channels: "
 msgstr ""
 
-#: experiment/views.py:5034
-msgid "Software version: "
-msgstr ""
-
-#: experiment/views.py:5050
+#: experiment/views.py:5527
 msgid "Device type: EEG Electrode Net; "
 msgstr ""
 
-#: experiment/views.py:5072
+#: experiment/views.py:5545
 msgid "Position: "
 msgstr ""
 
-#: experiment/views.py:5073
+#: experiment/views.py:5546
 msgid "Coordinates: ("
 msgstr ""
 
-#: experiment/views.py:5076
+#: experiment/views.py:5549
 msgid "EEG electrode localization system: "
 msgstr ""
 
-#: experiment/views.py:5087
+#: experiment/views.py:5560
 msgid "Reading acquisition data"
 msgstr ""
 
-#: experiment/views.py:5164
+#: experiment/views.py:5634
 msgid "Filter type:"
 msgstr ""
 
-#: experiment/views.py:5169
+#: experiment/views.py:5639
 msgid "High pass: "
 msgstr ""
 
-#: experiment/views.py:5171
+#: experiment/views.py:5641
 msgid "Low pass: "
 msgstr ""
 
-#: experiment/views.py:5173
+#: experiment/views.py:5643
 msgid "Order: "
 msgstr ""
 
-#: experiment/views.py:5308
+#: experiment/views.py:5778
+msgid "TMS data collection created successfully."
+msgstr ""
+
+#: experiment/views.py:5822 experiment/views.py:6209
+msgid "TMS data removed successfully."
+msgstr ""
+
+#: experiment/views.py:5866
+msgid "TMS data updated successfully."
+msgstr ""
+
+#: experiment/views.py:5885
+msgid "TMS position updated sucessfully."
+msgstr ""
+
+#: experiment/views.py:5888
+msgid "There is no changes to save"
+msgstr ""
+
+#: experiment/views.py:6014
+msgid "Digital game phase data collection created successfully."
+msgstr ""
+
+#: experiment/views.py:6054
+msgid "Digital game phase data removed successfully."
+msgstr ""
+
+#: experiment/views.py:6091
+msgid "Digital game phase data updated successfully."
+msgstr ""
+
+#: experiment/views.py:6169 experiment/views.py:10489
+msgid "TMS position updated successfully."
+msgstr ""
+
+#: experiment/views.py:6343
 msgid "EMG data collection created successfully."
 msgstr ""
 
-#: experiment/views.py:5352
+#: experiment/views.py:6387
 msgid "EMG data removed successfully."
 msgstr ""
 
-#: experiment/views.py:5393
+#: experiment/views.py:6428
 msgid "EMG data updated successfully."
 msgstr ""
 
-#: experiment/views.py:5515
+#: experiment/views.py:6664
+msgid "Main step"
+msgstr ""
+
+#: experiment/views.py:6680
+msgid "Sub-steps: ("
+msgstr ""
+
+#: experiment/views.py:6690
+msgid "Step"
+msgstr ""
+
+#: experiment/views.py:6765
+msgid "Identification"
+msgstr ""
+
+#: experiment/views.py:6767
+msgid "Description"
+msgstr ""
+
+#: experiment/views.py:6769
+msgid "Duration value"
+msgstr ""
+
+#: experiment/views.py:6771
+msgid "Duration unit"
+msgstr ""
+
+#: experiment/views.py:6777
+msgid "Type"
+msgstr ""
+
+#: experiment/views.py:6779
+msgid "Number of mandatory components"
+msgstr ""
+
+#: experiment/views.py:6785
+msgid "Text"
+msgstr ""
+
+#: experiment/views.py:6791
+msgid "LimeSurvey ID"
+msgstr ""
+
+#: experiment/views.py:6799
+msgid "Questionnaire title"
+msgstr ""
+
+#: experiment/views.py:6806
+msgid "Stimulus type"
+msgstr ""
+
+#: experiment/views.py:6808
+msgid "Media file"
+msgstr ""
+
+#: experiment/views.py:6824
+msgid "Name of use"
+msgstr ""
+
+#: experiment/views.py:6826
+msgid "Number of repetitions"
+msgstr ""
+
+#: experiment/views.py:6828
+msgid "Interval between repetitions value"
+msgstr ""
+
+#: experiment/views.py:6830
+msgid "Interval between repetitions unit"
+msgstr ""
+
+#: experiment/views.py:6831
+msgid "Order"
+msgstr ""
+
+#: experiment/views.py:6833
+msgid "Position in the set of steps "
+msgstr ""
+
+#: experiment/views.py:6835
+msgid "Requires start and end datetime"
+msgstr ""
+
+#: experiment/views.py:6835
+msgid "Yes"
+msgstr ""
+
+#: experiment/views.py:6835
+msgid "No"
+msgstr ""
+
+#: experiment/views.py:6884
 msgid "Additional data collection created successfully."
 msgstr ""
 
-#: experiment/views.py:5552
+#: experiment/views.py:6921
 msgid "Additional data removed successfully."
 msgstr ""
 
-#: experiment/views.py:5593
+#: experiment/views.py:6962
 msgid "Additional data updated successfully."
 msgstr ""
 
-#: experiment/views.py:5654
+#: experiment/views.py:7023
 msgid "Subject step data was created successfully."
 msgstr ""
 
-#: experiment/views.py:5688
+#: experiment/views.py:7057
 msgid "Subject step data updated successfully."
 msgstr ""
 
-#: experiment/views.py:5759
-msgid "Participant has already been inserted in this group."
-msgstr ""
-
-#: experiment/views.py:5812
+#: experiment/views.py:7181
 msgid "Consent term saved successfully."
 msgstr ""
 
-#: experiment/views.py:5817
+#: experiment/views.py:7186
 msgid "There are not attachments to save"
 msgstr ""
 
-#: experiment/views.py:5821
+#: experiment/views.py:7190
 msgid "Attachment deleted successfully."
 msgstr ""
 
-#: experiment/views.py:6038 experiment/views.py:7232 experiment/views.py:7350
-#: experiment/views.py:7371
+#: experiment/views.py:7409 experiment/views.py:8613 experiment/views.py:8736
+#: experiment/views.py:8757
 msgid "Step included successfully."
 msgstr ""
 
-#: experiment/views.py:6084
+#: experiment/views.py:7455
 msgid "Use of step "
 msgstr ""
 
-#: experiment/views.py:6170
+#: experiment/views.py:7541
 msgid " years "
 msgstr ""
 
-#: experiment/views.py:6170
+#: experiment/views.py:7541
 msgid " year "
 msgstr ""
 
-#: experiment/views.py:6175
+#: experiment/views.py:7546
 msgid " months "
 msgstr ""
 
-#: experiment/views.py:6175
+#: experiment/views.py:7546
 msgid " month "
 msgstr ""
 
-#: experiment/views.py:6180
+#: experiment/views.py:7551
 msgid " weeks "
 msgstr ""
 
-#: experiment/views.py:6180
+#: experiment/views.py:7551
 msgid " week "
 msgstr ""
 
-#: experiment/views.py:6185
+#: experiment/views.py:7556
 msgid " days "
 msgstr ""
 
-#: experiment/views.py:6185
+#: experiment/views.py:7556
 msgid " day "
 msgstr ""
 
-#: experiment/views.py:6190
+#: experiment/views.py:7561
 msgid " hours "
 msgstr ""
 
-#: experiment/views.py:6190
+#: experiment/views.py:7561
 msgid " hour "
 msgstr ""
 
-#: experiment/views.py:6195
+#: experiment/views.py:7566
 msgid " minutes "
 msgstr ""
 
-#: experiment/views.py:6195
+#: experiment/views.py:7566
 msgid " minute "
 msgstr ""
 
-#: experiment/views.py:6200
+#: experiment/views.py:7571
 msgid " seconds "
 msgstr ""
 
-#: experiment/views.py:6200
+#: experiment/views.py:7571
 msgid " second "
 msgstr ""
 
-#: experiment/views.py:6205
+#: experiment/views.py:7576
 msgid " miliseconds "
 msgstr ""
 
-#: experiment/views.py:6205
+#: experiment/views.py:7576
 msgid " milisecond "
 msgstr ""
 
-#: experiment/views.py:6220
+#: experiment/views.py:7591
 msgid " and "
 msgstr ""
 
-#: experiment/views.py:6433 experiment/views.py:6447 experiment/views.py:6469
-#: experiment/views.py:6656
+#: experiment/views.py:7804 experiment/views.py:7818 experiment/views.py:7840
+#: experiment/views.py:8031
 msgid "Copy of"
 msgstr ""
 
-#: experiment/views.py:6703 experiment/views.py:6969
+#: experiment/views.py:8078 experiment/views.py:8348
 msgid "Step use updated successfully."
 msgstr ""
 
-#: experiment/views.py:6709 experiment/views.py:6978
+#: experiment/views.py:8084 experiment/views.py:8357
 msgid "Component deleted successfully."
 msgstr ""
 
-#: experiment/views.py:6930 experiment/views.py:6959
+#: experiment/views.py:8309 experiment/views.py:8338
 msgid "Step updated successfully."
 msgstr ""
 
-#: experiment/views.py:7205
+#: experiment/views.py:8586
 msgid "Experimental protocol included successfully."
 msgstr ""
 
-#: experiment/views.py:7230 experiment/views.py:7369
+#: experiment/views.py:8611 experiment/views.py:8755
 msgid "Steps included successfully."
 msgstr ""
 
-#: experiment/views.py:7424
+#: experiment/views.py:8810
 msgid "EEG electrode localization system created successfully."
 msgstr ""
 
-#: experiment/views.py:7522
+#: experiment/views.py:8908 experiment/views.py:10386
 msgid "Error trying to delete localization system."
 msgstr ""
 
-#: experiment/views.py:7530
+#: experiment/views.py:8916
 msgid ""
 "Impossible to delete localization system because there is (are) Electrode "
 "Net associated."
 msgstr ""
 
-#: experiment/views.py:7563
+#: experiment/views.py:8949 experiment/views.py:10419
 msgid "Localization system updated successfully."
 msgstr ""
 
-#: experiment/views.py:7612
+#: experiment/views.py:8998
 msgid "EEG electrode positions updated successfully."
 msgstr ""
 
-#: experiment/views.py:7646
+#: experiment/views.py:9032
 msgid "EEG electrode position created successfully."
 msgstr ""
 
-#: experiment/views.py:7687
+#: experiment/views.py:9073
 msgid "Position removed successfully."
 msgstr ""
 
-#: experiment/views.py:7693
+#: experiment/views.py:9079
 msgid "Error trying to delete position."
 msgstr ""
 
-#: experiment/views.py:7700
+#: experiment/views.py:9086
 msgid ""
 "Impossible to delete position because there is (are) Position Setting "
 "associated."
 msgstr ""
 
-#: experiment/views.py:7729
+#: experiment/views.py:9115
 msgid "Position updated successfully."
 msgstr ""
 
-#: experiment/views.py:7761
+#: experiment/views.py:9147
 msgid "EMG setting included successfully."
 msgstr ""
 
-#: experiment/views.py:7799
+#: experiment/views.py:9185
 msgid "EMG setting was removed successfully."
 msgstr ""
 
-#: experiment/views.py:7862
+#: experiment/views.py:9248
 msgid "EMG setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:7920
+#: experiment/views.py:9306
 msgid "EMG digital filter setting created successfully."
 msgstr ""
 
-#: experiment/views.py:7962
+#: experiment/views.py:9348
 msgid "EMG digital filter setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:8021
+#: experiment/views.py:9407
 msgid "EMG A/D converter setting created successfully."
 msgstr ""
 
-#: experiment/views.py:8063
+#: experiment/views.py:9449
 msgid "EMG A/D converter setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:8229
+#: experiment/views.py:9615
 msgid "EMG electrode setting created successfully."
 msgstr ""
 
-#: experiment/views.py:8349
+#: experiment/views.py:9735
 msgid "EMG electrode setting was updated successfully."
 msgstr ""
 
-#: experiment/views.py:8435
+#: experiment/views.py:9821
 msgid "EMG preamplifier setting created successfully."
 msgstr ""
 
-#: experiment/views.py:8506
+#: experiment/views.py:9893
 msgid "EMG Preamplifier setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:8593
+#: experiment/views.py:9980
 msgid "EMG amplifier setting created successfully."
 msgstr ""
 
-#: experiment/views.py:8666
+#: experiment/views.py:10053
 msgid "EMG Amplifier setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:8702
+#: experiment/views.py:10089
 msgid "TMS setting included successfully."
 msgstr ""
 
-#: experiment/views.py:8736
+#: experiment/views.py:10123
 msgid "TMS setting was removed successfully."
 msgstr ""
 
-#: experiment/views.py:8786
+#: experiment/views.py:10173
 msgid "TMS setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:8867
+#: experiment/views.py:10256
 msgid "TMS device setting created successfully."
 msgstr ""
 
-#: experiment/views.py:8912
+#: experiment/views.py:10302
 msgid "TMS device setting updated successfully."
 msgstr ""
 
-#: experiment/views.py:8936
+#: experiment/views.py:10347
+msgid "TMS localization system created successfully."
+msgstr ""
+
+#: experiment/views.py:10453
+msgid "TMS position created successfully."
+msgstr ""
+
+#: experiment/views.py:10524
+msgid "TMS Position removed successfully."
+msgstr ""
+
+#: experiment/views.py:10528
+msgid "Error trying to delete TMS Position."
+msgstr ""
+
+#: experiment/views.py:10559
+msgid "Context tree included successfully."
+msgstr ""
+
+#: experiment/views.py:10598
+msgid "Context tree was removed successfully."
+msgstr ""
+
+#: experiment/views.py:10652
 msgid "Material"
 msgstr ""
 
-#: experiment/views.py:8941 experiment/views.py:8954
+#: experiment/views.py:10657 experiment/views.py:10670
 msgid "Muscle"
 msgstr ""
 
-#: experiment/views.py:8946
+#: experiment/views.py:10662
 msgid "EEG electrode localization system"
 msgstr ""
 
-#: experiment/views.py:8951
+#: experiment/views.py:10667
 msgid "EMG placement system"
 msgstr ""
 
-#: experiment/views.py:8957
+#: experiment/views.py:10673
+msgid "TMS localization system"
+msgstr ""
+
+#: experiment/views.py:10678
 msgid "Manufacturer"
 msgstr ""
 
-#: experiment/views.py:8966
+#: experiment/views.py:10687
 msgid "Electrode model"
 msgstr ""
 
-#: experiment/views.py:8971
+#: experiment/views.py:10692
 msgid "EEG electrode net / Cap"
 msgstr ""
 
-#: experiment/views.py:8976
+#: experiment/views.py:10697
 msgid "Solution"
 msgstr ""
 
-#: experiment/views.py:8986
+#: experiment/views.py:10707
 msgid "Filter type"
 msgstr ""
 
-#: experiment/views.py:8991
+#: experiment/views.py:10712
 msgid "Software"
 msgstr ""
 
-#: experiment/views.py:8996
+#: experiment/views.py:10717
 msgid "A/D converter"
 msgstr ""
 
-#: experiment/views.py:9001
+#: experiment/views.py:10722
 msgid "Coil model"
 msgstr ""
 
