@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-06 11:11-0300\n"
+"POT-Creation-Date: 2017-03-10 10:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,22 +42,21 @@ msgstr ""
 msgid "E-mail is not registered"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:35
+#: custom_user/templates/custom_user/register_users.html:34
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:43
+#: custom_user/templates/custom_user/register_users.html:42
 msgid "You have to choose at least one user profile!"
 msgstr "É necessário escolher pelo menos um perfil de usuário!"
 
-#: custom_user/templates/custom_user/register_users.html:68
-#: custom_user/templates/custom_user/register_users.html:82
+#: custom_user/templates/custom_user/register_users.html:67
 msgid "E-mail have to be filled!"
 msgstr "E-mail deve ser preenchido!"
 
-#: custom_user/templates/custom_user/register_users.html:125
+#: custom_user/templates/custom_user/register_users.html:109
 msgid "Please, correct the fields highlighted."
 msgstr "Por favor, corrija os campos em destaque."
 

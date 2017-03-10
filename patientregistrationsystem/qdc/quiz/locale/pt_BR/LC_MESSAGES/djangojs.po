@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-06 11:11-0300\n"
+"POT-Creation-Date: 2017-03-10 10:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,6 +69,7 @@ msgstr "Atualizando ponto "
 #: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:292
 #: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:334
 #: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:355
+#: quiz/static/quiz/js/tms_position_setting.js:145
 msgid "Confirms the coordinates? x - y: "
 msgstr "Confirma as coordenadas? x - y: "
 
@@ -125,6 +126,18 @@ msgstr "Opção Por participante e/ou Por questionário deve ser preenchida."
 #: quiz/static/quiz/js/questionnaire_export.js:85
 msgid "At least one questionnaire field have to be set."
 msgstr "Pelo menos um campo de questionário deve ser preenchido."
+
+#: quiz/static/quiz/js/questionnaire_export.js:121
+msgid "At least one field from participant/questionnaire have to be set."
+msgstr "Pelo menos um campo de participante/questionário deve ser preenchido."
+
+#: quiz/static/quiz/js/questionnaire_export.js:126
+msgid "At least one field from participant have to be set."
+msgstr "Pelo menos um campo de participante deve ser preenchido."
+
+#: quiz/static/quiz/js/tms_position_setting.js:146
+msgid "Please enter the name of the position"
+msgstr "Por favor insira o nome da posição"
 
 #: quiz/templates/quiz/template.html:27
 msgid "mm/dd/yy"
