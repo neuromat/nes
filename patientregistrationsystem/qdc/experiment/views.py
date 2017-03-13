@@ -71,7 +71,7 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm
 
-from export.export import create_directory
+from export.directory_utils import create_directory
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData, \
     Diagnosis
