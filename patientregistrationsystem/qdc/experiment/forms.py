@@ -17,7 +17,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
     ResearchProjectCollaboration, TMSLocalizationSystem, DigitalGamePhase, ContextTree, DigitalGamePhaseData, \
-    Publication
+    Publication, GenericDataCollection, GenericDataCollectionData
 
 
 class ExperimentForm(ModelForm):
@@ -258,6 +258,17 @@ class DigitalGamePhaseForm(ModelForm):
         if initial:
             self.fields['context_tree'].queryset = \
                 ContextTree.objects.filter(experiment=initial['experiment'])
+
+
+class GenericDataCollectionForm(ModelForm):
+    class Meta:
+        model = GenericDataCollection
+        fields = ['information_type']
+
+        widgets = {
+            'information_type': Select(attrs={'class': 'form-control', 'required': "",
+                                              'data-error': _('Information type must be filled.')}),
+        }
 
 
 class BlockForm(ModelForm):
@@ -1326,3 +1337,31 @@ class DigitalGamePhaseDataForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(DigitalGamePhaseDataForm, self).__init__(*args, **kwargs)
+
+
+class GenericDataCollectionDataForm(ModelForm):
+    class Meta:
+        model = GenericDataCollectionData
+
+        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description']
+
+        widgets = {
+            'date': DateInput(format=_("%m/%d/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                                     'required': "",
+                                     'data-error': _("Fill date must be filled.")}, ),
+            'time': TimeInput(attrs={'class': 'form-control', 'placeholder': 'HH:mm:ss'}),
+            'file_format': Select(attrs={'class': 'form-control', 'required': "",
+                                         'data-error': _('File format must be chosen.')}),
+            'description': Textarea(attrs={'class': 'form-control',
+                                           'rows': '4', 'required': "",
+                                           'data-error': _('Description must be filled.')}),
+            'file_format_description': Textarea(attrs={'class': 'form-control',
+                                                       'rows': '4', 'required': "",
+                                                       'data-error': _('File format description must be filled.')}),
+            # It is not possible to set the 'required' attribute because it affects the edit screen
+            # 'file': FileInput(attrs={'required': ""})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(GenericDataCollectionDataForm, self).__init__(*args, **kwargs)

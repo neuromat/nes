@@ -742,6 +742,7 @@ class Component(models.Model):
         ("emg", _("EMG")),
         ("tms", _("TMS")),
         ("digital_game_phase", _("Digital game phase")),
+        ("generic_data_collection", _("Generic data collection")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -822,6 +823,21 @@ class EMG(Component):
 
 class TMS(Component):
     tms_setting = models.ForeignKey(TMSSetting)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
+
+class InformationType(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
+class GenericDataCollection(Component):
+    information_type = models.ForeignKey(InformationType, null=False, blank=False)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -1117,6 +1133,24 @@ class EMGData(DataFile, DataCollection):
 
 class DigitalGamePhaseData(DataFile, DataCollection):
     sequence_used_in_context_tree = models.TextField(null=True, blank=True)
+
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+
+class GenericDataCollectionData(DataFile, DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
