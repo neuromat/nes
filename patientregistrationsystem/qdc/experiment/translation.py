@@ -1,6 +1,7 @@
 from modeltranslation.translator import translator, TranslationOptions
 from experiment.models import StimulusType, FileFormat, \
-    ElectrodeShape, MeasureSystem, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, CoilShape
+    ElectrodeShape, MeasureSystem, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, CoilShape, \
+    InformationType
 
 
 class StimulusTypeTranslationOptions(TranslationOptions):
@@ -49,3 +50,9 @@ class CoilShapeTranslationOptions(TranslationOptions):
     fields = ('name', )
 
 translator.register(CoilShape, CoilShapeTranslationOptions)
+
+
+class InformationTypeTranslationOptions(TranslationOptions):
+    fields = ('name', 'description')
+
+translator.register(InformationType, InformationTypeTranslationOptions)

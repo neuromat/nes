@@ -50,7 +50,8 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
     EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
-    DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication
+    DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
+    GenericDataCollection, GenericDataCollectionData
 
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -69,7 +70,8 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm
+    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
+    GenericDataCollectionForm, GenericDataCollectionDataForm
 
 from export.export import create_directory
 
@@ -96,7 +98,8 @@ icon_class = {
     'emg': 'glyphicon glyphicon-stats',
     'tms': 'glyphicon glyphicon-magnet',
     'experimental_protocol': 'glyphicon glyphicon-tasks',
-    'digital_game_phase': 'glyphicon glyphicon-play-circle'
+    'digital_game_phase': 'glyphicon glyphicon-play-circle',
+    'generic_data_collection': 'glyphicon glyphicon-file',
 }
 
 delimiter = "-"
@@ -3976,7 +3979,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                                   'number_of_eeg_data': 0,
                                   'number_of_emg_data': 0,
                                   'number_of_tms_data': 0,
-                                  'number_of_digital_game_phase_data': 0}
+                                  'number_of_digital_game_phase_data': 0,
+                                  'number_of_generic_data_collection_data': 0}
 
     group = get_object_or_404(Group, id=group_id)
 
@@ -4005,13 +4009,18 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
         list_of_digital_game_phase_configuration = create_list_of_trees(group.experimental_protocol,
                                                                         "digital_game_phase")
+        list_of_generic_data_collection_configuration = \
+            create_list_of_trees(group.experimental_protocol, "generic_data_collection")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
                                       'number_of_eeg_data': len(list_of_eeg_configuration),
                                       'number_of_emg_data': len(list_of_emg_configuration),
                                       'number_of_tms_data': len(list_of_tms_configuration),
                                       'number_of_digital_game_phase_data':
-                                          len(list_of_digital_game_phase_configuration)}
+                                          len(list_of_digital_game_phase_configuration),
+                                      'number_of_generic_data_collection_data':
+                                          len(list_of_generic_data_collection_configuration),
+                                      }
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -4135,12 +4144,31 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     100 * number_of_digital_game_phase_data_files_uploaded / \
                     len(list_of_digital_game_phase_configuration)
 
-            # If any questionnaire has responses or any eeg/emg/tms/digital_game_phase data file was uploaded,
-            # the subject can't be removed from the group.
+            # Generic data collection data files
+            number_of_generic_data_collection_data_files_uploaded = 0
+            # for each component_configuration of tms...
+            for generic_data_collection_configuration in list_of_generic_data_collection_configuration:
+                path = [item[0] for item in generic_data_collection_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
+                generic_data_collection_data_files = \
+                    GenericDataCollectionData.objects.filter(
+                        subject_of_group=subject_of_group, data_configuration_tree_id=data_configuration_tree_id)
+                if len(generic_data_collection_data_files):
+                    number_of_generic_data_collection_data_files_uploaded += 1
+
+            percentage_of_generic_data_collection_data_files_uploaded = 0
+            if len(list_of_generic_data_collection_configuration) > 0:
+                percentage_of_generic_data_collection_data_files_uploaded = \
+                    100 * number_of_generic_data_collection_data_files_uploaded / \
+                    len(list_of_generic_data_collection_configuration)
+
+            # If any questionnaire has responses or any eeg/emg/tms/digital_game_phase/generic_data_collection
+            # data file was uploaded, the subject can't be removed from the group.
             if number_of_eeg_data_files_uploaded or \
                     number_of_emg_data_files_uploaded or \
                     number_of_tms_data_files_uploaded or \
                     number_of_digital_game_phase_data_files_uploaded or \
+                    number_of_generic_data_collection_data_files_uploaded or \
                     number_of_questionnaires_filled:
                 can_remove = False
 
@@ -4166,6 +4194,12 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'total_of_digital_game_phase_data_files': len(list_of_digital_game_phase_configuration),
                  'percentage_of_digital_game_phase_data_files_uploaded':
                      int(percentage_of_digital_game_phase_data_files_uploaded),
+
+                 'number_of_generic_data_collection_data_files_uploaded':
+                     number_of_generic_data_collection_data_files_uploaded,
+                 'total_of_generic_data_collection_data_files': len(list_of_generic_data_collection_configuration),
+                 'percentage_of_generic_data_collection_data_files_uploaded':
+                     int(percentage_of_generic_data_collection_data_files_uploaded),
 
                  'number_of_additional_data_uploaded':
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
@@ -5966,7 +6000,7 @@ def subject_digital_game_phase_view(request, group_id, subject_id,
 
 
 @login_required
-@permission_required('experiment.add_questionnaireresponse')
+@permission_required('experiment.change_experiment')
 def subject_digital_game_phase_data_create(request, group_id, subject_id, digital_game_phase_configuration_id,
                                            template_name="experiment/subject_digital_game_phase_data_form.html"):
 
@@ -6111,6 +6145,193 @@ def digital_game_phase_data_edit(request, digital_game_phase_data_id):
                }
 
     return render(request, "experiment/subject_digital_game_phase_data_form.html", context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_generic_data_collection_view(request, group_id, subject_id,
+                                         template_name="experiment/subject_generic_data_collection_collection_list.html"):
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    generic_data_collection_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "generic_data_collection")
+
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for path in list_of_paths:
+        generic_data_collection_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = \
+            list_data_configuration_tree(generic_data_collection_configuration.id, [item[0] for item in path])
+
+        generic_data_collection_data_files = GenericDataCollectionData.objects.filter(
+            subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
+
+        generic_data_collection_collections.append(
+            {'generic_data_collection_configuration': generic_data_collection_configuration,
+             'path': path,
+             'generic_data_collection_data_files': generic_data_collection_data_files}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'generic_data_collection_collections': generic_data_collection_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def subject_generic_data_collection_data_create(
+        request, group_id, subject_id, generic_data_collection_configuration_id,
+        template_name="experiment/subject_generic_data_collection_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in generic_data_collection_configuration_id.split('-')]
+    generic_data_collection_configuration_id = list_of_path[-1]
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    generic_data_collection_configuration = get_object_or_404(ComponentConfiguration,
+                                                              id=generic_data_collection_configuration_id)
+
+    redirect_url = None
+    generic_data_collection_data_id = None
+
+    generic_data_collection_data_form = GenericDataCollectionDataForm(None, initial={'experiment': group.experiment})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            generic_data_collection_data_form = GenericDataCollectionDataForm(request.POST, request.FILES)
+
+            if generic_data_collection_data_form.is_valid():
+
+                data_configuration_tree_id = list_data_configuration_tree(generic_data_collection_configuration_id,
+                                                                          list_of_path)
+                if not data_configuration_tree_id:
+                    data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                subject = get_object_or_404(Subject, pk=subject_id)
+                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                generic_data_collection_data_added = generic_data_collection_data_form.save(commit=False)
+                generic_data_collection_data_added.subject_of_group = subject_of_group
+                generic_data_collection_data_added.component_configuration = generic_data_collection_configuration
+                generic_data_collection_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                # the following error 'GenericDataCollectionData' object has no attribute 'group'
+                generic_data_collection_data_added.group = group
+                generic_data_collection_data_added.subject = subject
+
+                generic_data_collection_data_added.save()
+
+                messages.success(request, _('Generic data collection created successfully.'))
+
+                redirect_url = reverse("generic_data_collection_data_view",
+                                       args=(generic_data_collection_data_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "creating": True,
+               "editing": True,
+               "group": group,
+               "generic_data_collection_configuration": generic_data_collection_configuration,
+               "generic_data_collection_data_form": generic_data_collection_data_form,
+               "generic_data_collection_data_id": generic_data_collection_data_id,
+               "subject": get_object_or_404(Subject, pk=subject_id),
+               "URL": redirect_url
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def generic_data_collection_data_view(request, generic_data_collection_data_id,
+                                      template_name="experiment/subject_generic_data_collection_data_form.html"):
+    generic_data_collection_data = get_object_or_404(
+        GenericDataCollectionData, pk=generic_data_collection_data_id)
+
+    generic_data_collection_data_form = GenericDataCollectionDataForm(request.POST or None,
+                                                                      instance=generic_data_collection_data)
+
+    for field in generic_data_collection_data_form.fields:
+        generic_data_collection_data_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            check_can_change(request.user,
+                             generic_data_collection_data.subject_of_group.group.experiment.research_project)
+
+            subject_of_group = generic_data_collection_data.subject_of_group
+            generic_data_collection_data.delete()
+            messages.success(request, _('Generic data collection removed successfully.'))
+            return redirect('subject_generic_data_collection_view',
+                            group_id=subject_of_group.group_id,
+                            subject_id=subject_of_group.subject_id)
+
+    context = {"can_change":
+        get_can_change(request.user, generic_data_collection_data.subject_of_group.group.experiment.research_project),
+               "editing": False,
+               "group": generic_data_collection_data.subject_of_group.group,
+               "subject": generic_data_collection_data.subject_of_group.subject,
+               "generic_data_collection_data_form": generic_data_collection_data_form,
+               "generic_data_collection_data": generic_data_collection_data
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def generic_data_collection_data_edit(request, generic_data_collection_data_id):
+    generic_data_collection_data = get_object_or_404(
+        GenericDataCollectionData, pk=generic_data_collection_data_id)
+
+    check_can_change(request.user, generic_data_collection_data.subject_of_group.group.experiment.research_project)
+
+    if request.method == "POST" and request.POST['action'] == "save":
+
+        generic_data_collection_data_form = GenericDataCollectionDataForm(
+            request.POST, request.FILES, instance=generic_data_collection_data)
+        if generic_data_collection_data_form.is_valid() and generic_data_collection_data_form.has_changed():
+
+            generic_data_collection_data_to_update = generic_data_collection_data_form.save(commit=False)
+            generic_data_collection_data_to_update.group = generic_data_collection_data.subject_of_group.group
+            generic_data_collection_data_to_update.subject = generic_data_collection_data.subject_of_group.subject
+            generic_data_collection_data_to_update.save()
+
+            messages.success(request, _('Generic data collection updated successfully.'))
+        else:
+            messages.success(request, _('There is no changes to save.'))
+
+        redirect_url = reverse("generic_data_collection_data_view", args=(generic_data_collection_data_id,))
+
+        return HttpResponseRedirect(redirect_url)
+
+    else:
+
+        generic_data_collection_data_form = GenericDataCollectionDataForm(
+            request.POST or None,
+            instance=generic_data_collection_data,
+            initial={'experiment': generic_data_collection_data.subject_of_group.group.experiment})
+
+    context = {"group": generic_data_collection_data.subject_of_group.group,
+               "subject": generic_data_collection_data.subject_of_group.subject,
+               "generic_data_collection_data_form": generic_data_collection_data_form,
+               "generic_data_collection_data": generic_data_collection_data,
+               "editing": True
+               }
+
+    return render(request, "experiment/subject_generic_data_collection_data_form.html", context)
 
 
 def get_pulse_stimulus_name(pulse_stimulus_type):
@@ -6581,6 +6802,8 @@ def get_subgraph(block: Block, node_identifier=""):
                 color_node = "#fe8181"
             elif component.component_type == "digital_game_phase":
                 color_node = "#80ced6"
+            elif component.component_type == "generic_data_collection":
+                color_node = "LightPink"
 
             new_node = pydot.Node(
                 'node_' + node_identifier + '_' + str(component_configuration.id),
@@ -6753,6 +6976,8 @@ def get_component_attributes(component, language_code):
     elif component.component_type == 'tms':
         specific_attributes = []
     elif component.component_type == 'digital_game_phase':
+        specific_attributes = []
+    elif component.component_type == 'generic_data_collection':
         specific_attributes = []
 
     for attribute in specific_attributes:
@@ -7376,6 +7601,8 @@ def component_create(request, experiment_id, component_type):
         # component_form.fields['duration_unit'].widget.attrs['disabled'] = True
     elif component_type == 'digital_game_phase':
         specific_form = DigitalGamePhaseForm(request.POST or None, initial={'experiment': experiment})
+    elif component_type == 'generic_data_collection':
+        specific_form = GenericDataCollectionForm(request.POST or None)
 
     if request.method == "POST":
         new_specific_component = None
@@ -8025,6 +8252,10 @@ def create_component(component, new_experiment):
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
         clone = DigitalGamePhase(context_tree_id=digital_game_phase.context_tree_id)
 
+    elif component_type == 'generic_data_collection':
+        generic_data_collection = get_object_or_404(GenericDataCollection, pk=component.id)
+        clone = GenericDataCollection(information_type_id=generic_data_collection.information_type_id)
+
     else:
         clone = Component()
 
@@ -8293,6 +8524,9 @@ def component_update(request, path_of_the_components):
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
         specific_form = DigitalGamePhaseForm(request.POST or None, instance=digital_game_phase,
                                              initial={'experiment': experiment})
+    elif component_type == 'generic_data_collection':
+        generic_data_collection = get_object_or_404(GenericDataCollection, pk=component.id)
+        specific_form = GenericDataCollectionForm(request.POST or None, instance=generic_data_collection)
 
     can_change = get_can_change(request.user, experiment.research_project)
 
@@ -8543,6 +8777,8 @@ def component_add_new(request, path_of_the_components, component_type):
         duration_string = "0"
     elif component_type == 'digital_game_phase':
         specific_form = DigitalGamePhaseForm(request.POST or None)
+    elif component_type == 'generic_data_collection':
+        specific_form = GenericDataCollectionForm(request.POST or None)
 
     if request.method == "POST":
         new_specific_component = None
@@ -8710,6 +8946,10 @@ def component_reuse(request, path_of_the_components, component_id):
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component_to_add.id)
         specific_form = DigitalGamePhaseForm(request.POST or None, instance=digital_game_phase,
                                              initial={'experiment': experiment})
+
+    elif component_type == 'generic_data_collection':
+        generic_data_collection = get_object_or_404(GenericDataCollection, pk=component_to_add.id)
+        specific_form = GenericDataCollectionForm(request.POST or None, instance=generic_data_collection)
 
     if component_type == 'questionnaire':
         for field in component_form.fields:
