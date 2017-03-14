@@ -5,6 +5,54 @@
 $(document).ready(function () {
     var original_name = $('#id_name').val();
     var original_cpf = $('#id_cpf').val();
+    var anonymous = $('#id_anonymous');
+
+    // Disable fields that identify a person when inserting an anonymous user
+    anonymous.change(function() {
+        if($(this).is(":checked")) {
+            $("#id_name").prop('disabled', true);
+            $("#id_cpf").prop('disabled', true);
+            $("#id_origin").prop('disabled', true);
+            $("#id_medical_record").prop('disabled', true);
+            $("#id_rg").prop('disabled', true);
+            $("#id_zipcode").prop('disabled', true);
+            $("#id_street").prop('disabled', true);
+            $("#id_address_number").prop('disabled', true);
+            $("#id_address_complement").prop('disabled', true);
+            $("#id_email").prop('disabled', true);
+            $("#id_telephone_set-0-number").parents('.telephones').hide();
+        }
+        else
+        {
+            $("#id_name").prop('disabled', false);
+            $("#id_cpf").prop('disabled', false);
+            $("#id_origin").prop('disabled', false);
+            $("#id_medical_record").prop('disabled', false);
+            $("#id_rg").prop('disabled', false);
+            $("#id_zipcode").prop('disabled', false);
+            $("#id_street").prop('disabled', false);
+            $("#id_address_number").prop('disabled', false);
+            $("#id_address_complement").prop('disabled', false);
+            $("#id_email").prop('disabled', false);
+            $("#id_telephone_set-0-number").parents('.telephones').show();
+        }
+    });
+
+    anonymous.each(function() {
+        if($(this).is(":checked")) {
+            $("#id_name").prop('disabled', true);
+            $("#id_cpf").prop('disabled', true);
+            $("#id_origin").prop('disabled', true);
+            $("#id_medical_record").prop('disabled', true);
+            $("#id_rg").prop('disabled', true);
+            $("#id_zipcode").prop('disabled', true);
+            $("#id_street").prop('disabled', true);
+            $("#id_address_number").prop('disabled', true);
+            $("#id_address_complement").prop('disabled', true);
+            $("#id_email").prop('disabled', true);
+            $("#id_telephone_set-0-number").parents('.telephones').hide();
+        }
+    });
 
     // Ajax to search for homonym patient by name
     $('#id_name').blur(function() {
@@ -104,17 +152,15 @@ $(document).ready(function () {
     $('#id_zipcode').mask('99999-999');
 
     $("#savetab").click(function () {
-        var name_value = $.trim($("#id_name").val());
         var date_birth_value = $.trim($("#id_date_birth").val());
         var gender_value = $.trim($("#id_gender").val());
         var cpf_value = $.trim($("#id_cpf").val());
 
-        if (name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
+        if (date_birth_value.length == 0 || gender_value.length == 0) {
             showErrorMessageTemporary(gettext("Obligatory fields must be filled."));
-            jumpToElement('id_name');
+            jumpToElement('id_date_birth');
             document.getElementById('id_date_birth').focus();
             document.getElementById('id_gender').focus();
-            document.getElementById('id_name').focus();
         } else {
             var email_value = $.trim($('#id_email').val());
 

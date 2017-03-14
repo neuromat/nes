@@ -42,17 +42,22 @@
                         </script>
                     {% endif %}
 
-
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                {{ patient_form.anonymous }}
+                                <label>{% trans "Anonymous user?" %}</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
                             <div class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
-                                <label for="name" class="control-label">{% trans "Full name" %}<b style="color: red;">*</b></label>
-
+                                <label for="name" class="control-label">{% trans "Full name" %}</label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                     {{ patient_form.name }}
                                 </div>
-                                <div class="help-block with-errors"></div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-6">
@@ -253,7 +258,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="container span6 offset3 well ">
+
+                <div class="container span6 offset3 well telephones">
                     <div class="row">
                         <div class="col-xs-6 col-sm-6">
                             <label>
