@@ -7,7 +7,7 @@ from survey.views import get_questionnaire_language
 BASE_DIRECTORY = "NES_EXPORT"
 PER_PARTICIPANT_DIRECTORY = "Per_participant"
 PER_QUESTIONNAIRE_DIRECTORY = "Per_questionnaire"
-PER_EXPERIMENT_QUESTIONNAIRE_DIRECTORY = "Per_experiment"
+PER_EXPERIMENT_DIRECTORY = "Per_experiment"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 
@@ -49,7 +49,7 @@ class InputExport:
         self.data["per_questionnaire_directory"] = PER_QUESTIONNAIRE_DIRECTORY
         self.data["export_filename"] = EXPORT_FILENAME
         if export_per_experiment:
-            self.data["per_experiment_questionnaire_directory"] = PER_EXPERIMENT_QUESTIONNAIRE_DIRECTORY
+            self.data["per_experiment_directory"] = PER_EXPERIMENT_DIRECTORY
 
     def build_dynamic_header(self, variable_name, variable_data):
         self.data[variable_name] = variable_data
