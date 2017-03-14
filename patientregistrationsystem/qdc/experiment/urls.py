@@ -364,6 +364,17 @@ urlpatterns = patterns(
     url(r'^digital_game_phase_data/edit/(?P<digital_game_phase_data_id>\d+)/$',
         'digital_game_phase_data_edit', name='digital_game_phase_data_edit'),
 
+    # subject + generic_data_collection_data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/generic_data_collection/$',
+        'subject_generic_data_collection_view', name='subject_generic_data_collection_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/generic_data_collection/'
+        r'(?P<generic_data_collection_configuration_id>[0-9-]+)/add_generic_data_collection_data/$',
+        'subject_generic_data_collection_data_create', name='subject_generic_data_collection_data_create'),
+    url(r'^generic_data_collection_data/(?P<generic_data_collection_data_id>\d+)/$',
+        'generic_data_collection_data_view', name='generic_data_collection_data_view'),
+    url(r'^generic_data_collection_data/edit/(?P<generic_data_collection_data_id>\d+)/$',
+        'generic_data_collection_data_edit', name='generic_data_collection_data_edit'),
+
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',
         'subject_additional_data_view', name='subject_additional_data_view'),
