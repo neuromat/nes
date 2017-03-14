@@ -64,9 +64,9 @@ directory_structure = [
 
 # valid for all questionnaires (no distinction amongst questionnaires)
 included_questionnaire_fields = [
-    {"field": "participation_code", "header": {"code": "participation_code",
-                                               "full": _("Participation code"),
-                                               "abbreviated": _("Participation code")},
+    {"field": "participant_code", "header": {"code": "participant_code",
+                                               "full": _("Participant code"),
+                                               "abbreviated": _("Participant code")},
      "model": "patient.patient", "model_field": "code"},
 ]
 
@@ -1096,12 +1096,10 @@ class ExportExecution:
 
         return export_rows_participants
 
-    def process_participant_filtered_data(self, participants_filtered_list):
+    def process_participant_filtered_data(self, participants_filtered_list, base_export_directory, base_directory):
         error_msg = ""
 
-        # participants_filtered_list = request.session['filtered_participant_data']
         self.set_participants_filtered_data(participants_filtered_list)
-        # participants_list = (export.get_per_participant_data().keys())
         participants_input_data = self.get_input_data("participants")
         participants_list = (self.get_participants_filtered_data())
         if participants_input_data[0]["output_list"] and participants_list:
@@ -1110,19 +1108,9 @@ class ExportExecution:
 
             export_filename = "%s.csv" % self.get_input_data('participants')[0]["output_filename"]  # "export.csv"
 
-            base_export_directory = self.get_export_directory()
-            base_per_participant_export_directory = path.join(base_export_directory, "Per_participant")
-            base_directory = self.get_input_data("base_directory")  # /NES_EXPORT
-            base_per_participant_directory = path.join(base_directory, "Per_participant")
+            complete_filename = path.join(base_export_directory, export_filename)
 
-            if not path.exists(base_per_participant_export_directory):
-                error_msg, base_per_participant_directory = create_directory(base_directory, "Per_participant")
-                if error_msg != "":
-                    return error_msg
-
-            complete_filename = path.join(base_per_participant_export_directory, export_filename)
-
-            self.files_to_zip_list.append([complete_filename, base_per_participant_directory])
+            self.files_to_zip_list.append([complete_filename, base_directory])
 
             with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
                 export_writer = writer(csv_file)
@@ -1137,15 +1125,10 @@ class ExportExecution:
 
             export_filename = "%s.csv" % self.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
 
-            base_directory = self.get_input_data("base_directory")  # /NES_EXPORT
-            base_per_participant_directory = path.join(base_directory, "Per_participant")
-            base_export_directory = self.get_export_directory()
-            base_per_participant_export_directory = path.join(base_export_directory, "Per_participant")
-
-            complete_filename = path.join(base_per_participant_export_directory, export_filename)
+            complete_filename = path.join(base_export_directory, export_filename)
 
             # files_to_zip_list.append(complete_filename)
-            self.files_to_zip_list.append([complete_filename, base_per_participant_directory])
+            self.files_to_zip_list.append([complete_filename, base_directory])
 
             with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
                 export_writer = writer(csv_file)
@@ -1210,6 +1193,16 @@ class ExportExecution:
                 with open(complete_group_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as txt_file:
                     txt_file.writelines(group_resume)
                     txt_file.writelines(experimental_protocol_description)
+
+                # process participant/diagnosis per Participant of each group
+                participant_group_list = []
+                subject_of_group = SubjectOfGroup.objects.filter(group=group)
+                for subject in subject_of_group:
+                    participant_group_list.append(subject.subject.patient_id)
+
+                if participant_group_list:
+                    self.process_participant_filtered_data(participant_group_list, complete_file_group_directory,
+                                                           export_group_directory)
 
         return error_msg
 
