@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from django import forms
+from django.core.validators import EMPTY_VALUES
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField
 from django.forms.widgets import Textarea
@@ -54,6 +55,16 @@ class PatientForm(ModelForm):
                 'class': 'form-control', 'type': 'email', 'data-error': _('Incorrect e-mail'),
                 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
         }
+
+    # Make the name required if anonymous field is not checked
+    def clean(self):
+        anonymous = self.cleaned_data.get('anonymous', False)
+        if not anonymous:
+            # validate the name
+            name = self.cleaned_data.get('name', None)
+            if name in EMPTY_VALUES:
+                self._errors['name'] = self.error_class([_('Name must be included')])
+        return self.cleaned_data
 
 
 class TelephoneForm(ModelForm):

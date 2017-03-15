@@ -155,6 +155,7 @@ $(document).ready(function () {
         var date_birth_value = $.trim($("#id_date_birth").val());
         var gender_value = $.trim($("#id_gender").val());
         var cpf_value = $.trim($("#id_cpf").val());
+        var anonymous = $('#id_anonymous');
 
         if (date_birth_value.length == 0 || gender_value.length == 0) {
             showErrorMessageTemporary(gettext("Obligatory fields must be filled."));
@@ -167,7 +168,7 @@ $(document).ready(function () {
             if (email_value.length != 0 && !validateEmail(email_value)) {
                 showErrorMessageTemporary(gettext("Please fill the fields correctly. E-mail is invalid"));
             } else {
-                if (cpf_value.length == 0) {
+                if (!anonymous.is(":checked") && cpf_value.length == 0) {
                     $("#modalNoCPF").modal('show');
                 } else {
                     $("#form_id").submit();
