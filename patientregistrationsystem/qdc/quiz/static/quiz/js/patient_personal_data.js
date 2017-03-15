@@ -21,7 +21,7 @@ $(document).ready(function () {
             $("#id_address_complement").prop('disabled', true);
             $("#id_email").prop('disabled', true);
             $("#id_telephone_set-0-number").parents('.telephones').hide();
-            //$("#div_name").attr("class", "form-group");
+            //$("#div_name").removeClass("form-group has-error");
             //$("#div_name_message").children("ul:first").remove();
         }
         else
@@ -37,6 +37,7 @@ $(document).ready(function () {
             $("#id_address_complement").prop('disabled', false);
             $("#id_email").prop('disabled', false);
             $("#id_telephone_set-0-number").parents('.telephones').show();
+            //$("#div_name").attr("class", "form-group");
         }
     });
 
