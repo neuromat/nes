@@ -28,6 +28,8 @@ class PatientForm(ModelForm):
         ]
 
         widgets = {
+            # 'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
+            #                          'data-error': _('Name must be included')}),
             'name': TextInput(attrs={'class': 'form-control'}),
             'cpf': TextInput(attrs={'class': 'form-control',
                                     'placeholder': 'xxx.xxx.xxx-xx'}),
