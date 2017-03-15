@@ -52,12 +52,13 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
-                            <div class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
+                            <div id="div_name" class="form-group {% if patient_form.errors.name %}has-error{% endif %}">
                                 <label for="name" class="control-label">{% trans "Full name" %}</label>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                     {{ patient_form.name }}
                                 </div>
+{#                                <div id="div_name_message" class="help-block with-errors"></div>#}
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-6">
