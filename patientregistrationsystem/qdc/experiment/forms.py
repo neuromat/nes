@@ -332,7 +332,7 @@ class ResearchProjectForm(ModelForm):
 class PublicationForm(ModelForm):
     class Meta:
         model = Publication
-        fields = ['title', 'citation', 'url', 'experiments']
+        fields = ['title', 'citation', 'url']
 
         widgets = {
             'title': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '2',
@@ -341,7 +341,6 @@ class PublicationForm(ModelForm):
             'citation': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '6',
                                         'data-error': _('Citation must be filled.')}),
             'url': URLInput(attrs={'class': 'form-control'}),
-            'experiments': CheckboxSelectMultiple()
         }
 
 

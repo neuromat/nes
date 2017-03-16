@@ -4084,7 +4084,7 @@ class PublicationTest(TestCase):
 
     def test_publication_list(self):
         # Check if list of publications is empty before inserting any.
-        response = self.client.get(reverse('research_project_list'))
+        response = self.client.get(reverse('publication_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['publications']), 0)
 
@@ -4093,7 +4093,7 @@ class PublicationTest(TestCase):
         Publication.objects.create(title="Publication title", citation="Publication citation")
 
         # Check if list of publications returns one item after inserting one.
-        response = self.client.get(reverse('research_project_list'))
+        response = self.client.get(reverse('publication_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['publications']), 1)
 
@@ -4113,10 +4113,9 @@ class PublicationTest(TestCase):
         self.data = {'action': 'save'}
         response = self.client.post(reverse('publication_new'), self.data)
         self.assertEqual(Publication.objects.all().count(), 0)
-        self.assertGreaterEqual(len(response.context['publication_form'].errors), 3)
+        self.assertGreaterEqual(len(response.context['publication_form'].errors), 2)
         self.assertTrue('title' in response.context['publication_form'].errors)
         self.assertTrue('citation' in response.context['publication_form'].errors)
-        self.assertTrue('experiments' in response.context['publication_form'].errors)
         self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
         self.assertEqual(response.status_code, 200)
 

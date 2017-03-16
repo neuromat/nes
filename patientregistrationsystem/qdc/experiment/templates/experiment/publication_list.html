@@ -10,7 +10,7 @@
     </script>
 {% endblock %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeAdvancedPublication %}class="active"{% endblock %}
 
 {% block content %}
 
@@ -40,7 +40,7 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active">{% trans "Studies" %}</li>
+                <li class="active">{% trans "Publications" %}</li>
             </ol>
         </div>
     </div>
@@ -49,38 +49,32 @@
         <div class="col-md-10">
 
             <div class="container span6 offset3 well ">
-                <h4>{% trans "Studies list" %}</h4>
+                <h4>{% trans "Publication list" %}</h4>
                 <div class="form-group">
                     <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>{% trans "Title" %}</th>
-                                <th>{% trans "Term" %}</th>
-                                <th>{% trans "Responsible" %}</th>
+                                <th>{% trans "Citation" %}</th>
+                                <th>{% trans "URL" %}</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {% for research_project in research_projects %}
+                        {% for publication in publications %}
                             <tr>
                                 <td>{% if perms.experiment.view_researchproject %}
                                         <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
-                                           href="/experiment/research_project/{{ research_project.id }}">
-                                            {{ research_project.title }}
+                                           href="/experiment/publication/{{ publication.id }}">
+                                            {{ publication.title }}
                                         </a>
                                     {% else %}
-                                        {{ research_project.title }}
+                                        {{ publication.title }}
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if research_project.end_date %}
-                                        {{ research_project.start_date }}
-                                        <br>{% trans "to" %}<br>
-                                        {{ research_project.end_date }}
-                                    {% else %}
-                                        {% trans "From" %}<br>{{ research_project.start_date }}
-                                    {% endif %}
+                                    {{ publication.citation }}
                                 </td>
-                                <td>{{ research_project.owner.first_name }} {{ research_project.owner.last_name }}</td>
+                                <td>{{ publication.url }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -88,7 +82,7 @@
                 </div>
                 {% if perms.experiment.add_researchproject %}
                     <div class="btn-group pull-left">
-                        <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Insert new study" %}</a>
+                        <a href="/experiment/publication/new/" class="btn btn-primary">{% trans "Insert new publication" %}</a>
                     </div>
                 {% endif %}
             </div>

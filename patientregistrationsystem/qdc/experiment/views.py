@@ -130,12 +130,8 @@ def get_current_tab(request):
 @permission_required('experiment.view_researchproject')
 def research_project_list(request, template_name="experiment/research_project_list.html"):
     research_projects = ResearchProject.objects.order_by('start_date')
-    publications = Publication.objects.all().order_by('title')
-    current_tab = get_current_tab(request)
     context = {
         "research_projects": research_projects,
-        "publications": publications,
-        "current_tab": current_tab
     }
 
     return render(request, template_name, context)
@@ -371,6 +367,16 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
 
 @login_required
+@permission_required('experiment.view_researchproject')
+def publication_list(request, template_name="experiment/publication_list.html"):
+    publications = Publication.objects.all().order_by('title')
+    context = {
+        "publications": publications,
+    }
+    return render(request, template_name, context)
+
+
+@login_required
 @permission_required('experiment.add_researchproject')
 def publication_create(request, template_name="experiment/publication_register.html"):
 
@@ -416,8 +422,15 @@ def publication_view(request, publication_id, template_name="experiment/publicat
         if request.POST['action'] == "remove":
             publication.delete()
             messages.success(request, _('Publication removed successfully.'))
-            redirect_url = reverse("research_project_list", args=())
-            return HttpResponseRedirect(redirect_url + "?currentTab=1")
+            redirect_url = reverse("publication_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'][:7] == "remove-":
+            experiment = get_object_or_404(Experiment, pk=int(request.POST['action'][7:]))
+            publication.experiments.remove(experiment)
+            messages.success(request, _('Experiment removed from publication successfully.'))
+            redirect_url = reverse("publication_view", args=(publication_id,))
+            return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": True,
                "publication": publication,
@@ -450,6 +463,51 @@ def publication_update(request, publication_id, template_name="experiment/public
                "editing": True}
 
     return render(request, template_name, context)
+
+
+@login_required
+def publication_add_experiment(request, publication_id, template_name="experiment/publication_add_experiment.html"):
+
+    publication = get_object_or_404(Publication, pk=publication_id)
+    research_projects = ResearchProject.objects.all().order_by('title')
+    experiments = Experiment.objects.all().order_by('title')
+
+    if request.method == "POST":
+        if request.POST['action'] == "add-experiment":
+
+            if 'experiment_selected' in request.POST:
+                experiment_selected = get_object_or_404(Experiment, pk=int(request.POST['experiment_selected']))
+                if experiment_selected in publication.experiments.all():
+                    messages.success(request, _('Experiment already included in the publication.'))
+                else:
+                    publication.experiments.add(experiment_selected)
+                    publication.save()
+                    messages.success(request, _('Experiment included successfully.'))
+
+            redirect_url = reverse("publication_view", args=(publication.id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "publication": publication,
+        "research_projects": research_projects,
+        "experiments": experiments,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+def get_experiments_by_research_project(request, research_project_id):
+
+    if research_project_id == "0":
+        list_of_experiments = Experiment.objects.all().order_by('title')
+    else:
+        list_of_experiments = Experiment.objects.filter(research_project_id=research_project_id).order_by('title')
+
+    json_experiment_list = serializers.serialize("json", list_of_experiments)
+
+    return HttpResponse(json_experiment_list, content_type='application/json')
 
 
 @login_required
