@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from django import forms
+from django.core.validators import EMPTY_VALUES
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField
 from django.forms.widgets import Textarea
@@ -13,17 +15,22 @@ from patient.quiz_widget import SelectBoxCountries, SelectBoxState
 
 
 class PatientForm(ModelForm):
+    anonymous = forms.BooleanField(required=False,
+                                   initial=False,
+                                   label=_('Anonymous user?'))
+
     class Meta:
         model = Patient
 
         fields = [
-            'name', 'cpf', 'origin', 'medical_record', 'date_birth', 'gender', 'rg', 'marital_status',
+            'anonymous', 'name', 'cpf', 'origin', 'medical_record', 'date_birth', 'gender', 'rg', 'marital_status',
             'country', 'zipcode', 'street', 'address_number', 'address_complement', 'district', 'city', 'state', 'email'
         ]
 
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
-                                     'data-error': _('Name must be included')}),
+            # 'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
+            #                          'data-error': _('Name must be included')}),
+            'name': TextInput(attrs={'class': 'form-control'}),
             'cpf': TextInput(attrs={'class': 'form-control',
                                     'placeholder': 'xxx.xxx.xxx-xx'}),
             'origin': TextInput(attrs={'class': 'form-control'}),
@@ -50,6 +57,16 @@ class PatientForm(ModelForm):
                 'class': 'form-control', 'type': 'email', 'data-error': _('Incorrect e-mail'),
                 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
         }
+
+    # Make the name required if anonymous field is not checked
+    def clean(self):
+        anonymous = self.cleaned_data.get('anonymous', False)
+        if not anonymous:
+            # validate the name
+            name = self.cleaned_data.get('name', None)
+            if name in EMPTY_VALUES:
+                self._errors['name'] = self.error_class([_('Name must be included')])
+        return self.cleaned_data
 
 
 class TelephoneForm(ModelForm):

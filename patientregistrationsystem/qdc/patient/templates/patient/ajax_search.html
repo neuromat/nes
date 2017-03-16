@@ -3,7 +3,7 @@
 
     {% for patient in patients %}
         <li><a href="/patient/{{ patient.id }}">
-            {% if patient.cpf %} {{ patient.cpf }} - {% endif %} {{ patient.name }}</a></li>
+            {% if patient.cpf %} {{ patient.cpf }} - {% endif %} {% if patient.name %} {{ patient.name }} {% else %} {{ patient.code }} {% endif %}</a></li>
     {% endfor %}
 
 {% else %}
