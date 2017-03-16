@@ -137,6 +137,9 @@ def patient_update_personal_data(request, patient, context):
 
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
+    if patient.name == '':
+        patient_form.fields['anonymous'].widget.attrs['checked'] = True
+
     if request.method == "POST":
         patient_form_is_valid = patient_form.is_valid()
 
@@ -355,6 +358,9 @@ def patient_view_personal_data(request, patient, context):
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
     telephone_formset = telephone_inlineformset(instance=patient)
 
+    if patient.name == '':
+        patient_form.fields['anonymous'].widget.attrs['checked'] = True
+
     for field in patient_form.fields:
         patient_form.fields[field].widget.attrs['disabled'] = True
 
@@ -566,7 +572,10 @@ def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
         if search_text:
-            if re.match('[a-zA-Z ]+', search_text):
+            if re.match('P{1}[0-9]', search_text):
+                patient_list = \
+                    Patient.objects.filter(code__icontains=search_text).exclude(removed=True).order_by('code')
+            elif re.match('[a-zA-Z ]+', search_text):
                 patient_list = \
                     Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
             else:
