@@ -901,6 +901,7 @@ class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
+    code = models.CharField(null=True, blank=True, max_length=150)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
     experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
 
@@ -944,6 +945,7 @@ class SubjectOfGroup(models.Model):
 class DataConfigurationTree(models.Model):
     component_configuration = models.ForeignKey(ComponentConfiguration, on_delete=models.PROTECT)
     parent = models.ForeignKey('self', null=True, related_name='children')
+    code = models.CharField(null=True, blank=True, max_length=150)
 
 
 class SubjectStepData(models.Model):
