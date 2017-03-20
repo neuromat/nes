@@ -682,7 +682,8 @@ def export_view(request, template_name="export/export_data.html"):
         if not lime_survey_id in surveys_id_list:
             completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
                                                            patient_questionnaire_response.token_id, "completed")
-            if completed:
+            # completed diff 'N'
+            if completed != 'N':
                 surveys_id_list.append(lime_survey_id)
                 surveys_with_ev_list.append(questionnaire)
                 participants_list_from_entrance_questionnaire.append(patient_questionnaire_response.patient_id)

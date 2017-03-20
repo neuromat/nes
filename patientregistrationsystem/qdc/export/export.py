@@ -192,7 +192,8 @@ class ExportExecution:
         self.user_name = None
         self.input_data = {}
         self.per_participant_data = {}
-        self.participants_per_questionnaire = {}
+        self.participants_per_entrance_questionnaire = {}
+        self.participants_per_experiment_questionnaire = {}
         self.questionnaires_data = {}
         self.root_directory = ""
         self.participants_filtered_data = []
@@ -322,14 +323,27 @@ class ExportExecution:
 
     def include_participant_per_questionnaire(self, token_id, code):
 
-        if code not in self.participants_per_questionnaire:
-            self.participants_per_questionnaire[code] = []
+        if code not in self.participants_per_entrance_questionnaire:
+            self.participants_per_entrance_questionnaire[code] = []
 
-        if not self.get_input_data('export_per_experiment'):
+        if code not in self.participants_per_experiment_questionnaire:
+            self.participants_per_experiment_questionnaire[code] = []
+
+        questionnaire_response = QuestionnaireResponse.objects.filter(token_id=token_id)
+        if questionnaire_response:
             patient_id = QuestionnaireResponse.objects.filter(token_id=token_id).values('patient_id')[0]['patient_id']
+            if patient_id not in self.participants_per_entrance_questionnaire[code]:
+                self.participants_per_entrance_questionnaire[code].append(patient_id)
+        else:
+            questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(token_id=token_id)
+            if questionnaire_response:
+                subject_of_group = questionnaire_response.values('subject_of_group')
+                patient = Patient.objects.filter(subject__subjectofgroup=subject_of_group)
+                if patient:
+                    patient_id = patient.values('id')[0]['id']
 
-            if patient_id not in self.participants_per_questionnaire[code]:
-                self.participants_per_questionnaire[code].append(patient_id)
+                    if patient_id is not None and patient_id not in self.participants_per_experiment_questionnaire[code]:
+                        self.participants_per_experiment_questionnaire[code].append(patient_id)
 
     def get_per_participant_data(self, participant=None, questonnaire=None):
 
@@ -582,6 +596,49 @@ class ExportExecution:
 
         return questionnaire_explanation_fields_list
 
+    def merge_participants_data_per_questionnaire_process(self, fields_description, participant_list):
+        # get fields from patient
+        export_participant_row = self.process_participant_data(self.get_input_data('participants'),
+                                                               participant_list)
+        # Merge fields from questionnaires and patient
+        export_fields_list = []
+        export_row_list = []
+        # Building the header
+        for field in fields_description[0][0:len(fields_description[0]) - 1]:
+            export_row_list.append(field)
+        for field in export_participant_row[0]:
+            export_row_list.append(field)
+        export_fields_list.append(export_row_list)
+        # Including the responses
+        for fields in fields_description[1:fields_description.__len__()]:
+            participation_code = fields[len(fields) - 1]
+            export_row_list = []
+            for field in fields[0:len(fields) - 1]:
+                export_row_list.append(field)
+            for fields in export_participant_row[1:export_participant_row.__len__()]:
+                if participation_code == fields[len(fields) - 1]:
+                    for field in fields:
+                        export_row_list.append(field)
+            export_fields_list.append(export_row_list)
+
+        return export_fields_list
+
+    def merge_participant_data_per_participant_process(self, questionnaire_code, participant_code,
+                                                       export_participant_row):
+        export_fields_list = []
+
+        fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
+
+        for rows in fields_rows:
+            export_rows = rows[0:len(rows) - 1]
+            for fields in export_participant_row[1:export_participant_row.__len__()]:
+                if rows[len(rows)-1] == fields[len(fields) - 1]:
+                    for field in fields:
+                        export_rows.append(field)
+            export_fields_list.append(export_rows)
+
+        return export_fields_list
+
     def process_per_questionnaire(self):
 
         error_msg = ""
@@ -619,30 +676,6 @@ class ExportExecution:
                 # path_questionnaire = str(questionnaire_id)
 
                 questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
-                participant_list = self.participants_per_questionnaire[questionnaire_code]
-                # get fields from patient
-                export_participant_row = self.process_participant_data(self.get_input_data('participants'),
-                                                                       participant_list)
-                # Merge fields from questionnaires and patient
-                export_field_list = []
-                export_row_list = []
-                # Building the header
-                for field in fields_description[0][0:len(fields_description[0])-1]:
-                    export_row_list.append(field)
-                for field in export_participant_row[0]:
-                    export_row_list.append(field)
-                export_field_list.append(export_row_list)
-                # Including the responses
-                for fields in fields_description[1:fields_description.__len__()]:
-                    participation_code = fields[len(fields)-1]
-                    export_row_list = []
-                    for field in fields[0:len(fields)-1]:
-                        export_row_list.append(field)
-                    for fields in export_participant_row[1:export_participant_row.__len__()]:
-                        if participation_code == fields[len(fields)-1]:
-                            for field in fields:
-                                export_row_list.append(field)
-                    export_field_list.append(export_row_list)
 
                 questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
                 path_questionnaire = "%s_%s" % (str(questionnaire_code), questionnaire_title)
@@ -650,22 +683,20 @@ class ExportExecution:
                 if error_msg != "":
                     return error_msg
 
-                # export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code))
-
                 export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
-
-                # complete_filename = path.join(export_path, export_filename)
-
-                # save_to_csv(complete_filename, fields_description)
-
-                # self.files_to_zip_list.append([complete_filename, export_directory])
 
                 export_filename = \
                     "%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code))
 
                 complete_filename = path.join(export_path, export_filename)
 
-                save_to_csv(complete_filename, export_field_list)
+                if self.get_input_data('participants')[0]['output_list']:
+                    participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
+                    export_field_list = self.merge_participants_data_per_questionnaire_process(fields_description,
+                                                                                               participant_list)
+                    save_to_csv(complete_filename, export_field_list)
+                else:
+                    save_to_csv(complete_filename, fields_description)
 
                 self.files_to_zip_list.append([complete_filename, export_directory])
 
@@ -748,7 +779,13 @@ class ExportExecution:
 
                 complete_filename = path.join(export_path, export_filename)
 
-                save_to_csv(complete_filename, fields_description)
+                if self.get_input_data('participants')[0]['output_list']:
+                    participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
+                    export_fields_list = self.merge_participants_data_per_questionnaire_process(fields_description,
+                                                                                                participant_list)
+                    save_to_csv(complete_filename, export_fields_list)
+                else:
+                    save_to_csv(complete_filename, fields_description)
 
                 # create questionnaire fields file ("fields.csv")
                 fields = self.get_questionnaire_fields(questionnaire_id)
@@ -858,7 +895,13 @@ class ExportExecution:
                 # Ex. Users/.../NES_EXPORT/Per_experiment/Group_xxx/Per_participant/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                 complete_filename = path.join(complete_export_path, export_filename)
 
-                save_to_csv(complete_filename, fields_description)
+                if self.get_input_data('participants')[0]['output_list']:
+                    participant_list = self.participants_per_experiment_questionnaire[questionnaire_code]
+                    export_fields_list = self.merge_participants_data_per_questionnaire_process(fields_description,
+                                                                                                participant_list)
+                    save_to_csv(complete_filename, export_fields_list)
+                else:
+                    save_to_csv(complete_filename, fields_description)
 
                 # create questionnaire fields file ("fields.csv")
                 fields = self.get_questionnaire_fields(questionnaire_id)
@@ -927,12 +970,28 @@ class ExportExecution:
 
                     header = self.get_header_questionnaire(questionnaire_id)
 
-                    per_participant_rows = [header]
-
                     fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
 
-                    for fields in fields_rows:
-                        per_participant_rows.append(fields)
+                    if self.get_input_data('participants')[0]['output_list']:
+                        header = header[0:len(header)-1]
+
+                        patient_id = Patient.objects.filter(code=participant_code)
+                        if patient_id:
+                            participant_list = [patient_id.values('id')[0]['id']]
+                            # get fields from patient 
+                            export_participant_row = self.process_participant_data(
+                                self.get_input_data('participants'), participant_list)
+                            for field in export_participant_row[0]:
+                                header.append(field)
+                            per_participant_rows = [header]
+                            export_fields_row = self.merge_participant_data_per_participant_process(
+                                questionnaire_code, participant_code, export_participant_row)
+                            for field in export_fields_row:
+                                per_participant_rows.append(field)
+                    else:
+                        per_participant_rows = [header]
+                        for fields in fields_rows:
+                            per_participant_rows.append(fields)
 
                     complete_filename = path.join(participant_path, export_filename)
 
@@ -971,13 +1030,7 @@ class ExportExecution:
                         if error_msg != "":
                             return error_msg
 
-                        # error_msg, questionnaire_path = create_directory(participant_path, path_questionnaire)
-                        # if error_msg != "":
-                        #     return error_msg
-
                         for questionnaire_code in self.get_per_participant_data(participant_code):
-                            # print(participant, questionnaire)
-
                             questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
                             # seleciona os participantes dos quesntionnarios de entrada
                             for questionnaire in self.get_input_data("questionnaires"):
@@ -989,10 +1042,28 @@ class ExportExecution:
 
                                     per_participant_rows = [header]
 
-                                    fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
+                                    if self.get_input_data('participants')[0]['output_list']:
+                                        header = header[0:len(header)-1]
+                                        patient_id = Patient.objects.filter(code=participant_code)
+                                        if patient_id:
+                                            participant_list = [patient_id.values('id')[0]['id']]
+                                            # get fields from patient 
+                                            export_participant_row = self.process_participant_data(
+                                                self.get_input_data('participants'), participant_list)
 
-                                    for fields in fields_rows:
-                                        per_participant_rows.append(fields)
+                                            for field in export_participant_row[0]:
+                                                header.append(field)
+                                            per_participant_rows = [header]
+
+                                            export_fields_rows = self.merge_participant_data_per_participant_process(
+                                                questionnaire_code, participant_code, export_participant_row)
+                                            for fields in export_fields_rows:
+                                                per_participant_rows.append(fields)
+                                    else:
+                                        fields_rows = self.get_per_participant_data(participant_code,
+                                                                                    questionnaire_code)
+                                        for fields in fields_rows:
+                                            per_participant_rows.append(fields)
 
                                     complete_filename = path.join(participant_path, export_filename)
 
@@ -1021,10 +1092,6 @@ class ExportExecution:
                     if participant_code == Patient.objects.filter(pk=participant_filtered[0])[0].code:
                         # ex. Participant_P22667
                         path_participant = prefix_filename_participant + str(participant_code)
-
-                        # error_msg, questionnaire_path = create_directory(participant_path, path_questionnaire)
-                        # if error_msg != "":
-                        #     return error_msg
 
                         for questionnaire_code in self.get_per_participant_data(participant_code):
                             # print(participant, questionnaire)
@@ -1083,10 +1150,27 @@ class ExportExecution:
 
                                     per_participant_rows = [header]
 
-                                    fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
+                                    if self.get_input_data('participants')[0]['output_list']:
+                                        header = header[0:len(header)-1]
+                                        patient_id = Patient.objects.filter(code=participant_code)
+                                        if patient_id:
+                                            participant_list = [patient_id.values('id')[0]['id']]
+                                            # get fields from patient 
+                                            export_participant_row = self.process_participant_data(
+                                                self.get_input_data('participants'), participant_list)
 
-                                    for fields in fields_rows:
-                                        per_participant_rows.append(fields)
+                                            for field in export_participant_row[0]:
+                                                header.append(field)
+                                            per_participant_rows = [header]
+                                            export_fields_row = self.merge_participant_data_per_participant_process(
+                                                questionnaire_code, participant_code, export_participant_row)
+                                            for field in export_fields_row:
+                                                per_participant_rows.append(field)
+                                    else:
+                                        fields_rows = self.get_per_participant_data(participant_code,
+                                                                                    questionnaire_code)
+                                        for fields in fields_rows:
+                                            per_participant_rows.append(fields)
 
                                     complete_filename = path.join(participant_path, export_filename)
 
