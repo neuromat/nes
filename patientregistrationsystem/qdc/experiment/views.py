@@ -51,7 +51,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
     EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
-    GenericDataCollection, GenericDataCollectionData
+    GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog
 
 from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -4044,6 +4044,12 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
     subject_id = None
 
+    goalkeeper = False
+    if 'goalkeeper' in settings.DATABASES and GoalkeeperGameLog.objects.using('goalkeeper').first():
+        # TODO: check if there is digital game phase step in the experimental protocol
+        # TODO: check if exists registers for this group
+        goalkeeper = True
+
     if request.method == "POST" and request.POST['action'][:6] == "remove":
         subject_id = request.POST['action'][7:]
         subject_list = \
@@ -4294,7 +4300,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                'group': group,
                'subject_list': subject_list_with_status,
                "limesurvey_available": limesurvey_available,
-               "experimental_protocol_info": experimental_protocol_info}
+               "experimental_protocol_info": experimental_protocol_info,
+               "goalkeeper": goalkeeper}
 
     return render(request, template_name, context)
 
@@ -6203,6 +6210,118 @@ def digital_game_phase_data_edit(request, digital_game_phase_data_id):
                }
 
     return render(request, "experiment/subject_digital_game_phase_data_form.html", context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def group_goalkeeper_game_data(request, group_id, template_name="experiment/group_goalkeeper_game_data.html"):
+    group = get_object_or_404(Group, id=group_id)
+
+    if request.method == "POST":
+        if request.POST['action'][0:7] == "detail-":
+            path_of_configuration = request.POST['action'][7:]
+
+            list_of_path = [int(item) for item in path_of_configuration.split('-')]
+            data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+            if not data_configuration_tree_id:
+                data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+            data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                        pk=data_configuration_tree_id)
+
+            data_configuration_tree.code = request.POST['code-' + path_of_configuration]
+            data_configuration_tree.save()
+
+    digital_game_phase_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+
+    for path in list_of_paths:
+
+        digital_game_phase_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = \
+            list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
+
+        data_configuration_tree = \
+            DataConfigurationTree.objects.filter(id=data_configuration_tree_id).first()
+
+        # digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(
+        #     subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
+
+        digital_game_phase_collections.append(
+            {'digital_game_phase_configuration': digital_game_phase_configuration,
+             'path': path,
+             'data_configuration_tree': data_configuration_tree
+             }
+             # 'digital_game_phase_data_files': digital_game_phase_data_files}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               # 'subject': subject,
+               'digital_game_phase_collections': digital_game_phase_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def load_group_goalkeeper_game_data(request, group_id):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    # TODO: check if group has code
+
+    # selecionar dados do grupo
+
+    game_group_data = {}
+
+    for file in GoalkeeperGameLog.objects.using('goalkeeper').filter(filecontent__icontains=group.code):
+        lines = file.filecontent.splitlines()
+        header = lines[0].split(',')
+        values = lines[1].split(',')
+        if header[0] == 'experimentGroup' and values[0] == group.code:
+            # search playerAlias and phase fields
+            if 'playerAlias' in header and 'phase' in header:
+                player_alias_index = header.index('playerAlias')
+                phase_index = header.index('phase')
+                if values[player_alias_index] not in game_group_data:
+                    game_group_data[values[player_alias_index]] = {}
+                game_group_data[values[player_alias_index]][values[phase_index]] = file.filecontent
+
+                # TODO: if there is information of this phase for this player, thrown an error message
+
+    # para cada fase
+    # para cada sujeito
+    # busco e gravo dados
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+
+    for path in list_of_paths:
+
+        digital_game_phase_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = \
+            list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
+
+        if data_configuration_tree_id:
+            data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                        pk=data_configuration_tree_id)
+            if data_configuration_tree.code:
+
+                for subject_of_group in group.subjectofgroup_set.all():
+                    if subject_of_group.subject.patient.code in game_group_data:
+                        if data_configuration_tree.code in game_group_data[subject_of_group.subject.patient.code]:
+                            # save data
+
+                            messages.success(request, _('Achei.') + '-' + subject_of_group.subject.patient.code + '-' + data_configuration_tree.code)
+
+    messages.success(request, _('Data loaded successfully.'))
+
+    redirect_url = reverse("group_goalkeeper_game_data",
+                           args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
 
 
 @login_required

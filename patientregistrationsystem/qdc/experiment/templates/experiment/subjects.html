@@ -78,6 +78,19 @@
                     </div>
                 </div>
             {% endif %}
+
+            {% if goalkeeper %}
+
+                <div class="col-xs-12 col-sm-12">
+                <div class="row">
+                    <div class="pull-right">
+                        <span class="fa fa-lg fa-soccer-ball-o"></span> <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data" class="btn btn-primary">{% trans "Check goalkeeper game data" %}</a>
+                    </div>
+                </div>
+                </div>
+
+            {% endif %}
+
             <div class="row">
                 <div class="col-xs-12 col-sm-12">
                     <div class="form-group">
@@ -89,7 +102,7 @@
                                 {% if experimental_protocol_info.number_of_questionnaires %}
                                     <th>{% trans "Completed questionnaires" %}</th>
                                 {% endif %}
-                                <th class="col-md-4">{% trans "Data files uploaded" %}</th>
+                                <th class="col-md-6">{% trans "Data files uploaded" %}</th>
                             </tr>
                             </thead>
                             <tbody>

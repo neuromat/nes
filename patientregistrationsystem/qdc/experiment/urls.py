@@ -370,6 +370,12 @@ urlpatterns = patterns(
     url(r'^digital_game_phase_data/edit/(?P<digital_game_phase_data_id>\d+)/$',
         'digital_game_phase_data_edit', name='digital_game_phase_data_edit'),
 
+    # subject + goalkeeper_game_data
+    url(r'^group/(?P<group_id>\d+)/goalkeeper_game_data/$',
+        'group_goalkeeper_game_data', name='group_goalkeeper_game_data'),
+    url(r'^group/(?P<group_id>\d+)/load_goalkeeper_game_data/$',
+        'load_group_goalkeeper_game_data', name='load_group_goalkeeper_game_data'),
+
     # subject + generic_data_collection_data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/generic_data_collection/$',
         'subject_generic_data_collection_view', name='subject_generic_data_collection_view'),

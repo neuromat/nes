@@ -901,9 +901,12 @@ class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
-    code = models.CharField(null=True, blank=True, max_length=150)
+    code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
     experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        verbose_name = _('Group')
 
 
 def get_dir(instance, filename):
@@ -1181,3 +1184,11 @@ class EEGElectrodePositionCollectionStatus(models.Model):
 
     def __str__(self):
         return self.eeg_electrode_position_setting.eeg_electrode_position.name
+
+
+class GoalkeeperGameLog(models.Model):
+    file_content = models.TextField(primary_key=True, name='filecontent')
+
+    class Meta:
+        managed = False
+        db_table = '"public"."goalgame"'
