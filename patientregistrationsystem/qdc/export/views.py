@@ -333,11 +333,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # update data of participants from advanced search
         # participants from questionnaires (entrance/experiment)
-        if 'group_selected_list' in request.session:
-            participants_entrance_questionnaire_list = request.session['participants_from_entrance_questionnaire']
-            export.set_participants_from_entrance_questionnaire(participants_entrance_questionnaire_list)
-            participants_experiment_questionnaire_list = request.session['participants_from_experiment_questionnaire']
-            export.set_participants_from_experiment_questionnaire(participants_experiment_questionnaire_list)
+        # if 'group_selected_list' in request.session:
+            # participants_entrance_questionnaire_list = request.session['participants_from_entrance_questionnaire']
+            # export.set_participants_from_entrance_questionnaire(participants_entrance_questionnaire_list)
+            # participants_experiment_questionnaire_list = request.session['participants_from_experiment_questionnaire']
+            # export.set_participants_from_experiment_questionnaire(participants_experiment_questionnaire_list)
 
         # all participants filtered
         if 'filtered_participant_data' in request.session:
@@ -605,9 +605,8 @@ def export_view(request, template_name="export/export_data.html"):
                                                 responses_type, heading_type, input_filename, request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
-                complete_experiment_filename = True
 
-                if complete_filename and complete_experiment_filename:
+                if complete_filename:
 
                     messages.success(request, _("Export was finished correctly"))
 
@@ -653,7 +652,7 @@ def export_view(request, template_name="export/export_data.html"):
                     for questionnaire_response in questionnaire_response_list:
                         completed = surveys.get_participant_properties(questionnaire_id,
                                                                        questionnaire_response.token_id, "completed")
-                        if completed:
+                        if completed != "N" and completed != "":
                             questionnaire_dic = {
                                 'questionnaire': questionnaire,
                                 'token': str(questionnaire_response.token_id),

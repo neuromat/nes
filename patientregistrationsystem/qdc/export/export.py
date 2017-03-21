@@ -369,35 +369,35 @@ class ExportExecution:
 
         return self.participants_filtered_data
 
-    def set_participants_from_entrance_questionnaire(self, participants_entrance_questionnaire_list):
-
-        participants = Patient.objects.filter(removed=False).values_list("id")
-
-        self.participants_from_entrance_questionnaire = \
-            participants.filter(id__in=participants_entrance_questionnaire_list)
-
-        # return participants
-
-    def get_participants_from_entrance_questionnaire(self):
-
-        # participants = Patient.objects.filter(removed=False).values_list("id")
-
-        return self.participants_from_entrance_questionnaire
-
-    def set_participants_from_experiment_questionnaire(self, participants_experiment_questionnaire_list):
-
-        participants = Patient.objects.filter(removed=False).values_list("id")
-
-        self.participants_from_experiment_questionnaire = \
-            participants.filter(id__in=participants_experiment_questionnaire_list)
-
-        # return participants
-
-    def get_participants_from_experiment_questionnaire(self):
-
-        # participants = Patient.objects.filter(removed=False).values_list("id")
-
-        return self.participants_from_experiment_questionnaire
+    # def set_participants_from_entrance_questionnaire(self, participants_entrance_questionnaire_list):
+    #
+    #     participants = Patient.objects.filter(removed=False).values_list("id")
+    #
+    #     self.participants_from_entrance_questionnaire = \
+    #         participants.filter(id__in=participants_entrance_questionnaire_list)
+    #
+    #     # return participants
+    #
+    # def get_participants_from_entrance_questionnaire(self):
+    #
+    #     # participants = Patient.objects.filter(removed=False).values_list("id")
+    #
+    #     return self.participants_from_entrance_questionnaire
+    #
+    # def set_participants_from_experiment_questionnaire(self, participants_experiment_questionnaire_list):
+    #
+    #     participants = Patient.objects.filter(removed=False).values_list("id")
+    #
+    #     self.participants_from_experiment_questionnaire = \
+    #         participants.filter(id__in=participants_experiment_questionnaire_list)
+    #
+    #     # return participants
+    #
+    # def get_participants_from_experiment_questionnaire(self):
+    #
+    #     # participants = Patient.objects.filter(removed=False).values_list("id")
+    #
+    #     return self.participants_from_experiment_questionnaire
 
     def update_questionnaire_rules(self, questionnaire_id):
 
@@ -1411,7 +1411,7 @@ class ExportExecution:
         limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
 
         if self.get_input_data('export_per_experiment') and questionnaire['group_id'] != "":
-            questionnaire_exists = True
+            questionnaire_exists = False
             questionnaire_responses = []
             group_id = questionnaire['group_id']
             group = get_object_or_404(Group, pk=group_id)
@@ -1423,8 +1423,9 @@ class ExportExecution:
                     completed = questionnaire_lime_survey.get_participant_properties(
                         questionnaire_id, questionnaire_response.token_id, "completed")
 
-                    if completed:
+                    if completed != 'N' and completed != "":
                         questionnaire_responses.append(questionnaire_response)
+                        questionnaire_exists = True
 
         else:
             questionnaire_exists = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id).exists()
