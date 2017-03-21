@@ -11,14 +11,28 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.CreateModel(
+            name='GoalkeeperGameLog',
+            fields=[
+                ('file_content', models.TextField(primary_key=True, serialize=False)),
+            ],
+            options={
+                'db_table': '"public"."goalgame"',
+                'managed': False,
+            },
+        ),
+        migrations.AlterModelOptions(
+            name='group',
+            options={'verbose_name': 'Group'},
+        ),
         migrations.AddField(
             model_name='dataconfigurationtree',
             name='code',
-            field=models.CharField(null=True, max_length=150, blank=True),
+            field=models.CharField(null=True, blank=True, max_length=150),
         ),
         migrations.AddField(
             model_name='group',
             name='code',
-            field=models.CharField(null=True, max_length=150, blank=True),
+            field=models.CharField(null=True, blank=True, max_length=150, unique=True, verbose_name='Code'),
         ),
     ]

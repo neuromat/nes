@@ -1,0 +1,158 @@
+{% extends "quiz/template.html" %}
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% load i18n admin_static %}
+{% load subjects_tags %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="subject_form" method="post">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="subjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
+                <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
+{#                <li class="active">{% get_name_or_code subject.patient.id %}</li>#}
+                <li class="active">{% trans "Check goalkeeper game data" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>{% trans "Digital game phase path" %}</th>
+                                <th>{% trans "Phase code" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if not digital_game_phase_collections %}
+                                <tr>
+                                    <td>{% trans "(No digital game phase collection)" %}</td>
+                                    <td></td>
+                                </tr>
+                            {% else %}
+                                {% for digital_game_phase_collection in digital_game_phase_collections %}
+                                    <tr>
+                                        <td>
+
+                                            <b>{{ digital_game_phase_collection.digital_game_phase_configuration.component.identification }}</b>
+                                             <blockquote>
+                                                <i><h6>
+                                                    {% for item in digital_game_phase_collection.path %}
+                                                        {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
+                                                    {% endfor %}
+                                                </h6></i>
+                                             </blockquote>
+
+                                        </td>
+                                        <td>
+
+                                            {% if digital_game_phase_collection.data_configuration_tree.code %}
+                                                <a data-toggle="tooltip" data-placement="right" title="{% trans "Change phase code" %}" style="font-style: italic;" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">
+                                                    {{ digital_game_phase_collection.data_configuration_tree.code }}
+                                                </a>
+                                            {% else %}
+                                                <a class="btn btn-warning" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">{% trans "Create phase code" %}</a>
+                                            {% endif %}
+
+                                            <div class="modal fade" id="modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4>
+                                                            {{ digital_game_phase_collection.digital_game_phase_configuration.component.identification }}
+                                                            </h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="row">
+                                                                <div class="form-group">
+                                                                    <label>{% trans "Phase code" %}</label>
+                                                                        <input class="form-control" id="phase_code" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" value="{% if digital_game_phase_collection.data_configuration_tree.code %}{{ digital_game_phase_collection.data_configuration_tree.code }}{% endif %}">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                                            <button class="btn btn-primary" id="confirm-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" type="submit" name="action" value="detail-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}">{% trans "Save" %}</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-toolbar">
+
+                <div class="btn-group pull-right">
+                    <a href="/experiment/group/{{ group.id }}/load_goalkeeper_game_data" class="btn btn-primary" >{% trans "Load goalkeeper game data" %}</a>
+                </div>
+
+                <div class="btn-group pull-right">
+                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

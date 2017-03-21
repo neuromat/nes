@@ -54,7 +54,7 @@ class GroupForm(ModelForm):
 
         model = Group
 
-        fields = ['title', 'description']
+        fields = ['title', 'description', 'code']
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control',
@@ -63,7 +63,8 @@ class GroupForm(ModelForm):
                                       'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
-                                           'data-error': _('Description must be filled.')})
+                                           'data-error': _('Description must be filled.')}),
+            'code': TextInput(attrs={'class': 'form-control'}),
         }
 
 
