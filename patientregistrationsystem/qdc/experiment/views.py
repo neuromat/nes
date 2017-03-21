@@ -6313,7 +6313,31 @@ def load_group_goalkeeper_game_data(request, group_id):
                 for subject_of_group in group.subjectofgroup_set.all():
                     if subject_of_group.subject.patient.code in game_group_data:
                         if data_configuration_tree.code in game_group_data[subject_of_group.subject.patient.code]:
-                            # save data
+
+                            # # TODO: if exists a record with the same date/time, overwrite it
+                            #
+                            # # save data
+                            # digital_game_phase_data = DigitalGamePhaseData()
+                            # digital_game_phase_data.subject_of_group = subject_of_group
+                            # digital_game_phase_data.data_configuration_tree = data_configuration_tree
+                            #
+                            # #TODO: use the date and time from the file
+                            # digital_game_phase_data.date = datetime.date.today()
+                            # # digital_game_phase_data.time =
+                            #
+                            # digital_game_phase_data.description = 'auto'
+                            #
+                            # # TODO: use the text file format
+                            # digital_game_phase_data.file_format = FileFormat.objects.first()
+                            #
+                            # # Creating a file
+                            # export_filename = "%s_%s.txt" % (subject_of_group.subject.patient.code, str(questionnaire_code))
+                            #
+                            # export_directory = path.join(export_metadata_directory, path_questionnaire)
+                            #
+                            # complete_filename = path.join(export_path, export_filename)
+                            #
+                            # save_to_csv(complete_filename, questionnaire_fields)
 
                             messages.success(request, _('Achei.') + '-' + subject_of_group.subject.patient.code + '-' + data_configuration_tree.code)
 
