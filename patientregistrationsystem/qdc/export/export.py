@@ -197,8 +197,6 @@ class ExportExecution:
         self.questionnaires_data = {}
         self.root_directory = ""
         self.participants_filtered_data = []
-        self.participants_from_entrance_questionnaire = []
-        self.participants_from_experiment_questionnaire = []
         self.questionnaire_code_and_id = {}
 
     def set_directory_base(self, user_id, export_id):
@@ -1423,12 +1421,13 @@ class ExportExecution:
                     completed = questionnaire_lime_survey.get_participant_properties(
                         questionnaire_id, questionnaire_response.token_id, "completed")
 
-                    if completed != 'N' and completed != "":
+                    if completed != "N" and completed != "":
                         questionnaire_responses.append(questionnaire_response)
                         questionnaire_exists = True
 
         else:
-            questionnaire_exists = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id).exists()
+            questionnaire_exists = QuestionnaireResponse.objects.filter(
+                survey__lime_survey_id=questionnaire_id).exists()
             # filter data (participants)
             questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
 

@@ -321,6 +321,7 @@ def update_diagnosis_list(diagnosis_list, heading_type):
             header_translated = ug_(header[heading_type])
             diagnosis_list.append([field, abbreviated_data(header_translated, heading_type)])
 
+
 # @login_required
 # @permission_required('questionnaire.create_export')
 # def export_create(request, template_name="export/export_data.html"):
@@ -331,21 +332,12 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         export = ExportExecution(export_instance.user.id, export_instance.id)
 
-        # update data of participants from advanced search
-        # participants from questionnaires (entrance/experiment)
-        # if 'group_selected_list' in request.session:
-            # participants_entrance_questionnaire_list = request.session['participants_from_entrance_questionnaire']
-            # export.set_participants_from_entrance_questionnaire(participants_entrance_questionnaire_list)
-            # participants_experiment_questionnaire_list = request.session['participants_from_experiment_questionnaire']
-            # export.set_participants_from_experiment_questionnaire(participants_experiment_questionnaire_list)
-
         # all participants filtered
         if 'filtered_participant_data' in request.session:
             participants_filtered_list = request.session['filtered_participant_data']
         else:
             participants_filtered_list = Patient.objects.filter(removed=False)
         export.set_participants_filtered_data(participants_filtered_list)
-
 
         # set path of the directory base: ex.
         base_directory, path_to_create = path.split(export.get_directory_base())
@@ -369,7 +361,6 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # copy(input_name, input_filename)
 
         # prepare data to be processed
-
         input_data = export.read_configuration_data(input_filename)
 
         if not export.is_input_data_consistent() or not input_data:
@@ -379,15 +370,10 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # create directory base for export: /NES_EXPORT
         error_msg = export.create_export_directory()
 
-        # error_msg, base_export_directory = create_directory(base_directory_name, base_directory)
-
         if error_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
 
-        # process per questionnaire data
-
-        # error_msg = export.process_per_questionnaire()
         # process per questionnaire data
         if 'group_selected_list' in request.session:
             error_msg = export.process_per_entrance_questionnaire()
@@ -413,7 +399,6 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             return render(request, template_name)
 
         # process participants/diagnosis (Per_participant directory)
-
         # path ex. Users/.../NES_EXPORT
         base_export_directory = export.get_export_directory()
         # /NES_EXPORT
@@ -662,7 +647,6 @@ def export_view(request, template_name="export/export_data.html"):
                             participants_list_from_experiment_questionnaire.append(
                                 questionnaire_response.subject_of_group.subject.patient_id)
 
-        request.session['participants_from_experiment_questionnaire'] = participants_list_from_experiment_questionnaire
         questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
             questionnaires_experiment_list_final, request.LANGUAGE_CODE)
 
@@ -686,8 +670,7 @@ def export_view(request, template_name="export/export_data.html"):
                 surveys_id_list.append(lime_survey_id)
                 surveys_with_ev_list.append(questionnaire)
                 participants_list_from_entrance_questionnaire.append(patient_questionnaire_response.patient_id)
-    # lista de participantes com questionarios de entrada completos
-    request.session['participants_from_entrance_questionnaire'] = participants_list_from_entrance_questionnaire
+
     # Check if limesurveyDB is available
     limesurvey_available = check_limesurvey_access(request, surveys)
 
