@@ -26,9 +26,9 @@
                     <li><a href="/patient/find/">{% trans "Participant" %}</a></li>
 
                     {% if status == "edit"%}
-                        <li><a href="/patient/edit/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
+                        <li><a href="/patient/edit/{{ patient.id }}/?currentTab=4">{% if patient.name %}{{ patient.name }}{% else %}{{ patient.code }}{% endif %}</a></li>
                     {% else %}
-                        <li><a href="/patient/{{ patient.id }}/?currentTab=4">{{ patient.name }}</a></li>
+                        <li><a href="/patient/{{ patient.id }}/?currentTab=4">{% if patient.name %}{{ patient.name }}{% else %}{{ patient.code }}{% endif %}</a></li>
                     {% endif %}
 
                     <li class="active">{% if creating %}{% trans "New fill" %}{% elif completed %}{% trans "Answers" %}{% else %}{% trans "Continue filling" %}{% endif %}</li>

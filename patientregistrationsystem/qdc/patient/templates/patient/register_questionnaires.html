@@ -17,8 +17,14 @@
                 <div class="container span6 offset3 well ">
 
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12">
+                        <div class="col-sm-6">
                             <h4>{% trans "Entrance evaluation" %}</h4>
+                        </div>
+                        <div class="col-sm-6" style="text-align: right; vertical-align: bottom">
+                            {% if perms.patient.sensitive_data_patient %}
+                                <label for="code" >{% trans "Code" %}:</label>
+                                <span class="disabled"> {{ code }} </span>
+                            {% endif %}
                         </div>
                     </div>
 
