@@ -54,7 +54,7 @@ class GroupForm(ModelForm):
 
         model = Group
 
-        fields = ['title', 'description']
+        fields = ['title', 'description', 'code']
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control',
@@ -63,7 +63,8 @@ class GroupForm(ModelForm):
                                       'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
-                                           'data-error': _('Description must be filled.')})
+                                           'data-error': _('Description must be filled.')}),
+            'code': TextInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -332,7 +333,7 @@ class ResearchProjectForm(ModelForm):
 class PublicationForm(ModelForm):
     class Meta:
         model = Publication
-        fields = ['title', 'citation', 'url', 'experiments']
+        fields = ['title', 'citation', 'url']
 
         widgets = {
             'title': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '2',
@@ -341,7 +342,6 @@ class PublicationForm(ModelForm):
             'citation': Textarea(attrs={'class': 'form-control', 'required': "", 'rows': '6',
                                         'data-error': _('Citation must be filled.')}),
             'url': URLInput(attrs={'class': 'form-control'}),
-            'experiments': CheckboxSelectMultiple()
         }
 
 

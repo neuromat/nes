@@ -333,11 +333,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # update data of participants from advanced search
         # participants from questionnaires (entrance/experiment)
-        if 'group_selected_list' in request.session:
-            participants_entrance_questionnaire_list = request.session['participants_from_entrance_questionnaire']
-            export.set_participants_from_entrance_questionnaire(participants_entrance_questionnaire_list)
-            participants_experiment_questionnaire_list = request.session['participants_from_experiment_questionnaire']
-            export.set_participants_from_experiment_questionnaire(participants_experiment_questionnaire_list)
+        # if 'group_selected_list' in request.session:
+            # participants_entrance_questionnaire_list = request.session['participants_from_entrance_questionnaire']
+            # export.set_participants_from_entrance_questionnaire(participants_entrance_questionnaire_list)
+            # participants_experiment_questionnaire_list = request.session['participants_from_experiment_questionnaire']
+            # export.set_participants_from_experiment_questionnaire(participants_experiment_questionnaire_list)
 
         # all participants filtered
         if 'filtered_participant_data' in request.session:
@@ -429,7 +429,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             messages.error(request, error_msg)
             return render(request, template_name)
 
-        # create arquivo de texto de protocolo experimental
+        # create arquivo de texto de protocolo experimental and diagnosis/participant csv file for each group
         if 'group_selected_list' in request.session:
             group_list = request.session['group_selected_list']
             language_code = request.LANGUAGE_CODE
@@ -494,7 +494,6 @@ def export_view(request, template_name="export/export_data.html"):
     selected_participant = []
     selected_diagnosis = []
     selected_ev_quest_experiments = []
-    questionnaires_experiment_list_final = []
     questionnaires_experiment_fields_list = []
 
     if request.method == "POST":
@@ -572,26 +571,23 @@ def export_view(request, template_name="export/export_data.html"):
                 heading_type = None
                 responses_type = None
 
-                if questionnaires_selected_list:
+                if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data['per_participant']
                     per_questionnaire = export_form.cleaned_data['per_questionnaire']
                     heading_type = export_form.cleaned_data['headings']
                     responses_type = export_form.cleaned_data['responses']
-                    questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
-                                                                    request.LANGUAGE_CODE)
+
+                    if questionnaires_selected_list:
+                        questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
+                                                                        request.LANGUAGE_CODE)
+
+                    if experiment_questionnaires_list:
+                        experiment_questionnaires_list = update_questionnaire_list(experiment_questionnaires_list,
+                                                                                   heading_type, request.LANGUAGE_CODE)
+                        per_experiment = True
 
                     update_participants_list(participants_list, heading_type)
                     update_diagnosis_list(diagnosis_list, heading_type)
-                if experiment_questionnaires_list:
-                    per_participant = export_form.cleaned_data['per_participant']
-                    per_questionnaire = export_form.cleaned_data['per_questionnaire']
-                    heading_type = export_form.cleaned_data['headings']
-                    responses_type = export_form.cleaned_data['responses']
-                    experiment_questionnaires_list = update_questionnaire_list(experiment_questionnaires_list,
-                                                                               heading_type, request.LANGUAGE_CODE)
-                    update_participants_list(participants_list, heading_type)
-                    update_diagnosis_list(diagnosis_list, heading_type)
-                    per_experiment = True
 
                 export_instance = create_export_instance(request.user)
 
@@ -609,9 +605,8 @@ def export_view(request, template_name="export/export_data.html"):
                                                 responses_type, heading_type, input_filename, request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
-                complete_experiment_filename = True
 
-                if complete_filename and complete_experiment_filename:
+                if complete_filename:
 
                     messages.success(request, _("Export was finished correctly"))
 
@@ -639,7 +634,7 @@ def export_view(request, template_name="export/export_data.html"):
             messages.error(request, _("No data was select. Export data was not generated."))
 
     surveys = Questionnaires()
-
+    # Exportacao de experimentos
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
         questionnaires_experiment_list_final = []
@@ -657,7 +652,7 @@ def export_view(request, template_name="export/export_data.html"):
                     for questionnaire_response in questionnaire_response_list:
                         completed = surveys.get_participant_properties(questionnaire_id,
                                                                        questionnaire_response.token_id, "completed")
-                        if completed:
+                        if completed != "N" and completed != "":
                             questionnaire_dic = {
                                 'questionnaire': questionnaire,
                                 'token': str(questionnaire_response.token_id),
@@ -671,22 +666,27 @@ def export_view(request, template_name="export/export_data.html"):
         questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
             questionnaires_experiment_list_final, request.LANGUAGE_CODE)
 
-    # obter a lista de participantes selecionados que tem questionnarios de entrada preenchidos
+    # obter a lista dos participantes filtrados que tem questionarios de entrada preenchidos
     patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
         patient_id__in=request.session['filtered_participant_data'])
-    # questionnaires_list_final_temp = []
-    surveys_with_ev_list_temp = []
+
+    surveys_with_ev_list = []
     participants_list_from_entrance_questionnaire = []
+    surveys_id_list = []
     # verificar se os questionnarios estão completos
     for patient_questionnaire_response in patient_questionnaire_response_list:
 
         questionnaire = Survey.objects.filter(id=patient_questionnaire_response.survey_id).values('lime_survey_id')
-        completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
-                                                       patient_questionnaire_response.token_id, "completed")
-        if completed:
-            surveys_with_ev_list_temp.append(questionnaire)
-            participants_list_from_entrance_questionnaire.append(patient_questionnaire_response.patient_id)
-
+        lime_survey_id = questionnaire[0]['lime_survey_id']
+        if not lime_survey_id in surveys_id_list:
+            completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
+                                                           patient_questionnaire_response.token_id, "completed")
+            # completed diff 'N'
+            if completed != 'N':
+                surveys_id_list.append(lime_survey_id)
+                surveys_with_ev_list.append(questionnaire)
+                participants_list_from_entrance_questionnaire.append(patient_questionnaire_response.patient_id)
+    # lista de participantes com questionarios de entrada completos
     request.session['participants_from_entrance_questionnaire'] = participants_list_from_entrance_questionnaire
     # Check if limesurveyDB is available
     limesurvey_available = check_limesurvey_access(request, surveys)
@@ -700,13 +700,8 @@ def export_view(request, template_name="export/export_data.html"):
 
     questionnaires_list_final = []
 
-    # entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
-    #                                                                                            flat=True))
-    # surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list).\
-    #     values('lime_survey_id')
-
     # load the questionnaires_list_final with the lime_survey_id
-    for survey in surveys_with_ev_list_temp:
+    for survey in surveys_with_ev_list:
         for questionnaire in questionnaires_list:
             if survey[0]['lime_survey_id'] == questionnaire['sid']:
                 questionnaires_list_final.append(questionnaire)
@@ -921,20 +916,7 @@ def get_questionnaire_fields(questionnaire_code_list, language_current="pt-BR"):
             for question in questionnaire_questions[0]:
                 if question not in questionnaire_evaluation_fields_excluded:
 
-                    # properties = questionnaire_lime_survey.get_question_properties(question, language)
-
-                    # record_question["output_list"].append({"field": question,
-                    #                                        "header": question})
-
                     description = questionnaire_questions_full[0][index]
-
-                    # if len(description)+3+len(question) > 120:
-                    #     length = 120 - (3+len(question))
-                    #
-                    #     description_part1 = description[:length-30]
-                    #     description_part2 = description[-25:]
-                    #     description = description_part1 + "..." + description_part2
-
                     record_question["output_list"].append({"field": question,
                                                            "header": question,
                                                            "description": description
