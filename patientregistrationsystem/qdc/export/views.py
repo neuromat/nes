@@ -624,29 +624,34 @@ def export_view(request, template_name="export/export_data.html"):
         group_list = request.session['group_selected_list']
         questionnaires_experiment_list_final = []
         participants_list_from_experiment_questionnaire = []
+
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
-
             if group.experimental_protocol is not None:
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
                     subject_of_group__group=group).distinct('data_configuration_tree')
+                questionnaire_in_list = []
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
                     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     questionnaire_id = questionnaire.survey.lime_survey_id
-                    for questionnaire_response in questionnaire_response_list:
-                        completed = surveys.get_participant_properties(questionnaire_id,
-                                                                       questionnaire_response.token_id, "completed")
-                        if completed != "N" and completed != "":
-                            questionnaire_dic = {
-                                'questionnaire': questionnaire,
-                                'token': str(questionnaire_response.token_id),
-                                'group_id': group_id
-                            }
-                            questionnaires_experiment_list_final.append(questionnaire_dic)
-                            participants_list_from_experiment_questionnaire.append(
-                                questionnaire_response.subject_of_group.subject.patient_id)
 
+                    for questionnaire_response in questionnaire_response_list:
+                        if questionnaire_id not in questionnaire_in_list:
+                            completed = surveys.get_participant_properties(questionnaire_id,
+                                                                               questionnaire_response.token_id, "completed")
+                            if completed is not None and completed != "N" and completed != "":
+                                questionnaire_dic = {
+                                    'questionnaire': questionnaire,
+                                    'token': str(questionnaire_response.token_id),
+                                    'group_id': group_id
+                                }
+                                # questionnaire_in_list.append(questionnaire_id)
+                                participants_list_from_experiment_questionnaire.append(
+                                    questionnaire_response.subject_of_group.subject.patient_id)
+                                questionnaires_experiment_list_final.append(questionnaire_dic)
+
+        request.session['participants_in_experiment_questionnaire'] = participants_list_from_experiment_questionnaire
         questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
             questionnaires_experiment_list_final, request.LANGUAGE_CODE)
 
@@ -666,11 +671,11 @@ def export_view(request, template_name="export/export_data.html"):
             completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
                                                            patient_questionnaire_response.token_id, "completed")
             # completed diff 'N'
-            if completed != 'N':
+            if completed is not None and completed != "N" and completed != "":
                 surveys_id_list.append(lime_survey_id)
                 surveys_with_ev_list.append(questionnaire)
                 participants_list_from_entrance_questionnaire.append(patient_questionnaire_response.patient_id)
-
+    request.session['participant_in_entrance_questionnaire'] = participants_list_from_entrance_questionnaire
     # Check if limesurveyDB is available
     limesurvey_available = check_limesurvey_access(request, surveys)
 
