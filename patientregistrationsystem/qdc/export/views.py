@@ -376,6 +376,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # process per questionnaire data
         if 'group_selected_list' in request.session:
+            export.group_list = request.session['group_selected_list']
             error_msg = export.process_per_entrance_questionnaire()
             error_exp_msg = export.process_per_experiment_questionnaire()
         else:
@@ -644,9 +645,9 @@ def export_view(request, template_name="export/export_data.html"):
                                 questionnaire_dic = {
                                     'questionnaire': questionnaire,
                                     'token': str(questionnaire_response.token_id),
-                                    # 'group_id': group_id
+                                    'group_id': group_id
                                 }
-                                # questionnaire_in_list.append(questionnaire_id)
+                                questionnaire_in_list.append(questionnaire_id)
                                 participants_list_from_experiment_questionnaire.append(
                                     questionnaire_response.subject_of_group.subject.patient_id)
                                 questionnaires_experiment_list_final.append(questionnaire_dic)
@@ -820,7 +821,7 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
     for questionnaire in questionnaire_code_list:
         questionnaire_id = questionnaire['questionnaire'].survey.lime_survey_id
         token = questionnaire['token']
-        # group_id = questionnaire['group_id']
+        group_id = questionnaire['group_id']
 
         language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_current)
 
@@ -830,7 +831,8 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
 
         if not isinstance(responses_string, dict):
 
-            record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
+            record_question = {'group_id':group_id, 'sid': questionnaire_id, "title": questionnaire_title,
+                               "output_list": []}
 
             questionnaire_questions = perform_csv_response(responses_string)
 

@@ -198,6 +198,7 @@ class ExportExecution:
         self.root_directory = ""
         self.participants_filtered_data = []
         self.questionnaire_code_and_id = {}
+        self.group_list = []
 
     def set_directory_base(self, user_id, export_id):
         self.directory_base = path.join(self.base_directory_name, str(user_id))
@@ -837,10 +838,10 @@ class ExportExecution:
             questionnaire_id = questionnaire["id"]
             language = questionnaire["language"]
             # dados do grupo
-            group_id = questionnaire["group_id"]
+            group_id = questionnaire['group_id']
             group = get_object_or_404(Group, pk=group_id)
             path_group = "Group_" + group.title
-            # cria pasta com o nome do grupo ex. Users/..../NES_EXPORT/Per_experiment/Group_xxx
+                # cria pasta com o nome do grupo ex. Users/..../NES_EXPORT/Per_experiment/Group_xxx
             error_msg, path_per_group = create_directory(path_per_questionnaire, path_group)
             if error_msg != "":
                 return error_msg
@@ -1417,14 +1418,14 @@ class ExportExecution:
 
             if group.experimental_protocol is not None:
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                    subject_of_group__group=group).distinct('data_configuration_tree')
+                        subject_of_group__group=group).distinct('data_configuration_tree')
                 for questionnaire_response in questionnaire_response_list:
                     completed = questionnaire_lime_survey.get_participant_properties(
-                        questionnaire_id, questionnaire_response.token_id, "completed")
+                            questionnaire_id, questionnaire_response.token_id, "completed")
 
                     if completed is not None and completed != "N" and completed != "":
-                        questionnaire_responses.append(questionnaire_response)
-                        questionnaire_exists = True
+                            questionnaire_responses.append(questionnaire_response)
+                            questionnaire_exists = True
 
         else:
             questionnaire_exists = QuestionnaireResponse.objects.filter(
