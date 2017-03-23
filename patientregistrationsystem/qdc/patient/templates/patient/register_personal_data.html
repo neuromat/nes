@@ -23,7 +23,7 @@
                             <h4>{% trans "Basic Information" %}</h4>
                         </div>
                         <div class="col-sm-6" style="text-align: right; vertical-align: bottom">
-                            {% if not editing and perms.patient.sensitive_data_patient %}
+                            {% if perms.patient.sensitive_data_patient and code %}
                                 <label for="code" >{% trans "Code" %}:</label>
                                 <span class="disabled"> {{ code }} </span>
                             {% endif %}
@@ -58,7 +58,7 @@
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
                                     {{ patient_form.name }}
                                 </div>
-{#                                <div id="div_name_message" class="help-block with-errors"></div>#}
+                                <div id="div_name_message" class="help-block with-errors"></div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-6">

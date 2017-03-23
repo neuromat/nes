@@ -21,8 +21,8 @@ $(document).ready(function () {
             $("#id_address_complement").prop('disabled', true);
             $("#id_email").prop('disabled', true);
             $("#id_telephone_set-0-number").parents('.telephones').hide();
-            //$("#div_name").removeClass("form-group has-error");
-            //$("#div_name_message").children("ul:first").remove();
+            $("#div_name").removeClass("form-group has-error");
+            $("#div_name_message").children("ul:first").remove();
         }
         else
         {
@@ -37,7 +37,7 @@ $(document).ready(function () {
             $("#id_address_complement").prop('disabled', false);
             $("#id_email").prop('disabled', false);
             $("#id_telephone_set-0-number").parents('.telephones').show();
-            //$("#div_name").attr("class", "form-group");
+            $("#div_name").attr("class", "form-group");
         }
     });
 
@@ -155,16 +155,23 @@ $(document).ready(function () {
     $('#id_zipcode').mask('99999-999');
 
     $("#savetab").click(function () {
+        var name_value = $.trim($("#id_name").val());
         var date_birth_value = $.trim($("#id_date_birth").val());
         var gender_value = $.trim($("#id_gender").val());
         var cpf_value = $.trim($("#id_cpf").val());
         var anonymous = $('#id_anonymous');
 
-        if (date_birth_value.length == 0 || gender_value.length == 0) {
+        if (anonymous.is(":checked") && date_birth_value.length == 0 || gender_value.length == 0) {
             showErrorMessageTemporary(gettext("Obligatory fields must be filled."));
             jumpToElement('id_date_birth');
             document.getElementById('id_date_birth').focus();
             document.getElementById('id_gender').focus();
+        } else if (!anonymous.is(":checked") && name_value.length == 0 || date_birth_value.length == 0 || gender_value.length == 0) {
+            showErrorMessageTemporary(gettext("Obligatory fields must be filled."));
+            jumpToElement('id_name');
+            document.getElementById('id_date_birth').focus();
+            document.getElementById('id_gender').focus();
+            document.getElementById('id_name').focus();
         } else {
             var email_value = $.trim($('#id_email').val());
 
