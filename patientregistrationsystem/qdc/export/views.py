@@ -639,12 +639,12 @@ def export_view(request, template_name="export/export_data.html"):
                     for questionnaire_response in questionnaire_response_list:
                         if questionnaire_id not in questionnaire_in_list:
                             completed = surveys.get_participant_properties(questionnaire_id,
-                                                                               questionnaire_response.token_id, "completed")
+                                                                           questionnaire_response.token_id, "completed")
                             if completed is not None and completed != "N" and completed != "":
                                 questionnaire_dic = {
                                     'questionnaire': questionnaire,
                                     'token': str(questionnaire_response.token_id),
-                                    'group_id': group_id
+                                    # 'group_id': group_id
                                 }
                                 # questionnaire_in_list.append(questionnaire_id)
                                 participants_list_from_experiment_questionnaire.append(
@@ -820,7 +820,7 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
     for questionnaire in questionnaire_code_list:
         questionnaire_id = questionnaire['questionnaire'].survey.lime_survey_id
         token = questionnaire['token']
-        group_id = questionnaire['group_id']
+        # group_id = questionnaire['group_id']
 
         language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_current)
 
@@ -830,8 +830,7 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
 
         if not isinstance(responses_string, dict):
 
-            record_question = {'group_id': group_id, 'sid': questionnaire_id, "title": questionnaire_title,
-                               "output_list": []}
+            record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
 
             questionnaire_questions = perform_csv_response(responses_string)
 
