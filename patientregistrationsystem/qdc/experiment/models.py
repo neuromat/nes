@@ -741,7 +741,7 @@ class Component(models.Model):
         ("eeg", _("EEG")),
         ("emg", _("EMG")),
         ("tms", _("TMS")),
-        ("digital_game_phase", _("Digital game phase")),
+        ("digital_game_phase", _("Goalkeeper game phase")),
         ("generic_data_collection", _("Generic data collection")),
     )
 

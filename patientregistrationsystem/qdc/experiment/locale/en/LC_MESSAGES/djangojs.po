@@ -465,7 +465,7 @@ msgid "TMS"
 msgstr ""
 
 #: experiment/models.py:744
-msgid "Digital game phase"
+msgid "Goalkeeper game phase"
 msgstr ""
 
 #: experiment/templates/experiment/ad_converter_register.html:43
@@ -1238,15 +1238,15 @@ msgid "There is no changes to save"
 msgstr ""
 
 #: experiment/views.py:6014
-msgid "Digital game phase data collection created successfully."
+msgid "Goalkeeper game phase data collection created successfully."
 msgstr ""
 
 #: experiment/views.py:6054
-msgid "Digital game phase data removed successfully."
+msgid "Goalkeeper game phase data removed successfully."
 msgstr ""
 
 #: experiment/views.py:6091
-msgid "Digital game phase data updated successfully."
+msgid "Goalkeeper game phase data updated successfully."
 msgstr ""
 
 #: experiment/views.py:6169 experiment/views.py:10489

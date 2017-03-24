@@ -185,7 +185,7 @@
                 <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/digital_game_phase">{% get_name_or_code subject.patient.id %}</a></li>
 
                 {% if creating %}
-                    <li class="active">{% trans "New digital game phase data file" %}</li>
+                    <li class="active">{% trans "New goalkeeper game phase data file" %}</li>
                 {% else %}
                     <li class="active">{{ digital_game_phase_data_form.description.value }}</li>
                 {% endif %}
@@ -226,7 +226,7 @@
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
 
-                <h4>{% trans "Digital game phase data collection" %}</h4>
+                <h4>{% trans "Goalkeeper game phase data collection" %}</h4>
 
                     <div id="data_collection">
 
@@ -281,7 +281,7 @@
                         <div class="row">
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group">
-                                    <label class="control-label">{% trans "Digital game phase data collection description" %} <b style="color: red;">*</b></label>
+                                    <label class="control-label">{% trans "Goalkeeper game phase data collection description" %} <b style="color: red;">*</b></label>
                                     {{ digital_game_phase_data_form.description }}
                                     <div class="help-block with-errors"></div>
                                 </div>
@@ -370,7 +370,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
-                    {% trans "Are you sure you want to delete digital game phase data?" %}
+                    {% trans "Are you sure you want to delete goalkeeper game phase data?" %}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>

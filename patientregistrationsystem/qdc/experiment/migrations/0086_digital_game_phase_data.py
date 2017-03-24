@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
             options={
                 'get_latest_by': 'history_date',
                 'ordering': ('-history_date', '-history_id'),
-                'verbose_name': 'historical digital game phase data',
+                'verbose_name': 'historical goalkeeper game phase data',
             },
         ),
         migrations.AlterField(

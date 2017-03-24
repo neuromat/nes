@@ -467,8 +467,8 @@ msgid "TMS"
 msgstr ""
 
 #: experiment/models.py:744
-msgid "Digital game phase"
-msgstr "Fase de jogo eletrônico"
+msgid "Goalkeeper game phase"
+msgstr "Fase de jogo do goleiro"
 
 #: experiment/templates/experiment/ad_converter_register.html:43
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:46
@@ -1247,16 +1247,16 @@ msgid "There is no changes to save"
 msgstr "Não há mudanças a salvar."
 
 #: experiment/views.py:6014
-msgid "Digital game phase data collection created successfully."
-msgstr "Dados de jogo eletrônico criada com sucesso."
+msgid "Goalkeeper game phase data collection created successfully."
+msgstr "Dados de jogo do goleiro criada com sucesso."
 
 #: experiment/views.py:6054
-msgid "Digital game phase data removed successfully."
-msgstr "Dados de jogo eletrônico removidos com sucesso."
+msgid "Goalkeeper game phase data removed successfully."
+msgstr "Dados de jogo do goleiro removidos com sucesso."
 
 #: experiment/views.py:6091
-msgid "Digital game phase data updated successfully."
-msgstr "Dados de jogo eletrônico atualizados com sucesso."
+msgid "Goalkeeper game phase data updated successfully."
+msgstr "Dados de jogo do goleiro atualizados com sucesso."
 
 #: experiment/views.py:6169 experiment/views.py:10489
 msgid "TMS position updated successfully."
