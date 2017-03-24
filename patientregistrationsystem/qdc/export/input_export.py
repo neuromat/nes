@@ -5,9 +5,9 @@ from survey.views import get_questionnaire_language
 
 
 BASE_DIRECTORY = "NES_EXPORT"
-PER_PARTICIPANT_DIRECTORY = "Per_participant"
-PER_QUESTIONNAIRE_DIRECTORY = "Per_questionnaire"
-PER_EXPERIMENT_DIRECTORY = "Per_experiment"
+PER_PARTICIPANT_DIRECTORY = "Participant_data"
+PER_QUESTIONNAIRE_DIRECTORY = "Questionnaire_data"
+PER_EXPERIMENT_DIRECTORY = "Experiment_data"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 
