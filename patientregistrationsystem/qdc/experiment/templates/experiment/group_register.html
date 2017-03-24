@@ -107,24 +107,6 @@
                     </div>
                 </div>
 
-                {% if group.code%}
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group {% if group_form.errors.code %}has-error{% endif %}">
-                            <label class="control-label">{% trans "Code" %}</label>
-                            {{ group_form.code }}
-                            <div class="help-block with-errors">
-                                {% if group_form.code.errors %}
-                                    <span>
-                                    {% for error in group_form.code.errors %}{{ error }}{% endfor %}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
                         <a href="/experiment/group/edit/{{ group.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
