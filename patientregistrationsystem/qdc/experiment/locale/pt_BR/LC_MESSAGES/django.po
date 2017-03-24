@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-14 12:10-0300\n"
+"POT-Creation-Date: 2017-03-24 09:25-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: experiment/forms.py:33 experiment/forms.py:62 experiment/forms.py:303
-#: experiment/forms.py:339
+#: experiment/forms.py:33 experiment/forms.py:62 experiment/forms.py:304
+#: experiment/forms.py:340
 msgid "Title must be filled."
 msgstr "Título deve ser preenchido."
 
-#: experiment/forms.py:37 experiment/forms.py:66 experiment/forms.py:308
+#: experiment/forms.py:37 experiment/forms.py:66 experiment/forms.py:309
 #: experiment/forms.py:377 experiment/forms.py:423 experiment/forms.py:909
 #: experiment/forms.py:949 experiment/forms.py:989 experiment/forms.py:1144
 #: experiment/forms.py:1218 experiment/forms.py:1263 experiment/forms.py:1307
@@ -31,122 +31,122 @@ msgstr "Título deve ser preenchido."
 msgid "Description must be filled."
 msgstr "Descrição deve ser preenchida."
 
-#: experiment/forms.py:78 experiment/forms.py:309 experiment/forms.py:312
+#: experiment/forms.py:79 experiment/forms.py:310 experiment/forms.py:313
 #: experiment/forms.py:364 experiment/forms.py:898 experiment/forms.py:941
 #: experiment/forms.py:965 experiment/forms.py:969 experiment/forms.py:1198
-#: experiment/forms.py:1320 experiment/forms.py:1349 experiment/views.py:4425
+#: experiment/forms.py:1320 experiment/forms.py:1349 experiment/views.py:4492
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: experiment/forms.py:79 experiment/forms.py:310 experiment/forms.py:313
+#: experiment/forms.py:80 experiment/forms.py:311 experiment/forms.py:314
 #: experiment/forms.py:365 experiment/forms.py:899 experiment/forms.py:942
 #: experiment/forms.py:966 experiment/forms.py:970 experiment/forms.py:1199
 #: experiment/forms.py:1321 experiment/forms.py:1350
 msgid "mm/dd/yyyy"
 msgstr "dd/mm/aaaa"
 
-#: experiment/forms.py:81 experiment/forms.py:367 experiment/forms.py:901
+#: experiment/forms.py:82 experiment/forms.py:367 experiment/forms.py:901
 #: experiment/forms.py:944 experiment/forms.py:1201 experiment/forms.py:1323
 #: experiment/forms.py:1352
 msgid "Fill date must be filled."
 msgstr "Data de preenchimento deve ser preenchida"
 
-#: experiment/forms.py:106 experiment/forms.py:575 experiment/forms.py:683
+#: experiment/forms.py:107 experiment/forms.py:575 experiment/forms.py:683
 #: experiment/forms.py:701 experiment/forms.py:752
 msgid "Identification must be filled."
 msgstr "Identificação deve ser preenchida."
 
-#: experiment/forms.py:111 experiment/forms.py:159
+#: experiment/forms.py:112 experiment/forms.py:160
 msgid "Time"
 msgstr "Tempo"
 
-#: experiment/forms.py:119
+#: experiment/forms.py:120
 msgid "Duration time must be filled in."
 msgstr "Tempo da duração deve ser preenchido"
 
-#: experiment/forms.py:127
+#: experiment/forms.py:128
 msgid "Duration unit must be filled in."
 msgstr "Unidade da duração deve ser preenchida"
 
-#: experiment/forms.py:136 experiment/views.py:7058
+#: experiment/forms.py:137 experiment/views.py:7285
 msgid "Fixed"
 msgstr "Fixa"
 
-#: experiment/forms.py:136 experiment/views.py:7058
+#: experiment/forms.py:137 experiment/views.py:7285
 msgid "Random"
 msgstr "Aleatória"
 
-#: experiment/forms.py:156
+#: experiment/forms.py:157
 msgid "Quantity of repetitions must be filled."
 msgstr "Quantidade de repetições deve ser preenchida."
 
-#: experiment/forms.py:158
+#: experiment/forms.py:159
 msgid "Interval must be filled."
 msgstr "Intervalo deve ser preenchido"
 
-#: experiment/forms.py:163
+#: experiment/forms.py:164
 msgid "Interval unit must be filled."
 msgstr "Unidade do intervalo deve ser preenchida"
 
-#: experiment/forms.py:174
+#: experiment/forms.py:175
 msgid "Instruction must be filled."
 msgstr "Instrução deve ser preenchida."
 
-#: experiment/forms.py:185
+#: experiment/forms.py:186
 msgid "Stimulus type must be filled."
 msgstr "Tipo do estímulo deve ser preenchido."
 
-#: experiment/forms.py:197 experiment/forms.py:370
+#: experiment/forms.py:198 experiment/forms.py:370
 msgid "EEG setting type must be filled."
 msgstr "Tipo de configuração de EEG deve ser preenchido."
 
-#: experiment/forms.py:215 experiment/forms.py:904
+#: experiment/forms.py:216 experiment/forms.py:904
 msgid "EMG setting type must be filled."
 msgstr "Tipo de configuração de EMG deve ser preenchido."
 
-#: experiment/forms.py:233 experiment/forms.py:1204
+#: experiment/forms.py:234 experiment/forms.py:1204
 msgid "TMS setting type must be filled."
 msgstr "Tipo de configuração de TMS deve ser preenchido."
 
-#: experiment/forms.py:250
+#: experiment/forms.py:251
 msgid "Software version must be filled."
 msgstr "Versão do software deve ser preenchida."
 
-#: experiment/forms.py:252
+#: experiment/forms.py:253
 msgid "Context tree must be filled."
 msgstr "Árvore de contexto deve ser preenchida"
 
-#: experiment/forms.py:270
+#: experiment/forms.py:271
 msgid "Information type must be filled."
 msgstr "Tipo de informação deve ser preenchido."
 
-#: experiment/forms.py:277 experiment/models.py:801
+#: experiment/forms.py:278 experiment/models.py:801
 msgid "Sequence"
 msgstr "Em uma sequência"
 
-#: experiment/forms.py:278 experiment/models.py:801
+#: experiment/forms.py:279 experiment/models.py:801
 msgid "Parallel"
 msgstr "De forma paralela"
 
-#: experiment/forms.py:280
+#: experiment/forms.py:281
 msgid "Organization type must be filled in."
 msgstr "Tipo de organização deve ser escolhido."
 
-#: experiment/forms.py:288 experiment/forms.py:353
+#: experiment/forms.py:289 experiment/forms.py:353
 msgid "Quantity must be filled."
 msgstr "Quantidade deve ser preenchida."
 
-#: experiment/forms.py:293
-#: experiment/templates/experiment/research_project_list.html:76
+#: experiment/forms.py:294
+#: experiment/templates/experiment/research_project_list.html:59
 #: experiment/templates/experiment/research_project_register.html:116
 msgid "Responsible"
 msgstr "Responsável"
 
-#: experiment/forms.py:311
+#: experiment/forms.py:312
 msgid "Initial date must be filled."
 msgstr "Data de início deve ser preenchida"
 
-#: experiment/forms.py:342
+#: experiment/forms.py:343
 msgid "Citation must be filled."
 msgstr "Citação deve ser preenchida."
 
@@ -329,7 +329,7 @@ msgstr "Máquina EEG"
 #: experiment/templates/experiment/amplifier_register.html:72
 #: experiment/templates/experiment/eeg_setting_register.html:115
 #: experiment/templates/experiment/emg_electrode_setting_amplifier.html:101
-#: experiment/views.py:10942
+#: experiment/views.py:11169
 msgid "Amplifier"
 msgstr "Amplificador"
 
@@ -360,7 +360,7 @@ msgstr "Conversor A/D"
 #: experiment/templates/experiment/tmsdevice_new.html:72
 #: experiment/templates/experiment/tmsdevice_register.html:53
 #: experiment/templates/experiment/tmsdevice_register.html:72
-#: experiment/views.py:10967
+#: experiment/views.py:11194
 msgid "TMS device"
 msgstr "Dispositivo TMS"
 
@@ -478,26 +478,37 @@ msgstr "Tarefa para o participante"
 msgid "Task for experimenter"
 msgstr "Tarefa para o experimentador"
 
-#: experiment/models.py:741 experiment/templates/experiment/subjects.html:162
+#: experiment/models.py:741 experiment/templates/experiment/subjects.html:175
 msgid "EEG"
 msgstr "EEG"
 
-#: experiment/models.py:742 experiment/templates/experiment/subjects.html:180
+#: experiment/models.py:742 experiment/templates/experiment/subjects.html:193
 msgid "EMG"
 msgstr "EMG"
 
-#: experiment/models.py:743 experiment/templates/experiment/subjects.html:198
+#: experiment/models.py:743 experiment/templates/experiment/subjects.html:211
 msgid "TMS"
 msgstr ""
 
 #: experiment/models.py:744
-msgid "Digital game phase"
-msgstr "Fase de jogo eletrônico"
+msgid "Goalkeeper game phase"
+msgstr "Fase de jogo do goleiro"
 
 #: experiment/models.py:745
 #: experiment/templates/experiment/subject_generic_data_collection_data_form.html:229
 msgid "Generic data collection"
 msgstr "Coleta genérica de dados"
+
+#: experiment/models.py:904
+#: experiment/templates/experiment/group_register.html:114
+#: experiment/templates/experiment/show_selected_participants.html:51
+msgid "Code"
+msgstr "Código"
+
+#: experiment/models.py:909
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:65
+msgid "Group"
+msgstr "Grupos"
 
 #: experiment/templates/experiment/ad_converter_list.html:42
 #: experiment/templates/experiment/ad_converter_register.html:51
@@ -538,6 +549,7 @@ msgstr "Coleta genérica de dados"
 #: experiment/templates/experiment/experiment_register.html:49
 #: experiment/templates/experiment/filtertype_list.html:42
 #: experiment/templates/experiment/filtertype_register.html:51
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:26
 #: experiment/templates/experiment/group_register.html:68
 #: experiment/templates/experiment/manufacturer_list.html:42
 #: experiment/templates/experiment/manufacturer_register.html:51
@@ -547,6 +559,8 @@ msgstr "Coleta genérica de dados"
 #: experiment/templates/experiment/muscle_register.html:51
 #: experiment/templates/experiment/muscle_side_register.html:51
 #: experiment/templates/experiment/muscle_subdivision_register.html:51
+#: experiment/templates/experiment/publication_add_experiment.html:25
+#: experiment/templates/experiment/publication_list.html:42
 #: experiment/templates/experiment/publication_register.html:57
 #: experiment/templates/experiment/questionnaire_view.html:56
 #: experiment/templates/experiment/research_project_list.html:42
@@ -639,7 +653,7 @@ msgstr "Cadastros"
 #: experiment/templates/experiment/ad_converter_register.html:53
 #: experiment/templates/experiment/ad_converter_register.html:72
 #: experiment/templates/experiment/emg_setting_ad_converter.html:82
-#: experiment/views.py:10957
+#: experiment/views.py:11184
 msgid "A/D converter"
 msgstr "Conversor A/D"
 
@@ -664,7 +678,7 @@ msgstr "Lista de conversor A/D"
 #: experiment/templates/experiment/tmsdevice_list.html:57
 #: experiment/templates/experiment/tmsdevice_new.html:85
 #: experiment/templates/experiment/tmsdevice_register.html:85
-#: experiment/views.py:6990
+#: experiment/views.py:7217
 msgid "Identification"
 msgstr "Identificação"
 
@@ -695,7 +709,7 @@ msgstr "Identificação"
 #: experiment/templates/experiment/tmsdevice_list.html:58
 #: experiment/templates/experiment/tmsdevice_new.html:76
 #: experiment/templates/experiment/tmsdevice_register.html:76
-#: experiment/views.py:10918
+#: experiment/views.py:11145
 msgid "Manufacturer"
 msgstr "Fabricante"
 
@@ -731,8 +745,8 @@ msgstr "Resolução (bits)"
 #: experiment/templates/experiment/muscle_list.html:65
 #: experiment/templates/experiment/muscle_register.html:110
 #: experiment/templates/experiment/muscle_register.html:148
-#: experiment/templates/experiment/research_project_list.html:83
-#: experiment/templates/experiment/research_project_list.html:132
+#: experiment/templates/experiment/publication_list.html:66
+#: experiment/templates/experiment/research_project_list.html:66
 #: experiment/templates/experiment/research_project_register.html:233
 #: experiment/templates/experiment/software_list.html:66
 #: experiment/templates/experiment/software_register.html:128
@@ -765,6 +779,7 @@ msgstr "Ver"
 #: experiment/templates/experiment/muscle_list.html:80
 #: experiment/templates/experiment/muscle_register.html:129
 #: experiment/templates/experiment/muscle_register.html:157
+#: experiment/templates/experiment/publication_register.html:145
 #: experiment/templates/experiment/research_project_register.html:212
 #: experiment/templates/experiment/research_project_register.html:247
 #: experiment/templates/experiment/software_list.html:83
@@ -811,7 +826,8 @@ msgstr "Inserir novo"
 #: experiment/templates/experiment/experiment_register.html:320
 #: experiment/templates/experiment/filtertype_list.html:90
 #: experiment/templates/experiment/filtertype_register.html:145
-#: experiment/templates/experiment/group_register.html:367
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:204
+#: experiment/templates/experiment/group_register.html:385
 #: experiment/templates/experiment/manufacturer_list.html:86
 #: experiment/templates/experiment/manufacturer_register.html:110
 #: experiment/templates/experiment/material_list.html:90
@@ -820,7 +836,7 @@ msgstr "Inserir novo"
 #: experiment/templates/experiment/muscle_register.html:179
 #: experiment/templates/experiment/muscle_side_register.html:115
 #: experiment/templates/experiment/muscle_subdivision_register.html:140
-#: experiment/templates/experiment/publication_register.html:145
+#: experiment/templates/experiment/publication_register.html:167
 #: experiment/templates/experiment/questionnaire_view.html:229
 #: experiment/templates/experiment/research_project_register.html:269
 #: experiment/templates/experiment/software_list.html:90
@@ -845,7 +861,7 @@ msgstr "Inserir novo"
 #: experiment/templates/experiment/subject_tms_collection_list.html:129
 #: experiment/templates/experiment/subject_tms_data_form.html:420
 #: experiment/templates/experiment/subject_tms_data_form_template.html:283
-#: experiment/templates/experiment/subjects.html:266
+#: experiment/templates/experiment/subjects.html:279
 #: experiment/templates/experiment/tms_localization_system_list.html:97
 #: experiment/templates/experiment/tms_localization_system_position.html:107
 #: experiment/templates/experiment/tms_localization_system_register.html:174
@@ -969,10 +985,11 @@ msgstr "Edição"
 #: experiment/templates/experiment/filtertype_list.html:58
 #: experiment/templates/experiment/filtertype_register.html:85
 #: experiment/templates/experiment/group_register.html:103
-#: experiment/templates/experiment/group_register.html:143
-#: experiment/templates/experiment/group_register.html:281
+#: experiment/templates/experiment/group_register.html:161
+#: experiment/templates/experiment/group_register.html:299
 #: experiment/templates/experiment/material_list.html:58
 #: experiment/templates/experiment/material_register.html:85
+#: experiment/templates/experiment/publication_register.html:122
 #: experiment/templates/experiment/research_project_register.html:108
 #: experiment/templates/experiment/research_project_register.html:224
 #: experiment/templates/experiment/software_list.html:59
@@ -986,7 +1003,7 @@ msgstr "Edição"
 #: experiment/templates/experiment/tms_setting_tms_device.html:129
 #: experiment/templates/experiment/tmsdevice_new.html:94
 #: experiment/templates/experiment/tmsdevice_register.html:94
-#: experiment/views.py:6992
+#: experiment/views.py:7219
 msgid "Description"
 msgstr "Descrição"
 
@@ -1049,15 +1066,15 @@ msgstr "Relação sinal-ruído (dB)"
 #: experiment/templates/experiment/experiment_register.html:241
 #: experiment/templates/experiment/experiment_register.html:274
 #: experiment/templates/experiment/filtertype_register.html:122
-#: experiment/templates/experiment/group_register.html:112
-#: experiment/templates/experiment/group_register.html:216
-#: experiment/templates/experiment/group_register.html:287
+#: experiment/templates/experiment/group_register.html:130
+#: experiment/templates/experiment/group_register.html:234
+#: experiment/templates/experiment/group_register.html:305
 #: experiment/templates/experiment/manufacturer_register.html:85
 #: experiment/templates/experiment/material_register.html:94
 #: experiment/templates/experiment/muscle_register.html:85
 #: experiment/templates/experiment/muscle_side_register.html:87
 #: experiment/templates/experiment/muscle_subdivision_register.html:115
-#: experiment/templates/experiment/publication_register.html:123
+#: experiment/templates/experiment/publication_register.html:108
 #: experiment/templates/experiment/randon_configuration_line.html:10
 #: experiment/templates/experiment/randon_configuration_line.html:12
 #: experiment/templates/experiment/research_project_register.html:124
@@ -1131,10 +1148,10 @@ msgstr "Editar"
 #: experiment/templates/experiment/experiment_register.html:337
 #: experiment/templates/experiment/filtertype_register.html:132
 #: experiment/templates/experiment/filtertype_register.html:161
-#: experiment/templates/experiment/group_register.html:161
-#: experiment/templates/experiment/group_register.html:354
-#: experiment/templates/experiment/group_register.html:384
-#: experiment/templates/experiment/group_register.html:399
+#: experiment/templates/experiment/group_register.html:179
+#: experiment/templates/experiment/group_register.html:372
+#: experiment/templates/experiment/group_register.html:402
+#: experiment/templates/experiment/group_register.html:417
 #: experiment/templates/experiment/manufacturer_register.html:97
 #: experiment/templates/experiment/manufacturer_register.html:126
 #: experiment/templates/experiment/material_register.html:106
@@ -1145,8 +1162,9 @@ msgstr "Editar"
 #: experiment/templates/experiment/muscle_side_register.html:131
 #: experiment/templates/experiment/muscle_subdivision_register.html:127
 #: experiment/templates/experiment/muscle_subdivision_register.html:156
-#: experiment/templates/experiment/publication_register.html:132
-#: experiment/templates/experiment/publication_register.html:160
+#: experiment/templates/experiment/publication_register.html:154
+#: experiment/templates/experiment/publication_register.html:182
+#: experiment/templates/experiment/publication_register.html:197
 #: experiment/templates/experiment/research_project_register.html:143
 #: experiment/templates/experiment/research_project_register.html:256
 #: experiment/templates/experiment/research_project_register.html:285
@@ -1175,7 +1193,7 @@ msgstr "Editar"
 #: experiment/templates/experiment/subject_tms_data_form.html:436
 #: experiment/templates/experiment/subject_tms_data_form_template.html:263
 #: experiment/templates/experiment/subject_tms_data_form_template.html:299
-#: experiment/templates/experiment/subjects.html:284
+#: experiment/templates/experiment/subjects.html:297
 #: experiment/templates/experiment/tms_localization_system_position.html:94
 #: experiment/templates/experiment/tms_localization_system_position.html:123
 #: experiment/templates/experiment/tms_localization_system_register.html:161
@@ -1210,13 +1228,15 @@ msgstr "Excluir"
 #: experiment/templates/experiment/emg_setting_register.html:275
 #: experiment/templates/experiment/experiment_register.html:312
 #: experiment/templates/experiment/filtertype_register.html:137
-#: experiment/templates/experiment/group_register.html:359
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:108
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:178
+#: experiment/templates/experiment/group_register.html:377
 #: experiment/templates/experiment/manufacturer_register.html:102
 #: experiment/templates/experiment/material_register.html:111
 #: experiment/templates/experiment/muscle_register.html:171
 #: experiment/templates/experiment/muscle_side_register.html:104
 #: experiment/templates/experiment/muscle_subdivision_register.html:132
-#: experiment/templates/experiment/publication_register.html:137
+#: experiment/templates/experiment/publication_register.html:159
 #: experiment/templates/experiment/research_project_register.html:261
 #: experiment/templates/experiment/software_register.html:152
 #: experiment/templates/experiment/software_version_register.html:101
@@ -1295,11 +1315,13 @@ msgstr "Salvar"
 #: experiment/templates/experiment/experiment_register.html:335
 #: experiment/templates/experiment/filtertype_register.html:141
 #: experiment/templates/experiment/filtertype_register.html:160
-#: experiment/templates/experiment/group_register.html:363
-#: experiment/templates/experiment/group_register.html:382
-#: experiment/templates/experiment/group_register.html:398
-#: experiment/templates/experiment/group_register.html:412
-#: experiment/templates/experiment/group_register.html:429
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:107
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:177
+#: experiment/templates/experiment/group_register.html:381
+#: experiment/templates/experiment/group_register.html:400
+#: experiment/templates/experiment/group_register.html:416
+#: experiment/templates/experiment/group_register.html:430
+#: experiment/templates/experiment/group_register.html:447
 #: experiment/templates/experiment/manufacturer_register.html:106
 #: experiment/templates/experiment/manufacturer_register.html:125
 #: experiment/templates/experiment/material_register.html:115
@@ -1310,8 +1332,10 @@ msgstr "Salvar"
 #: experiment/templates/experiment/muscle_side_register.html:130
 #: experiment/templates/experiment/muscle_subdivision_register.html:136
 #: experiment/templates/experiment/muscle_subdivision_register.html:155
-#: experiment/templates/experiment/publication_register.html:141
-#: experiment/templates/experiment/publication_register.html:159
+#: experiment/templates/experiment/publication_add_experiment.html:84
+#: experiment/templates/experiment/publication_register.html:163
+#: experiment/templates/experiment/publication_register.html:181
+#: experiment/templates/experiment/publication_register.html:196
 #: experiment/templates/experiment/research_project_register.html:265
 #: experiment/templates/experiment/research_project_register.html:284
 #: experiment/templates/experiment/research_project_register.html:299
@@ -1349,7 +1373,7 @@ msgstr "Salvar"
 #: experiment/templates/experiment/subject_tms_data_form_template.html:274
 #: experiment/templates/experiment/subject_tms_data_form_template.html:277
 #: experiment/templates/experiment/subject_tms_data_form_template.html:298
-#: experiment/templates/experiment/subjects.html:283
+#: experiment/templates/experiment/subjects.html:296
 #: experiment/templates/experiment/tms_localization_system_position.html:103
 #: experiment/templates/experiment/tms_localization_system_position.html:122
 #: experiment/templates/experiment/tms_localization_system_register.html:170
@@ -1385,10 +1409,11 @@ msgstr "Tem certeza que deseja excluir conversor A/D?"
 #: experiment/templates/experiment/emg_setting_electrode.html:54
 #: experiment/templates/experiment/emg_setting_register.html:52
 #: experiment/templates/experiment/experiment_register.html:50
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:27
 #: experiment/templates/experiment/group_register.html:69
+#: experiment/templates/experiment/publication_add_experiment.html:42
 #: experiment/templates/experiment/questionnaire_view.html:57
 #: experiment/templates/experiment/research_project_list.html:43
-#: experiment/templates/experiment/research_project_list.html:54
 #: experiment/templates/experiment/research_project_register.html:52
 #: experiment/templates/experiment/search_subjects.html:27
 #: experiment/templates/experiment/show_selected_participants.html:27
@@ -1418,6 +1443,7 @@ msgstr "Estudos"
 
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:61
 #: experiment/templates/experiment/add_equipment_to_eeg_setting.html:76
+#: experiment/templates/experiment/publication_add_experiment.html:79
 msgid "Add"
 msgstr "Incluir"
 
@@ -1445,7 +1471,8 @@ msgid "Are you sure you want to delete step?"
 msgstr "Tem certeza que deseja excluir o passo?"
 
 #: experiment/templates/experiment/additional_data_collection_list.html:31
-#: experiment/templates/experiment/group_register.html:242
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:31
+#: experiment/templates/experiment/group_register.html:260
 #: experiment/templates/experiment/questionnaire_view.html:143
 #: experiment/templates/experiment/show_selected_participants.html:31
 #: experiment/templates/experiment/subject_additional_data_form.html:120
@@ -1466,7 +1493,7 @@ msgstr "Tem certeza que deseja excluir o passo?"
 #: experiment/templates/experiment/subject_tms_collection_list.html:31
 #: experiment/templates/experiment/subject_tms_data_form.html:123
 #: experiment/templates/experiment/subject_tms_data_form_template.html:181
-#: experiment/templates/experiment/subjects.html:87
+#: experiment/templates/experiment/subjects.html:100
 #: experiment/templates/experiment/upload_consent_form.html:25
 msgid "Participant"
 msgstr "Participantes"
@@ -1484,7 +1511,7 @@ msgid "Additional data file"
 msgstr "Arquivo de dados adicionais"
 
 #: experiment/templates/experiment/additional_data_collection_list.html:82
-#: experiment/templates/experiment/group_register.html:272
+#: experiment/templates/experiment/group_register.html:290
 msgid "Experimental protocol"
 msgstr "Protocolo Experimental"
 
@@ -1499,7 +1526,7 @@ msgid "from"
 msgstr "de"
 
 #: experiment/templates/experiment/additional_data_collection_list.html:94
-#: experiment/templates/experiment/research_project_list.html:94
+#: experiment/templates/experiment/research_project_list.html:77
 #: experiment/templates/experiment/search_subjects.html:182
 msgid "to"
 msgstr "a"
@@ -1621,7 +1648,7 @@ msgstr "Passos com posição fixa"
 #: experiment/templates/experiment/emg_setting_register.html:197
 #: experiment/templates/experiment/standardization_system_register.html:107
 #: experiment/templates/experiment/tms_setting_register.html:107
-#: experiment/views.py:7002
+#: experiment/views.py:7229
 msgid "Type"
 msgstr "Tipo"
 
@@ -1629,7 +1656,7 @@ msgstr "Tipo"
 #: experiment/templates/experiment/block_component.html:108
 #: experiment/templates/experiment/block_component.html:241
 #: experiment/templates/experiment/block_component.html:245
-#: experiment/views.py:6913
+#: experiment/views.py:7140
 msgid "Step"
 msgstr "Passo"
 
@@ -1638,7 +1665,7 @@ msgstr "Passo"
 #: experiment/templates/experiment/block_component.html:109
 #: experiment/templates/experiment/block_component.html:242
 #: experiment/templates/experiment/block_component.html:246
-#: experiment/views.py:7049
+#: experiment/views.py:7276
 msgid "Name of use"
 msgstr "Nome do uso"
 
@@ -1651,7 +1678,7 @@ msgstr "Nome do uso"
 #: experiment/templates/experiment/emg_electrode_setting_preamplifier.html:217
 #: experiment/templates/experiment/emg_setting_digital_filter.html:183
 #: experiment/templates/experiment/subject_eeg_data_form.html:388
-#: experiment/views.py:7056
+#: experiment/views.py:7283
 msgid "Order"
 msgstr "Ordem"
 
@@ -1695,7 +1722,7 @@ msgstr "Passos com posição aleatória"
 #: experiment/templates/experiment/block_component.html:363
 #: experiment/templates/experiment/component_list.html:128
 #: experiment/templates/experiment/component_template.html:329
-#: experiment/templates/experiment/group_register.html:426
+#: experiment/templates/experiment/group_register.html:444
 msgid ""
 "This experiment is in use, you can not change it! Do you want to copy this "
 "experiment?"
@@ -1706,7 +1733,7 @@ msgstr ""
 #: experiment/templates/experiment/block_component.html:367
 #: experiment/templates/experiment/component_list.html:132
 #: experiment/templates/experiment/component_template.html:333
-#: experiment/templates/experiment/group_register.html:430
+#: experiment/templates/experiment/group_register.html:448
 msgid "Copy experiment"
 msgstr "Copiar experimento"
 
@@ -1742,7 +1769,7 @@ msgstr "Lista de bobinas"
 #: experiment/templates/experiment/experiment_register.html:266
 #: experiment/templates/experiment/filtertype_list.html:57
 #: experiment/templates/experiment/filtertype_register.html:76
-#: experiment/templates/experiment/group_register.html:182
+#: experiment/templates/experiment/group_register.html:200
 #: experiment/templates/experiment/manufacturer_list.html:57
 #: experiment/templates/experiment/manufacturer_register.html:76
 #: experiment/templates/experiment/material_list.html:57
@@ -1785,7 +1812,7 @@ msgstr "Desenho da bobina"
 #: experiment/templates/experiment/material_list.html:44
 #: experiment/templates/experiment/material_register.html:53
 #: experiment/templates/experiment/material_register.html:72
-#: experiment/views.py:10892
+#: experiment/views.py:11119
 msgid "Material"
 msgstr "Material"
 
@@ -1961,12 +1988,12 @@ msgstr "Tem certeza que deseja excluir esta configuração da lista?"
 
 #: experiment/templates/experiment/digital_game_phase_component.html:8
 #: experiment/templates/experiment/digital_game_phase_component.html:24
-msgid "New digital game phase"
-msgstr "Nova fase de jogo eletrônico"
+msgid "New goalkeeper game phase"
+msgstr "Nova fase de jogo do goleiro"
 
 #: experiment/templates/experiment/digital_game_phase_component.html:13
-msgid "the digital game phase"
-msgstr "a fase de jogo eletrônico"
+msgid "the goalkeeper game phase"
+msgstr "a fase de jogo do goleiro"
 
 #: experiment/templates/experiment/digital_game_phase_component.html:18
 #: experiment/templates/experiment/generic_data_collection_component.html:18
@@ -2028,7 +2055,7 @@ msgstr "Configuração de EEG"
 #: experiment/templates/experiment/eeg_electrode_localization_system_test.html:47
 #: experiment/templates/experiment/eeg_electrode_position_register.html:53
 #: experiment/templates/experiment/eeg_setting_eeg_electrode_net_system.html:66
-#: experiment/views.py:10902
+#: experiment/views.py:11129
 msgid "EEG electrode localization system"
 msgstr "Sistema de localização de eletrodos de EEG"
 
@@ -2267,7 +2294,7 @@ msgstr "Configurações de Filtro de EEG"
 #: experiment/templates/experiment/filtertype_list.html:44
 #: experiment/templates/experiment/filtertype_register.html:53
 #: experiment/templates/experiment/filtertype_register.html:72
-#: experiment/views.py:10947
+#: experiment/views.py:11174
 msgid "Filter type"
 msgstr "Tipo de filtro"
 
@@ -2356,7 +2383,7 @@ msgid "Delete setting from list"
 msgstr "Remover configuração da lista"
 
 #: experiment/templates/experiment/eeg_setting_register.html:144
-#: experiment/views.py:10937
+#: experiment/views.py:11164
 msgid "Solution"
 msgstr "Solução"
 
@@ -2502,7 +2529,7 @@ msgid "Are you sure you want to delete EEG solution?"
 msgstr "Tem certeza que deseja excluir a solução de EEG?"
 
 #: experiment/templates/experiment/electrodemodel_list.html:44
-#: experiment/views.py:10927
+#: experiment/views.py:11154
 msgid "Electrode model"
 msgstr "Modelo de eletrodos"
 
@@ -2903,20 +2930,23 @@ msgstr "Estudo"
 
 #: experiment/templates/experiment/experiment_register.html:83
 #: experiment/templates/experiment/group_register.html:94
+#: experiment/templates/experiment/publication_list.html:57
 #: experiment/templates/experiment/publication_register.html:81
-#: experiment/templates/experiment/research_project_list.html:74
-#: experiment/templates/experiment/research_project_list.html:123
+#: experiment/templates/experiment/publication_register.html:121
+#: experiment/templates/experiment/research_project_list.html:57
 #: experiment/templates/experiment/research_project_register.html:75
 #: experiment/templates/experiment/research_project_register.html:223
 msgid "Title"
 msgstr "Título"
 
 #: experiment/templates/experiment/experiment_register.html:103
+#: experiment/templates/experiment/publication_register.html:123
 #: experiment/templates/experiment/research_project_register.html:225
 msgid "Is public"
 msgstr "É público"
 
 #: experiment/templates/experiment/experiment_register.html:112
+#: experiment/templates/experiment/publication_register.html:124
 #: experiment/templates/experiment/research_project_register.html:226
 msgid "Data acquisition is concluded"
 msgstr "Aquisição de dados concluída"
@@ -2946,6 +2976,61 @@ msgstr "a coleta genérica de dados"
 msgid "Information type"
 msgstr "Tipo de informação"
 
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:32
+msgid "Check goalkeeper game data"
+msgstr "Checar dados do jogo do goleiro"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:70
+msgid "Experimental group code"
+msgstr "Código do grup experimental"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:77
+msgid "Create institution code"
+msgstr "Criar código da instituição"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:79
+msgid "missing institution code"
+msgstr "falta código da instituição"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:83
+msgid "Change group code"
+msgstr "Alterar código do grupo"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:87
+msgid "Create group code"
+msgstr "Criar código do grupo"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:96
+msgid "Group code"
+msgstr "Código do grupo"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:123
+#: experiment/templates/experiment/subject_digital_game_phase_collection_list.html:68
+msgid "Goalkeeper game phase path"
+msgstr "Caminho da fase de jogo do goleiro"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:124
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:171
+msgid "Phase code"
+msgstr "Código da fase"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:131
+#: experiment/templates/experiment/subject_digital_game_phase_collection_list.html:75
+msgid "(No goalkeeper game phase collection)"
+msgstr "(Não há coleta de fase de jogo do goleiro)"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:153
+msgid "Change phase code"
+msgstr "Alterar código da fase"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:157
+msgid "Create phase code"
+msgstr "Criar código da fase"
+
+#: experiment/templates/experiment/group_goalkeeper_game_data.html:200
+msgid "Load goalkeeper game data"
+msgstr "Carregar dados do jogo do goleiro"
+
 #: experiment/templates/experiment/group_register.html:74
 msgid "New group"
 msgstr "Novo grupo"
@@ -2954,36 +3039,36 @@ msgstr "Novo grupo"
 msgid "Group basic information"
 msgstr "Informações básicas do grupo"
 
-#: experiment/templates/experiment/group_register.html:119
+#: experiment/templates/experiment/group_register.html:137
 msgid "Inclusion criteria"
 msgstr "Critério de inclusão"
 
-#: experiment/templates/experiment/group_register.html:128
+#: experiment/templates/experiment/group_register.html:146
 msgid "Inform disease diagnosis or disease code (ICD-10)"
 msgstr "Especificar o diagnóstico da doença ou o código da doença (CID-10)"
 
-#: experiment/templates/experiment/group_register.html:150
+#: experiment/templates/experiment/group_register.html:168
 msgid ""
 "There are no diagnosis as inclusion criteria of participants in this group"
 msgstr ""
 "Não há diagnósticos como critério de inclusão de participantes neste grupo"
 
-#: experiment/templates/experiment/group_register.html:177
+#: experiment/templates/experiment/group_register.html:195
 msgid "Questionnaires of experimental protocol"
 msgstr "Questionários do protocolo experimental"
 
-#: experiment/templates/experiment/group_register.html:186
-#: experiment/templates/experiment/group_register.html:195
+#: experiment/templates/experiment/group_register.html:204
+#: experiment/templates/experiment/group_register.html:213
 msgid "Quantity of fills for each participant"
 msgstr "Quantidade de preenchimentos exigida para cada participante"
 
-#: experiment/templates/experiment/group_register.html:187
-#: experiment/templates/experiment/group_register.html:235
+#: experiment/templates/experiment/group_register.html:205
+#: experiment/templates/experiment/group_register.html:253
 msgid "Needed fills by participant"
 msgstr "Preenchimentos necessários por participante"
 
-#: experiment/templates/experiment/group_register.html:189
-#: experiment/templates/experiment/group_register.html:198
+#: experiment/templates/experiment/group_register.html:207
+#: experiment/templates/experiment/group_register.html:216
 msgid ""
 "Quantity of fills needed by pariticipant multiplied by quantity of "
 "participants in this group"
@@ -2991,81 +3076,81 @@ msgstr ""
 "Quantidade de preenchimentos necessários por participante vezes a quantidade "
 "de participantes deste grupo"
 
-#: experiment/templates/experiment/group_register.html:190
-#: experiment/templates/experiment/group_register.html:236
+#: experiment/templates/experiment/group_register.html:208
+#: experiment/templates/experiment/group_register.html:254
 msgid "Total fills needed"
 msgstr "Total de preenchimentos necessários"
 
-#: experiment/templates/experiment/group_register.html:192
-#: experiment/templates/experiment/group_register.html:201
+#: experiment/templates/experiment/group_register.html:210
+#: experiment/templates/experiment/group_register.html:219
 msgid "Sum of fills quantity already made by each participant"
 msgstr ""
 "Soma da quantidade de preenchimentos já realizada por cada participante"
 
-#: experiment/templates/experiment/group_register.html:193
-#: experiment/templates/experiment/group_register.html:237
+#: experiment/templates/experiment/group_register.html:211
+#: experiment/templates/experiment/group_register.html:255
 msgid "Total fills already made"
 msgstr "Total de preenchimentos já realizados"
 
-#: experiment/templates/experiment/group_register.html:196
+#: experiment/templates/experiment/group_register.html:214
 msgid "PNP"
 msgstr ""
 
-#: experiment/templates/experiment/group_register.html:199
+#: experiment/templates/experiment/group_register.html:217
 msgid "TPN"
 msgstr ""
 
-#: experiment/templates/experiment/group_register.html:202
+#: experiment/templates/experiment/group_register.html:220
 msgid "TPR"
 msgstr ""
 
-#: experiment/templates/experiment/group_register.html:209
+#: experiment/templates/experiment/group_register.html:227
 msgid "There are no questionnaires in the experimental protocol in this group"
 msgstr "Não há questionários no protocolo experimental deste grupo"
 
-#: experiment/templates/experiment/group_register.html:247
+#: experiment/templates/experiment/group_register.html:265
 msgid "View / Edit"
 msgstr "Ver / Editar"
 
-#: experiment/templates/experiment/group_register.html:250
+#: experiment/templates/experiment/group_register.html:268
 #, python-format
 msgid "There is %(number_of_subjects)s participant recorded"
 msgstr "Há %(number_of_subjects)s participante registrado"
 
-#: experiment/templates/experiment/group_register.html:252
+#: experiment/templates/experiment/group_register.html:270
 #, python-format
 msgid "There are %(number_of_subjects)s participants recorded"
 msgstr "Há %(number_of_subjects)s participantes registrados"
 
-#: experiment/templates/experiment/group_register.html:258
+#: experiment/templates/experiment/group_register.html:276
 msgid "No participants recorded"
 msgstr "Não há participantes cadastrados"
 
-#: experiment/templates/experiment/group_register.html:263
+#: experiment/templates/experiment/group_register.html:281
 msgid "Register"
 msgstr "Cadastrar"
 
-#: experiment/templates/experiment/group_register.html:280
+#: experiment/templates/experiment/group_register.html:298
 msgid "Set of root steps"
 msgstr "Conjunto de passos raiz"
 
-#: experiment/templates/experiment/group_register.html:299
+#: experiment/templates/experiment/group_register.html:317
 msgid "UnConfigure experimental protocol"
 msgstr "Desconfigurar protocolo experimental"
 
-#: experiment/templates/experiment/group_register.html:314
+#: experiment/templates/experiment/group_register.html:332
 msgid "Textual description"
 msgstr "Descrição textual"
 
-#: experiment/templates/experiment/group_register.html:321
+#: experiment/templates/experiment/group_register.html:339
 msgid "Graph representation"
 msgstr "Representação gráfica"
 
-#: experiment/templates/experiment/group_register.html:335
+#: experiment/templates/experiment/group_register.html:353
 msgid "There is no experimental protocol configured"
 msgstr "Não há protocolo experimental configurado"
 
-#: experiment/templates/experiment/group_register.html:341
+#: experiment/templates/experiment/group_register.html:359
 msgid ""
 "The experimental protocol root is always a set of steps. You can create a "
 "new set or reuse some that have already been created for this experiment."
@@ -3074,23 +3159,23 @@ msgstr ""
 "poderá criar um conjunto novo ou reusar algum que já tenha sido criado para "
 "este experimento."
 
-#: experiment/templates/experiment/group_register.html:342
+#: experiment/templates/experiment/group_register.html:360
 msgid "Configure / Create"
 msgstr "Configurar / Criar"
 
-#: experiment/templates/experiment/group_register.html:379
+#: experiment/templates/experiment/group_register.html:397
 msgid "Are you sure you want to delete group?"
 msgstr "Tem certeza que deseja excluir o grupo?"
 
-#: experiment/templates/experiment/group_register.html:395
+#: experiment/templates/experiment/group_register.html:413
 msgid "Are you sure you want to delete diagnosis?"
 msgstr "Tem certeza que deseja excluir o diagnóstico?"
 
-#: experiment/templates/experiment/group_register.html:409
+#: experiment/templates/experiment/group_register.html:427
 msgid "Are you sure you want to unprovision experimental protocol?"
 msgstr "Tem certeza que deseja desconfigurar o protocolo experimental?"
 
-#: experiment/templates/experiment/group_register.html:414
+#: experiment/templates/experiment/group_register.html:432
 msgid "Unset"
 msgstr "Desconfigurar"
 
@@ -3128,7 +3213,7 @@ msgstr "Tem certeza que deseja excluir o material?"
 #: experiment/templates/experiment/muscle_side_register.html:53
 #: experiment/templates/experiment/muscle_subdivision_register.html:53
 #: experiment/templates/experiment/standardization_system_register.html:108
-#: experiment/views.py:10897
+#: experiment/views.py:11124
 msgid "Muscle"
 msgstr "Músculo"
 
@@ -3190,33 +3275,67 @@ msgstr "Nova pausa"
 msgid "the pause"
 msgstr "a pausa"
 
+#: experiment/templates/experiment/publication_add_experiment.html:26
+#: experiment/templates/experiment/publication_list.html:43
 #: experiment/templates/experiment/publication_register.html:58
 msgid "Publications"
 msgstr "Publicações"
 
-#: experiment/templates/experiment/publication_register.html:77
-#: experiment/templates/experiment/research_project_list.html:59
-msgid "Publication"
-msgstr "Publicação"
+#: experiment/templates/experiment/publication_add_experiment.html:28
+msgid "Add experiment"
+msgstr "Novo experimento"
 
-#: experiment/templates/experiment/publication_register.html:90
-#: experiment/templates/experiment/research_project_list.html:124
-msgid "Citation"
-msgstr "Citação"
+#: experiment/templates/experiment/publication_add_experiment.html:36
+msgid "Experiment selection"
+msgstr "Seleção de experimentos"
 
-#: experiment/templates/experiment/publication_register.html:99
-#: experiment/templates/experiment/research_project_list.html:125
-msgid "URL"
-msgstr ""
-
-#: experiment/templates/experiment/publication_register.html:110
+#: experiment/templates/experiment/publication_add_experiment.html:59
 #: experiment/templates/experiment/research_project_register.html:218
 msgid "Experiments"
 msgstr "Experimentos"
 
-#: experiment/templates/experiment/publication_register.html:156
+#: experiment/templates/experiment/publication_list.html:52
+msgid "Publication list"
+msgstr "Lista de publicações"
+
+#: experiment/templates/experiment/publication_list.html:58
+#: experiment/templates/experiment/publication_register.html:90
+msgid "Citation"
+msgstr "Citação"
+
+#: experiment/templates/experiment/publication_list.html:59
+#: experiment/templates/experiment/publication_register.html:99
+msgid "URL"
+msgstr ""
+
+#: experiment/templates/experiment/publication_list.html:85
+msgid "Insert new publication"
+msgstr "Inserir nova publicação"
+
+#: experiment/templates/experiment/publication_register.html:77
+msgid "Publication"
+msgstr "Publicação"
+
+#: experiment/templates/experiment/publication_register.html:116
+msgid "Related experiments"
+msgstr "Experimentos relacionados"
+
+#: experiment/templates/experiment/publication_register.html:125
+#: experiment/templates/experiment/research_project_register.html:176
+msgid "Remove"
+msgstr "Remover"
+
+#: experiment/templates/experiment/publication_register.html:136
+msgid "Remove experiment from list"
+msgstr "Remover experimento da lista"
+
+#: experiment/templates/experiment/publication_register.html:178
 msgid "Are you sure you want to delete this publication?"
 msgstr "Tem certeza que deseja excluir esta publicação?"
+
+#: experiment/templates/experiment/publication_register.html:193
+msgid "Are you sure you want to remove experiment from list?"
+msgstr "Tem certeza que deseja excluir experimento da lista?"
 
 #: experiment/templates/experiment/questionnaire_component.html:8
 #: experiment/templates/experiment/questionnaire_component.html:18
@@ -3266,14 +3385,14 @@ msgid "Fills"
 msgstr "Preenchimentos"
 
 #: experiment/templates/experiment/questionnaire_view.html:151
-#: experiment/templates/experiment/subjects.html:98
+#: experiment/templates/experiment/subjects.html:111
 msgid "(No participant inserted)"
 msgstr "(Não há participantes cadastrados)"
 
 #: experiment/templates/experiment/questionnaire_view.html:173
 #: experiment/templates/experiment/questionnaire_view.html:197
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:125
-#: experiment/templates/experiment/subjects.html:151
+#: experiment/templates/experiment/subjects.html:164
 msgid "No status"
 msgstr "Não há status"
 
@@ -3295,29 +3414,21 @@ msgstr "Incompleto"
 msgid "New fill"
 msgstr "Novo preenchimento"
 
-#: experiment/templates/experiment/research_project_list.html:69
+#: experiment/templates/experiment/research_project_list.html:52
 msgid "Studies list"
 msgstr "Lista de estudos"
 
-#: experiment/templates/experiment/research_project_list.html:75
+#: experiment/templates/experiment/research_project_list.html:58
 msgid "Term"
 msgstr "Vigência"
 
-#: experiment/templates/experiment/research_project_list.html:97
+#: experiment/templates/experiment/research_project_list.html:80
 msgid "From"
 msgstr "A partir de"
 
-#: experiment/templates/experiment/research_project_list.html:108
+#: experiment/templates/experiment/research_project_list.html:91
 msgid "Insert new study"
 msgstr "Inserir novo estudo"
-
-#: experiment/templates/experiment/research_project_list.html:118
-msgid "Publication list"
-msgstr "Lista de publicações"
-
-#: experiment/templates/experiment/research_project_list.html:151
-msgid "Insert new publication"
-msgstr "Inserir nova publicação"
 
 #: experiment/templates/experiment/research_project_register.html:71
 msgid "Study basic information"
@@ -3351,10 +3462,6 @@ msgstr "Equipe"
 #: experiment/templates/experiment/research_project_register.html:175
 msgid "Is_coordinator"
 msgstr "É coordenador"
-
-#: experiment/templates/experiment/research_project_register.html:176
-msgid "Remove"
-msgstr "Remover"
 
 #: experiment/templates/experiment/research_project_register.html:200
 msgid "Remove person from the collaboration team"
@@ -3446,10 +3553,6 @@ msgstr "Lista de participantes"
 msgid "participants were selected"
 msgstr "participantes foram selecionados"
 
-#: experiment/templates/experiment/show_selected_participants.html:51
-msgid "Code"
-msgstr "Código"
-
 #: experiment/templates/experiment/show_selected_participants.html:54
 msgid "Country"
 msgstr "País"
@@ -3463,12 +3566,12 @@ msgid "City"
 msgstr "Cidade"
 
 #: experiment/templates/experiment/show_selected_participants.html:63
-#: experiment/templates/experiment/subjects.html:108
+#: experiment/templates/experiment/subjects.html:121
 msgid "Delete participant"
 msgstr "Excluir participante"
 
 #: experiment/templates/experiment/show_selected_participants.html:111
-#: experiment/templates/experiment/subjects.html:280
+#: experiment/templates/experiment/subjects.html:293
 msgid "Are you sure you want to delete participant?"
 msgstr "Tem certeza que deseja excluir o participante?"
 
@@ -3476,7 +3579,7 @@ msgstr "Tem certeza que deseja excluir o participante?"
 #: experiment/templates/experiment/software_register.html:53
 #: experiment/templates/experiment/software_register.html:73
 #: experiment/templates/experiment/software_version_register.html:53
-#: experiment/views.py:10952
+#: experiment/views.py:11179
 msgid "Software"
 msgstr ""
 
@@ -3529,12 +3632,12 @@ msgid "the stimulus"
 msgstr "o estímulo"
 
 #: experiment/templates/experiment/stimulus_component.html:31
-#: experiment/views.py:7031
+#: experiment/views.py:7258
 msgid "Stimulus type"
 msgstr "Tipo do estímulo"
 
 #: experiment/templates/experiment/stimulus_component.html:41
-#: experiment/views.py:7033
+#: experiment/views.py:7260
 msgid "Media file"
 msgstr "Arquivo de mídia"
 
@@ -3588,29 +3691,21 @@ msgid "Are you sure you want to delete additional data?"
 msgstr "Tem certeza que deseja excluir os dados adicionais?"
 
 #: experiment/templates/experiment/subject_digital_game_phase_collection_list.html:33
-msgid "Digital game phase data files"
-msgstr "Arquivos de dados da fase de jogo eletrônico"
-
-#: experiment/templates/experiment/subject_digital_game_phase_collection_list.html:68
-msgid "Digital game phase path"
-msgstr "Caminho da fase de jogo eletrônico"
+msgid "Goalkeeper game phase data files"
+msgstr "Arquivos de dados da fase de jogo do goleiro"
 
 #: experiment/templates/experiment/subject_digital_game_phase_collection_list.html:69
-msgid "Digital game phase data file"
-msgstr "Arquivo de dados da fase de jogo eletrônico"
-
-#: experiment/templates/experiment/subject_digital_game_phase_collection_list.html:75
-msgid "(No digital game phase collection)"
-msgstr "(Não há coleta de fase de jogo eletrônico)"
+msgid "Goalkeeper game phase data file"
+msgstr "Arquivo de dados da fase de jogo do goleiro"
 
 #: experiment/templates/experiment/subject_digital_game_phase_collection_list.html:112
 #: experiment/templates/experiment/subject_digital_game_phase_data_form.html:188
-msgid "New digital game phase data file"
-msgstr "Novo arquivo de dados de fase de jogo eletrônico"
+msgid "New goalkeeper game phase data file"
+msgstr "Novo arquivo de dados de fase de jogo do goleiro"
 
 #: experiment/templates/experiment/subject_digital_game_phase_data_form.html:229
-msgid "Digital game phase data collection"
-msgstr "Coleta de dados de fase de jogo eletrônico"
+msgid "Goalkeeper game phase data collection"
+msgstr "Coleta de dados de fase de jogo do goleiro"
 
 #: experiment/templates/experiment/subject_digital_game_phase_data_form.html:249
 #: experiment/templates/experiment/subject_eeg_data_form.html:271
@@ -3621,16 +3716,16 @@ msgid "Hour"
 msgstr "Hora"
 
 #: experiment/templates/experiment/subject_digital_game_phase_data_form.html:284
-msgid "Digital game phase data collection description"
-msgstr "Descrição de coleta de dados de fase de jogo eletrônico"
+msgid "Goalkeeper game phase data collection description"
+msgstr "Descrição de coleta de dados de fase de jogo do goleiro"
 
 #: experiment/templates/experiment/subject_digital_game_phase_data_form.html:294
 msgid "Sequence used in context tree"
 msgstr "Sequência usada na árvore de contexto"
 
 #: experiment/templates/experiment/subject_digital_game_phase_data_form.html:373
-msgid "Are you sure you want to delete digital game phase data?"
-msgstr "Tem certeza que deseja excluir os dados de fase de jogo eletrônico?"
+msgid "Are you sure you want to delete goalkeeper game phase data?"
+msgstr "Tem certeza que deseja excluir os dados de fase de jogo do goleiro?"
 
 #: experiment/templates/experiment/subject_eeg_collection_list.html:29
 msgid "EEG data files"
@@ -3696,7 +3791,7 @@ msgstr "Coleta de dados de EEG"
 #: experiment/templates/experiment/subject_eeg_data_form.html:239
 #: experiment/templates/experiment/subject_tms_data_form_template.html:232
 #: experiment/templates/experiment/subject_tms_data_form_template.html:237
-#: experiment/templates/experiment/subjects.html:234
+#: experiment/templates/experiment/subjects.html:247
 msgid "Data collection"
 msgstr "Coleta de dados"
 
@@ -4023,65 +4118,69 @@ msgstr "Digite nome do participante ou CPF"
 msgid "Type participant code"
 msgstr "Digite código do participante"
 
-#: experiment/templates/experiment/subjects.html:88
+#: experiment/templates/experiment/subjects.html:87
+msgid "Goalkeeper game data"
+msgstr "Dados do jogo do goleiro"
+
+#: experiment/templates/experiment/subjects.html:101
 #: experiment/templates/experiment/upload_consent_form.html:26
 #: experiment/templates/experiment/upload_consent_form.html:58
 msgid "Term of consent"
 msgstr "Termo de consentimento"
 
-#: experiment/templates/experiment/subjects.html:90
+#: experiment/templates/experiment/subjects.html:103
 msgid "Completed questionnaires"
 msgstr "Questionários concluídos"
 
-#: experiment/templates/experiment/subjects.html:92
+#: experiment/templates/experiment/subjects.html:105
 msgid "Data files uploaded"
 msgstr "Arquivos de dados carregados"
 
-#: experiment/templates/experiment/subjects.html:118
+#: experiment/templates/experiment/subjects.html:131
 msgid "Upload consent form"
 msgstr "Termo de consentimento carregado"
 
-#: experiment/templates/experiment/subjects.html:127
+#: experiment/templates/experiment/subjects.html:140
 msgid "Attached"
 msgstr "Anexado"
 
-#: experiment/templates/experiment/subjects.html:129
+#: experiment/templates/experiment/subjects.html:142
 msgid "No attachments"
 msgstr "Sem anexo"
 
-#: experiment/templates/experiment/subjects.html:139
+#: experiment/templates/experiment/subjects.html:152
 msgid "Fill questionnaires"
 msgstr "Preencher questionários"
 
-#: experiment/templates/experiment/subjects.html:161
+#: experiment/templates/experiment/subjects.html:174
 msgid "Uploaded EEG data files"
 msgstr "Arquivos de dados de EEG carregados"
 
-#: experiment/templates/experiment/subjects.html:179
+#: experiment/templates/experiment/subjects.html:192
 msgid "Uploaded EMG data files"
 msgstr "Arquivos de dados de EMG carregados"
 
-#: experiment/templates/experiment/subjects.html:197
+#: experiment/templates/experiment/subjects.html:210
 msgid "Uploaded TMS data files"
 msgstr "Arquivos de dados de TMS carregados"
 
-#: experiment/templates/experiment/subjects.html:215
-msgid "Uploaded digital game phase data files"
-msgstr "Arquivos de dados de fase de jogo eletrônico carregados"
+#: experiment/templates/experiment/subjects.html:228
+msgid "Uploaded goalkeeper game phase data files"
+msgstr "Arquivos de dados de fase de jogo do goleiro carregados"
 
-#: experiment/templates/experiment/subjects.html:216
+#: experiment/templates/experiment/subjects.html:229
 msgid "Game"
 msgstr "Jogo"
 
-#: experiment/templates/experiment/subjects.html:233
+#: experiment/templates/experiment/subjects.html:246
 msgid "Uploaded generic collection data files"
 msgstr "Arquivos de coleta genérica de dados carregados"
 
-#: experiment/templates/experiment/subjects.html:250
+#: experiment/templates/experiment/subjects.html:263
 msgid "Uploaded additional data files"
 msgstr "Arquivos de dados adicionais carregados"
 
-#: experiment/templates/experiment/subjects.html:251
+#: experiment/templates/experiment/subjects.html:264
 msgid "Additional"
 msgstr "Adicionais"
 
@@ -4114,7 +4213,7 @@ msgstr "o TMS"
 #: experiment/templates/experiment/tms_data_position_setting.html:27
 #: experiment/templates/experiment/tms_localization_system_list.html:44
 #: experiment/templates/experiment/tms_localization_system_register.html:53
-#: experiment/views.py:10913
+#: experiment/views.py:11140
 msgid "TMS localization system"
 msgstr "Sistema de localização de TMS"
 
@@ -4156,7 +4255,7 @@ msgid "TMS Setting"
 msgstr "Configuração de TMS"
 
 #: experiment/templates/experiment/tms_setting_register.html:126
-#: experiment/views.py:10962
+#: experiment/views.py:11189
 msgid "Coil model"
 msgstr "Modelo de bobina"
 
@@ -4217,15 +4316,15 @@ msgstr "Tem certeza que deseja remover o anexo?"
 #: experiment/tests.py:3152 experiment/tests.py:3220 experiment/tests.py:3292
 #: experiment/tests.py:3420 experiment/tests.py:3493 experiment/tests.py:3565
 #: experiment/tests.py:3640 experiment/tests.py:3712 experiment/tests.py:3791
-#: experiment/tests.py:4109 experiment/tests.py:4225 experiment/views.py:169
-#: experiment/views.py:395 experiment/views.py:1769 experiment/views.py:1945
-#: experiment/views.py:2049 experiment/views.py:2152 experiment/views.py:2259
-#: experiment/views.py:2336 experiment/views.py:2518 experiment/views.py:2620
-#: experiment/views.py:2722 experiment/views.py:2826 experiment/views.py:2924
-#: experiment/views.py:3032 experiment/views.py:3138 experiment/views.py:3233
-#: experiment/views.py:3327 experiment/views.py:3451 experiment/views.py:3683
-#: experiment/views.py:3783 experiment/views.py:9058 experiment/views.py:9281
-#: experiment/views.py:10595 experiment/views.py:10807
+#: experiment/tests.py:4109 experiment/tests.py:4224 experiment/views.py:167
+#: experiment/views.py:403 experiment/views.py:1829 experiment/views.py:2005
+#: experiment/views.py:2109 experiment/views.py:2212 experiment/views.py:2319
+#: experiment/views.py:2396 experiment/views.py:2578 experiment/views.py:2680
+#: experiment/views.py:2782 experiment/views.py:2886 experiment/views.py:2984
+#: experiment/views.py:3092 experiment/views.py:3198 experiment/views.py:3293
+#: experiment/views.py:3387 experiment/views.py:3511 experiment/views.py:3743
+#: experiment/views.py:3843 experiment/views.py:9285 experiment/views.py:9508
+#: experiment/views.py:10822 experiment/views.py:11034
 msgid "Action not available."
 msgstr "Ação não disponível"
 
@@ -4236,456 +4335,468 @@ msgstr "Ação não disponível"
 #: experiment/tests.py:3144 experiment/tests.py:3212 experiment/tests.py:3284
 #: experiment/tests.py:3412 experiment/tests.py:3485 experiment/tests.py:3557
 #: experiment/tests.py:3632 experiment/tests.py:3704 experiment/tests.py:3782
-#: experiment/tests.py:4120 experiment/tests.py:4235 experiment/views.py:166
-#: experiment/views.py:392 experiment/views.py:1766 experiment/views.py:1942
-#: experiment/views.py:2046 experiment/views.py:2149 experiment/views.py:2256
-#: experiment/views.py:2333 experiment/views.py:2515 experiment/views.py:2617
-#: experiment/views.py:2719 experiment/views.py:2823 experiment/views.py:2921
-#: experiment/views.py:3029 experiment/views.py:3135 experiment/views.py:3230
-#: experiment/views.py:3324 experiment/views.py:3448 experiment/views.py:3680
-#: experiment/views.py:3780 experiment/views.py:9056 experiment/views.py:9279
-#: experiment/views.py:10593 experiment/views.py:10805
+#: experiment/tests.py:4119 experiment/tests.py:4234 experiment/views.py:164
+#: experiment/views.py:400 experiment/views.py:1826 experiment/views.py:2002
+#: experiment/views.py:2106 experiment/views.py:2209 experiment/views.py:2316
+#: experiment/views.py:2393 experiment/views.py:2575 experiment/views.py:2677
+#: experiment/views.py:2779 experiment/views.py:2883 experiment/views.py:2981
+#: experiment/views.py:3089 experiment/views.py:3195 experiment/views.py:3290
+#: experiment/views.py:3384 experiment/views.py:3508 experiment/views.py:3740
+#: experiment/views.py:3840 experiment/views.py:9283 experiment/views.py:9506
+#: experiment/views.py:10820 experiment/views.py:11032
 msgid "Information not saved."
 msgstr "Informação não salva."
 
-#: experiment/tests.py:4161 experiment/views.py:441
+#: experiment/tests.py:4160 experiment/views.py:456
 msgid "Publication updated successfully."
 msgstr "Publicação alterada com sucesso."
 
-#: experiment/tests.py:4166 experiment/tests.py:4276 experiment/views.py:279
-#: experiment/views.py:443 experiment/views.py:589 experiment/views.py:797
-#: experiment/views.py:916 experiment/views.py:1792 experiment/views.py:1972
-#: experiment/views.py:2074 experiment/views.py:2181 experiment/views.py:2287
-#: experiment/views.py:2439 experiment/views.py:2546 experiment/views.py:2683
-#: experiment/views.py:2785 experiment/views.py:2885 experiment/views.py:2983
-#: experiment/views.py:3060 experiment/views.py:3191 experiment/views.py:3286
-#: experiment/views.py:3351 experiment/views.py:3552 experiment/views.py:3710
-#: experiment/views.py:3810 experiment/views.py:5237 experiment/views.py:5902
-#: experiment/views.py:6127 experiment/views.py:6314 experiment/views.py:6393
-#: experiment/views.py:6651 experiment/views.py:7189 experiment/views.py:7284
-#: experiment/views.py:8545 experiment/views.py:8574 experiment/views.py:8584
-#: experiment/views.py:9191 experiment/views.py:9357 experiment/views.py:9490
-#: experiment/views.py:9590 experiment/views.py:9691 experiment/views.py:10063
-#: experiment/views.py:10135 experiment/views.py:10222
-#: experiment/views.py:10295 experiment/views.py:10415
-#: experiment/views.py:10544 experiment/views.py:10661
-#: experiment/views.py:10871
+#: experiment/tests.py:4165 experiment/tests.py:4275 experiment/views.py:277
+#: experiment/views.py:458 experiment/views.py:649 experiment/views.py:857
+#: experiment/views.py:976 experiment/views.py:1852 experiment/views.py:2032
+#: experiment/views.py:2134 experiment/views.py:2241 experiment/views.py:2347
+#: experiment/views.py:2499 experiment/views.py:2606 experiment/views.py:2743
+#: experiment/views.py:2845 experiment/views.py:2945 experiment/views.py:3043
+#: experiment/views.py:3120 experiment/views.py:3251 experiment/views.py:3346
+#: experiment/views.py:3411 experiment/views.py:3612 experiment/views.py:3770
+#: experiment/views.py:3870 experiment/views.py:5304 experiment/views.py:5969
+#: experiment/views.py:6194 experiment/views.py:6541 experiment/views.py:6620
+#: experiment/views.py:6878 experiment/views.py:7416 experiment/views.py:7511
+#: experiment/views.py:8772 experiment/views.py:8801 experiment/views.py:8811
+#: experiment/views.py:9418 experiment/views.py:9584 experiment/views.py:9717
+#: experiment/views.py:9817 experiment/views.py:9918 experiment/views.py:10290
+#: experiment/views.py:10362 experiment/views.py:10449
+#: experiment/views.py:10522 experiment/views.py:10642
+#: experiment/views.py:10771 experiment/views.py:10888
+#: experiment/views.py:11098
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: experiment/tests.py:4271 experiment/views.py:10869
+#: experiment/tests.py:4270 experiment/views.py:11096
 msgid "Context tree updated successfully."
 msgstr "Árvore de contexto alterada com sucesso."
 
-#: experiment/views.py:161
+#: experiment/views.py:159
 msgid "Study created successfully."
 msgstr "Estudo criado com sucesso."
 
-#: experiment/views.py:210
+#: experiment/views.py:208
 msgid "Is coordinator status successfully changed."
 msgstr "Status de coordenador alterado com sucesso."
 
-#: experiment/views.py:212
+#: experiment/views.py:210
 msgid "Error trying to change the status of the coordinator."
 msgstr "Erro ao tentar alterar o status de coordenador."
 
-#: experiment/views.py:220
+#: experiment/views.py:218
 msgid "Collaborator removed successfully from the Research Project."
 msgstr "Colaborador removido com sucesso do estudo."
 
-#: experiment/views.py:222
+#: experiment/views.py:220
 msgid "Error trying to delete a collaborator from the Research Project."
 msgstr "Erro ao tentar excluir um colaborador do estudo."
 
-#: experiment/views.py:235 experiment/views.py:9145 experiment/views.py:10623
+#: experiment/views.py:233 experiment/views.py:9372 experiment/views.py:10850
 msgid "Study removed successfully."
 msgstr "Estudo excluído com sucesso."
 
-#: experiment/views.py:238
+#: experiment/views.py:236
 msgid "Error trying to delete research."
 msgstr "Erro ao tentar excluir o estudo."
 
-#: experiment/views.py:244 experiment/views.py:555
+#: experiment/views.py:242 experiment/views.py:615
 msgid ""
 "Impossible to delete group because there is (are) questionnaire(s) answered."
 msgstr ""
 "Não foi possível excluir o grupo, pois há questionário(s) respondido(s)."
 
-#: experiment/views.py:277
+#: experiment/views.py:275
 msgid "Research updated successfully."
 msgstr "Estudo atualizado com sucesso."
 
-#: experiment/views.py:387
+#: experiment/views.py:395
 msgid "Publication created successfully."
 msgstr "Publicação criada com sucesso."
 
-#: experiment/views.py:418
+#: experiment/views.py:426
 msgid "Publication removed successfully."
 msgstr "Publicação excluída com sucesso."
 
-#: experiment/views.py:471
+#: experiment/views.py:433
+msgid "Experiment removed from publication successfully."
+msgstr "Experimento excluído da publicação com sucesso."
+
+#: experiment/views.py:483
+msgid "Experiment already included in the publication."
+msgstr "Experimento já incluído na publicação"
+
+#: experiment/views.py:487
+msgid "Experiment included successfully."
+msgstr "Experimento incluído com sucesso."
+
+#: experiment/views.py:531
 msgid "Collaborator created successfully."
 msgstr "Colaborador criado com sucesso"
 
-#: experiment/views.py:498
+#: experiment/views.py:558
 msgid "Experiment created successfully."
 msgstr "Experimento criado com sucesso."
 
-#: experiment/views.py:539 experiment/views.py:7959
+#: experiment/views.py:599 experiment/views.py:8186
 msgid ""
 "It was not possible to exclude because there is data collection associated."
 msgstr "Não foi possível excluir porque há dados de coleta associados."
 
-#: experiment/views.py:545
+#: experiment/views.py:605
 msgid "Experiment removed successfully."
 msgstr "Experimento excluído com sucesso."
 
-#: experiment/views.py:549
+#: experiment/views.py:609
 msgid ""
 "It was not possible to delete experiment, because there are groups connected."
 msgstr "Não foi possível excluir o experimento, pois há grupos associados"
 
-#: experiment/views.py:587
+#: experiment/views.py:647
 msgid "Experiment updated successfully."
 msgstr "Experimento atualizado com sucesso."
 
-#: experiment/views.py:619
+#: experiment/views.py:679
 msgid "Group included successfully."
 msgstr "Grupo incluído com sucesso."
 
-#: experiment/views.py:723
+#: experiment/views.py:783
 msgid "Group removed successfully."
 msgstr "Grupo excluído com sucesso."
 
-#: experiment/views.py:727
+#: experiment/views.py:787
 msgid "Impossible to delete group, because there are dependencies."
 msgstr "Não foi possível excluir o grupo, pois há dependências."
 
-#: experiment/views.py:732
+#: experiment/views.py:792
 msgid ""
 "Impossible to delete group because there is (are) data collection associated."
 msgstr "Não foi possível excluir o grupo porque há dados coletados."
 
-#: experiment/views.py:742 experiment/views.py:7440 experiment/views.py:8343
-#: experiment/views.py:8595
+#: experiment/views.py:802 experiment/views.py:7667 experiment/views.py:8570
+#: experiment/views.py:8822
 msgid "The experiment was copied."
 msgstr "O experimento foi copiado."
 
-#: experiment/views.py:795
+#: experiment/views.py:855
 msgid "Group updated successfully."
 msgstr "Grupo atualizado com sucesso."
 
-#: experiment/views.py:826
+#: experiment/views.py:886
 msgid "EEG setting included successfully."
 msgstr "Configuração de EEG incluída com sucesso."
 
-#: experiment/views.py:862
+#: experiment/views.py:922
 msgid "EEG setting was removed successfully."
 msgstr "Configuração de EEG excluído com sucesso."
 
-#: experiment/views.py:886 experiment/views.py:9447 experiment/views.py:9922
-#: experiment/views.py:10383
+#: experiment/views.py:946 experiment/views.py:9674 experiment/views.py:10149
+#: experiment/views.py:10610
 msgid "Setting was removed successfully."
 msgstr "Configuração foi excluída com sucesso."
 
-#: experiment/views.py:914
+#: experiment/views.py:974
 msgid "EEG setting updated successfully."
 msgstr "Configuração de EEG foi alterado com sucesso."
 
-#: experiment/views.py:978
+#: experiment/views.py:1038
 msgid "EEG amplifier setting created sucessfully."
 msgstr "Configuração de amplificador de EEG criada com sucesso."
 
-#: experiment/views.py:992
+#: experiment/views.py:1052
 msgid "EEG solution setting created sucessfully."
 msgstr "Configuração de solução de EEG criada com sucesso."
 
-#: experiment/views.py:1010
+#: experiment/views.py:1070
 msgid "EEG filter setting created sucessfully."
 msgstr "Configuração de filtro de EEG criada com sucesso."
 
-#: experiment/views.py:1044
+#: experiment/views.py:1104
 msgid "Now you can set each electrode position."
 msgstr "Agora você pode configurar cada posição de eletrodo."
 
-#: experiment/views.py:1046
+#: experiment/views.py:1106
 msgid "EEG electrode net system setting created sucessfully."
 msgstr "Configuração de sistema de rede de eletrodo de EEG criada com sucesso."
 
-#: experiment/views.py:1226
+#: experiment/views.py:1286
 msgid "EEG Amplifier setting updated successfully."
 msgstr "Configuração de amplificador de EEG alterada com sucesso."
 
-#: experiment/views.py:1244
+#: experiment/views.py:1304
 msgid "EEG amplifier setting updated sucessfully."
 msgstr "Configuração de amplificador de EEG alterada com sucesso."
 
-#: experiment/views.py:1258
+#: experiment/views.py:1318
 msgid "EEG solution setting updated sucessfully."
 msgstr "Configuração de solução de EEG alterada com sucesso."
 
-#: experiment/views.py:1283
+#: experiment/views.py:1343
 msgid "EEG filter setting updated sucessfully."
 msgstr "Configuração de filtro de EEG alterada com sucesso."
 
-#: experiment/views.py:1332
+#: experiment/views.py:1392
 msgid "EEG electrode net system setting updated sucessfully."
 msgstr ""
 "Configuração de sistema de rede de eletrodo de EEG alterada com sucesso."
 
-#: experiment/views.py:1598 experiment/views.py:1651 experiment/views.py:5333
+#: experiment/views.py:1658 experiment/views.py:1711 experiment/views.py:5400
 msgid "Setting saved successfully."
 msgstr "Configuração gravada com sucesso."
 
-#: experiment/views.py:1761
+#: experiment/views.py:1821
 msgid "Manufacturer created successfully."
 msgstr "Fabricante criado com sucesso."
 
-#: experiment/views.py:1790
+#: experiment/views.py:1850
 msgid "Manufacturer updated successfully."
 msgstr "Fabricante alterado com sucesso."
 
-#: experiment/views.py:1820
+#: experiment/views.py:1880
 msgid "Manufacturer removed successfully."
 msgstr "Fabricante excluído com sucesso."
 
-#: experiment/views.py:1823
+#: experiment/views.py:1883
 msgid "Error trying to delete manufacturer."
 msgstr "Erro ao tentar excluir o fabricante."
 
-#: experiment/views.py:1937
+#: experiment/views.py:1997
 msgid "Amplifier created successfully."
 msgstr "Amplificador criado com sucesso."
 
-#: experiment/views.py:1970
+#: experiment/views.py:2030
 msgid "Amplifier updated successfully."
 msgstr "Amplificador alterado com sucesso."
 
-#: experiment/views.py:2002
+#: experiment/views.py:2062
 msgid "Amplifier removed successfully."
 msgstr "Amplificador excluído com sucesso."
 
-#: experiment/views.py:2005
+#: experiment/views.py:2065
 msgid "Error trying to delete amplifier."
 msgstr "Erro ao tentar excluir o amplificador."
 
-#: experiment/views.py:2041
+#: experiment/views.py:2101
 msgid "EEG solution created successfully."
 msgstr "Solução de EEG criada com sucesso."
 
-#: experiment/views.py:2072
+#: experiment/views.py:2132
 msgid "EEG solution updated successfully."
 msgstr "Solução de EEG foi alterado com sucesso."
 
-#: experiment/views.py:2101
+#: experiment/views.py:2161
 msgid "EEG solution removed successfully."
 msgstr "Solução de EEG excluído com sucesso."
 
-#: experiment/views.py:2104
+#: experiment/views.py:2164
 msgid "Error trying to delete eegsolution."
 msgstr "Erro ao tentar excluir a solução de EEG."
 
-#: experiment/views.py:2144
+#: experiment/views.py:2204
 msgid "Filter type created successfully."
 msgstr "Tipo de filtro criado com sucesso."
 
-#: experiment/views.py:2179
+#: experiment/views.py:2239
 msgid "Filter type updated successfully."
 msgstr "Tipo de filtro alterado com sucesso."
 
-#: experiment/views.py:2212
+#: experiment/views.py:2272
 msgid "Filter type removed successfully."
 msgstr "Tipo de filtro excluído com sucesso."
 
-#: experiment/views.py:2215
+#: experiment/views.py:2275
 msgid "Error trying to delete filter type."
 msgstr "Erro ao deletar o tipo de filtro."
 
-#: experiment/views.py:2251
+#: experiment/views.py:2311
 msgid "Standardization system created successfully."
 msgstr "Sistema de padronização alterado com sucesso."
 
-#: experiment/views.py:2285
+#: experiment/views.py:2345
 msgid "Standardization system updated successfully."
 msgstr "Sistema de padronização alterado com sucesso."
 
-#: experiment/views.py:2328
+#: experiment/views.py:2388
 msgid "Electrode placement subdivision created successfully."
 msgstr "Sub-divisão do posicionamento do eletrodo criada com sucesso."
 
-#: experiment/views.py:2380
+#: experiment/views.py:2440
 msgid "EMG electrode placement removed successfully."
 msgstr "Posicionamento de eletrodos de EMG excluída com sucesso."
 
-#: experiment/views.py:2384
+#: experiment/views.py:2444
 msgid "Error trying to delete EMG electrode placement."
 msgstr "Erro ao tentar excluir o posicionamento de eletrodos de EMG."
 
-#: experiment/views.py:2437
+#: experiment/views.py:2497
 msgid "EMG electrode placement was updated successfully."
 msgstr "O posicionamento de eletrodos de EMG alterada com sucesso."
 
-#: experiment/views.py:2469
+#: experiment/views.py:2529
 msgid "Standardization system removed successfully."
 msgstr "Sistema de padronização excluído com sucesso."
 
-#: experiment/views.py:2472
+#: experiment/views.py:2532
 msgid "Error trying to delete standardization system."
 msgstr "Erro ao tentar excluir sistema de padronização."
 
-#: experiment/views.py:2510
+#: experiment/views.py:2570
 msgid "Muscle created successfully."
 msgstr "Músculo criado com sucesso."
 
-#: experiment/views.py:2544
+#: experiment/views.py:2604
 msgid "Muscle updated successfully."
 msgstr "Músculo atualizado com sucesso."
 
-#: experiment/views.py:2577
+#: experiment/views.py:2637
 msgid "Muscle removed successfully."
 msgstr "Músculo excluído com sucesso."
 
-#: experiment/views.py:2580
+#: experiment/views.py:2640
 msgid "Error trying to delete muscle."
 msgstr "Erro ao tentar excluir o músculo."
 
-#: experiment/views.py:2612
+#: experiment/views.py:2672
 msgid "Muscle subdivision created successfully."
 msgstr "Sub-divisão do músculo criada com sucesso."
 
-#: experiment/views.py:2648
+#: experiment/views.py:2708
 msgid "Muscle subdivision removed successfully."
 msgstr "Sub-divisão do músculo excluída com sucesso."
 
-#: experiment/views.py:2652
+#: experiment/views.py:2712
 msgid "Error trying to delete muscle subdivision."
 msgstr "Erro ao tentar excluir a sub-divisão do músculo."
 
-#: experiment/views.py:2681
+#: experiment/views.py:2741
 msgid "Muscle subdivision updated successfully."
 msgstr "Sub-divisão do músculo foi alterada com sucesso."
 
-#: experiment/views.py:2714
+#: experiment/views.py:2774
 msgid "Muscle side created successfully."
 msgstr "Lado do músculo criado com sucesso."
 
-#: experiment/views.py:2750
+#: experiment/views.py:2810
 msgid "Muscle side removed successfully."
 msgstr "Lado do músculo excluído com sucesso."
 
-#: experiment/views.py:2754
+#: experiment/views.py:2814
 msgid "Error trying to delete muscle side."
 msgstr "Erro ao tentar excluir o lado do músculo."
 
-#: experiment/views.py:2783
+#: experiment/views.py:2843
 msgid "Muscle side updated successfully."
 msgstr "Lado do músculo atualizado com sucesso."
 
-#: experiment/views.py:2818
+#: experiment/views.py:2878
 msgid "Software created successfully."
 msgstr "Software criado com sucesso."
 
-#: experiment/views.py:2853
+#: experiment/views.py:2913
 msgid "Software removed successfully."
 msgstr "Software excluído com sucesso."
 
-#: experiment/views.py:2856
+#: experiment/views.py:2916
 msgid "Error trying to delete software."
 msgstr "Erro ao tentar excluir Software."
 
-#: experiment/views.py:2883
+#: experiment/views.py:2943
 msgid "Software updated successfully."
 msgstr "Software alterado com sucesso."
 
-#: experiment/views.py:2915
+#: experiment/views.py:2975
 msgid "Software version created successfully."
 msgstr "Versão do software criado com sucesso."
 
-#: experiment/views.py:2951
+#: experiment/views.py:3011
 msgid "Software version removed successfully."
 msgstr "Versão do software excluída com sucesso."
 
-#: experiment/views.py:2955
+#: experiment/views.py:3015
 msgid "Error trying to delete software version."
 msgstr "Erro ao tentar excluir a versão do software ."
 
-#: experiment/views.py:2981
+#: experiment/views.py:3041
 msgid "Software version updated successfully."
 msgstr "Versão do software foi alterada com sucesso."
 
-#: experiment/views.py:3024
+#: experiment/views.py:3084
 msgid "Electrode model created successfully."
 msgstr "Modelo de eletrodo criado com sucesso."
 
-#: experiment/views.py:3058
+#: experiment/views.py:3118
 msgid "Electrode model updated successfully."
 msgstr "Modelo de eletrodo alterado com sucesso."
 
-#: experiment/views.py:3091
+#: experiment/views.py:3151
 msgid "Electrode model removed successfully."
 msgstr "Modelo de eletrodo excluído com sucesso."
 
-#: experiment/views.py:3094
+#: experiment/views.py:3154
 msgid "Error trying to delete electrode model."
 msgstr "Erro ao tentar excluir o modelo de eletrodo."
 
-#: experiment/views.py:3130
+#: experiment/views.py:3190
 msgid "Coil Model created successfully."
 msgstr "Modelo da bobina criado com sucesso"
 
-#: experiment/views.py:3162
+#: experiment/views.py:3222
 msgid "Coil model removed successfully."
 msgstr "Modelo da bobina excluído com sucesso."
 
-#: experiment/views.py:3165
+#: experiment/views.py:3225
 msgid "Error trying to delete coil model."
 msgstr "Erro ao tentar excluir o modelo da bobina."
 
-#: experiment/views.py:3189
+#: experiment/views.py:3249
 msgid "Coil Model updated successfully."
 msgstr "Modelo da bobina alterado com sucesso."
 
-#: experiment/views.py:3225
+#: experiment/views.py:3285
 msgid "TMS device created successfully."
 msgstr "Dispositivo TMS criado com sucesso."
 
-#: experiment/views.py:3257
+#: experiment/views.py:3317
 msgid "TMS device removed successfully."
 msgstr "Dispositivo TMS excluído com sucesso."
 
-#: experiment/views.py:3260
+#: experiment/views.py:3320
 msgid "Error trying to delete TMS device."
 msgstr "Erro ao tentar excluir dispositivo TMS."
 
-#: experiment/views.py:3284
+#: experiment/views.py:3344
 msgid "TMS device updated successfully."
 msgstr "Dispositivo TMS atualizado com sucesso."
 
-#: experiment/views.py:3319
+#: experiment/views.py:3379
 msgid "Material created successfully."
 msgstr "Material criado com sucesso."
 
-#: experiment/views.py:3349
+#: experiment/views.py:3409
 msgid "Material updated successfully."
 msgstr "Material alterado com sucesso."
 
-#: experiment/views.py:3378
+#: experiment/views.py:3438
 msgid "Material removed successfully."
 msgstr "Material excluído com sucesso."
 
-#: experiment/views.py:3381
+#: experiment/views.py:3441
 msgid "Error trying to delete material."
 msgstr "Erro ao deletar o material"
 
-#: experiment/views.py:3443
+#: experiment/views.py:3503
 msgid "EEG electrode net created successfully."
 msgstr "Rede de eletrodo de EEG criada com sucesso."
 
-#: experiment/views.py:3550
+#: experiment/views.py:3610
 msgid "EEG electrode net updated successfully."
 msgstr "Rede de eletrodos de EEG alterada com sucesso."
 
-#: experiment/views.py:3610
+#: experiment/views.py:3670
 msgid ""
 "EEG electrode net cannot be removed because it is used in EEG electrode "
 "system."
@@ -4693,7 +4804,7 @@ msgstr ""
 "Rede de eletrodos de EEG não pode ser removida porque é usada em sistema de "
 "eletrodos de EEG."
 
-#: experiment/views.py:3620
+#: experiment/views.py:3680
 msgid ""
 "EEG electrode net cannot be removed because cap size is associated with EEG "
 "data."
@@ -4701,51 +4812,51 @@ msgstr ""
 "Rede de eletrodos de EEG não pode ser removida porque tamanho da touca está "
 "associado a dados de EEG."
 
-#: experiment/views.py:3628
+#: experiment/views.py:3688
 msgid "EEG electrode net removed successfully."
 msgstr "Rede de eletrodos de EEG excluída com sucesso."
 
-#: experiment/views.py:3631
+#: experiment/views.py:3691
 msgid "Error trying to delete EEG Electrode Net."
 msgstr "Erro ao tentar excluir a rede de eletrodos de EEG."
 
-#: experiment/views.py:3675
+#: experiment/views.py:3735
 msgid "EEG cap size created successfully."
 msgstr "Tamanho da touca de EEG criada com sucesso."
 
-#: experiment/views.py:3708
+#: experiment/views.py:3768
 msgid "Cap size updated successfully."
 msgstr "Tamanho da touca atualizado com sucesso."
 
-#: experiment/views.py:3739
+#: experiment/views.py:3799
 msgid "Cap size removed successfully."
 msgstr "Tamanho da touca excluído com sucesso."
 
-#: experiment/views.py:3743
+#: experiment/views.py:3803
 msgid "Error trying to delete cap size."
 msgstr "Erro ao tentar excluir tamanho da touca."
 
-#: experiment/views.py:3775
+#: experiment/views.py:3835
 msgid "A/D converter created successfully."
 msgstr "Conversor A/D criado com sucesso."
 
-#: experiment/views.py:3808
+#: experiment/views.py:3868
 msgid "A/D converter updated successfully."
 msgstr "Conversor A/D alterado com sucesso."
 
-#: experiment/views.py:3838
+#: experiment/views.py:3898
 msgid "A/D converter removed successfully."
 msgstr "Conversor A/D removido com sucesso."
 
-#: experiment/views.py:3841
+#: experiment/views.py:3901
 msgid "Error trying to delete A/D converter."
 msgstr "Erro ao tentar excluir o conversor A/D."
 
-#: experiment/views.py:4227
+#: experiment/views.py:4293
 msgid "Participant deleted from experiment."
 msgstr "Participante deletado do experimento."
 
-#: experiment/views.py:4229
+#: experiment/views.py:4295
 msgid ""
 "It was not possible to delete participant, because there are answers or eeg "
 "data associated"
@@ -4753,24 +4864,24 @@ msgstr ""
 "Não foi possível excluir o participante, pois há respostas de questionários "
 "ou arquivos de eeg associados"
 
-#: experiment/views.py:4352 experiment/views.py:7353
+#: experiment/views.py:4419 experiment/views.py:7580
 msgid "Participant has already been inserted in this group."
 msgstr "Participante já foi incluído neste grupo"
 
-#: experiment/views.py:4400
+#: experiment/views.py:4467
 msgid "Fill not available - Table of tokens was not started."
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: experiment/views.py:4404
+#: experiment/views.py:4471
 msgid "Fill not available - Questionnaire is not activated."
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: experiment/views.py:4408
+#: experiment/views.py:4475
 msgid "Fill not available - Questionnaire does not contain standard fields."
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: experiment/views.py:4417
+#: experiment/views.py:4484
 msgid ""
 "Fail trying to generate token to answer questionnaire. Check if "
 "questionnaire is active."
@@ -4778,59 +4889,59 @@ msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 
-#: experiment/views.py:4544
+#: experiment/views.py:4611
 msgid "You will be redirected to questionnaire. Please wait."
 msgstr "Você será redirecionado para o questionário. Aguarde."
 
-#: experiment/views.py:4566 experiment/views.py:4720
+#: experiment/views.py:4633 experiment/views.py:4787
 msgid "Fill deleted successfully."
 msgstr "Preenchimento removido com sucesso"
 
-#: experiment/views.py:4568 experiment/views.py:4722
+#: experiment/views.py:4635 experiment/views.py:4789
 msgid "Error trying to delete fill"
 msgstr "Erro ao deletar o preenchimento"
 
-#: experiment/views.py:4984
+#: experiment/views.py:5051
 msgid "EEG data collection created successfully."
 msgstr "Coleta de dados de EEG criada com sucesso."
 
-#: experiment/views.py:4985
+#: experiment/views.py:5052
 msgid "Now you can configure each electrode position"
 msgstr "Agora você pode configurar cada posição de eletrodo."
 
-#: experiment/views.py:5009
+#: experiment/views.py:5076
 msgid "EEG data file format validated."
 msgstr "Formato de arquivo de dados de EEG validado."
 
-#: experiment/views.py:5011
+#: experiment/views.py:5078
 msgid "Not valid EEG file format."
 msgstr "Formato de arquivo de EEG não válido"
 
-#: experiment/views.py:5160
+#: experiment/views.py:5227
 msgid "EEG data removed successfully."
 msgstr "Dados de EEG excluídos com sucesso."
 
-#: experiment/views.py:5235
+#: experiment/views.py:5302
 msgid "EEG data updated successfully."
 msgstr "Dados de EEG alterado com sucesso."
 
-#: experiment/views.py:5244 experiment/views.py:5251
+#: experiment/views.py:5311 experiment/views.py:5318
 msgid "EEG position data updated successfully."
 msgstr "Dados da posição alterados com sucesso."
 
-#: experiment/views.py:5353
+#: experiment/views.py:5420
 msgid "Waiting for status"
 msgstr "Esperando por status"
 
-#: experiment/views.py:5378
+#: experiment/views.py:5445
 msgid "Reading source file"
 msgstr "Lendo arquivo fonte"
 
-#: experiment/views.py:5409 experiment/views.py:5662
+#: experiment/views.py:5476 experiment/views.py:5729
 msgid "Finished"
 msgstr "Terminado"
 
-#: experiment/views.py:5413
+#: experiment/views.py:5480
 msgid ""
 "It was not possible to open the data file. Check if the number of channels "
 "configured is correct."
@@ -4838,344 +4949,361 @@ msgstr ""
 "Não foi possível abrir o arquivo de dados. Verifique se o número de canais "
 "configurado está correto."
 
-#: experiment/views.py:5469
+#: experiment/views.py:5536
 msgid "Reading metadata"
 msgstr "Lendo metadados"
 
-#: experiment/views.py:5503
+#: experiment/views.py:5570
 msgid "Reading device data"
 msgstr "Lendo dados do dispositivo"
 
-#: experiment/views.py:5508
+#: experiment/views.py:5575
 msgid "Device type: Amplifier; "
 msgstr "Tipo de dispositivo: Amplificador; "
 
-#: experiment/views.py:5511 experiment/views.py:5539 experiment/views.py:5564
+#: experiment/views.py:5578 experiment/views.py:5606 experiment/views.py:5631
 msgid "Description: "
 msgstr "Descrição:"
 
-#: experiment/views.py:5515 experiment/views.py:5542 experiment/views.py:5566
+#: experiment/views.py:5582 experiment/views.py:5609 experiment/views.py:5633
 msgid "Manufacturer: "
 msgstr "Fabricante: "
 
-#: experiment/views.py:5517
+#: experiment/views.py:5584
 msgid "Gain: "
 msgstr "Ganho: "
 
-#: experiment/views.py:5521
+#: experiment/views.py:5588
 msgid "Impedance: "
 msgstr "Impedância: "
 
-#: experiment/views.py:5526
+#: experiment/views.py:5593
 msgid "Common mode rejection ratio: "
 msgstr "Taxa de rejeição do modo comum: "
 
-#: experiment/views.py:5535
+#: experiment/views.py:5602
 msgid "Device type: EEG Amplifier; "
 msgstr "Tipo de dispositivo: Amplificador de EEG; "
 
-#: experiment/views.py:5545
+#: experiment/views.py:5612
 msgid "Number of used channels: "
 msgstr "Número de canais usados: "
 
-#: experiment/views.py:5561
+#: experiment/views.py:5628
 msgid "Device type: EEG Electrode Net; "
 msgstr "Tipo de dispositivo: Rede de eletrodos de EEG; "
 
-#: experiment/views.py:5579
+#: experiment/views.py:5646
 msgid "Position: "
 msgstr "Posição: "
 
-#: experiment/views.py:5580
+#: experiment/views.py:5647
 msgid "Coordinates: ("
 msgstr "Coordenadas: ("
 
-#: experiment/views.py:5583
+#: experiment/views.py:5650
 msgid "EEG electrode localization system: "
 msgstr "Sistema de localização de eletrodos de EEG: "
 
-#: experiment/views.py:5594
+#: experiment/views.py:5661
 msgid "Reading acquisition data"
 msgstr "Lendo dados de aquisição"
 
-#: experiment/views.py:5668
+#: experiment/views.py:5735
 msgid "Filter type:"
 msgstr "Tipo de filtro:"
 
-#: experiment/views.py:5673
+#: experiment/views.py:5740
 msgid "High pass: "
 msgstr "Passa-alta: "
 
-#: experiment/views.py:5675
+#: experiment/views.py:5742
 msgid "Low pass: "
 msgstr "Passa-baixa: "
 
-#: experiment/views.py:5677
+#: experiment/views.py:5744
 msgid "Order: "
 msgstr "Ordem: "
 
-#: experiment/views.py:5812
+#: experiment/views.py:5879
 msgid "TMS data collection created successfully."
 msgstr "Coleta de dados de TMS criada com sucesso."
 
-#: experiment/views.py:5856 experiment/views.py:6430
+#: experiment/views.py:5923 experiment/views.py:6657
 msgid "TMS data removed successfully."
 msgstr "Dados de TMS excluídos com sucesso."
 
-#: experiment/views.py:5900
+#: experiment/views.py:5967
 msgid "TMS data updated successfully."
 msgstr "Dados de TMS alterado com sucesso."
 
-#: experiment/views.py:5919
+#: experiment/views.py:5986
 msgid "TMS position updated sucessfully."
 msgstr "Posição de TMS foi alterada com sucesso."
 
-#: experiment/views.py:5922
+#: experiment/views.py:5989
 msgid "There is no changes to save"
 msgstr "Não há alterações para salvar."
 
-#: experiment/views.py:6048
-msgid "Digital game phase data collection created successfully."
-msgstr "Coleta de dados de jogo eletrônico criada com sucesso."
+#: experiment/views.py:6115
+msgid "Goalkeeper game phase data collection created successfully."
+msgstr "Coleta de dados de jogo do goleiro criada com sucesso."
 
-#: experiment/views.py:6088
-msgid "Digital game phase data removed successfully."
-msgstr "Dados de jogo eletrônico excluídos com sucesso."
+#: experiment/views.py:6155
+msgid "Goalkeeper game phase data removed successfully."
+msgstr "Dados de jogo do goleiro excluídos com sucesso."
 
-#: experiment/views.py:6125
-msgid "Digital game phase data updated successfully."
-msgstr "Dados de jogo eletrônico alterados com sucesso."
+#: experiment/views.py:6192
+msgid "Goalkeeper game phase data updated successfully."
+msgstr "Dados de jogo do goleiro alterados com sucesso."
 
-#: experiment/views.py:6235
+#: experiment/views.py:6227
+msgid "Group code changed successfully."
+msgstr "Código do grupo atualizado com sucesso."
+
+#: experiment/views.py:6366
+msgid "1 new play was imported."
+msgstr "1 nova jogada foi importada."
+
+#: experiment/views.py:6368
+#, python-format
+msgid "%s new plays were imported."
+msgstr "%s novas jogadas foram importadas."
+
+#: experiment/views.py:6370
+msgid "No new data loaded."
+msgstr "Nenhum arquivo de dados foi carregado."
+
+#: experiment/views.py:6462
 msgid "Generic data collection created successfully."
 msgstr "Coleta genérica de dados criada com sucesso."
 
-#: experiment/views.py:6276
+#: experiment/views.py:6503
 msgid "Generic data collection removed successfully."
 msgstr "Coleta genérica de dados removida com sucesso."
 
-#: experiment/views.py:6312
+#: experiment/views.py:6539
 msgid "Generic data collection updated successfully."
 msgstr "Coleta genérica de dados atualizada com sucesso."
 
-#: experiment/views.py:6390
+#: experiment/views.py:6617
 msgid "TMS position updated successfully."
 msgstr "Posição de TMS foi alterada com sucesso."
 
-#: experiment/views.py:6564
+#: experiment/views.py:6791
 msgid "EMG data collection created successfully."
 msgstr "Coleta de dados de EMG criada com sucesso."
 
-#: experiment/views.py:6608
+#: experiment/views.py:6835
 msgid "EMG data removed successfully."
 msgstr "Dados de EMG excluídos com sucesso."
 
-#: experiment/views.py:6649
+#: experiment/views.py:6876
 msgid "EMG data updated successfully."
 msgstr "Dados de EMG alterado com sucesso."
 
-#: experiment/views.py:6887
+#: experiment/views.py:7114
 msgid "Main step"
 msgstr "Passo principal"
 
-#: experiment/views.py:6903
+#: experiment/views.py:7130
 msgid "Sub-steps: ("
 msgstr "Sub-passos: ("
 
-#: experiment/views.py:6994
+#: experiment/views.py:7221
 msgid "Duration value"
 msgstr "Valor de duração"
 
-#: experiment/views.py:6996
+#: experiment/views.py:7223
 msgid "Duration unit"
 msgstr "Unidade de duração"
 
-#: experiment/views.py:7004
+#: experiment/views.py:7231
 msgid "Number of mandatory components"
 msgstr "Número de passos obrigatórios"
 
-#: experiment/views.py:7010
+#: experiment/views.py:7237
 msgid "Text"
 msgstr "Texto"
 
-#: experiment/views.py:7016
+#: experiment/views.py:7243
 msgid "LimeSurvey ID"
 msgstr ""
 
-#: experiment/views.py:7024
+#: experiment/views.py:7251
 msgid "Questionnaire title"
 msgstr "Título do questionário"
 
-#: experiment/views.py:7051
+#: experiment/views.py:7278
 msgid "Number of repetitions"
 msgstr "Número de repetições"
 
-#: experiment/views.py:7053
+#: experiment/views.py:7280
 msgid "Interval between repetitions value"
 msgstr "Valor do intervalo entre repetições"
 
-#: experiment/views.py:7055
+#: experiment/views.py:7282
 msgid "Interval between repetitions unit"
 msgstr "Unidade do intervalo entre repetições"
 
-#: experiment/views.py:7058
+#: experiment/views.py:7285
 msgid "Position in the set of steps "
 msgstr "Posição no conjunto de passos"
 
-#: experiment/views.py:7060
+#: experiment/views.py:7287
 msgid "Requires start and end datetime"
 msgstr "Requer configuração de data/hora de início e fim"
 
-#: experiment/views.py:7060
+#: experiment/views.py:7287
 msgid "Yes"
 msgstr "Sim"
 
-#: experiment/views.py:7060
+#: experiment/views.py:7287
 msgid "No"
 msgstr "Não"
 
-#: experiment/views.py:7109
+#: experiment/views.py:7336
 msgid "Additional data collection created successfully."
 msgstr "Coleta de dados adicionais criada com sucesso."
 
-#: experiment/views.py:7146
+#: experiment/views.py:7373
 msgid "Additional data removed successfully."
 msgstr "Dados adicionais excluídos com sucesso."
 
-#: experiment/views.py:7187
+#: experiment/views.py:7414
 msgid "Additional data updated successfully."
 msgstr "Dados adicionais alterados com sucesso."
 
-#: experiment/views.py:7248
+#: experiment/views.py:7475
 msgid "Subject step data was created successfully."
 msgstr "Dados do passo do participante criado com sucesso."
 
-#: experiment/views.py:7282
+#: experiment/views.py:7509
 msgid "Subject step data updated successfully."
 msgstr "Dados do passo do participante alterado com sucesso."
 
-#: experiment/views.py:7406
+#: experiment/views.py:7633
 msgid "Consent term saved successfully."
 msgstr "Termo salvo com sucesso."
 
-#: experiment/views.py:7411
+#: experiment/views.py:7638
 msgid "There are not attachments to save"
 msgstr "Não existem anexos para salvar"
 
-#: experiment/views.py:7415
+#: experiment/views.py:7642
 msgid "Attachment deleted successfully."
 msgstr "Anexo removido com sucesso."
 
-#: experiment/views.py:7636 experiment/views.py:8849 experiment/views.py:8976
-#: experiment/views.py:8997
+#: experiment/views.py:7863 experiment/views.py:9076 experiment/views.py:9203
+#: experiment/views.py:9224
 msgid "Step included successfully."
 msgstr "Passo incluído com sucesso."
 
-#: experiment/views.py:7682
+#: experiment/views.py:7909
 msgid "Use of step "
 msgstr "Uso do passo "
 
-#: experiment/views.py:7768
+#: experiment/views.py:7995
 msgid " years "
 msgstr " anos "
 
-#: experiment/views.py:7768
+#: experiment/views.py:7995
 msgid " year "
 msgstr " ano "
 
-#: experiment/views.py:7773
+#: experiment/views.py:8000
 msgid " months "
 msgstr " meses "
 
-#: experiment/views.py:7773
+#: experiment/views.py:8000
 msgid " month "
 msgstr " mês "
 
-#: experiment/views.py:7778
+#: experiment/views.py:8005
 msgid " weeks "
 msgstr " semanas "
 
-#: experiment/views.py:7778
+#: experiment/views.py:8005
 msgid " week "
 msgstr " semana "
 
-#: experiment/views.py:7783
+#: experiment/views.py:8010
 msgid " days "
 msgstr " dias "
 
-#: experiment/views.py:7783
+#: experiment/views.py:8010
 msgid " day "
 msgstr " dia "
 
-#: experiment/views.py:7788
+#: experiment/views.py:8015
 msgid " hours "
 msgstr " horas "
 
-#: experiment/views.py:7788
+#: experiment/views.py:8015
 msgid " hour "
 msgstr " hora "
 
-#: experiment/views.py:7793
+#: experiment/views.py:8020
 msgid " minutes "
 msgstr " minutos "
 
-#: experiment/views.py:7793
+#: experiment/views.py:8020
 msgid " minute "
 msgstr " minuto "
 
-#: experiment/views.py:7798
+#: experiment/views.py:8025
 msgid " seconds "
 msgstr " segundos "
 
-#: experiment/views.py:7798
+#: experiment/views.py:8025
 msgid " second "
 msgstr " segundo "
 
-#: experiment/views.py:7803
+#: experiment/views.py:8030
 msgid " miliseconds "
 msgstr " milesegundos "
 
-#: experiment/views.py:7803
+#: experiment/views.py:8030
 msgid " milisecond "
 msgstr " milesegundo "
 
-#: experiment/views.py:7818
+#: experiment/views.py:8045
 msgid " and "
 msgstr " e "
 
-#: experiment/views.py:8031
+#: experiment/views.py:8258
 msgid "Copy of"
 msgstr "Cópia de"
 
-#: experiment/views.py:8309 experiment/views.py:8582
+#: experiment/views.py:8536 experiment/views.py:8809
 msgid "Step use updated successfully."
 msgstr "Uso do passo atualizado com sucesso."
 
-#: experiment/views.py:8315 experiment/views.py:8591
+#: experiment/views.py:8542 experiment/views.py:8818
 msgid "Component deleted successfully."
 msgstr "Componente removido com sucesso."
 
-#: experiment/views.py:8543 experiment/views.py:8572
+#: experiment/views.py:8770 experiment/views.py:8799
 msgid "Step updated successfully."
 msgstr "Passo alterado com sucesso."
 
-#: experiment/views.py:8822
+#: experiment/views.py:9049
 msgid "Experimental protocol included successfully."
 msgstr "Protocolo experimental incluído com sucesso."
 
-#: experiment/views.py:8847 experiment/views.py:8995
+#: experiment/views.py:9074 experiment/views.py:9222
 msgid "Steps included successfully."
 msgstr "Passos incluídos com sucesso."
 
-#: experiment/views.py:9050
+#: experiment/views.py:9277
 msgid "EEG electrode localization system created successfully."
 msgstr "Sistema de localização de eletrodo de EEG criado com sucesso."
 
-#: experiment/views.py:9148 experiment/views.py:10626
+#: experiment/views.py:9375 experiment/views.py:10853
 msgid "Error trying to delete localization system."
 msgstr "Erro ao tentar excluir sistema de localização."
 
-#: experiment/views.py:9156
+#: experiment/views.py:9383
 msgid ""
 "Impossible to delete localization system because there is (are) Electrode "
 "Net associated."
@@ -5183,126 +5311,126 @@ msgstr ""
 "Não foi possível excluir sistema de localização, pois há  rede de eletrodos "
 "associado."
 
-#: experiment/views.py:9189 experiment/views.py:10659
+#: experiment/views.py:9416 experiment/views.py:10886
 msgid "Localization system updated successfully."
 msgstr "Sistema de localização alterado com sucesso."
 
-#: experiment/views.py:9238
+#: experiment/views.py:9465
 msgid "EEG electrode positions updated successfully."
 msgstr "Posição de eletrodo de EEG atualizada com sucesso."
 
-#: experiment/views.py:9272
+#: experiment/views.py:9499
 msgid "EEG electrode position created successfully."
 msgstr "Posição de eletrodo de EEG criada com sucesso."
 
-#: experiment/views.py:9313
+#: experiment/views.py:9540
 msgid "Position removed successfully."
 msgstr "Posição excluída com sucesso."
 
-#: experiment/views.py:9319
+#: experiment/views.py:9546
 msgid "Error trying to delete position."
 msgstr "Erro ao tentar excluir a posição."
 
-#: experiment/views.py:9326
+#: experiment/views.py:9553
 msgid ""
 "Impossible to delete position because there is (are) Position Setting "
 "associated."
 msgstr ""
 "Não foi possível excluir posição, pois há configuração de posição associada."
 
-#: experiment/views.py:9355
+#: experiment/views.py:9582
 msgid "Position updated successfully."
 msgstr "Posição foi alterada com sucesso."
 
-#: experiment/views.py:9387
+#: experiment/views.py:9614
 msgid "EMG setting included successfully."
 msgstr "Configuração de EMG incluída com sucesso."
 
-#: experiment/views.py:9425
+#: experiment/views.py:9652
 msgid "EMG setting was removed successfully."
 msgstr "Configuração de EMG excluído com sucesso."
 
-#: experiment/views.py:9488
+#: experiment/views.py:9715
 msgid "EMG setting updated successfully."
 msgstr "Configuração de EMG foi alterado com sucesso."
 
-#: experiment/views.py:9546
+#: experiment/views.py:9773
 msgid "EMG digital filter setting created successfully."
 msgstr "Configuração de filtro digital de EMG criada com sucesso."
 
-#: experiment/views.py:9588
+#: experiment/views.py:9815
 msgid "EMG digital filter setting updated successfully."
 msgstr "Configuração de filtro digital de EMG alterada com sucesso."
 
-#: experiment/views.py:9647
+#: experiment/views.py:9874
 msgid "EMG A/D converter setting created successfully."
 msgstr "Configuração de conversor A/D de EMG criada com sucesso."
 
-#: experiment/views.py:9689
+#: experiment/views.py:9916
 msgid "EMG A/D converter setting updated successfully."
 msgstr "Configuração de conversor A/D de EMG alterada com sucesso."
 
-#: experiment/views.py:9855
+#: experiment/views.py:10082
 msgid "EMG electrode setting created successfully."
 msgstr "Comfiguração de eletrodo de EMG criada com sucesso."
 
-#: experiment/views.py:9975
+#: experiment/views.py:10202
 msgid "EMG electrode setting was updated successfully."
 msgstr "Configuração de eletrodo de EMG alterada com sucesso."
 
-#: experiment/views.py:10061
+#: experiment/views.py:10288
 msgid "EMG preamplifier setting created successfully."
 msgstr "Configuração de pré-amplificador de EMG criada com sucesso."
 
-#: experiment/views.py:10133
+#: experiment/views.py:10360
 msgid "EMG Preamplifier setting updated successfully."
 msgstr "Configuração de pré-amplificador de EMG alterada com sucesso."
 
-#: experiment/views.py:10220
+#: experiment/views.py:10447
 msgid "EMG amplifier setting created successfully."
 msgstr "Configuração de amplificador de EMG criada com sucesso."
 
-#: experiment/views.py:10293
+#: experiment/views.py:10520
 msgid "EMG Amplifier setting updated successfully."
 msgstr "Configuração de amplificador de EMG alterada com sucesso."
 
-#: experiment/views.py:10329
+#: experiment/views.py:10556
 msgid "TMS setting included successfully."
 msgstr "Configuração de TMS incluída com sucesso."
 
-#: experiment/views.py:10363
+#: experiment/views.py:10590
 msgid "TMS setting was removed successfully."
 msgstr "Configuração de TMS excluído com sucesso."
 
-#: experiment/views.py:10413
+#: experiment/views.py:10640
 msgid "TMS setting updated successfully."
 msgstr "Configuração de TMS foi alterado com sucesso."
 
-#: experiment/views.py:10496
+#: experiment/views.py:10723
 msgid "TMS device setting created successfully."
 msgstr "Comfiguração de dispositivos de TMS criada com sucesso."
 
-#: experiment/views.py:10542
+#: experiment/views.py:10769
 msgid "TMS device setting updated successfully."
 msgstr "Configuração de dispositivos de TMS foi alterado com sucesso."
 
-#: experiment/views.py:10587
+#: experiment/views.py:10814
 msgid "TMS localization system created successfully."
 msgstr "Sistema de localização alterado com sucesso."
 
-#: experiment/views.py:10799
+#: experiment/views.py:11026
 msgid "Context tree included successfully."
 msgstr "Árvore de contexto incluída com sucesso."
 
-#: experiment/views.py:10838
+#: experiment/views.py:11065
 msgid "Context tree was removed successfully."
 msgstr "Árvore de contexto excluída com sucesso."
 
-#: experiment/views.py:10907
+#: experiment/views.py:11134
 msgid "EMG placement system"
 msgstr "Sistema de posicionamento de EMG"
 
-#: experiment/views.py:10932
+#: experiment/views.py:11159
 msgid "EEG electrode net / Cap"
 msgstr "Rede de eletrodos de EEG / Touca"
 

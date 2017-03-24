@@ -29,7 +29,6 @@
                 <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
-{#                <li class="active">{% get_name_or_code subject.patient.id %}</li>#}
                 <li class="active">{% trans "Check goalkeeper game data" %}</li>
             </ol>
         </div>
@@ -59,20 +58,78 @@
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
+
+            <div class="container span6 offset3 well ">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>{% trans "Group" %}</label>
+                        <br/>
+                        {{ group.title }}
+                    </div>
+                    <div>
+                        <label>{% trans "Experimental group code" %}</label>
+                        <br/>
+                        {% if institution_code %}
+                            {{ institution_code }}
+                            <span>-</span>
+                        {% else %}
+                            {% if perms.user.is_superuser %}
+                                <a class="btn btn-warning" href="/admin/configuration/institution/" target="_blank">{% trans "Create institution code" %}</a>
+                            {% else %}
+                                <span class="label label-warning">{% trans "missing institution code" %}</span>
+                            {% endif %}
+                        {% endif %}
+                        {% if group.code %}
+                            <a data-toggle="tooltip" data-placement="right" title="{% trans "Change group code" %}" onclick="$('#modalGroupCode').modal('show');">
+                                {{ group.code }}
+                            </a>
+                        {% else %}
+                            <a class="btn btn-warning" onclick="$('#modalGroupCode').modal('show');$('#group-code').focus();">{% trans "Create group code" %}</a>
+                        {% endif %}
+                    </div>
+
+                    <div class="modal fade" id="modalGroupCode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4>
+                                    {% trans "Group code" %}
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <input class="form-control" id="group-code" name="group-code" value="{% if group.code %}{{ group.code }}{% endif %}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                                    <button class="btn btn-primary" type="submit" name="action" value="group-code">{% trans "Save" %}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
             <div class="row">
                 <div class="col-xs-12 col-sm-12">
                     <div class="form-group">
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Digital game phase path" %}</th>
-                                <th>{% trans "Phase code" %}</th>
+                                <th class="col-md-6">{% trans "Goalkeeper game phase path" %}</th>
+                                <th class="col-md-6">{% trans "Phase code" %}</th>
+{#                                <th class="col-md-3">{% trans "Goalkeeper game data" %}</th>#}
                             </tr>
                             </thead>
                             <tbody>
                             {% if not digital_game_phase_collections %}
                                 <tr>
-                                    <td>{% trans "(No digital game phase collection)" %}</td>
+                                    <td>{% trans "(No goalkeeper game phase collection)" %}</td>
+                                    <td></td>
                                     <td></td>
                                 </tr>
                             {% else %}
@@ -93,7 +150,7 @@
                                         <td>
 
                                             {% if digital_game_phase_collection.data_configuration_tree.code %}
-                                                <a data-toggle="tooltip" data-placement="right" title="{% trans "Change phase code" %}" style="font-style: italic;" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">
+                                                <a data-toggle="tooltip" data-placement="right" title="{% trans "Change phase code" %}" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">
                                                     {{ digital_game_phase_collection.data_configuration_tree.code }}
                                                 </a>
                                             {% else %}
@@ -112,7 +169,7 @@
                                                             <div class="row">
                                                                 <div class="form-group">
                                                                     <label>{% trans "Phase code" %}</label>
-                                                                        <input class="form-control" id="phase_code" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" value="{% if digital_game_phase_collection.data_configuration_tree.code %}{{ digital_game_phase_collection.data_configuration_tree.code }}{% endif %}">
+                                                                    <input class="form-control" id="phase_code" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" value="{% if digital_game_phase_collection.data_configuration_tree.code %}{{ digital_game_phase_collection.data_configuration_tree.code }}{% endif %}">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -125,6 +182,9 @@
                                             </div>
 
                                         </td>
+{#                                        <td>#}
+{##}
+{#                                        </td>#}
 
                                     </tr>
                                 {% endfor %}

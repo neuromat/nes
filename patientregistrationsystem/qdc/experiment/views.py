@@ -27,6 +27,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import PermissionDenied
 from django.core import serializers
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.loading import get_model
@@ -36,7 +37,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
-from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
+from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, Amplifier, EEGElectrodeNet, DataConfigurationTree, \
@@ -53,7 +54,7 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
     GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog
 
-from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
+from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
     EEGAmplifierSettingForm, EEGSolutionForm, EEGFilterForm, EEGFilterSettingForm, \
@@ -73,11 +74,12 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
     GenericDataCollectionForm, GenericDataCollectionDataForm
 
-from export.directory_utils import create_directory
+from configuration.models import Institution
 
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData, \
-    Diagnosis
+from export.directory_utils import create_directory
 from export.forms import ParticipantsSelectionForm, AgeIntervalForm
+
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -4045,10 +4047,6 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
     subject_id = None
 
     goalkeeper = False
-    if 'goalkeeper' in settings.DATABASES and GoalkeeperGameLog.objects.using('goalkeeper').first():
-        # TODO: check if there is digital game phase step in the experimental protocol
-        # TODO: check if exists registers for this group
-        goalkeeper = True
 
     if request.method == "POST" and request.POST['action'][:6] == "remove":
         subject_id = request.POST['action'][7:]
@@ -4085,6 +4083,10 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                                       'number_of_generic_data_collection_data':
                                           len(list_of_generic_data_collection_configuration),
                                       }
+
+        if experimental_protocol_info['number_of_digital_game_phase_data']:
+            if 'goalkeeper' in settings.DATABASES and GoalkeeperGameLog.objects.using('goalkeeper').first():
+                goalkeeper = True
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -6110,7 +6112,7 @@ def subject_digital_game_phase_data_create(request, group_id, subject_id, digita
 
                 digital_game_phase_data_added.save()
 
-                messages.success(request, _('Digital game phase data collection created successfully.'))
+                messages.success(request, _('Goalkeeper game phase data collection created successfully.'))
 
                 redirect_url = reverse("digital_game_phase_data_view", args=(digital_game_phase_data_added.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -6150,7 +6152,7 @@ def digital_game_phase_data_view(request, digital_game_phase_data_id,
 
             subject_of_group = digital_game_phase_data.subject_of_group
             digital_game_phase_data.delete()
-            messages.success(request, _('Digital game phase data removed successfully.'))
+            messages.success(request, _('Goalkeeper game phase data removed successfully.'))
             return redirect('subject_digital_game_phase_view',
                             group_id=subject_of_group.group_id,
                             subject_id=subject_of_group.subject_id)
@@ -6187,7 +6189,7 @@ def digital_game_phase_data_edit(request, digital_game_phase_data_id):
             digital_game_phase_data_to_update.subject = digital_game_phase_data.subject_of_group.subject
             digital_game_phase_data_to_update.save()
 
-            messages.success(request, _('Digital game phase data updated successfully.'))
+            messages.success(request, _('Goalkeeper game phase data updated successfully.'))
         else:
             messages.success(request, _('There is no changes to save.'))
 
@@ -6218,7 +6220,13 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
     group = get_object_or_404(Group, id=group_id)
 
     if request.method == "POST":
-        if request.POST['action'][0:7] == "detail-":
+
+        if request.POST['action'] == "group-code":
+            group.code = request.POST['group-code']
+            group.save()
+            messages.success(request, _('Group code changed successfully.'))
+
+        elif request.POST['action'][0:7] == "detail-":
             path_of_configuration = request.POST['action'][7:]
 
             list_of_path = [int(item) for item in path_of_configuration.split('-')]
@@ -6245,20 +6253,16 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
         data_configuration_tree = \
             DataConfigurationTree.objects.filter(id=data_configuration_tree_id).first()
 
-        # digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(
-        #     subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
-
         digital_game_phase_collections.append(
             {'digital_game_phase_configuration': digital_game_phase_configuration,
              'path': path,
              'data_configuration_tree': data_configuration_tree
              }
-             # 'digital_game_phase_data_files': digital_game_phase_data_files}
         )
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
                'group': group,
-               # 'subject': subject,
+               'institution_code': Institution.get_solo().code,
                'digital_game_phase_collections': digital_game_phase_collections
                }
 
@@ -6284,13 +6288,22 @@ def load_group_goalkeeper_game_data(request, group_id):
         if header[0] == 'experimentGroup' and values[0] == group.code:
             # search playerAlias and phase fields
             if 'playerAlias' in header and 'phase' in header:
+
                 player_alias_index = header.index('playerAlias')
                 phase_index = header.index('phase')
+                date_index = header.index('YYMMDD')
+                time_index = header.index('HHMMSS')
+
                 if values[player_alias_index] not in game_group_data:
                     game_group_data[values[player_alias_index]] = {}
-                game_group_data[values[player_alias_index]][values[phase_index]] = file.filecontent
+                game_group_data[values[player_alias_index]][values[phase_index]] = {
+                    'file_content': file.filecontent,
+                    'date': values[date_index],
+                    'time': values[time_index]}
 
                 # TODO: if there is information of this phase for this player, thrown an error message
+
+    number_of_imported_data = 0
 
     # para cada fase
     # para cada sujeito
@@ -6314,34 +6327,47 @@ def load_group_goalkeeper_game_data(request, group_id):
                     if subject_of_group.subject.patient.code in game_group_data:
                         if data_configuration_tree.code in game_group_data[subject_of_group.subject.patient.code]:
 
-                            # # TODO: if exists a record with the same date/time, overwrite it
-                            #
-                            # # save data
-                            # digital_game_phase_data = DigitalGamePhaseData()
-                            # digital_game_phase_data.subject_of_group = subject_of_group
-                            # digital_game_phase_data.data_configuration_tree = data_configuration_tree
-                            #
-                            # #TODO: use the date and time from the file
-                            # digital_game_phase_data.date = datetime.date.today()
-                            # # digital_game_phase_data.time =
-                            #
-                            # digital_game_phase_data.description = 'auto'
-                            #
-                            # # TODO: use the text file format
-                            # digital_game_phase_data.file_format = FileFormat.objects.first()
-                            #
-                            # # Creating a file
-                            # export_filename = "%s_%s.txt" % (subject_of_group.subject.patient.code, str(questionnaire_code))
-                            #
-                            # export_directory = path.join(export_metadata_directory, path_questionnaire)
-                            #
-                            # complete_filename = path.join(export_path, export_filename)
-                            #
-                            # save_to_csv(complete_filename, questionnaire_fields)
+                            game_data_collection = \
+                                game_group_data[subject_of_group.subject.patient.code][data_configuration_tree.code]
 
-                            messages.success(request, _('Achei.') + '-' + subject_of_group.subject.patient.code + '-' + data_configuration_tree.code)
+                            if not DigitalGamePhaseData.objects.filter(
+                                    subject_of_group=subject_of_group,
+                                    data_configuration_tree=data_configuration_tree,
+                                    date=datetime.strptime(game_data_collection['date'], '%y%m%d'),
+                                    time=datetime.strptime(game_data_collection['time'], '%H%M%S')):
 
-    messages.success(request, _('Data loaded successfully.'))
+                                # saving data
+                                digital_game_phase_data = DigitalGamePhaseData()
+                                digital_game_phase_data.subject_of_group = subject_of_group
+                                digital_game_phase_data.data_configuration_tree = data_configuration_tree
+
+                                digital_game_phase_data.date = datetime.strptime(game_data_collection['date'], '%y%m%d')
+                                digital_game_phase_data.time = datetime.strptime(game_data_collection['time'], '%H%M%S')
+
+                                digital_game_phase_data.description = \
+                                    "%s - %s" % (group.code, subject_of_group.subject.patient.code)
+
+                                digital_game_phase_data.file_format = get_object_or_404(FileFormat, nes_code='txt')
+
+                                # Data file
+                                file_name = "%s_%s.txt" % (group.code, subject_of_group.subject.patient.code)
+                                file_content = game_data_collection['file_content']
+
+                                digital_game_phase_data.file.save(
+                                    file_name,
+                                    ContentFile(file_content))
+
+                                digital_game_phase_data.save()
+
+                                number_of_imported_data += 1
+
+    if number_of_imported_data:
+        if number_of_imported_data == 1:
+            messages.success(request, _('1 new play was imported.'))
+        else:
+            messages.success(request, _('%s new plays were imported.') % (str(number_of_imported_data)))
+    else:
+        messages.info(request, _('No new data loaded.'))
 
     redirect_url = reverse("group_goalkeeper_game_data",
                            args=(group_id,))
