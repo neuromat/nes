@@ -7617,7 +7617,10 @@ def search_patients_ajax(request):
 
         if request.user.has_perm('patient.sensitive_data_patient'):
             if search_text:
-                if re.match('[a-zA-Z ]+', search_text):
+                if re.match('P{1}[0-9]', search_text):
+                    patient_list = \
+                        Patient.objects.filter(code__icontains=search_text).exclude(removed=True).order_by('code')
+                elif re.match('[a-zA-Z ]+', search_text):
                     patient_list = \
                         Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
                 else:
