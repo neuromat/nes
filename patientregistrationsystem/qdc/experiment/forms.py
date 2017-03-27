@@ -24,7 +24,8 @@ class ExperimentForm(ModelForm):
     class Meta:
         model = Experiment
 
-        fields = ['research_project', 'title', 'description', 'is_public', 'data_acquisition_is_concluded']
+        fields = ['research_project', 'title', 'description', 'is_public', 'data_acquisition_is_concluded',
+                  'source_code_url', 'ethics_committee_project_url', 'ethics_committee_project_file']
 
         widgets = {
             'research_project': Select(attrs={'class': 'form-control'}),
@@ -35,6 +36,8 @@ class ExperimentForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
+            'source_code_url': URLInput(attrs={'class': 'form-control'}),
+            'ethics_committee_project_url': URLInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -54,7 +57,7 @@ class GroupForm(ModelForm):
 
         model = Group
 
-        fields = ['title', 'description', 'code']
+        fields = ['title', 'description']
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control',
@@ -64,7 +67,6 @@ class GroupForm(ModelForm):
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
-            'code': TextInput(attrs={'class': 'form-control'}),
         }
 
 

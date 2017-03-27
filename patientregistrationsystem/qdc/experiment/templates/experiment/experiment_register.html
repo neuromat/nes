@@ -8,7 +8,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post" data-toggle="validator">
+    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -95,6 +95,46 @@
                         </div>
                     </div>
                 </div>
+
+                {% if editing or experiment_form.source_code_url.value %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Source code URL" %}</label>
+                                {{ experiment_form.source_code_url }}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if editing or experiment_form.ethics_committee_project_url.value %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "URL of the project approved by the ethics committee" %}</label>
+                                {{ experiment_form.ethics_committee_project_url }}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if editing or experiment_form.ethics_committee_project_file.value %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Project file approved by the ethics committee" %}</label>
+                                <br/>
+                                {% if editing %}
+                                    {{ experiment_form.ethics_committee_project_file }}
+                                {% else %}
+                                    {{ experiment_form.ethics_committee_project_file.value }}
+                                    <button class="btn btn-default" type="button" onclick="location.href='{{ experiment.ethics_committee_project_file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                {% endif %}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">

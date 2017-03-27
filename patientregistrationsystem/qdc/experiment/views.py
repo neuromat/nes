@@ -548,9 +548,9 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 
     check_can_change(request.user, research_project)
 
-    experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
-
     if request.method == "POST":
+        experiment_form = ExperimentForm(request.POST or None, request.FILES,
+                                         initial={'research_project': research_project_id})
         if request.POST['action'] == "save":
             if experiment_form.is_valid():
                 experiment_added = experiment_form.save()
@@ -559,6 +559,8 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 
                 redirect_url = reverse("experiment_view", args=(experiment_added.id,))
                 return HttpResponseRedirect(redirect_url)
+    else:
+        experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
 
     context = {"research_project": ResearchProject.objects.get(id=research_project_id),
                "experiment_form": experiment_form,
@@ -637,9 +639,9 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     check_can_change(request.user, experiment.research_project)
 
     group_list = Group.objects.filter(experiment=experiment)
-    experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     if request.method == "POST":
+        experiment_form = ExperimentForm(request.POST or None, request.FILES, instance=experiment)
         if request.POST['action'] == "save":
             if experiment_form.is_valid():
                 if experiment_form.has_changed():
@@ -650,6 +652,8 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
+    else:
+        experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     context = {"research_project": experiment.research_project,
                "experiment_form": experiment_form,
@@ -6217,12 +6221,14 @@ def digital_game_phase_data_edit(request, digital_game_phase_data_id):
 @login_required
 @permission_required('experiment.view_researchproject')
 def group_goalkeeper_game_data(request, group_id, template_name="experiment/group_goalkeeper_game_data.html"):
+
     group = get_object_or_404(Group, id=group_id)
 
     if request.method == "POST":
 
         if request.POST['action'] == "group-code":
-            group.code = request.POST['group-code']
+
+            group.code = request.POST['group-code'] if request.POST['group-code'] else None
             group.save()
             messages.success(request, _('Group code changed successfully.'))
 
@@ -6239,6 +6245,7 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
             data_configuration_tree.code = request.POST['code-' + path_of_configuration]
             data_configuration_tree.save()
 
+    enable_upload = False
     digital_game_phase_collections = []
 
     list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
@@ -6260,10 +6267,14 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
              }
         )
 
+        if not enable_upload and group.code and data_configuration_tree.code:
+            enable_upload = True
+
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
                'group': group,
                'institution_code': Institution.get_solo().code,
-               'digital_game_phase_collections': digital_game_phase_collections
+               'digital_game_phase_collections': digital_game_phase_collections,
+               "enable_upload": enable_upload
                }
 
     return render(request, template_name, context)
@@ -6275,109 +6286,124 @@ def load_group_goalkeeper_game_data(request, group_id):
 
     group = get_object_or_404(Group, id=group_id)
 
-    # TODO: check if group has code
-
-    # selecionar dados do grupo
-
-    game_group_data = {}
-
-    for file in GoalkeeperGameLog.objects.using('goalkeeper').filter(filecontent__icontains=group.code):
-        lines = file.filecontent.splitlines()
-        header = lines[0].split(',')
-        values = lines[1].split(',')
-        if header[0] == 'experimentGroup' and values[0] == group.code:
-            # search playerAlias and phase fields
-            if 'playerAlias' in header and 'phase' in header:
-
-                player_alias_index = header.index('playerAlias')
-                phase_index = header.index('phase')
-                date_index = header.index('YYMMDD')
-                time_index = header.index('HHMMSS')
-
-                if values[player_alias_index] not in game_group_data:
-                    game_group_data[values[player_alias_index]] = {}
-                game_group_data[values[player_alias_index]][values[phase_index]] = {
-                    'file_content': file.filecontent,
-                    'date': values[date_index],
-                    'time': values[time_index]}
-
-                # TODO: if there is information of this phase for this player, thrown an error message
-
-    number_of_imported_data = 0
-
-    # para cada fase
-    # para cada sujeito
-    # busco e gravo dados
-
-    list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
-
-    for path in list_of_paths:
-
-        digital_game_phase_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
-
-        data_configuration_tree_id = \
-            list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
-
-        if data_configuration_tree_id:
-            data_configuration_tree = get_object_or_404(DataConfigurationTree,
-                                                        pk=data_configuration_tree_id)
-            if data_configuration_tree.code:
-
-                for subject_of_group in group.subjectofgroup_set.all():
-                    if subject_of_group.subject.patient.code in game_group_data:
-                        if data_configuration_tree.code in game_group_data[subject_of_group.subject.patient.code]:
-
-                            game_data_collection = \
-                                game_group_data[subject_of_group.subject.patient.code][data_configuration_tree.code]
-
-                            if not DigitalGamePhaseData.objects.filter(
-                                    subject_of_group=subject_of_group,
-                                    data_configuration_tree=data_configuration_tree,
-                                    date=datetime.strptime(game_data_collection['date'], '%y%m%d'),
-                                    time=datetime.strptime(game_data_collection['time'], '%H%M%S')):
-
-                                # saving data
-                                digital_game_phase_data = DigitalGamePhaseData()
-                                digital_game_phase_data.subject_of_group = subject_of_group
-                                digital_game_phase_data.data_configuration_tree = data_configuration_tree
-
-                                digital_game_phase_data.date = datetime.strptime(game_data_collection['date'], '%y%m%d')
-                                digital_game_phase_data.time = datetime.strptime(game_data_collection['time'], '%H%M%S')
-
-                                digital_game_phase_data.description = \
-                                    "%s - %s" % (group.code, subject_of_group.subject.patient.code)
-
-                                digital_game_phase_data.file_format = get_object_or_404(FileFormat, nes_code='txt')
-
-                                # Data file
-                                file_name = "%s_%s.txt" % (group.code, subject_of_group.subject.patient.code)
-                                file_content = game_data_collection['file_content']
-
-                                digital_game_phase_data.file.save(
-                                    file_name,
-                                    ContentFile(file_content))
-
-                                digital_game_phase_data.save()
-
-                                number_of_imported_data += 1
-
-    if number_of_imported_data:
-        if number_of_imported_data == 1:
-            messages.success(request, _('1 new play was imported.'))
-        else:
-            messages.success(request, _('%s new plays were imported.') % (str(number_of_imported_data)))
+    if not group.code:
+        messages.info(request, _('No experimental group code configured.'))
     else:
-        messages.info(request, _('No new data loaded.'))
 
-    redirect_url = reverse("group_goalkeeper_game_data",
-                           args=(group_id,))
+        experimental_group_code = (Institution.get_solo().code + '-' if Institution.get_solo().code else '') + \
+                                  group.code
+
+        # data structure
+        game_group_data = {}
+
+        # Filtering the candidate registers from 'Goalkeeper repository'
+        candidate_registers_from_goalkeeper_repository = \
+            GoalkeeperGameLog.objects.using('goalkeeper').filter(filecontent__icontains=experimental_group_code)
+
+        # each register is a 'goalkeeper game data file'
+        for register in candidate_registers_from_goalkeeper_repository:
+
+            lines = register.filecontent.splitlines()
+            header = lines[0].split(',')
+            values = lines[1].split(',')
+
+            # checking if the first element is the experimental group
+            if header[0] == 'experimentGroup' and values[0] == experimental_group_code:
+
+                # getting fields of interest
+                if 'playerAlias' in header and \
+                                'phase' in header and \
+                                'YYMMDD' in header and \
+                                'HHMMSS' in header:
+
+                    player_alias_index = header.index('playerAlias')
+                    phase_index = header.index('phase')
+                    date_index = header.index('YYMMDD')
+                    time_index = header.index('HHMMSS')
+
+                    if values[player_alias_index] not in game_group_data:
+                        game_group_data[values[player_alias_index]] = {}
+
+                    game_group_data[values[player_alias_index]][values[phase_index]] = {
+                        'file_content': register.filecontent,
+                        'date': datetime.strptime(values[date_index], '%y%m%d'),
+                        'time': datetime.strptime(values[time_index], '%H%M%S')}
+
+        number_of_imported_data = 0
+        list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+
+        # for each phase
+        for path in list_of_paths:
+
+            digital_game_phase_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+            data_configuration_tree_id = \
+                list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
+
+            if data_configuration_tree_id:
+                data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                            pk=data_configuration_tree_id)
+                if data_configuration_tree.code:
+
+                    # for each subject
+                    for subject_of_group in group.subjectofgroup_set.all():
+
+                        if subject_of_group.subject.patient.code in game_group_data:
+                            if data_configuration_tree.code in game_group_data[subject_of_group.subject.patient.code]:
+
+                                game_data_collection = \
+                                    game_group_data[subject_of_group.subject.patient.code][data_configuration_tree.code]
+
+                                if not DigitalGamePhaseData.objects.filter(
+                                        subject_of_group=subject_of_group,
+                                        data_configuration_tree=data_configuration_tree,
+                                        date=game_data_collection['date'],
+                                        time=game_data_collection['time']):
+
+                                    # saving data
+                                    digital_game_phase_data = DigitalGamePhaseData()
+                                    digital_game_phase_data.subject_of_group = subject_of_group
+                                    digital_game_phase_data.data_configuration_tree = data_configuration_tree
+
+                                    digital_game_phase_data.date = game_data_collection['date']
+                                    digital_game_phase_data.time = game_data_collection['time']
+
+                                    digital_game_phase_data.description = \
+                                        "%s - %s" % (experimental_group_code, subject_of_group.subject.patient.code)
+
+                                    digital_game_phase_data.file_format = get_object_or_404(FileFormat, nes_code='txt')
+
+                                    # Data file
+                                    file_name = "%s_%s.txt" % (experimental_group_code,
+                                                               subject_of_group.subject.patient.code)
+                                    file_content = game_data_collection['file_content']
+
+                                    digital_game_phase_data.file.save(
+                                        file_name,
+                                        ContentFile(file_content))
+
+                                    digital_game_phase_data.save()
+
+                                    number_of_imported_data += 1
+
+        if number_of_imported_data:
+            if number_of_imported_data == 1:
+                messages.success(request, _('1 new play was imported.'))
+            else:
+                messages.success(request, _('%s new plays were imported.') % (str(number_of_imported_data)))
+        else:
+            messages.info(request, _('No new data loaded.'))
+
+    redirect_url = reverse("group_goalkeeper_game_data", args=(group_id,))
     return HttpResponseRedirect(redirect_url)
 
 
 @login_required
 @permission_required('experiment.view_researchproject')
-def subject_generic_data_collection_view(request, group_id, subject_id,
-                                         template_name="experiment/subject_generic_data_collection_collection_list.html"):
+def subject_generic_data_collection_view(
+        request, group_id, subject_id,
+        template_name="experiment/subject_generic_data_collection_collection_list.html"):
+
     group = get_object_or_404(Group, id=group_id)
     subject = get_object_or_404(Subject, id=subject_id)
 
@@ -6505,14 +6531,14 @@ def generic_data_collection_data_view(request, generic_data_collection_data_id,
                             group_id=subject_of_group.group_id,
                             subject_id=subject_of_group.subject_id)
 
-    context = {"can_change":
-        get_can_change(request.user, generic_data_collection_data.subject_of_group.group.experiment.research_project),
-               "editing": False,
-               "group": generic_data_collection_data.subject_of_group.group,
-               "subject": generic_data_collection_data.subject_of_group.subject,
-               "generic_data_collection_data_form": generic_data_collection_data_form,
-               "generic_data_collection_data": generic_data_collection_data
-               }
+    context = {
+        "can_change": get_can_change(request.user,
+                                     generic_data_collection_data.subject_of_group.group.experiment.research_project),
+        "editing": False,
+        "group": generic_data_collection_data.subject_of_group.group,
+        "subject": generic_data_collection_data.subject_of_group.subject,
+        "generic_data_collection_data_form": generic_data_collection_data_form,
+        "generic_data_collection_data": generic_data_collection_data}
 
     return render(request, template_name, context)
 
@@ -7594,7 +7620,10 @@ def search_patients_ajax(request):
 
         if request.user.has_perm('patient.sensitive_data_patient'):
             if search_text:
-                if re.match('[a-zA-Z ]+', search_text):
+                if re.match('P{1}[0-9]', search_text):
+                    patient_list = \
+                        Patient.objects.filter(code__icontains=search_text).exclude(removed=True).order_by('code')
+                elif re.match('[a-zA-Z ]+', search_text):
                     patient_list = \
                         Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
                 else:
