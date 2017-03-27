@@ -81,12 +81,23 @@ class ResearchProjectCollaboration(models.Model):
     is_coordinator = models.BooleanField()
 
 
+def get_experiment_dir(instance, filename):
+    return "experiment_files/%s/%s" % (instance.id, filename)
+
+
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=150, blank=False)
     description = models.TextField(null=False, blank=False)
     research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
     is_public = models.BooleanField(default=False)
     data_acquisition_is_concluded = models.BooleanField(default=False)
+
+    source_code_url = models.URLField(null=True, blank=True)
+    ethics_committee_project_url = models.URLField(_('URL of the project approved by the ethics committee'),
+                                                   null=True, blank=True)
+    ethics_committee_project_file = models.FileField(_('Project file approved by the ethics committee'),
+                                                     upload_to=get_experiment_dir,
+                                                     null=True, blank=True)
 
     # Audit trail - Simple History
     history = HistoricalRecords()

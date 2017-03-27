@@ -548,9 +548,9 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 
     check_can_change(request.user, research_project)
 
-    experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
-
     if request.method == "POST":
+        experiment_form = ExperimentForm(request.POST or None, request.FILES,
+                                         initial={'research_project': research_project_id})
         if request.POST['action'] == "save":
             if experiment_form.is_valid():
                 experiment_added = experiment_form.save()
@@ -559,6 +559,8 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 
                 redirect_url = reverse("experiment_view", args=(experiment_added.id,))
                 return HttpResponseRedirect(redirect_url)
+    else:
+        experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
 
     context = {"research_project": ResearchProject.objects.get(id=research_project_id),
                "experiment_form": experiment_form,
@@ -637,9 +639,9 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     check_can_change(request.user, experiment.research_project)
 
     group_list = Group.objects.filter(experiment=experiment)
-    experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     if request.method == "POST":
+        experiment_form = ExperimentForm(request.POST or None, request.FILES, instance=experiment)
         if request.POST['action'] == "save":
             if experiment_form.is_valid():
                 if experiment_form.has_changed():
@@ -650,6 +652,8 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
+    else:
+        experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     context = {"research_project": experiment.research_project,
                "experiment_form": experiment_form,
