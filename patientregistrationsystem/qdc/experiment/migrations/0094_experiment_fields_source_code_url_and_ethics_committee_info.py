@@ -14,17 +14,20 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='historicaldigitalgamephasedata',
-            options={'get_latest_by': 'history_date', 'verbose_name': 'historical digital game phase data', 'ordering': ('-history_date', '-history_id')},
+            options={'get_latest_by': 'history_date', 'verbose_name': 'historical digital game phase data',
+                     'ordering': ('-history_date', '-history_id')},
         ),
         migrations.AddField(
             model_name='experiment',
             name='ethics_committee_project_file',
-            field=models.FileField(null=True, verbose_name='Project file approved by the ethics committee', blank=True, upload_to=experiment.models.get_experiment_dir),
+            field=models.FileField(null=True, verbose_name='Project file approved by the ethics committee',
+                                   blank=True, upload_to=experiment.models.get_experiment_dir),
         ),
         migrations.AddField(
             model_name='experiment',
             name='ethics_committee_project_url',
-            field=models.URLField(null=True, verbose_name='URL of the project approved by the ethics committee', blank=True),
+            field=models.URLField(null=True, verbose_name='URL of the project approved by the ethics committee',
+                                  blank=True),
         ),
         migrations.AddField(
             model_name='experiment',
@@ -34,12 +37,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalexperiment',
             name='ethics_committee_project_file',
-            field=models.TextField(null=True, verbose_name='Project file approved by the ethics committee', blank=True, max_length=100),
+            field=models.TextField(null=True, verbose_name='Project file approved by the ethics committee',
+                                   blank=True, max_length=100),
         ),
         migrations.AddField(
             model_name='historicalexperiment',
             name='ethics_committee_project_url',
-            field=models.URLField(null=True, verbose_name='URL of the project approved by the ethics committee', blank=True),
+            field=models.URLField(null=True, verbose_name='URL of the project approved by the ethics committee',
+                                  blank=True),
         ),
         migrations.AddField(
             model_name='historicalexperiment',

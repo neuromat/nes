@@ -6374,7 +6374,8 @@ def load_group_goalkeeper_game_data(request, group_id):
                                     digital_game_phase_data.file_format = get_object_or_404(FileFormat, nes_code='txt')
 
                                     # Data file
-                                    file_name = "%s_%s.txt" % (experimental_group_code, subject_of_group.subject.patient.code)
+                                    file_name = "%s_%s.txt" % (experimental_group_code,
+                                                               subject_of_group.subject.patient.code)
                                     file_content = game_data_collection['file_content']
 
                                     digital_game_phase_data.file.save(
@@ -6399,8 +6400,10 @@ def load_group_goalkeeper_game_data(request, group_id):
 
 @login_required
 @permission_required('experiment.view_researchproject')
-def subject_generic_data_collection_view(request, group_id, subject_id,
-                                         template_name="experiment/subject_generic_data_collection_collection_list.html"):
+def subject_generic_data_collection_view(
+        request, group_id, subject_id,
+        template_name="experiment/subject_generic_data_collection_collection_list.html"):
+
     group = get_object_or_404(Group, id=group_id)
     subject = get_object_or_404(Subject, id=subject_id)
 
@@ -6528,14 +6531,14 @@ def generic_data_collection_data_view(request, generic_data_collection_data_id,
                             group_id=subject_of_group.group_id,
                             subject_id=subject_of_group.subject_id)
 
-    context = {"can_change":
-        get_can_change(request.user, generic_data_collection_data.subject_of_group.group.experiment.research_project),
-               "editing": False,
-               "group": generic_data_collection_data.subject_of_group.group,
-               "subject": generic_data_collection_data.subject_of_group.subject,
-               "generic_data_collection_data_form": generic_data_collection_data_form,
-               "generic_data_collection_data": generic_data_collection_data
-               }
+    context = {
+        "can_change": get_can_change(request.user,
+                                     generic_data_collection_data.subject_of_group.group.experiment.research_project),
+        "editing": False,
+        "group": generic_data_collection_data.subject_of_group.group,
+        "subject": generic_data_collection_data.subject_of_group.subject,
+        "generic_data_collection_data_form": generic_data_collection_data_form,
+        "generic_data_collection_data": generic_data_collection_data}
 
     return render(request, template_name, context)
 
