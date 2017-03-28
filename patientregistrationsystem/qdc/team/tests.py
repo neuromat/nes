@@ -4,6 +4,9 @@ from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
+from django.utils.translation import ugettext as _
+
+from .models import Person
 
 from custom_user.views import User
 
@@ -35,10 +38,6 @@ class PersonTest(TestCase):
         self.group = Group.objects.create(name='group')
         self.group.save()
 
-
-        # # Cria um estudo
-        # self.research_project = ObjectsFactory.create_research_project()
-
     def test_person_list(self):
         """
         Test person list
@@ -51,12 +50,58 @@ class PersonTest(TestCase):
         # should be empty
         self.assertEqual(len(response.context['persons']), 0)
 
-    def test_person_create_basics(self):
-        """Test the creation of a person """
+    def test_person_create_access_register_screen(self):
+        """Test the creation of a person - access register screen"""
 
         # access (get method) person create screen
         response = self.client.get(reverse('person_new'))
         self.assertEqual(response.status_code, 200)
+
+    def test_person_create_wrong_option(self):
+        """Test the creation of a person - using wrong option"""
+
+        counter = User.objects.all().count()
+
+        # POSTing "wrong" action
+        self.data = {'action': 'wrong'}
+        response = self.client.post(reverse('person_new'), self.data)
+        self.assertEqual(User.objects.all().count(), counter)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Action not available.'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_person_create_posting_missing_information(self):
+        """Test the creation of a person - posting missing information"""
+
+        counter = User.objects.all().count()
+
+        # POSTing missing information (person_form)
+        self.data = {'action': 'save'}
+        response = self.client.post(reverse('person_new'), self.data)
+        self.assertEqual(User.objects.all().count(), counter)
+        self.assertGreaterEqual(len(response.context['person_form'].errors), 3)
+        self.assertTrue('first_name' in response.context['person_form'].errors)
+        self.assertTrue('last_name' in response.context['person_form'].errors)
+        self.assertTrue('email' in response.context['person_form'].errors)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
+        self.assertEqual(response.status_code, 200)
+
+        # POSTing missing information (user_form)
+        self.data = {'action': 'save',
+                     'optradio': '2',
+                     'first_name': 'José',
+                     'last_name': 'da Silva',
+                     'email': 'teste@gmail.com.br'}
+        response = self.client.post(reverse('person_new'), self.data)
+        self.assertEqual(User.objects.all().count(), counter)
+        self.assertGreaterEqual(len(response.context['user_form'].errors), 2)
+        self.assertTrue('username' in response.context['user_form'].errors)
+        self.assertTrue('password' in response.context['user_form'].errors)
+        # self.assertTrue('groups' in response.context['user_form'].errors)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_person_create_with_login(self):
+        """Test the creation of a person with login"""
 
         # person data
         self.data = {'action': 'save',
@@ -73,5 +118,74 @@ class PersonTest(TestCase):
         response = self.client.post(reverse('person_new'), self.data)
         self.assertEqual(response.status_code, 302)
 
-        count_after_insert = User.objects.all().count()
+        counter = User.objects.all().count()
+        self.assertEqual(counter, count_before_insert + 1)
+
+        # list of persons. Should show one
+        response = self.client.get(reverse("person_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['persons']), 1)
+
+    def test_person_create_with_invalid_email(self):
+        """Test the creation of a person - invalid e-mail"""
+
+        counter = User.objects.all().count()
+
+        # person data
+        self.data = {'action': 'save',
+                     'optradio': '2',
+                     'username': 'mariasilva',
+                     'first_name': 'Maria',
+                     'last_name': 'da Silva',
+                     'email': 'mary',
+                     'password': 'mary',
+                     'groups': [self.group.id]}
+
+        response = self.client.post(reverse('person_new'), self.data)
+        self.assertEqual(User.objects.all().count(), counter)
+        self.assertGreaterEqual(len(response.context['person_form'].errors), 1)
+        self.assertTrue('email' in response.context['person_form'].errors)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Information not saved.'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_person_create_with_existing_email(self):
+        """Test the creation of a person - existing e-mail"""
+
+        counter = User.objects.all().count()
+
+        # person data
+        self.data = {'action': 'save',
+                     'optradio': '2',
+                     'username': 'mariasilva',
+                     'first_name': 'Maria',
+                     'last_name': 'da Silva',
+                     'email': 'test@dummy.com',
+                     'password': 'mary',
+                     'groups': [self.group.id]}
+
+        response = self.client.post(reverse('person_new'), self.data)
+        self.assertEqual(User.objects.all().count(), counter)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('E-mail already exists.'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_person_create_without_login(self):
+        """Test the creation of a person with login"""
+
+        # access (get method) person create screen
+        response = self.client.get(reverse('person_new'))
+        self.assertEqual(response.status_code, 200)
+
+        # person data
+        self.data = {'action': 'save',
+                     'optradio': '1',
+                     'first_name': 'José',
+                     'last_name': 'da Silva',
+                     'email': 'teste@gmail.com.br'}
+
+        count_before_insert = Person.objects.all().count()
+
+        response = self.client.post(reverse('person_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        count_after_insert = Person.objects.all().count()
         self.assertEqual(count_after_insert, count_before_insert + 1)
