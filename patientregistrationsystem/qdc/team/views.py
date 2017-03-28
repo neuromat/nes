@@ -95,9 +95,6 @@ def person_create(request, template_name="team/person_register.html"):
                         person_added.user.last_name = person_added.last_name
                         person_added.user.save()
 
-                    if request.POST['optradio'] == '3':
-                        update_groups(person_added, [int(item) for item in request.POST.getlist('groups')])
-
                     messages.success(request, _('Person created successfully.'))
                     redirect_url = reverse("person_view", args=(person_added.id,))
                     return HttpResponseRedirect(redirect_url)
