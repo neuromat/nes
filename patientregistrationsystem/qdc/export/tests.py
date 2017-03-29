@@ -462,11 +462,11 @@ class InputExportTest(TestCase):
 
         input_data.build_header(export_per_experiment=False)
 
-        self.assertEqual(len(input_data.data), 4)
+        self.assertEqual(len(input_data.data), 5)
         # self.assertEqual(input_data.data, )
         input_data.build_dynamic_header("export_per_participant", 1)
 
-        self.assertEqual(len(input_data.data), 5)
+        self.assertEqual(len(input_data.data), 6)
 
         # field_header_list[0] -> field
         # field_header_list[1] -> header

@@ -393,7 +393,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # process per participant data
         if 'group_selected_list' in request.session:
             error_msg = export.process_per_participant_per_entrance_questionnaire()
-            # error_exp_msg = export.process_per_participant_per_experiment()
+            error_exp_msg = export.process_per_participant_per_experiment()
         else:
             error_msg = export.process_per_participant()
             error_exp_msg = ""
@@ -403,15 +403,16 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             return render(request, template_name)
 
         # process participants/diagnosis (Per_participant directory)
-        # path ex. Users/.../NES_EXPORT
+        # path ex. Users/.../NES_EXPORT/
         base_export_directory = export.get_export_directory()
-        # /NES_EXPORT
+        # /NES_EXPORT/
         base_directory = export.get_input_data("base_directory")
+        participant_data_directory = export.get_input_data("participant_data_directory")
         if 'group_selected_list' in request.session:
-            base_export_directory = path.join(base_export_directory, "Per_participant")
-            base_directory = path.join(base_directory, "Per_participant")
+            base_export_directory = path.join(base_export_directory, participant_data_directory)
+            base_directory = path.join(base_directory, participant_data_directory)
 
-        particpant_selected_list = request.session['filtered_participant_data']
+        particpant_selected_list = export.get_participants_filtered_data()
         error_msg = export.process_participant_filtered_data(
             particpant_selected_list, base_export_directory, base_directory)
         if error_msg != "":
@@ -420,7 +421,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # create arquivo de texto de protocolo experimental and diagnosis/participant csv file for each group
         if 'group_selected_list' in request.session:
-            group_list = request.session['group_selected_list']
+            group_list = export.per_group_data
             language_code = request.LANGUAGE_CODE
 
             error_msg = export.process_experiment_data(group_list, language_code)
