@@ -18,13 +18,19 @@
 
         function validateForm()
         {
-           var c=document.getElementsByName('groups');
-           for (var i = 0; i<c.length; i++){
-               if (c[i].type=='checkbox') {
-                    if (c[i].checked){return true}
-               }
-           }
-           return false;
+            if ($("#optradio2").is(":checked")) {
+                var c = document.getElementsByName('groups');
+                for (var i = 0; i < c.length; i++) {
+                    if (c[i].type == 'checkbox') {
+                        if (c[i].checked) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            } else {
+                return true;
+            }
         }
     </script>
 

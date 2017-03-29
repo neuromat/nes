@@ -126,6 +126,46 @@ class PersonTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['persons']), 1)
 
+        # get added person
+        person = Person.objects.filter(email=self.data['email'])[0]
+
+        # person update screen
+        response = self.client.get(reverse("person_edit", args=(person.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update with no changes
+        self.data = {'action': 'save',
+                     'username': 'josesilva',
+                     'first_name': 'José',
+                     'last_name': 'da Silva',
+                     'email': 'teste@gmail.com.br',
+                     'password': 'ze',
+                     'groups': [self.group.id]}
+        response = self.client.post(reverse("person_edit", args=(person.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Person.objects.filter(first_name=self.data['first_name']).exists())
+
+        # update with changes
+        self.data = {'action': 'save',
+                     'username': 'josesilva',
+                     'first_name': 'Joselito',
+                     'last_name': 'da Silva',
+                     'email': 'teste@gmail.com.br',
+                     'password': 'ze',
+                     'groups': [self.group.id]}
+        response = self.client.post(reverse("person_edit", args=(person.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Person.objects.filter(first_name=self.data['first_name']).exists())
+
+        # view person
+        response = self.client.get(reverse('person_view', args=[person.id,]))
+        self.assertEqual(response.status_code, 200)
+
+        # remove person
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("person_view", args=(person.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
     def test_person_create_with_invalid_email(self):
         """Test the creation of a person - invalid e-mail"""
 
@@ -189,3 +229,37 @@ class PersonTest(TestCase):
 
         count_after_insert = Person.objects.all().count()
         self.assertEqual(count_after_insert, count_before_insert + 1)
+
+        # get added person
+        person = Person.objects.filter(email=self.data['email'])[0]
+
+        # person update screen
+        response = self.client.get(reverse("person_edit", args=(person.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # update with no changes
+        self.data = {'action': 'save',
+                     'first_name': 'José',
+                     'last_name': 'da Silva',
+                     'email': 'teste@gmail.com.br'}
+        response = self.client.post(reverse("person_edit", args=(person.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Person.objects.filter(first_name=self.data['first_name']).exists())
+
+        # update with changes
+        self.data = {'action': 'save',
+                     'first_name': 'Joselito',
+                     'last_name': 'da Silva',
+                     'email': 'teste@gmail.com.br'}
+        response = self.client.post(reverse("person_edit", args=(person.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Person.objects.filter(first_name=self.data['first_name']).exists())
+
+        # view person
+        response = self.client.get(reverse('person_view', args=[person.id,]))
+        self.assertEqual(response.status_code, 200)
+
+        # remove person
+        self.data = {'action': 'remove'}
+        response = self.client.post(reverse("person_view", args=(person.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
