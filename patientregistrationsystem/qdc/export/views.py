@@ -116,7 +116,8 @@ patient_fields = [
      "description": _("Cigarretes/Day")},
     {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker', "description": _("Former smoker")},
     {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic', "description": _("Alcoholic")},
-    {"field": 'socialhistorydata__alcohol_frequency__name', "header": 'alcohol_frequency', "description": _("Frequency")},
+    {"field": 'socialhistorydata__alcohol_frequency__name', "header": 'alcohol_frequency',
+     "description": _("Frequency")},
     {"field": 'socialhistorydata__alcohol_period__name', "header": 'alcohol_period', "description": _("Period")},
     {"field": 'socialhistorydata__drugs', "header": 'drugs', "description": _("Drugs")},
 ]
@@ -646,7 +647,7 @@ def export_view(request, template_name="export/export_data.html"):
 
                     if questionnaire_id not in questionnaire_in_list:
                         for questionnaire_response in questionnaire_response_list:
-                        # if questionnaire_id not in questionnaire_in_list:
+                            # if questionnaire_id not in questionnaire_in_list:
                             completed = surveys.get_participant_properties(questionnaire_id,
                                                                            questionnaire_response.token_id, "completed")
                             if completed is not None and completed != "N" and completed != "":
@@ -677,7 +678,7 @@ def export_view(request, template_name="export/export_data.html"):
 
         questionnaire = Survey.objects.filter(id=patient_questionnaire_response.survey_id).values('lime_survey_id')
         lime_survey_id = questionnaire[0]['lime_survey_id']
-        if not lime_survey_id in surveys_id_list:
+        if lime_survey_id not in surveys_id_list:
             completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
                                                            patient_questionnaire_response.token_id, "completed")
             # if completed is a data
@@ -690,7 +691,7 @@ def export_view(request, template_name="export/export_data.html"):
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     questionnaires_list = []
-    #If available get all the questionnaires
+    # If available get all the questionnaires
     if limesurvey_available:
         questionnaires_list = surveys.find_all_active_questionnaires()
 
@@ -841,7 +842,7 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
 
         if not isinstance(responses_string, dict):
 
-            record_question = {'group_id':group_id, 'sid': questionnaire_id, "title": questionnaire_title,
+            record_question = {'group_id': group_id, 'sid': questionnaire_id, "title": questionnaire_title,
                                "output_list": []}
 
             questionnaire_questions = perform_csv_response(responses_string)

@@ -159,11 +159,14 @@ def person_view(request, person_id, template_name="team/person_register.html"):
         if request.POST['action'] == "remove":
 
             try:
+                have_user_to_remove = True if person.user else False
+
                 person.delete()
 
-                user = get_object_or_404(User, id=person.user_id)
-                user.is_active = False
-                user.save()
+                if have_user_to_remove:
+                    user = get_object_or_404(User, id=person.user_id)
+                    user.is_active = False
+                    user.save()
 
                 messages.success(request, _('Person removed successfully.'))
                 return redirect('person_list')

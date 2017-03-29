@@ -68,8 +68,8 @@ directory_structure = [
 # valid for all questionnaires (no distinction amongst questionnaires)
 included_questionnaire_fields = [
     {"field": "participant_code", "header": {"code": "participant_code",
-                                               "full": _("Participant code"),
-                                               "abbreviated": _("Participant code")},
+                                             "full": _("Participant code"),
+                                             "abbreviated": _("Participant code")},
      "model": "patient.patient", "model_field": "code"},
 ]
 
@@ -344,7 +344,8 @@ class ExportExecution:
                 if patient:
                     patient_id = patient.values('id')[0]['id']
 
-                    if patient_id is not None and patient_id not in self.participants_per_experiment_questionnaire[code]:
+                    if patient_id is not None \
+                            and patient_id not in self.participants_per_experiment_questionnaire[code]:
                         self.participants_per_experiment_questionnaire[code].append(patient_id)
 
     def include_group_data(self, group_list):
