@@ -163,6 +163,36 @@
             </div>
 
             {% if not editing %}
+
+                {% if experiment.is_public or experiment.last_sending %}
+
+                    <div class="container span6 offset3 well ">
+                    <h4><span class="fa fa-database"></span> {% trans "Schedule of sending to NeuroMat" %}</h4>
+
+                        <br/>
+
+                        <span class="glyphicon glyphicon-refresh"></span>
+                        <label class="control-label">{% trans "Last experiment update:" %}</label> {{ experiment.last_update }}
+
+                        <br/>
+                        <span class="glyphicon glyphicon-send"></span>
+                        <label class="control-label">{% trans "Last sending to NeuroMat:" %}</label>
+                        {% if last_sending %}
+                            {{ experiment.last_sending }}
+                        {% else %}
+                            {% trans "never sent" %}
+                        {% endif %}
+
+                        <br/>
+{#                        {% if experiment.is_public and can_sending %}#}
+{#                            {% if not experiment.last_send %}#}
+                                <a href="/experiment/{{ experiment.id }}/group/new" class="btn btn-primary">{% trans "Schedule sending" %}</a>
+{#                            {% endif %}#}
+{#                        {% endif %}#}
+                    </div>
+                {% endif %}
+
+
                 <div class="container span6 offset3 well ">
                 <h4><span class="glyphicon glyphicon-user"></span> {% trans "Groups" %}</h4>
                     {% if group_list %}

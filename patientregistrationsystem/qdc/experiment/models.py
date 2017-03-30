@@ -99,6 +99,9 @@ class Experiment(models.Model):
                                                      upload_to=get_experiment_dir,
                                                      null=True, blank=True)
 
+    last_update = models.DateTimeField(default=datetime.datetime.now())
+    last_sending = models.DateTimeField(null=True)
+
     # Audit trail - Simple History
     history = HistoricalRecords()
     # changed_by = models.ForeignKey('auth.User')
@@ -1203,3 +1206,19 @@ class GoalkeeperGameLog(models.Model):
     class Meta:
         managed = False
         db_table = '"public"."goalgame"'
+
+
+class ScheduleOfSending(models.Model):
+    SCHEDULE_STATUS_OPTIONS = (
+        ("scheduled", _("scheduled")),
+        ("canceled", _("canceled")),
+        ("sending", _("sending")),
+        ("sent", _("sent")),
+        ("error_sending", _("error sending")),
+    )
+    experiment = models.ForeignKey(Experiment, related_name='schedule_of_sending')
+    schedule_datetime = models.DateTimeField(default=datetime.datetime.now())
+    responsible = models.ForeignKey(User)
+    status = models.CharField(max_length=50, choices=SCHEDULE_STATUS_OPTIONS)
+    sending_datetime = models.DateTimeField(null=True)
+    reason_for_resending = models.CharField(null=True, max_length=500)
