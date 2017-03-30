@@ -35,8 +35,11 @@ class PersonTest(TestCase):
         logged, self.user, self.factory = ObjectsFactory.system_authentication(self)
         self.assertEqual(logged, True)
 
-        self.group = Group.objects.create(name='group')
-        self.group.save()
+        self.group1 = Group.objects.create(name='group1')
+        self.group1.save()
+
+        self.group2 = Group.objects.create(name='group2')
+        self.group2.save()
 
     def test_person_list(self):
         """
@@ -111,7 +114,7 @@ class PersonTest(TestCase):
                      'last_name': 'da Silva',
                      'email': 'teste@gmail.com.br',
                      'password': 'ze',
-                     'groups': [self.group.id]}
+                     'groups': [self.group1.id]}
 
         count_before_insert = User.objects.all().count()
 
@@ -140,7 +143,7 @@ class PersonTest(TestCase):
                      'last_name': 'da Silva',
                      'email': 'teste@gmail.com.br',
                      'password': 'ze',
-                     'groups': [self.group.id]}
+                     'groups': [self.group1.id]}
         response = self.client.post(reverse("person_edit", args=(person.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Person.objects.filter(first_name=self.data['first_name']).exists())
@@ -152,13 +155,19 @@ class PersonTest(TestCase):
                      'last_name': 'da Silva',
                      'email': 'teste@gmail.com.br',
                      'password': 'ze',
-                     'groups': [self.group.id]}
+                     'groups': [self.group1.id, self.group2.id]}
         response = self.client.post(reverse("person_edit", args=(person.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Person.objects.filter(first_name=self.data['first_name']).exists())
 
         # view person
-        response = self.client.get(reverse('person_view', args=[person.id,]))
+        response = self.client.get(reverse('person_view', args=[person.id, ]))
+        self.assertEqual(response.status_code, 200)
+
+        # view person with "wrong" action
+        self.data = {'action': 'wrong'}
+        response = self.client.post(reverse("person_view", args=(person.id,)), self.data)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Action not available.'))
         self.assertEqual(response.status_code, 200)
 
         # remove person
@@ -179,7 +188,7 @@ class PersonTest(TestCase):
                      'last_name': 'da Silva',
                      'email': 'mary',
                      'password': 'mary',
-                     'groups': [self.group.id]}
+                     'groups': [self.group1.id]}
 
         response = self.client.post(reverse('person_new'), self.data)
         self.assertEqual(User.objects.all().count(), counter)
@@ -201,7 +210,7 @@ class PersonTest(TestCase):
                      'last_name': 'da Silva',
                      'email': 'test@dummy.com',
                      'password': 'mary',
-                     'groups': [self.group.id]}
+                     'groups': [self.group1.id]}
 
         response = self.client.post(reverse('person_new'), self.data)
         self.assertEqual(User.objects.all().count(), counter)
@@ -256,10 +265,39 @@ class PersonTest(TestCase):
         self.assertTrue(Person.objects.filter(first_name=self.data['first_name']).exists())
 
         # view person
-        response = self.client.get(reverse('person_view', args=[person.id,]))
+        response = self.client.get(reverse('person_view', args=[person.id, ]))
         self.assertEqual(response.status_code, 200)
 
         # remove person
         self.data = {'action': 'remove'}
         response = self.client.post(reverse("person_view", args=(person.id,)), self.data)
         self.assertEqual(response.status_code, 302)
+
+    def test_person_create_deactivating(self):
+        """Test the login deactivation for a person with login"""
+
+        email = 'teste@gmail.com.br'
+
+        # creating a person with login
+        self.data = {'action': 'save',
+                     'optradio': '2',
+                     'username': 'josesilva',
+                     'first_name': 'José',
+                     'last_name': 'da Silva',
+                     'email': email,
+                     'password': 'ze',
+                     'groups': [self.group1.id]}
+
+        response = self.client.post(reverse('person_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        # get added person
+        person = Person.objects.filter(email=self.data['email'])[0]
+
+        # deactivating the login
+        self.data = {'action': 'deactivate'}
+        response = self.client.post(reverse("person_edit", args=(person.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Person.objects.filter(email=email).exists())
+        self.assertTrue(User.objects.filter(email=email).exists())
+        self.assertTrue(not User.objects.filter(email=email)[0].is_active)
