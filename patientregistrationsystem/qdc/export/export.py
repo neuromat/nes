@@ -376,28 +376,28 @@ class ExportExecution:
                         step += 2
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
                     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
-                    questionnaire_identification = questionnaire.identification
                     questionnaire_id = questionnaire.survey.lime_survey_id
                     questionnaire_code = questionnaire.survey.code
 
                     # if questionnaire_code not in questionnaire_per_group:
-                    #     questionnaire_per_group[questionnaire_code] = []
+                    token_list = {}
                     for questionnaire_response in questionnaire_response_list:
-                        completed = surveys.get_participant_properties(questionnaire_id,
-                                                                       questionnaire_response.token_id, "completed")
+                        token_id = questionnaire_response.token_id
+                        completed = surveys.get_participant_properties(questionnaire_id, token_id, "completed")
                         # carrega os questionarios completos
                         if completed is not None and completed != "N" and completed != "":
-
+                            token_list[token_id] = []
                             questionnaire_data_dic = {
-                                'token': str(questionnaire_response.token_id),
+                                'token': str(token_id),
                                 'patient_id': questionnaire_response.subject_of_group.subject.patient_id,
-                                'identification': questionnaire_identification,
-                                'path_questionnaire': path_questionnaire,
                                 'data_completed': completed
                             }
                             if questionnaire_code not in questionnaire_per_group:
                                 questionnaire_per_group[questionnaire_code] = []
-                            questionnaire_per_group[questionnaire_code].append(questionnaire_data_dic)
+                            questionnaire_per_group[questionnaire_code].append(questionnaire.identification)
+                            questionnaire_per_group[questionnaire_code].append(path_questionnaire)
+                            token_list[token_id].append(questionnaire_data_dic)
+                            questionnaire_per_group[questionnaire_code].append(token_list)
 
             # dados(token,patient_id) dos questionarios no grupo
             self.per_group_data[group_id].append(questionnaire_per_group)
@@ -406,9 +406,9 @@ class ExportExecution:
     def get_experiment_questionnaire_response_per_questionnaire(self, questionnaire_code, group_id):
         experiment_questionnaire_response = []
         if questionnaire_code in self.per_group_data[group_id][3]:
-            for element in self.per_group_data[group_id][3][questionnaire_code]:
-                questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(token_id=element['token'])[0]
-                experiment_questionnaire_response.append(questionnaire_response)
+            for element in self.per_group_data[group_id][3][questionnaire_code][2]:
+                questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(token_id=element)
+                experiment_questionnaire_response.append(questionnaire_response[0])
 
         return experiment_questionnaire_response
 
@@ -1500,11 +1500,10 @@ class ExportExecution:
         if group_id != "":
             questionnaire_exists = False
             survey_code = Survey.objects.filter(lime_survey_id=questionnaire_id).values('code')[0]['code']
-            questionnaire_responses = self.get_experiment_questionnaire_response_per_questionnaire(survey_code,
-                                                                                                   group_id)
-
+            questionnaire_responses = self.get_experiment_questionnaire_response_per_questionnaire(survey_code,group_id)
             if questionnaire_responses:
                 questionnaire_exists = True
+            step_header = ['Identification', 'Path of the step', 'Data completed']
         else:
             questionnaire_exists = QuestionnaireResponse.objects.filter(
             survey__lime_survey_id=questionnaire_id).exists()
@@ -1589,11 +1588,17 @@ class ExportExecution:
                 # include new fieldsm
 
                 if group_id != "":
-                    patient = Patient.objects.filter(subject__subjectofgroup=questionnaire_response.subject_of_group)[0]
-                    patient_id = patient.id
+                    questionnaire_per_group = self.per_group_data[group_id][3][survey_code]
+                    token_id = questionnaire_response.token_id
+                    patient_id = questionnaire_per_group[2][token_id][0]['patient_id']
+                    patient = get_object_or_404(Patient, pk=patient_id)
                     lime_survey_id = questionnaire_id
                     patient_code = patient.code
-                    token_id = questionnaire_response.token_id
+                    identification = questionnaire_per_group[0]
+                    step_path = questionnaire_per_group[1]
+                    data_completed = questionnaire_per_group[2][token_id][0][
+                        'data_completed']
+                    step_per_response = [identification, step_path, data_completed]
                 else:
                     patient_id = questionnaire_response.patient_id
                     survey_code = questionnaire_response.survey.code
@@ -1607,6 +1612,10 @@ class ExportExecution:
 
                     lm_data_row = data_from_lime_survey[token]
 
+                    if lm_data_row and group_id != "":
+                        for element in step_per_response:
+                            lm_data_row.append(element)
+
                     data_fields = [smart_str(data) for data in lm_data_row]
 
                     transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
@@ -1614,9 +1623,6 @@ class ExportExecution:
 
                     if len(transformed_fields) > 0:
                         export_rows.append(transformed_fields)
-
-                        if group_id != "":
-                            identification = self.per_group_data[group_id][3][survey_code][0]['identification']
 
                         # self.include_in_per_participant_data([transformed_fields],
                         #                                      questionnaire_response.patient_id,
@@ -1629,6 +1635,12 @@ class ExportExecution:
 
             self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
         header = self.get_header_questionnaire(questionnaire_id)
+        if group_id != "":
+            if header[len(header)-1] == 'participant_code':
+                header = header[0:len(header)-1]
+                for element in step_header:
+                    header.append(element)
+                header.append('participant_code')
 
         export_rows.insert(0, header)
         return export_rows
