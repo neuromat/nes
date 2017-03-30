@@ -158,22 +158,19 @@ def person_view(request, person_id, template_name="team/person_register.html"):
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
-            try:
-                have_user_to_remove = True if person.user else False
+            have_user_to_remove = True if person.user else False
 
-                person.delete()
+            person.delete()
 
-                if have_user_to_remove:
-                    user = get_object_or_404(User, id=person.user_id)
-                    user.is_active = False
-                    user.save()
+            if have_user_to_remove:
+                user = get_object_or_404(User, id=person.user_id)
+                user.is_active = False
+                user.save()
 
-                messages.success(request, _('Person removed successfully.'))
-                return redirect('person_list')
-            except ProtectedError:
-                messages.error(request, _("Error trying to delete person."))
-                redirect_url = reverse("person_view", args=(person_id,))
-                return HttpResponseRedirect(redirect_url)
+            messages.success(request, _('Person removed successfully.'))
+            return redirect('person_list')
+        else:
+            messages.warning(request, _('Action not available.'))
 
     context = {"person": person,
                "person_form": person_form,
