@@ -25,7 +25,7 @@ from os import path, makedirs
 
 from patient.models import Patient, QuestionnaireResponse
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, Survey, \
-    ComponentConfiguration, Questionnaire
+    ComponentConfiguration, Questionnaire, DataConfigurationTree
 from experiment.views import get_experimental_protocol_description
 
 from survey.abc_search_engine import Questionnaires
@@ -361,13 +361,15 @@ class ExportExecution:
 
             participant_group_list = Patient.objects.filter(subject__subjectofgroup__group=group).values('id')
             self.per_group_data[group_id].append(participant_group_list)
-            questionnaire_per_group = {}
 
             if group.experimental_protocol is not None:
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
                     subject_of_group__group=group)
-
+                questionnaire_per_group = {}
+                questionnaire_list_per_patient = {}
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
+                    data_configuration_tree_id = DataConfigurationTree.objects.filter(
+                        component_configuration_id=path_experiment[0][0]).values('id')[0]['id']
                     path_questionnaire = ''
                     size = len(path_experiment[0])
                     step = 1
@@ -381,21 +383,38 @@ class ExportExecution:
 
                     # if questionnaire_code not in questionnaire_per_group:
                     token_list = {}
+                    questionnaire_list = {}
+
+                    path_number = 1
                     for questionnaire_response in questionnaire_response_list:
+
                         token_id = questionnaire_response.token_id
                         completed = surveys.get_participant_properties(questionnaire_id, token_id, "completed")
                         # carrega os questionarios completos
                         if completed is not None and completed != "N" and completed != "":
                             token_list[token_id] = []
+                            patient_id = questionnaire_response.subject_of_group.subject.patient_id
+                            if patient_id not in questionnaire_list_per_patient:
+                                questionnaire_list_per_patient[patient_id] = []
+
+                            if data_configuration_tree_id not in questionnaire_list_per_patient[patient_id]:
+                                questionnaire_list_per_patient[patient_id].append(data_configuration_tree_id)
+                                path_identification = "Path_" + path_number
+                            else:
+                                path_number += 1
+                                path_identification = "Path_" + path_number
+
                             questionnaire_data_dic = {
                                 'token': str(token_id),
-                                'patient_id': questionnaire_response.subject_of_group.subject.patient_id,
-                                'data_completed': completed
+                                'patient_id': patient_id,
+                                'data_completed': completed,
+                                'path_description': questionnaire.identification,
+                                'path_questionnaire': path_questionnaire,
+                                'path_identification': path_identification,
+                                'data_configuration_tree_id': data_configuration_tree_id
                             }
                             if questionnaire_code not in questionnaire_per_group:
                                 questionnaire_per_group[questionnaire_code] = []
-                            questionnaire_per_group[questionnaire_code].append(questionnaire.identification)
-                            questionnaire_per_group[questionnaire_code].append(path_questionnaire)
                             token_list[token_id].append(questionnaire_data_dic)
                             questionnaire_per_group[questionnaire_code].append(token_list)
 
@@ -1503,7 +1522,7 @@ class ExportExecution:
             questionnaire_responses = self.get_experiment_questionnaire_response_per_questionnaire(survey_code,group_id)
             if questionnaire_responses:
                 questionnaire_exists = True
-            step_header = ['Identification', 'Path of the step', 'Data completed']
+            step_header = ['Path identification', 'Path description', 'Path of the step', 'Data completed']
         else:
             questionnaire_exists = QuestionnaireResponse.objects.filter(
             survey__lime_survey_id=questionnaire_id).exists()
@@ -1594,11 +1613,12 @@ class ExportExecution:
                     patient = get_object_or_404(Patient, pk=patient_id)
                     lime_survey_id = questionnaire_id
                     patient_code = patient.code
-                    identification = questionnaire_per_group[0]
-                    step_path = questionnaire_per_group[1]
+                    identification = questionnaire_per_group[2][token_id][0]['path_identification']
+                    step_path = questionnaire_per_group[2][token_id][0]['path_questionnaire']
                     data_completed = questionnaire_per_group[2][token_id][0][
                         'data_completed']
-                    step_per_response = [identification, step_path, data_completed]
+                    path_id = questionnaire_per_group[2][token_id][0]['path_id']
+                    step_per_response = [path_id, identification, step_path, data_completed]
                 else:
                     patient_id = questionnaire_response.patient_id
                     survey_code = questionnaire_response.survey.code
