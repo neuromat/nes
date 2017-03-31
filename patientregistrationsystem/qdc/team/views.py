@@ -215,6 +215,10 @@ def person_update(request, person_id, template_name="team/person_register.html")
 
                 changed = False
 
+                # TODO: error about user_form because always wait that the password.
+                # example-1: if you only change the username
+                # example-2: if you change some group selection, the "user_form.is_valid" is True
+
                 if user_form.has_changed():
                     if user_form.is_valid():
                         person.user = user_form.save()
