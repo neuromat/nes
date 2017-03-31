@@ -484,6 +484,7 @@ def export_view(request, template_name="export/export_data.html"):
     selected_participant = []
     selected_diagnosis = []
     selected_ev_quest_experiments = []
+    questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
 
     if request.method == "POST":
@@ -645,20 +646,18 @@ def export_view(request, template_name="export/export_data.html"):
                     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     questionnaire_id = questionnaire.survey.lime_survey_id
 
-                    if questionnaire_id not in questionnaire_in_list:
-                        for questionnaire_response in questionnaire_response_list:
-                            # if questionnaire_id not in questionnaire_in_list:
-                            completed = surveys.get_participant_properties(questionnaire_id,
-                                                                           questionnaire_response.token_id, "completed")
-                            if completed is not None and completed != "N" and completed != "":
-                                questionnaire_dic = {
-                                    'questionnaire': questionnaire,
-                                    'token': str(questionnaire_response.token_id),
-                                    'group_id': group_id
-                                }
+                    for questionnaire_response in questionnaire_response_list:
+                        # if questionnaire_id not in questionnaire_in_list:
+                        completed = surveys.get_participant_properties(questionnaire_id,
+                                                                       questionnaire_response.token_id, "completed")
+                        if completed is not None and completed != "N" and completed != "":
+                            questionnaire_dic = {
+                                'questionnaire': questionnaire,
+                                'token': str(questionnaire_response.token_id),
+                                'group_id': group_id
+                            }
+                            if questionnaire_id not in questionnaire_in_list:
                                 questionnaire_in_list.append(questionnaire_id)
-                                # participants_list_from_experiment_questionnaire.append(
-                                #     questionnaire_response.subject_of_group.subject.patient_id)
                                 questionnaires_experiment_list_final.append(questionnaire_dic)
 
         # request.session['participants_in_experiment_questionnaire'] = participants_list_from_experiment_questionnaire
@@ -685,22 +684,21 @@ def export_view(request, template_name="export/export_data.html"):
             if completed is not None and completed != "N" and completed != "":
                 surveys_id_list.append(lime_survey_id)
                 surveys_with_ev_list.append(questionnaire)
-                # participants_list_from_entrance_questionnaire.append(patient_questionnaire_response.patient_id)
-    # request.session['participant_in_entrance_questionnaire'] = participants_list_from_entrance_questionnaire
-    # Check if limesurveyDB is available
-    limesurvey_available = check_limesurvey_access(request, surveys)
-
-    questionnaires_list = []
-    # If available get all the questionnaires
-    if limesurvey_available:
-        questionnaires_list = surveys.find_all_active_questionnaires()
-
-    surveys.release_session_key()
-
-    questionnaires_list_final = []
 
     # load the questionnaires_list_final with the lime_survey_id
+    index = 0
     if surveys_with_ev_list:
+        # Check if limesurveyDB is available
+        limesurvey_available = check_limesurvey_access(request, surveys)
+
+        questionnaires_list = []
+        # If available get all the questionnaires
+        if limesurvey_available:
+            questionnaires_list = surveys.find_all_active_questionnaires()
+
+        surveys.release_session_key()
+
+        questionnaires_list_final = []
         for survey in surveys_with_ev_list:
             for questionnaire in questionnaires_list:
                 if survey[0]['lime_survey_id'] == questionnaire['sid']:
@@ -715,7 +713,6 @@ def export_view(request, template_name="export/export_data.html"):
         else:
             questionnaire_ids = ()
 
-        index = 0
         for questionnaire in questionnaires_fields_list:
             questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
             questionnaire["index"] = index
