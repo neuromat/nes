@@ -574,10 +574,10 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 @permission_required('experiment.change_experiment')
 def experiment_view(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    group_list = Group.objects.filter(experiment=experiment)
-    eeg_setting_list = EEGSetting.objects.filter(experiment=experiment)
-    emg_setting_list = EMGSetting.objects.filter(experiment=experiment)
-    tms_setting_list = TMSSetting.objects.filter(experiment=experiment)
+    group_list = Group.objects.filter(experiment=experiment).order_by('title')
+    eeg_setting_list = EEGSetting.objects.filter(experiment=experiment).order_by('name')
+    emg_setting_list = EMGSetting.objects.filter(experiment=experiment).order_by('name')
+    tms_setting_list = TMSSetting.objects.filter(experiment=experiment).order_by('name')
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
