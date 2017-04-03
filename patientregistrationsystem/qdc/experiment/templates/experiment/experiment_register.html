@@ -168,7 +168,6 @@
 
                     <div class="container span6 offset3 well ">
 
-{#                        <h4><span class="fa fa-database"></span> {% trans "Schedule of sending to NeuroMat Portal" %}</h4>#}
                         <h4><span class="fa fa-database"></span> {% trans "NeuroMat Portal - Experimental data sending " %}</h4>
 
                         <div class="col-md-12">
@@ -186,11 +185,11 @@
                             {% endif %}
 
                             <br/>
-{#                            {% if experiment.is_public and can_sending %}#}
-{#                                {% if not experiment.last_send %}#}
+                            {% if experiment.is_public and can_change %}
+                                {% if not experiment.last_send or experiment.last_update > experiment.last_send %}
                                     <a href="/experiment/{{ experiment.id }}/group/new" class="btn btn-primary">{% trans "Schedule sending" %}</a>
-{#                                {% endif %}#}
-{#                            {% endif %}#}
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
