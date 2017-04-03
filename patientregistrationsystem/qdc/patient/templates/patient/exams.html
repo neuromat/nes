@@ -47,9 +47,9 @@
                 <li><a href="/patient/find/">{% trans "Participants" %}</a></li>
 
                 {% if status == "edit" %}
-                    <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+                    <li><a href="/patient/edit/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
                 {% else %}
-                    <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ name_patient }}</a></li>
+                    <li><a href="/patient/{{ patient_id }}/?currentTab=3">{{ patient }}</a></li>
                 {% endif %}
 
                 <li>{% trans "Medical assessment" %}</li>

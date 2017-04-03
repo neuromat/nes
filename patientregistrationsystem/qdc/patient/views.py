@@ -137,6 +137,9 @@ def patient_update_personal_data(request, patient, context):
 
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
+    if patient.name == '':
+        patient_form.fields['anonymous'].widget.attrs['checked'] = True
+
     if request.method == "POST":
         patient_form_is_valid = patient_form.is_valid()
 
@@ -172,7 +175,9 @@ def patient_update_personal_data(request, patient, context):
 
     context.update({
         'patient_form': patient_form,
-        'telephone_formset': telephone_formset})
+        'telephone_formset': telephone_formset,
+        'code': patient.code
+    })
 
     return render(request, "patient/register_personal_data.html", context)
 
@@ -244,7 +249,9 @@ def patient_update_social_demographic_data(request, patient, context):
             return finish_handling_post(request, patient.id, 1)
 
     context.update({
-        'social_demographic_form': social_demographic_form})
+        'social_demographic_form': social_demographic_form,
+        'code': patient.code
+    })
 
     return render(request, "patient/register_socialdemographic_data.html", context)
 
@@ -269,7 +276,9 @@ def patient_update_social_history(request, patient, context):
             return finish_handling_post(request, patient.id, 2)
 
     context.update({
-        'social_history_form': social_history_form})
+        'social_history_form': social_history_form,
+        'code': patient.code
+    })
 
     return render(request, "patient/register_social_history.html", context)
 
@@ -281,7 +290,9 @@ def patient_update_medical_record(request, patient, context):
     medical_record = MedicalRecordData.objects.filter(patient=patient).order_by('record_date')
 
     context.update({
-        'medical_record': medical_record})
+        'medical_record': medical_record,
+        'code': patient.code
+    })
 
     return render(request, "patient/register_medical_record.html", context)
 
@@ -355,6 +366,9 @@ def patient_view_personal_data(request, patient, context):
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
     telephone_formset = telephone_inlineformset(instance=patient)
 
+    if patient.name == '':
+        patient_form.fields['anonymous'].widget.attrs['checked'] = True
+
     for field in patient_form.fields:
         patient_form.fields[field].widget.attrs['disabled'] = True
 
@@ -370,7 +384,8 @@ def patient_view_personal_data(request, patient, context):
     context.update({
         'code': patient.code,
         'patient_form': patient_form,
-        'telephone_formset': telephone_formset})
+        'telephone_formset': telephone_formset
+    })
 
     return render(request, "patient/register_personal_data.html", context)
 
@@ -389,7 +404,9 @@ def patient_view_social_demographic_data(request, patient, context):
         attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
     context.update({
-        'social_demographic_form': social_demographic_form})
+        'social_demographic_form': social_demographic_form,
+        'code': patient.code
+    })
 
     return render(request, "patient/register_socialdemographic_data.html", context)
 
@@ -405,7 +422,9 @@ def patient_view_social_history(request, patient, context):
         social_history_form.fields[field].widget.attrs['disabled'] = True
 
     context.update({
-        'social_history_form': social_history_form})
+        'social_history_form': social_history_form,
+        'code': patient.code
+    })
 
     return render(request, "patient/register_social_history.html", context)
 
@@ -414,7 +433,9 @@ def patient_view_medical_record(request, patient, context):
     medical_record = MedicalRecordData.objects.filter(patient_id=patient.id).order_by('record_date')
 
     context.update({
-        'medical_record': medical_record})
+        'medical_record': medical_record,
+        'code': patient.code
+    })
 
     return render(request, "patient/register_medical_record.html", context)
 
@@ -531,7 +552,9 @@ def patient_view_questionnaires(request, patient, context, is_update):
     context.update({
         'patient_questionnaires_data_list': patient_questionnaires_data_list,
         'questionnaires_data': questionnaires_data,
-        'limesurvey_available': limesurvey_available})
+        'limesurvey_available': limesurvey_available,
+        'code': patient.code
+    })
 
     return render(request, "patient/register_questionnaires.html", context)
 
@@ -566,7 +589,10 @@ def search_patients_ajax(request):
     if request.method == "POST":
         search_text = request.POST['search_text']
         if search_text:
-            if re.match('[a-zA-Z ]+', search_text):
+            if re.match('P{1}[0-9]', search_text):
+                patient_list = \
+                    Patient.objects.filter(code__icontains=search_text).exclude(removed=True).order_by('code')
+            elif re.match('[a-zA-Z ]+', search_text):
                 patient_list = \
                     Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
             else:
@@ -635,8 +661,13 @@ def search_cid10_ajax(request):
 def medical_record_create(request, patient_id, template_name='patient/medical_record.html'):
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
+    if current_patient.name:
+        patient = current_patient.name
+    else:
+        patient = current_patient.code
+
     return render(request, template_name,
-                  {'name_patient': current_patient.name,
+                  {'patient': patient,
                    'patient_id': patient_id,
                    'creating': True,
                    'editing': True})
@@ -652,6 +683,11 @@ def medical_record_view(request, patient_id, record_id, template_name="patient/m
     current_patient = get_object_or_404(Patient, pk=patient_id)
     medical_record = get_object_or_404(MedicalRecordData, pk=record_id)
 
+    if current_patient.name:
+        patient = current_patient.name
+    else:
+        patient = current_patient.code
+
     if medical_record:
 
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id).order_by('classification_of_diseases')
@@ -662,7 +698,7 @@ def medical_record_view(request, patient_id, record_id, template_name="patient/m
         lists_diagnosis_exams = list(zip(diagnosis_list, complementary_exams_list))
 
         return render(request, template_name,
-                      {'name_patient': current_patient.name,
+                      {'patient': patient,
                        'patient_id': patient_id,
                        'record_id': medical_record.id,
                        'object_list': diagnosis_list,
@@ -685,6 +721,11 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
 
     current_patient = get_object_or_404(Patient, pk=patient_id)
     medical_record = get_object_or_404(MedicalRecordData, pk=record_id)
+
+    if current_patient.name:
+        patient = current_patient.name
+    else:
+        patient = current_patient.code
 
     if medical_record:
         diagnosis_list = Diagnosis.objects.filter(medical_record_data=record_id).order_by('classification_of_diseases')
@@ -726,7 +767,7 @@ def medical_record_update(request, patient_id, record_id, template_name="patient
                     messages.error(request, _("Incorrect date. Use format: mm/dd/yyyy"))
 
         return render(request, template_name,
-                      {'name_patient': current_patient.name,
+                      {'patient': patient,
                        'patient_id': patient_id,
                        'record_id': medical_record.id,
                        'object_list': diagnosis_list,
@@ -824,6 +865,11 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
     diagnosis = get_object_or_404(Diagnosis, pk=diagnosis_id)
     current_patient = get_object_or_404(Patient, pk=patient_id)
 
+    if current_patient.name:
+        patient = current_patient.name
+    else:
+        patient = current_patient.code
+
     if request.method == "POST":
         file_form = ExamFileForm(request.POST, request.FILES)
 
@@ -864,7 +910,7 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                    'complementary_exam_form': form,
                    'patient_id': patient_id,
                    'record_id': record_id,
-                   'name_patient': current_patient.name,
+                   'patient': patient,
                    'file_form': file_form,
                    'status': status,
                    'new_medical_record': new_medical_record}, )
@@ -883,6 +929,11 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
     new_medical_record = False
     if 'mr' in request.GET:
         new_medical_record = True
+
+    if current_patient.name:
+        patient = current_patient.name
+    else:
+        patient = current_patient.code
 
     if complementary_exam:
         complementary_exam_form = ComplementaryExamForm(request.POST or None, instance=complementary_exam)
@@ -926,7 +977,7 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                        'length': length,
                        'patient_id': patient_id,
                        'record_id': record_id,
-                       'name_patient': current_patient.name,
+                       'patient': patient,
                        'file_form': file_form,
                        'status': status,
                        'new_medical_record': new_medical_record})
@@ -951,6 +1002,11 @@ def exam_view(request, patient_id, record_id, exam_id, template_name="patient/ex
     except ExamFile.DoesNotExist:
         exam_file_list = None
 
+    if current_patient.name:
+        patient = current_patient.name
+    else:
+        patient = current_patient.code
+
     return render(request, template_name,
                   {'viewing': True,
                    'creating': False,
@@ -958,7 +1014,7 @@ def exam_view(request, patient_id, record_id, exam_id, template_name="patient/ex
                    'exam_file_list': exam_file_list,
                    'patient_id': patient_id,
                    'record_id': record_id,
-                   'name_patient': current_patient.name,
+                   'patient': patient,
                    'status': status})
 
 

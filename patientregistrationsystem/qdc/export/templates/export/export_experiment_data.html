@@ -249,13 +249,19 @@
 
                                         </div>
                                     </div>
+                                {% else %}
+                                    <div class="container span6 offset3 well ">
+                                        <div class="container span6 offset3 well ">
+                                            <h4>{% trans "There is not questionnaire to entrance avaliation to the filtered participants" %}</h4>
+                                        </div>
+                                    </div>
                                 {% endif %}
                         {% endif %}
                     </div>
 
                     <div id="questionnaires_from_experiments" {% if tab == '3' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
                         {% if perms.patient.export_patient %}
-                                {% if questionnaires_fields_list %}
+                                {% if questionnaires_experiment_fields_list %}
                                      <div class="container span6 offset3 well ">
                                         <div class="container span6 offset3 well ">
                                             <h4>{% trans "Questionnaire information" %}</h4>

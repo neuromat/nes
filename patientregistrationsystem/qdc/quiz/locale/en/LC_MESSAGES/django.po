@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-10 10:39-0300\n"
+"POT-Creation-Date: 2017-03-30 14:50-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,27 +41,31 @@ msgstr ""
 msgid "Participants"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:209
+#: quiz/templates/quiz/template.html:208
 msgid "Studies"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:218
+#: quiz/templates/quiz/template.html:217
+msgid "Publications"
+msgstr ""
+
+#: quiz/templates/quiz/template.html:226
 msgid "Questionnaires"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:227
+#: quiz/templates/quiz/template.html:235
 msgid "Users"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:236
+#: quiz/templates/quiz/template.html:244
 msgid "Teams"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:245
+#: quiz/templates/quiz/template.html:253
 msgid "Export"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:254
+#: quiz/templates/quiz/template.html:262
 msgid "Set up"
 msgstr ""
 

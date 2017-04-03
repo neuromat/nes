@@ -5,8 +5,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _
 
-from configuration.models import Institution
-
 
 def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
 
