@@ -37,6 +37,11 @@ urlpatterns = patterns(
     url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),
     url(r'^edit/(?P<experiment_id>\d+)/$', 'experiment_update', name='experiment_edit'),
 
+    # Schedule of sending
+    url(r'^schedule_of_sending/(?P<experiment_id>\d+)/$',
+        'experiment_schedule_of_sending', name='experiment_schedule_of_sending'),
+    url(r'^schedule_of_sending/list/$', 'schedule_of_sending_list', name='schedule_of_sending_list'),
+
     # group
     url(r'^(?P<experiment_id>\d+)/group/new/$', 'group_create', name='group_new'),
     url(r'^group/(?P<group_id>\d+)/$', 'group_view', name='group_view'),
