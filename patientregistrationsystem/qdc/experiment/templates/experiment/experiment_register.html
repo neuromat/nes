@@ -172,22 +172,38 @@
 
                         <div class="col-md-12">
 
-                            <span class="glyphicon glyphicon-refresh"></span>
-                            <label class="control-label">{% trans "Last experiment update:" %}</label> {{ experiment.last_update }}
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <span class="glyphicon glyphicon-refresh"> </span>
+                                    <label class="control-label">{% trans "Last experiment update:" %}</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{ experiment.last_update }}
+                                </div>
+                            </div>
 
-                            <br/>
-                            <span class="glyphicon glyphicon-send"></span>
-                            <label class="control-label">{% trans "Last sending to NeuroMat:" %}</label>
-                            {% if last_sending %}
-                                {{ experiment.last_sending }}
-                            {% else %}
-                                {% trans "never sent" %}
-                            {% endif %}
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <span class="glyphicon glyphicon-send"> </span>
+                                    <label class="control-label">{% trans "Last experiment sending status:" %}</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {% if not last_schedule_of_sending %}
+                                        <span class="label label-info">{% trans "never sent" %}</span>
+                                    {% else %}
+                                        {% if last_schedule_of_sending.status == "sent" %}
+                                            {% trans "Sent on: " %}{{ last_schedule_of_sending.sending_datetime }}
+                                        {% else %}
+                                            {{ last_schedule_of_sending.schedule_datetime }}
+                                        {% endif %}
+                                        <span class="label label-info">{{ last_schedule_of_sending.status }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
 
-                            <br/>
-                            {% if experiment.is_public and can_change %}
+                            {% if experiment.is_public and can_change and last_schedule_of_sending.status != "scheduled" %}
                                 {% if not experiment.last_send or experiment.last_update > experiment.last_send %}
-                                    <a href="/experiment/{{ experiment.id }}/group/new" class="btn btn-primary">{% trans "Schedule sending" %}</a>
+                                    <a href="/experiment/schedule_of_sending/{{ experiment.id }}" class="btn btn-primary">{% trans "Schedule sending" %}</a>
                                 {% endif %}
                             {% endif %}
                         </div>

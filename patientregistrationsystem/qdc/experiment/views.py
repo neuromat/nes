@@ -1,8 +1,8 @@
 # coding=utf-8
 import re
-# import datetime
 import json
 import random
+import subprocess
 
 import numpy as np
 
@@ -52,7 +52,7 @@ from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, 
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
     EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
-    GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog
+    GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending
 
 from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -132,8 +132,14 @@ def get_current_tab(request):
 @permission_required('experiment.view_researchproject')
 def research_project_list(request, template_name="experiment/research_project_list.html"):
     research_projects = ResearchProject.objects.order_by('start_date')
+
+    can_send_to_portal = False
+    if settings.PORTAL_API['URL']:
+        can_send_to_portal = True
+
     context = {
         "research_projects": research_projects,
+        "can_send_to_portal": can_send_to_portal
     }
 
     return render(request, template_name, context)
@@ -620,6 +626,8 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 
     context = {"can_change": get_can_change(request.user, experiment.research_project),
                "experiment": experiment,
+               "last_schedule_of_sending":
+                   ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last(),
                "experiment_form": experiment_form,
                "group_list": group_list,
                "eeg_setting_list": eeg_setting_list,
@@ -662,6 +670,123 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                "experiment": experiment}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def experiment_schedule_of_sending(request, experiment_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    last_schedule_of_sending = \
+        ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last()
+
+    new_schedule = ScheduleOfSending(experiment=experiment,
+                                     schedule_datetime=datetime.now(),
+                                     responsible=request.user,
+                                     status="scheduled")
+    new_schedule.save()
+    messages.success(request, _('Experiment scheduled to be sent successfully.'))
+
+    redirect_url = reverse("experiment_view", args=(experiment_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def schedule_of_sending_list(request, template_name="experiment/schedule_of_sending_list.html"):
+
+    list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
+
+    experiment_sent = False
+
+    if request.method == "POST":
+        if request.POST['action'] == "send-to-portal":
+
+            users_to_send = []
+            research_projects_to_send = []
+
+            for schedule_of_sending in list_of_schedule_of_sending:
+                if schedule_of_sending.experiment.research_project.owner not in users_to_send:
+                    users_to_send.append(schedule_of_sending.experiment.research_project.owner)
+                if schedule_of_sending.experiment.research_project not in research_projects_to_send:
+                    research_projects_to_send.append(schedule_of_sending.experiment.research_project)
+
+            for user in users_to_send:
+                send_user_to_portal(user)
+
+            for research_project in research_projects_to_send:
+                send_research_project_to_portal(research_project)
+
+            for schedule_of_sending in list_of_schedule_of_sending:
+                send_experiment_to_portal(schedule_of_sending)
+
+                schedule_of_sending.status = "sent"
+                schedule_of_sending.sending_datetime = datetime.now()
+                schedule_of_sending.save()
+
+            messages.success(request, _('Experiments sent successfully.'))
+
+    context = {
+        "list_of_schedule_of_sending": list_of_schedule_of_sending
+    }
+
+    return render(request, template_name, context)
+
+
+def send_user_to_portal(user):
+    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
+    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
+
+    subprocess.call(['http', '-a', credential, '--ignore-stdin', 'POST',
+                     portal_server + '/api/researchers/',
+                     'first_name=' + user.first_name,
+                     'surname=' + user.last_name,
+                     'nes_id=' + str(user.id)])
+    return
+
+
+def send_research_project_to_portal(research_project):
+    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
+    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
+
+    if research_project.end_date is None:
+        subprocess.call(['http', '-a', credential, '--ignore-stdin',
+                         'POST', portal_server + '/api/researchers/' +
+                         str(research_project.owner.id) + '/studies/',
+                         'title=' + research_project.title,
+                         'description=' + research_project.description,
+                         'start_date=' + str(research_project.start_date),
+                         'nes_id=' + str(research_project.id)])
+    else:
+        subprocess.call(['http', '-a', credential, '--ignore-stdin',
+                         'POST', portal_server + '/api/researchers/' +
+                         str(research_project.owner.id) + '/studies/',
+                         'title=' + research_project.title,
+                         'description=' + research_project.description,
+                         'start_date=' + str(research_project.start_date),
+                         'end_date=' + str(research_project.end_date),
+                         'nes_id=' + str(research_project.id)])
+
+    return
+
+
+def send_experiment_to_portal(schedule_of_sending):
+    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
+    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
+
+    subprocess.call(['http', '-a', credential,
+                     '--ignore-stdin', 'POST',
+                     portal_server + '/api/studies/' + str(
+                         schedule_of_sending.experiment.research_project.id) + '/experiments/',
+                     'title=' + schedule_of_sending.experiment.title,
+                     'description=' + schedule_of_sending.experiment.description,
+                     'data_acquisition_none=' +
+                     str(schedule_of_sending.experiment.data_acquisition_is_concluded),
+                     'nes_id=' + str(schedule_of_sending.experiment.id)])
+
+    return
 
 
 @login_required

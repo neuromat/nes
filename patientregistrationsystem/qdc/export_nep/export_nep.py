@@ -4,25 +4,28 @@ import subprocess
 # Collect and send User's (nep: Researcher's) -> ResearchProject's
 # (nep: Study's), Experiment's and Experiment releated objects
 users = models.User.objects.all()
+
+portal_server = 'http://192.168.59.61:8000'
+
 for user in users:
-    subprocess.run(['http', '-a', 'lab1:nep-lab1', '--ignore-stdin', 'POST',
-                    'http://127.0.0.1:8000/api/researchers/',
+    subprocess.call(['http', '-a', 'lab1:nep-lab1', '--ignore-stdin', 'POST',
+                    portal_server + '/api/researchers/',
                     'first_name=' + user.first_name,
                     'surname=' + user.last_name,
                     'nes_id=' + str(user.id)])
     for research_project in models.ResearchProject.objects.filter(
             owner__id=user.id):
         if research_project.end_date is None:
-            subprocess.run(['http', '-a', 'lab1:nep-lab1', '--ignore-stdin',
-                            'POST', 'http://127.0.0.1:8000/api/researchers/' +
+            subprocess.call(['http', '-a', 'lab1:nep-lab1', '--ignore-stdin',
+                            'POST', portal_server + '/api/researchers/' +
                             str(user.id) + '/studies/',
                             'title=' + research_project.title,
                             'description=' + research_project.description,
                             'start_date=' + str(research_project.start_date),
                             'nes_id=' + str(research_project.id)])
         else:
-            subprocess.run(['http', '-a', 'lab1:nep-lab1', '--ignore-stdin',
-                            'POST', 'http://127.0.0.1:8000/api/researchers/' +
+            subprocess.call(['http', '-a', 'lab1:nep-lab1', '--ignore-stdin',
+                            'POST', portal_server + '/api/researchers/' +
                             str(user.id) + '/studies/',
                             'title=' + research_project.title,
                             'description=' + research_project.description,
@@ -31,9 +34,9 @@ for user in users:
                             'nes_id=' + str(research_project.id)])
         for experiment in models.Experiment.objects.filter(
                 research_project__id=research_project.id):
-            subprocess.run(['http', '-a', 'lab1:nep-lab1',
+            subprocess.call(['http', '-a', 'lab1:nep-lab1',
                             '--ignore-stdin', 'POST',
-                            'http://127.0.0.1:8000/api/studies/' + str(
+                            portal_server + '/api/studies/' + str(
                                 research_project.id) + '/experiments/',
                             'title=' + experiment.title,
                             'description=' + experiment.description,
@@ -43,9 +46,9 @@ for user in users:
             for component in models.Component.objects.filter(
                     experiment__id=experiment.id):
                 if component.duration_value is None:
-                    subprocess.run(['http', '-a', 'lab1:nep-lab1',
+                    subprocess.call(['http', '-a', 'lab1:nep-lab1',
                                     '--ignore-stdin', 'POST',
-                                    'http://127.0.0.1:8000/api/experiments/' +
+                                    portal_server + '/api/experiments/' +
                                     str(experiment.id) +
                                     '/protocol_components/',
                                     'identification=' +
@@ -57,9 +60,9 @@ for user in users:
                                     str(component.component_type),
                                     'nes_id=' + str(component.id)])
                 else:
-                    subprocess.run(['http', '-a', 'lab1:nep-lab1',
+                    subprocess.call(['http', '-a', 'lab1:nep-lab1',
                                     '--ignore-stdin', 'POST',
-                                    'http://127.0.0.1:8000/api/experiments/' +
+                                    portal_server + '/api/experiments/' +
                                     str(experiment.id) +
                                     '/protocol_components/',
                                     'identification=' +
@@ -74,9 +77,9 @@ for user in users:
                                     'nes_id=' + str(component.id)])
                 for group in models.Group.objects.filter(
                         experimental_protocol__id=component.id):
-                    subprocess.run(['http', '-a', 'lab1:nep-lab1',
+                    subprocess.call(['http', '-a', 'lab1:nep-lab1',
                                     '--ignore-stdin', 'POST',
-                                    'http://127.0.0.1:8000/api/'
+                                    portal_server + '/api/'
                                     'protocol_components/'
                                     + str(component.id) + '/groups/',
                                     'title=' + group.title,
@@ -86,8 +89,8 @@ for user in users:
 # Send Patient's
 for subject in models.Subject.objects.all():
     patient = models.Patient.objects.filter(id=subject.patient_id).get()
-    subprocess.run(['http', '-a', 'lab1:nep-lab1', '--ignore-stdin', 'POST',
-                    'http://127.0.0.1:8000/api/participants/',
+    subprocess.call(['http', '-a', 'lab1:nep-lab1', '--ignore-stdin', 'POST',
+                    portal_server + '/api/participants/',
                     'date_birth=' + str(patient.date_birth),
                     'district=' + patient.district,
                     'city=' + patient.city,
@@ -98,4 +101,3 @@ for subject in models.Subject.objects.all():
                     patient.marital_status.name if patient.marital_status
                     else 'marital_status=',
                     'nes_id=' + str(patient.id)])
-
