@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-30 14:50-0300\n"
+"POT-Creation-Date: 2017-04-04 09:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/export.py:71 export/export.py:72 export/views.py:137
-#: export/views.py:138 export/views.py:142 export/views.py:143
+#: export/export.py:71 export/export.py:72 export/views.py:138
+#: export/views.py:139 export/views.py:143 export/views.py:144
 msgid "Participant code"
 msgstr ""
 
@@ -26,11 +26,11 @@ msgstr ""
 msgid "Base path does not exist"
 msgstr ""
 
-#: export/export.py:1258 export/views.py:1140
+#: export/export.py:1311 export/views.py:1140
 msgid "Yes"
 msgstr ""
 
-#: export/export.py:1258 export/views.py:1140
+#: export/export.py:1311 export/views.py:1140
 msgid "No"
 msgstr ""
 
@@ -111,8 +111,8 @@ msgstr ""
 #: export/templates/export/experiment_selection.html:80
 #: export/templates/export/export_data.html:241
 #: export/templates/export/export_data.html:263
-#: export/templates/export/export_experiment_data.html:373
-#: export/templates/export/export_experiment_data.html:395
+#: export/templates/export/export_experiment_data.html:379
+#: export/templates/export/export_experiment_data.html:401
 msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
 msgstr ""
 
@@ -124,7 +124,7 @@ msgstr ""
 
 #: export/templates/export/experiment_selection.html:101
 #: export/templates/export/export_data.html:277
-#: export/templates/export/export_experiment_data.html:413
+#: export/templates/export/export_experiment_data.html:419
 #: export/templates/export/participant_selection.html:198
 #: export/templates/export/show_selected_participants.html:100
 msgid "Cancel"
@@ -172,7 +172,7 @@ msgstr ""
 
 #: export/templates/export/export_data.html:135
 #: export/templates/export/export_experiment_data.html:168
-#: export/templates/export/export_experiment_data.html:261
+#: export/templates/export/export_experiment_data.html:267
 msgid "Questionnaire information"
 msgstr ""
 
@@ -182,55 +182,55 @@ msgstr ""
 
 #: export/templates/export/export_data.html:157
 #: export/templates/export/export_experiment_data.html:187
-#: export/templates/export/export_experiment_data.html:281
+#: export/templates/export/export_experiment_data.html:287
 msgid "Fields available:"
 msgstr ""
 
 #: export/templates/export/export_data.html:162
 #: export/templates/export/export_experiment_data.html:192
-#: export/templates/export/export_experiment_data.html:286
+#: export/templates/export/export_experiment_data.html:292
 msgid "Please, select a questionnaire from the list."
 msgstr ""
 
 #: export/templates/export/export_data.html:194
 #: export/templates/export/export_experiment_data.html:224
-#: export/templates/export/export_experiment_data.html:318
+#: export/templates/export/export_experiment_data.html:324
 msgid "Fields chosen:"
 msgstr ""
 
 #: export/templates/export/export_data.html:226
-#: export/templates/export/export_experiment_data.html:358
+#: export/templates/export/export_experiment_data.html:364
 msgid "Participants"
 msgstr ""
 
 #: export/templates/export/export_data.html:232
-#: export/templates/export/export_experiment_data.html:364
+#: export/templates/export/export_experiment_data.html:370
 msgid "Participant fields"
 msgstr ""
 
 #: export/templates/export/export_data.html:235
-#: export/templates/export/export_experiment_data.html:367
+#: export/templates/export/export_experiment_data.html:373
 msgid "Please, select a patient field from the list."
 msgstr ""
 
 #: export/templates/export/export_data.html:249
-#: export/templates/export/export_experiment_data.html:381
+#: export/templates/export/export_experiment_data.html:387
 #: export/templates/export/participant_selection.html:124
 msgid "Diagnosis"
 msgstr ""
 
 #: export/templates/export/export_data.html:254
-#: export/templates/export/export_experiment_data.html:386
+#: export/templates/export/export_experiment_data.html:392
 msgid "Diagnosis fields"
 msgstr ""
 
 #: export/templates/export/export_data.html:257
-#: export/templates/export/export_experiment_data.html:389
+#: export/templates/export/export_experiment_data.html:395
 msgid "Please, select a diagnosis field from the list."
 msgstr ""
 
 #: export/templates/export/export_data.html:273
-#: export/templates/export/export_experiment_data.html:409
+#: export/templates/export/export_experiment_data.html:415
 msgid "Run"
 msgstr ""
 
@@ -252,6 +252,12 @@ msgstr ""
 
 #: export/templates/export/export_experiment_data.html:87
 msgid "Participants and Diagnosis"
+msgstr ""
+
+#: export/templates/export/export_experiment_data.html:255
+msgid ""
+"There is not questionnaire to entrance avaliation to the filtered "
+"participants"
 msgstr ""
 
 #: export/templates/export/export_menu.html:51
@@ -418,51 +424,51 @@ msgstr ""
 msgid "Alcoholic"
 msgstr ""
 
-#: export/views.py:119
+#: export/views.py:120
 msgid "Frequency"
 msgstr ""
 
-#: export/views.py:120
+#: export/views.py:121
 msgid "Period"
 msgstr ""
 
-#: export/views.py:121
+#: export/views.py:122
 msgid "Drugs"
 msgstr ""
 
-#: export/views.py:125
+#: export/views.py:126
 msgid "Date"
 msgstr ""
 
-#: export/views.py:127
+#: export/views.py:128
 msgid "Observation"
 msgstr ""
 
-#: export/views.py:129
+#: export/views.py:130
 msgid "Disease code (ICD)"
 msgstr ""
 
-#: export/views.py:131
+#: export/views.py:132
 msgid "Disease Description"
 msgstr ""
 
-#: export/views.py:133
+#: export/views.py:134
 msgid "Disease Abbreviated Description"
 msgstr ""
 
-#: export/views.py:368
+#: export/views.py:369
 msgid "Inconsistent data read from json file"
 msgstr ""
 
-#: export/views.py:598
+#: export/views.py:602
 msgid "Export was finished correctly"
 msgstr ""
 
-#: export/views.py:608
+#: export/views.py:612
 msgid "Export data was not generated."
 msgstr ""
 
-#: export/views.py:625
+#: export/views.py:629
 msgid "No data was select. Export data was not generated."
 msgstr ""
 

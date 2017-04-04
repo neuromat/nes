@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-30 14:50-0300\n"
+"POT-Creation-Date: 2017-04-04 09:26-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -691,7 +691,7 @@ msgid "email address"
 msgstr ""
 
 #: team/templates/team/person_list.html:42
-#: team/templates/team/person_register.html:67
+#: team/templates/team/person_register.html:73
 #: team/templates/team/registers.html:42 team/templates/team/team_list.html:42
 #: team/templates/team/team_person_register.html:51
 #: team/templates/team/team_register.html:51
@@ -701,7 +701,7 @@ msgid "Home"
 msgstr "Home"
 
 #: team/templates/team/person_list.html:43
-#: team/templates/team/person_register.html:68
+#: team/templates/team/person_register.html:74
 #: team/templates/team/registers.html:43 team/templates/team/team_list.html:43
 #: team/templates/team/team_list.html:44
 #: team/templates/team/team_register.html:52
@@ -710,7 +710,7 @@ msgid "Teams"
 msgstr "Equipes"
 
 #: team/templates/team/person_list.html:44
-#: team/templates/team/person_register.html:69
+#: team/templates/team/person_register.html:75
 #: team/templates/team/team_register.html:103 team/views.py:23
 msgid "Persons"
 msgstr "Pessoas"
@@ -720,17 +720,17 @@ msgid "Person list"
 msgstr "Lista de pessoas"
 
 #: team/templates/team/person_list.html:57
-#: team/templates/team/person_register.html:127
+#: team/templates/team/person_register.html:133
 msgid "First name"
 msgstr "Nome"
 
 #: team/templates/team/person_list.html:58
-#: team/templates/team/person_register.html:134
+#: team/templates/team/person_register.html:140
 msgid "Last name"
 msgstr "Sobrenome"
 
 #: team/templates/team/person_list.html:59
-#: team/templates/team/person_register.html:143
+#: team/templates/team/person_register.html:149
 #: team/templates/team/team_register.html:109
 #: templates/registration/password_reset_form.html:83
 msgid "E-mail"
@@ -751,45 +751,45 @@ msgid "Insert new"
 msgstr "Inserir novo"
 
 #: team/templates/team/person_list.html:93
-#: team/templates/team/person_register.html:272
+#: team/templates/team/person_register.html:278
 #: team/templates/team/team_list.html:88
 #: team/templates/team/team_person_register.html:125
 #: team/templates/team/team_register.html:187
 msgid "Back"
 msgstr "Voltar"
 
-#: team/templates/team/person_register.html:71
+#: team/templates/team/person_register.html:77
 #: team/templates/team/team_person_register.html:55
 #: team/templates/team/team_register.html:56
 msgid "New"
 msgstr "Novo"
 
-#: team/templates/team/person_register.html:75
+#: team/templates/team/person_register.html:81
 #: team/templates/team/team_register.html:60
 msgid "Editing"
 msgstr "Edição"
 
-#: team/templates/team/person_register.html:87
+#: team/templates/team/person_register.html:93
 msgid "Person"
 msgstr "Pessoa"
 
-#: team/templates/team/person_register.html:96
+#: team/templates/team/person_register.html:102
 msgid "Is this person allowed to login on the system?"
 msgstr "Esta pessoa pode efetuar login no sistema?"
 
-#: team/templates/team/person_register.html:101
+#: team/templates/team/person_register.html:107
 msgid "No."
 msgstr "Não."
 
-#: team/templates/team/person_register.html:108
+#: team/templates/team/person_register.html:114
 msgid "Yes, a new login should be created."
 msgstr "Sim, um novo login será criado."
 
-#: team/templates/team/person_register.html:163
+#: team/templates/team/person_register.html:169
 msgid "Update password"
 msgstr "Alterar senha"
 
-#: team/templates/team/person_register.html:169
+#: team/templates/team/person_register.html:175
 #: templates/registration/change_password_custom.html:114
 #: templates/registration/password_reset_confirm.html:146
 msgid ""
@@ -799,43 +799,43 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: team/templates/team/person_register.html:171
+#: team/templates/team/person_register.html:177
 #: templates/registration/login.html:94
 msgid "Password"
 msgstr "Senha"
 
-#: team/templates/team/person_register.html:186
+#: team/templates/team/person_register.html:192
 msgid "Please confirm password"
 msgstr "Confirmar senha"
 
-#: team/templates/team/person_register.html:207
+#: team/templates/team/person_register.html:213
 msgid "Deactivate login"
 msgstr "Desativar login"
 
-#: team/templates/team/person_register.html:211
+#: team/templates/team/person_register.html:217
 msgid "Add login"
 msgstr "Adicionar login"
 
-#: team/templates/team/person_register.html:214
+#: team/templates/team/person_register.html:220
 msgid "Cancel add login"
 msgstr "Cdicionar criação de login"
 
-#: team/templates/team/person_register.html:222
+#: team/templates/team/person_register.html:228
 msgid "Profiles"
 msgstr "Perfis"
 
-#: team/templates/team/person_register.html:225
+#: team/templates/team/person_register.html:231
 msgid "In which these profiles does user identify?"
 msgstr "Em quais desses perfis o usuário se identifica?"
 
-#: team/templates/team/person_register.html:252
+#: team/templates/team/person_register.html:258
 #: team/templates/team/team_person_register.html:103
 #: team/templates/team/team_register.html:95
 msgid "Edit"
 msgstr "Editar"
 
-#: team/templates/team/person_register.html:260
-#: team/templates/team/person_register.html:285
+#: team/templates/team/person_register.html:266
+#: team/templates/team/person_register.html:291
 #: team/templates/team/team_person_register.html:112
 #: team/templates/team/team_person_register.html:141
 #: team/templates/team/team_register.html:205
@@ -843,16 +843,16 @@ msgstr "Editar"
 msgid "Delete"
 msgstr "Remover"
 
-#: team/templates/team/person_register.html:264
+#: team/templates/team/person_register.html:270
 #: team/templates/team/team_person_register.html:117
 #: team/templates/team/team_register.html:179
 #: templates/registration/change_password_custom.html:137
 msgid "Save"
 msgstr "Salvar"
 
-#: team/templates/team/person_register.html:268
-#: team/templates/team/person_register.html:284
-#: team/templates/team/person_register.html:298
+#: team/templates/team/person_register.html:274
+#: team/templates/team/person_register.html:290
+#: team/templates/team/person_register.html:304
 #: team/templates/team/team_person_register.html:121
 #: team/templates/team/team_person_register.html:140
 #: team/templates/team/team_register.html:183
@@ -862,16 +862,16 @@ msgstr "Salvar"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: team/templates/team/person_register.html:281
+#: team/templates/team/person_register.html:287
 #: team/templates/team/team_person_register.html:137
 msgid "Are you sure you want to delete person?"
 msgstr "Tem certeza que deseja remover esta pessoa"
 
-#: team/templates/team/person_register.html:295
+#: team/templates/team/person_register.html:301
 msgid "Are you sure you want to deactivate the user?"
 msgstr "Tem certeza que deseja desativar esta pessoa"
 
-#: team/templates/team/person_register.html:299
+#: team/templates/team/person_register.html:305
 msgid "Deactivate"
 msgstr "Desativar"
 
@@ -959,79 +959,77 @@ msgstr "Tem certeza que deseja alterar o status de coordenador desta pessoa?"
 msgid "Change Is_coordinator"
 msgstr "Alterar status de coordenador"
 
-#: team/views.py:79
-msgid "E-mail already exists."
-msgstr "E-mail já existe."
-
-#: team/views.py:82 team/views.py:106 team/views.py:302 team/views.py:417
-msgid "Information not saved."
-msgstr "Informação não salva."
-
-#: team/views.py:101
-msgid "Person created successfully."
-msgstr "Pessoa criada com sucesso."
-
-#: team/views.py:109 team/views.py:304 team/views.py:419
+#: team/tests.py:72 team/tests.py:170 team/views.py:106 team/views.py:173
+#: team/views.py:305 team/views.py:420
 msgid "Action not available."
 msgstr "Ação não disponível."
 
-#: team/views.py:171
+#: team/tests.py:88 team/tests.py:103 team/tests.py:197 team/views.py:82
+#: team/views.py:103 team/views.py:303 team/views.py:418
+msgid "Information not saved."
+msgstr "Informação não salva."
+
+#: team/tests.py:217 team/views.py:79
+msgid "E-mail already exists."
+msgstr "E-mail já existe."
+
+#: team/views.py:98
+msgid "Person created successfully."
+msgstr "Pessoa criada com sucesso."
+
+#: team/views.py:170
 msgid "Person removed successfully."
 msgstr "Pessoa removida com sucesso."
 
-#: team/views.py:174
-msgid "Error trying to delete person."
-msgstr "Erro ao tentar remover pessoa."
-
-#: team/views.py:236
+#: team/views.py:237
 msgid "Person updated successfully."
 msgstr "Pessoa atualizada com sucesso."
 
-#: team/views.py:238 team/views.py:390
+#: team/views.py:239 team/views.py:391
 msgid "There is no changes to save."
 msgstr "Não há alteração para salvar."
 
-#: team/views.py:250
+#: team/views.py:251
 msgid "User deactivated successfully."
 msgstr "Pessoa desativada com sucesso."
 
-#: team/views.py:298
+#: team/views.py:299
 msgid "Team created successfully."
 msgstr "Equipe criada com sucesso."
 
-#: team/views.py:332
+#: team/views.py:333
 msgid "Is coordinator status successfully changed."
 msgstr "Status de coordenador alterado com sucesso."
 
-#: team/views.py:334
+#: team/views.py:335
 msgid "Error trying to the status of the coordinator."
 msgstr "Erro ao tentar alterar status de coordenador"
 
-#: team/views.py:342
+#: team/views.py:343
 msgid "Person removed successfully from the Team."
 msgstr "Pessoa removida da equipe com sucesso."
 
-#: team/views.py:344
+#: team/views.py:345
 msgid "Error trying to delete a persom from the team."
 msgstr "Erro ao tentar remover uma pessoa da equipe"
 
-#: team/views.py:352
+#: team/views.py:353
 msgid "Team removed successfully."
 msgstr "Equipe removida com sucesso."
 
-#: team/views.py:355
+#: team/views.py:356
 msgid "Error trying to delete a team."
 msgstr "Erro ao tentar remover uma equipe"
 
-#: team/views.py:364
+#: team/views.py:365
 msgid "Person added to the team successfully."
 msgstr "Pessoa adicionada à equipe com suscesso."
 
-#: team/views.py:388
+#: team/views.py:389
 msgid "Team updated successfully."
 msgstr "Equipe atualizada com sucesso."
 
-#: team/views.py:413
+#: team/views.py:414
 msgid "Team person created successfully."
 msgstr "Pessoa inserida na equipe com sucesso."
 
@@ -1206,6 +1204,9 @@ msgstr ""
 #, python-format
 msgid "Password reset on %(site_name)s"
 msgstr "Alterar senha em %(site_name)s"
+
+#~ msgid "Error trying to delete person."
+#~ msgstr "Erro ao tentar remover pessoa."
 
 #~ msgid "Existent user"
 #~ msgstr "Usuário existente"
