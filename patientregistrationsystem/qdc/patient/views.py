@@ -43,6 +43,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
     if request.method == "POST":
+        patient_form.city = request.POST['city']
         patient_form_is_valid = patient_form.is_valid()
 
         telephone_formset = telephone_inlineformset(request.POST, request.FILES)

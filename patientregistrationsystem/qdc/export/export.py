@@ -26,7 +26,7 @@ from os import path, makedirs
 from patient.models import Patient, QuestionnaireResponse
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, Survey, \
     ComponentConfiguration, Questionnaire, Component, DataConfigurationTree
-from experiment.views import get_experimental_protocol_description
+from experiment.views import get_experimental_protocol_description, get_experimental_protocol_image
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import is_limesurvey_available
@@ -1415,8 +1415,7 @@ class ExportExecution:
         base_directory = self.get_input_data("base_directory")
         # path ex. NES_EXPORT/Experiment_data
         export_experiment_resume_directory = path.join(base_directory, self.get_input_data("experiment_data_directory"))
-        self.files_to_zip_list.append([complete_filename_experiment_resume,
-                                         export_experiment_resume_directory])
+        self.files_to_zip_list.append([complete_filename_experiment_resume, export_experiment_resume_directory])
 
         with open(complete_filename_experiment_resume.encode('utf-8'), 'w', newline='',
                   encoding='UTF-8') as csv_file:
@@ -1444,6 +1443,22 @@ class ExportExecution:
                 with open(complete_group_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as txt_file:
                     txt_file.writelines(group_resume)
                     txt_file.writelines(experimental_protocol_description)
+
+                # save protocol image
+                filename_protocol_image = "Protocol_image.png"
+                complete_protocol_image_filename = path.join(group_file_directory, filename_protocol_image)
+                # self.files_to_zip_list.append([complete_group_filename, complete_protocol_image_filename])
+
+                experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol,
+                                                                              language_code)
+                image_protocol = settings.BASE_DIR + experimental_protocol_image
+                with open(image_protocol, 'rb') as f:
+                    data = f.read()
+
+                with open(complete_protocol_image_filename, 'wb') as f:
+                    f.write(data)
+
+                self.files_to_zip_list.append([complete_protocol_image_filename, export_group_directory])
 
                 # process participant/diagnosis per Participant of each group
                 participant_group_list = []
