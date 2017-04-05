@@ -6,6 +6,24 @@ $(document).ready(function () {
     var original_name = $('#id_name').val();
     var original_cpf = $('#id_cpf').val();
     var anonymous = $('#id_anonymous');
+    var city = $('#patient_city').val();
+    
+    if (city != ""){
+        $("#get_location").val(city);
+    }
+
+    // Get city from the database
+    $('#get_location').autocomplete({
+       source: "/export/get_locations",
+        select: function (event, ui) {
+            $("#get_location").val(ui.item.value);
+            // $('ul').empty();
+        },
+        // close: function () {
+        //   $("#get_location").val("");
+        //     $("#get_location").attr('placeholder', 'Enter a city');
+        // }
+    });
 
     // Disable fields that identify a person when inserting an anonymous user
     anonymous.change(function() {
