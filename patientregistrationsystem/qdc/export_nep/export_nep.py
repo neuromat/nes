@@ -101,3 +101,4 @@ for subject in models.Subject.objects.all():
                     patient.marital_status.name if patient.marital_status
                     else 'marital_status=',
                     'nes_id=' + str(patient.id)])
+
