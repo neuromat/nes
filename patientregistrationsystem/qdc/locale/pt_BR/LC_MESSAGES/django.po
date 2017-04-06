@@ -818,7 +818,7 @@ msgstr "Adicionar login"
 
 #: team/templates/team/person_register.html:220
 msgid "Cancel add login"
-msgstr "Cdicionar criação de login"
+msgstr "Cancelar adicionar login"
 
 #: team/templates/team/person_register.html:228
 msgid "Profiles"

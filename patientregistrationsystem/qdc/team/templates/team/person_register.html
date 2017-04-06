@@ -262,9 +262,12 @@
         </div>
     </div>
     <div class="btn-toolbar">
-        <div class="btn-group pull-left">
-            <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
-        </div>
+        {% if not editing %}
+            <div class="btn-group pull-left">
+                <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
+            </div>
+        {% endif %}
+
         {% if editing %}
             <div class="btn-group pull-right">
                 <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
