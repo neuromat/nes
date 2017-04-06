@@ -201,10 +201,13 @@ def person_update(request, person_id, template_name="team/person_register.html")
     person = get_object_or_404(Person, pk=person_id)
 
     person_form = PersonRegisterForm(request.POST or None, instance=person)
-    if person.user:
-        user_form = UserPersonForm(request.POST or None, instance=person.user)
-    else:
-        user_form = UserPersonForm(request.POST or None)
+
+    user_form = UserPersonForm(request.POST or None, instance=person.user)
+    # user_form = UserPersonForm(request.POST or None)
+    # if person.user:
+    #     user_form = UserPersonForm(request.POST or None, instance=person.user)
+    # else:
+    #     user_form = UserPersonForm(request.POST or None)
 
     group_permissions = get_group_permissions(person)
 
