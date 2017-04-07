@@ -204,11 +204,11 @@ def person_update(request, person_id, template_name="team/person_register.html")
 
     user_form = UserPersonForm(request.POST or None, instance=person.user)
     # user_form = UserPersonForm(request.POST or None)
+
     # if person.user:
     #     user_form = UserPersonForm(request.POST or None, instance=person.user)
     # else:
     #     user_form = UserPersonForm(request.POST or None)
-
     group_permissions = get_group_permissions(person)
 
     if request.method == "POST":
@@ -217,6 +217,7 @@ def person_update(request, person_id, template_name="team/person_register.html")
             if person_form.is_valid():
 
                 changed = False
+                error = False
 
                 # TODO: error about user_form because always wait that the password.
                 # example-1: if you only change the username
@@ -227,22 +228,27 @@ def person_update(request, person_id, template_name="team/person_register.html")
                         person.user = user_form.save()
                         person.save()
                         changed = True
+                    else:
+                        error = True
+                        messages.error(request,
+                                       _('Error while updating person. Please correct the highlighted fields.'))
 
-                if person_form.has_changed():
-                    person_form.save()
-                    changed = True
-
-                if person.user:
-                    if update_groups(person, [int(item) for item in request.POST.getlist('groups')]):
+                if not error:
+                    if person_form.has_changed():
+                        person_form.save()
                         changed = True
 
-                if changed:
-                    messages.success(request, _('Person updated successfully.'))
-                else:
-                    messages.success(request, _('There is no changes to save.'))
+                    if person.user:
+                        if update_groups(person, [int(item) for item in request.POST.getlist('groups')]):
+                            changed = True
 
-                redirect_url = reverse("person_view", args=(person.id,))
-                return HttpResponseRedirect(redirect_url)
+                    if changed:
+                        messages.success(request, _('Person updated successfully.'))
+                    else:
+                        messages.success(request, _('There is no changes to save.'))
+
+                    redirect_url = reverse("person_view", args=(person.id,))
+                    return HttpResponseRedirect(redirect_url)
 
         if request.POST['action'] == "deactivate":
             user_to_deactivate = person.user

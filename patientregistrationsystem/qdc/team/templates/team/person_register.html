@@ -6,7 +6,21 @@
 
 {% block header %}
     <script src="{% static 'quiz/js/person_register.js' %}"></script>
+    <script src="{% static 'quiz/js/password.js' %}"></script>
+    <script src="{% static 'quiz/js/person_password_register.js' %}"></script>
     <script type="text/javascript">
+
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+            $( "user_form" ).submit(function( event ) {
+                if(checkPassExt())
+                    event.preventDefault();
+                if(passwordForce() < 20 && $('#id_new_password1').val()){
+                    showErrorMessageTemporary(gettext("Password must contain at least 8 characters, including at least one uppercase letter, digit or special character."));
+                    event.preventDefault();
+                }
+            })
+        });
 
         function Validate(){
            if(!validateForm()){
@@ -158,9 +172,14 @@
                 </div>
                 <div class="row collapse" id="user_name_div">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group ">
+                        <div class="form-group {% if user_form.username.errors %}has-error{% endif %}">
                             <label class="control-label">Login<b style="color: red;">*</b></label>
                             {{ user_form.username }}
+                            <div class="help-block with-errors">
+                                {% for error in user_form.username.errors %}
+                                    {{ error }}<br/>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -181,7 +200,7 @@
                                     {{ user_form.password }}
                                 </div>
                                 <div class="help-block with-errors">
-                                    {% for error in form.errors.password %}
+                                    {% for error in user_form.errors.password %}
                                         <div>{{ error }}</div>
                                     {% endfor %}
                                 </div>
