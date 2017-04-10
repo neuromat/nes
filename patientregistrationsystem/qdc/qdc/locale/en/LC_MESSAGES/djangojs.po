@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-06 11:11-0300\n"
+"POT-Creation-Date: 2017-03-10 10:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: qdc/forms.py:11
-msgid "Type old password"
+#: qdc/forms.py:15
+msgid "Current password"
 msgstr ""
 
-#: qdc/forms.py:13
-msgid "Type new password"
+#: qdc/forms.py:23
+msgid "New password"
 msgstr ""
 
-#: qdc/forms.py:16
-msgid "Type again new password"
+#: qdc/forms.py:28
+msgid "Confirm new password"
 msgstr ""
 
-#: qdc/views.py:40
+#: qdc/views.py:39
 msgid "Password changed successfully."
 msgstr ""

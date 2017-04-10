@@ -25,6 +25,7 @@ from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure
+from export.export_utils import create_list_of_trees
 
 from patient.models import QuestionnaireResponse, Patient, Diagnosis
 from patient.views import check_limesurvey_access
@@ -35,10 +36,13 @@ from survey.views import get_questionnaire_language
 
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases
 
 JSON_FILENAME = "json_export.json"
+JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
 EXPORT_DIRECTORY = "export"
+EXPORT_FILENAME = "export.zip"
+EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 
 # patient_fields = [
 #     {"field": 'id', "header": 'id'},
@@ -87,33 +91,34 @@ patient_fields = [
     # {"field": 'name', "header": 'name', "description": _("Full name")},
     {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
-    {"field": 'marital_status', "header": 'marital_status', "description": _("Marital status")},
+    {"field": 'marital_status__name', "header": 'marital_status', "description": _("Marital status")},
     {"field": 'origin', "header": 'origin', "description": _("Origin")},
     {"field": 'city', "header": 'city', "description": _("City")},
     {"field": 'state', "header": 'state', "description": _("State")},
     {"field": 'country', "header": 'country', "description": _("Country")},
     {"field": 'socialdemographicdata__natural_of', "header": 'natural_of', "description": _("Natural of")},
-    {"field": 'socialdemographicdata__schooling', "header": 'schooling', "description": _("Schooling")},
-    {"field": 'socialdemographicdata__patient_schooling', "header": 'patient_schooling',
+    {"field": 'socialdemographicdata__schooling__name', "header": 'schooling', "description": _("Schooling")},
+    {"field": 'socialdemographicdata__patient_schooling__name', "header": 'patient_schooling',
      "description": _("Schooling of the patient")},
     {"field": 'socialdemographicdata__profession', "header": 'profession', "description": _("Profession")},
     {"field": 'socialdemographicdata__social_class', "header": 'social_class',
      "description": _("Calculated social class")},
     {"field": 'socialdemographicdata__occupation', "header": 'occupation', "description": _("Occupation")},
     {"field": 'socialdemographicdata__benefit_government', "header": 'benefit_government',
-     "description": _("What form of payment of the treatment performed")},
-    {"field": 'socialdemographicdata__religion', "header": 'religion', "description": _("Religion")},
-    {"field": 'socialdemographicdata__flesh_tone', "header": 'flesh_tone', "description": _("Flesh tone")},
-    {"field": 'socialdemographicdata__citizenship', "header": 'citizenship', "description": _("Citizenship")},
-    {"field": 'socialdemographicdata__payment', "header": 'payment',
      "description": _("Do you receive some benefit from the municipal level, state or federal government?")},
+    {"field": 'socialdemographicdata__religion__name', "header": 'religion', "description": _("Religion")},
+    {"field": 'socialdemographicdata__flesh_tone__name', "header": 'flesh_tone', "description": _("Flesh tone")},
+    {"field": 'socialdemographicdata__citizenship', "header": 'citizenship', "description": _("Citizenship")},
+    {"field": 'socialdemographicdata__payment__name', "header": 'payment',
+     "description": _("What form of payment of the treatment performed")},
     {"field": 'socialhistorydata__smoker', "header": 'smoker', "description": _("Smoker")},
-    {"field": 'socialhistorydata__amount_cigarettes', "header": 'amount_cigarettes',
+    {"field": 'socialhistorydata__amount_cigarettes__name', "header": 'amount_cigarettes',
      "description": _("Cigarretes/Day")},
     {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker', "description": _("Former smoker")},
     {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic', "description": _("Alcoholic")},
-    {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency', "description": _("Frequency")},
-    {"field": 'socialhistorydata__alcohol_period', "header": 'alcohol_period', "description": _("Period")},
+    {"field": 'socialhistorydata__alcohol_frequency__name', "header": 'alcohol_frequency',
+     "description": _("Frequency")},
+    {"field": 'socialhistorydata__alcohol_period__name', "header": 'alcohol_period', "description": _("Period")},
     {"field": 'socialhistorydata__drugs', "header": 'drugs', "description": _("Drugs")},
 ]
 
@@ -130,13 +135,13 @@ diagnosis_fields = [
 ]
 
 patient_fields_inclusion = [
-    ["code", {"code": "participation_code", "full": _("Participation code"),
-              "abbreviated": _("Participation code")}],
+    ["code", {"code": "participant_code", "full": _("Participant code"),
+              "abbreviated": _("Participant code")}],
 ]
 
 diagnosis_fields_inclusion = [
-    ["code", {"code": "participation_code", "full": _("Participation code"),
-              "abbreviated": _("Participation code")}],
+    ["code", {"code": "participant_code", "full": _("Participant code"),
+              "abbreviated": _("Participant code")}],
 ]
 
 questionnaire_evaluation_fields_excluded = [
@@ -193,22 +198,22 @@ header_explanation_fields = ['questionnaire_id',
                              'column_title']
 
 
-def get_headers_and_fields(output_list):
-    """
-    :param output_list: list with fields and headers
-    :return: list of headers
-             list of fields
-    """
-
-    headers = []
-    fields = []
-
-    for element in output_list:
-        if element["field"]:
-            headers.append(element["header"])
-            fields.append(element["field"])
-
-    return headers, fields
+# def get_headers_and_fields(output_list):
+#     """
+#     :param output_list: list with fields and headers
+#     :return: list of headers
+#              list of fields
+#     """
+#
+#     headers = []
+#     fields = []
+#
+#     for element in output_list:
+#         if element["field"]:
+#             headers.append(element["header"])
+#             fields.append(element["field"])
+#
+#     return headers, fields
 
 
 # def read_configuration_data(json_file):
@@ -221,23 +226,33 @@ def get_headers_and_fields(output_list):
 #     return read_data
 
 
-def process_participant_data(participants, participants_list):
-    export_rows_participants = []
+# def process_participant_data(participants, participants_list):
+#     export_rows_participants = []
+#
+#     for participant in participants:
+#         headers, fields = get_headers_and_fields(participant["output_list"])
+#
+#         model_to_export = getattr(modules['patient.models'], 'Patient')
+#
+#         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(order_by=['id'])
+#
+#         export_rows_participants = [headers]
+#
+#         # transform data
+#         for record in db_data:
+#             export_rows_participants.append([handle_exported_field(field) for field in record])
+#
+#     return export_rows_participants
 
-    for participant in participants:
-        headers, fields = get_headers_and_fields(participant["output_list"])
 
-        model_to_export = getattr(modules['patient.models'], 'Patient')
-
-        db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(order_by=['id'])
-
-        export_rows_participants = [headers]
-
-        # transform data
-        for record in db_data:
-            export_rows_participants.append([smart_str(field) for field in record])
-
-    return export_rows_participants
+# def handle_exported_field(field):
+#     if field is None:
+#         result = ''
+#     elif isinstance(field, bool):
+#         result = _('Yes') if field else _('No')
+#     else:
+#         result = smart_str(field)
+#     return result
 
 
 def create_export_instance(user):
@@ -287,7 +302,7 @@ def update_participants_list(participants_list, heading_type):
                 header_translated = find_description(participant[0], patient_fields)
                 participant[1] = abbreviated_data(header_translated, heading_type)
 
-        # include participation_code
+        # include participant_code
 
         for field, header in patient_fields_inclusion:
             header_translated = ug_(header[heading_type])
@@ -303,7 +318,7 @@ def update_diagnosis_list(diagnosis_list, heading_type):
                 header_translated = find_description(diagnosis[0], diagnosis_fields)
                 diagnosis[1] = abbreviated_data(header_translated, heading_type)
 
-        # include participation_code
+        # include participant_code
         for field, header in diagnosis_fields_inclusion:
             header_translated = ug_(header[heading_type])
             diagnosis_list.append([field, abbreviated_data(header_translated, heading_type)])
@@ -319,25 +334,16 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         export = ExportExecution(export_instance.user.id, export_instance.id)
 
-        # update data from advanced search
+        # all participants filtered
         if 'filtered_participant_data' in request.session:
             participants_filtered_list = request.session['filtered_participant_data']
         else:
             participants_filtered_list = Patient.objects.filter(removed=False)
         export.set_participants_filtered_data(participants_filtered_list)
 
-        # files_to_zip_list = []
-
-        # export_instance = create_export_instance(request.user)
-        #
-        # # directory_root = path.join("export", path.join(str(request.user.id), str(export_instance.id)))
-        # export.set_directory_base(request.user.id, export_instance.id)
-        #
+        # set path of the directory base: ex.
         base_directory, path_to_create = path.split(export.get_directory_base())
-        #
-        # path_to_create = base_directory[1]
-        # base_directory = base_directory[0]
-        #
+        # create directory base
         error_msg, base_directory_name = create_directory(base_directory, path_to_create)
         if error_msg != "":
             messages.error(request, error_msg)
@@ -349,7 +355,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # input_name = path.join(path_source, json_filename)
         #
         input_export_file = path.join("export", path.join(str(request.user.id),
-                                                          path.join(str(export_instance.id), str(JSON_FILENAME))))
+                                                          path.join(str(export_instance.id), str(input_filename))))
         #
         # # copy data to .../media/export/<user_id>/<export_id>/
         # input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
@@ -357,83 +363,72 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # copy(input_name, input_filename)
 
         # prepare data to be processed
-
         input_data = export.read_configuration_data(input_filename)
 
-        # gady #####
         if not export.is_input_data_consistent() or not input_data:
             messages.error(request, _("Inconsistent data read from json file"))
             return render(request, template_name)
-        ##########################################
 
         # create directory base for export: /NES_EXPORT
         error_msg = export.create_export_directory()
-
-        # error_msg, base_export_directory = create_directory(base_directory_name, base_directory)
 
         if error_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
 
         # process per questionnaire data
+        if 'group_selected_list' in request.session:
+            export.include_group_data(request.session['group_selected_list'])
 
-        # ### gady ##################
-        error_msg = export.process_per_questionnaire()
-        if error_msg != "":
-            messages.error(request, error_msg)
+            error_msg = export.process_per_entrance_questionnaire()
+            error_exp_msg = export.process_per_experiment_questionnaire()
+        else:
+            error_msg = export.process_per_questionnaire()
+            error_exp_msg = ""
+
+        if error_msg != "" or error_exp_msg != "":
+            messages.error(request, error_msg + error_exp_msg)
             return render(request, template_name)
-        ##################################################
 
         # process per participant data
-        error_msg = export.process_per_participant()
+        if 'group_selected_list' in request.session:
+            error_msg = export.process_per_participant_per_entrance_questionnaire()
+            error_exp_msg = export.process_per_participant_per_experiment()
+        else:
+            error_msg = export.process_per_participant()
+            error_exp_msg = ""
+
+        if error_msg != "" or error_exp_msg != "":
+            messages.error(request, error_msg + error_exp_msg)
+            return render(request, template_name)
+
+        # process participants/diagnosis (Per_participant directory)
+        # path ex. Users/.../NES_EXPORT/
+        base_export_directory = export.get_export_directory()
+        # /NES_EXPORT/
+        base_directory = export.get_input_data("base_directory")
+        participant_data_directory = export.get_input_data("participant_data_directory")
+        if 'group_selected_list' in request.session:
+            base_export_directory = path.join(base_export_directory, participant_data_directory)
+            base_directory = path.join(base_directory, participant_data_directory)
+
+        particpant_selected_list = export.get_participants_filtered_data()
+        error_msg = export.process_participant_filtered_data(
+            particpant_selected_list, base_export_directory, base_directory)
         if error_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
 
-        # process participants
-        # only participants that were used in questionnaire: export.get_per_participant_data().keys()
-        participants_list = (export.get_participants_filtered_data())
-        # participants_list = (export.get_per_participant_data().keys())
-        participants_input_data = export.get_input_data("participants")
+        # create arquivo de texto de protocolo experimental and diagnosis/participant csv file for each group
+        if 'group_selected_list' in request.session:
+            group_list = export.per_group_data
+            language_code = request.LANGUAGE_CODE
 
-        if participants_input_data[0]["output_list"] and participants_list:
+            error_msg = export.process_experiment_data(group_list, language_code)
 
-            export_rows_participants = process_participant_data(participants_input_data, participants_list)
-
-            export_filename = "%s.csv" % export.get_input_data('participants')[0]["output_filename"]  # "export.csv"
-
-            base_export_directory = export.get_export_directory()
-            base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
-
-            complete_filename = path.join(base_export_directory, export_filename)
-
-            export.files_to_zip_list.append([complete_filename, base_directory])
-
-            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-                export_writer = writer(csv_file)
-                for row in export_rows_participants:
-                    export_writer.writerow(row)
-
-        # process  diagnosis file
-        diagnosis_input_data = export.get_input_data("diagnosis")
-
-        if diagnosis_input_data[0]['output_list'] and participants_list:
-            export_rows_diagnosis = process_participant_data(diagnosis_input_data, participants_list)
-
-            export_filename = "%s.csv" % export.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
-
-            base_directory = export.get_input_data("base_directory")   # /NES_EXPORT
-            base_export_directory = export.get_export_directory()
-
-            complete_filename = path.join(base_export_directory, export_filename)
-
-            # files_to_zip_list.append(complete_filename)
-            export.files_to_zip_list.append([complete_filename, base_directory])
-
-            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-                export_writer = writer(csv_file)
-                for row in export_rows_diagnosis:
-                    export_writer.writerow(row)
+            if error_msg != "":
+                messages.error(request, error_msg)
+                return render(request, template_name)
 
         # create zip file and include files
         export_complete_filename = ""
@@ -457,9 +452,6 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             update_export_instance(input_export_file, output_export_file, export_instance)
 
             print("finalizado corretamente")
-
-        # print(export_filename)
-        # print(complete_filename)
 
         # delete temporary directory: from base_directory and below
         base_export_directory = export.get_export_directory()
@@ -491,40 +483,55 @@ def export_view(request, template_name="export/export_data.html"):
     selected_ev_quest = []
     selected_participant = []
     selected_diagnosis = []
-    questionnaires_experiment_list_final = []
+    selected_ev_quest_experiments = []
+    questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
 
     if request.method == "POST":
 
         questionnaires_selected_list = request.POST.getlist('to[]')
+        experiment_questionnaires_selected_list = []
 
         questionnaires_list = []
+        experiment_questionnaires_list = []
 
-        # fields = {}
-
-        # previous_questionnaire_id = 0
+        # for entrance questionnaires
         previous_questionnaire_id = -1
         output_list = []
         for questionnaire in questionnaires_selected_list:
             index, sid, title, field, header = questionnaire.split("*")
 
             sid = int(sid)    # transform to integer
-            #
-            # if sid not in fields:
-            #     fields[sid] = []
-            # fields[sid].append(field)
 
-            # if sid != previous_questionnaire_id:
             if index != previous_questionnaire_id:
                 if previous_questionnaire_id != 0:
                     output_list = []
 
                 questionnaires_list.append([index, sid, title, output_list])
 
-                # previous_questionnaire_id = sid
                 previous_questionnaire_id = index
 
             output_list.append((field, header))
+
+        # for experiment questionnaires
+        if request.POST.getlist('to_experiment[]'):
+            experiment_questionnaires_selected_list = request.POST.getlist('to_experiment[]')
+            previous_questionnaire_id = -1
+            output_list = []
+            for questionnaire in experiment_questionnaires_selected_list:
+                index, group_id, sid, title, field, header = questionnaire.split("*")
+
+                sid = int(sid)  # transform to integer
+
+                if index != previous_questionnaire_id:
+                    if previous_questionnaire_id != 0:
+                        output_list = []
+
+                        experiment_questionnaires_list.append([index, group_id, sid, title, output_list])
+
+                    previous_questionnaire_id = index
+
+                output_list.append((field, header))
 
         # get participants list
         participant_selected_list = request.POST.getlist('patient_selected')
@@ -542,42 +549,36 @@ def export_view(request, template_name="export/export_data.html"):
         for diagnosis in diagnosis_selected_list:
             diagnosis_list.append(diagnosis.split("*"))
 
-        selected_data_available = (len(questionnaires_selected_list) or
+        selected_data_available = (len(questionnaires_selected_list) or len(experiment_questionnaires_selected_list) or
                                    len(participant_selected_list) or len(diagnosis_selected_list))
-
-        # selected_data_available = (len(participant_selected_list) or len(diagnosis_selected_list))
 
         if selected_data_available:
 
             if export_form.is_valid():
                 print("valid data")
+                per_experiment = False
+                per_participant = True
+                per_questionnaire = False
+                heading_type = None
+                responses_type = None
 
-                if questionnaires_selected_list:
+                if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data['per_participant']
                     per_questionnaire = export_form.cleaned_data['per_questionnaire']
                     heading_type = export_form.cleaned_data['headings']
                     responses_type = export_form.cleaned_data['responses']
-                    questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
-                                                                    request.LANGUAGE_CODE)
-                    # insert participation_code
+
+                    if questionnaires_selected_list:
+                        questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
+                                                                        request.LANGUAGE_CODE)
+
+                    if experiment_questionnaires_list:
+                        experiment_questionnaires_list = update_questionnaire_list(experiment_questionnaires_list,
+                                                                                   heading_type, request.LANGUAGE_CODE)
+                        per_experiment = True
+
                     update_participants_list(participants_list, heading_type)
                     update_diagnosis_list(diagnosis_list, heading_type)
-                else:
-                    per_participant = True
-                    per_questionnaire = False
-                    heading_type = None
-                    responses_type = None
-                    questionnaires_list = []
-
-                # heading_type = export_form.cleaned_data['headings']
-                # responses_type = export_form.cleaned_data['responses']
-
-                # questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type,
-                #                                                 request.LANGUAGE_CODE)
-
-                # insert participation_code
-                # update_participants_list(participants_list, heading_type)
-                # update_diagnosis_list(diagnosis_list, heading_type)
 
                 export_instance = create_export_instance(request.user)
 
@@ -587,12 +588,12 @@ def export_view(request, template_name="export/export_data.html"):
 
                 # copy data to .../media/export/<user_id>/<export_id>/
                 input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
+
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
-                build_complete_export_structure(per_participant, per_questionnaire,
-                                                participants_list, diagnosis_list,
-                                                questionnaires_list, responses_type, heading_type,
-                                                input_filename, request.LANGUAGE_CODE)
+                build_complete_export_structure(per_participant, per_questionnaire, per_experiment, participants_list,
+                                                diagnosis_list, questionnaires_list, experiment_questionnaires_list,
+                                                responses_type, heading_type, input_filename, request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 
@@ -615,6 +616,10 @@ def export_view(request, template_name="export/export_data.html"):
                     for field in questionnaire[2]:  # get output_list
                         selected_ev_quest.append((questionnaire[0], field[0]))
 
+                for questionnaire in experiment_questionnaires_list:
+                    for field in questionnaire[2]:
+                        selected_ev_quest_experiments.append(questionnaire[0], field[0])
+
                 for participant in participants_list:
                     selected_participant.append(participant[0])
 
@@ -624,88 +629,112 @@ def export_view(request, template_name="export/export_data.html"):
             messages.error(request, _("No data was select. Export data was not generated."))
 
     surveys = Questionnaires()
-
-
+    # Exportacao de experimentos
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
+        questionnaires_experiment_list_final = []
+        participants_list_from_experiment_questionnaire = []
+
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
-            # subject_of_group = get_object_or_404(SubjectOfGroup, group_id=group_id)
-
             if group.experimental_protocol is not None:
-                questionnaire_response = ExperimentQuestionnaireResponse.objects.filter(subject_of_group__group=group).\
-                    distinct('data_configuration_tree')
+                questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                    subject_of_group__group=group).distinct('data_configuration_tree')
+                questionnaire_in_list = []
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
                     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     questionnaire_id = questionnaire.survey.lime_survey_id
-                    token = surveys.get_participant_properties(questionnaire_id, questionnaire_response[0].token_id,
-                                                               "token")
-                    if token:
-                        questionnaire_dic = {
-                            'questionnaire': questionnaire,
-                            'token': token
-                        }
-                        questionnaires_experiment_list_final.append(questionnaire_dic)
 
-        questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
-            questionnaires_experiment_list_final,request.LANGUAGE_CODE)
+                    for questionnaire_response in questionnaire_response_list:
+                        # if questionnaire_id not in questionnaire_in_list:
+                        completed = surveys.get_participant_properties(questionnaire_id,
+                                                                       questionnaire_response.token_id, "completed")
+                        if completed is not None and completed != "N" and completed != "":
+                            questionnaire_dic = {
+                                'questionnaire': questionnaire,
+                                'token': str(questionnaire_response.token_id),
+                                'group_id': group_id
+                            }
+                            if questionnaire_id not in questionnaire_in_list:
+                                questionnaire_in_list.append(questionnaire_id)
+                                questionnaires_experiment_list_final.append(questionnaire_dic)
 
+        # request.session['participants_in_experiment_questionnaire'] = participants_list_from_experiment_questionnaire
+        if questionnaires_experiment_list_final:
+            questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
+                questionnaires_experiment_list_final, request.LANGUAGE_CODE)
 
-    limesurvey_available = check_limesurvey_access(request, surveys)
+    # obter a lista dos participantes filtrados que tem questionarios de entrada preenchidos
+    patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
+        patient_id__in=request.session['filtered_participant_data'])
 
-    questionnaires_list = []
+    surveys_with_ev_list = []
+    participants_list_from_entrance_questionnaire = []
+    surveys_id_list = []
+    # verificar se os questionnarios estão completos
+    for patient_questionnaire_response in patient_questionnaire_response_list:
 
-    if limesurvey_available:
-        questionnaires_list = surveys.find_all_active_questionnaires()
+        questionnaire = Survey.objects.filter(id=patient_questionnaire_response.survey_id).values('lime_survey_id')
+        lime_survey_id = questionnaire[0]['lime_survey_id']
+        if lime_survey_id not in surveys_id_list:
+            completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
+                                                           patient_questionnaire_response.token_id, "completed")
+            # if completed is a data
+            if completed is not None and completed != "N" and completed != "":
+                surveys_id_list.append(lime_survey_id)
+                surveys_with_ev_list.append(questionnaire)
 
-    surveys.release_session_key()
-
-    questionnaires_list_final = []
-
-    # removing surveys that are not entrance evaluation
-    # entrance_evaluation_questionnaires = QuestionnaireResponse.objects.all()
-    entrance_evaluation_questionnaire_ids_list = set(QuestionnaireResponse.objects.values_list('survey',
-                                                                                               flat=True))
-
-    # ev_questionnaire_ids_list = entrance_evaluation_questionnaires.values_list("survey")
-    surveys_with_ev_list = Survey.objects.filter(id__in=entrance_evaluation_questionnaire_ids_list).\
-        values('lime_survey_id')
-
-    for survey in surveys_with_ev_list:
-        for questionnaire in questionnaires_list:
-            # if survey.lime_survey_id == questionnaire['sid']:
-            if survey['lime_survey_id'] == questionnaire['sid']:
-                questionnaires_list_final.append(questionnaire)
-                break
-
-
-
-    # questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(questionnaires_experiment_list_final,
-    #                                                                             request.LANGUAGE_CODE)
-
-    # page 2 fields
-
-    # entrance evaluation questionnarie fields
-
-    # if len(language_code) > 2:
-    #     language_code = "{}-{}".format(language_code[:2],language_code[-2:].upper())
-
-    questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
-
-    if len(selected_ev_quest):
-        questionnaire_ids, field_id = zip(*selected_ev_quest)
-    else:
-        questionnaire_ids = ()
-
+    # load the questionnaires_list_final with the lime_survey_id
     index = 0
-    for questionnaire in questionnaires_fields_list:
-        questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
-        questionnaire["index"] = index
-        index += 1
-        for output_list in questionnaire["output_list"]:
-            if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
-                output_list["selected"] = True
+    if surveys_with_ev_list:
+        # Check if limesurveyDB is available
+        limesurvey_available = check_limesurvey_access(request, surveys)
+
+        questionnaires_list = []
+        # If available get all the questionnaires
+        if limesurvey_available:
+            questionnaires_list = surveys.find_all_active_questionnaires()
+
+        surveys.release_session_key()
+
+        questionnaires_list_final = []
+        for survey in surveys_with_ev_list:
+            for questionnaire in questionnaires_list:
+                if survey[0]['lime_survey_id'] == questionnaire['sid']:
+                    questionnaires_list_final.append(questionnaire)
+                    break
+
+        # get the questionnaire fields from the questionnaires_list_final and show them for selection
+        questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
+
+        if len(selected_ev_quest):
+            questionnaire_ids, field_id = zip(*selected_ev_quest)
+        else:
+            questionnaire_ids = ()
+
+        for questionnaire in questionnaires_fields_list:
+            questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+            questionnaire["index"] = index
+            index += 1
+            for output_list in questionnaire["output_list"]:
+                if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
+                    output_list["selected"] = True
+
+    if 'group_selected_list' in request.session and questionnaires_experiment_list_final:
+        if len(selected_ev_quest_experiments):
+            questionnaire_ids, field_id = zip(*selected_ev_quest_experiments)
+        else:
+            questionnaire_ids = ()
+
+        # index = 0
+        for questionnaire in questionnaires_experiment_fields_list:
+            questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+            questionnaire["index"] = index
+            index += 1
+            for output_list in questionnaire["output_list"]:
+                if (questionnaire["sid"], output_list["field"]) in selected_ev_quest_experiments:
+                    output_list["selected"] = True
 
     context = {
 
@@ -714,7 +743,6 @@ def export_view(request, template_name="export/export_data.html"):
         "diagnosis_fields": diagnosis_fields,
         "questionnaires_fields_list": questionnaires_fields_list,
         "questionnaires_experiment_fields_list": questionnaires_experiment_fields_list,
-        "selected_ev_quest": selected_ev_quest,
         "selected_participant": selected_participant,
         "selected_diagnosis": selected_diagnosis,
         "tab": '1',
@@ -801,6 +829,7 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
     for questionnaire in questionnaire_code_list:
         questionnaire_id = questionnaire['questionnaire'].survey.lime_survey_id
         token = questionnaire['token']
+        group_id = questionnaire['group_id']
 
         language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_current)
 
@@ -810,7 +839,8 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
 
         if not isinstance(responses_string, dict):
 
-            record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
+            record_question = {'group_id': group_id, 'sid': questionnaire_id, "title": questionnaire_title,
+                               "output_list": []}
 
             questionnaire_questions = perform_csv_response(responses_string)
 
@@ -883,20 +913,7 @@ def get_questionnaire_fields(questionnaire_code_list, language_current="pt-BR"):
             for question in questionnaire_questions[0]:
                 if question not in questionnaire_evaluation_fields_excluded:
 
-                    # properties = questionnaire_lime_survey.get_question_properties(question, language)
-
-                    # record_question["output_list"].append({"field": question,
-                    #                                        "header": question})
-
                     description = questionnaire_questions_full[0][index]
-
-                    # if len(description)+3+len(question) > 120:
-                    #     length = 120 - (3+len(question))
-                    #
-                    #     description_part1 = description[:length-30]
-                    #     description_part2 = description[-25:]
-                    #     description = description_part1 + "..." + description_part2
-
                     record_question["output_list"].append({"field": question,
                                                            "header": question,
                                                            "description": description
@@ -1022,7 +1039,7 @@ def export_menu(request, template_name="export/export_menu.html"):
         {
             'item': _('Per experiments'),
             'href': reverse("experiment_selection", args=()),
-            'enabled': False
+            'enabled': True
         },
     ]
     if 'group_selected_list' in request.session.keys():
@@ -1059,6 +1076,7 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
                         subject_list.append(patient.id)
 
             participants_list = participants_list.filter(pk__in=subject_list)
+            request.session['filtered_participant_data'] = [item.id for item in participants_list]
 
             context = {
                 "total_of_participants": len(participants_list),
@@ -1214,38 +1232,38 @@ def get_block_type_name(block_type):
     return block_type_name if block_type_name else block_type
 
 
-def create_list_of_trees(block_id, component_type):
-
-    list_of_path = []
-
-    configurations = ComponentConfiguration.objects.filter(parent_id=block_id)
-
-    if component_type:
-        configurations = configurations.filter(component__component_type=component_type)
-
-    for configuration in configurations:
-        list_of_path.append(
-            [[configuration.id,
-              configuration.parent.identification,
-              configuration.name,
-              configuration.component.identification]]
-        )
-
-    # Look for steps in descendant blocks.
-    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                 component__component_type="block")
-
-    for block_configuration in block_configurations:
-        list_of_configurations = create_list_of_trees(block_configuration.component.id, component_type)
-        for item in list_of_configurations:
-            item.insert(0,
-                        [block_configuration.id,
-                         block_configuration.parent.identification,
-                         block_configuration.name,
-                         block_configuration.component.identification])
-            list_of_path.append(item)
-
-    return list_of_path
+# def create_list_of_trees(block_id, component_type):
+#
+#     list_of_path = []
+#
+#     configurations = ComponentConfiguration.objects.filter(parent_id=block_id)
+#
+#     if component_type:
+#         configurations = configurations.filter(component__component_type=component_type)
+#
+#     for configuration in configurations:
+#         list_of_path.append(
+#             [[configuration.id,
+#               configuration.parent.identification,
+#               configuration.name,
+#               configuration.component.identification]]
+#         )
+#
+#     # Look for steps in descendant blocks.
+#     block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
+#                                                                  component__component_type="block")
+#
+#     for block_configuration in block_configurations:
+#         list_of_configurations = create_list_of_trees(block_configuration.component.id, component_type)
+#         for item in list_of_configurations:
+#             item.insert(0,
+#                         [block_configuration.id,
+#                          block_configuration.parent.identification,
+#                          block_configuration.name,
+#                          block_configuration.component.identification])
+#             list_of_path.append(item)
+#
+#     return list_of_path
 
 
 def list_data_configuration_tree(eeg_configuration_id, list_of_path):
@@ -1278,22 +1296,23 @@ def search_locations(request):
         search_text = request.GET.get('term', '')
 
         if search_text:
-            location_list = Patient.objects.filter(city__icontains=search_text).exclude(removed=True).values('id', 'city').distinct('city');
+            location_list = \
+                Patient.objects.filter(
+                    city__icontains=search_text).exclude(removed=True).values('id', 'city').distinct('city')
 
             results = []
             for location in location_list:
                 location_dict = {
                     'id': location['city'],
                     'label': location['city'],
-                    'value': location['city']
-                }
+                    'value': location['city']}
                 results.append(location_dict)
 
             data = json.dumps(results)
         else:
             data = 'fail'
 
-        mimetype='application/json'
+        mimetype = 'application/json'
 
         return HttpResponse(data, mimetype)
 
@@ -1304,21 +1323,21 @@ def search_diagnoses(request):
         search_text = request.GET.get('term', '')
 
         if search_text:
-            classification_of_diseases_list = Diagnosis.objects.filter(
-                Q(classification_of_diseases__description__icontains=search_text) |
-                Q(classification_of_diseases__description__icontains=search_text) |
-                Q(classification_of_diseases__code__icontains=search_text)).values(
-                'classification_of_diseases_id','classification_of_diseases__abbreviated_description',
-                'classification_of_diseases__code').distinct()
+
+            classification_of_diseases_list = ClassificationOfDiseases.objects.filter(diagnosis__isnull=False).filter(
+                Q(abbreviated_description__icontains=search_text) |
+                Q(description__icontains=search_text) |
+                Q(code__icontains=search_text)).distinct().order_by("code")
 
             results = []
             for classification_of_diseases in classification_of_diseases_list:
-                label = classification_of_diseases['classification_of_diseases__code'] + ' - ' + \
-                        classification_of_diseases['classification_of_diseases__abbreviated_description']
+                label = classification_of_diseases.code + ' - ' + \
+                        classification_of_diseases.abbreviated_description
                 diseases_dict = \
-                    {'id': classification_of_diseases['classification_of_diseases_id'],
+                    {'id': classification_of_diseases.id,
                      'label': label,
-                     'value': classification_of_diseases['classification_of_diseases__abbreviated_description']}
+                     'value': classification_of_diseases.abbreviated_description}
+
                 results.append(diseases_dict)
             data = json.dumps(results)
         else:

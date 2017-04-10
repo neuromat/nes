@@ -81,12 +81,26 @@ class ResearchProjectCollaboration(models.Model):
     is_coordinator = models.BooleanField()
 
 
+def get_experiment_dir(instance, filename):
+    return "experiment_files/%s/%s" % (instance.id, filename)
+
+
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=150, blank=False)
     description = models.TextField(null=False, blank=False)
     research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
     is_public = models.BooleanField(default=False)
     data_acquisition_is_concluded = models.BooleanField(default=False)
+
+    source_code_url = models.URLField(null=True, blank=True)
+    ethics_committee_project_url = models.URLField(_('URL of the project approved by the ethics committee'),
+                                                   null=True, blank=True)
+    ethics_committee_project_file = models.FileField(_('Project file approved by the ethics committee'),
+                                                     upload_to=get_experiment_dir,
+                                                     null=True, blank=True)
+
+    last_update = models.DateTimeField(default=datetime.datetime.now())
+    last_sending = models.DateTimeField(null=True)
 
     # Audit trail - Simple History
     history = HistoricalRecords()
@@ -102,6 +116,13 @@ class Experiment(models.Model):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
+
+
+class Publication(models.Model):
+    title = models.CharField(max_length=255)
+    citation = models.TextField()
+    url = models.URLField(null=True, blank=True)
+    experiments = models.ManyToManyField(Experiment)
 
 
 class Manufacturer(models.Model):
@@ -734,7 +755,8 @@ class Component(models.Model):
         ("eeg", _("EEG")),
         ("emg", _("EMG")),
         ("tms", _("TMS")),
-        ("digital_game_phase", _("Digital game phase")),
+        ("digital_game_phase", _("Goalkeeper game phase")),
+        ("generic_data_collection", _("Generic data collection")),
     )
 
     identification = models.CharField(null=False, max_length=50, blank=False)
@@ -820,6 +842,21 @@ class TMS(Component):
         super(Component, self).save(*args, **kwargs)
 
 
+class InformationType(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
+class GenericDataCollection(Component):
+    information_type = models.ForeignKey(InformationType, null=False, blank=False)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+
+
 def get_context_tree_dir(instance, filename):
     return "context_tree/%s/%s" % (instance.id, filename)
 
@@ -878,8 +915,12 @@ class Group(models.Model):
     experiment = models.ForeignKey(Experiment, null=False, blank=False)
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
+    code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
     experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        verbose_name = _('Group')
 
 
 def get_dir(instance, filename):
@@ -921,6 +962,7 @@ class SubjectOfGroup(models.Model):
 class DataConfigurationTree(models.Model):
     component_configuration = models.ForeignKey(ComponentConfiguration, on_delete=models.PROTECT)
     parent = models.ForeignKey('self', null=True, related_name='children')
+    code = models.CharField(null=True, blank=True, max_length=150)
 
 
 class SubjectStepData(models.Model):
@@ -1109,6 +1151,25 @@ class EMGData(DataFile, DataCollection):
 
 
 class DigitalGamePhaseData(DataFile, DataCollection):
+    sequence_used_in_context_tree = models.TextField(null=True, blank=True)
+
+    # Audit trail - Simple History
+    history = HistoricalRecords()
+    # changed_by = models.ForeignKey('auth.User')
+
+    def __str__(self):
+        return self.description
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+
+class GenericDataCollectionData(DataFile, DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
@@ -1137,3 +1198,27 @@ class EEGElectrodePositionCollectionStatus(models.Model):
 
     def __str__(self):
         return self.eeg_electrode_position_setting.eeg_electrode_position.name
+
+
+class GoalkeeperGameLog(models.Model):
+    file_content = models.TextField(primary_key=True, name='filecontent')
+
+    class Meta:
+        managed = False
+        db_table = '"public"."goalgame"'
+
+
+class ScheduleOfSending(models.Model):
+    SCHEDULE_STATUS_OPTIONS = (
+        ("scheduled", _("scheduled")),
+        ("canceled", _("canceled")),
+        ("sending", _("sending")),
+        ("sent", _("sent")),
+        ("error_sending", _("error sending")),
+    )
+    experiment = models.ForeignKey(Experiment, related_name='schedule_of_sending')
+    schedule_datetime = models.DateTimeField(default=datetime.datetime.now())
+    responsible = models.ForeignKey(User)
+    status = models.CharField(max_length=50, choices=SCHEDULE_STATUS_OPTIONS)
+    sending_datetime = models.DateTimeField(null=True)
+    reason_for_resending = models.CharField(null=True, max_length=500)

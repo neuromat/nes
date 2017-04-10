@@ -1,8 +1,8 @@
 # coding=utf-8
 import re
-# import datetime
 import json
 import random
+import subprocess
 
 import numpy as np
 
@@ -27,6 +27,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import PermissionDenied
 from django.core import serializers
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.models.loading import get_model
@@ -36,7 +37,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
-from experiment.models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
+from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, Amplifier, EEGElectrodeNet, DataConfigurationTree, \
@@ -50,9 +51,10 @@ from experiment.models import Experiment, Subject, QuestionnaireResponse, Subjec
     EMGElectrodePlacement, EMGSurfacePlacement, TMS, TMSSetting, TMSDeviceSetting, TMSDevice, Software, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
     EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
-    DigitalGamePhase, ContextTree, DigitalGamePhaseData
+    DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
+    GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending
 
-from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
+from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
     EEGDataForm, EEGSettingForm, EquipmentForm, EEGForm, EEGAmplifierForm, \
     EEGAmplifierSettingForm, EEGSolutionForm, EEGFilterForm, EEGFilterSettingForm, \
@@ -69,13 +71,15 @@ from experiment.forms import ExperimentForm, QuestionnaireResponseForm, FileForm
     SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
-    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm
+    HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
+    GenericDataCollectionForm, GenericDataCollectionDataForm
 
-from export.export import create_directory
+from configuration.models import Institution
 
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData, \
-    Diagnosis
+from export.directory_utils import create_directory
 from export.forms import ParticipantsSelectionForm, AgeIntervalForm
+
+from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -96,7 +100,8 @@ icon_class = {
     'emg': 'glyphicon glyphicon-stats',
     'tms': 'glyphicon glyphicon-magnet',
     'experimental_protocol': 'glyphicon glyphicon-tasks',
-    'digital_game_phase': 'glyphicon glyphicon-play-circle'
+    'digital_game_phase': 'glyphicon glyphicon-play-circle',
+    'generic_data_collection': 'glyphicon glyphicon-file',
 }
 
 delimiter = "-"
@@ -110,11 +115,32 @@ class EEGReading:
     reading = None
 
 
+def get_current_tab(request):
+    current_tab = '0'
+
+    if request.method == "POST":
+        if 'currentTab' in request.POST:
+            current_tab = request.POST['currentTab']
+    else:
+        if 'currentTab' in request.GET:
+            current_tab = request.GET['currentTab']
+
+    return current_tab
+
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def research_project_list(request, template_name="experiment/research_project_list.html"):
     research_projects = ResearchProject.objects.order_by('start_date')
-    context = {"research_projects": research_projects}
+
+    can_send_to_portal = False
+    if settings.PORTAL_API['URL']:
+        can_send_to_portal = True
+
+    context = {
+        "research_projects": research_projects,
+        "can_send_to_portal": can_send_to_portal
+    }
 
     return render(request, template_name, context)
 
@@ -349,6 +375,150 @@ def keyword_remove_ajax(request, research_project_id, keyword_id):
 
 
 @login_required
+@permission_required('experiment.view_researchproject')
+def publication_list(request, template_name="experiment/publication_list.html"):
+    publications = Publication.objects.all().order_by('title')
+    context = {
+        "publications": publications,
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_researchproject')
+def publication_create(request, template_name="experiment/publication_register.html"):
+
+    publication_form = PublicationForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if publication_form.is_valid():
+
+                publication_added = publication_form.save()
+
+                messages.success(request, _('Publication created successfully.'))
+                redirect_url = reverse("publication_view", args=(publication_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"publication_form": publication_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def publication_view(request, publication_id, template_name="experiment/publication_register.html"):
+    publication = get_object_or_404(Publication, pk=publication_id)
+
+    publication_form = PublicationForm(request.POST or None, instance=publication)
+
+    for field in publication_form.fields:
+        publication_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "remove":
+            publication.delete()
+            messages.success(request, _('Publication removed successfully.'))
+            redirect_url = reverse("publication_list", args=())
+            return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'][:7] == "remove-":
+            experiment = get_object_or_404(Experiment, pk=int(request.POST['action'][7:]))
+            publication.experiments.remove(experiment)
+            messages.success(request, _('Experiment removed from publication successfully.'))
+            redirect_url = reverse("publication_view", args=(publication_id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "publication": publication,
+               "publication_form": publication_form}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_researchproject')
+def publication_update(request, publication_id, template_name="experiment/publication_register.html"):
+    publication = get_object_or_404(Publication, pk=publication_id)
+
+    publication_form = PublicationForm(request.POST or None, instance=publication)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if publication_form.is_valid():
+                if publication_form.has_changed():
+                    publication_form.save()
+                    messages.success(request, _('Publication updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("publication_view", args=(publication.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"publication": publication,
+               "publication_form": publication_form,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+def publication_add_experiment(request, publication_id, template_name="experiment/publication_add_experiment.html"):
+
+    publication = get_object_or_404(Publication, pk=publication_id)
+    research_projects = ResearchProject.objects.all().order_by('title')
+    experiments = Experiment.objects.all().order_by('title')
+
+    if request.method == "POST":
+        if request.POST['action'] == "add-experiment":
+
+            if 'experiment_selected' in request.POST:
+                experiment_selected = get_object_or_404(Experiment, pk=int(request.POST['experiment_selected']))
+                if experiment_selected in publication.experiments.all():
+                    messages.success(request, _('Experiment already included in the publication.'))
+                else:
+                    publication.experiments.add(experiment_selected)
+                    publication.save()
+                    messages.success(request, _('Experiment included successfully.'))
+
+            redirect_url = reverse("publication_view", args=(publication.id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "publication": publication,
+        "research_projects": research_projects,
+        "experiments": experiments,
+        "creating": True,
+        "editing": True,
+    }
+
+    return render(request, template_name, context)
+
+
+def get_experiments_by_research_project(request, research_project_id):
+
+    if research_project_id == "0":
+        list_of_experiments = Experiment.objects.all().order_by('title')
+    else:
+        list_of_experiments = Experiment.objects.filter(research_project_id=research_project_id).order_by('title')
+
+    json_experiment_list = serializers.serialize("json", list_of_experiments)
+
+    return HttpResponse(json_experiment_list, content_type='application/json')
+
+
+@login_required
 @permission_required('experiment.add_experiment')
 def collaborator_create(request, research_project_id, template_name="experiment/collaborator_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
@@ -384,9 +554,9 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 
     check_can_change(request.user, research_project)
 
-    experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
-
     if request.method == "POST":
+        experiment_form = ExperimentForm(request.POST or None, request.FILES,
+                                         initial={'research_project': research_project_id})
         if request.POST['action'] == "save":
             if experiment_form.is_valid():
                 experiment_added = experiment_form.save()
@@ -395,6 +565,8 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 
                 redirect_url = reverse("experiment_view", args=(experiment_added.id,))
                 return HttpResponseRedirect(redirect_url)
+    else:
+        experiment_form = ExperimentForm(request.POST or None, initial={'research_project': research_project_id})
 
     context = {"research_project": ResearchProject.objects.get(id=research_project_id),
                "experiment_form": experiment_form,
@@ -408,10 +580,10 @@ def experiment_create(request, research_project_id, template_name="experiment/ex
 @permission_required('experiment.change_experiment')
 def experiment_view(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-    group_list = Group.objects.filter(experiment=experiment)
-    eeg_setting_list = EEGSetting.objects.filter(experiment=experiment)
-    emg_setting_list = EMGSetting.objects.filter(experiment=experiment)
-    tms_setting_list = TMSSetting.objects.filter(experiment=experiment)
+    group_list = Group.objects.filter(experiment=experiment).order_by('title')
+    eeg_setting_list = EEGSetting.objects.filter(experiment=experiment).order_by('name')
+    emg_setting_list = EMGSetting.objects.filter(experiment=experiment).order_by('name')
+    tms_setting_list = TMSSetting.objects.filter(experiment=experiment).order_by('name')
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
@@ -454,6 +626,8 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 
     context = {"can_change": get_can_change(request.user, experiment.research_project),
                "experiment": experiment,
+               "last_schedule_of_sending":
+                   ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last(),
                "experiment_form": experiment_form,
                "group_list": group_list,
                "eeg_setting_list": eeg_setting_list,
@@ -473,9 +647,9 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     check_can_change(request.user, experiment.research_project)
 
     group_list = Group.objects.filter(experiment=experiment)
-    experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     if request.method == "POST":
+        experiment_form = ExperimentForm(request.POST or None, request.FILES, instance=experiment)
         if request.POST['action'] == "save":
             if experiment_form.is_valid():
                 if experiment_form.has_changed():
@@ -486,6 +660,8 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
+    else:
+        experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
     context = {"research_project": experiment.research_project,
                "experiment_form": experiment_form,
@@ -494,6 +670,123 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                "experiment": experiment}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def experiment_schedule_of_sending(request, experiment_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    last_schedule_of_sending = \
+        ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last()
+
+    new_schedule = ScheduleOfSending(experiment=experiment,
+                                     schedule_datetime=datetime.now(),
+                                     responsible=request.user,
+                                     status="scheduled")
+    new_schedule.save()
+    messages.success(request, _('Experiment scheduled to be sent successfully.'))
+
+    redirect_url = reverse("experiment_view", args=(experiment_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def schedule_of_sending_list(request, template_name="experiment/schedule_of_sending_list.html"):
+
+    list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
+
+    experiment_sent = False
+
+    if request.method == "POST":
+        if request.POST['action'] == "send-to-portal":
+
+            users_to_send = []
+            research_projects_to_send = []
+
+            for schedule_of_sending in list_of_schedule_of_sending:
+                if schedule_of_sending.experiment.research_project.owner not in users_to_send:
+                    users_to_send.append(schedule_of_sending.experiment.research_project.owner)
+                if schedule_of_sending.experiment.research_project not in research_projects_to_send:
+                    research_projects_to_send.append(schedule_of_sending.experiment.research_project)
+
+            for user in users_to_send:
+                send_user_to_portal(user)
+
+            for research_project in research_projects_to_send:
+                send_research_project_to_portal(research_project)
+
+            for schedule_of_sending in list_of_schedule_of_sending:
+                send_experiment_to_portal(schedule_of_sending)
+
+                schedule_of_sending.status = "sent"
+                schedule_of_sending.sending_datetime = datetime.now()
+                schedule_of_sending.save()
+
+            messages.success(request, _('Experiments sent successfully.'))
+
+    context = {
+        "list_of_schedule_of_sending": list_of_schedule_of_sending
+    }
+
+    return render(request, template_name, context)
+
+
+def send_user_to_portal(user):
+    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
+    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
+
+    subprocess.call(['http', '-a', credential, '--ignore-stdin', 'POST',
+                     portal_server + '/api/researchers/',
+                     'first_name=' + user.first_name,
+                     'surname=' + user.last_name,
+                     'nes_id=' + str(user.id)])
+    return
+
+
+def send_research_project_to_portal(research_project):
+    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
+    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
+
+    if research_project.end_date is None:
+        subprocess.call(['http', '-a', credential, '--ignore-stdin',
+                         'POST', portal_server + '/api/researchers/' +
+                         str(research_project.owner.id) + '/studies/',
+                         'title=' + research_project.title,
+                         'description=' + research_project.description,
+                         'start_date=' + str(research_project.start_date),
+                         'nes_id=' + str(research_project.id)])
+    else:
+        subprocess.call(['http', '-a', credential, '--ignore-stdin',
+                         'POST', portal_server + '/api/researchers/' +
+                         str(research_project.owner.id) + '/studies/',
+                         'title=' + research_project.title,
+                         'description=' + research_project.description,
+                         'start_date=' + str(research_project.start_date),
+                         'end_date=' + str(research_project.end_date),
+                         'nes_id=' + str(research_project.id)])
+
+    return
+
+
+def send_experiment_to_portal(schedule_of_sending):
+    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
+    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
+
+    subprocess.call(['http', '-a', credential,
+                     '--ignore-stdin', 'POST',
+                     portal_server + '/api/studies/' + str(
+                         schedule_of_sending.experiment.research_project.id) + '/experiments/',
+                     'title=' + schedule_of_sending.experiment.title,
+                     'description=' + schedule_of_sending.experiment.description,
+                     'data_acquisition_none=' +
+                     str(schedule_of_sending.experiment.data_acquisition_is_concluded),
+                     'nes_id=' + str(schedule_of_sending.experiment.id)])
+
+    return
 
 
 @login_required
@@ -3875,11 +4168,14 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                                   'number_of_eeg_data': 0,
                                   'number_of_emg_data': 0,
                                   'number_of_tms_data': 0,
-                                  'number_of_digital_game_phase_data': 0}
+                                  'number_of_digital_game_phase_data': 0,
+                                  'number_of_generic_data_collection_data': 0}
 
     group = get_object_or_404(Group, id=group_id)
 
     subject_id = None
+
+    goalkeeper = False
 
     if request.method == "POST" and request.POST['action'][:6] == "remove":
         subject_id = request.POST['action'][7:]
@@ -3904,13 +4200,22 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
         list_of_digital_game_phase_configuration = create_list_of_trees(group.experimental_protocol,
                                                                         "digital_game_phase")
+        list_of_generic_data_collection_configuration = \
+            create_list_of_trees(group.experimental_protocol, "generic_data_collection")
 
         experimental_protocol_info = {'number_of_questionnaires': len(list_of_questionnaires_configuration),
                                       'number_of_eeg_data': len(list_of_eeg_configuration),
                                       'number_of_emg_data': len(list_of_emg_configuration),
                                       'number_of_tms_data': len(list_of_tms_configuration),
                                       'number_of_digital_game_phase_data':
-                                          len(list_of_digital_game_phase_configuration)}
+                                          len(list_of_digital_game_phase_configuration),
+                                      'number_of_generic_data_collection_data':
+                                          len(list_of_generic_data_collection_configuration),
+                                      }
+
+        if experimental_protocol_info['number_of_digital_game_phase_data']:
+            if 'goalkeeper' in settings.DATABASES and GoalkeeperGameLog.objects.using('goalkeeper').first():
+                goalkeeper = True
 
         # For each subject of the group...
         for subject_of_group in subject_list:
@@ -4034,12 +4339,31 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     100 * number_of_digital_game_phase_data_files_uploaded / \
                     len(list_of_digital_game_phase_configuration)
 
-            # If any questionnaire has responses or any eeg/emg/tms/digital_game_phase data file was uploaded,
-            # the subject can't be removed from the group.
+            # Generic data collection data files
+            number_of_generic_data_collection_data_files_uploaded = 0
+            # for each component_configuration of tms...
+            for generic_data_collection_configuration in list_of_generic_data_collection_configuration:
+                path = [item[0] for item in generic_data_collection_configuration]
+                data_configuration_tree_id = list_data_configuration_tree(path[-1], path)
+                generic_data_collection_data_files = \
+                    GenericDataCollectionData.objects.filter(
+                        subject_of_group=subject_of_group, data_configuration_tree_id=data_configuration_tree_id)
+                if len(generic_data_collection_data_files):
+                    number_of_generic_data_collection_data_files_uploaded += 1
+
+            percentage_of_generic_data_collection_data_files_uploaded = 0
+            if len(list_of_generic_data_collection_configuration) > 0:
+                percentage_of_generic_data_collection_data_files_uploaded = \
+                    100 * number_of_generic_data_collection_data_files_uploaded / \
+                    len(list_of_generic_data_collection_configuration)
+
+            # If any questionnaire has responses or any eeg/emg/tms/digital_game_phase/generic_data_collection
+            # data file was uploaded, the subject can't be removed from the group.
             if number_of_eeg_data_files_uploaded or \
                     number_of_emg_data_files_uploaded or \
                     number_of_tms_data_files_uploaded or \
                     number_of_digital_game_phase_data_files_uploaded or \
+                    number_of_generic_data_collection_data_files_uploaded or \
                     number_of_questionnaires_filled:
                 can_remove = False
 
@@ -4065,6 +4389,12 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'total_of_digital_game_phase_data_files': len(list_of_digital_game_phase_configuration),
                  'percentage_of_digital_game_phase_data_files_uploaded':
                      int(percentage_of_digital_game_phase_data_files_uploaded),
+
+                 'number_of_generic_data_collection_data_files_uploaded':
+                     number_of_generic_data_collection_data_files_uploaded,
+                 'total_of_generic_data_collection_data_files': len(list_of_generic_data_collection_configuration),
+                 'percentage_of_generic_data_collection_data_files_uploaded':
+                     int(percentage_of_generic_data_collection_data_files_uploaded),
 
                  'number_of_additional_data_uploaded':
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
@@ -4101,7 +4431,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                'group': group,
                'subject_list': subject_list_with_status,
                "limesurvey_available": limesurvey_available,
-               "experimental_protocol_info": experimental_protocol_info}
+               "experimental_protocol_info": experimental_protocol_info,
+               "goalkeeper": goalkeeper}
 
     return render(request, template_name, context)
 
@@ -5865,7 +6196,7 @@ def subject_digital_game_phase_view(request, group_id, subject_id,
 
 
 @login_required
-@permission_required('experiment.add_questionnaireresponse')
+@permission_required('experiment.change_experiment')
 def subject_digital_game_phase_data_create(request, group_id, subject_id, digital_game_phase_configuration_id,
                                            template_name="experiment/subject_digital_game_phase_data_form.html"):
 
@@ -5910,7 +6241,7 @@ def subject_digital_game_phase_data_create(request, group_id, subject_id, digita
 
                 digital_game_phase_data_added.save()
 
-                messages.success(request, _('Digital game phase data collection created successfully.'))
+                messages.success(request, _('Goalkeeper game phase data collection created successfully.'))
 
                 redirect_url = reverse("digital_game_phase_data_view", args=(digital_game_phase_data_added.id,))
                 return HttpResponseRedirect(redirect_url)
@@ -5950,7 +6281,7 @@ def digital_game_phase_data_view(request, digital_game_phase_data_id,
 
             subject_of_group = digital_game_phase_data.subject_of_group
             digital_game_phase_data.delete()
-            messages.success(request, _('Digital game phase data removed successfully.'))
+            messages.success(request, _('Goalkeeper game phase data removed successfully.'))
             return redirect('subject_digital_game_phase_view',
                             group_id=subject_of_group.group_id,
                             subject_id=subject_of_group.subject_id)
@@ -5987,7 +6318,7 @@ def digital_game_phase_data_edit(request, digital_game_phase_data_id):
             digital_game_phase_data_to_update.subject = digital_game_phase_data.subject_of_group.subject
             digital_game_phase_data_to_update.save()
 
-            messages.success(request, _('Digital game phase data updated successfully.'))
+            messages.success(request, _('Goalkeeper game phase data updated successfully.'))
         else:
             messages.success(request, _('There is no changes to save.'))
 
@@ -6010,6 +6341,375 @@ def digital_game_phase_data_edit(request, digital_game_phase_data_id):
                }
 
     return render(request, "experiment/subject_digital_game_phase_data_form.html", context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def group_goalkeeper_game_data(request, group_id, template_name="experiment/group_goalkeeper_game_data.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "group-code":
+
+            group.code = request.POST['group-code'] if request.POST['group-code'] else None
+            group.save()
+            messages.success(request, _('Group code changed successfully.'))
+
+        elif request.POST['action'][0:7] == "detail-":
+            path_of_configuration = request.POST['action'][7:]
+
+            list_of_path = [int(item) for item in path_of_configuration.split('-')]
+            data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+            if not data_configuration_tree_id:
+                data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+            data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                        pk=data_configuration_tree_id)
+
+            data_configuration_tree.code = request.POST['code-' + path_of_configuration]
+            data_configuration_tree.save()
+
+    enable_upload = False
+    digital_game_phase_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+
+    for path in list_of_paths:
+
+        digital_game_phase_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = \
+            list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
+
+        data_configuration_tree = \
+            DataConfigurationTree.objects.filter(id=data_configuration_tree_id).first()
+
+        digital_game_phase_collections.append(
+            {'digital_game_phase_configuration': digital_game_phase_configuration,
+             'path': path,
+             'data_configuration_tree': data_configuration_tree
+             }
+        )
+
+        if not enable_upload and group.code and data_configuration_tree.code:
+            enable_upload = True
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'institution_code': Institution.get_solo().code,
+               'digital_game_phase_collections': digital_game_phase_collections,
+               "enable_upload": enable_upload
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def load_group_goalkeeper_game_data(request, group_id):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    if not group.code:
+        messages.info(request, _('No experimental group code configured.'))
+    else:
+
+        experimental_group_code = (Institution.get_solo().code + '-' if Institution.get_solo().code else '') + \
+                                  group.code
+
+        # data structure
+        game_group_data = {}
+
+        # Filtering the candidate registers from 'Goalkeeper repository'
+        candidate_registers_from_goalkeeper_repository = \
+            GoalkeeperGameLog.objects.using('goalkeeper').filter(filecontent__icontains=experimental_group_code)
+
+        # each register is a 'goalkeeper game data file'
+        for register in candidate_registers_from_goalkeeper_repository:
+
+            lines = register.filecontent.splitlines()
+            header = lines[0].split(',')
+            values = lines[1].split(',')
+
+            # checking if the first element is the experimental group
+            if header[0] == 'experimentGroup' and values[0] == experimental_group_code:
+
+                # getting fields of interest
+                if 'playerAlias' in header and \
+                                'phase' in header and \
+                                'YYMMDD' in header and \
+                                'HHMMSS' in header:
+
+                    player_alias_index = header.index('playerAlias')
+                    phase_index = header.index('phase')
+                    date_index = header.index('YYMMDD')
+                    time_index = header.index('HHMMSS')
+
+                    if values[player_alias_index] not in game_group_data:
+                        game_group_data[values[player_alias_index]] = {}
+
+                    game_group_data[values[player_alias_index]][values[phase_index]] = {
+                        'file_content': register.filecontent,
+                        'date': datetime.strptime(values[date_index], '%y%m%d'),
+                        'time': datetime.strptime(values[time_index], '%H%M%S')}
+
+        number_of_imported_data = 0
+        list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+
+        # for each phase
+        for path in list_of_paths:
+
+            digital_game_phase_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+            data_configuration_tree_id = \
+                list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
+
+            if data_configuration_tree_id:
+                data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                            pk=data_configuration_tree_id)
+                if data_configuration_tree.code:
+
+                    # for each subject
+                    for subject_of_group in group.subjectofgroup_set.all():
+
+                        if subject_of_group.subject.patient.code in game_group_data:
+                            if data_configuration_tree.code in game_group_data[subject_of_group.subject.patient.code]:
+
+                                game_data_collection = \
+                                    game_group_data[subject_of_group.subject.patient.code][data_configuration_tree.code]
+
+                                if not DigitalGamePhaseData.objects.filter(
+                                        subject_of_group=subject_of_group,
+                                        data_configuration_tree=data_configuration_tree,
+                                        date=game_data_collection['date'],
+                                        time=game_data_collection['time']):
+
+                                    # saving data
+                                    digital_game_phase_data = DigitalGamePhaseData()
+                                    digital_game_phase_data.subject_of_group = subject_of_group
+                                    digital_game_phase_data.data_configuration_tree = data_configuration_tree
+
+                                    digital_game_phase_data.date = game_data_collection['date']
+                                    digital_game_phase_data.time = game_data_collection['time']
+
+                                    digital_game_phase_data.description = \
+                                        "%s - %s" % (experimental_group_code, subject_of_group.subject.patient.code)
+
+                                    digital_game_phase_data.file_format = get_object_or_404(FileFormat, nes_code='txt')
+
+                                    # Data file
+                                    file_name = "%s_%s.txt" % (experimental_group_code,
+                                                               subject_of_group.subject.patient.code)
+                                    file_content = game_data_collection['file_content']
+
+                                    digital_game_phase_data.file.save(
+                                        file_name,
+                                        ContentFile(file_content))
+
+                                    digital_game_phase_data.save()
+
+                                    number_of_imported_data += 1
+
+        if number_of_imported_data:
+            if number_of_imported_data == 1:
+                messages.success(request, _('1 new play was imported.'))
+            else:
+                messages.success(request, _('%s new plays were imported.') % (str(number_of_imported_data)))
+        else:
+            messages.info(request, _('No new data loaded.'))
+
+    redirect_url = reverse("group_goalkeeper_game_data", args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def subject_generic_data_collection_view(
+        request, group_id, subject_id,
+        template_name="experiment/subject_generic_data_collection_collection_list.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+    subject = get_object_or_404(Subject, id=subject_id)
+
+    generic_data_collection_collections = []
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "generic_data_collection")
+
+    subject_of_group = get_object_or_404(SubjectOfGroup, group=group, subject=subject)
+
+    for path in list_of_paths:
+        generic_data_collection_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = \
+            list_data_configuration_tree(generic_data_collection_configuration.id, [item[0] for item in path])
+
+        generic_data_collection_data_files = GenericDataCollectionData.objects.filter(
+            subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
+
+        generic_data_collection_collections.append(
+            {'generic_data_collection_configuration': generic_data_collection_configuration,
+             'path': path,
+             'generic_data_collection_data_files': generic_data_collection_data_files}
+        )
+
+    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+               'group': group,
+               'subject': subject,
+               'generic_data_collection_collections': generic_data_collection_collections
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def subject_generic_data_collection_data_create(
+        request, group_id, subject_id, generic_data_collection_configuration_id,
+        template_name="experiment/subject_generic_data_collection_data_form.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in generic_data_collection_configuration_id.split('-')]
+    generic_data_collection_configuration_id = list_of_path[-1]
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    generic_data_collection_configuration = get_object_or_404(ComponentConfiguration,
+                                                              id=generic_data_collection_configuration_id)
+
+    redirect_url = None
+    generic_data_collection_data_id = None
+
+    generic_data_collection_data_form = GenericDataCollectionDataForm(None, initial={'experiment': group.experiment})
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            generic_data_collection_data_form = GenericDataCollectionDataForm(request.POST, request.FILES)
+
+            if generic_data_collection_data_form.is_valid():
+
+                data_configuration_tree_id = list_data_configuration_tree(generic_data_collection_configuration_id,
+                                                                          list_of_path)
+                if not data_configuration_tree_id:
+                    data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+                subject = get_object_or_404(Subject, pk=subject_id)
+                subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+                generic_data_collection_data_added = generic_data_collection_data_form.save(commit=False)
+                generic_data_collection_data_added.subject_of_group = subject_of_group
+                generic_data_collection_data_added.component_configuration = generic_data_collection_configuration
+                generic_data_collection_data_added.data_configuration_tree_id = data_configuration_tree_id
+
+                # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+                # the following error 'GenericDataCollectionData' object has no attribute 'group'
+                generic_data_collection_data_added.group = group
+                generic_data_collection_data_added.subject = subject
+
+                generic_data_collection_data_added.save()
+
+                messages.success(request, _('Generic data collection created successfully.'))
+
+                redirect_url = reverse("generic_data_collection_data_view",
+                                       args=(generic_data_collection_data_added.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "creating": True,
+               "editing": True,
+               "group": group,
+               "generic_data_collection_configuration": generic_data_collection_configuration,
+               "generic_data_collection_data_form": generic_data_collection_data_form,
+               "generic_data_collection_data_id": generic_data_collection_data_id,
+               "subject": get_object_or_404(Subject, pk=subject_id),
+               "URL": redirect_url
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def generic_data_collection_data_view(request, generic_data_collection_data_id,
+                                      template_name="experiment/subject_generic_data_collection_data_form.html"):
+    generic_data_collection_data = get_object_or_404(
+        GenericDataCollectionData, pk=generic_data_collection_data_id)
+
+    generic_data_collection_data_form = GenericDataCollectionDataForm(request.POST or None,
+                                                                      instance=generic_data_collection_data)
+
+    for field in generic_data_collection_data_form.fields:
+        generic_data_collection_data_form.fields[field].widget.attrs['disabled'] = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            check_can_change(request.user,
+                             generic_data_collection_data.subject_of_group.group.experiment.research_project)
+
+            subject_of_group = generic_data_collection_data.subject_of_group
+            generic_data_collection_data.delete()
+            messages.success(request, _('Generic data collection removed successfully.'))
+            return redirect('subject_generic_data_collection_view',
+                            group_id=subject_of_group.group_id,
+                            subject_id=subject_of_group.subject_id)
+
+    context = {
+        "can_change": get_can_change(request.user,
+                                     generic_data_collection_data.subject_of_group.group.experiment.research_project),
+        "editing": False,
+        "group": generic_data_collection_data.subject_of_group.group,
+        "subject": generic_data_collection_data.subject_of_group.subject,
+        "generic_data_collection_data_form": generic_data_collection_data_form,
+        "generic_data_collection_data": generic_data_collection_data}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def generic_data_collection_data_edit(request, generic_data_collection_data_id):
+    generic_data_collection_data = get_object_or_404(
+        GenericDataCollectionData, pk=generic_data_collection_data_id)
+
+    check_can_change(request.user, generic_data_collection_data.subject_of_group.group.experiment.research_project)
+
+    if request.method == "POST" and request.POST['action'] == "save":
+
+        generic_data_collection_data_form = GenericDataCollectionDataForm(
+            request.POST, request.FILES, instance=generic_data_collection_data)
+        if generic_data_collection_data_form.is_valid() and generic_data_collection_data_form.has_changed():
+
+            generic_data_collection_data_to_update = generic_data_collection_data_form.save(commit=False)
+            generic_data_collection_data_to_update.group = generic_data_collection_data.subject_of_group.group
+            generic_data_collection_data_to_update.subject = generic_data_collection_data.subject_of_group.subject
+            generic_data_collection_data_to_update.save()
+
+            messages.success(request, _('Generic data collection updated successfully.'))
+        else:
+            messages.success(request, _('There is no changes to save.'))
+
+        redirect_url = reverse("generic_data_collection_data_view", args=(generic_data_collection_data_id,))
+
+        return HttpResponseRedirect(redirect_url)
+
+    else:
+
+        generic_data_collection_data_form = GenericDataCollectionDataForm(
+            request.POST or None,
+            instance=generic_data_collection_data,
+            initial={'experiment': generic_data_collection_data.subject_of_group.group.experiment})
+
+    context = {"group": generic_data_collection_data.subject_of_group.group,
+               "subject": generic_data_collection_data.subject_of_group.subject,
+               "generic_data_collection_data_form": generic_data_collection_data_form,
+               "generic_data_collection_data": generic_data_collection_data,
+               "editing": True
+               }
+
+    return render(request, "experiment/subject_generic_data_collection_data_form.html", context)
 
 
 def get_pulse_stimulus_name(pulse_stimulus_type):
@@ -6480,6 +7180,8 @@ def get_subgraph(block: Block, node_identifier=""):
                 color_node = "#fe8181"
             elif component.component_type == "digital_game_phase":
                 color_node = "#80ced6"
+            elif component.component_type == "generic_data_collection":
+                color_node = "LightPink"
 
             new_node = pydot.Node(
                 'node_' + node_identifier + '_' + str(component_configuration.id),
@@ -6652,6 +7354,8 @@ def get_component_attributes(component, language_code):
     elif component.component_type == 'tms':
         specific_attributes = []
     elif component.component_type == 'digital_game_phase':
+        specific_attributes = []
+    elif component.component_type == 'generic_data_collection':
         specific_attributes = []
 
     for attribute in specific_attributes:
@@ -7041,7 +7745,10 @@ def search_patients_ajax(request):
 
         if request.user.has_perm('patient.sensitive_data_patient'):
             if search_text:
-                if re.match('[a-zA-Z ]+', search_text):
+                if re.match('P{1}[0-9]', search_text):
+                    patient_list = \
+                        Patient.objects.filter(code__icontains=search_text).exclude(removed=True).order_by('code')
+                elif re.match('[a-zA-Z ]+', search_text):
                     patient_list = \
                         Patient.objects.filter(name__icontains=search_text).exclude(removed=True).order_by('name')
                 else:
@@ -7275,6 +7982,8 @@ def component_create(request, experiment_id, component_type):
         # component_form.fields['duration_unit'].widget.attrs['disabled'] = True
     elif component_type == 'digital_game_phase':
         specific_form = DigitalGamePhaseForm(request.POST or None, initial={'experiment': experiment})
+    elif component_type == 'generic_data_collection':
+        specific_form = GenericDataCollectionForm(request.POST or None)
 
     if request.method == "POST":
         new_specific_component = None
@@ -7924,6 +8633,10 @@ def create_component(component, new_experiment):
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
         clone = DigitalGamePhase(context_tree_id=digital_game_phase.context_tree_id)
 
+    elif component_type == 'generic_data_collection':
+        generic_data_collection = get_object_or_404(GenericDataCollection, pk=component.id)
+        clone = GenericDataCollection(information_type_id=generic_data_collection.information_type_id)
+
     else:
         clone = Component()
 
@@ -8192,6 +8905,9 @@ def component_update(request, path_of_the_components):
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
         specific_form = DigitalGamePhaseForm(request.POST or None, instance=digital_game_phase,
                                              initial={'experiment': experiment})
+    elif component_type == 'generic_data_collection':
+        generic_data_collection = get_object_or_404(GenericDataCollection, pk=component.id)
+        specific_form = GenericDataCollectionForm(request.POST or None, instance=generic_data_collection)
 
     can_change = get_can_change(request.user, experiment.research_project)
 
@@ -8442,6 +9158,8 @@ def component_add_new(request, path_of_the_components, component_type):
         duration_string = "0"
     elif component_type == 'digital_game_phase':
         specific_form = DigitalGamePhaseForm(request.POST or None)
+    elif component_type == 'generic_data_collection':
+        specific_form = GenericDataCollectionForm(request.POST or None)
 
     if request.method == "POST":
         new_specific_component = None
@@ -8609,6 +9327,10 @@ def component_reuse(request, path_of_the_components, component_id):
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component_to_add.id)
         specific_form = DigitalGamePhaseForm(request.POST or None, instance=digital_game_phase,
                                              initial={'experiment': experiment})
+
+    elif component_type == 'generic_data_collection':
+        generic_data_collection = get_object_or_404(GenericDataCollection, pk=component_to_add.id)
+        specific_form = GenericDataCollectionForm(request.POST or None, instance=generic_data_collection)
 
     if component_type == 'questionnaire':
         for field in component_form.fields:
@@ -10459,6 +11181,11 @@ def context_tree_create(request, experiment_id, template_name="experiment/contex
 
                 redirect_url = reverse("context_tree_view", args=(context_tree_added.id,))
                 return HttpResponseRedirect(redirect_url)
+
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
 
     context = {"context_tree_form": context_tree_form,
                "creating": True,

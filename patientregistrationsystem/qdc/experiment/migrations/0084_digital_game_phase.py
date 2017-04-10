@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                                             ('stimulus', 'Stimulus'), ('task', 'Task for participant'),
                                             ('task_experiment', 'Task for experimenter'), ('eeg', 'EEG'),
                                             ('emg', 'EMG'), ('tms', 'TMS'),
-                                            ('digital_game_phase', 'Digital game phase')],
+                                            ('digital_game_phase', 'Goalkeeper game phase')],
                                    max_length=15),
         ),
     ]

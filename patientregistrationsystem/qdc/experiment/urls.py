@@ -17,6 +17,17 @@ urlpatterns = patterns(
     url(r'^research_project/edit/(?P<research_project_id>\d+)/$', 'research_project_update',
         name='research_project_edit'),
 
+    # publication
+    url(r'^publication/list/$', 'publication_list', name='publication_list'),
+    url(r'^publication/new/$', 'publication_create', name='publication_new'),
+    url(r'^publication/(?P<publication_id>\d+)/$', 'publication_view', name='publication_view'),
+    url(r'^publication/edit/(?P<publication_id>\d+)/$', 'publication_update', name='publication_edit'),
+    url(r'^publication/(?P<publication_id>\d+)/add_experiment/$',
+        'publication_add_experiment', name='publication_add_experiment'),
+
+    # publication (ajax)
+    url(r'^get_experiments_by_research_project/(?P<research_project_id>\d+)/$', 'get_experiments_by_research_project'),
+
     # collaborator
     url(r'^research_project/(?P<research_project_id>\d+)/new_collaborator/$',
         'collaborator_create', name='collaborator_new'),
@@ -25,6 +36,11 @@ urlpatterns = patterns(
     url(r'^research_project/(?P<research_project_id>\d+)/new_experiment/$', 'experiment_create', name='experiment_new'),
     url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),
     url(r'^edit/(?P<experiment_id>\d+)/$', 'experiment_update', name='experiment_edit'),
+
+    # Schedule of sending
+    url(r'^schedule_of_sending/(?P<experiment_id>\d+)/$',
+        'experiment_schedule_of_sending', name='experiment_schedule_of_sending'),
+    url(r'^schedule_of_sending/list/$', 'schedule_of_sending_list', name='schedule_of_sending_list'),
 
     # group
     url(r'^(?P<experiment_id>\d+)/group/new/$', 'group_create', name='group_new'),
@@ -358,6 +374,23 @@ urlpatterns = patterns(
         'digital_game_phase_data_view', name='digital_game_phase_data_view'),
     url(r'^digital_game_phase_data/edit/(?P<digital_game_phase_data_id>\d+)/$',
         'digital_game_phase_data_edit', name='digital_game_phase_data_edit'),
+
+    # subject + goalkeeper_game_data
+    url(r'^group/(?P<group_id>\d+)/goalkeeper_game_data/$',
+        'group_goalkeeper_game_data', name='group_goalkeeper_game_data'),
+    url(r'^group/(?P<group_id>\d+)/load_goalkeeper_game_data/$',
+        'load_group_goalkeeper_game_data', name='load_group_goalkeeper_game_data'),
+
+    # subject + generic_data_collection_data
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/generic_data_collection/$',
+        'subject_generic_data_collection_view', name='subject_generic_data_collection_view'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/generic_data_collection/'
+        r'(?P<generic_data_collection_configuration_id>[0-9-]+)/add_generic_data_collection_data/$',
+        'subject_generic_data_collection_data_create', name='subject_generic_data_collection_data_create'),
+    url(r'^generic_data_collection_data/(?P<generic_data_collection_data_id>\d+)/$',
+        'generic_data_collection_data_view', name='generic_data_collection_data_view'),
+    url(r'^generic_data_collection_data/edit/(?P<generic_data_collection_data_id>\d+)/$',
+        'generic_data_collection_data_edit', name='generic_data_collection_data_edit'),
 
     # subject + additional data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/additional_data/$',

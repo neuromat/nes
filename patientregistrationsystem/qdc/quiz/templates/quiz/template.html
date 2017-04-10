@@ -204,9 +204,17 @@
                 {% if perms.experiment.view_researchproject %}
                     <li {% block activeAdvancedResearchProject %}{% endblock %}>
                         <a href="/experiment/research_project/list/">
-{#                            <span class="glyphicon glyphicon-book"></span>#}
                             <span class="fa fa-graduation-cap"></span>
                             {% trans "Studies" %}
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% if perms.experiment.view_researchproject %}
+                    <li {% block activeAdvancedPublication %}{% endblock %}>
+                        <a href="/experiment/publication/list/">
+                            <span class="glyphicon glyphicon-book"></span>
+                            {% trans "Publications" %}
                         </a>
                     </li>
                 {% endif %}

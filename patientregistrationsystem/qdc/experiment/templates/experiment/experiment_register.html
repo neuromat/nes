@@ -8,7 +8,7 @@
 
 {% block form %}
     <div class="row">
-    <form id="user_form" method="post" data-toggle="validator">
+    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
     {% csrf_token %}
 {% endblock %}
 
@@ -96,6 +96,46 @@
                     </div>
                 </div>
 
+                {% if editing or experiment_form.source_code_url.value %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Source code URL" %}</label>
+                                {{ experiment_form.source_code_url }}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if editing or experiment_form.ethics_committee_project_url.value %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "URL of the project approved by the ethics committee" %}</label>
+                                {{ experiment_form.ethics_committee_project_url }}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if editing or experiment_form.ethics_committee_project_file.value %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Project file approved by the ethics committee" %}</label>
+                                <br/>
+                                {% if editing %}
+                                    {{ experiment_form.ethics_committee_project_file }}
+                                {% else %}
+                                    {{ experiment_form.ethics_committee_project_file.value }}
+                                    <button class="btn btn-default" type="button" onclick="location.href='{{ experiment.ethics_committee_project_file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                {% endif %}
+                                <div class="help-block with-errors"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group">
@@ -123,6 +163,54 @@
             </div>
 
             {% if not editing %}
+
+                {% if experiment.is_public or experiment.last_sending %}
+
+                    <div class="container span6 offset3 well ">
+
+                        <h4><span class="fa fa-database"></span> {% trans "NeuroMat Portal - Experimental data sending " %}</h4>
+
+                        <div class="col-md-12">
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <span class="glyphicon glyphicon-refresh"> </span>
+                                    <label class="control-label">{% trans "Last experiment update:" %}</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {{ experiment.last_update }}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <span class="glyphicon glyphicon-send"> </span>
+                                    <label class="control-label">{% trans "Last experiment sending status:" %}</label>
+                                </div>
+                                <div class="col-md-8">
+                                    {% if not last_schedule_of_sending %}
+                                        <span class="label label-info">{% trans "never sent" %}</span>
+                                    {% else %}
+                                        {% if last_schedule_of_sending.status == "sent" %}
+                                            {% trans "Sent on: " %}{{ last_schedule_of_sending.sending_datetime }}
+                                        {% else %}
+                                            {{ last_schedule_of_sending.schedule_datetime }}
+                                        {% endif %}
+                                        <span class="label label-info">{{ last_schedule_of_sending.status }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if experiment.is_public and can_change and last_schedule_of_sending.status != "scheduled" %}
+                                {% if not experiment.last_send or experiment.last_update > experiment.last_send %}
+                                    <a href="/experiment/schedule_of_sending/{{ experiment.id }}" class="btn btn-primary">{% trans "Schedule sending" %}</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+
                 <div class="container span6 offset3 well ">
                 <h4><span class="glyphicon glyphicon-user"></span> {% trans "Groups" %}</h4>
                     {% if group_list %}
@@ -132,6 +220,7 @@
                                 <tr>
                                     <th>{% trans "Name" %}</th>
                                     <th>{% trans "Description" %}</th>
+                                    <th>{% trans "Details" %}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -144,6 +233,12 @@
                                         </td>
                                         <td>
                                             {{ group.description }}
+                                        </td>
+                                        <td>
+                                            {{ group.subjectofgroup_set.all.count }} {% trans "participants" %}
+                                            {% if not group.experimental_protocol %}
+                                                <span class="label label-warning"><br/>{% trans "missing experimental protocol" %}</span>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}

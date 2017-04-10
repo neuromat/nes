@@ -120,6 +120,14 @@ LIMESURVEY = {
     'PASSWORD': '',
 }
 
+# Portal API configuration
+PORTAL_API = {
+    'URL': '',
+    'PORT': '',
+    'USER': '',
+    'PASSWORD': ''
+}
+
 # AUTH_USER_MODEL = 'quiz.UserProfile'
 # AUTH_PROFILE_MODULE = 'quiz.UserProfile'
 
@@ -196,4 +204,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.8.0'
+VERSION = '1.11.0'

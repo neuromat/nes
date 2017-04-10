@@ -30,7 +30,7 @@
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
                 <li class="active">{% get_name_or_code subject.patient.id %}</li>
-                <li class="active">{% trans "Digital game phase data files" %}</li>
+                <li class="active">{% trans "Goalkeeper game phase data files" %}</li>
             </ol>
         </div>
     </div>
@@ -65,14 +65,14 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Digital game phase path" %}</th>
-                                <th>{% trans "Digital game phase data file" %}</th>
+                                <th>{% trans "Goalkeeper game phase path" %}</th>
+                                <th>{% trans "Goalkeeper game phase data file" %}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% if not digital_game_phase_collections %}
                                 <tr>
-                                    <td>{% trans "(No digital game phase collection)" %}</td>
+                                    <td>{% trans "(No goalkeeper game phase collection)" %}</td>
                                     <td></td>
                                 </tr>
                             {% else %}
@@ -109,7 +109,7 @@
                                                     <td colspan="5">
                                                         <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/digital_game_phase/{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_digital_game_phase_data">
                                                         <span class="glyphicon glyphicon-plus-sign"></span>
-                                                            {% trans "New digital game phase data file" %}
+                                                            {% trans "New goalkeeper game phase data file" %}
                                                         </a>
                                                     </td>
                                                 </tr>

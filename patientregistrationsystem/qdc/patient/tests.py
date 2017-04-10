@@ -409,10 +409,6 @@ class PatientFormValidation(TestCase):
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
-        self.data['currentTab'] = 0
-        self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-
     def fill_social_demographic_data(self):
         """ Criar uma opcao de Schooling """
 
