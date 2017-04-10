@@ -677,6 +677,7 @@ def export_view(request, template_name="export/export_data.html"):
 
         questionnaire = Survey.objects.filter(id=patient_questionnaire_response.survey_id).values('lime_survey_id')
         lime_survey_id = questionnaire[0]['lime_survey_id']
+        # Validação para não repeter os questionarios
         if lime_survey_id not in surveys_id_list:
             completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
                                                            patient_questionnaire_response.token_id, "completed")
