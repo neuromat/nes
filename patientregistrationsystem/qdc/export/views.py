@@ -675,15 +675,14 @@ def export_view(request, template_name="export/export_data.html"):
     # verificar se os questionnarios estão completos
     for patient_questionnaire_response in patient_questionnaire_response_list:
 
-        questionnaire = Survey.objects.filter(id=patient_questionnaire_response.survey_id).values('lime_survey_id')
-        lime_survey_id = questionnaire[0]['lime_survey_id']
+        lime_survey_id = patient_questionnaire_response.survey.lime_survey_id
         if lime_survey_id not in surveys_id_list:
-            completed = surveys.get_participant_properties(questionnaire[0]['lime_survey_id'],
+            completed = surveys.get_participant_properties(lime_survey_id,
                                                            patient_questionnaire_response.token_id, "completed")
             # if completed is a data
             if completed is not None and completed != "N" and completed != "":
                 surveys_id_list.append(lime_survey_id)
-                surveys_with_ev_list.append(questionnaire)
+                surveys_with_ev_list.append(get_object_or_404(Survey, pk=patient_questionnaire_response.survey_id))
 
     # load the questionnaires_list_final with the lime_survey_id
     index = 0
@@ -701,7 +700,7 @@ def export_view(request, template_name="export/export_data.html"):
         questionnaires_list_final = []
         for survey in surveys_with_ev_list:
             for questionnaire in questionnaires_list:
-                if survey[0]['lime_survey_id'] == questionnaire['sid']:
+                if survey.lime_survey_id == questionnaire['sid']:
                     questionnaires_list_final.append(questionnaire)
                     break
 
