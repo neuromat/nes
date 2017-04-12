@@ -72,7 +72,7 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
-    GenericDataCollectionForm, GenericDataCollectionDataForm
+    GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
 
 from configuration.models import Institution
 
@@ -674,23 +674,41 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 @login_required
 @permission_required('experiment.change_experiment')
-def experiment_schedule_of_sending(request, experiment_id):
+def experiment_schedule_of_sending(request, experiment_id,
+                                   template_name="experiment/experiment_schedule_of_sending.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    resend_experiment_form = ResendExperimentForm(request.POST or None)
 
     check_can_change(request.user, experiment.research_project)
 
     last_schedule_of_sending = \
         ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last()
 
-    new_schedule = ScheduleOfSending(experiment=experiment,
-                                     schedule_datetime=datetime.now(),
-                                     responsible=request.user,
-                                     status="scheduled")
-    new_schedule.save()
-    messages.success(request, _('Experiment scheduled to be sent successfully.'))
+    if request.method == "POST":
+        if request.POST['action'] == "send":
 
-    redirect_url = reverse("experiment_view", args=(experiment_id,))
-    return HttpResponseRedirect(redirect_url)
+            if experiment.last_sending:
+                new_schedule = resend_experiment_form.save(commit=False)
+            else:
+                new_schedule = ScheduleOfSending()
+
+            new_schedule.experiment = experiment
+            new_schedule.responsible = request.user
+            new_schedule.status = "scheduled"
+            new_schedule.save()
+            messages.success(request, _('Experiment scheduled to be sent successfully.'))
+
+            redirect_url = reverse("experiment_view", args=(experiment_id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "experiment": experiment,
+        "last_schedule_of_sending": last_schedule_of_sending,
+        "resend_experiment_form": resend_experiment_form
+    }
+
+    return render(request, template_name, context)
 
 
 @login_required
@@ -698,8 +716,6 @@ def experiment_schedule_of_sending(request, experiment_id):
 def schedule_of_sending_list(request, template_name="experiment/schedule_of_sending_list.html"):
 
     list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
-
-    experiment_sent = False
 
     if request.method == "POST":
         if request.POST['action'] == "send-to-portal":
@@ -723,10 +739,16 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
                 send_experiment_to_portal(schedule_of_sending)
 
                 schedule_of_sending.status = "sent"
-                schedule_of_sending.sending_datetime = datetime.now()
+                schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
                 schedule_of_sending.save()
 
+                experiment = schedule_of_sending.experiment
+                experiment.last_sending = schedule_of_sending.sending_datetime
+                experiment.save()
+
             messages.success(request, _('Experiments sent successfully.'))
+
+            list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
 
     context = {
         "list_of_schedule_of_sending": list_of_schedule_of_sending
@@ -982,6 +1004,14 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                 if group_form.has_changed():
                     group_form.save()
                     messages.success(request, _('Group updated successfully.'))
+
+                    if group.experiment.last_sending and group.experiment.last_update > group.experiment.last_sending:
+
+                        messages.info(request,
+                                      _('<a href="/experiment/schedule_of_sending/{!s}">'
+                                        'This experiment was previously sent to the Portal. Click here to resend it.'
+                                        '</a>').format(str(group.experiment.id)))
+
                 else:
                     messages.success(request, _('There is no changes to save.'))
 
@@ -7083,12 +7113,17 @@ def subject_additional_data_view(request, group_id, subject_id,
             SubjectStepData.objects.filter(subject_of_group=subject_of_group,
                                            data_configuration_tree=data_configuration_tree_id)
 
+        additional_data_files = None
+        if data_configuration_tree_id:
+            additional_data_files = \
+                AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                                              data_configuration_tree__id=data_configuration_tree_id)
+
         data_collections.append(
             {'component_configuration': component_configuration,
              'path': path,
              'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
-             'additional_data_files': AdditionalData.objects.filter(
-                 subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id),
+             'additional_data_files': additional_data_files,
              'icon_class': icon_class[component_configuration.component.component_type]}
         )
 
