@@ -6459,30 +6459,37 @@ def load_group_goalkeeper_game_data(request, group_id):
         for register in candidate_registers_from_goalkeeper_repository:
 
             lines = register.filecontent.splitlines()
-            header = lines[0].split(',')
-            values = lines[1].split(',')
 
-            # checking if the first element is the experimental group
-            if header[0] == 'experimentGroup' and values[0] == experimental_group_code:
+            if lines:
+                sequence_used = lines[0][15:] if (lines[0][:14] == 'sequExecutada:') else ''
 
-                # getting fields of interest
-                if 'playerAlias' in header and \
-                                'phase' in header and \
-                                'YYMMDD' in header and \
-                                'HHMMSS' in header:
+                header_line = 1 if sequence_used else 0
 
-                    player_alias_index = header.index('playerAlias')
-                    phase_index = header.index('phase')
-                    date_index = header.index('YYMMDD')
-                    time_index = header.index('HHMMSS')
+                header = lines[header_line].split(',')
+                values = lines[header_line + 1].split(',')
 
-                    if values[player_alias_index] not in game_group_data:
-                        game_group_data[values[player_alias_index]] = {}
+                # checking if the first element is the experimental group
+                if header[0] == 'experimentGroup' and values[0] == experimental_group_code:
 
-                    game_group_data[values[player_alias_index]][values[phase_index]] = {
-                        'file_content': register.filecontent,
-                        'date': datetime.strptime(values[date_index], '%y%m%d'),
-                        'time': datetime.strptime(values[time_index], '%H%M%S')}
+                    # getting fields of interest
+                    if 'playerAlias' in header and \
+                                    'phase' in header and \
+                                    'YYMMDD' in header and \
+                                    'HHMMSS' in header:
+
+                        player_alias_index = header.index('playerAlias')
+                        phase_index = header.index('phase')
+                        date_index = header.index('YYMMDD')
+                        time_index = header.index('HHMMSS')
+
+                        if values[player_alias_index] not in game_group_data:
+                            game_group_data[values[player_alias_index]] = {}
+
+                        game_group_data[values[player_alias_index]][values[phase_index]] = {
+                            'file_content': register.filecontent,
+                            'sequence_used': sequence_used,
+                            'date': datetime.strptime(values[date_index], '%y%m%d'),
+                            'time': datetime.strptime(values[time_index], '%H%M%S')}
 
         number_of_imported_data = 0
         list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
@@ -6536,6 +6543,9 @@ def load_group_goalkeeper_game_data(request, group_id):
                                     digital_game_phase_data.file.save(
                                         file_name,
                                         ContentFile(file_content))
+
+                                    digital_game_phase_data.sequence_used_in_context_tree = \
+                                        game_data_collection['sequence_used']
 
                                     digital_game_phase_data.save()
 
