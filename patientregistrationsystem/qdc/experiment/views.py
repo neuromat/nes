@@ -74,6 +74,8 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
     GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
 
+from .portal import get_experiment_status_portal
+
 from configuration.models import Institution
 
 from export.directory_utils import create_directory
@@ -590,6 +592,8 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     for field in experiment_form.fields:
         experiment_form.fields[field].widget.attrs['disabled'] = True
 
+    experiment_status_portal = get_experiment_status_portal(experiment_id)
+
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
@@ -634,7 +638,8 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                "emg_setting_list": emg_setting_list,
                "tms_setting_list": tms_setting_list,
                "context_tree_list": context_tree_list,
-               "research_project": experiment.research_project}
+               "research_project": experiment.research_project,
+               "experiment_status_portal": experiment_status_portal}
 
     return render(request, template_name, context)
 
