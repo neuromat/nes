@@ -77,7 +77,7 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
 from .portal import get_experiment_status_portal, send_user_to_portal, \
     send_research_project_to_portal, send_experiment_to_portal, get_portal_status
 
-from configuration.models import Institution
+from configuration.models import LocalInstitution
 
 from export.directory_utils import create_directory
 from export.forms import ParticipantsSelectionForm, AgeIntervalForm
@@ -6384,7 +6384,7 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
                'group': group,
-               'institution_code': Institution.get_solo().code,
+               'institution_code': LocalInstitution.get_solo().code,
                'digital_game_phase_collections': digital_game_phase_collections,
                "enable_upload": enable_upload
                }
@@ -6402,7 +6402,7 @@ def load_group_goalkeeper_game_data(request, group_id):
         messages.info(request, _('No experimental group code configured.'))
     else:
 
-        experimental_group_code = (Institution.get_solo().code + '-' if Institution.get_solo().code else '') + \
+        experimental_group_code = (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + \
                                   group.code
 
         # data structure

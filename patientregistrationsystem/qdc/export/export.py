@@ -1424,9 +1424,11 @@ class ExportExecution:
         experiment_resume_header = 'Study' + '\t' + 'Study description' + '\t' + 'Start date' + '\t' + \
                                    'End date' + '\t' + 'Experiment' + '\t' + \
                                    'Experiment description' + '\t' + 'Data aquisition concluded' + "\n"
-        experiment_resume = study.title + '\t' + study.description + '\t' + str(study.start_date) + '\t' + \
-                            str(study.end_date) + '\t' + experiment.title + '\t' + \
-                            experiment.description + '\t' + str(experiment.data_acquisition_is_concluded) + "\n"
+        experiment_resume = \
+            study.title + '\t' + study.description + '\t' + \
+            str(study.start_date) + '\t' + str(study.end_date) + '\t' + \
+            experiment.title + '\t' + experiment.description + '\t' + \
+            str(experiment.data_acquisition_is_concluded) + "\n"
 
         filename_experiment_resume = "%s.csv" % "Experiment"
         base_export_directory = self.get_export_directory()
