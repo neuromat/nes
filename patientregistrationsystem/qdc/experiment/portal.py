@@ -46,6 +46,9 @@ def send_user_to_portal(user):
 
     rest = RestApiClient()
 
+    if not rest.active:
+        return None
+
     portal_user = rest.client.action(
         rest.schema, ['api', 'researchers', 'read'], params={"nes_id": str(user.id)})
 
@@ -57,7 +60,7 @@ def send_user_to_portal(user):
 
     # create or update
     if portal_user:
-        params["id"]= portal_user[0]['id']
+        params["id"] = portal_user[0]['id']
 
         portal_user = rest.client.action(
             rest.schema, ['api', 'researchers', 'update', 'update'], params=params)
@@ -71,6 +74,9 @@ def send_user_to_portal(user):
 def send_research_project_to_portal(research_project):
 
     rest = RestApiClient()
+
+    if not rest.active:
+        return None
 
     portal_research_project = rest.client.action(
         rest.schema, ['api', 'studies', 'read'], params={"nes_id": str(research_project.id)})
@@ -99,6 +105,9 @@ def send_research_project_to_portal(research_project):
 def send_experiment_to_portal(experiment):
 
     rest = RestApiClient()
+
+    if not rest.active:
+        return None
 
     portal_experiment = rest.client.action(
         rest.schema, ['api', 'experiments', 'read'], params={"nes_id": str(experiment.id)})

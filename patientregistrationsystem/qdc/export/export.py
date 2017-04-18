@@ -890,8 +890,8 @@ class ExportExecution:
             export_per_entrance_questionnaire_directory = path.join(self.get_input_data("base_directory"),
                                                                     self.get_input_data("participant_data_directory"))
             # path:'NES_EXPORT/Participant_data/Per_questionnaire/'
-            export_per_questionnaire_directory= path.join(export_per_entrance_questionnaire_directory,
-                                                          self.get_input_data("per_questionnaire_directory"))
+            export_per_questionnaire_directory = path.join(export_per_entrance_questionnaire_directory,
+                                                           self.get_input_data("per_questionnaire_directory"))
 
             # path: 'NES_EXPORT/Participant_data/Questionnaire_metadata'
             export_metadata_directory = path.join(export_per_entrance_questionnaire_directory,
@@ -925,7 +925,9 @@ class ExportExecution:
                 export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code))
                 # path:'NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/'
                 export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
-                # path ex. /qdc/media/export/#user/#export_instance/Participant_data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
+                # path ex.
+                # /qdc/media/export/#user/#export_instance/Participant_data/
+                #                   Per_questionnaire/Q123_aaa/Responses_Q123.csv
                 complete_filename = path.join(export_path, export_filename)
 
                 if self.get_input_data('participants')[0]['output_list']:
@@ -981,7 +983,7 @@ class ExportExecution:
             if error_msg != "":
                 return error_msg
 
-            #path ex. /NES_EXPORT/Experiment_data
+            # path ex. /NES_EXPORT/Experiment_data
             export_experiment_data = path.join(self.get_input_data("base_directory"),
                                                self.get_input_data("experiment_data_directory"))
 
@@ -1023,7 +1025,7 @@ class ExportExecution:
                     print(questionnaire_id)
 
                     # per_participant_data is updated by define_questionnaire method
-                    fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey,group_data)
+                    fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, group_data)
 
                     # create directory for questionnaire: <per_questionnaire>/<q_code_title>
                     if self.get_input_data("export_per_experiment") and (len(fields_description) > 1):
@@ -1046,7 +1048,8 @@ class ExportExecution:
                         # Ex. NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaaa/
                         export_directory = path.join(export_directory_group_per_questionnaire,
                                                      directory_questionnaire_name)
-                        # Ex. Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/Responses_Q123.csv
+                        # Ex.
+                        # Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                         complete_filename = path.join(complete_export_path, export_filename)
 
                         if self.get_input_data('participants')[0]['output_list']:
@@ -1064,12 +1067,13 @@ class ExportExecution:
                         # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
                         fields = self.get_questionnaire_fields(questionnaire_id)
                         questionnaire_fields = self.create_questionnaire_explanation_fields_file(
-                            questionnaire_id, language,questionnaire_lime_survey,fields)
+                            questionnaire_id, language, questionnaire_lime_survey, fields)
                         # Fields_Q123.csv
                         export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_fields"],
                                                          str(questionnaire_code))
 
-                        # metadata directory para export ('NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/')
+                        # metadata directory para export
+                        # ('NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/')
                         export_metadata_directory = path.join(export_directory_group,
                                                               self.get_input_data("questionnaire_metadata_directory"))
                         # Ex. 'NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/'
@@ -1192,7 +1196,8 @@ class ExportExecution:
                             for questionnaire in self.get_input_data("questionnaires"):
                                 if questionnaire_id == questionnaire['id']:
                                     title = self.get_title_reduced(questionnaire_id=questionnaire_id)
-                                    export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code), title)
+                                    export_filename = "%s_%s_%s.csv" % (str(participant_code),
+                                                                        str(questionnaire_code), title)
 
                                     header = self.get_header_questionnaire(questionnaire_id)
                                     per_participant_rows = [header]
@@ -1270,7 +1275,7 @@ class ExportExecution:
 
                         # ex. Users/.../Experiment_data/Group_xxx/Per_participant/Participant_P123/
                         error_msg, complete_group_participant_directory = create_directory(
-                            path_group_per_participant,path_participant)
+                            path_group_per_participant, path_participant)
                         if error_msg != "":
                             return error_msg
 
@@ -1285,7 +1290,8 @@ class ExportExecution:
                             # Build the header
                             header = header[0:len(header)-1]
 
-                            step_header = ['Path identification', 'Step description', 'Path of the step', 'Data completed']
+                            step_header = ['Path identification', 'Step description',
+                                           'Path of the step', 'Data completed']
                             for element in step_header:
                                 header.append(element)
 
@@ -1416,11 +1422,11 @@ class ExportExecution:
         study = group.experiment.research_project
         experiment = group.experiment
         experiment_resume_header = 'Study' + '\t' + 'Study description' + '\t' + 'Start date' + '\t' + \
-                                   'End date' + '\t' + 'Experiment' + '\t' + 'Experiment description' + '\t' \
-                                   + 'Data aquisition concluded' + "\n"
+                                   'End date' + '\t' + 'Experiment' + '\t' + \
+                                   'Experiment description' + '\t' + 'Data aquisition concluded' + "\n"
         experiment_resume = study.title + '\t' + study.description + '\t' + str(study.start_date) + '\t' + \
-                            str(study.end_date) + '\t' + experiment.title + '\t' + experiment.description \
-                            + '\t' + str(experiment.data_acquisition_is_concluded) + "\n"
+                            str(study.end_date) + '\t' + experiment.title + '\t' + \
+                            experiment.description + '\t' + str(experiment.data_acquisition_is_concluded) + "\n"
 
         filename_experiment_resume = "%s.csv" % "Experiment"
         base_export_directory = self.get_export_directory()
@@ -1453,7 +1459,8 @@ class ExportExecution:
                 group_file_directory = path.join(experiment_resume_directory, group_directory_name)
                 # path ex. /NES_EXPORT/Experiment_data/Group_xxxx/
                 export_group_directory = path.join(export_experiment_resume_directory, group_directory_name)
-                # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Experimental_protocol_description.txt
+                # path ex.
+                # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Experimental_protocol_description.txt
                 complete_group_filename = path.join(group_file_directory, filename_group_for_export)
                 self.files_to_zip_list.append([complete_group_filename, export_group_directory])
 
@@ -1565,14 +1572,14 @@ class ExportExecution:
 
         if group_id != "":
             questionnaire_exists = False
-            questionnaire_responses = self.get_experiment_questionnaire_response_per_questionnaire(
-                questionnaire_id,group_id)
+            questionnaire_responses = \
+                self.get_experiment_questionnaire_response_per_questionnaire(questionnaire_id, group_id)
             if questionnaire_responses:
                 questionnaire_exists = True
             step_header = ['Path identification', 'Step description', 'Path of the step', 'Data completed']
         else:
             questionnaire_exists = QuestionnaireResponse.objects.filter(
-            survey__lime_survey_id=questionnaire_id).exists()
+                survey__lime_survey_id=questionnaire_id).exists()
             # filter data (participants)
             questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
 

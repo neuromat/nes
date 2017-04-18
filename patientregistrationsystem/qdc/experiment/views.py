@@ -754,7 +754,8 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
 
             messages.success(request, _('Experiments sent successfully.'))
 
-            list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
+            list_of_schedule_of_sending = \
+                ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
 
     portal_status = get_portal_status()
     if not portal_status:
