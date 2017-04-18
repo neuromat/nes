@@ -83,7 +83,7 @@
                 </div>
 
                 <div class="btn-group pull-left">
-                    <button type="submit" name="action" value="send-to-portal" class="btn btn-primary">{% trans "Send to Portal" %}</button>
+                    <button type="submit" {% if not portal_status %}disabled="disabled"{% endif %} name="action" value="send-to-portal" class="btn btn-primary">{% trans "Send to Portal" %}</button>
                 </div>
             </div>
 

@@ -74,7 +74,8 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
     GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
 
-from .portal import get_experiment_status_portal
+from .portal import get_experiment_status_portal, send_user_to_portal, \
+    send_research_project_to_portal, send_experiment_to_portal, get_portal_status
 
 from configuration.models import Institution
 
@@ -741,7 +742,7 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
                 send_research_project_to_portal(research_project)
 
             for schedule_of_sending in list_of_schedule_of_sending:
-                send_experiment_to_portal(schedule_of_sending)
+                send_experiment_to_portal(schedule_of_sending.experiment)
 
                 schedule_of_sending.status = "sent"
                 schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
@@ -755,65 +756,15 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
 
             list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
 
+    portal_status = get_portal_status()
+    if not portal_status:
+        messages.warning(request, _("Portal is not available to send experiments"))
     context = {
-        "list_of_schedule_of_sending": list_of_schedule_of_sending
+        "list_of_schedule_of_sending": list_of_schedule_of_sending,
+        "portal_status": portal_status
     }
 
     return render(request, template_name, context)
-
-
-def send_user_to_portal(user):
-    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
-    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
-
-    subprocess.call(['http', '-a', credential, '--ignore-stdin', 'POST',
-                     portal_server + '/api/researchers/',
-                     'first_name=' + user.first_name,
-                     'surname=' + user.last_name,
-                     'nes_id=' + str(user.id)])
-    return
-
-
-def send_research_project_to_portal(research_project):
-    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
-    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
-
-    if research_project.end_date is None:
-        subprocess.call(['http', '-a', credential, '--ignore-stdin',
-                         'POST', portal_server + '/api/researchers/' +
-                         str(research_project.owner.id) + '/studies/',
-                         'title=' + research_project.title,
-                         'description=' + research_project.description,
-                         'start_date=' + str(research_project.start_date),
-                         'nes_id=' + str(research_project.id)])
-    else:
-        subprocess.call(['http', '-a', credential, '--ignore-stdin',
-                         'POST', portal_server + '/api/researchers/' +
-                         str(research_project.owner.id) + '/studies/',
-                         'title=' + research_project.title,
-                         'description=' + research_project.description,
-                         'start_date=' + str(research_project.start_date),
-                         'end_date=' + str(research_project.end_date),
-                         'nes_id=' + str(research_project.id)])
-
-    return
-
-
-def send_experiment_to_portal(schedule_of_sending):
-    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
-    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
-
-    subprocess.call(['http', '-a', credential,
-                     '--ignore-stdin', 'POST',
-                     portal_server + '/api/studies/' + str(
-                         schedule_of_sending.experiment.research_project.id) + '/experiments/',
-                     'title=' + schedule_of_sending.experiment.title,
-                     'description=' + schedule_of_sending.experiment.description,
-                     'data_acquisition_none=' +
-                     str(schedule_of_sending.experiment.data_acquisition_is_concluded),
-                     'nes_id=' + str(schedule_of_sending.experiment.id)])
-
-    return
 
 
 @login_required

@@ -198,23 +198,26 @@
                                             {{ last_schedule_of_sending.schedule_datetime }}
                                         {% endif %}
 
-                                        <br/>
 
-                                        {% if experiment_status_portal == "to_be_approved" %}
-                                            <span class="label label-warning">{{ experiment_status_portal }}</span>
-                                        {% else %}
-                                            {% if experiment_status_portal == "rejected" %}
-                                                <span class="label label-danger">{{ experiment_status_portal }}</span>
+                                        {% if experiment_status_portal %}
+                                            <br/>
+
+                                            {% if experiment_status_portal == "to_be_approved" %}
+                                                <span class="label label-warning">{{ experiment_status_portal }}</span>
                                             {% else %}
-                                                {% if experiment_status_portal == "approved" %}
-                                                    <span class="label label-success">{{ experiment_status_portal }}</span>
+                                                {% if experiment_status_portal == "rejected" %}
+                                                    <span class="label label-danger">{{ experiment_status_portal }}</span>
                                                 {% else %}
-                                                    <span class="label label-info">{{ experiment_status_portal }}</span>
+                                                    {% if experiment_status_portal == "approved" %}
+                                                        <span class="label label-success">{{ experiment_status_portal }}</span>
+                                                    {% else %}
+                                                        <span class="label label-info">{{ experiment_status_portal }}</span>
+                                                    {% endif %}
                                                 {% endif %}
                                             {% endif %}
-                                        {% endif %}
 
-                                        ({% trans "Portal status" %})
+                                            ({% trans "Portal status" %})
+                                        {% endif %}
 
                                     {% endif %}
                                 </div>
