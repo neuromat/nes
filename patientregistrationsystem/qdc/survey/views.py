@@ -488,6 +488,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 'question_id': properties['title'],
                                 'answer_options': 'super_question',
                                 'type': 'X',   # properties['type'],
+                                'other': False,
                                 'attributes_lang': properties['attributes_lang'],
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
@@ -501,10 +502,26 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                     'question_id': properties['title'] + '[' + value['title'] + ']',
                                     'answer_options': properties['answeroptions'],
                                     'type': properties['type'],
+                                    'other': False,
                                     'attributes_lang': properties['attributes_lang'],
                                     'hidden': 'hidden' in properties['attributes'] and
                                               properties['attributes']['hidden'] == '1'
                                 })
+                            if properties['other'] == 'Y':
+                                question_properties.append({
+                                    'gid': group['id']['gid'],
+                                    'group_name': group['group_name'],
+                                    'qid': question,
+                                    'question': _('Other'),
+                                    'question_id': properties['title'] + '[other]',
+                                    'answer_options': properties['answeroptions'],
+                                    'type': properties['type'],
+                                    'other': True,
+                                    'attributes_lang': properties['attributes_lang'],
+                                    'hidden': 'hidden' in properties['attributes'] and
+                                              properties['attributes']['hidden'] == '1'
+                                })
+
                         else:
                             question_properties.append({
                                 'gid': group['id']['gid'],
@@ -514,6 +531,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 'question_id': properties['title'],
                                 'answer_options': properties['answeroptions'],
                                 'type': properties['type'],
+                                'other': False,
                                 'attributes_lang': properties['attributes_lang'],
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
@@ -527,6 +545,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                             'question_id': properties['title'],
                             'answer_options': properties['answeroptions'],
                             'type': properties['type'],
+                            'other': False,
                             'attributes_lang': properties['attributes_lang'],
                             'hidden': False
                         })
@@ -635,8 +654,12 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                                 # type "M" means "Multiple choice"
                                                 if question['type'] == 'M':
                                                     answer = responses_list[1][index]
-                                                    if answer != 'Y':
-                                                        no_response_flag = True
+                                                    if question['other']:
+                                                        if answer == '':
+                                                            no_response_flag = True
+                                                    else:
+                                                        if answer != 'Y':
+                                                            no_response_flag = True
                                                 else:
                                                     if responses_list[1][index] in answer_options:
                                                         answer_option = answer_options[responses_list[1][index]]
@@ -658,8 +681,14 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                                                     answer = responses_list[1][index]
 
-                                                    if question['type'] == 'M' and answer != 'Y':
-                                                        no_response_flag = True
+                                                    # type "M" means "Multiple choice"
+                                                    if question['type'] == 'M':
+                                                        if question['other']:
+                                                            if answer == '':
+                                                                no_response_flag = True
+                                                        else:
+                                                            if answer != 'Y':
+                                                                no_response_flag = True
 
                                                     if question['type'] == '|' and answer:
                                                         link = settings.LIMESURVEY['URL_WEB'] + \
@@ -707,6 +736,7 @@ def add_questionnaire_response_to_group(groups_of_question, question, answer, li
         'question': question['question'],
         'answer': answer,
         'type': question['type'],
+        'other': question['other'],
         'link': link,
         'no_response_flag': no_response_flag
     })
