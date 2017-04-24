@@ -11,11 +11,12 @@ from .models import Person, Team, TeamPerson
 class PersonRegisterForm(ModelForm):
     class Meta:
         model = Person
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'institution']
         widgets = {
             'first_name': TextInput(attrs={'class': 'form-control', 'required': ""}),
             'last_name': TextInput(attrs={'class': 'form-control', 'required': ""}),
             'email': EmailInput(attrs={'class': 'form-control', 'required': ""}),
+            'institution': Select(attrs={'class': 'form-control'}),
         }
 
 

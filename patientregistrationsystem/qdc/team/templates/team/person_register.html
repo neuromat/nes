@@ -170,6 +170,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group {% if person_form.institution.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Institution" %}</label>
+                            {{ person_form.institution }}
+                            <div class="help-block with-errors">
+                                {% for error in person_form.institution.errors %}
+                                    {{ error }}<br/>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row collapse" id="user_name_div">
                     <div class="col-xs-12 col-sm-12">
                         <div class="form-group {% if user_form.username.errors %}has-error{% endif %}">
