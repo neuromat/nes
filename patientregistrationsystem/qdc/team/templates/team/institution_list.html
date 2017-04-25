@@ -41,7 +41,7 @@
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/team/registers">{% trans "Teams" %}</a></li>
-                <li class="active">{% trans "Persons" %}</li>
+                <li class="active">{% trans "Institutions" %}</li>
             </ol>
         </div>
     </div>
@@ -49,32 +49,32 @@
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <h4>{% trans "Person list" %}</h4>
+                <h4>{% trans "Institutions list" %}</h4>
                 <div class="form-group">
                     <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>{% trans "Name" %}</th>
-                                <th>{% trans "E-mail" %}</th>
-                                <th>{% trans "User" %}</th>
-                                <th>{% trans "Institution" %}</th>
+                                <th>{% trans "Acronym" %}</th>
+                                <th>{% trans "Country" %}</th>
+                                <th>{% trans "Parent" %}</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {% for person in persons %}
+                        {% for institution in institutions %}
                             <tr>
                                 <td>{% if perms.team.change_team %}
                                         <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
-                                           href="/team/person/{{ person.id }}">
-                                            {{ person.first_name }} {{ person.last_name }}
+                                           href="/team/institution/{{ institution.id }}">
+                                            {{ institution.name }}
                                         </a>
                                     {% else %}
-                                        {{ person.first_name }} {{ person.last_name }}
+                                        {{ institution.name }}
                                     {% endif %}
                                 </td>
-                                <td>{{ person.email }}</td>
-                                <td>{{ person.user.username|default:'' }}</td>
-                                <td>{{ person.institution|default:"" }}</td>
+                                <td>{{ institution.acronym }}</td>
+                                <td>{{ institution.country|default:"" }}</td>
+                                <td>{{ institution.parent|default:"" }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -82,7 +82,7 @@
                 </div>
                 {% if perms.team.change_team %}
                     <div class="btn-group pull-left">
-                        <a href="/team/person/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                        <a href="/team/institution/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                     </div>
                 {% endif %}
             </div>

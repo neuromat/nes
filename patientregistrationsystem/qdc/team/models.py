@@ -7,7 +7,7 @@ class Institution (models.Model):
     name = models.CharField(max_length=150)
     acronym = models.CharField(max_length=30, unique=True)
     country = models.CharField(max_length=30)
-    parent = models.ForeignKey('self', null=True, related_name='children')
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
 
     def __str__(self):
         return '%s' % (self.name)

@@ -20,4 +20,11 @@ urlpatterns = patterns(
     url(r'^team/edit/(?P<team_id>\d+)/$', 'team_update', name='team_edit'),
 
     url(r'^team/team_person_register/(?P<team_id>\d+)/new_person/$', 'team_person_create', name='team_person_new'),
+
+    # register institution
+    url(r'^institution/list/$', 'institution_list', name='institution_list'),
+    url(r'^institution/new/$', 'institution_create', name='institution_new'),
+    url(r'^institution/(?P<institution_id>\d+)/$', 'institution_view', name='institution_view'),
+    url(r'^institution/edit/(?P<institution_id>\d+)/$', 'institution_update', name='institution_edit'),
+
 )

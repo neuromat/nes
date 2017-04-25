@@ -11,9 +11,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import ugettext as _
 
-from .forms import PersonRegisterForm, TeamRegisterForm, TeamPersonRegisterForm, UserPersonForm
-from .models import Person, Team, TeamPerson
+from .forms import PersonRegisterForm, TeamRegisterForm, TeamPersonRegisterForm, UserPersonForm, \
+    InstitutionRegisterForm
+from .models import Person, Team, TeamPerson, Institution
 
+from patient.quiz_widget import SelectBoxCountriesDisabled
 
 @login_required
 @permission_required('team.change_team')
@@ -28,6 +30,11 @@ def registers(request, template_name="team/registers.html"):
             'item': _('Teams'),
             'href': reverse("team_list", args=()),
             'quantity': Team.objects.all().count()
+        },
+        {
+            'item': _('Institutions'),
+            'href': reverse("institution_list", args=()),
+            'quantity': Institution.objects.all().count()
         },
     ]
 
@@ -433,5 +440,100 @@ def team_person_create(request, team_id, template_name="team/team_person_registe
                "creating": True,
                "editing": True
                }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('team.change_team')
+def institution_list(request, template_name='team/institution_list.html'):
+    return render(request, template_name, context={"institutions": Institution.objects.all().order_by('name')})
+
+
+@login_required
+@permission_required('team.change_team')
+def institution_create(request, template_name="team/institution_register.html"):
+
+    institution_form = InstitutionRegisterForm(request.POST or None)
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "save":
+
+            if institution_form.is_valid():
+                institution_added = institution_form.save()
+                messages.success(request, _('Institution created successfully.'))
+                redirect_url = reverse("institution_list", args=())
+                return HttpResponseRedirect(redirect_url)
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"institution_form": institution_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('team.change_team')
+def institution_view(request, institution_id, template_name="team/institution_register.html"):
+    institution = get_object_or_404(Institution, pk=institution_id)
+
+    institution_form = InstitutionRegisterForm(request.POST or None, instance=institution)
+
+    for field in institution_form.fields:
+        institution_form.fields[field].widget.attrs['disabled'] = True
+
+    institution_form.fields['country'].widget = SelectBoxCountriesDisabled(
+        attrs={'id': 'id_country', 'data-flags': 'true', 'disabled': 'true'})
+
+    if request.method == "POST":
+
+        if request.POST['action'] == "remove":
+
+            if Person.objects.filter(institution=institution).exists():
+                messages.warning(
+                    request,
+                    _('This institution cannot be removed because there is (are) person(s) associated with it.'))
+
+                redirect_url = reverse("institution_view", args=(institution_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            institution.delete()
+            messages.success(request, _('Institution removed successfully.'))
+            return redirect('institution_list')
+
+    context = {"can_change": True,
+               "institution": institution,
+               "institution_form": institution_form}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('team.change_team')
+def institution_update(request, institution_id, template_name="team/institution_register.html"):
+    institution = get_object_or_404(Institution, pk=institution_id)
+
+    institution_form = InstitutionRegisterForm(request.POST or None, instance=institution)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if institution_form.is_valid():
+                if institution_form.has_changed():
+                    institution_form.save()
+                    messages.success(request, _('Institution updated successfully.'))
+                else:
+                    messages.success(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("institution_view", args=(institution.id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"institution": institution,
+               "institution_form": institution_form,
+               "editing": True}
 
     return render(request, template_name, context)
