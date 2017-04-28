@@ -24,9 +24,10 @@ from operator import itemgetter
 from os import path, makedirs
 
 from patient.models import Patient, QuestionnaireResponse
-from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, Survey, \
-    ComponentConfiguration, Questionnaire, Component, DataConfigurationTree
-from experiment.views import get_experimental_protocol_description, get_experimental_protocol_image
+from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, \
+    ComponentConfiguration, Questionnaire, DataConfigurationTree
+from experiment.views import get_block_tree, get_experimental_protocol_image, \
+    get_description_from_experimental_protocol_tree
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import is_limesurvey_available
@@ -393,6 +394,7 @@ class ExportExecution:
                                 'questionnaire_id': questionnaire_id,
                                 'questionnaire_code': questionnaire_code,
                                 'data_configuration_tree_id': data_configuration_tree.id,
+                                'numeration': path_experiment[0][4],
                                 'path_questionnaire': path_questionnaire,
                                 'path_description': questionnaire_configuration.component.identification,
                                 'patient_id': questionnaire_response.subject_of_group.subject.patient_id,
@@ -423,7 +425,7 @@ class ExportExecution:
                             'patient_code': patient_code,
                             'step_description': questionnaire_data['path_description'],
                             'path_questionnaire': questionnaire_data['path_questionnaire'],
-                            'path_identification': questionnaire_data['data_configuration_tree_id'],
+                            'path_identification': questionnaire_data['numeration'],
                             'data_completed': completed
                         }
                         token_dic[token_id].append(questionnaire_data_completed_dic)
@@ -1451,8 +1453,10 @@ class ExportExecution:
         for group_data in group_list:
             group = get_object_or_404(Group, pk=group_data)
             if group.experimental_protocol:
-                experimental_protocol_description = get_experimental_protocol_description(
-                    group.experimental_protocol, language_code)
+
+                tree = get_block_tree(group.experimental_protocol, language_code)
+                experimental_protocol_description = get_description_from_experimental_protocol_tree(tree)
+
                 group_resume = "Group name: " + group.title + "\n" + "Group description: " + group.description \
                                + "\n"
                 group_directory_name = 'Group_' + group.title
@@ -1475,8 +1479,7 @@ class ExportExecution:
                 complete_protocol_image_filename = path.join(group_file_directory, filename_protocol_image)
                 # self.files_to_zip_list.append([complete_group_filename, complete_protocol_image_filename])
 
-                experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol,
-                                                                              language_code)
+                experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
                 image_protocol = settings.BASE_DIR + experimental_protocol_image
                 with open(image_protocol, 'rb') as f:
                     data = f.read()

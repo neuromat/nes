@@ -917,11 +917,10 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     experimental_protocol_image = None
 
     if group.experimental_protocol:
-        experimental_protocol_description = get_experimental_protocol_description(
-            group.experimental_protocol, request.LANGUAGE_CODE)
 
-        experimental_protocol_image = get_experimental_protocol_image(
-            group.experimental_protocol, request.LANGUAGE_CODE)
+        tree = get_block_tree(group.experimental_protocol, request.LANGUAGE_CODE)
+        experimental_protocol_description = get_description_from_experimental_protocol_tree(tree)
+        experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -7103,20 +7102,16 @@ def subject_additional_data_view(request, group_id, subject_id,
     return render(request, template_name, context)
 
 
-def get_experimental_protocol_description(experimental_protocol, language_code):
+def get_subgraph(tree, node_identifier=""):
 
-    tree = get_block_tree(experimental_protocol.id, language_code)
-
-    return get_description_from_experimental_protocol_tree(tree)
-
-
-def get_subgraph(block: Block, node_identifier=""):
+    block = get_object_or_404(Block, id=tree['component'].id)
 
     first_node = None
     last_node = None
 
     # create a subgraph
-    subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier, label=block.identification,
+    subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier,
+                             label=(tree['numeration'] + ' - ' if tree['numeration'] else '') + block.identification,
                              labeljust="left", pencolor="#757575")
 
     # Paralel blocks have additional start and end points
@@ -7136,17 +7131,17 @@ def get_subgraph(block: Block, node_identifier=""):
 
     # For each use of step
     previous_node = None
-    for component_configuration in ComponentConfiguration.objects.filter(parent_id=block.id).order_by('order'):
+    for component_configuration_item in tree['list_of_component_configuration']:
 
         # get the component
-        component = component_configuration.component
+        component = component_configuration_item['component']['component']
 
         # create node or subgraph
         if component.component_type == "block":
 
             new_subgraph, new_first_node, new_last_node = \
-                get_subgraph(get_object_or_404(Block, id=component.id),
-                             node_identifier + '_' + str(component_configuration.id))
+                get_subgraph(component_configuration_item['component'],
+                             node_identifier + '_' + str(component_configuration_item['id']))
             subgraph.add_subgraph(new_subgraph)
 
             if block.type == Block.PARALLEL_BLOCK:
@@ -7186,9 +7181,10 @@ def get_subgraph(block: Block, node_identifier=""):
                 color_node = "LightPink"
 
             new_node = pydot.Node(
-                'node_' + node_identifier + '_' + str(component_configuration.id),
-                label=split_node_identification_for_graph(component.identification + ' (' +
-                                                          get_component_name(component.component_type) + ')'),
+                'node_' + node_identifier + '_' + str(component_configuration_item['id']),
+                label=split_node_identification_for_graph(
+                    component_configuration_item['component']['numeration'] + ' - ' +
+                    component.identification + ' (' + get_component_name(component.component_type) + ')'),
                 style="filled", fillcolor=color_node, shape='rectangle')
 
             subgraph.add_node(new_node)
@@ -7218,7 +7214,7 @@ def split_node_identification_for_graph(identification):
         if not current_line:
             current_line = item
         else:
-            if len(current_line + item) > 10:
+            if len(current_line + item) > 15:
                 result.append(current_line)
                 current_line = item
             else:
@@ -7229,20 +7225,12 @@ def split_node_identification_for_graph(identification):
     return '\n'.join(result)
 
 
-def get_experimental_protocol_image(experimental_protocol, language_code):
+def get_experimental_protocol_image(experimental_protocol, tree):
 
     graph = pydot.Dot(graph_type='digraph')
 
-    subgraph, first_node, last_node = get_subgraph(get_object_or_404(Block, id=experimental_protocol.id))
+    subgraph, first_node, last_node = get_subgraph(tree)
     graph.add_subgraph(subgraph)
-
-    # main cluster
-    # subgraph = pydot.Cluster(graph_name='Component' + str(experimental_protocol.id),
-    #                          label=experimental_protocol.identification)
-    # graph.add_subgraph(subgraph)
-    #
-    # node_b = pydot.Node('B', label='Initial instruction\n(instruction)', shape='square')
-    # subgraph.add_node(node_b)
 
     initial_node = pydot.Node('initial_node', label='', style="filled", shape='circle', fillcolor='green')
     ending_node = pydot.Node('ending_node', label='', style="filled", shape='circle', fillcolor='red')
@@ -7263,8 +7251,9 @@ def get_experimental_protocol_image(experimental_protocol, language_code):
     return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
 
 
-def get_description_from_experimental_protocol_tree(component, numeration='', component_configuration_attributes=[]):
-    description = numeration if numeration else _('Main step')
+def get_description_from_experimental_protocol_tree(component, component_configuration_attributes=[]):
+    description = _('Step') + ' ' + component['numeration'] if component['numeration'] else _('Main step')
+
     description += ': ' + get_component_name(component['component_type']) + "\n"
 
     # component attributes
@@ -7282,7 +7271,7 @@ def get_description_from_experimental_protocol_tree(component, numeration='', co
     if num_of_sub_steps > 0:
         description += '\t-' + _('Sub-steps: (')
         for item in range(1, num_of_sub_steps + 1):
-            description += (numeration + '.' if numeration else '') + str(item)
+            description += (component['numeration'] + '.' if component['numeration'] else '') + str(item)
             description += ', ' if item != num_of_sub_steps else ''
         description += ')\n'
 
@@ -7290,7 +7279,6 @@ def get_description_from_experimental_protocol_tree(component, numeration='', co
         for component_configuration in component['list_of_component_configuration']:
             description += get_description_from_experimental_protocol_tree(
                 component_configuration['component'],
-                (numeration + '.' if numeration else _('Step') + ' ') + str(counter),
                 component_configuration['component_configuration_attributes']
             )
             counter += 1
@@ -7307,26 +7295,31 @@ def get_component_name(component_type):
     return component_name if component_name else component_type
 
 
-def get_block_tree(component_id, language_code=None):
-
-    component = get_object_or_404(Component, id=component_id)
+def get_block_tree(component, language_code=None, numeration=''):
 
     attributes = get_component_attributes(component, language_code)
 
     list_of_component_configuration = []
     if component.component_type == 'block':
-        configurations = ComponentConfiguration.objects.filter(parent_id=component_id).order_by('order')
+        configurations = ComponentConfiguration.objects.filter(parent=component).order_by('order')
+        counter = 1
         for configuration in configurations:
             component_configuration_attributes = get_component_configuration_attributes(configuration)
-            component_info = get_block_tree(configuration.component_id, language_code)
+            component_info = get_block_tree(configuration.component,
+                                            language_code,
+                                            (numeration + '.' if numeration else '') + str(counter))
             list_of_component_configuration.append(
                 {'component_configuration_attributes': component_configuration_attributes,
-                 'component': component_info})
+                 'component': component_info,
+                 'id': configuration.id})
+            counter += 1
 
     return {'identification': component.identification,
             'component_type': component.component_type,
             'attributes': attributes,
-            'list_of_component_configuration': list_of_component_configuration}
+            'list_of_component_configuration': list_of_component_configuration,
+            'numeration': numeration,
+            'component': component}
 
 
 def get_component_attributes(component, language_code):

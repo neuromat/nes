@@ -154,36 +154,39 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
     return render(request, template_name, context)
 
 
-def create_list_of_trees(block_id, component_type):
+def create_list_of_trees(block_id, component_type, numeration=''):
 
     list_of_path = []
 
-    configurations = ComponentConfiguration.objects.filter(parent_id=block_id)
+    configurations = ComponentConfiguration.objects.filter(parent_id=block_id).order_by('order')
 
-    if component_type:
-        configurations = configurations.filter(component__component_type=component_type)
-
+    counter = 1
     for configuration in configurations:
-        list_of_path.append(
-            [[configuration.id,
-              configuration.parent.identification,
-              configuration.name,
-              configuration.component.identification]]
-        )
 
-    # Look for steps in descendant blocks.
-    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                 component__component_type="block")
+        sub_numeration = (numeration + '.' if numeration else '') + str(counter)
 
-    for block_configuration in block_configurations:
-        list_of_configurations = create_list_of_trees(block_configuration.component.id, component_type)
-        for item in list_of_configurations:
-            item.insert(0,
-                        [block_configuration.id,
-                         block_configuration.parent.identification,
-                         block_configuration.name,
-                         block_configuration.component.identification])
-            list_of_path.append(item)
+        if not component_type or configuration.component.component_type == component_type:
+            list_of_path.append(
+                [[configuration.id,
+                  configuration.parent.identification,
+                  configuration.name,
+                  configuration.component.identification,
+                  sub_numeration]]
+            )
+
+        # Look for steps in descendant blocks
+        if configuration.component.component_type == "block":
+            list_of_configurations = create_list_of_trees(configuration.component.id, component_type, sub_numeration)
+            for item in list_of_configurations:
+                item.insert(0,
+                            [configuration.id,
+                             configuration.parent.identification,
+                             configuration.name,
+                             configuration.component.identification,
+                             sub_numeration])
+                list_of_path.append(item)
+
+        counter += 1
 
     return list_of_path
 
