@@ -36,7 +36,7 @@ def load_data(apps, schema_editor):
 
         # create a new institution
         new_institution = institution_model(
-            name=current_institution.name,
+            name=current_institution.name if current_institution.name else '',
             acronym='',
             country='',
             parent=None
