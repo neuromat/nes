@@ -1,7 +1,9 @@
 import coreapi
+import os
 
 from django.conf import settings
 
+from .models import Experiment
 
 class RestApiClient(object):
     client = None
@@ -102,7 +104,7 @@ def send_research_project_to_portal(research_project):
     return portal_research_project
 
 
-def send_experiment_to_portal(experiment):
+def send_experiment_to_portal(experiment: Experiment):
 
     rest = RestApiClient()
 
@@ -112,27 +114,30 @@ def send_experiment_to_portal(experiment):
     portal_experiment = rest.client.action(
         rest.schema, ['api', 'experiments', 'read'], params={"nes_id": str(experiment.id)})
 
-    ethics_committee_project_file = None
-    # if experiment.ethics_committee_project_file:
-    #     with open(settings.MEDIA_ROOT + '/' + str(experiment.ethics_committee_project_file), 'rb') as f:
-    #         ethics_committee_project_file = coreapi.utils.File('test.png', f)
-
     # general params
     params = {"nes_id": str(experiment.id),
               "title": experiment.title,
               "description": experiment.description,
               "data_acquisition_done": str(experiment.data_acquisition_is_concluded),
-              # "ethics_committee_project_file": ethics_committee_project_file
               }
 
     # create or update
     if portal_experiment:
         params["id"] = portal_experiment[0]['id']
-        portal_experiment = rest.client.action(
-            rest.schema, ['api', 'experiments', 'update', 'update'], params=params, encoding="multipart/form-data")
+        action_keys = ['api', 'experiments', 'update', 'update']
     else:
         params["id"] = str(experiment.research_project.id)
-        portal_experiment = rest.client.action(
-            rest.schema, ['api', 'studies', 'experiments', 'create'], params=params, encoding="multipart/form-data")
+        action_keys = ['api', 'studies', 'experiments', 'create']
+
+    if experiment.ethics_committee_project_file:
+        with open(settings.MEDIA_ROOT + '/' + str(experiment.ethics_committee_project_file), 'rb') as f:
+            params["ethics_committee_project_file"] = \
+                coreapi.utils.File(os.path.basename(experiment.ethics_committee_project_file.name), f)
+
+            portal_experiment = rest.client.action(rest.schema, action_keys,
+                                                   params=params, encoding="multipart/form-data")
+    else:
+        portal_experiment = rest.client.action(rest.schema, action_keys,
+                                               params=params, encoding="multipart/form-data")
 
     return portal_experiment
