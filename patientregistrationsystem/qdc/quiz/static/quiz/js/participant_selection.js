@@ -98,7 +98,7 @@ $(document).ready(function () {
             div_diagnosis_list.hide();
         }
 
-    })
+    });
 
     diseases_checkbox.click(function () {
         if (diseases_checkbox.is(":checked"))
@@ -112,7 +112,7 @@ $(document).ready(function () {
             div_diagnosis_list.hide();
         }
 
-    })
+    });
 
     
     $('#get_location').autocomplete({
@@ -200,7 +200,7 @@ function add_location(location) {
         //botão
         var btn_node = document.createElement('BUTTON');
         btn_node.id = "btn" + location;
-        btn_node.type = "button"
+        btn_node.type = "button";
         btn_node.className = "btn btn-default unbuttonmize";
         btn_node.appendChild(checknode);
         btn_node.appendChild(textnode);
@@ -222,7 +222,7 @@ function add_location(location) {
             var localization_div = document.getElementById("localization_list");
             var node = document.getElementById("btn"+ this.id);
             localization_div.removeChild(node);
-        }
+        };
         tagnode.appendChild(spannode);
         btn_node.appendChild(tagnode);
 
@@ -282,7 +282,7 @@ function add_disease(id, disease){
         var node = document.getElementById("btn"+ this.id);
         diagnosis_div.removeChild(node);
         input_diagnosis.value = "";
-    }
+    };
     tagnode.appendChild(spannode);
     btn_node.appendChild(tagnode);
 

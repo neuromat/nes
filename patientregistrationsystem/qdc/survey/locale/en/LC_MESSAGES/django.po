@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-04 09:27-0300\n"
+"POT-Creation-Date: 2017-05-04 18:13-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr ""
 
 #: survey/templates/survey/survey_list.html:49
 #: survey/templates/survey/survey_register.html:94
-msgid "Entrance evaluation"
+msgid "Required fill"
 msgstr ""
 
 #: survey/templates/survey/survey_list.html:55
@@ -68,7 +68,7 @@ msgid "Edit"
 msgstr ""
 
 #: survey/templates/survey/survey_register.html:112
-msgid "Answered as entrance evaluation"
+msgid "Answered by participants"
 msgstr ""
 
 #: survey/templates/survey/survey_register.html:119
@@ -158,29 +158,33 @@ msgstr ""
 msgid "There are no changes to save."
 msgstr ""
 
-#: survey/views.py:409
+#: survey/views.py:412
 msgid "Questionnaire deleted successfully."
 msgstr ""
 
-#: survey/views.py:412
+#: survey/views.py:415
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
 msgstr ""
 
-#: survey/views.py:526
+#: survey/views.py:518
+msgid "Other"
+msgstr ""
+
+#: survey/views.py:547
 msgid "Formula"
 msgstr ""
 
-#: survey/views.py:602 survey/views.py:617 survey/views.py:646
+#: survey/views.py:624 survey/views.py:639 survey/views.py:672
 msgid "No answer"
 msgstr ""
 
-#: survey/views.py:683
+#: survey/views.py:715
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 
-#: survey/views.py:722
+#: survey/views.py:755
 msgid "LimeSurvey unavailable. System running partially."
 msgstr ""
 
