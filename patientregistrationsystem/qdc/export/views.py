@@ -147,6 +147,14 @@ diagnosis_fields_inclusion = [
 questionnaire_evaluation_fields_excluded = [
     "subjectid",
     "responsibleid",
+    "id",
+    "submitdate",
+    "lastpage",
+    "startlanguage",
+    "token",
+    "startdate",
+    "datestamp",
+    "ipaddr",
 ]
 
 '''
