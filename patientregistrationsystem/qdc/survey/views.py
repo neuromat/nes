@@ -344,7 +344,8 @@ def create_patients_questionnaire_data_list(survey, surveys):
     # We use a dictionary because it is useful for filtering out duplicate patients from the list.
     patients_questionnaire_data_dictionary = {}
 
-    for response in PatientQuestionnaireResponse.objects.filter(survey=survey):
+    for response in PatientQuestionnaireResponse.objects.filter(survey=survey).filter(patient__removed=False):
+    # for response in PatientQuestionnaireResponse.objects.filter(survey=survey):
         if response.patient.id not in patients_questionnaire_data_dictionary:
             patients_questionnaire_data_dictionary[response.patient.id] = {
                 'patient_id': response.patient.id,
