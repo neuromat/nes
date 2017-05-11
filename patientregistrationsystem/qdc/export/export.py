@@ -722,26 +722,29 @@ class ExportExecution:
 
     def merge_participants_data_per_questionnaire_process(self, fields_description, participant_list):
         # get fields from patient
-        export_participant_row = self.process_participant_data(self.get_input_data('participants'),
-                                                               participant_list)
+        export_participant_row = self.process_participant_data(self.get_input_data('participants'), participant_list)
+
         # Merge fields from questionnaires and patient
         export_fields_list = []
         export_row_list = []
         # Building the header
-        for field in fields_description[0][0:len(fields_description[0]) - 1]:
-            export_row_list.append(field)
+        export_row_list = fields_description[0][0:len(fields_description[0]) - 1]
+        # for field in fields_description[0][0:len(fields_description[0]) - 1]:
+        #     export_row_list.append(field)
         for field in export_participant_row[0]:
             export_row_list.append(field)
         export_fields_list.append(export_row_list)
+
         # Including the responses
         for fields in fields_description[1:fields_description.__len__()]:
             participation_code = fields[len(fields) - 1]
             export_row_list = []
-            for field in fields[0:len(fields) - 1]:
-                export_row_list.append(field)
-            for fields in export_participant_row[1:export_participant_row.__len__()]:
-                if participation_code == fields[len(fields) - 1]:
-                    for field in fields:
+            export_row_list = fields[0:len(fields) - 1]
+            # for field in fields[0:len(fields) - 1]:
+            #     export_row_list.append(field)
+            for participant_fields in export_participant_row[1:export_participant_row.__len__()]:
+                if participation_code == participant_fields[len(participant_fields) - 1]:
+                    for field in participant_fields:
                         export_row_list.append(field)
             export_fields_list.append(export_row_list)
 
@@ -824,14 +827,15 @@ class ExportExecution:
                 # path ex. /Users/.../media/NES_EXPORT/Per_questionnaire.Q123_aaa/Responses_Q123.csv
                 complete_filename = path.join(export_path, export_filename)
 
-                if self.get_input_data('participants')[0]['output_list']:
-                    participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
-                    export_field_list = self.merge_participants_data_per_questionnaire_process(fields_description,
-                                                                                               participant_list)
-                    save_to_csv(complete_filename, export_field_list)
-                else:
-                    save_to_csv(complete_filename, fields_description)
-
+                # if self.get_input_data('participants')[0]['output_list']:
+                #     participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
+                #
+                #     export_field_list = self.merge_participants_data_per_questionnaire_process(fields_description,
+                #                                                                                participant_list)
+                #     save_to_csv(complete_filename, export_field_list)
+                # else:
+                #     save_to_csv(complete_filename, fields_description)
+                save_to_csv(complete_filename, fields_description)
                 self.files_to_zip_list.append([complete_filename, export_directory])
 
                 # create questionnaire fields file ("fields.csv") - metadata directory
@@ -932,14 +936,15 @@ class ExportExecution:
                 #                   Per_questionnaire/Q123_aaa/Responses_Q123.csv
                 complete_filename = path.join(export_path, export_filename)
 
-                if self.get_input_data('participants')[0]['output_list']:
-                    participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
-                    export_fields_list = self.merge_participants_data_per_questionnaire_process(fields_description,
-                                                                                                participant_list)
-                    save_to_csv(complete_filename, export_fields_list)
-                else:
-                    save_to_csv(complete_filename, fields_description)
+                # if self.get_input_data('participants')[0]['output_list']:
+                #     participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
+                #     export_fields_list = self.merge_participants_data_per_questionnaire_process(fields_description,
+                #                                                                                 participant_list)
+                #     save_to_csv(complete_filename, export_fields_list)
+                # else:
+                #     save_to_csv(complete_filename, fields_description)
 
+                save_to_csv(complete_filename, fields_description)
                 self.files_to_zip_list.append([complete_filename, export_directory])
 
                 # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
@@ -1054,16 +1059,17 @@ class ExportExecution:
                         # Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                         complete_filename = path.join(complete_export_path, export_filename)
 
-                        if self.get_input_data('participants')[0]['output_list']:
-                            participant_list = self.get_participant_list(group_data)
-                            # add questionnaire experiment path to export_rows
+                        # if self.get_input_data('participants')[0]['output_list']:
+                        #     participant_list = self.get_participant_list(group_data)
+                        #     # add questionnaire experiment path to export_rows
+                        #
+                        #     export_fields_list = self.merge_participants_data_per_questionnaire_process(
+                        #         fields_description, participant_list)
+                        #     save_to_csv(complete_filename, export_fields_list)
+                        # else:
+                        #     save_to_csv(complete_filename, fields_description)
 
-                            export_fields_list = self.merge_participants_data_per_questionnaire_process(
-                                fields_description, participant_list)
-                            save_to_csv(complete_filename, export_fields_list)
-                        else:
-                            save_to_csv(complete_filename, fields_description)
-
+                        save_to_csv(complete_filename, fields_description)
                         self.files_to_zip_list.append([complete_filename, export_directory])
 
                         # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
@@ -1140,9 +1146,9 @@ class ExportExecution:
                             for field in export_participant_row[0]:
                                 header.append(field)
                             per_participant_rows = [header]
-                            export_fields_row = self.merge_participant_data_per_participant_process(
-                                questionnaire_code, participant_code, export_participant_row)
-                            for field in export_fields_row:
+                            # export_fields_row = self.merge_participant_data_per_participant_process(
+                            #     questionnaire_code, participant_code, export_participant_row)
+                            for field in fields_rows:
                                 per_participant_rows.append(field)
                     else:
                         per_participant_rows = [header]
@@ -1373,6 +1379,26 @@ class ExportExecution:
                 export_rows_participants.append([self.handle_exported_field(field) for field in record])
 
         return export_rows_participants
+
+    def get_participant_data_per_id(self, patient_id, questionnaire_response_fields):
+
+        for row in self.get_input_data('participants'):
+            headers, fields = self.get_headers_and_fields(row["output_list"])
+
+            model_to_export = getattr(modules['patient.models'], 'Patient')
+
+            if model_to_export.objects.filter(id=patient_id):
+                db_data = model_to_export.objects.filter(id=patient_id).values_list(*fields)[0]
+            else:
+                db_data=""
+
+            # export_participant_data = [headers]
+
+            #append participant data
+            for field in db_data:
+                questionnaire_response_fields.append(field)
+
+        return questionnaire_response_fields
 
     def process_participant_filtered_data(self, participants_filtered_list, base_export_directory, base_directory):
         error_msg = ""
@@ -1709,11 +1735,13 @@ class ExportExecution:
 
                     data_fields = [smart_str(data) for data in lm_data_row]
 
-                    transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
+                    if self.get_input_data('participants')[0]['output_list']:
+                        transformed_fields = self.get_participant_data_per_id(patient_id, data_fields)
+                    else:
+                        transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
                     # data_rows.append(transformed_fields)
 
                     if len(transformed_fields) > 0:
-                        # export_rows.append(transformed_fields)
                         export_rows.append(transformed_fields)
 
                         self.include_questionnaire_code_and_id(survey_code, lime_survey_id)
@@ -1724,12 +1752,22 @@ class ExportExecution:
 
             self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
         header = self.get_header_questionnaire(questionnaire_id)
+        for row in self.get_input_data('participants'):
+            headers_participant_data, fields = self.get_headers_and_fields(row["output_list"])
+
+        # header = header[0:len(header) - 1]
+        # for field in headers_participant_data:
+        #     header.append(field)
+
         if group_id != "":
             if header[len(header)-1] == 'participant_code':
                 header = header[0:len(header)-1]
                 for element in step_header:
                     header.append(element)
-                header.append('participant_code')
+        else:
+            header = header[0:len(header) - 1]
+        for field in headers_participant_data:
+            header.append(field)
 
         export_rows.insert(0, header)
         return export_rows
