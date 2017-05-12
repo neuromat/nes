@@ -2,7 +2,7 @@
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from django.forms import ModelForm, TextInput, EmailInput, Select, PasswordInput, CheckboxSelectMultiple
+from django.forms import ModelForm, TextInput, EmailInput, Select, PasswordInput, CheckboxSelectMultiple, CharField
 from django.utils.translation import ugettext as _
 
 from .models import Person, Team, TeamPerson, Institution
@@ -29,14 +29,26 @@ class UserPersonForm(ModelForm):
         widgets = {
             'username': TextInput(attrs={'class': 'form-control', 'required': "", 'disabled': 'disabled',
                                          'placeholder': _('Type a new username')}),
-            'password': PasswordInput(attrs={'id': 'id_new_password1', 'required': "",
-                                             'class': 'form-control',
+            'password': PasswordInput(attrs={'id': 'id_new_password1', 'required': "", 'class': 'form-control',
                                              'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPassExt();"}),
             'groups': CheckboxSelectMultiple(),
         }
 
+        def clean_password(self):
+            return make_password(self.cleaned_data['password'])
+
+
+class UserPersonPasswordForm(UserPersonForm):
+    password = CharField(required=False,
+                         widget=PasswordInput(attrs={'id':'id_new_password1','class':'form-control',
+                                                     'placeholder':_('Type password'), 'onkeyup':"passwordForce();"
+                                                     "if(beginCheckPassword1) checkPassExt();"}))
+
     def clean_password(self):
-        return make_password(self.cleaned_data['password'])
+        if self.cleaned_data['password']:
+            return make_password(self.cleaned_data['password'])
+        else:
+            return self.instance.password
 
 
 class TeamRegisterForm(ModelForm):

@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import ugettext as _
 
 from .forms import PersonRegisterForm, TeamRegisterForm, TeamPersonRegisterForm, UserPersonForm, \
-    InstitutionRegisterForm
+    InstitutionRegisterForm, UserPersonPasswordForm
 from .models import Person, Team, TeamPerson, Institution
 
 from patient.quiz_widget import SelectBoxCountriesDisabled
@@ -209,7 +209,7 @@ def person_update(request, person_id, template_name="team/person_register.html")
 
     person_form = PersonRegisterForm(request.POST or None, instance=person)
 
-    user_form = UserPersonForm(request.POST or None, instance=person.user)
+    user_form = UserPersonPasswordForm(request.POST or None, instance=person.user)
     # user_form = UserPersonForm(request.POST or None)
 
     # if person.user:
