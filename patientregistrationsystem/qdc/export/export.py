@@ -200,6 +200,7 @@ class ExportExecution:
         self.participants_per_entrance_questionnaire = {}
         self.participants_per_experiment_questionnaire = {}
         self.questionnaires_data = {}
+        self.questionnaires_experiment_data = {}
         self.root_directory = ""
         self.participants_filtered_data = []
         self.questionnaire_code_and_id = {}
@@ -272,6 +273,25 @@ class ExportExecution:
 
         return headers, fields
 
+    def set_questionnaire_experiment_header_and_fields(self, questionnaire):
+
+        headers = []
+        fields = []
+
+        questionnaire_id = questionnaire["id"]
+        for output_list in questionnaire["output_list"]:
+            if output_list["field"]:
+                headers.append(output_list["header"])
+                fields.append(output_list["field"])
+
+        if questionnaire_id not in self.questionnaires_experiment_data:
+            self.questionnaires_experiment_data[questionnaire_id] = {}
+
+        self.questionnaires_experiment_data[questionnaire_id]["header"] = headers
+        self.questionnaires_experiment_data[questionnaire_id]["fields"] = fields
+
+        return headers, fields
+
     def append_questionnaire_header_and_field(self, questionnaire_id, header, fields):
         # only one header, field instance
         for field in fields:
@@ -279,12 +299,27 @@ class ExportExecution:
                 self.questionnaires_data[questionnaire_id]["header"].append(header[fields.index(field)])
                 self.questionnaires_data[questionnaire_id]["fields"].append(field)
 
+    def append_questionnaire_experiment_header_and_field(self, questionnaire_id, header, fields):
+        # only one header, field instance
+        for field in fields:
+            if field not in self.questionnaires_experiment_data[questionnaire_id]["fields"]:
+                self.questionnaires_experiment_data[questionnaire_id]["header"].append(header[fields.index(field)])
+                self.questionnaires_experiment_data[questionnaire_id]["fields"].append(field)
+
     def get_header_questionnaire(self, questionnaire_id):
         # headers_questionnaire format: dict {questionnaire_id: {header:[header]}}
 
         header = []
         if questionnaire_id in self.questionnaires_data:
             header = self.questionnaires_data[questionnaire_id]["header"]
+        return header
+
+    def get_header_experiment_questionnaire(self, questionnaire_id):
+        # headers_questionnaire format: dict {questionnaire_id: {header:[header]}}
+
+        header = []
+        if questionnaire_id in self.questionnaires_data:
+            header = self.questionnaires_experiment_data[questionnaire_id]["header"]
         return header
 
     def get_questionnaire_fields(self, questionnaire_id):
@@ -559,6 +594,20 @@ class ExportExecution:
             fields.append(smart_str(row["field"]))
 
         self.append_questionnaire_header_and_field(questionnaire_id, header, fields)
+
+    def update_questionnaire_experiment_rules(self, questionnaire_id):
+
+        header = []
+        fields = []
+
+        heading_type = self.get_heading_type()
+
+        for row in included_questionnaire_fields:
+            header_translated = _(row["header"][heading_type])
+            header.append(smart_str(header_translated))
+            fields.append(smart_str(row["field"]))
+
+        self.append_questionnaire_experiment_header_and_field(questionnaire_id, header, fields)
 
     def transform_questionnaire_data(self, patient_id, fields):
 
@@ -1241,6 +1290,7 @@ class ExportExecution:
                                                                         str(questionnaire_code), title)
 
                                     header = self.get_header_questionnaire(questionnaire_id)
+
                                     for row in self.get_input_data('participants'):
                                         headers_participant_data, fields = self.get_headers_and_fields(
                                             row["output_list"])
@@ -1334,7 +1384,7 @@ class ExportExecution:
                                                             questionnaire_title)
 
                         # Build the header
-                        header = self.get_header_questionnaire(questionnaire_id)
+                        header = self.get_header_experiment_questionnaire(questionnaire_id)
                         header = header[0:len(header) - 1]
 
                         step_header = ['Path identification', 'Step description',
@@ -1593,6 +1643,25 @@ class ExportExecution:
         self.questionnaires_data[questionnaire_id]["header"] = new_header
         self.questionnaires_data[questionnaire_id]["fields"] = new_fields
 
+    def redefine_header_and_fields_experiment(self, questionnaire_id, header_filtered, fields):
+
+        header = self.questionnaires_experiment_data[questionnaire_id]["header"]
+        fields_saved = self.questionnaires_experiment_data[questionnaire_id]["fields"]
+
+        new_header = []
+        new_fields = []
+
+        for item in fields:
+            new_header.append(header[fields.index(item)])
+            new_fields.append(fields_saved[fields.index(item)])
+
+            if item in header_filtered:
+                new_header.append(header[fields.index(item)])
+                new_fields.append(fields_saved[fields.index(item)])
+
+        self.questionnaires_experiment_data[questionnaire_id]["header"] = new_header
+        self.questionnaires_experiment_data[questionnaire_id]["fields"] = new_fields
+
     def get_response_type(self):
 
         response_type = self.get_input_data("response_type")
@@ -1624,8 +1693,6 @@ class ExportExecution:
 
         response_type = self.get_response_type()
 
-        headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
-
         export_rows = []
 
         # verify if Lime Survey is running
@@ -1637,8 +1704,10 @@ class ExportExecution:
                 self.get_experiment_questionnaire_response_per_questionnaire(questionnaire_id, group_id)
             if questionnaire_responses:
                 questionnaire_exists = True
+                headers, fields = self.set_questionnaire_experiment_header_and_fields(questionnaire)
             step_header = ['Path identification', 'Step description', 'Path of the step', 'Data completed']
         else:
+            headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
             questionnaire_exists = QuestionnaireResponse.objects.filter(
                 survey__lime_survey_id=questionnaire_id).exists()
             # filter data (participants)
@@ -1703,17 +1772,10 @@ class ExportExecution:
                 data_from_lime_survey[token] = list(data_fields_filtered)
                 line_index += 1
 
-            # filter data (participants)
-            # questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
-
-            #  include new filter that come from advanced search
-            # filtered_data = self.get_participants_filtered_data()
-            # questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
-
-            # process data fields
-
-            # data_rows = []
-            self.update_questionnaire_rules(questionnaire_id)
+            if group_id != "":
+                self.update_questionnaire_experiment_rules(questionnaire_id)
+            else:
+                self.update_questionnaire_rules(questionnaire_id)
 
             # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
             for questionnaire_response in questionnaire_responses:
@@ -1784,21 +1846,23 @@ class ExportExecution:
 
                         self.include_participant_per_questionnaire(token_id, survey_code)
 
-            self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
-        header = self.get_header_questionnaire(questionnaire_id)
+            if group_id != "":
+                self.redefine_header_and_fields_experiment(questionnaire_id, header_filtered, fields)
+            else:
+                self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
+
+
         for row in self.get_input_data('participants'):
             headers_participant_data, fields = self.get_headers_and_fields(row["output_list"])
 
-        # header = header[0:len(header) - 1]
-        # for field in headers_participant_data:
-        #     header.append(field)
-
         if group_id != "":
+            header = self.get_header_experiment_questionnaire(questionnaire_id)
             if header[len(header)-1] == 'participant_code':
                 header = header[0:len(header)-1]
                 for element in step_header:
                     header.append(element)
         else:
+            header = self.get_header_questionnaire(questionnaire_id)
             header = header[0:len(header) - 1]
         for field in headers_participant_data:
             header.append(field)
