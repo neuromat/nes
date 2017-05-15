@@ -4182,6 +4182,45 @@ class PublicationTest(TestCase):
         # Check if number of publications decreased by 1
         self.assertEqual(Publication.objects.all().count(), count - 1)
 
+    def test_publication_add_experiment(self):
+        # Create a publication to be used in the test
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        publication = ObjectsFactory.create_publication([])
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('publication_add_experiment', args=[publication.pk, ]))
+        request.user = self.user
+
+        response = publication_update(request, publication_id=publication.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Add an experiment to the publication
+        self.data = {'action': 'add-experiment',
+                     'experiment_selected': str(experiment.id)}
+        response = self.client.post(reverse('publication_add_experiment', args=(publication.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Experiment included successfully.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Try to add the same experiment to the publication
+        response = self.client.post(reverse('publication_add_experiment', args=(publication.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]),
+                         _('Experiment already included in the publication.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Save current number of experiments related to the publication
+        count = publication.experiments.count()
+
+        self.data = {'action': 'remove-' + str(experiment.id)}
+        response = self.client.post(reverse('publication_view', args=(publication.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if number of publications decreased by 1
+        self.assertEqual(publication.experiments.count(), count - 1)
+
 
 class ContextTreeTest(TestCase):
 

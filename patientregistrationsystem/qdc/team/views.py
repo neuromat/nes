@@ -17,6 +17,7 @@ from .models import Person, Team, TeamPerson, Institution
 
 from patient.quiz_widget import SelectBoxCountriesDisabled
 
+
 @login_required
 @permission_required('team.change_team')
 def registers(request, template_name="team/registers.html"):

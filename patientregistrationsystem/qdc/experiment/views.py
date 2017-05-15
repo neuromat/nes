@@ -436,7 +436,7 @@ def publication_view(request, publication_id, template_name="experiment/publicat
             redirect_url = reverse("publication_list", args=())
             return HttpResponseRedirect(redirect_url)
 
-        if request.POST['action'][:7] == "remove-":
+        elif request.POST['action'][:7] == "remove-":
             experiment = get_object_or_404(Experiment, pk=int(request.POST['action'][7:]))
             publication.experiments.remove(experiment)
             messages.success(request, _('Experiment removed from publication successfully.'))
@@ -6401,8 +6401,8 @@ def load_group_goalkeeper_game_data(request, group_id):
         messages.info(request, _('No experimental group code configured.'))
     else:
 
-        experimental_group_code = (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + \
-                                  group.code
+        experimental_group_code = \
+            (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + group.code
 
         # data structure
         game_group_data = {}

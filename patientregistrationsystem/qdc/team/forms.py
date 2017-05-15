@@ -40,8 +40,8 @@ class UserPersonForm(ModelForm):
 
 class UserPersonPasswordForm(UserPersonForm):
     password = CharField(required=False,
-                         widget=PasswordInput(attrs={'id':'id_new_password1','class':'form-control',
-                                                     'placeholder':_('Type password'), 'onkeyup':"passwordForce();"
+                         widget=PasswordInput(attrs={'id': 'id_new_password1', 'class': 'form-control',
+                                                     'placeholder': _('Type password'), 'onkeyup': "passwordForce();"
                                                      "if(beginCheckPassword1) checkPassExt();"}))
 
     def clean_password(self):

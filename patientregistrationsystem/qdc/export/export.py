@@ -1470,11 +1470,11 @@ class ExportExecution:
             if model_to_export.objects.filter(id=patient_id):
                 db_data = model_to_export.objects.filter(id=patient_id).values_list(*fields)[0]
             else:
-                db_data=""
+                db_data = ""
 
             # export_participant_data = [headers]
 
-            #append participant data
+            # append participant data
             for field in db_data:
                 questionnaire_response_fields.append(field)
 
@@ -1850,7 +1850,6 @@ class ExportExecution:
                 self.redefine_header_and_fields_experiment(questionnaire_id, header_filtered, fields)
             else:
                 self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
-
 
         for row in self.get_input_data('participants'):
             headers_participant_data, fields = self.get_headers_and_fields(row["output_list"])
