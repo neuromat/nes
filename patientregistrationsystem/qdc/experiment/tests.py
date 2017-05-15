@@ -16,7 +16,8 @@ from .models import Experiment, Group, Subject, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree
-from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update
+from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
+    publication_add_experiment
 
 from patient.models import ClassificationOfDiseases
 from patient.tests import UtilTests
@@ -1888,6 +1889,25 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Keyword.objects.all().count(), 2)
         self.assertEqual(research_project2.keywords.count(), 1)
+
+    def test_research_project_collaborator(self):
+        # Create a research project to be used in the test
+        research_project = ObjectsFactory.create_research_project()
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('collaborator_new', args=[research_project.pk, ]))
+        request.user = self.user
+
+        response = research_project_update(request, research_project_id=research_project.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # # Add a collaborator
+        # self.data = {'action': 'save', 'title': 'New research project title',
+        #              'start_date': [datetime.date.today() - datetime.timedelta(days=1)],
+        #              'description': ['New research project description']}
+        # response = self.client.post(reverse('research_project_edit', args=(research_project.pk,)), self.data,
+        #                             follow=True)
+        # self.assertEqual(response.status_code, 200)
 
 
 class EEGSettingTest(TestCase):
@@ -4192,7 +4212,7 @@ class PublicationTest(TestCase):
         request = self.factory.get(reverse('publication_add_experiment', args=[publication.pk, ]))
         request.user = self.user
 
-        response = publication_update(request, publication_id=publication.pk)
+        response = publication_add_experiment(request, publication_id=publication.pk)
         self.assertEqual(response.status_code, 200)
 
         # Add an experiment to the publication
