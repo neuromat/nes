@@ -119,7 +119,7 @@ $(document).ready(function () {
        source: "/export/get_locations",
         select: function (event, ui) {
             add_location(ui.item.value);
-            $('ul').empty();
+            $('ui-id-1').empty();
         },
         close: function () {
           $("#get_location").val("");
@@ -132,7 +132,7 @@ $(document).ready(function () {
             minLength: 2,
             select: function (event, ui) {
                 add_disease(ui.item.id, ui.item.value);
-                $('ul').empty();
+                $('ui-id-2').empty();
             },
             close: function () {
                 $("#get_diagnosis").val("");
