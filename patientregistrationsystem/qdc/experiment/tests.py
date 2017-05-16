@@ -15,9 +15,12 @@ from .models import Experiment, Group, Subject, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree
+    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree, \
+    ResearchProjectCollaboration
 from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
+
+from custom_user.views import User
 
 from patient.models import ClassificationOfDiseases
 from patient.tests import UtilTests
@@ -25,7 +28,8 @@ from patient.tests import UtilTests
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 
-from custom_user.views import User
+from team.models import Team, Person, TeamPerson
+from team.tests import ObjectsFactory as TeamObjectsFactory
 
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
@@ -1894,20 +1898,36 @@ class ResearchProjectTest(TestCase):
         # Create a research project to be used in the test
         research_project = ObjectsFactory.create_research_project()
 
-        # Create an instance of a GET request.
-        request = self.factory.get(reverse('collaborator_new', args=[research_project.pk, ]))
-        request.user = self.user
+        team = TeamObjectsFactory.create_team()
+        person = TeamObjectsFactory.create_basic_person()
+        team_person = TeamObjectsFactory.create_team_person(team, person)
 
-        response = research_project_update(request, research_project_id=research_project.pk)
+        # screen to update an eeg_setting
+        response = self.client.get(reverse("collaborator_new", args=(research_project.id,)))
         self.assertEqual(response.status_code, 200)
 
-        # # Add a collaborator
-        # self.data = {'action': 'save', 'title': 'New research project title',
-        #              'start_date': [datetime.date.today() - datetime.timedelta(days=1)],
-        #              'description': ['New research project description']}
-        # response = self.client.post(reverse('research_project_edit', args=(research_project.pk,)), self.data,
-        #                             follow=True)
-        # self.assertEqual(response.status_code, 200)
+        # Add a collaborator to a research project
+        self.data = {'action': 'save', 'team_person': str(team_person.id), 'is_coordinator': 'on'}
+        response = self.client.post(reverse('collaborator_new', args=(research_project.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        research_project_collaboration = ResearchProjectCollaboration.objects.get(team_person=team_person,
+                                                                                  research_project=research_project)
+        self.assertTrue(research_project_collaboration.is_coordinator)
+
+        # Change is_coordinator flag
+        self.data = {'action': 'change_collaborator-' + str(research_project_collaboration.id)}
+        response = self.client.post(reverse('research_project_view', args=(research_project.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        research_project_collaboration = ResearchProjectCollaboration.objects.get(team_person=team_person,
+                                                                                  research_project=research_project)
+        self.assertFalse(research_project_collaboration.is_coordinator)
+
+        # Remove a collaborator to a research project
+        self.data = {'action': 'remove_collaborator-' + str(research_project_collaboration.id)}
+        response = self.client.post(reverse('research_project_view', args=(research_project.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(research_project.collaborators.count(), 0)
 
 
 class EEGSettingTest(TestCase):
