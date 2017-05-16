@@ -154,36 +154,39 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
     return render(request, template_name, context)
 
 
-def create_list_of_trees(block_id, component_type):
+def create_list_of_trees(block_id, component_type, numeration=''):
 
     list_of_path = []
 
-    configurations = ComponentConfiguration.objects.filter(parent_id=block_id)
+    configurations = ComponentConfiguration.objects.filter(parent_id=block_id).order_by('order')
 
-    if component_type:
-        configurations = configurations.filter(component__component_type=component_type)
-
+    counter = 1
     for configuration in configurations:
-        list_of_path.append(
-            [[configuration.id,
-              configuration.parent.identification,
-              configuration.name,
-              configuration.component.identification]]
-        )
 
-    # Look for steps in descendant blocks.
-    block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                 component__component_type="block")
+        sub_numeration = (numeration + '.' if numeration else '') + str(counter)
 
-    for block_configuration in block_configurations:
-        list_of_configurations = create_list_of_trees(block_configuration.component.id, component_type)
-        for item in list_of_configurations:
-            item.insert(0,
-                        [block_configuration.id,
-                         block_configuration.parent.identification,
-                         block_configuration.name,
-                         block_configuration.component.identification])
-            list_of_path.append(item)
+        if not component_type or configuration.component.component_type == component_type:
+            list_of_path.append(
+                [[configuration.id,
+                  configuration.parent.identification,
+                  configuration.name,
+                  configuration.component.identification,
+                  sub_numeration]]
+            )
+
+        # Look for steps in descendant blocks
+        if configuration.component.component_type == "block":
+            list_of_configurations = create_list_of_trees(configuration.component.id, component_type, sub_numeration)
+            for item in list_of_configurations:
+                item.insert(0,
+                            [configuration.id,
+                             configuration.parent.identification,
+                             configuration.name,
+                             configuration.component.identification,
+                             sub_numeration])
+                list_of_path.append(item)
+
+        counter += 1
 
     return list_of_path
 
@@ -488,6 +491,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 'question_id': properties['title'],
                                 'answer_options': 'super_question',
                                 'type': 'X',   # properties['type'],
+                                'other': False,
                                 'attributes_lang': properties['attributes_lang'],
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
@@ -501,10 +505,26 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                     'question_id': properties['title'] + '[' + value['title'] + ']',
                                     'answer_options': properties['answeroptions'],
                                     'type': properties['type'],
+                                    'other': False,
                                     'attributes_lang': properties['attributes_lang'],
                                     'hidden': 'hidden' in properties['attributes'] and
                                               properties['attributes']['hidden'] == '1'
                                 })
+                            if properties['other'] == 'Y':
+                                question_properties.append({
+                                    'gid': group['id']['gid'],
+                                    'group_name': group['group_name'],
+                                    'qid': question,
+                                    'question': _('Other'),
+                                    'question_id': properties['title'] + '[other]',
+                                    'answer_options': properties['answeroptions'],
+                                    'type': properties['type'],
+                                    'other': True,
+                                    'attributes_lang': properties['attributes_lang'],
+                                    'hidden': 'hidden' in properties['attributes'] and
+                                              properties['attributes']['hidden'] == '1'
+                                })
+
                         else:
                             question_properties.append({
                                 'gid': group['id']['gid'],
@@ -514,6 +534,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 'question_id': properties['title'],
                                 'answer_options': properties['answeroptions'],
                                 'type': properties['type'],
+                                'other': False,
                                 'attributes_lang': properties['attributes_lang'],
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
@@ -527,6 +548,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                             'question_id': properties['title'],
                             'answer_options': properties['answeroptions'],
                             'type': properties['type'],
+                            'other': False,
                             'attributes_lang': properties['attributes_lang'],
                             'hidden': False
                         })
@@ -635,8 +657,12 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                                 # type "M" means "Multiple choice"
                                                 if question['type'] == 'M':
                                                     answer = responses_list[1][index]
-                                                    if answer != 'Y':
-                                                        no_response_flag = True
+                                                    if question['other']:
+                                                        if answer == '':
+                                                            no_response_flag = True
+                                                    else:
+                                                        if answer != 'Y':
+                                                            no_response_flag = True
                                                 else:
                                                     if responses_list[1][index] in answer_options:
                                                         answer_option = answer_options[responses_list[1][index]]
@@ -658,8 +684,14 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                                                     answer = responses_list[1][index]
 
-                                                    if question['type'] == 'M' and answer != 'Y':
-                                                        no_response_flag = True
+                                                    # type "M" means "Multiple choice"
+                                                    if question['type'] == 'M':
+                                                        if question['other']:
+                                                            if answer == '':
+                                                                no_response_flag = True
+                                                        else:
+                                                            if answer != 'Y':
+                                                                no_response_flag = True
 
                                                     if question['type'] == '|' and answer:
                                                         link = settings.LIMESURVEY['URL_WEB'] + \
@@ -707,6 +739,7 @@ def add_questionnaire_response_to_group(groups_of_question, question, answer, li
         'question': question['question'],
         'answer': answer,
         'type': question['type'],
+        'other': question['other'],
         'link': link,
         'no_response_flag': no_response_flag
     })

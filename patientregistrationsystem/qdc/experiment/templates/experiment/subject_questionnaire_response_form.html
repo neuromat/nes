@@ -235,12 +235,23 @@
                                                 <div class="input-group input-group-sm">
                                                     {% if question_response.type == 'M' %}
                                                         <label>
-                                                        {% if question_response.answer == 'Y'%}
-                                                            <input type="checkbox" value="answer" checked disabled>
-                                                        {% else%}
-                                                            <input type="checkbox" value="answer" disabled>
+                                                        {% if question_response.other %}
+                                                            {% if question_response.answer != ''%}
+                                                                <input type="checkbox" value="answer" checked disabled>
+                                                            {% else%}
+                                                                <input type="checkbox" value="answer" disabled>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {% if question_response.answer == 'Y'%}
+                                                                <input type="checkbox" value="answer" checked disabled>
+                                                            {% else%}
+                                                                <input type="checkbox" value="answer" disabled>
+                                                            {% endif %}
                                                         {% endif %}
                                                         {{ question_response.question }}</label>
+                                                        {% if question_response.other and question_response.answer != ''%}
+                                                            <input class="form-control" value="{{ question_response.answer }}" type="text" disabled>
+                                                        {% endif %}
                                                     {% else %}
                                                         <label>{{ question_response.question }}</label>
                                                         {% if question_response.type == 'D' %}

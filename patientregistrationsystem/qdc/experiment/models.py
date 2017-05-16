@@ -99,7 +99,7 @@ class Experiment(models.Model):
                                                      upload_to=get_experiment_dir,
                                                      null=True, blank=True)
 
-    last_update = models.DateTimeField(default=datetime.datetime.now())
+    last_update = models.DateTimeField(auto_now=True)
     last_sending = models.DateTimeField(null=True)
 
     # Audit trail - Simple History
@@ -441,6 +441,10 @@ class EEGSetting(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super(EEGSetting, self).save(*args, **kwargs)
+        self.experiment.save()
+
 
 class EEGAmplifierSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_amplifier_setting')
@@ -449,10 +453,18 @@ class EEGAmplifierSetting(models.Model):
     sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     number_of_channels_used = models.IntegerField(null=True, validators=[MinValueValidator(0)])
 
+    def save(self, *args, **kwargs):
+        super(EEGAmplifierSetting, self).save(*args, **kwargs)
+        self.eeg_setting.experiment.save()
+
 
 class EEGSolutionSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_solution_setting')
     eeg_solution = models.ForeignKey(EEGSolution)
+
+    def save(self, *args, **kwargs):
+        super(EEGSolutionSetting, self).save(*args, **kwargs)
+        self.eeg_setting.experiment.save()
 
 
 class EEGFilterSetting(models.Model):
@@ -466,10 +478,18 @@ class EEGFilterSetting(models.Model):
     low_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
+    def save(self, *args, **kwargs):
+        super(EEGFilterSetting, self).save(*args, **kwargs)
+        self.eeg_setting.experiment.save()
+
 
 class EEGElectrodeLayoutSetting(models.Model):
     eeg_setting = models.OneToOneField(EEGSetting, primary_key=True, related_name='eeg_electrode_layout_setting')
     eeg_electrode_net_system = models.ForeignKey(EEGElectrodeNetSystem)
+
+    def save(self, *args, **kwargs):
+        super(EEGElectrodeLayoutSetting, self).save(*args, **kwargs)
+        self.eeg_setting.experiment.save()
 
 
 class EEGElectrodePositionSetting(models.Model):
@@ -481,6 +501,10 @@ class EEGElectrodePositionSetting(models.Model):
 
     class Meta:
         unique_together = ('eeg_electrode_layout_setting', 'channel_index')
+
+    def save(self, *args, **kwargs):
+        super(EEGElectrodePositionSetting, self).save(*args, **kwargs)
+        self.eeg_electrode_layout_setting.eeg_setting.experiment.save()
 
 
 class Software(models.Model):
@@ -594,6 +618,10 @@ class EMGSetting(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super(EMGSetting, self).save(*args, **kwargs)
+        self.experiment.save()
+
 
 class EMGDigitalFilterSetting(models.Model):
     emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_digital_filter_setting')
@@ -606,16 +634,28 @@ class EMGDigitalFilterSetting(models.Model):
     high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
+    def save(self, *args, **kwargs):
+        super(EMGDigitalFilterSetting, self).save(*args, **kwargs)
+        self.emg_setting.experiment.save()
+
 
 class EMGADConverterSetting(models.Model):
     emg_setting = models.OneToOneField(EMGSetting, primary_key=True, related_name='emg_ad_converter_setting')
     ad_converter = models.ForeignKey(ADConverter)
     sampling_rate = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
 
+    def save(self, *args, **kwargs):
+        super(EMGADConverterSetting, self).save(*args, **kwargs)
+        self.emg_setting.experiment.save()
+
 
 class EMGElectrodeSetting(models.Model):
     emg_setting = models.ForeignKey(EMGSetting, related_name='emg_electrode_settings')
     electrode = models.ForeignKey(ElectrodeModel)
+
+    def save(self, *args, **kwargs):
+        super(EMGElectrodeSetting, self).save(*args, **kwargs)
+        self.emg_setting.experiment.save()
 
 
 class EMGPreamplifierSetting(models.Model):
@@ -623,6 +663,10 @@ class EMGPreamplifierSetting(models.Model):
                                                  primary_key=True, related_name='emg_preamplifier_setting')
     amplifier = models.ForeignKey(Amplifier)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+
+    def save(self, *args, **kwargs):
+        super(EMGPreamplifierSetting, self).save(*args, **kwargs)
+        self.emg_electrode_setting.emg_setting.experiment.save()
 
 
 class EMGPreamplifierFilterSetting(models.Model):
@@ -637,12 +681,20 @@ class EMGPreamplifierFilterSetting(models.Model):
     high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
+    def save(self, *args, **kwargs):
+        super(EMGPreamplifierFilterSetting, self).save(*args, **kwargs)
+        self.emg_preamplifier_filter_setting.emg_electrode_setting.emg_setting.experiment.save()
+
 
 class EMGAmplifierSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
                                                  primary_key=True, related_name='emg_amplifier_setting')
     amplifier = models.ForeignKey(Amplifier)
     gain = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
+
+    def save(self, *args, **kwargs):
+        super(EMGAmplifierSetting, self).save(*args, **kwargs)
+        self.emg_electrode_setting.emg_setting.experiment.save()
 
 
 class EMGAnalogFilterSetting(models.Model):
@@ -656,6 +708,10 @@ class EMGAnalogFilterSetting(models.Model):
     high_notch = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     order = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
 
+    def save(self, *args, **kwargs):
+        super(EMGAnalogFilterSetting, self).save(*args, **kwargs)
+        self.emg_electrode_setting.emg_electrode_setting.emg_setting.experiment.save()
+
 
 class EMGElectrodePlacementSetting(models.Model):
     emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
@@ -663,6 +719,10 @@ class EMGElectrodePlacementSetting(models.Model):
     emg_electrode_placement = models.ForeignKey(EMGElectrodePlacement)
     remarks = models.TextField(null=True, blank=True)
     muscle_side = models.ForeignKey(MuscleSide, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(EMGElectrodePlacementSetting, self).save(*args, **kwargs)
+        self.emg_electrode_setting.emg_setting.experiment.save()
 
 
 class TMSSetting(models.Model):
@@ -673,6 +733,10 @@ class TMSSetting(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        super(TMSSetting, self).save(*args, **kwargs)
+        self.experiment.save()
 
 
 class TMSDeviceSetting(models.Model):
@@ -685,6 +749,10 @@ class TMSDeviceSetting(models.Model):
     tms_device = models.ForeignKey(TMSDevice)
     pulse_stimulus_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_STIMULUS_TYPES)
     coil_model = models.ForeignKey(CoilModel)
+
+    def save(self, *args, **kwargs):
+        super(TMSDeviceSetting, self).save(*args, **kwargs)
+        self.tms_setting.experiment.save()
 
 
 def get_tms_brain_area_dir(instance, filename):
@@ -765,6 +833,10 @@ class Component(models.Model):
     duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     experiment = models.ForeignKey(Experiment, null=False)
     component_type = models.CharField(null=False, max_length=30, choices=COMPONENT_TYPES)
+
+    def save(self, *args, **kwargs):
+        super(Component, self).save(*args, **kwargs)
+        self.experiment.save()
 
 
 class Task(Component):
@@ -871,6 +943,10 @@ class ContextTree(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super(ContextTree, self).save(*args, **kwargs)
+        self.experiment.save()
+
 
 class DigitalGamePhase(Component):
     software_version = models.ForeignKey(SoftwareVersion)
@@ -909,6 +985,7 @@ class ComponentConfiguration(models.Model):
             top = ComponentConfiguration.objects.filter(parent=self.parent).order_by('-order').first()
             self.order = top.order + 1 if top else 1
         super(ComponentConfiguration, self).save()
+        self.component.experiment.save()
 
 
 class Group(models.Model):
@@ -921,6 +998,10 @@ class Group(models.Model):
 
     class Meta:
         verbose_name = _('Group')
+
+    def save(self, *args, **kwargs):
+        super(Group, self).save(*args, **kwargs)
+        self.experiment.save()
 
 
 def get_dir(instance, filename):
@@ -958,11 +1039,19 @@ class SubjectOfGroup(models.Model):
     class Meta:
         unique_together = ('subject', 'group',)
 
+    def save(self, *args, **kwargs):
+        super(SubjectOfGroup, self).save(*args, **kwargs)
+        self.group.experiment.save()
+
 
 class DataConfigurationTree(models.Model):
     component_configuration = models.ForeignKey(ComponentConfiguration, on_delete=models.PROTECT)
     parent = models.ForeignKey('self', null=True, related_name='children')
     code = models.CharField(null=True, blank=True, max_length=150)
+
+    def save(self, *args, **kwargs):
+        super(DataConfigurationTree, self).save(*args, **kwargs)
+        self.component_configuration.component.experiment.save()
 
 
 class SubjectStepData(models.Model):
@@ -979,6 +1068,10 @@ class SubjectStepData(models.Model):
                                 validators=[validate_date_questionnaire_response])
     end_time = models.TimeField(null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        super(SubjectStepData, self).save(*args, **kwargs)
+        self.subject_of_group.group.experiment.save()
+
 
 class DataCollection(models.Model):
     # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
@@ -991,6 +1084,10 @@ class DataCollection(models.Model):
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        super(DataCollection, self).save(*args, **kwargs)
+        self.subject_of_group.group.experiment.save()
 
 
 class QuestionnaireResponse(DataCollection):
@@ -1205,7 +1302,7 @@ class GoalkeeperGameLog(models.Model):
 
     class Meta:
         managed = False
-        db_table = '"public"."goalgame"'
+        db_table = '"public"."results"'
 
 
 class ScheduleOfSending(models.Model):
@@ -1217,7 +1314,7 @@ class ScheduleOfSending(models.Model):
         ("error_sending", _("error sending")),
     )
     experiment = models.ForeignKey(Experiment, related_name='schedule_of_sending')
-    schedule_datetime = models.DateTimeField(default=datetime.datetime.now())
+    schedule_datetime = models.DateTimeField(auto_now_add=True)
     responsible = models.ForeignKey(User)
     status = models.CharField(max_length=50, choices=SCHEDULE_STATUS_OPTIONS)
     sending_datetime = models.DateTimeField(null=True)

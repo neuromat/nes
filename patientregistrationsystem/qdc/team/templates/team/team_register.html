@@ -137,7 +137,7 @@
                             </tbody>
                         </table>
                         {% if perms.experiment.add_experiment %}
-                            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#insert_new_person">Insert new person</button>
+                            <button type="button" id="new_person_btn" class="btn btn-primary" data-toggle="collapse" data-target="#insert_new_person" onclick="hideNewPersonButton()">Insert new person</button>
                             <div id="insert_new_person" class="collapse">
                                 <div class="row">
                                     <br/>

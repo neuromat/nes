@@ -6,7 +6,21 @@
 
 {% block header %}
     <script src="{% static 'quiz/js/person_register.js' %}"></script>
+    <script src="{% static 'quiz/js/password.js' %}"></script>
+    <script src="{% static 'quiz/js/person_password_register.js' %}"></script>
     <script type="text/javascript">
+
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+            $( "user_form" ).submit(function( event ) {
+                if(checkPassExt())
+                    event.preventDefault();
+                if(passwordForce() < 20 && $('#id_new_password1').val()){
+                    showErrorMessageTemporary(gettext("Password must contain at least 8 characters, including at least one uppercase letter, digit or special character."));
+                    event.preventDefault();
+                }
+            })
+        });
 
         function Validate(){
            if(!validateForm()){
@@ -156,11 +170,29 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group {% if person_form.institution.errors %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Institution" %}</label>
+                            {{ person_form.institution }}
+                            <div class="help-block with-errors">
+                                {% for error in person_form.institution.errors %}
+                                    {{ error }}<br/>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="row collapse" id="user_name_div">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group ">
-                            <label class="control-label">Login</label>
+                        <div class="form-group {% if user_form.username.errors %}has-error{% endif %}">
+                            <label class="control-label">Login<b style="color: red;">*</b></label>
                             {{ user_form.username }}
+                            <div class="help-block with-errors">
+                                {% for error in user_form.username.errors %}
+                                    {{ error }}<br/>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -181,7 +213,7 @@
                                     {{ user_form.password }}
                                 </div>
                                 <div class="help-block with-errors">
-                                    {% for error in form.errors.password %}
+                                    {% for error in user_form.errors.password %}
                                         <div>{{ error }}</div>
                                     {% endfor %}
                                 </div>
@@ -262,9 +294,12 @@
         </div>
     </div>
     <div class="btn-toolbar">
-        <div class="btn-group pull-left">
-            <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
-        </div>
+        {% if not editing %}
+            <div class="btn-group pull-left">
+                <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete" %}</button>
+            </div>
+        {% endif %}
+
         {% if editing %}
             <div class="btn-group pull-right">
                 <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>

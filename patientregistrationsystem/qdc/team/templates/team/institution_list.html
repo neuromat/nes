@@ -10,7 +10,7 @@
     </script>
 {% endblock %}
 
-{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+{% block activeTeam %}class="active"{% endblock %}
 
 {% block content %}
 
@@ -40,66 +40,58 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active">{% trans "Studies" %}</li>
+                <li><a href="/team/registers">{% trans "Teams" %}</a></li>
+                <li class="active">{% trans "Institutions" %}</li>
             </ol>
         </div>
     </div>
 
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
-
             <div class="container span6 offset3 well ">
-                <h4>{% trans "Studies list" %}</h4>
+                <h4>{% trans "Institutions list" %}</h4>
                 <div class="form-group">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>{% trans "Title" %}</th>
-                                <th>{% trans "Term" %}</th>
-                                <th>{% trans "Responsible" %}</th>
+                                <th>{% trans "Name" %}</th>
+                                <th>{% trans "Acronym" %}</th>
+                                <th>{% trans "Country" %}</th>
+                                <th>{% trans "Parent" %}</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {% for research_project in research_projects %}
+                        {% for institution in institutions %}
                             <tr>
-                                <td>{% if perms.experiment.view_researchproject %}
+                                <td>{% if perms.team.change_team %}
                                         <a data-toggle="tooltip" data-placement="left" title="{% trans "Visualize" %}"
-                                           href="/experiment/research_project/{{ research_project.id }}">
-                                            {{ research_project.title }}
+                                           href="/team/institution/{{ institution.id }}">
+                                            {{ institution.name }}
                                         </a>
                                     {% else %}
-                                        {{ research_project.title }}
+                                        {{ institution.name }}
                                     {% endif %}
                                 </td>
-                                <td>
-                                    {% if research_project.end_date %}
-                                        {{ research_project.start_date }}
-                                        <br>{% trans "to" %}<br>
-                                        {{ research_project.end_date }}
-                                    {% else %}
-                                        {% trans "From" %}<br>{{ research_project.start_date }}
-                                    {% endif %}
-                                </td>
-                                <td>{{ research_project.owner.first_name }} {{ research_project.owner.last_name }}</td>
+                                <td>{{ institution.acronym }}</td>
+                                <td>{{ institution.country|default:"" }}</td>
+                                <td>{{ institution.parent|default:"" }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                {% if perms.experiment.add_researchproject %}
+                {% if perms.team.change_team %}
                     <div class="btn-group pull-left">
-                        <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Insert new study" %}</a>
+                        <a href="/team/institution/new/" class="btn btn-primary">{% trans "Insert new" %}</a>
                     </div>
                 {% endif %}
             </div>
 
-            {% if can_send_to_portal and perms.experiment.add_researchproject %}
-                <div class="btn-group pull-left">
-                    <a href="/experiment/schedule_of_sending/list/" class="btn btn-success">
-                        <span class="glyphicon glyphicon-send"></span> {% trans "Send experiments to Portal" %}
-                    </a>
+            <div class="btn-toolbar">
+                <div class="btn-group pull-right">
+                    <a href="/team/registers" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
-            {% endif %}
+            </div>
 
         </div>
     </div>

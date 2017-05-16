@@ -72,9 +72,12 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
-    GenericDataCollectionForm, GenericDataCollectionDataForm
+    GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
 
-from configuration.models import Institution
+from .portal import get_experiment_status_portal, send_user_to_portal, \
+    send_research_project_to_portal, send_experiment_to_portal, get_portal_status
+
+from configuration.models import LocalInstitution
 
 from export.directory_utils import create_directory
 from export.forms import ParticipantsSelectionForm, AgeIntervalForm
@@ -590,6 +593,8 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     for field in experiment_form.fields:
         experiment_form.fields[field].widget.attrs['disabled'] = True
 
+    experiment_status_portal = get_experiment_status_portal(experiment_id)
+
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
@@ -634,7 +639,8 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                "emg_setting_list": emg_setting_list,
                "tms_setting_list": tms_setting_list,
                "context_tree_list": context_tree_list,
-               "research_project": experiment.research_project}
+               "research_project": experiment.research_project,
+               "experiment_status_portal": experiment_status_portal}
 
     return render(request, template_name, context)
 
@@ -674,23 +680,41 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 
 @login_required
 @permission_required('experiment.change_experiment')
-def experiment_schedule_of_sending(request, experiment_id):
+def experiment_schedule_of_sending(request, experiment_id,
+                                   template_name="experiment/experiment_schedule_of_sending.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    resend_experiment_form = ResendExperimentForm(request.POST or None)
 
     check_can_change(request.user, experiment.research_project)
 
     last_schedule_of_sending = \
         ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last()
 
-    new_schedule = ScheduleOfSending(experiment=experiment,
-                                     schedule_datetime=datetime.now(),
-                                     responsible=request.user,
-                                     status="scheduled")
-    new_schedule.save()
-    messages.success(request, _('Experiment scheduled to be sent successfully.'))
+    if request.method == "POST":
+        if request.POST['action'] == "send":
 
-    redirect_url = reverse("experiment_view", args=(experiment_id,))
-    return HttpResponseRedirect(redirect_url)
+            if experiment.last_sending:
+                new_schedule = resend_experiment_form.save(commit=False)
+            else:
+                new_schedule = ScheduleOfSending()
+
+            new_schedule.experiment = experiment
+            new_schedule.responsible = request.user
+            new_schedule.status = "scheduled"
+            new_schedule.save()
+            messages.success(request, _('Experiment scheduled to be sent successfully.'))
+
+            redirect_url = reverse("experiment_view", args=(experiment_id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "experiment": experiment,
+        "last_schedule_of_sending": last_schedule_of_sending,
+        "resend_experiment_form": resend_experiment_form
+    }
+
+    return render(request, template_name, context)
 
 
 @login_required
@@ -698,8 +722,6 @@ def experiment_schedule_of_sending(request, experiment_id):
 def schedule_of_sending_list(request, template_name="experiment/schedule_of_sending_list.html"):
 
     list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
-
-    experiment_sent = False
 
     if request.method == "POST":
         if request.POST['action'] == "send-to-portal":
@@ -720,73 +742,30 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
                 send_research_project_to_portal(research_project)
 
             for schedule_of_sending in list_of_schedule_of_sending:
-                send_experiment_to_portal(schedule_of_sending)
+                send_experiment_to_portal(schedule_of_sending.experiment)
 
                 schedule_of_sending.status = "sent"
-                schedule_of_sending.sending_datetime = datetime.now()
+                schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
                 schedule_of_sending.save()
+
+                experiment = schedule_of_sending.experiment
+                experiment.last_sending = schedule_of_sending.sending_datetime
+                experiment.save()
 
             messages.success(request, _('Experiments sent successfully.'))
 
+            list_of_schedule_of_sending = \
+                ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
+
+    portal_status = get_portal_status()
+    if not portal_status:
+        messages.warning(request, _("Portal is not available to send experiments"))
     context = {
-        "list_of_schedule_of_sending": list_of_schedule_of_sending
+        "list_of_schedule_of_sending": list_of_schedule_of_sending,
+        "portal_status": portal_status
     }
 
     return render(request, template_name, context)
-
-
-def send_user_to_portal(user):
-    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
-    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
-
-    subprocess.call(['http', '-a', credential, '--ignore-stdin', 'POST',
-                     portal_server + '/api/researchers/',
-                     'first_name=' + user.first_name,
-                     'surname=' + user.last_name,
-                     'nes_id=' + str(user.id)])
-    return
-
-
-def send_research_project_to_portal(research_project):
-    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
-    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
-
-    if research_project.end_date is None:
-        subprocess.call(['http', '-a', credential, '--ignore-stdin',
-                         'POST', portal_server + '/api/researchers/' +
-                         str(research_project.owner.id) + '/studies/',
-                         'title=' + research_project.title,
-                         'description=' + research_project.description,
-                         'start_date=' + str(research_project.start_date),
-                         'nes_id=' + str(research_project.id)])
-    else:
-        subprocess.call(['http', '-a', credential, '--ignore-stdin',
-                         'POST', portal_server + '/api/researchers/' +
-                         str(research_project.owner.id) + '/studies/',
-                         'title=' + research_project.title,
-                         'description=' + research_project.description,
-                         'start_date=' + str(research_project.start_date),
-                         'end_date=' + str(research_project.end_date),
-                         'nes_id=' + str(research_project.id)])
-
-    return
-
-
-def send_experiment_to_portal(schedule_of_sending):
-    credential = settings.PORTAL_API['USER'] + ':' + settings.PORTAL_API['PASSWORD']
-    portal_server = settings.PORTAL_API['URL'] + ':' + settings.PORTAL_API['PORT']
-
-    subprocess.call(['http', '-a', credential,
-                     '--ignore-stdin', 'POST',
-                     portal_server + '/api/studies/' + str(
-                         schedule_of_sending.experiment.research_project.id) + '/experiments/',
-                     'title=' + schedule_of_sending.experiment.title,
-                     'description=' + schedule_of_sending.experiment.description,
-                     'data_acquisition_none=' +
-                     str(schedule_of_sending.experiment.data_acquisition_is_concluded),
-                     'nes_id=' + str(schedule_of_sending.experiment.id)])
-
-    return
 
 
 @login_required
@@ -938,11 +917,10 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     experimental_protocol_image = None
 
     if group.experimental_protocol:
-        experimental_protocol_description = get_experimental_protocol_description(
-            group.experimental_protocol, request.LANGUAGE_CODE)
 
-        experimental_protocol_image = get_experimental_protocol_image(
-            group.experimental_protocol, request.LANGUAGE_CODE)
+        tree = get_block_tree(group.experimental_protocol, request.LANGUAGE_CODE)
+        experimental_protocol_description = get_description_from_experimental_protocol_tree(tree)
+        experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -982,6 +960,14 @@ def group_update(request, group_id, template_name="experiment/group_register.htm
                 if group_form.has_changed():
                     group_form.save()
                     messages.success(request, _('Group updated successfully.'))
+
+                    if group.experiment.last_sending and group.experiment.last_update > group.experiment.last_sending:
+
+                        messages.info(request,
+                                      _('<a href="/experiment/schedule_of_sending/{!s}">'
+                                        'This experiment was previously sent to the Portal. Click here to resend it.'
+                                        '</a>').format(str(group.experiment.id)))
+
                 else:
                     messages.success(request, _('There is no changes to save.'))
 
@@ -6397,7 +6383,7 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
                'group': group,
-               'institution_code': Institution.get_solo().code,
+               'institution_code': LocalInstitution.get_solo().code,
                'digital_game_phase_collections': digital_game_phase_collections,
                "enable_upload": enable_upload
                }
@@ -6415,7 +6401,7 @@ def load_group_goalkeeper_game_data(request, group_id):
         messages.info(request, _('No experimental group code configured.'))
     else:
 
-        experimental_group_code = (Institution.get_solo().code + '-' if Institution.get_solo().code else '') + \
+        experimental_group_code = (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + \
                                   group.code
 
         # data structure
@@ -6429,30 +6415,37 @@ def load_group_goalkeeper_game_data(request, group_id):
         for register in candidate_registers_from_goalkeeper_repository:
 
             lines = register.filecontent.splitlines()
-            header = lines[0].split(',')
-            values = lines[1].split(',')
 
-            # checking if the first element is the experimental group
-            if header[0] == 'experimentGroup' and values[0] == experimental_group_code:
+            if lines:
+                sequence_used = lines[0][15:] if (lines[0][:14] == 'sequExecutada:') else ''
 
-                # getting fields of interest
-                if 'playerAlias' in header and \
-                                'phase' in header and \
-                                'YYMMDD' in header and \
-                                'HHMMSS' in header:
+                header_line = 1 if sequence_used else 0
 
-                    player_alias_index = header.index('playerAlias')
-                    phase_index = header.index('phase')
-                    date_index = header.index('YYMMDD')
-                    time_index = header.index('HHMMSS')
+                header = lines[header_line].split(',')
+                values = lines[header_line + 1].split(',')
 
-                    if values[player_alias_index] not in game_group_data:
-                        game_group_data[values[player_alias_index]] = {}
+                # checking if the first element is the experimental group
+                if header[0] == 'experimentGroup' and values[0] == experimental_group_code:
 
-                    game_group_data[values[player_alias_index]][values[phase_index]] = {
-                        'file_content': register.filecontent,
-                        'date': datetime.strptime(values[date_index], '%y%m%d'),
-                        'time': datetime.strptime(values[time_index], '%H%M%S')}
+                    # getting fields of interest
+                    if 'playerAlias' in header and \
+                                    'phase' in header and \
+                                    'YYMMDD' in header and \
+                                    'HHMMSS' in header:
+
+                        player_alias_index = header.index('playerAlias')
+                        phase_index = header.index('phase')
+                        date_index = header.index('YYMMDD')
+                        time_index = header.index('HHMMSS')
+
+                        if values[player_alias_index] not in game_group_data:
+                            game_group_data[values[player_alias_index]] = {}
+
+                        game_group_data[values[player_alias_index]][values[phase_index]] = {
+                            'file_content': register.filecontent,
+                            'sequence_used': sequence_used,
+                            'date': datetime.strptime(values[date_index], '%y%m%d'),
+                            'time': datetime.strptime(values[time_index], '%H%M%S')}
 
         number_of_imported_data = 0
         list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
@@ -6506,6 +6499,9 @@ def load_group_goalkeeper_game_data(request, group_id):
                                     digital_game_phase_data.file.save(
                                         file_name,
                                         ContentFile(file_content))
+
+                                    digital_game_phase_data.sequence_used_in_context_tree = \
+                                        game_data_collection['sequence_used']
 
                                     digital_game_phase_data.save()
 
@@ -7083,12 +7079,17 @@ def subject_additional_data_view(request, group_id, subject_id,
             SubjectStepData.objects.filter(subject_of_group=subject_of_group,
                                            data_configuration_tree=data_configuration_tree_id)
 
+        additional_data_files = None
+        if data_configuration_tree_id:
+            additional_data_files = \
+                AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                                              data_configuration_tree__id=data_configuration_tree_id)
+
         data_collections.append(
             {'component_configuration': component_configuration,
              'path': path,
              'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
-             'additional_data_files': AdditionalData.objects.filter(
-                 subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id),
+             'additional_data_files': additional_data_files,
              'icon_class': icon_class[component_configuration.component.component_type]}
         )
 
@@ -7101,20 +7102,16 @@ def subject_additional_data_view(request, group_id, subject_id,
     return render(request, template_name, context)
 
 
-def get_experimental_protocol_description(experimental_protocol, language_code):
+def get_subgraph(tree, node_identifier=""):
 
-    tree = get_block_tree(experimental_protocol.id, language_code)
-
-    return get_description_from_experimental_protocol_tree(tree)
-
-
-def get_subgraph(block: Block, node_identifier=""):
+    block = get_object_or_404(Block, id=tree['component'].id)
 
     first_node = None
     last_node = None
 
     # create a subgraph
-    subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier, label=block.identification,
+    subgraph = pydot.Cluster(graph_name='subgraph_' + node_identifier,
+                             label=(tree['numeration'] + ' - ' if tree['numeration'] else '') + block.identification,
                              labeljust="left", pencolor="#757575")
 
     # Paralel blocks have additional start and end points
@@ -7134,17 +7131,17 @@ def get_subgraph(block: Block, node_identifier=""):
 
     # For each use of step
     previous_node = None
-    for component_configuration in ComponentConfiguration.objects.filter(parent_id=block.id).order_by('order'):
+    for component_configuration_item in tree['list_of_component_configuration']:
 
         # get the component
-        component = component_configuration.component
+        component = component_configuration_item['component']['component']
 
         # create node or subgraph
         if component.component_type == "block":
 
             new_subgraph, new_first_node, new_last_node = \
-                get_subgraph(get_object_or_404(Block, id=component.id),
-                             node_identifier + '_' + str(component_configuration.id))
+                get_subgraph(component_configuration_item['component'],
+                             node_identifier + '_' + str(component_configuration_item['id']))
             subgraph.add_subgraph(new_subgraph)
 
             if block.type == Block.PARALLEL_BLOCK:
@@ -7184,9 +7181,10 @@ def get_subgraph(block: Block, node_identifier=""):
                 color_node = "LightPink"
 
             new_node = pydot.Node(
-                'node_' + node_identifier + '_' + str(component_configuration.id),
-                label=split_node_identification_for_graph(component.identification + ' (' +
-                                                          get_component_name(component.component_type) + ')'),
+                'node_' + node_identifier + '_' + str(component_configuration_item['id']),
+                label=split_node_identification_for_graph(
+                    component_configuration_item['component']['numeration'] + ' - ' +
+                    component.identification + ' (' + get_component_name(component.component_type) + ')'),
                 style="filled", fillcolor=color_node, shape='rectangle')
 
             subgraph.add_node(new_node)
@@ -7216,7 +7214,7 @@ def split_node_identification_for_graph(identification):
         if not current_line:
             current_line = item
         else:
-            if len(current_line + item) > 10:
+            if len(current_line + item) > 15:
                 result.append(current_line)
                 current_line = item
             else:
@@ -7227,20 +7225,12 @@ def split_node_identification_for_graph(identification):
     return '\n'.join(result)
 
 
-def get_experimental_protocol_image(experimental_protocol, language_code):
+def get_experimental_protocol_image(experimental_protocol, tree):
 
     graph = pydot.Dot(graph_type='digraph')
 
-    subgraph, first_node, last_node = get_subgraph(get_object_or_404(Block, id=experimental_protocol.id))
+    subgraph, first_node, last_node = get_subgraph(tree)
     graph.add_subgraph(subgraph)
-
-    # main cluster
-    # subgraph = pydot.Cluster(graph_name='Component' + str(experimental_protocol.id),
-    #                          label=experimental_protocol.identification)
-    # graph.add_subgraph(subgraph)
-    #
-    # node_b = pydot.Node('B', label='Initial instruction\n(instruction)', shape='square')
-    # subgraph.add_node(node_b)
 
     initial_node = pydot.Node('initial_node', label='', style="filled", shape='circle', fillcolor='green')
     ending_node = pydot.Node('ending_node', label='', style="filled", shape='circle', fillcolor='red')
@@ -7261,8 +7251,9 @@ def get_experimental_protocol_image(experimental_protocol, language_code):
     return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
 
 
-def get_description_from_experimental_protocol_tree(component, numeration='', component_configuration_attributes=[]):
-    description = numeration if numeration else _('Main step')
+def get_description_from_experimental_protocol_tree(component, component_configuration_attributes=[]):
+    description = _('Step') + ' ' + component['numeration'] if component['numeration'] else _('Main step')
+
     description += ': ' + get_component_name(component['component_type']) + "\n"
 
     # component attributes
@@ -7280,7 +7271,7 @@ def get_description_from_experimental_protocol_tree(component, numeration='', co
     if num_of_sub_steps > 0:
         description += '\t-' + _('Sub-steps: (')
         for item in range(1, num_of_sub_steps + 1):
-            description += (numeration + '.' if numeration else '') + str(item)
+            description += (component['numeration'] + '.' if component['numeration'] else '') + str(item)
             description += ', ' if item != num_of_sub_steps else ''
         description += ')\n'
 
@@ -7288,7 +7279,6 @@ def get_description_from_experimental_protocol_tree(component, numeration='', co
         for component_configuration in component['list_of_component_configuration']:
             description += get_description_from_experimental_protocol_tree(
                 component_configuration['component'],
-                (numeration + '.' if numeration else _('Step') + ' ') + str(counter),
                 component_configuration['component_configuration_attributes']
             )
             counter += 1
@@ -7305,26 +7295,31 @@ def get_component_name(component_type):
     return component_name if component_name else component_type
 
 
-def get_block_tree(component_id, language_code=None):
-
-    component = get_object_or_404(Component, id=component_id)
+def get_block_tree(component, language_code=None, numeration=''):
 
     attributes = get_component_attributes(component, language_code)
 
     list_of_component_configuration = []
     if component.component_type == 'block':
-        configurations = ComponentConfiguration.objects.filter(parent_id=component_id).order_by('order')
+        configurations = ComponentConfiguration.objects.filter(parent=component).order_by('order')
+        counter = 1
         for configuration in configurations:
             component_configuration_attributes = get_component_configuration_attributes(configuration)
-            component_info = get_block_tree(configuration.component_id, language_code)
+            component_info = get_block_tree(configuration.component,
+                                            language_code,
+                                            (numeration + '.' if numeration else '') + str(counter))
             list_of_component_configuration.append(
                 {'component_configuration_attributes': component_configuration_attributes,
-                 'component': component_info})
+                 'component': component_info,
+                 'id': configuration.id})
+            counter += 1
 
     return {'identification': component.identification,
             'component_type': component.component_type,
             'attributes': attributes,
-            'list_of_component_configuration': list_of_component_configuration}
+            'list_of_component_configuration': list_of_component_configuration,
+            'numeration': numeration,
+            'component': component}
 
 
 def get_component_attributes(component, language_code):

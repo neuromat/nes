@@ -26,3 +26,7 @@ function show_modal_alter_is_coordinator(team_person_id) {
 
     $('#modalComponentIs_coordinator').modal('show');
 }
+
+function hideNewPersonButton() {
+    $('#new_person_btn').hide();
+}

@@ -17,7 +17,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
     EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
     ResearchProjectCollaboration, TMSLocalizationSystem, DigitalGamePhase, ContextTree, DigitalGamePhaseData, \
-    Publication, GenericDataCollection, GenericDataCollectionData
+    Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending
 
 
 class ExperimentForm(ModelForm):
@@ -1367,3 +1367,17 @@ class GenericDataCollectionDataForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(GenericDataCollectionDataForm, self).__init__(*args, **kwargs)
+
+
+class ResendExperimentForm(ModelForm):
+    class Meta:
+        model = ScheduleOfSending
+
+        fields = ['reason_for_resending']
+
+        widgets = {
+            'reason_for_resending': Textarea(attrs={'class': 'form-control',
+                                                    'rows': '4', 'required': "",
+                                                    'data-error': _('Reason must be filled.'),
+                                                    'autofocus': ''}),
+        }

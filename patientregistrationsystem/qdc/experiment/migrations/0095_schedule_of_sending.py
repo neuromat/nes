@@ -19,7 +19,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('schedule_datetime', models.DateTimeField(default=datetime.datetime(2017, 3, 30, 14, 4, 25, 122376))),
-                ('status', models.CharField(choices=[('scheduled', 'scheduled'), ('canceled', 'canceled'), ('sending', 'sending'), ('sent', 'sent'), ('error_sending', 'error sending')], max_length=50)),
+                ('status', models.CharField(
+                    choices=[('scheduled', 'scheduled'), ('canceled', 'canceled'), ('sending', 'sending'),
+                             ('sent', 'sent'), ('error_sending', 'error sending')], max_length=50)),
                 ('sending_datetime', models.DateTimeField(null=True)),
                 ('reason_for_resending', models.CharField(null=True, max_length=500)),
             ],

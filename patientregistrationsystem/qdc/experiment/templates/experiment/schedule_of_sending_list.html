@@ -65,6 +65,7 @@
                                 <th>{% trans "Study title" %}</th>
                                 <th>{% trans "Schedule time" %}</th>
                                 <th>{% trans "Responsible" %}</th>
+                                <th>{% trans "Reason (when resending)" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -74,25 +75,18 @@
                                 <td>{{ schedule_of_sending.experiment.research_project.title }}</td>
                                 <td>{{ schedule_of_sending.schedule_datetime }}</td>
                                 <td>{{ schedule_of_sending.responsible.first_name }} {{ schedule_of_sending.responsible.last_name }}</td>
+                                <td>{{ schedule_of_sending.reason_for_resending | default:"" }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                 </div>
 
-{#                {% if perms.experiment.add_researchproject %}#}
-                    <div class="btn-group pull-left">
-{#                        <a href="/experiment/schedule_of_sending/send_all/" class="btn btn-primary">{% trans "Send to Portal" %}</a>#}
-                        <button type="submit" name="action" value="send-to-portal" class="btn btn-primary">{% trans "Send to Portal" %}</button>
-                    </div>
-{#                {% endif %}#}
+                <div class="btn-group pull-left">
+                    <button type="submit" {% if not portal_status %}disabled="disabled"{% endif %} name="action" value="send-to-portal" class="btn btn-primary">{% trans "Send to Portal" %}</button>
+                </div>
             </div>
 
-{#            {% if can_send_to_portal and perms.experiment.add_researchproject %}#}
-{#                <div class="btn-group pull-left">#}
-{#                    <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Send experiments to Portal" %}</a>#}
-{#                </div>#}
-{#            {% endif %}#}
 
         </div>
     </div>

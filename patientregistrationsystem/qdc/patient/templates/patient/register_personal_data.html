@@ -15,6 +15,9 @@
 {% block sub_content %}
 
     <div class="tab-pane {% if currentTab == '0' %}active{% endif %}" id="tab1">
+        <div hidden="hidden">
+            <input type="text" id="patient_city" value="{{ patient_form.city.value }}">
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="container span6 offset3 well ">
@@ -221,6 +224,7 @@
                                 <div class="input-group  input-group-sm ">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
                                     {{ patient_form.district }}
+
                                 </div>
 
                             </div>
@@ -228,10 +232,15 @@
                         <div class="col-xs-6 col-sm-6">
                             <div class="form-group">
                                 <label>{% trans "City" %}</label>
-
                                 <div class="input-group  input-group-sm ">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-home"></span></span>
-                                    {{ patient_form.city }}
+                                    {% if editing %}
+                                        <div class="ui-widget">
+                                          <input id="get_location" name="city" class="form-control">
+                                        </div>
+                                    {% else %}
+                                         {{ patient_form.city }}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>

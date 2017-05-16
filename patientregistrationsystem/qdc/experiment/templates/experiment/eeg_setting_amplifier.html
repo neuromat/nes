@@ -29,7 +29,7 @@
         </div>
         <div class="col-xs-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Identification" %} </label>
+                <label class="control-label">{% trans "Identification" %} <b style="color: red;">*</b></label>
 
                 <select class="form-control" name="equipment_selection" id="id_equipment_selection" required {% if not editing and not creating %}disabled{% endif %}>
                     <option value>-------</option>
@@ -109,7 +109,7 @@
         </div>
         <div class="col-xs-11 col-sm-11">
             <div class="form-group">
-                <label class="control-label">{% trans "Number of used channels" %} </label>
+                <label class="control-label">{% trans "Number of used channels" %} <b style="color: red;">*</b></label>
                 {{ setting_form.number_of_channels_used }}
                 <div class="help-block with-errors"></div>
             </div>

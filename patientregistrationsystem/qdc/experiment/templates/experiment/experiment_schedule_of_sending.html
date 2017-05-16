@@ -1,0 +1,113 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
+    {% csrf_token %}
+{% endblock %}
+
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li class="active">{% trans "Schedule of sending" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+
+            <div class="container span6 offset3 well ">
+
+                {% if experiment.last_sending %}
+                    <h4>{% trans "Resend experiment to Portal" %}</h4>
+                {% else %}
+                    <h4>{% trans "Send experiment to Portal" %}</h4>
+                {% endif %}
+
+                <div class="form-group">
+
+{#                    <div class="alert alert-info" role="alert">bla bla bla</div>#}
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{% trans "Committee responsible for the Portal" %}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% trans "When the experiment is sent to the Portal, its information is verified by a committee before it is publicly available." %}
+                            {% trans "Then, after be approved, an email will be sent to the experiment owner." %}
+                        </div>
+                    </div>
+
+                    {% if experiment.last_sending %}
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <div class="form-group">
+                                    <label class="control-label">{% trans "Reason for resending" %} <b style="color: red;">*</b></label>
+                                    {{ resend_experiment_form.reason_for_resending }}
+                                    <div class="help-block with-errors"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                    <div class="btn-group pull-left">
+                        <button type="submit" name="action" value="send" class="btn btn-primary">{% trans "Send to Portal" %}</button>
+                    </div>
+            </div>
+
+{#            {% if can_send_to_portal and perms.experiment.add_researchproject %}#}
+{#                <div class="btn-group pull-left">#}
+{#                    <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Send experiments to Portal" %}</a>#}
+{#                </div>#}
+{#            {% endif %}#}
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}

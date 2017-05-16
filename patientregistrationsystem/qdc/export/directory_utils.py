@@ -1,5 +1,6 @@
 from os import path, makedirs
 
+
 def create_directory(basedir, path_to_create):
     """
     Create a directory
