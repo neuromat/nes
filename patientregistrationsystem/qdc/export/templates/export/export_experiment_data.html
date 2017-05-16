@@ -78,7 +78,7 @@
                             <a data-toggle="tab" href="#general_information">{% trans "General information" %}</a>
                         </li>
                         <li {% if tab == '2' %}class="active"{% endif %}>
-                            <a data-toggle="tab" href="#questionnaire_from_entrance_evaluation">{% trans "Questionnaire from entrance evaluation" %}</a>
+                            <a data-toggle="tab" href="#questionnaire_from_entrance_evaluation">{% trans "Questionnaire answered by participants" %}</a>
                         </li>
                         <li {% if tab == '3' %}class="active"{% endif %}>
                             <a {% if not creating %}data-toggle="tab"{% endif %} href="#questionnaires_from_experiments">{% trans "Questionnaires from experiments" %}</a>
@@ -252,7 +252,7 @@
                                 {% else %}
                                     <div class="container span6 offset3 well ">
                                         <div class="container span6 offset3 well ">
-                                            <h4>{% trans "There is not questionnaire to entrance avaliation to the filtered participants" %}</h4>
+                                            <h4>{% trans "There is no questionnaires for the filtered participants" %}</h4>
                                         </div>
                                     </div>
                                 {% endif %}

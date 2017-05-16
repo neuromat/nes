@@ -5,6 +5,7 @@ from django.conf import settings
 
 from .models import Experiment
 
+
 class RestApiClient(object):
     client = None
     schema = None
@@ -35,8 +36,11 @@ def get_experiment_status_portal(experiment_id):
 
     if rest.active:
 
-        portal_experiment = rest.client.action(
-            rest.schema, ['api', 'experiments', 'read'], params={"nes_id": str(experiment_id)})
+        try:
+            portal_experiment = rest.client.action(
+                rest.schema, ['experiments', 'read'], params={"nes_id": str(experiment_id)})
+        except:
+            portal_experiment = None
 
         if portal_experiment and 'status' in portal_experiment[0]:
             status = portal_experiment[0]['status']
@@ -51,8 +55,12 @@ def send_user_to_portal(user):
     if not rest.active:
         return None
 
-    portal_user = rest.client.action(
-        rest.schema, ['api', 'researchers', 'read'], params={"nes_id": str(user.id)})
+    try:
+        portal_user = rest.client.action(
+            rest.schema, ['researchers', 'read'], params={"nes_id": str(user.id)})
+
+    except:
+        portal_user = None
 
     # general params
     params = {"nes_id": str(user.id),
@@ -62,13 +70,13 @@ def send_user_to_portal(user):
 
     # create or update
     if portal_user:
-        params["id"] = portal_user[0]['id']
+        # params["id"] = portal_user['id']
 
         portal_user = rest.client.action(
-            rest.schema, ['api', 'researchers', 'update', 'update'], params=params)
+            rest.schema, ['researchers', 'update'], params=params)
     else:
         portal_user = rest.client.action(
-            rest.schema, ['api', 'researchers', 'create'], params=params)
+            rest.schema, ['researchers', 'create'], params=params)
 
     return portal_user
 
@@ -80,8 +88,11 @@ def send_research_project_to_portal(research_project):
     if not rest.active:
         return None
 
-    portal_research_project = rest.client.action(
-        rest.schema, ['api', 'studies', 'read'], params={"nes_id": str(research_project.id)})
+    try:
+        portal_research_project = rest.client.action(
+            rest.schema, ['studies', 'read'], params={"nes_id": str(research_project.id)})
+    except:
+        portal_research_project = None
 
     # general params
     params = {"nes_id": str(research_project.id),
@@ -95,11 +106,11 @@ def send_research_project_to_portal(research_project):
     if portal_research_project:
         params["id"] = portal_research_project[0]['id']
         portal_research_project = rest.client.action(
-            rest.schema, ['api', 'studies', 'update', 'update'], params=params)
+            rest.schema, ['studies', 'update', 'update'], params=params)
     else:
         params["id"] = str(research_project.owner.id)
         portal_research_project = rest.client.action(
-            rest.schema, ['api', 'researchers', 'studies', 'create'], params=params)
+            rest.schema, ['researchers', 'studies', 'create'], params=params)
 
     return portal_research_project
 
@@ -112,7 +123,7 @@ def send_experiment_to_portal(experiment: Experiment):
         return None
 
     portal_experiment = rest.client.action(
-        rest.schema, ['api', 'experiments', 'read'], params={"nes_id": str(experiment.id)})
+        rest.schema, ['experiments', 'read'], params={"nes_id": str(experiment.id)})
 
     # general params
     params = {"nes_id": str(experiment.id),
@@ -124,10 +135,10 @@ def send_experiment_to_portal(experiment: Experiment):
     # create or update
     if portal_experiment:
         params["id"] = portal_experiment[0]['id']
-        action_keys = ['api', 'experiments', 'update', 'update']
+        action_keys = ['experiments', 'update', 'update']
     else:
         params["id"] = str(experiment.research_project.id)
-        action_keys = ['api', 'studies', 'experiments', 'create']
+        action_keys = ['studies', 'experiments', 'create']
 
     if experiment.ethics_committee_project_file:
         with open(settings.MEDIA_ROOT + '/' + str(experiment.ethics_committee_project_file), 'rb') as f:

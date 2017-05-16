@@ -515,6 +515,20 @@ def patient_view_questionnaires(request, patient, context, is_update):
     patient_questionnaires_data_list = \
         sorted(patient_questionnaires_data_list, key=itemgetter('is_initial_evaluation'), reverse=True)
 
+    # additional survey list
+
+    additional_survey_list = []
+
+    if is_update:
+
+        for survey in Survey.objects.exclude(
+                lime_survey_id__in=[item['limesurvey_id'] for item in patient_questionnaires_data_list]):
+
+            language = get_questionnaire_language(surveys, survey.lime_survey_id, language_code)
+            additional_survey_list.append({'id': survey.id,
+                                           'lime_survey_id': survey.lime_survey_id,
+                                           'title': surveys.get_survey_title(survey.lime_survey_id, language)})
+
     # Questionnaires filled in an experimental group
 
     questionnaires_data = []
@@ -554,7 +568,8 @@ def patient_view_questionnaires(request, patient, context, is_update):
         'patient_questionnaires_data_list': patient_questionnaires_data_list,
         'questionnaires_data': questionnaires_data,
         'limesurvey_available': limesurvey_available,
-        'code': patient.code
+        'code': patient.code,
+        'additional_survey_list': additional_survey_list,
     })
 
     return render(request, "patient/register_questionnaires.html", context)

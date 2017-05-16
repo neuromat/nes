@@ -198,7 +198,7 @@
                 </div>
                 <div class="row collapse" id="update_password">
                     <div class="form-group">
-                        <input type="checkbox" id="password_flag" name="password_flag_name" {% if creating %}   {% endif %}> <b>{% trans "Update password" %}</b> </input>
+                        <input type="checkbox" id="password_flag" name="password_flag_name" {% if creating %}  checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
                     </div>
                 </div>
                 <div class="container span6 offset3 well collapse" id="div_password">

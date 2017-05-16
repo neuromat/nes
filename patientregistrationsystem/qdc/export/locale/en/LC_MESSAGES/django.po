@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-04 09:27-0300\n"
+"POT-Creation-Date: 2017-05-04 18:13-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,20 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/export.py:71 export/export.py:72 export/views.py:138
+#: export/export.py:72 export/export.py:73 export/views.py:138
 #: export/views.py:139 export/views.py:143 export/views.py:144
 msgid "Participant code"
 msgstr ""
 
-#: export/export.py:132 export/tests.py:187
+#: export/export.py:133 export/tests.py:187
 msgid "Base path does not exist"
 msgstr ""
 
-#: export/export.py:1311 export/views.py:1140
+#: export/export.py:1336 export/views.py:1139
 msgid "Yes"
 msgstr ""
 
-#: export/export.py:1311 export/views.py:1140
+#: export/export.py:1336 export/views.py:1139
 msgid "No"
 msgstr ""
 
@@ -151,7 +151,7 @@ msgid "Directory Structure"
 msgstr ""
 
 #: export/templates/export/export_data.html:87
-#: export/templates/export/export_experiment_data.html:115 export/views.py:1035
+#: export/templates/export/export_experiment_data.html:115 export/views.py:1034
 msgid "Per participant"
 msgstr ""
 
@@ -177,7 +177,7 @@ msgid "Questionnaire information"
 msgstr ""
 
 #: export/templates/export/export_data.html:138
-msgid "Questionnaire - Entrance evaluation"
+msgid "Questionnaire - Answered by participants"
 msgstr ""
 
 #: export/templates/export/export_data.html:157
@@ -243,7 +243,7 @@ msgid "General information"
 msgstr ""
 
 #: export/templates/export/export_experiment_data.html:81
-msgid "Questionnaire from entrance evaluation"
+msgid "Questionnaire answered by participants"
 msgstr ""
 
 #: export/templates/export/export_experiment_data.html:84
@@ -255,9 +255,7 @@ msgid "Participants and Diagnosis"
 msgstr ""
 
 #: export/templates/export/export_experiment_data.html:255
-msgid ""
-"There is not questionnaire to entrance avaliation to the filtered "
-"participants"
+msgid "There is no questionnaires for the filtered participants"
 msgstr ""
 
 #: export/templates/export/export_menu.html:51
@@ -472,86 +470,86 @@ msgstr ""
 msgid "No data was select. Export data was not generated."
 msgstr ""
 
-#: export/views.py:1040
+#: export/views.py:1039
 msgid "Per experiments"
 msgstr ""
 
-#: export/views.py:1129
+#: export/views.py:1128
 msgid "Name of use"
 msgstr ""
 
-#: export/views.py:1131
+#: export/views.py:1130
 msgid "Number of repetitions"
 msgstr ""
 
-#: export/views.py:1133
+#: export/views.py:1132
 msgid "Interval between repetitions value"
 msgstr ""
 
-#: export/views.py:1135
+#: export/views.py:1134
 msgid "Interval between repetitions unit"
 msgstr ""
 
-#: export/views.py:1136
+#: export/views.py:1135
 msgid "Order"
 msgstr ""
 
-#: export/views.py:1138
+#: export/views.py:1137
 msgid "Position in the set of steps "
 msgstr ""
 
-#: export/views.py:1138
+#: export/views.py:1137
 msgid "Random"
 msgstr ""
 
-#: export/views.py:1138
+#: export/views.py:1137
 msgid "Fixed"
 msgstr ""
 
-#: export/views.py:1140
+#: export/views.py:1139
 msgid "Requires start and end datetime"
 msgstr ""
 
-#: export/views.py:1179
+#: export/views.py:1178
 msgid "Identification"
 msgstr ""
 
-#: export/views.py:1181
+#: export/views.py:1180
 msgid "Description"
 msgstr ""
 
-#: export/views.py:1183
+#: export/views.py:1182
 msgid "Duration value"
 msgstr ""
 
-#: export/views.py:1185
+#: export/views.py:1184
 msgid "Duration unit"
 msgstr ""
 
-#: export/views.py:1191
+#: export/views.py:1190
 msgid "Type"
 msgstr ""
 
-#: export/views.py:1193
+#: export/views.py:1192
 msgid "Number of mandatory components"
 msgstr ""
 
-#: export/views.py:1199
+#: export/views.py:1198
 msgid "Text"
 msgstr ""
 
-#: export/views.py:1205
+#: export/views.py:1204
 msgid "LimeSurvey ID"
 msgstr ""
 
-#: export/views.py:1213
+#: export/views.py:1212
 msgid "Questionnaire title"
 msgstr ""
 
-#: export/views.py:1220
+#: export/views.py:1219
 msgid "Stimulus type"
 msgstr ""
 
-#: export/views.py:1222
+#: export/views.py:1221
 msgid "Media file"
 msgstr ""
