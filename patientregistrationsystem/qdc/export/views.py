@@ -564,7 +564,7 @@ def export_view(request, template_name="export/export_data.html"):
 
             if export_form.is_valid():
                 print("valid data")
-                per_experiment = False
+                per_experiment = 'group_selected_list' in request.session
                 per_participant = True
                 per_questionnaire = False
                 heading_type = None

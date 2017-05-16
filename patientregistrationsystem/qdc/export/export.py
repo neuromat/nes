@@ -1384,7 +1384,7 @@ class ExportExecution:
                                                             questionnaire_title)
 
                         # Build the header
-                        header = self.get_header_experiment_questionnaire(questionnaire_id)
+                        header = self.questionnaires_experiment_data[questionnaire_id]['header']
                         header = header[0:len(header) - 1]
 
                         step_header = ['Path identification', 'Step description',
@@ -1574,6 +1574,10 @@ class ExportExecution:
                 # path ex.
                 # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Experimental_protocol_description.txt
                 complete_group_filename = path.join(group_file_directory, filename_group_for_export)
+                if not path.exists(group_file_directory):
+                    error_msg, group_file_directory = create_directory(experiment_resume_directory,
+                                                                         group_directory_name)
+
                 self.files_to_zip_list.append([complete_group_filename, export_group_directory])
 
                 with open(complete_group_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as txt_file:
@@ -1855,7 +1859,7 @@ class ExportExecution:
             headers_participant_data, fields = self.get_headers_and_fields(row["output_list"])
 
         if group_id != "":
-            header = self.get_header_experiment_questionnaire(questionnaire_id)
+            header = self.questionnaires_experiment_data[questionnaire_id]['header']
             if header[len(header)-1] == 'participant_code':
                 header = header[0:len(header)-1]
                 for element in step_header:
