@@ -995,7 +995,7 @@ class ExportExecution:
             print(questionnaire_id)
 
             # per_participant_data is updated by define_questionnaire method
-            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, group_id="")
+            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
 
             # create directory for questionnaire: <per_questionnaire>/<q_code_title>
             if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
@@ -1114,7 +1114,8 @@ class ExportExecution:
                     print(questionnaire_id)
 
                     # per_participant_data is updated by define_questionnaire method
-                    fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, group_data)
+                    fields_description = self.define_experiment_questionnaire(questionnaire, questionnaire_lime_survey,
+                                                                              group_data)
 
                     # create directory for questionnaire: <per_questionnaire>/<q_code_title>
                     if self.get_input_data("export_per_experiment") and (len(fields_description) > 1):
@@ -1140,16 +1141,6 @@ class ExportExecution:
                         # Ex.
                         # Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                         complete_filename = path.join(complete_export_path, export_filename)
-
-                        # if self.get_input_data('participants')[0]['output_list']:
-                        #     participant_list = self.get_participant_list(group_data)
-                        #     # add questionnaire experiment path to export_rows
-                        #
-                        #     export_fields_list = self.merge_participants_data_per_questionnaire_process(
-                        #         fields_description, participant_list)
-                        #     save_to_csv(complete_filename, export_fields_list)
-                        # else:
-                        #     save_to_csv(complete_filename, fields_description)
 
                         save_to_csv(complete_filename, fields_description)
                         self.files_to_zip_list.append([complete_filename, export_directory])
@@ -1297,28 +1288,6 @@ class ExportExecution:
                                     header = header[0:len(header) - 1]
                                     for field in headers_participant_data:
                                         header.append(field)
-                                    # per_participant_rows = [header]
-                                    #
-                                    # if self.get_input_data('participants')[0]['output_list']:
-                                    #     header = header[0:len(header)-1]
-                                    #     participant_list = [patient_id]
-                                    #     # get fields from patient 
-                                    #     export_participant_row = self.process_participant_data(
-                                    #         self.get_input_data('participants'), participant_list)
-                                    #
-                                    #     for field in export_participant_row[0]:
-                                    #         header.append(field)
-                                    #     per_participant_rows = [header]
-                                    #
-                                    #     export_fields_rows = self.merge_participant_data_per_participant_process(
-                                    #         questionnaire_code, participant_code, export_participant_row)
-                                    #     for fields in export_fields_rows:
-                                    #         per_participant_rows.append(fields)
-                                    # else:
-                                    #     fields_rows = self.get_per_participant_data(participant_code,
-                                    #                                                 questionnaire_code)
-                                    #     for fields in fields_rows:
-                                    #         per_participant_rows.append(fields)
 
                                     per_participant_rows = self.get_per_participant_data(participant_code,
                                                                                          questionnaire_code)
@@ -1684,25 +1653,16 @@ class ExportExecution:
 
         return heading_type
 
-    def define_questionnaire(self, questionnaire, questionnaire_lime_survey, group_id):
-        """
-        :param questionnaire:
-        :return: fields_description: (list)
-
-        """
-        # questionnaire exportation - evaluation questionnaire
-        # print("define_questionnaire:  ")
+    def define_experiment_questionnaire(self, questionnaire, questionnaire_lime_survey, group_id):
         questionnaire_id = questionnaire["id"]
         language = questionnaire["language"]
-
         response_type = self.get_response_type()
 
         export_rows = []
-
         # verify if Lime Survey is running
         limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
 
-        if group_id != "":
+        if group_id:
             questionnaire_exists = False
             questionnaire_responses = \
                 self.get_experiment_questionnaire_response_per_questionnaire(questionnaire_id, group_id)
@@ -1710,84 +1670,56 @@ class ExportExecution:
                 questionnaire_exists = True
                 headers, fields = self.set_questionnaire_experiment_header_and_fields(questionnaire)
             step_header = ['Path identification', 'Step description', 'Path of the step', 'Data completed']
-        else:
-            headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
-            questionnaire_exists = QuestionnaireResponse.objects.filter(
-                survey__lime_survey_id=questionnaire_id).exists()
-            # filter data (participants)
-            questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
 
-            #  include new filter that come from advanced search
-            filtered_data = self.get_participants_filtered_data()
-            questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
+            if questionnaire_exists and limesurvey_available:
+                # read all data for questionnaire_id from LimeSurvey
+                # responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+                responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                            response_type[0])
+                # fill_list = perform_csv_response(responses_string)
+                fill_list1 = perform_csv_response(responses_string1)
 
-        if questionnaire_exists and limesurvey_available:
+                # read "long" information, if necessary
+                if len(response_type) > 1:
+                    responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                                response_type[1])
+                    fill_list2 = perform_csv_response(responses_string2)
+                else:
+                    fill_list2 = fill_list1
 
-            # read all data for questionnaire_id from LimeSurvey
-            # responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
-            responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
-            # fill_list = perform_csv_response(responses_string)
-            fill_list1 = perform_csv_response(responses_string1)
+                # filter fields
+                subscripts = []
 
-            # read "long" information, if necessary
-            if len(response_type) > 1:
-                responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
-                                                                            response_type[1])
-                fill_list2 = perform_csv_response(responses_string2)
-            else:
-                fill_list2 = fill_list1
+                for field in fields:
+                    if field in fill_list1[0]:
+                        subscripts.append(fill_list1[0].index(field))
 
-            # filter fields
-            subscripts = []
-            # find fields that must be used for this process
-            # for field in fields:
-            #     if field in fill_list[0]:
-            #         subscripts.append(fill_list[0].index(field))
+                data_from_lime_survey = {}
 
-            for field in fields:
-                if field in fill_list1[0]:
-                    subscripts.append(fill_list1[0].index(field))
+                duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
 
-            data_from_lime_survey = {}
+                line_index = 1
+                line_total = len(fill_list1) - 1
+                header_filtered = set()
+                while line_index < line_total:
+                    data_fields_filtered = []
+                    line1 = fill_list1[line_index]
+                    line2 = fill_list2[line_index]
 
-            # do not consider first line, because it is header TODO: verificar token_id
-            # for line in fill_list[1:len(fill_list) - 1]:
-            #     token_id = int(line[fill_list[0].index("id")])
-            #     data_fields_filtered = [line[index] for index in subscripts]
-            #     data_from_lime_survey[token_id] = data_fields_filtered
+                    for index in subscripts:
+                        data_fields_filtered.append(line1[index])
+                        if index in duplicate_indices:
+                            data_fields_filtered.append(line2[index])
+                            header_filtered.add(fill_list1[0][index])
 
-            duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
-
-            line_index = 1
-            line_total = len(fill_list1) - 1
-            header_filtered = set()
-            while line_index < line_total:
-                data_fields_filtered = []
-                line1 = fill_list1[line_index]
-                line2 = fill_list2[line_index]
-
-                for index in subscripts:
-                    data_fields_filtered.append(line1[index])
-                    if index in duplicate_indices:
-                        data_fields_filtered.append(line2[index])
-                        header_filtered.add(fill_list1[0][index])
-
-                token = line1[fill_list1[0].index("token")]
-                data_from_lime_survey[token] = list(data_fields_filtered)
-                line_index += 1
-
-            if group_id != "":
+                    token = line1[fill_list1[0].index("token")]
+                    data_from_lime_survey[token] = list(data_fields_filtered)
+                    line_index += 1
                 self.update_questionnaire_experiment_rules(questionnaire_id)
-            else:
-                self.update_questionnaire_rules(questionnaire_id)
 
-            # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
-            for questionnaire_response in questionnaire_responses:
-
-                # transform data fields
-                # include new fieldsm
-
-                if group_id != "":
+                for questionnaire_response in questionnaire_responses:
+                    # transform data fields
+                    # include new fieldsm
                     token_id = questionnaire_response.token_id
                     survey_code = self.per_group_data[group_id][3][questionnaire_id][0]
                     questionnaire_data_list = self.per_group_data[group_id][3][questionnaire_id]
@@ -1809,12 +1741,180 @@ class ExportExecution:
                     data_completed = questionnaire_data['data_completed']
 
                     step_per_response = [path_identification, description, step_path, data_completed]
+
+                    token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+
+                    if token in data_from_lime_survey:
+
+                        lm_data_row = data_from_lime_survey[token]
+
+                        if lm_data_row:
+                            # lm_row = lm_data_row
+                            for element in step_per_response:
+                                lm_data_row.append(element)
+                                # data_fields = [smart_str(data) for data in lm_row]
+                                # fields_with_code = self.transform_questionnaire_data(patient_id, data_fields)
+
+                        data_fields = [smart_str(data) for data in lm_data_row]
+
+                        if self.get_input_data('participants')[0]['output_list']:
+                            transformed_fields = self.get_participant_data_per_id(patient_id, data_fields)
+                        else:
+                            transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
+                        # data_rows.append(transformed_fields)
+
+                        if len(transformed_fields) > 0:
+                            export_rows.append(transformed_fields)
+
+                            self.include_questionnaire_code_and_id(survey_code, lime_survey_id)
+
+                            self.include_in_per_participant_data_from_experiment([transformed_fields], patient_code,
+                                                                                     survey_code)
+
+                            self.include_participant_per_questionnaire(token_id, survey_code)
+
+                self.redefine_header_and_fields_experiment(questionnaire_id, header_filtered, fields)
+
+                # build the header
+                for row in self.get_input_data('participants'):
+                    headers_participant_data, fields = self.get_headers_and_fields(row["output_list"])
+
+                if self.questionnaires_experiment_data:
+                    header = self.questionnaires_experiment_data[questionnaire_id]['header']
                 else:
-                    patient_id = questionnaire_response.patient_id
-                    survey_code = questionnaire_response.survey.code
-                    lime_survey_id = questionnaire_response.survey.lime_survey_id
-                    patient_code = questionnaire_response.patient.code
-                    token_id = questionnaire_response.token_id
+                    header = self.get_header_questionnaire(questionnaire_id)
+                if header[len(header) - 1] == 'participant_code':
+                    header = header[0:len(header) - 1]
+                    for element in step_header:
+                        header.append(element)
+
+                for field in headers_participant_data:
+                    header.append(field)
+
+                export_rows.insert(0, header)
+            return export_rows
+
+    def define_questionnaire(self, questionnaire, questionnaire_lime_survey):
+        """
+        :param questionnaire:
+        :return: fields_description: (list)
+
+        """
+        # questionnaire exportation - evaluation questionnaire
+        # print("define_questionnaire:  ")
+        questionnaire_id = questionnaire["id"]
+        language = questionnaire["language"]
+
+        response_type = self.get_response_type()
+
+        export_rows = []
+
+        # verify if Lime Survey is running
+        limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
+
+        # if group_id != "":
+        #     questionnaire_exists = False
+        #     questionnaire_responses = \
+        #         self.get_experiment_questionnaire_response_per_questionnaire(questionnaire_id, group_id)
+        #     if questionnaire_responses:
+        #         questionnaire_exists = True
+        #     headers, fields = self.set_questionnaire_experiment_header_and_fields(questionnaire)
+        #     step_header = ['Path identification', 'Step description', 'Path of the step', 'Data completed']
+        # else:
+        headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
+        questionnaire_exists = QuestionnaireResponse.objects.filter(
+            survey__lime_survey_id=questionnaire_id).exists()
+        # filter data (participants)
+        questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
+
+        #  include new filter that come from advanced search
+        filtered_data = self.get_participants_filtered_data()
+        questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
+
+        if questionnaire_exists and limesurvey_available:
+
+            # read all data for questionnaire_id from LimeSurvey
+            # responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+            responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
+            # fill_list = perform_csv_response(responses_string)
+            fill_list1 = perform_csv_response(responses_string1)
+
+            # read "long" information, if necessary
+            if len(response_type) > 1:
+                responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                            response_type[1])
+                fill_list2 = perform_csv_response(responses_string2)
+            else:
+                fill_list2 = fill_list1
+
+            # filter fields
+            subscripts = []
+
+            for field in fields:
+                if field in fill_list1[0]:
+                    subscripts.append(fill_list1[0].index(field))
+
+            data_from_lime_survey = {}
+
+            duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
+
+            line_index = 1
+            line_total = len(fill_list1) - 1
+            header_filtered = set()
+            while line_index < line_total:
+                data_fields_filtered = []
+                line1 = fill_list1[line_index]
+                line2 = fill_list2[line_index]
+
+                for index in subscripts:
+                    data_fields_filtered.append(line1[index])
+                    if index in duplicate_indices:
+                        data_fields_filtered.append(line2[index])
+                        header_filtered.add(fill_list1[0][index])
+
+                token = line1[fill_list1[0].index("token")]
+                data_from_lime_survey[token] = list(data_fields_filtered)
+                line_index += 1
+
+            # if group_id != "":
+            #     self.update_questionnaire_experiment_rules(questionnaire_id)
+            # else:
+            self.update_questionnaire_rules(questionnaire_id)
+
+            # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
+            for questionnaire_response in questionnaire_responses:
+
+                # transform data fields
+                # include new fieldsm
+
+                # if group_id != "":
+                #     token_id = questionnaire_response.token_id
+                #     survey_code = self.per_group_data[group_id][3][questionnaire_id][0]
+                #     questionnaire_data_list = self.per_group_data[group_id][3][questionnaire_id]
+                #     questionnaire_list = questionnaire_data_list[1:len(questionnaire_data_list)]
+                #     index = 0
+                #     for element in questionnaire_list:
+                #         for key in element:
+                #             index += 1
+                #             if key == token_id:
+                #                 questionnaire_per_group = self.per_group_data[group_id][3][questionnaire_id][index]
+                #
+                #     questionnaire_data = questionnaire_per_group[token_id][0]
+                #     patient_id = questionnaire_data['patient_id']
+                #     lime_survey_id = questionnaire_id
+                #     patient_code = questionnaire_data['patient_code']
+                #     description = questionnaire_data['step_description']
+                #     step_path = questionnaire_data['path_questionnaire']
+                #     path_identification = questionnaire_data['path_identification']
+                #     data_completed = questionnaire_data['data_completed']
+                #
+                #     step_per_response = [path_identification, description, step_path, data_completed]
+                # else:
+                patient_id = questionnaire_response.patient_id
+                survey_code = questionnaire_response.survey.code
+                lime_survey_id = questionnaire_response.survey.lime_survey_id
+                patient_code = questionnaire_response.patient.code
+                token_id = questionnaire_response.token_id
 
                 token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
 
@@ -1822,10 +1922,10 @@ class ExportExecution:
 
                     lm_data_row = data_from_lime_survey[token]
 
-                    if lm_data_row and group_id != "":
-                        # lm_row = lm_data_row
-                        for element in step_per_response:
-                            lm_data_row.append(element)
+                    # if lm_data_row and group_id != "":
+                    #     # lm_row = lm_data_row
+                    #     for element in step_per_response:
+                    #         lm_data_row.append(element)
                         # data_fields = [smart_str(data) for data in lm_row]
                         # fields_with_code = self.transform_questionnaire_data(patient_id, data_fields)
 
@@ -1842,31 +1942,34 @@ class ExportExecution:
 
                         self.include_questionnaire_code_and_id(survey_code, lime_survey_id)
 
-                        if group_id != "":
-                            self.include_in_per_participant_data_from_experiment([transformed_fields], patient_code,
-                                                                                 survey_code)
-                        else:
-                            self.include_in_per_participant_data([transformed_fields], patient_code, survey_code)
+                        # if group_id != "":
+                        #     self.include_in_per_participant_data_from_experiment([transformed_fields], patient_code,
+                        #                                                          survey_code)
+                        # else:
+                        self.include_in_per_participant_data([transformed_fields], patient_code, survey_code)
 
                         self.include_participant_per_questionnaire(token_id, survey_code)
 
-            if group_id != "":
-                self.redefine_header_and_fields_experiment(questionnaire_id, header_filtered, fields)
-            else:
-                self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
+            # if group_id != "":
+            #     self.redefine_header_and_fields_experiment(questionnaire_id, header_filtered, fields)
+            # else:
+            self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
 
         for row in self.get_input_data('participants'):
             headers_participant_data, fields = self.get_headers_and_fields(row["output_list"])
 
-        if group_id != "":
-            header = self.questionnaires_experiment_data[questionnaire_id]['header']
-            if header[len(header)-1] == 'participant_code':
-                header = header[0:len(header)-1]
-                for element in step_header:
-                    header.append(element)
-        else:
-            header = self.get_header_questionnaire(questionnaire_id)
-            header = header[0:len(header) - 1]
+        # if group_id != "":
+        #     if self.questionnaires_experiment_data:
+        #         header = self.questionnaires_experiment_data[questionnaire_id]['header']
+        #     else:
+        #         header = self.get_header_questionnaire(questionnaire_id)
+        #     if header[len(header)-1] == 'participant_code':
+        #         header = header[0:len(header)-1]
+        #         for element in step_header:
+        #             header.append(element)
+        # else:
+        header = self.get_header_questionnaire(questionnaire_id)
+        header = header[0:len(header) - 1]
         for field in headers_participant_data:
             header.append(field)
 
