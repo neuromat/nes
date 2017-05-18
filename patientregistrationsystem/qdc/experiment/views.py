@@ -2,7 +2,6 @@
 import re
 import json
 import random
-import subprocess
 
 import numpy as np
 
@@ -118,19 +117,6 @@ class EEGReading:
     reading = None
 
 
-def get_current_tab(request):
-    current_tab = '0'
-
-    if request.method == "POST":
-        if 'currentTab' in request.POST:
-            current_tab = request.POST['currentTab']
-    else:
-        if 'currentTab' in request.GET:
-            current_tab = request.GET['currentTab']
-
-    return current_tab
-
-
 @login_required
 @permission_required('experiment.view_researchproject')
 def research_project_list(request, template_name="experiment/research_project_list.html"):
@@ -197,9 +183,7 @@ def get_can_change(user, research_project):
 def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    owners_full_name = ""
-    if research_project.owner:
-        owners_full_name = research_project.owner.get_full_name()
+    owners_full_name = get_owner_full_name(research_project)
 
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,
                                                 initial={'owners_full_name': owners_full_name})
@@ -262,6 +246,13 @@ def research_project_view(request, research_project_id, template_name="experimen
     return render(request, template_name, context)
 
 
+def get_owner_full_name(research_project):
+    owners_full_name = ""
+    if research_project.owner:
+        owners_full_name = research_project.owner.get_full_name()
+    return owners_full_name
+
+
 @login_required
 @permission_required('experiment.change_researchproject')
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
@@ -269,9 +260,7 @@ def research_project_update(request, research_project_id, template_name="experim
 
     check_can_change(request.user, research_project)
 
-    owners_full_name = ""
-    if research_project.owner:
-        owners_full_name = research_project.owner.get_full_name()
+    owners_full_name = get_owner_full_name(research_project)
 
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,
                                                 initial={'owners_full_name': owners_full_name})

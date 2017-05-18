@@ -1545,7 +1545,7 @@ class ExportExecution:
                 complete_group_filename = path.join(group_file_directory, filename_group_for_export)
                 if not path.exists(group_file_directory):
                     error_msg, group_file_directory = create_directory(experiment_resume_directory,
-                                                                         group_directory_name)
+                                                                       group_directory_name)
 
                 self.files_to_zip_list.append([complete_group_filename, export_group_directory])
 

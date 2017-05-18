@@ -40,8 +40,8 @@
                             {% for patient_questionnaire in patient_questionnaires_data_list %}
                                 <tr>
                                     <td>
-                                        {% if patient_questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-asterisk" style="color: red;"></span>{% endif %}
                                         {{ patient_questionnaire.limesurvey_id }} - {{ patient_questionnaire.questionnaire_title }}
+                                        {% if patient_questionnaire.is_initial_evaluation %}<span style="color: red; font-weight: bold">*</span>{% endif %}
 
                                         {% if patient_questionnaire.questionnaire_responses|length == 0 %}
                                             <span class="label label-warning">{% trans "It must be filled" %}</span>
