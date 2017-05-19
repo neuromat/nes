@@ -321,7 +321,7 @@ class ExportExecution:
         # headers_questionnaire format: dict {questionnaire_id: {header:[header]}}
 
         header = []
-        if questionnaire_id in self.questionnaires_data:
+        if questionnaire_id in self.questionnaires_experiment_data:
             header = self.questionnaires_experiment_data[questionnaire_id]["header"]
         return header
 
@@ -889,7 +889,7 @@ class ExportExecution:
             print(questionnaire_id)
 
             # per_participant_data is updated by define_questionnaire method
-            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, group_id="")
+            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
 
             # create directory for questionnaire: <per_questionnaire>/<q_code_title>
             if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
@@ -1356,20 +1356,7 @@ class ExportExecution:
                                                             questionnaire_title)
 
                         # Build the header
-                        header = self.questionnaires_experiment_data[questionnaire_id]['header']
-                        # header = header[0:len(header) - 1]
-                        #
-                        # step_header = ['Path identification', 'Step description',
-                        #                'Path of the step', 'Data completed']
-                        # for element in step_header:
-                        #     header.append(element)
-                        #
-                        # for row in self.get_input_data('participants'):
-                        #     headers_participant_data, fields = self.get_headers_and_fields(
-                        #         row["output_list"])
-                        #
-                        # for field in headers_participant_data:
-                        #     header.append(field)
+                        header = self.get_header_experiment_questionnaire(questionnaire_id)
 
                         # Get the responses from questionnaire per participant
                         per_participant_rows = self.get_per_participant_data_from_experiment(participant_code,
@@ -1724,7 +1711,7 @@ class ExportExecution:
                     token = line1[fill_list1[0].index("token")]
                     data_from_lime_survey[token] = list(data_fields_filtered)
                     line_index += 1
-                self.update_questionnaire_experiment_rules(questionnaire_id)
+                # self.update_questionnaire_experiment_rules(questionnaire_id)
 
                 for questionnaire_response in questionnaire_responses:
                     # transform data fields
@@ -1784,12 +1771,12 @@ class ExportExecution:
                 for row in self.get_input_data('participants'):
                     headers_participant_data, fields_participant_data = self.get_headers_and_fields(row["output_list"])
 
-                header = self.get_header_questionnaire(questionnaire_id)
+                header = self.get_header_experiment_questionnaire(questionnaire_id)
 
-                if header[len(header) - 1] == 'participant_code':
-                    header = header[0:len(header) - 1]
-                    for element in step_header:
-                        header.append(element)
+                # if header[len(header) - 1] == 'participant_code':
+                #     header = header[0:len(header) - 1]
+                for element in step_header:
+                    header.append(element)
 
                 for field in headers_participant_data:
                     header.append(field)
