@@ -73,8 +73,8 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
     GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
 
-from .portal import get_experiment_status_portal, send_user_to_portal, \
-    send_research_project_to_portal, send_experiment_to_portal, get_portal_status
+from .portal import get_experiment_status_portal, send_experiment_to_portal, get_portal_status, \
+    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -715,31 +715,41 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
     if request.method == "POST":
         if request.POST['action'] == "send-to-portal":
 
-            users_to_send = []
-            research_projects_to_send = []
+            # users_to_send = []
+            # research_projects_to_send = []
+            #
+            # for schedule_of_sending in list_of_schedule_of_sending:
+            #     if schedule_of_sending.experiment.research_project.owner not in users_to_send:
+            #         users_to_send.append(schedule_of_sending.experiment.research_project.owner)
+            #     if schedule_of_sending.experiment.research_project not in research_projects_to_send:
+            #         research_projects_to_send.append(schedule_of_sending.experiment.research_project)
+
+            # for user in users_to_send:
+            #     send_user_to_portal(user)
+
+            # for research_project in research_projects_to_send:
+            #     send_research_project_to_portal(research_project)
 
             for schedule_of_sending in list_of_schedule_of_sending:
-                if schedule_of_sending.experiment.research_project.owner not in users_to_send:
-                    users_to_send.append(schedule_of_sending.experiment.research_project.owner)
-                if schedule_of_sending.experiment.research_project not in research_projects_to_send:
-                    research_projects_to_send.append(schedule_of_sending.experiment.research_project)
+                if send_experiment_to_portal(schedule_of_sending.experiment):
 
-            for user in users_to_send:
-                send_user_to_portal(user)
+                    schedule_of_sending.status = "sent"
+                    schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
+                    schedule_of_sending.save()
 
-            for research_project in research_projects_to_send:
-                send_research_project_to_portal(research_project)
+                    experiment = schedule_of_sending.experiment
+                    experiment.last_sending = schedule_of_sending.sending_datetime
+                    experiment.save()
 
-            for schedule_of_sending in list_of_schedule_of_sending:
-                send_experiment_to_portal(schedule_of_sending.experiment)
+                    # sending research project
+                    send_research_project_to_portal(schedule_of_sending.experiment)
 
-                schedule_of_sending.status = "sent"
-                schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
-                schedule_of_sending.save()
+                    # sending groups
+                    for group in schedule_of_sending.experiment.group_set.all():
+                        send_group_to_portal(group)
 
-                experiment = schedule_of_sending.experiment
-                experiment.last_sending = schedule_of_sending.sending_datetime
-                experiment.save()
+                    # end of sending
+                    send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
             messages.success(request, _('Experiments sent successfully.'))
 
