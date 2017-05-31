@@ -1501,6 +1501,10 @@ class ExportExecution:
         base_export_directory = self.get_export_directory()
         # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data
         experiment_resume_directory = path.join(base_export_directory, self.get_input_data("experiment_data_directory"))
+        if not path.exists(experiment_resume_directory):
+            error_msg, experiment_resume_directory = create_directory(base_export_directory,
+                                                                      self.get_input_data("experiment_data_directory"))
+
         # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Experiment.csv
         complete_filename_experiment_resume = path.join(experiment_resume_directory, filename_experiment_resume)
         # /NES_EXPORT/

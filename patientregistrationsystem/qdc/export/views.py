@@ -384,31 +384,73 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             messages.error(request, error_msg)
             return render(request, template_name)
 
-        # process per questionnaire data
         if 'group_selected_list' in request.session:
+            # Export filter by experiments
             export.include_group_data(request.session['group_selected_list'])
+            # If questionnaire from entrance evaluation was selected
+            if export.get_input_data('questionnaires'):
+                # process per questionnaire data - entrance evaluation questionnaires
+                error_msg = export.process_per_entrance_questionnaire()
+                if error_msg != "":
+                    messages.error(request, error_msg)
+                    return render(request, template_name)
+                error_msg = export.process_per_participant_per_entrance_questionnaire()
+                if error_msg != "":
+                    messages.error(request, error_msg)
+                    return render(request, template_name)
 
-            error_msg = export.process_per_entrance_questionnaire()
-            error_exp_msg = export.process_per_experiment_questionnaire()
+            # If questionnaire from experiments was selected
+            if export.get_input_data('questionnaires_from_experiments'):
+                error_msg = export.process_per_experiment_questionnaire()
+                if error_msg != "":
+                    messages.error(request, error_msg)
+                    return render(request, template_name)
+                error_msg = export.process_per_participant_per_experiment()
+                if error_msg != "":
+                    messages.error(request, error_msg)
+                    return render(request, template_name)
+
         else:
-            error_msg = export.process_per_questionnaire()
-            error_exp_msg = ""
+            # Export filter by entrance questionnaire
+            if export.get_input_data('questionnaires'):
+                # process per questionnaire data - entrance evaluation questionnaires
+                error_msg = export.process_per_questionnaire()
+                if error_msg != "":
+                    messages.error(request, error_msg)
+                    return render(request, template_name)
 
-        if error_msg != "" or error_exp_msg != "":
-            messages.error(request, error_msg + error_exp_msg)
-            return render(request, template_name)
+                error_msg = export.process_per_participant()
+                if error_msg != "":
+                    messages.error(request, error_msg)
+                    return render(request, template_name)
 
-        # process per participant data
-        if 'group_selected_list' in request.session:
-            error_msg = export.process_per_participant_per_entrance_questionnaire()
-            error_exp_msg = export.process_per_participant_per_experiment()
-        else:
-            error_msg = export.process_per_participant()
-            error_exp_msg = ""
 
-        if error_msg != "" or error_exp_msg != "":
-            messages.error(request, error_msg + error_exp_msg)
-            return render(request, template_name)
+
+        # process per questionnaire data
+        # if 'group_selected_list' in request.session:
+        #     export.include_group_data(request.session['group_selected_list'])
+        #
+        #     error_msg = export.process_per_entrance_questionnaire()
+        #     error_exp_msg = export.process_per_experiment_questionnaire()
+        # else:
+        #     error_msg = export.process_per_questionnaire()
+        #     error_exp_msg = ""
+        #
+        # if error_msg != "" or error_exp_msg != "":
+        #     messages.error(request, error_msg + error_exp_msg)
+        #     return render(request, template_name)
+        #
+        # # process per participant data
+        # if 'group_selected_list' in request.session:
+        #     error_msg = export.process_per_participant_per_entrance_questionnaire()
+        #     error_exp_msg = export.process_per_participant_per_experiment()
+        # else:
+        #     error_msg = export.process_per_participant()
+        #     error_exp_msg = ""
+        #
+        # if error_msg != "" or error_exp_msg != "":
+        #     messages.error(request, error_msg + error_exp_msg)
+        #     return render(request, template_name)
 
         # process participants/diagnosis (Per_participant directory)
         # path ex. Users/.../NES_EXPORT/
@@ -417,12 +459,15 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         base_directory = export.get_input_data("base_directory")
         participant_data_directory = export.get_input_data("participant_data_directory")
         if 'group_selected_list' in request.session:
-            base_export_directory = path.join(base_export_directory, participant_data_directory)
+            participant_base_export_directory = path.join(base_export_directory, participant_data_directory)
             base_directory = path.join(base_directory, participant_data_directory)
+            if not path.exists(participant_base_export_directory):
+                error_msg, participant_base_export_directory = create_directory(base_export_directory,
+                                                                                participant_data_directory)
 
         particpant_selected_list = export.get_participants_filtered_data()
         error_msg = export.process_participant_filtered_data(
-            particpant_selected_list, base_export_directory, base_directory)
+            particpant_selected_list, participant_base_export_directory, base_directory)
         if error_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
