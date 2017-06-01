@@ -28,6 +28,12 @@ class ExportForm(Form):
     title = CharField(required=False, widget=TextInput(attrs={'class': 'form-control', 'disabled': ''}))
     per_participant = BooleanField(initial=True, required=False)
     per_questionnaire = BooleanField(initial=True, required=False)
+    per_eeg_settings = BooleanField(initial=False, required=False)
+    per_emg_settings = BooleanField(initial=False, required=False)
+    per_tms_settings = BooleanField(initial=False, required=False)
+    per_eeg_data = BooleanField(initial=False, required=False)
+    per_emg_data = BooleanField(initial=False, required=False)
+    per_tms_data = BooleanField(initial=False, required=False)
 
     questionnaire_entrance_selected = []
 

@@ -36,7 +36,10 @@ from survey.views import get_questionnaire_language
 
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases, EEGData, EEGSetting, \
+    DataCollection, DataFile, EMGData, EMGSetting, TMSData, TMSSetting
+
+from experiment.views import get_block_tree as get_block_attributes_tree
 
 JSON_FILENAME = "json_export.json"
 JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
@@ -513,6 +516,7 @@ def export_view(request, template_name="export/export_data.html"):
     selected_ev_quest_experiments = []
     questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
+    language_code = request.LANGUAGE_CODE
 
     if request.method == "POST":
 
@@ -661,10 +665,28 @@ def export_view(request, template_name="export/export_data.html"):
         group_list = request.session['group_selected_list']
         questionnaires_experiment_list_final = []
         participants_list_from_experiment_questionnaire = []
-
+        component_list = []
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
+
+                if 'eeg' not in component_list:
+                    eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct(
+                        'data_configuration_tree')
+                    if eeg_data_list:
+                        component_list.append('eeg')
+                if 'emg' not in component_list:
+                    emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct(
+                        'data_configuration_tree')
+                    if emg_data_list:
+                        component_list.append('emg')
+                if 'tms' not in component_list:
+                    tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct(
+                        'data_configuration_tree')
+                    if tms_data_list:
+                        component_list.append('tms')
+
+                # component_list = get_component_attributes(group.experimental_protocol)
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
                     subject_of_group__group=group).distinct('data_configuration_tree')
                 questionnaire_in_list = []
@@ -690,7 +712,7 @@ def export_view(request, template_name="export/export_data.html"):
         # request.session['participants_in_experiment_questionnaire'] = participants_list_from_experiment_questionnaire
         if questionnaires_experiment_list_final:
             questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
-                questionnaires_experiment_list_final, request.LANGUAGE_CODE)
+                questionnaires_experiment_list_final, language_code)
 
     # obter a lista dos participantes filtrados que tem questionarios de entrada preenchidos
     patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
@@ -769,6 +791,7 @@ def export_view(request, template_name="export/export_data.html"):
         "diagnosis_fields": diagnosis_fields,
         "questionnaires_fields_list": questionnaires_fields_list,
         "questionnaires_experiment_fields_list": questionnaires_experiment_fields_list,
+        "component_list": component_list,
         "selected_participant": selected_participant,
         "selected_diagnosis": selected_diagnosis,
         "tab": '1',
