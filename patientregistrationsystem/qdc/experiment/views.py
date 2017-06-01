@@ -6416,9 +6416,19 @@ def load_group_goalkeeper_game_data(request, group_id):
             lines = register.filecontent.splitlines()
 
             if lines:
-                sequence_used = lines[0][15:] if (lines[0][:14] == 'sequExecutada:') else ''
 
-                header_line = 1 if sequence_used else 0
+                # Example of content:
+                #
+                # (optional) tree: 0;0;1 | 1;0;0 | 2;1;0
+                # (optional) sequExecutada: 10210210
+                # experimentGroup, game, playID, phase, gameTime, relaxTime, playerMachine, (...)
+                # Araguaia, JG, grupo1 - v1 - ph0, ph0, 42.92149, 0, USP, (...)
+
+                has_tree_information = (lines[0][:5] == 'tree:')
+                sequence_line = 1 if has_tree_information else 0
+                sequence_used = lines[sequence_line][15:] if (lines[sequence_line][:14] == 'sequExecutada:') else ''
+
+                header_line = sequence_line + 1 if sequence_used else sequence_line
 
                 header = lines[header_line].split(',')
                 values = lines[header_line + 1].split(',')
