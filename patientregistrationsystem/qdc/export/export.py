@@ -1669,7 +1669,7 @@ class ExportExecution:
             if questionnaire_responses:
                 questionnaire_exists = True
                 headers, fields = self.set_questionnaire_experiment_header_and_fields(questionnaire)
-            step_header = ['Path identification', 'Step description', 'Path of the step', 'Data completed']
+            step_header = ['Step', 'Step identification', 'Path of the step', 'Data completed']
 
             if questionnaire_exists and limesurvey_available:
                 # read all data for questionnaire_id from LimeSurvey
