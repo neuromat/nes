@@ -74,7 +74,8 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
 
 from .portal import get_experiment_status_portal, send_experiment_to_portal, get_portal_status, \
-    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal
+    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
+    send_experimental_protocol_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -746,7 +747,18 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
 
                     # sending groups
                     for group in schedule_of_sending.experiment.group_set.all():
-                        send_group_to_portal(group)
+                        created_group = send_group_to_portal(group)
+
+                        textual_description = None
+                        image = None
+
+                        if group.experimental_protocol:
+
+                            tree = get_block_tree(group.experimental_protocol, request.LANGUAGE_CODE)
+                            textual_description = get_description_from_experimental_protocol_tree(tree)
+                            image = get_experimental_protocol_image(group.experimental_protocol, tree)
+
+                        send_experimental_protocol_to_portal(created_group['id'], textual_description, image=image)
 
                     # end of sending
                     send_experiment_end_message_to_portal(schedule_of_sending.experiment)
