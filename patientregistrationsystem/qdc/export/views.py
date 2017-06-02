@@ -36,7 +36,10 @@ from survey.views import get_questionnaire_language
 
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases, EEGData, EEGSetting, \
+    AdditionalData, EMGData, EMGSetting, TMSData, TMSSetting
+
+from experiment.views import get_block_tree as get_block_attributes_tree
 
 JSON_FILENAME = "json_export.json"
 JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
@@ -389,7 +392,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             export.include_group_data(request.session['group_selected_list'])
             # If questionnaire from entrance evaluation was selected
             if export.get_input_data('questionnaires'):
-                # process per questionnaire data - entrance evaluation questionnaires
+                # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
                 error_msg = export.process_per_entrance_questionnaire()
                 if error_msg != "":
                     messages.error(request, error_msg)
@@ -399,7 +402,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     messages.error(request, error_msg)
                     return render(request, template_name)
 
-            # If questionnaire from experiments was selected
+            # If questionnaire from experiments was selected (Experiment data directory)
             if export.get_input_data('questionnaires_from_experiments'):
                 error_msg = export.process_per_experiment_questionnaire()
                 if error_msg != "":
@@ -513,6 +516,7 @@ def export_view(request, template_name="export/export_data.html"):
     selected_ev_quest_experiments = []
     questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
+    language_code = request.LANGUAGE_CODE
 
     if request.method == "POST":
 
@@ -580,7 +584,7 @@ def export_view(request, template_name="export/export_data.html"):
                                    len(participant_selected_list) or len(diagnosis_selected_list))
 
         if selected_data_available:
-
+            component_list = {}
             if export_form.is_valid():
                 print("valid data")
                 per_experiment = 'group_selected_list' in request.session
@@ -588,6 +592,15 @@ def export_view(request, template_name="export/export_data.html"):
                 per_questionnaire = False
                 heading_type = None
                 responses_type = None
+
+                component_list['per_eeg_setting'] = export_form.cleaned_data['per_eeg_settings']
+                component_list['per_emg_setting'] = export_form.cleaned_data['per_emg_settings']
+                component_list['per_tms_setting'] = export_form.cleaned_data['per_tms_settings']
+                component_list['per_eeg_raw_data'] = export_form.cleaned_data['per_eeg_raw_data']
+                component_list['per_eeg_nwb_data'] = export_form.cleaned_data['per_eeg_nwb_data']
+                component_list['per_emg_data'] = export_form.cleaned_data['per_emg_data']
+                component_list['per_tms_data'] = export_form.cleaned_data['per_tms_data']
+                component_list['per_additional_data'] = export_form.cleaned_data['per_additional_data']
 
                 if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data['per_participant']
@@ -620,7 +633,8 @@ def export_view(request, template_name="export/export_data.html"):
 
                 build_complete_export_structure(per_participant, per_questionnaire, per_experiment, participants_list,
                                                 diagnosis_list, questionnaires_list, experiment_questionnaires_list,
-                                                responses_type, heading_type, input_filename, request.LANGUAGE_CODE)
+                                                responses_type, heading_type, input_filename, component_list,
+                                                request.LANGUAGE_CODE)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 
@@ -660,11 +674,12 @@ def export_view(request, template_name="export/export_data.html"):
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
         questionnaires_experiment_list_final = []
-        participants_list_from_experiment_questionnaire = []
-
+        # participants_list_from_experiment_questionnaire = []
+        component_list = []
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
+                component_list = get_component_with_data_and_metadata(group, component_list)
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
                     subject_of_group__group=group).distinct('data_configuration_tree')
                 questionnaire_in_list = []
@@ -690,7 +705,7 @@ def export_view(request, template_name="export/export_data.html"):
         # request.session['participants_in_experiment_questionnaire'] = participants_list_from_experiment_questionnaire
         if questionnaires_experiment_list_final:
             questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
-                questionnaires_experiment_list_final, request.LANGUAGE_CODE)
+                questionnaires_experiment_list_final, language_code)
 
     # obter a lista dos participantes filtrados que tem questionarios de entrada preenchidos
     patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
@@ -769,6 +784,7 @@ def export_view(request, template_name="export/export_data.html"):
         "diagnosis_fields": diagnosis_fields,
         "questionnaires_fields_list": questionnaires_fields_list,
         "questionnaires_experiment_fields_list": questionnaires_experiment_fields_list,
+        "component_list": component_list,
         "selected_participant": selected_participant,
         "selected_diagnosis": selected_diagnosis,
         "tab": '1',
@@ -779,6 +795,47 @@ def export_view(request, template_name="export/export_data.html"):
     else:
         return render(request, template_name, context)
 
+
+def get_component_with_data_and_metadata(group, component_list):
+    experiment_id = group.experiment.id
+
+    # data collection
+    if 'eeg' not in component_list:
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct(
+            'data_configuration_tree')
+        if eeg_data_list:
+            component_list.append('eeg')
+    if 'emg' not in component_list:
+        emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct(
+            'data_configuration_tree')
+        if emg_data_list:
+            component_list.append('emg')
+    if 'tms' not in component_list:
+        tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct(
+            'data_configuration_tree')
+        if tms_data_list:
+            component_list.append('tms')
+    if 'additional_data' not in component_list:
+        additional_data_list = AdditionalData.objects.filter(subject_of_group__group=group).distinct(
+            'data_configuration_tree')
+        if additional_data_list:
+            component_list.append('additional_data')
+
+    # settings
+    if 'eeg_setting' not in component_list:
+        eeg_setting_list = EEGSetting.objects.filter(experiment_id=experiment_id)
+        if eeg_setting_list:
+            component_list.append('eeg_setting')
+    if 'emg_setting' not in component_list:
+        emg_setting_list = EMGSetting.objects.filter(experiment_id=experiment_id)
+        if emg_setting_list:
+            component_list.append('emg_setting')
+    if 'tms_setting' not in component_list:
+        tms_setting_list = TMSSetting.objects.filter(experiment_id=experiment_id)
+        if tms_setting_list:
+            component_list.append('tms_setting')
+
+    return component_list
 
 def update_questionnaire_list(questionnaire_list, heading_type, current_language="pt-BR"):
 

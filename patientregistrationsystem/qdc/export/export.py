@@ -363,7 +363,8 @@ class ExportExecution:
         for element in to_be_included_list:
             self.per_participant_data[participant_id][questionnaire_id].append(element)
 
-    def include_in_per_participant_data_from_experiment(self, to_be_included_list, participant_id, questionnaire_id):
+    def include_in_per_participant_data_from_experiment(self, to_be_included_list, participant_id, questionnaire_id,
+                                                        token_id, step):
         """
         :param to_be_included_list: list with information to be included in include_data dict
         :param participant_id: participant identification (number)
@@ -380,10 +381,17 @@ class ExportExecution:
             self.per_participant_data_from_experiment[participant_id] = {}
 
         if questionnaire_id not in self.per_participant_data_from_experiment[participant_id]:
-            self.per_participant_data_from_experiment[participant_id][questionnaire_id] = []
+            self.per_participant_data_from_experiment[participant_id][questionnaire_id] = {}
+
+        if token_id not  in self.per_participant_data_from_experiment[participant_id][questionnaire_id]:
+            self.per_participant_data_from_experiment[participant_id][questionnaire_id][token_id] = {}
+            self.per_participant_data_from_experiment[participant_id][questionnaire_id][token_id]['step'] = step
+            self.per_participant_data_from_experiment[participant_id][questionnaire_id][token_id][
+                'questionnaire_response'] = []
 
         for element in to_be_included_list:
-            self.per_participant_data_from_experiment[participant_id][questionnaire_id].append(element)
+            self.per_participant_data_from_experiment[participant_id][questionnaire_id][token_id][
+                'questionnaire_response'].append(element)
 
     def include_participant_per_questionnaire(self, token_id, code):
 
@@ -484,9 +492,9 @@ class ExportExecution:
                             'token': token_id,
                             'patient_id': patient_id,
                             'patient_code': patient_code,
-                            'step_description': questionnaire_data['path_description'],
+                            'step_identification': questionnaire_data['path_description'],
                             'path_questionnaire': questionnaire_data['path_questionnaire'],
-                            'path_identification': questionnaire_data['numeration'],
+                            'step_number': questionnaire_data['numeration'],
                             'data_completed': completed
                         }
                         token_dic[token_id].append(questionnaire_data_completed_dic)
@@ -1341,7 +1349,6 @@ class ExportExecution:
                     path_participant = prefix_filename_participant + str(participant_code)
 
                     for questionnaire_code in self.per_participant_data_from_experiment[participant_code]:
-
                         questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
                         title = self.get_title_experiment_questionnaire(questionnaire_id)
                         questionnaire_title = self.redefine_questionnaire_title(title)
@@ -1352,26 +1359,42 @@ class ExportExecution:
                         if error_msg != "":
                             return error_msg
 
-                        export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code),
+                        for token_id in self.per_participant_data_from_experiment[participant_code][questionnaire_code]:
+                            step_name = "Step_" + self.per_participant_data_from_experiment[participant_code][
+                                questionnaire_code][token_id]['step']
+
+                            # ex. Users/.../Experiment_data/Group_xxx/Per_participant/Participant_P123/Step_X
+                            error_msg, complete_group_participant_step_directory = create_directory(
+                                complete_group_participant_directory, step_name)
+                            if error_msg != "":
+                                return error_msg
+
+                            export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code),
                                                             questionnaire_title)
 
-                        # Build the header
-                        header = self.get_header_experiment_questionnaire(questionnaire_id)
+                            # Build the header
+                            header = self.get_header_experiment_questionnaire(questionnaire_id)
 
-                        # Get the responses from questionnaire per participant
-                        per_participant_rows = self.get_per_participant_data_from_experiment(participant_code,
-                                                                                             questionnaire_code)
-                        per_participant_rows.insert(0, header)
+                            # Get the responses from questionnaire per participant
+                            questionnaire_response = self.per_participant_data_from_experiment[participant_code][
+                                questionnaire_code][token_id]['questionnaire_response'][0]
+                            # per_participant_rows = self.get_per_participant_data_from_experiment(participant_code,
+                            #                                                                      questionnaire_code)
+                            per_participant_rows = []
+                            per_participant_rows.insert(0, header)
+                            per_participant_rows.insert(1, questionnaire_response)
 
-                        # path ex. Users/.../Group_xxx/Per_participant/Per_participant
-                        # /Participant_P123/P123_Q123_aaa.csv
-                        complete_filename = path.join(complete_group_participant_directory, export_filename)
+                            # path ex. Users/.../Group_xxx/Per_participant/Per_participant
+                            # /Participant_P123/P123_Q123_aaa.csv
+                            complete_filename = path.join(complete_group_participant_step_directory, export_filename)
 
-                        save_to_csv(complete_filename, per_participant_rows)
-                        # path ex.NES_EXPORT/Per_experiment/Per_participant/Per_participant/Participant_P123
-                        export_directory = path.join(export_directory_group_per_participant, path_participant)
+                            save_to_csv(complete_filename, per_participant_rows)
+                            # path ex.NES_EXPORT/Per_experiment/Per_participant/Per_participant/Participant_P123
+                            export_directory_participant = path.join(export_directory_group_per_participant,
+                                                                     path_participant)
+                            export_directory = path.join(export_directory_participant, step_name)
 
-                        self.files_to_zip_list.append([complete_filename, export_directory])
+                            self.files_to_zip_list.append([complete_filename, export_directory])
         return error_msg
 
     def handle_exported_field(self, field):
@@ -1735,12 +1758,12 @@ class ExportExecution:
                     patient_id = questionnaire_data['patient_id']
                     lime_survey_id = questionnaire_id
                     patient_code = questionnaire_data['patient_code']
-                    description = questionnaire_data['step_description']
+                    step_identification = questionnaire_data['step_identification']
                     step_path = questionnaire_data['path_questionnaire']
-                    path_identification = questionnaire_data['path_identification']
+                    step_number = questionnaire_data['step_number']
                     data_completed = questionnaire_data['data_completed']
 
-                    step_per_response = [path_identification, description, step_path, data_completed]
+                    step_per_response = [step_number, step_identification, step_path, data_completed]
 
                     token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
 
@@ -1767,7 +1790,7 @@ class ExportExecution:
                             self.include_questionnaire_code_and_id(survey_code, lime_survey_id)
 
                             self.include_in_per_participant_data_from_experiment([transformed_fields], patient_code,
-                                                                                     survey_code)
+                                                                                 survey_code, token_id, step_number)
 
                             self.include_participant_per_questionnaire(token_id, survey_code)
 
