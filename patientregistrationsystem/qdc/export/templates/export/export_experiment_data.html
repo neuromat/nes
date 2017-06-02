@@ -161,26 +161,26 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-7">
                                                 <label data-toggle="tooltip" data-placement="auto left"
-                                                       title="{% trans "At least one option must be selected" %}" for="experiment_metadata"
+                                                       for="experiment_metadata"
                                                        class="control-label">{% trans "Experiment metadata" %} </label>
-                                                {% if 'eeg' in component_list %}
+                                                {% if 'eeg_setting' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_eeg_settings }}
-                                                        <label for="per_eeg" class="control-label">{% trans "EEG Settings" %}</label>
+                                                        <label for="per_eeg_setting" class="control-label">{% trans "EEG Settings" %}</label>
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 {% endif %}
-                                                {% if 'emg' in component_list %}
+                                                {% if 'emg_setting' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_emg_settings }}
-                                                        <label for="per_emg" class="control-label">{% trans "EMG Settings" %}</label>
+                                                        <label for="per_emg_setting" class="control-label">{% trans "EMG Settings" %}</label>
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 {% endif %}
-                                                {% if 'tms' in component_list %}
+                                                {% if 'tms_setting' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_tms_settings }}
-                                                        <label for="per_emg" class="control-label">{% trans "EMG Settings" %}</label>
+                                                        <label for="per_tms_setting" class="control-label">{% trans "TMS Settings" %}</label>
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 {% endif %}
@@ -192,26 +192,38 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-7">
                                                 <label data-toggle="tooltip" data-placement="auto left"
-                                                       title="{% trans "At least one option must be selected" %}" for="experiment_data_collection"
+                                                       for="experiment_data_collection"
                                                        class="control-label">{% trans "Experiment data collection" %} </label>
                                                 {% if 'eeg' in component_list %}
                                                     <div class="checkbox">
-                                                        {{ export_form.per_eeg_data }}
-                                                        <label for="per_eeg" class="control-label">{% trans "EEG Data" %}</label>
+                                                        {{ export_form.per_eeg_raw_data }}
+                                                        <label for="per_eeg_raw_data" class="control-label">{% trans "EEG Raw Data" %}</label>
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                    <div class="checkbox">
+                                                        {{ export_form.per_eeg_nwb_data }}
+                                                        <label for="per_eeg_nwb_data" class="control-label">{% trans "EEG NWB Data" %}</label>
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'emg' in component_list %}
                                                     <div class="checkbox">
                                                         {{ export_form.per_emg_data }}
-                                                        <label for="per_emg" class="control-label">{% trans "EMG Data" %}</label>
+                                                        <label for="per_emg_data" class="control-label">{% trans "EMG Data" %}</label>
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 {% endif %}
                                                 {% if 'tms' in component_list %}
                                                     <div class="checkbox">
-                                                        {{ export_form.per_emg_data }}
-                                                        <label for="per_tms" class="control-label">{% trans "TMS Data" %}</label>
+                                                        {{ export_form.per_tms_data }}
+                                                        <label for="per_tms_data" class="control-label">{% trans "TMS Data" %}</label>
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                {% endif %}
+                                                {% if 'additional_data' in component_list %}
+                                                    <div class="checkbox">
+                                                        {{ export_form.per_additional_data }}
+                                                        <label for="per_additional_data" class="control-label">{% trans "Additional Data" %}</label>
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 {% endif %}
