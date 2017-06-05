@@ -1,4 +1,5 @@
 import coreapi
+import os
 
 from django.conf import settings
 
@@ -118,16 +119,40 @@ def send_group_to_portal(group: Group):
 
     # general params
     params = {"experiment_nes_id": str(group.experiment.id),
-              "nes_id": group.id,
               "title": group.title,
               "description": group.description,
               }
 
     action_keys = ['experiments', 'groups', 'create']
 
-    portal_experiment = rest.client.action(rest.schema, action_keys, params=params)
+    portal_group = rest.client.action(rest.schema, action_keys, params=params)
 
-    return portal_experiment
+    return portal_group
+
+
+def send_experimental_protocol_to_portal(portal_group_id, textual_description, image):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {"id": portal_group_id}
+
+    if textual_description:
+        params["textual_description"] = textual_description
+
+    action_keys = ['groups', 'experimental_protocol', 'create']
+
+    if image:
+        with open(settings.BASE_DIR + image, 'rb') as f:
+            params["image"] = coreapi.utils.File(os.path.basename(image), f)
+            portal_experimental_protocol = rest.client.action(rest.schema, action_keys,
+                                                              params=params, encoding="multipart/form-data")
+    else:
+        portal_experimental_protocol = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_experimental_protocol
 
 
 def send_research_project_to_portal(experiment: Experiment):
