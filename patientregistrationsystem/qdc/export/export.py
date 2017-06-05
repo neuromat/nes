@@ -25,7 +25,7 @@ from os import path, makedirs
 
 from patient.models import Patient, QuestionnaireResponse
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, \
-    ComponentConfiguration, Questionnaire, DataConfigurationTree
+    ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData
 from experiment.views import get_block_tree, get_experimental_protocol_image, \
     get_description_from_experimental_protocol_tree
 
@@ -422,6 +422,8 @@ class ExportExecution:
         surveys = Questionnaires()
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
+            # tree = get_block_tree(group.experimental_protocol, language_code)
+            # experimental_protocol_description = get_description_from_experimental_protocol_tree(tree)
             title = group.title
             description = group.description
             if group_id not in self.per_group_data:
