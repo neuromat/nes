@@ -422,93 +422,108 @@ class ExportExecution:
         surveys = Questionnaires()
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
-            # tree = get_block_tree(group.experimental_protocol, language_code)
-            # experimental_protocol_description = get_description_from_experimental_protocol_tree(tree)
+
             title = group.title
             description = group.description
             if group_id not in self.per_group_data:
-                self.per_group_data[group_id] = []
-            self.per_group_data[group_id].append(title)
-            self.per_group_data[group_id].append(description)
+                self.per_group_data[group_id] = {}
+            self.per_group_data[group_id]['title'] = []
+            self.per_group_data[group_id]['title'].append({'title':title,
+                                                           'description': description})
 
             participant_group_list = Patient.objects.filter(subject__subjectofgroup__group=group).values('id')
-            self.per_group_data[group_id].append(participant_group_list)
+            self.per_group_data[group_id]['participant_list'] = []
+            for participant in participant_group_list:
+                self.per_group_data[group_id]['participant_list'].append(participant)
+
+            self.per_group_data[group_id]['data_per_participant'] = {}
 
             if group.experimental_protocol is not None:
-                # questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                #     subject_of_group__group=group)
-                questionnaire_per_group = {}
-                questionnaires_per_patient = {}
-                questionnaire_response_list = {}
-                for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
-                    path_questionnaire = ''
-                    size = len(path_experiment[0])
-                    step = 1
-                    while step < size:
-                        path_questionnaire += path_experiment[0][step] + "/"
-                        step += 2
-                    questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
-                    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
-                    questionnaire_id = questionnaire.survey.lime_survey_id
-                    questionnaire_code = questionnaire.survey.code
-                    configuration_tree_list = DataConfigurationTree.objects.filter(
-                        component_configuration=questionnaire_configuration)
+                if self.get_input_data('questionnaires_from_experiments'):
+                    questionnaire_per_group = {}
+                    questionnaires_per_patient = {}
+                    questionnaire_response_list = {}
+                    for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
+                        path_questionnaire = ''
+                        size = len(path_experiment[0])
+                        step = 1
+                        while step < size:
+                            path_questionnaire += path_experiment[0][step] + "/"
+                            step += 2
+                        questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
+                        questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+                        questionnaire_id = questionnaire.survey.lime_survey_id
+                        questionnaire_code = questionnaire.survey.code
+                        configuration_tree_list = DataConfigurationTree.objects.filter(
+                            component_configuration=questionnaire_configuration)
 
-                    for data_configuration_tree in configuration_tree_list:
-                        experiment_questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                            data_configuration_tree_id=data_configuration_tree.id)
+                        for data_configuration_tree in configuration_tree_list:
+                            experiment_questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                                data_configuration_tree_id=data_configuration_tree.id)
 
-                        for questionnaire_response in experiment_questionnaire_response_list:
-                            token_id = questionnaire_response.token_id
-                            questionnaire_response_list[token_id] = []
-                            questionnaire_dict = {
-                                'questionnaire_id': questionnaire_id,
-                                'questionnaire_code': questionnaire_code,
-                                'data_configuration_tree_id': data_configuration_tree.id,
-                                'numeration': path_experiment[0][4],
-                                'path_questionnaire': path_questionnaire,
-                                'path_description': questionnaire_configuration.component.identification,
-                                'patient_id': questionnaire_response.subject_of_group.subject.patient_id,
-                                'patient_code': questionnaire_response.subject_of_group.subject.patient.code,
-                            }
-                            questionnaire_response_list[token_id].append(questionnaire_dict)
+                            for questionnaire_response in experiment_questionnaire_response_list:
+                                token_id = questionnaire_response.token_id
+                                completed = surveys.get_participant_properties(questionnaire_id, token_id, "completed")
+                                # carrega dados de questionarios completos
+                                if completed is not None and completed != "N" and completed != "":
+                                    questionnaire_response_list[token_id] = []
+                                    subject_code = questionnaire_response.subject_of_group.subject.patient.code
+                                    questionnaire_response_list[token_id].append(
+                                        {
+                                            'questionnaire_id': questionnaire_id,
+                                            'questionnaire_code': questionnaire_code,
+                                            'data_configuration_tree_id': data_configuration_tree.id,
+                                            'step_number': path_experiment[0][4],
+                                            'path_questionnaire': path_questionnaire,
+                                            'step_identification': questionnaire_configuration.component.identification,
+                                            'subject_id': questionnaire_response.subject_of_group.id,
+                                            'subject_code': subject_code,
+                                            'data_completed': completed
+                                        }
+                                    )
 
-                for token_id in questionnaire_response_list:
-                    token_dic = {}
-                    questionnaire_data = questionnaire_response_list[token_id][0]
-                    questionnaire_id = questionnaire_data['questionnaire_id']
-                    completed = surveys.get_participant_properties(questionnaire_id, token_id, "completed")
-                    # carrega os questionarios completos
-                    if completed is not None and completed != "N" and completed != "":
+                                    if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                        self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
 
-                        token_dic[token_id] = []
-                        patient_code = questionnaire_data['patient_code']
-                        patient_id = questionnaire_data['patient_id']
-                        if patient_code not in questionnaires_per_patient:
-                            questionnaires_per_patient[patient_code] = []
+                                    if questionnaire_code not in \
+                                            self.per_group_data[group_id]['data_per_participant'][subject_code]:
+                                        self.per_group_data[group_id]['data_per_participant'][subject_code] = {
+                                            'questionnaire_code': questionnaire_code
+                                        }
 
-                        if questionnaire_code not in questionnaires_per_patient[patient_code]:
-                            questionnaires_per_patient[patient_code].append(questionnaire_code)
+                                    if questionnaire_id not in questionnaire_per_group:
+                                        questionnaire_per_group[questionnaire_id] = []
+                                        questionnaire_per_group[questionnaire_id].append(questionnaire_code)
 
-                        questionnaire_data_completed_dic = {
-                            'token': token_id,
-                            'patient_id': patient_id,
-                            'patient_code': patient_code,
-                            'step_identification': questionnaire_data['path_description'],
-                            'path_questionnaire': questionnaire_data['path_questionnaire'],
-                            'step_number': questionnaire_data['numeration'],
-                            'data_completed': completed
-                        }
-                        token_dic[token_id].append(questionnaire_data_completed_dic)
-                        if questionnaire_id not in questionnaire_per_group:
-                            questionnaire_per_group[questionnaire_id] = []
-                            questionnaire_per_group[questionnaire_id].append(questionnaire_data['questionnaire_code'])
+                                    questionnaire_per_group[questionnaire_id].append(
+                                        questionnaire_response_list[token_id])
 
-                        questionnaire_per_group[questionnaire_id].append(token_dic)
+                    surveys.release_session_key()
+                    self.per_group_data[group_id]['questionnaires_per_group'] = []
+                    self.per_group_data[group_id]['questionnaires_per_group'].append(questionnaire_per_group)
 
-            self.per_group_data[group_id].append(questionnaire_per_group)
-            self.per_group_data[group_id].append(questionnaires_per_patient)
-        surveys.release_session_key()
+                if self.get_input_data('component_list')['per_eeg_raw_data'] or \
+                        self.get_input_data('component_list')['per_eeg_nwb_data']:
+                    for path_eeg_experiment in create_list_of_trees(group.experimental_protocol, "eeg"):
+                        eeg_configuration = get_object_or_404(ComponentConfiguration, pk=path_eeg_experiment[-1][0])
+                        configuration_tree_list = DataConfigurationTree.objects.filter(
+                            component_configuration=eeg_configuration)
+                        for data_configuration_tree in configuration_tree_list:
+                            eeg_data_list = EEGData.objects.filter(data_configuration_tree_id=data_configuration_tree.id)
+                            for eeg_data in eeg_data_list:
+                                for data in eeg_data:
+                                    subject_code = data.subject_of_group.subject.patient.code
+
+                                    if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                        self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'] = []
+
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'].append({
+                                        'step_number': path_eeg_experiment[0][4],
+                                        'step_identification': path_eeg_experiment[0][3],
+                                        'setting_id': data.eeg_setting_id,
+                                        'eeg_data_id': data.id
+                                    })
 
     def get_experiment_questionnaire_response_per_questionnaire(self, questionnaire_id, group_id):
         experiment_questionnaire_response = []

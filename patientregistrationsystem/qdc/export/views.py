@@ -394,27 +394,27 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             # Export filter by experiments
             export.include_group_data(request.session['group_selected_list'])
             # If questionnaire from entrance evaluation was selected
-            if export.get_input_data('questionnaires'):
-                # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
-                error_msg = export.process_per_entrance_questionnaire()
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
-                error_msg = export.process_per_participant_per_entrance_questionnaire()
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
-
-            # If questionnaire from experiments was selected (Experiment data directory)
-            if export.get_input_data('questionnaires_from_experiments'):
-                error_msg = export.process_per_experiment_questionnaire()
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
-                error_msg = export.process_per_participant_per_experiment()
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
+            # if export.get_input_data('questionnaires'):
+            #     # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
+            #     error_msg = export.process_per_entrance_questionnaire()
+            #     if error_msg != "":
+            #         messages.error(request, error_msg)
+            #         return render(request, template_name)
+            #     error_msg = export.process_per_participant_per_entrance_questionnaire()
+            #     if error_msg != "":
+            #         messages.error(request, error_msg)
+            #         return render(request, template_name)
+            #
+            # # If questionnaire from experiments was selected (Experiment data directory)
+            # if export.get_input_data('questionnaires_from_experiments'):
+            #     error_msg = export.process_per_experiment_questionnaire()
+            #     if error_msg != "":
+            #         messages.error(request, error_msg)
+            #         return render(request, template_name)
+            #     error_msg = export.process_per_participant_per_experiment()
+            #     if error_msg != "":
+            #         messages.error(request, error_msg)
+            #         return render(request, template_name)
 
         else:
             # Export filter by entrance questionnaire
@@ -462,7 +462,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            if export.get_input_data('component_list')['per_eeg_setting']:
+            if export.get_input_data('component_list')['per_eeg_data']:
                 for group_id in group_list:
                     group = get_object_or_404(Group, pk=group_id)
                     eeg_setting = EEGSetting.objects.filter(experiment_id=group.experiment.id)
@@ -626,14 +626,12 @@ def export_view(request, template_name="export/export_data.html"):
                 heading_type = None
                 responses_type = None
 
-                component_list['per_eeg_setting'] = export_form.cleaned_data['per_eeg_settings']
-                component_list['per_emg_setting'] = export_form.cleaned_data['per_emg_settings']
-                component_list['per_tms_setting'] = export_form.cleaned_data['per_tms_settings']
                 component_list['per_eeg_raw_data'] = export_form.cleaned_data['per_eeg_raw_data']
                 component_list['per_eeg_nwb_data'] = export_form.cleaned_data['per_eeg_nwb_data']
                 component_list['per_emg_data'] = export_form.cleaned_data['per_emg_data']
                 component_list['per_tms_data'] = export_form.cleaned_data['per_tms_data']
                 component_list['per_additional_data'] = export_form.cleaned_data['per_additional_data']
+                component_list['per_goalkeeper_game_data'] = export_form.cleaned_data['per_goalkeeper_game_data']
 
                 if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data['per_participant']
