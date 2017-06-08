@@ -75,7 +75,8 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
 
 from .portal import get_experiment_status_portal, send_experiment_to_portal, get_portal_status, \
     send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
-    send_experimental_protocol_to_portal
+    send_experimental_protocol_to_portal, send_participant_to_portal, send_collaborator_to_portal, \
+    send_researcher_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -743,12 +744,25 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
                     experiment.save()
 
                     # sending research project
-                    send_research_project_to_portal(schedule_of_sending.experiment)
+                    created_research_project = send_research_project_to_portal(schedule_of_sending.experiment)
+
+                    # sending researcher
+                    send_researcher_to_portal(created_research_project['id'],
+                                              schedule_of_sending.experiment.research_project.owner)
+
+                    # sending collaborators
+                    for collaborator in schedule_of_sending.experiment.research_project.collaborators.all():
+                        send_collaborator_to_portal(created_research_project['id'], collaborator.team_person)
 
                     # sending groups
                     for group in schedule_of_sending.experiment.group_set.all():
                         created_group = send_group_to_portal(group)
 
+                        # participants
+                        for subject_of_group in group.subjectofgroup_set.all():
+                            send_participant_to_portal(created_group['id'], subject_of_group.subject)
+
+                        # experimental protocol
                         textual_description = None
                         image = None
 
