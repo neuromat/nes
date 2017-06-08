@@ -93,19 +93,21 @@ class InputExport:
 
         else:
             # print("questionnaire from experiments")
-            self.data["questionnaires_from_experiments"] = []
+            self.data["questionnaires_from_experiments"] = {}
 
             for index, group_id, sid, title, field_header_list in questionnaire_list:
                 language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
+                if group_id not in self.data['questionnaires_from_experiments']:
+                    self.data['questionnaires_from_experiments'][group_id] = []
 
-                self.data["questionnaires_from_experiments"].\
-                    append({"group_id": group_id, "id": sid, "language": language,
-                            "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
-                            "questionnaire_name": title, "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
-                            "output_list": []})
-                for header, field in field_header_list:
-                    output_data = {"header": header, "field": field}
-                    self.data["questionnaires_from_experiments"][-1]["output_list"].append(output_data)
+                    self.data["questionnaires_from_experiments"][group_id].\
+                        append({"group_id": group_id, "id": sid, "language": language,
+                                "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
+                                "questionnaire_name": title, "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
+                                "output_list": []})
+                    for header, field in field_header_list:
+                        output_data = {"header": header, "field": field}
+                        self.data["questionnaires_from_experiments"][group_id][-1]["output_list"].append(output_data)
 
         questionnaire_lime_survey.release_session_key()
 
