@@ -37,7 +37,8 @@ from survey.views import get_questionnaire_language
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases, EEGData, EEGSetting, \
-    AdditionalData, EMGData, EMGSetting, TMSData, TMSSetting
+    AdditionalData, EMGData, EMGSetting, TMSData, TMSSetting, EEGAmplifierSetting, EEGElectrodeLayoutSetting, \
+    EEGFilterSetting, EEGSolutionSetting
 
 from experiment.views import get_block_tree as get_block_attributes_tree
 
@@ -345,6 +346,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         export = ExportExecution(export_instance.user.id, export_instance.id)
 
+        language_code = request.LANGUAGE_CODE
+
         # all participants filtered
         if 'filtered_participant_data' in request.session:
             participants_filtered_list = request.session['filtered_participant_data']
@@ -452,13 +455,43 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # create arquivo de texto de protocolo experimental and diagnosis/participant csv file for each group
         if 'group_selected_list' in request.session:
             group_list = export.per_group_data
-            language_code = request.LANGUAGE_CODE
 
             error_msg = export.process_experiment_data(group_list, language_code)
 
             if error_msg != "":
                 messages.error(request, error_msg)
                 return render(request, template_name)
+
+            if export.get_input_data('component_list')['per_eeg_setting']:
+                for group_id in group_list:
+                    group = get_object_or_404(Group, pk=group_id)
+                    eeg_setting = EEGSetting.objects.filter(experiment_id=group.experiment.id)
+                    eeg_setting_description = get_eeg_setting_description(eeg_setting[0])
+
+                    group_directory_name = 'Group_' + group.title
+                    filename_export = "%s.txt" % "eeg_setting_description"
+                    base_export_directory = export.get_export_directory()
+                    # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data
+                    experiment_data_directory = path.join(base_export_directory,
+                                                          export.get_input_data("experiment_data_directory"))
+                    # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
+                    group_file_directory = path.join(experiment_data_directory, group_directory_name)
+                    # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/eeg_setting_description.txt
+                    complete_setting_filename = path.join(group_file_directory, filename_export)
+
+                    # /NES_EXPORT/
+                    base_directory = export.get_input_data("base_directory")
+                    # path ex. NES_EXPORT/Experiment_data
+                    export_experiment_resume_directory = path.join(base_directory,
+                                                                   export.get_input_data("experiment_data_directory"))
+
+                    # path ex. /NES_EXPORT/Experiment_data/Group_xxxx/
+                    export_group_directory = path.join(export_experiment_resume_directory, group_directory_name)
+
+                    export.files_to_zip_list.append([complete_setting_filename, export_group_directory])
+
+                    with open(complete_setting_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as outfile:
+                        json.dump(eeg_setting_description, outfile)
 
         # create zip file and include files
         export_complete_filename = ""
@@ -1449,3 +1482,51 @@ def select_groups_by_experiment(request, experiment_id):
     json_group_list = serializers.serialize("json", group_list)
 
     return HttpResponse(json_group_list, content_type='application/json')
+
+
+def get_eeg_setting_description(eeg_setting):
+    description = {}
+    description['eeg_amplifier_setting'] = []
+    eeg_amplifier_setting = eeg_setting.eeg_amplifier_setting
+    description['eeg_amplifier_setting'].append({
+        'identification': eeg_amplifier_setting.eeg_amplifier.identification,
+        'description': eeg_amplifier_setting.eeg_amplifier.description,
+        'gain': eeg_amplifier_setting.gain,
+        'sampling_rate': eeg_amplifier_setting.sampling_rate,
+        'number_of_channels_used': eeg_amplifier_setting.number_of_channels_used
+    })
+
+    description['eeg_filter_setting'] = []
+    eeg_filter_setting = eeg_setting.eeg_filter_setting
+    description['eeg_filter_setting'].append({
+        'filter_type': eeg_filter_setting.eeg_filter_type.name,
+        'description': eeg_filter_setting.eeg_filter_type.description,
+        'high_pass': eeg_filter_setting.high_pass,
+        'low_pass': eeg_filter_setting.low_pass,
+        'order': eeg_filter_setting.order,
+        'high_band_pass': eeg_filter_setting.high_band_pass,
+        'low_band_pass': eeg_filter_setting.low_band_pass,
+        'high_notch': eeg_filter_setting.high_notch,
+        'low_notch': eeg_filter_setting.low_notch
+    })
+
+    description['eeg_solution_setting'] = []
+    eeg_solution_setting = eeg_setting.eeg_solution_setting
+    description['eeg_solution_setting'].append({
+        'manufacturer': eeg_solution_setting.eeg_solution.manufacturer.name,
+        'identification': eeg_solution_setting.eeg_solution.name,
+        'components': eeg_solution_setting.eeg_solution.components
+    })
+
+    description['eeg_electrode_layout_setting'] = []
+    eeg_electrode_layout_setting = eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system
+    description['eeg_electrode_layout_setting'].append({
+        'manufacturer': eeg_electrode_layout_setting.eeg_electrode_net.manufacturer.name,
+        'identification': eeg_electrode_layout_setting.eeg_electrode_net.identification,
+        'description': eeg_electrode_layout_setting.eeg_electrode_net.description,
+        'eeg_electrode_localization_system': eeg_electrode_layout_setting.eeg_electrode_localization_system.name,
+        'eeg_electrode_model_default': eeg_electrode_layout_setting.eeg_electrode_localization_system.name,
+        'cap_size': ''
+    })
+
+    return description
