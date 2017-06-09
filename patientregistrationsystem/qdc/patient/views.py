@@ -65,7 +65,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
             for phone in new_phone_list:
                 phone.changed_by = request.user
-                phone.patient_id = new_patient.id
+                phone.patient = new_patient
                 phone.save()
 
             messages.success(request, _('Personal data successfully written.'))
