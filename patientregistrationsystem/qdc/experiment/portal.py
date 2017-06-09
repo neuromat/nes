@@ -193,7 +193,12 @@ def send_research_project_to_portal(experiment: Experiment):
     params = {"experiment_nes_id": str(experiment.id),
               "title": experiment.research_project.title,
               "description": experiment.research_project.description,
-              "start_date": experiment.research_project.start_date.strftime("%Y-%m-%d")}
+              "start_date": experiment.research_project.start_date.strftime("%Y-%m-%d"),
+              "keywords": []
+              #     {'name': 'batata'},
+              #     {'name': 'feijão'}
+              # ]
+              }
 
     if experiment.research_project.end_date:
         params["end_date"] = experiment.research_project.end_date.strftime("%Y-%m-%d")
