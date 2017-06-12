@@ -195,10 +195,10 @@ def send_research_project_to_portal(experiment: Experiment):
               "description": experiment.research_project.description,
               "start_date": experiment.research_project.start_date.strftime("%Y-%m-%d"),
               "keywords": []
-              #     {'name': 'batata'},
-              #     {'name': 'feijão'}
-              # ]
               }
+
+    for keyword in experiment.research_project.keywords.all():
+        params['keywords'].append({'name': keyword.name})
 
     if experiment.research_project.end_date:
         params["end_date"] = experiment.research_project.end_date.strftime("%Y-%m-%d")
