@@ -84,7 +84,7 @@ class InputExport:
 
                 # if sid not in self.data['questionnaires']:
                     # self.data['questionnaires'][sid] = []
-                self.data["questionnaires"].append({"sid": sid, "language": language,
+                self.data["questionnaires"].append({"id": sid, "language": language,
                                                          "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
                                                          "questionnaire_name": title,
                                                          "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,

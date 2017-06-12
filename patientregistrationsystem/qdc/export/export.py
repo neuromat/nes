@@ -342,12 +342,14 @@ class ExportExecution:
         return fields
 
     def get_header_description(self, questionnaire_id, field):
-
+        header_description = []
         questionnaire_id = str(questionnaire_id)
-
-        index = self.questionnaires_experiment_data[questionnaire_id]["fields"].index(field)
-
-        header_description = self.questionnaires_experiment_data[questionnaire_id]["header"][index]
+        if self.get_input_data('questionnaires_from_experiments'):
+            index = self.questionnaires_experiment_data[questionnaire_id]["fields"].index(field)
+            header_description = self.questionnaires_experiment_data[questionnaire_id]["header"][index]
+        if self.get_input_data('questionnaires'):
+            index = self.questionnaires_data[questionnaire_id]["fields"].index(field)
+            header_description = self.questionnaires_data[questionnaire_id]["header"][index]
 
         return header_description
 

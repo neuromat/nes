@@ -453,13 +453,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                                                                                 participant_data_directory)
         else:
             participant_base_export_directory = export.get_export_directory()
-
-        particpant_selected_list = export.get_participants_filtered_data()
-        error_msg = export.process_participant_filtered_data(
-            particpant_selected_list, participant_base_export_directory, base_directory)
-        if error_msg != "":
-            messages.error(request, error_msg)
-            return render(request, template_name)
+        if export.get_input_data('participants')[0]['output_list']:
+            participant_selected_list = export.get_participants_filtered_data()
+            error_msg = export.process_participant_filtered_data(
+                participant_selected_list, participant_base_export_directory, base_directory)
+            if error_msg != "":
+                messages.error(request, error_msg)
+                return render(request, template_name)
 
         # create arquivo de texto de protocolo experimental and diagnosis/participant csv file for each group
         if 'group_selected_list' in request.session:
@@ -559,6 +559,7 @@ def export_view(request, template_name="export/export_data.html"):
     questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
     language_code = request.LANGUAGE_CODE
+    component_list = []
 
     if request.method == "POST":
 
