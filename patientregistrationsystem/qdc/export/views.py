@@ -394,20 +394,21 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             # Export filter by experiments
             export.include_group_data(request.session['group_selected_list'])
             # if fields from questionnaires were selected
-            questionnaire_list = export.get_input_data("questionnaire_list")
-            if questionnaire_list:
-                export.get_questionnaires_responses(questionnaire_list)
+            if export.get_input_data("questionnaire_list"):
+                export.get_questionnaires_responses()
+
+            error_msg = export.create_group_data_directory()
             #If questionnaire from entrance evaluation was selected
-            # if export.get_input_data('questionnaires'):
-            #     # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
-            #     error_msg = export.process_per_entrance_questionnaire()
-            #     if error_msg != "":
-            #         messages.error(request, error_msg)
-            #         return render(request, template_name)
-            #     error_msg = export.process_per_participant_per_entrance_questionnaire()
-            #     if error_msg != "":
-            #         messages.error(request, error_msg)
-            #         return render(request, template_name)
+            if export.get_input_data('questionnaires'):
+                # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
+                error_msg = export.process_per_entrance_questionnaire()
+                if error_msg != "":
+                    messages.error(request, error_msg)
+                    return render(request, template_name)
+                error_msg = export.process_per_participant_per_entrance_questionnaire()
+                if error_msg != "":
+                    messages.error(request, error_msg)
+                    return render(request, template_name)
 
             # If questionnaire from experiments was selected (Experiment data directory)
             if export.get_input_data('questionnaires_from_experiments'):
@@ -714,9 +715,11 @@ def export_view(request, template_name="export/export_data.html"):
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
-                component_list = get_component_with_data_and_metadata(group, component_list)
+                # component_list = get_component_with_data_and_metadata(group, component_list)
+                # questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                #     subject_of_group__group=group).distinct('data_configuration_tree')
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                    subject_of_group__group=group).distinct('data_configuration_tree')
+                    subject_of_group__group=group)
                 questionnaire_in_list = []
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
@@ -837,8 +840,9 @@ def get_component_with_data_and_metadata(group, component_list):
 
     # data collection
     if 'eeg' not in component_list:
-        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        # eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct(
+        #     'data_configuration_tree')
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
         if eeg_data_list:
             component_list.append('eeg')
     if 'emg' not in component_list:
