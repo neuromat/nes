@@ -398,6 +398,10 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 export.get_questionnaires_responses()
 
             error_msg = export.create_group_data_directory()
+            if error_msg != "":
+                messages.error(request, error_msg)
+                return  render(request, template_name)
+
             #If questionnaire from entrance evaluation was selected
             if export.get_input_data('questionnaires'):
                 # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
