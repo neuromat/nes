@@ -124,7 +124,11 @@ def send_group_to_portal(group: Group):
     params = {"experiment_nes_id": str(group.experiment.id),
               "title": group.title,
               "description": group.description,
+              "inclusion_criteria": []
               }
+
+    for criteria in group.classification_of_diseases.all():
+        params['inclusion_criteria'].append({'code': criteria.code})
 
     action_keys = ['experiments', 'groups', 'create']
 
