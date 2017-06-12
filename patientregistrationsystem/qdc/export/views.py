@@ -393,7 +393,16 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         if 'group_selected_list' in request.session:
             # Export filter by experiments
             export.include_group_data(request.session['group_selected_list'])
-            # If questionnaire from entrance evaluation was selected
+            # if fields from questionnaires were selected
+            if export.get_input_data("questionnaire_list"):
+                export.get_questionnaires_responses()
+
+            error_msg = export.create_group_data_directory()
+            if error_msg != "":
+                messages.error(request, error_msg)
+                return  render(request, template_name)
+
+            #If questionnaire from entrance evaluation was selected
             if export.get_input_data('questionnaires'):
                 # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
                 error_msg = export.process_per_entrance_questionnaire()
@@ -444,13 +453,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                                                                                 participant_data_directory)
         else:
             participant_base_export_directory = export.get_export_directory()
-
-        particpant_selected_list = export.get_participants_filtered_data()
-        error_msg = export.process_participant_filtered_data(
-            particpant_selected_list, participant_base_export_directory, base_directory)
-        if error_msg != "":
-            messages.error(request, error_msg)
-            return render(request, template_name)
+        if export.get_input_data('participants')[0]['output_list']:
+            participant_selected_list = export.get_participants_filtered_data()
+            error_msg = export.process_participant_filtered_data(
+                participant_selected_list, participant_base_export_directory, base_directory)
+            if error_msg != "":
+                messages.error(request, error_msg)
+                return render(request, template_name)
 
         # create arquivo de texto de protocolo experimental and diagnosis/participant csv file for each group
         if 'group_selected_list' in request.session:
@@ -462,36 +471,36 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            if export.get_input_data('component_list')['per_eeg_setting']:
-                for group_id in group_list:
-                    group = get_object_or_404(Group, pk=group_id)
-                    eeg_setting = EEGSetting.objects.filter(experiment_id=group.experiment.id)
-                    eeg_setting_description = get_eeg_setting_description(eeg_setting[0])
-
-                    group_directory_name = 'Group_' + group.title
-                    filename_export = "%s.txt" % "eeg_setting_description"
-                    base_export_directory = export.get_export_directory()
-                    # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data
-                    experiment_data_directory = path.join(base_export_directory,
-                                                          export.get_input_data("experiment_data_directory"))
-                    # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
-                    group_file_directory = path.join(experiment_data_directory, group_directory_name)
-                    # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/eeg_setting_description.txt
-                    complete_setting_filename = path.join(group_file_directory, filename_export)
-
-                    # /NES_EXPORT/
-                    base_directory = export.get_input_data("base_directory")
-                    # path ex. NES_EXPORT/Experiment_data
-                    export_experiment_resume_directory = path.join(base_directory,
-                                                                   export.get_input_data("experiment_data_directory"))
-
-                    # path ex. /NES_EXPORT/Experiment_data/Group_xxxx/
-                    export_group_directory = path.join(export_experiment_resume_directory, group_directory_name)
-
-                    export.files_to_zip_list.append([complete_setting_filename, export_group_directory])
-
-                    with open(complete_setting_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as outfile:
-                        json.dump(eeg_setting_description, outfile)
+            # if export.get_input_data('component_list')['per_eeg_data']:
+            #     for group_id in group_list:
+            #         group = get_object_or_404(Group, pk=group_id)
+            #         eeg_setting = EEGSetting.objects.filter(experiment_id=group.experiment.id)
+            #         eeg_setting_description = get_eeg_setting_description(eeg_setting[0])
+            #
+            #         group_directory_name = 'Group_' + group.title
+            #         filename_export = "%s.txt" % "eeg_setting_description"
+            #         base_export_directory = export.get_export_directory()
+            #         # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data
+            #         experiment_data_directory = path.join(base_export_directory,
+            #                                               export.get_input_data("experiment_data_directory"))
+            #         # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
+            #         group_file_directory = path.join(experiment_data_directory, group_directory_name)
+            #         # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/eeg_setting_description.txt
+            #         complete_setting_filename = path.join(group_file_directory, filename_export)
+            #
+            #         # /NES_EXPORT/
+            #         base_directory = export.get_input_data("base_directory")
+            #         # path ex. NES_EXPORT/Experiment_data
+            #         export_experiment_resume_directory = path.join(base_directory,
+            #                                                        export.get_input_data("experiment_data_directory"))
+            #
+            #         # path ex. /NES_EXPORT/Experiment_data/Group_xxxx/
+            #         export_group_directory = path.join(export_experiment_resume_directory, group_directory_name)
+            #
+            #         export.files_to_zip_list.append([complete_setting_filename, export_group_directory])
+            #
+            #         with open(complete_setting_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as outfile:
+            #             json.dump(eeg_setting_description, outfile)
 
         # create zip file and include files
         export_complete_filename = ""
@@ -550,6 +559,7 @@ def export_view(request, template_name="export/export_data.html"):
     questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
     language_code = request.LANGUAGE_CODE
+    component_list = []
 
     if request.method == "POST":
 
@@ -626,14 +636,12 @@ def export_view(request, template_name="export/export_data.html"):
                 heading_type = None
                 responses_type = None
 
-                component_list['per_eeg_setting'] = export_form.cleaned_data['per_eeg_settings']
-                component_list['per_emg_setting'] = export_form.cleaned_data['per_emg_settings']
-                component_list['per_tms_setting'] = export_form.cleaned_data['per_tms_settings']
                 component_list['per_eeg_raw_data'] = export_form.cleaned_data['per_eeg_raw_data']
                 component_list['per_eeg_nwb_data'] = export_form.cleaned_data['per_eeg_nwb_data']
                 component_list['per_emg_data'] = export_form.cleaned_data['per_emg_data']
                 component_list['per_tms_data'] = export_form.cleaned_data['per_tms_data']
                 component_list['per_additional_data'] = export_form.cleaned_data['per_additional_data']
+                component_list['per_goalkeeper_game_data'] = export_form.cleaned_data['per_goalkeeper_game_data']
 
                 if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data['per_participant']
@@ -712,9 +720,11 @@ def export_view(request, template_name="export/export_data.html"):
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
-                component_list = get_component_with_data_and_metadata(group, component_list)
+                # component_list = get_component_with_data_and_metadata(group, component_list)
+                # questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                #     subject_of_group__group=group).distinct('data_configuration_tree')
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                    subject_of_group__group=group).distinct('data_configuration_tree')
+                    subject_of_group__group=group)
                 questionnaire_in_list = []
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
                     questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
@@ -729,7 +739,8 @@ def export_view(request, template_name="export/export_data.html"):
                             questionnaire_dic = {
                                 'questionnaire': questionnaire,
                                 'token': str(questionnaire_response.token_id),
-                                'group_id': group_id
+                                'group_id': group_id,
+                                'group_title': group.title
                             }
                             if questionnaire_id not in questionnaire_in_list:
                                 questionnaire_in_list.append(questionnaire_id)
@@ -834,8 +845,9 @@ def get_component_with_data_and_metadata(group, component_list):
 
     # data collection
     if 'eeg' not in component_list:
-        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        # eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct(
+        #     'data_configuration_tree')
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
         if eeg_data_list:
             component_list.append('eeg')
     if 'emg' not in component_list:
@@ -946,6 +958,7 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
         questionnaire_id = questionnaire['questionnaire'].survey.lime_survey_id
         token = questionnaire['token']
         group_id = questionnaire['group_id']
+        group_title = questionnaire['group_title']
 
         language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_current)
 
@@ -955,8 +968,8 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
 
         if not isinstance(responses_string, dict):
 
-            record_question = {'group_id': group_id, 'sid': questionnaire_id, "title": questionnaire_title,
-                               "output_list": []}
+            record_question = {'group_id': group_id, 'group_title': group_title, 'sid': questionnaire_id,
+                               "title": questionnaire_title, "output_list": []}
 
             questionnaire_questions = perform_csv_response(responses_string)
 

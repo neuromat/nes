@@ -161,37 +161,6 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-7">
                                                 <label data-toggle="tooltip" data-placement="auto left"
-                                                       for="experiment_metadata"
-                                                       class="control-label">{% trans "Experiment metadata" %} </label>
-                                                {% if 'eeg_setting' in component_list %}
-                                                    <div class="checkbox">
-                                                        {{ export_form.per_eeg_settings }}
-                                                        <label for="per_eeg_setting" class="control-label">{% trans "EEG Settings" %}</label>
-                                                        <div class="help-block with-errors"></div>
-                                                    </div>
-                                                {% endif %}
-                                                {% if 'emg_setting' in component_list %}
-                                                    <div class="checkbox">
-                                                        {{ export_form.per_emg_settings }}
-                                                        <label for="per_emg_setting" class="control-label">{% trans "EMG Settings" %}</label>
-                                                        <div class="help-block with-errors"></div>
-                                                    </div>
-                                                {% endif %}
-                                                {% if 'tms_setting' in component_list %}
-                                                    <div class="checkbox">
-                                                        {{ export_form.per_tms_settings }}
-                                                        <label for="per_tms_setting" class="control-label">{% trans "TMS Settings" %}</label>
-                                                        <div class="help-block with-errors"></div>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="container span6 offset3 well ">
-                                        <div class="row">
-                                            <div class="col-xs-12 col-sm-7">
-                                                <label data-toggle="tooltip" data-placement="auto left"
                                                        for="experiment_data_collection"
                                                        class="control-label">{% trans "Experiment data collection" %} </label>
                                                 {% if 'eeg' in component_list %}
@@ -353,7 +322,7 @@
                                                                        href="#collapse_{{ survey.index }}">
                                                                     <span style="background-color: #428bca" id="badge_{{ survey.index }}"
                                                                           class="badge">{{ survey.selected_counter }} </span> {{ survey.sid }}
-                                                                        - {{ survey.title }} </a>
+                                                                        - {{ survey.title }} - {{ survey.group_title }} </a>
                                                                 </h9>
                                                             </div>
                                                             <div id="collapse_{{ survey.index }}" class="panel-collapse collapse">
