@@ -2,7 +2,6 @@
 import re
 import json
 import random
-import subprocess
 
 import numpy as np
 
@@ -74,8 +73,8 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
     GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
 
-from .portal import get_experiment_status_portal, send_user_to_portal, \
-    send_research_project_to_portal, send_experiment_to_portal, get_portal_status
+from .portal import get_experiment_status_portal, send_experiment_to_portal, get_portal_status, \
+    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -116,19 +115,6 @@ delimiter = "-"
 class EEGReading:
     file_format = None
     reading = None
-
-
-def get_current_tab(request):
-    current_tab = '0'
-
-    if request.method == "POST":
-        if 'currentTab' in request.POST:
-            current_tab = request.POST['currentTab']
-    else:
-        if 'currentTab' in request.GET:
-            current_tab = request.GET['currentTab']
-
-    return current_tab
 
 
 @login_required
@@ -197,9 +183,7 @@ def get_can_change(user, research_project):
 def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    owners_full_name = ""
-    if research_project.owner:
-        owners_full_name = research_project.owner.get_full_name()
+    owners_full_name = get_owner_full_name(research_project)
 
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,
                                                 initial={'owners_full_name': owners_full_name})
@@ -262,6 +246,13 @@ def research_project_view(request, research_project_id, template_name="experimen
     return render(request, template_name, context)
 
 
+def get_owner_full_name(research_project):
+    owners_full_name = ""
+    if research_project.owner:
+        owners_full_name = research_project.owner.get_full_name()
+    return owners_full_name
+
+
 @login_required
 @permission_required('experiment.change_researchproject')
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
@@ -269,9 +260,7 @@ def research_project_update(request, research_project_id, template_name="experim
 
     check_can_change(request.user, research_project)
 
-    owners_full_name = ""
-    if research_project.owner:
-        owners_full_name = research_project.owner.get_full_name()
+    owners_full_name = get_owner_full_name(research_project)
 
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,
                                                 initial={'owners_full_name': owners_full_name})
@@ -436,7 +425,7 @@ def publication_view(request, publication_id, template_name="experiment/publicat
             redirect_url = reverse("publication_list", args=())
             return HttpResponseRedirect(redirect_url)
 
-        if request.POST['action'][:7] == "remove-":
+        elif request.POST['action'][:7] == "remove-":
             experiment = get_object_or_404(Experiment, pk=int(request.POST['action'][7:]))
             publication.experiments.remove(experiment)
             messages.success(request, _('Experiment removed from publication successfully.'))
@@ -726,31 +715,41 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
     if request.method == "POST":
         if request.POST['action'] == "send-to-portal":
 
-            users_to_send = []
-            research_projects_to_send = []
+            # users_to_send = []
+            # research_projects_to_send = []
+            #
+            # for schedule_of_sending in list_of_schedule_of_sending:
+            #     if schedule_of_sending.experiment.research_project.owner not in users_to_send:
+            #         users_to_send.append(schedule_of_sending.experiment.research_project.owner)
+            #     if schedule_of_sending.experiment.research_project not in research_projects_to_send:
+            #         research_projects_to_send.append(schedule_of_sending.experiment.research_project)
+
+            # for user in users_to_send:
+            #     send_user_to_portal(user)
+
+            # for research_project in research_projects_to_send:
+            #     send_research_project_to_portal(research_project)
 
             for schedule_of_sending in list_of_schedule_of_sending:
-                if schedule_of_sending.experiment.research_project.owner not in users_to_send:
-                    users_to_send.append(schedule_of_sending.experiment.research_project.owner)
-                if schedule_of_sending.experiment.research_project not in research_projects_to_send:
-                    research_projects_to_send.append(schedule_of_sending.experiment.research_project)
+                if send_experiment_to_portal(schedule_of_sending.experiment):
 
-            for user in users_to_send:
-                send_user_to_portal(user)
+                    schedule_of_sending.status = "sent"
+                    schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
+                    schedule_of_sending.save()
 
-            for research_project in research_projects_to_send:
-                send_research_project_to_portal(research_project)
+                    experiment = schedule_of_sending.experiment
+                    experiment.last_sending = schedule_of_sending.sending_datetime
+                    experiment.save()
 
-            for schedule_of_sending in list_of_schedule_of_sending:
-                send_experiment_to_portal(schedule_of_sending.experiment)
+                    # sending research project
+                    send_research_project_to_portal(schedule_of_sending.experiment)
 
-                schedule_of_sending.status = "sent"
-                schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
-                schedule_of_sending.save()
+                    # sending groups
+                    for group in schedule_of_sending.experiment.group_set.all():
+                        send_group_to_portal(group)
 
-                experiment = schedule_of_sending.experiment
-                experiment.last_sending = schedule_of_sending.sending_datetime
-                experiment.save()
+                    # end of sending
+                    send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
             messages.success(request, _('Experiments sent successfully.'))
 
@@ -6401,8 +6400,8 @@ def load_group_goalkeeper_game_data(request, group_id):
         messages.info(request, _('No experimental group code configured.'))
     else:
 
-        experimental_group_code = (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + \
-                                  group.code
+        experimental_group_code = \
+            (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + group.code
 
         # data structure
         game_group_data = {}
@@ -6417,9 +6416,19 @@ def load_group_goalkeeper_game_data(request, group_id):
             lines = register.filecontent.splitlines()
 
             if lines:
-                sequence_used = lines[0][15:] if (lines[0][:14] == 'sequExecutada:') else ''
 
-                header_line = 1 if sequence_used else 0
+                # Example of content:
+                #
+                # (optional) tree: 0;0;1 | 1;0;0 | 2;1;0
+                # (optional) sequExecutada: 10210210
+                # experimentGroup, game, playID, phase, gameTime, relaxTime, playerMachine, (...)
+                # Araguaia, JG, grupo1 - v1 - ph0, ph0, 42.92149, 0, USP, (...)
+
+                has_tree_information = (lines[0][:5] == 'tree:')
+                sequence_line = 1 if has_tree_information else 0
+                sequence_used = lines[sequence_line][15:] if (lines[sequence_line][:14] == 'sequExecutada:') else ''
+
+                header_line = sequence_line + 1 if sequence_used else sequence_line
 
                 header = lines[header_line].split(',')
                 values = lines[header_line + 1].split(',')
@@ -7987,8 +7996,10 @@ def component_create(request, experiment_id, component_type):
             if component_type == 'questionnaire':
                 new_specific_component = Questionnaire()
                 survey, created = Survey.objects.get_or_create(
-                    lime_survey_id=request.POST['questionnaire_selected'],
-                    is_initial_evaluation=False)
+                    lime_survey_id=request.POST['questionnaire_selected'])
+                if created:
+                    survey.is_initial_evaluation = False
+                    survey.save()
                 new_specific_component.survey = survey
             elif component_type == 'pause':
                 new_specific_component = Pause()

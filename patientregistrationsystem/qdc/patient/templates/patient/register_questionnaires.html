@@ -18,7 +18,7 @@
 
                     <div class="row">
                         <div class="col-sm-6">
-                            <h4>{% trans "Entrance evaluation" %}</h4>
+                            <h4>{% trans "Questionnaire fills" %}</h4>
                         </div>
                         <div class="col-sm-6" style="text-align: right; vertical-align: bottom">
                             {% if perms.patient.sensitive_data_patient %}
@@ -32,18 +32,19 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Questionnaire" %}</th>
+                                <th class="col-md-8">{% trans "Questionnaire" %}</th>
                                 <th>{% trans "Fills" %}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for patient_questionnaire in patient_questionnaires_data_list %}
-                                <tr {% if not patient_questionnaire.is_initial_evaluation %} data-toggle="tooltip" data-placement="left" title="{% trans "It is not entrance evaluation anymore" %}" {% endif %}>
+                                <tr>
                                     <td>
                                         {{ patient_questionnaire.limesurvey_id }} - {{ patient_questionnaire.questionnaire_title }}
+                                        {% if patient_questionnaire.is_initial_evaluation %}<span style="color: red; font-weight: bold">*</span>{% endif %}
 
                                         {% if patient_questionnaire.questionnaire_responses|length == 0 %}
-                                            <br/><span class="label label-warning">{% trans "It must be filled" %}</span>
+                                            <span class="label label-warning">{% trans "It must be filled" %}</span>
                                         {% endif %}
                                     </td>
                                     <td>
@@ -88,7 +89,7 @@
                                                 </tr>
                                             {% endfor %}
 
-                                            {% if editing and patient_questionnaire.is_initial_evaluation and perms.patient.add_questionnaireresponse %}
+                                            {% if editing and perms.patient.add_questionnaireresponse %}
                                                 <tr>
                                                     <td colspan="2" class="col-md-12">
                                                         <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/add_response/?origin=subject"
@@ -99,12 +100,43 @@
 
                                         </table>
 
-
                                     </td>
                                 </tr>
                             {% endfor %}
+
+{#                            {% if editing %}#}
+{#                                <tr>#}
+{#                                    <td>#}
+{#                                        <label class="control-label">{% trans "Select other questionnaire" %}</label>#}
+{#                                        <select class="form-control" id="additional_survey_selected" name="additional_survey_selected">#}
+{#                                        <option selected="selected" value="">---------</option>#}
+{#                                        {% for additional_survey in additional_survey_list%}#}
+{#                                            <option value="{{ additional_survey.sid }}">{{ additional_survey.title }} ({{ additional_survey.lime_survey_id }})</option>#}
+{#                                        {% endfor %}#}
+{#                                        </select>#}
+{#                                    </td>#}
+{#                                    <td>#}
+{#                                        <table class="col-md-12">#}
+{#                                        <tr>#}
+{#                                            <td colspan="2" class="col-md-12">#}
+{#                                                <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/add_response/?origin=subject"#}
+{#                                                    class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">{% trans "New fill" %}</a>#}
+{#                                            </td>#}
+{#                                        </tr>#}
+{#                                        </table>#}
+{#                                    </td>#}
+{#                                </tr>#}
+{#                            {% endif %}#}
+
                             </tbody>
                         </table>
+
+                        {% if editing %}
+                            <button type="button" class="btn btn-primary" onclick="showAdditionalSurveyDialog()">
+                                {% trans "Choose another questionnaire to fill" %}
+                            </button>
+                        {% endif %}
+
                     </div>
 
                 </div>
@@ -117,7 +149,7 @@
 
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
-                            <h4>{% trans "Questionnaires" %}</h4>
+                            <h4>{% trans "Experiment questionnaires" %}</h4>
                         </div>
                     </div>
 
@@ -170,5 +202,26 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalAdditionalSurvey" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <label class="control-label">{% trans "Choose a questionnaire to fill" %}</label>
+                    <select class="form-control" id="additional_survey_selected" name="additional_survey_selected">
+                    <option selected="selected" value="">---------</option>
+                    {% for additional_survey in additional_survey_list%}
+                        <option value="{{ additional_survey.id }}">{{ additional_survey.title }} ({{ additional_survey.lime_survey_id }})</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <a href_template="/patient/{{ patient_id }}/questionnaire/{survey_id}/add_response/?origin=subject"
+                       id="fill_button" disabled="" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">{% trans "New fill" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

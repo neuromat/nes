@@ -15,8 +15,12 @@ from .models import Experiment, Group, Subject, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree
-from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update
+    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree, \
+    ResearchProjectCollaboration
+from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
+    publication_add_experiment
+
+from custom_user.views import User
 
 from patient.models import ClassificationOfDiseases
 from patient.tests import UtilTests
@@ -24,7 +28,8 @@ from patient.tests import UtilTests
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 
-from custom_user.views import User
+from team.models import Team, Person, TeamPerson
+from team.tests import ObjectsFactory as TeamObjectsFactory
 
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
@@ -1888,6 +1893,41 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Keyword.objects.all().count(), 2)
         self.assertEqual(research_project2.keywords.count(), 1)
+
+    def test_research_project_collaborator(self):
+        # Create a research project to be used in the test
+        research_project = ObjectsFactory.create_research_project()
+
+        team = TeamObjectsFactory.create_team()
+        person = TeamObjectsFactory.create_basic_person()
+        team_person = TeamObjectsFactory.create_team_person(team, person)
+
+        # screen to update an eeg_setting
+        response = self.client.get(reverse("collaborator_new", args=(research_project.id,)))
+        self.assertEqual(response.status_code, 200)
+
+        # Add a collaborator to a research project
+        self.data = {'action': 'save', 'team_person': str(team_person.id), 'is_coordinator': 'on'}
+        response = self.client.post(reverse('collaborator_new', args=(research_project.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        research_project_collaboration = ResearchProjectCollaboration.objects.get(team_person=team_person,
+                                                                                  research_project=research_project)
+        self.assertTrue(research_project_collaboration.is_coordinator)
+
+        # Change is_coordinator flag
+        self.data = {'action': 'change_collaborator-' + str(research_project_collaboration.id)}
+        response = self.client.post(reverse('research_project_view', args=(research_project.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+
+        research_project_collaboration = ResearchProjectCollaboration.objects.get(team_person=team_person,
+                                                                                  research_project=research_project)
+        self.assertFalse(research_project_collaboration.is_coordinator)
+
+        # Remove a collaborator to a research project
+        self.data = {'action': 'remove_collaborator-' + str(research_project_collaboration.id)}
+        response = self.client.post(reverse('research_project_view', args=(research_project.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(research_project.collaborators.count(), 0)
 
 
 class EEGSettingTest(TestCase):
@@ -4181,6 +4221,45 @@ class PublicationTest(TestCase):
 
         # Check if number of publications decreased by 1
         self.assertEqual(Publication.objects.all().count(), count - 1)
+
+    def test_publication_add_experiment(self):
+        # Create a publication to be used in the test
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        publication = ObjectsFactory.create_publication([])
+
+        # Create an instance of a GET request.
+        request = self.factory.get(reverse('publication_add_experiment', args=[publication.pk, ]))
+        request.user = self.user
+
+        response = publication_add_experiment(request, publication_id=publication.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # Add an experiment to the publication
+        self.data = {'action': 'add-experiment',
+                     'experiment_selected': str(experiment.id)}
+        response = self.client.post(reverse('publication_add_experiment', args=(publication.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]), _('Experiment included successfully.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Try to add the same experiment to the publication
+        response = self.client.post(reverse('publication_add_experiment', args=(publication.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(str(list(response.context['messages'])[0]),
+                         _('Experiment already included in the publication.'))
+        self.assertEqual(response.status_code, 200)
+
+        # Save current number of experiments related to the publication
+        count = publication.experiments.count()
+
+        self.data = {'action': 'remove-' + str(experiment.id)}
+        response = self.client.post(reverse('publication_view', args=(publication.pk,)),
+                                    self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if number of publications decreased by 1
+        self.assertEqual(publication.experiments.count(), count - 1)
 
 
 class ContextTreeTest(TestCase):

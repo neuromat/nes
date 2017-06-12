@@ -196,9 +196,11 @@ class ExportExecution:
         self.user_name = None
         self.input_data = {}
         self.per_participant_data = {}
+        self.per_participant_data_from_experiment = {}
         self.participants_per_entrance_questionnaire = {}
         self.participants_per_experiment_questionnaire = {}
         self.questionnaires_data = {}
+        self.questionnaires_experiment_data = {}
         self.root_directory = ""
         self.participants_filtered_data = []
         self.questionnaire_code_and_id = {}
@@ -271,6 +273,26 @@ class ExportExecution:
 
         return headers, fields
 
+    def set_questionnaire_experiment_header_and_fields(self, questionnaire):
+
+        headers = []
+        fields = []
+
+        questionnaire_id = questionnaire["id"]
+        for output_list in questionnaire["output_list"]:
+            if output_list["field"]:
+                headers.append(output_list["header"])
+                fields.append(output_list["field"])
+
+        if questionnaire_id not in self.questionnaires_experiment_data:
+            self.questionnaires_experiment_data[questionnaire_id] = {}
+
+        self.questionnaires_experiment_data[questionnaire_id]["header"] = headers
+        self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"] = headers
+        self.questionnaires_experiment_data[questionnaire_id]["fields"] = fields
+
+        return headers, fields
+
     def append_questionnaire_header_and_field(self, questionnaire_id, header, fields):
         # only one header, field instance
         for field in fields:
@@ -278,12 +300,29 @@ class ExportExecution:
                 self.questionnaires_data[questionnaire_id]["header"].append(header[fields.index(field)])
                 self.questionnaires_data[questionnaire_id]["fields"].append(field)
 
+    def append_questionnaire_experiment_header_and_field(self, questionnaire_id, header, fields):
+        # only one header, field instance
+        for field in fields:
+            if field not in self.questionnaires_experiment_data[questionnaire_id]["fields"]:
+                self.questionnaires_experiment_data[questionnaire_id]["header"].append(header[fields.index(field)])
+                self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"].\
+                    append(header[fields.index(field)])
+                self.questionnaires_experiment_data[questionnaire_id]["fields"].append(field)
+
     def get_header_questionnaire(self, questionnaire_id):
         # headers_questionnaire format: dict {questionnaire_id: {header:[header]}}
 
         header = []
         if questionnaire_id in self.questionnaires_data:
             header = self.questionnaires_data[questionnaire_id]["header"]
+        return header
+
+    def get_header_experiment_questionnaire(self, questionnaire_id):
+        # headers_questionnaire format: dict {questionnaire_id: {header:[header]}}
+
+        header = []
+        if questionnaire_id in self.questionnaires_experiment_data:
+            header = self.questionnaires_experiment_data[questionnaire_id]["header"]
         return header
 
     def get_questionnaire_fields(self, questionnaire_id):
@@ -323,6 +362,28 @@ class ExportExecution:
 
         for element in to_be_included_list:
             self.per_participant_data[participant_id][questionnaire_id].append(element)
+
+    def include_in_per_participant_data_from_experiment(self, to_be_included_list, participant_id, questionnaire_id):
+        """
+        :param to_be_included_list: list with information to be included in include_data dict
+        :param participant_id: participant identification (number)
+        :param questionnaire_id: questionnaire identification (number)
+        :return: include_data dict is updated with new information from parameters
+
+        Note: include_data format example:
+        {10: {1: [[5, 7, 8], [4, 9, 6], [11, 12, 13]]}}
+        10: participant_id
+        1: questionnaire_id
+
+        """
+        if participant_id not in self.per_participant_data_from_experiment:
+            self.per_participant_data_from_experiment[participant_id] = {}
+
+        if questionnaire_id not in self.per_participant_data_from_experiment[participant_id]:
+            self.per_participant_data_from_experiment[participant_id][questionnaire_id] = []
+
+        for element in to_be_included_list:
+            self.per_participant_data_from_experiment[participant_id][questionnaire_id].append(element)
 
     def include_participant_per_questionnaire(self, token_id, code):
 
@@ -459,15 +520,25 @@ class ExportExecution:
 
         return participant_list
 
-    def get_per_participant_data(self, participant=None, questonnaire=None):
+    def get_per_participant_data(self, participant=None, questionnaire=None):
 
-        if questonnaire:
-            return self.per_participant_data[participant][questonnaire]
+        if questionnaire:
+            return self.per_participant_data[participant][questionnaire]
 
         if participant:
             return self.per_participant_data[participant]
 
         return self.per_participant_data
+
+    def get_per_participant_data_from_experiment(self, participant=None, questionnaire=None):
+
+        if questionnaire:
+            return self.per_participant_data_from_experiment[participant][questionnaire]
+
+        if participant:
+            return self.per_participant_data_from_experiment[participant]
+
+        return self.per_participant_data_from_experiment
 
     def set_participants_filtered_data(self, participants_filtered_list):
 
@@ -526,6 +597,20 @@ class ExportExecution:
             fields.append(smart_str(row["field"]))
 
         self.append_questionnaire_header_and_field(questionnaire_id, header, fields)
+
+    def update_questionnaire_experiment_rules(self, questionnaire_id):
+
+        header = []
+        fields = []
+
+        heading_type = self.get_heading_type()
+
+        for row in included_questionnaire_fields:
+            header_translated = _(row["header"][heading_type])
+            header.append(smart_str(header_translated))
+            fields.append(smart_str(row["field"]))
+
+        self.append_questionnaire_experiment_header_and_field(questionnaire_id, header, fields)
 
     def transform_questionnaire_data(self, patient_id, fields):
 
@@ -722,26 +807,29 @@ class ExportExecution:
 
     def merge_participants_data_per_questionnaire_process(self, fields_description, participant_list):
         # get fields from patient
-        export_participant_row = self.process_participant_data(self.get_input_data('participants'),
-                                                               participant_list)
+        export_participant_row = self.process_participant_data(self.get_input_data('participants'), participant_list)
+
         # Merge fields from questionnaires and patient
         export_fields_list = []
         export_row_list = []
         # Building the header
-        for field in fields_description[0][0:len(fields_description[0]) - 1]:
-            export_row_list.append(field)
+        export_row_list = fields_description[0][0:len(fields_description[0]) - 1]
+        # for field in fields_description[0][0:len(fields_description[0]) - 1]:
+        #     export_row_list.append(field)
         for field in export_participant_row[0]:
             export_row_list.append(field)
         export_fields_list.append(export_row_list)
+
         # Including the responses
         for fields in fields_description[1:fields_description.__len__()]:
             participation_code = fields[len(fields) - 1]
             export_row_list = []
-            for field in fields[0:len(fields) - 1]:
-                export_row_list.append(field)
-            for fields in export_participant_row[1:export_participant_row.__len__()]:
-                if participation_code == fields[len(fields) - 1]:
-                    for field in fields:
+            export_row_list = fields[0:len(fields) - 1]
+            # for field in fields[0:len(fields) - 1]:
+            #     export_row_list.append(field)
+            for participant_fields in export_participant_row[1:export_participant_row.__len__()]:
+                if participation_code == participant_fields[len(participant_fields) - 1]:
+                    for field in participant_fields:
                         export_row_list.append(field)
             export_fields_list.append(export_row_list)
 
@@ -801,7 +889,7 @@ class ExportExecution:
             print(questionnaire_id)
 
             # per_participant_data is updated by define_questionnaire method
-            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, group_id="")
+            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
 
             # create directory for questionnaire: <per_questionnaire>/<q_code_title>
             if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
@@ -824,14 +912,15 @@ class ExportExecution:
                 # path ex. /Users/.../media/NES_EXPORT/Per_questionnaire.Q123_aaa/Responses_Q123.csv
                 complete_filename = path.join(export_path, export_filename)
 
-                if self.get_input_data('participants')[0]['output_list']:
-                    participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
-                    export_field_list = self.merge_participants_data_per_questionnaire_process(fields_description,
-                                                                                               participant_list)
-                    save_to_csv(complete_filename, export_field_list)
-                else:
-                    save_to_csv(complete_filename, fields_description)
-
+                # if self.get_input_data('participants')[0]['output_list']:
+                #     participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
+                #
+                #     export_field_list = self.merge_participants_data_per_questionnaire_process(fields_description,
+                #                                                                                participant_list)
+                #     save_to_csv(complete_filename, export_field_list)
+                # else:
+                #     save_to_csv(complete_filename, fields_description)
+                save_to_csv(complete_filename, fields_description)
                 self.files_to_zip_list.append([complete_filename, export_directory])
 
                 # create questionnaire fields file ("fields.csv") - metadata directory
@@ -909,7 +998,7 @@ class ExportExecution:
             print(questionnaire_id)
 
             # per_participant_data is updated by define_questionnaire method
-            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, group_id="")
+            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
 
             # create directory for questionnaire: <per_questionnaire>/<q_code_title>
             if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
@@ -932,14 +1021,15 @@ class ExportExecution:
                 #                   Per_questionnaire/Q123_aaa/Responses_Q123.csv
                 complete_filename = path.join(export_path, export_filename)
 
-                if self.get_input_data('participants')[0]['output_list']:
-                    participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
-                    export_fields_list = self.merge_participants_data_per_questionnaire_process(fields_description,
-                                                                                                participant_list)
-                    save_to_csv(complete_filename, export_fields_list)
-                else:
-                    save_to_csv(complete_filename, fields_description)
+                # if self.get_input_data('participants')[0]['output_list']:
+                #     participant_list = self.participants_per_entrance_questionnaire[questionnaire_code]
+                #     export_fields_list = self.merge_participants_data_per_questionnaire_process(fields_description,
+                #                                                                                 participant_list)
+                #     save_to_csv(complete_filename, export_fields_list)
+                # else:
+                #     save_to_csv(complete_filename, fields_description)
 
+                save_to_csv(complete_filename, fields_description)
                 self.files_to_zip_list.append([complete_filename, export_directory])
 
                 # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
@@ -1027,7 +1117,8 @@ class ExportExecution:
                     print(questionnaire_id)
 
                     # per_participant_data is updated by define_questionnaire method
-                    fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, group_data)
+                    fields_description = self.define_experiment_questionnaire(questionnaire, questionnaire_lime_survey,
+                                                                              group_data)
 
                     # create directory for questionnaire: <per_questionnaire>/<q_code_title>
                     if self.get_input_data("export_per_experiment") and (len(fields_description) > 1):
@@ -1054,16 +1145,7 @@ class ExportExecution:
                         # Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                         complete_filename = path.join(complete_export_path, export_filename)
 
-                        if self.get_input_data('participants')[0]['output_list']:
-                            participant_list = self.get_participant_list(group_data)
-                            # add questionnaire experiment path to export_rows
-
-                            export_fields_list = self.merge_participants_data_per_questionnaire_process(
-                                fields_description, participant_list)
-                            save_to_csv(complete_filename, export_fields_list)
-                        else:
-                            save_to_csv(complete_filename, fields_description)
-
+                        save_to_csv(complete_filename, fields_description)
                         self.files_to_zip_list.append([complete_filename, export_directory])
 
                         # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
@@ -1140,9 +1222,9 @@ class ExportExecution:
                             for field in export_participant_row[0]:
                                 header.append(field)
                             per_participant_rows = [header]
-                            export_fields_row = self.merge_participant_data_per_participant_process(
-                                questionnaire_code, participant_code, export_participant_row)
-                            for field in export_fields_row:
+                            # export_fields_row = self.merge_participant_data_per_participant_process(
+                            #     questionnaire_code, participant_code, export_participant_row)
+                            for field in fields_rows:
                                 per_participant_rows.append(field)
                     else:
                         per_participant_rows = [header]
@@ -1202,28 +1284,17 @@ class ExportExecution:
                                                                         str(questionnaire_code), title)
 
                                     header = self.get_header_questionnaire(questionnaire_id)
-                                    per_participant_rows = [header]
 
-                                    if self.get_input_data('participants')[0]['output_list']:
-                                        header = header[0:len(header)-1]
-                                        participant_list = [patient_id]
-                                        # get fields from patient 
-                                        export_participant_row = self.process_participant_data(
-                                            self.get_input_data('participants'), participant_list)
+                                    for row in self.get_input_data('participants'):
+                                        headers_participant_data, fields = self.get_headers_and_fields(
+                                            row["output_list"])
+                                    header = header[0:len(header) - 1]
+                                    for field in headers_participant_data:
+                                        header.append(field)
 
-                                        for field in export_participant_row[0]:
-                                            header.append(field)
-                                        per_participant_rows = [header]
-
-                                        export_fields_rows = self.merge_participant_data_per_participant_process(
-                                            questionnaire_code, participant_code, export_participant_row)
-                                        for fields in export_fields_rows:
-                                            per_participant_rows.append(fields)
-                                    else:
-                                        fields_rows = self.get_per_participant_data(participant_code,
-                                                                                    questionnaire_code)
-                                        for fields in fields_rows:
-                                            per_participant_rows.append(fields)
+                                    per_participant_rows = self.get_per_participant_data(participant_code,
+                                                                                         questionnaire_code)
+                                    per_participant_rows.insert(0, header)
                                     # path ex. /Users/.../NES_EXPORT/Participant_data/Per_participant/
                                     complete_filename = path.join(participant_path, export_filename)
 
@@ -1239,7 +1310,7 @@ class ExportExecution:
 
         error_msg = ''
 
-        if self.get_input_data("export_per_participant"):
+        if self.get_input_data("questionnaires_from_experiments"):
             # path ex. /Users/.../NES_EXPORT/Experiment_data/
             per_experiment_directory = path.join(self.get_export_directory(),
                                                  self.get_input_data("experiment_data_directory"))
@@ -1269,7 +1340,7 @@ class ExportExecution:
                     # ex. Participant_P123
                     path_participant = prefix_filename_participant + str(participant_code)
 
-                    for questionnaire_code in self.per_group_data[group_data][4][participant_code]:
+                    for questionnaire_code in self.per_participant_data_from_experiment[participant_code]:
 
                         questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
                         title = self.get_title_experiment_questionnaire(questionnaire_id)
@@ -1284,47 +1355,21 @@ class ExportExecution:
                         export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code),
                                                             questionnaire_title)
 
-                        header = self.get_header_questionnaire(questionnaire_id)
+                        # Build the header
+                        header = self.get_header_experiment_questionnaire(questionnaire_id)
 
-                        per_participant_rows = [header]
-                        # if participant fields were selected
-                        if self.get_input_data('participants')[0]['output_list']:
-                            # Build the header
-                            header = header[0:len(header)-1]
+                        # Get the responses from questionnaire per participant
+                        per_participant_rows = self.get_per_participant_data_from_experiment(participant_code,
+                                                                                             questionnaire_code)
+                        per_participant_rows.insert(0, header)
 
-                            step_header = ['Path identification', 'Step description',
-                                           'Path of the step', 'Data completed']
-                            for element in step_header:
-                                header.append(element)
-
-                            patient_id = Patient.objects.filter(code=participant_code).values('id')[0]['id']
-                            participant_list = [patient_id]
-                            # get fields from patient 
-                            export_participant_row = self.process_participant_data(self.get_input_data('participants'),
-                                                                                   participant_list)
-
-                            for field in export_participant_row[0]:
-                                header.append(field)
-
-                            per_participant_rows = [header]
-                            export_fields_row = self.merge_participant_data_per_participant_process(
-                                questionnaire_code, participant_code, export_participant_row)
-                            for field in export_fields_row:
-                                per_participant_rows.append(field)
-                        else:
-                            fields_rows = self.get_per_participant_data(participant_code,
-                                                                        questionnaire_code)
-                            for fields in fields_rows:
-                                per_participant_rows.append(fields)
                         # path ex. Users/.../Group_xxx/Per_participant/Per_participant
                         # /Participant_P123/P123_Q123_aaa.csv
-                        complete_filename = path.join(complete_group_participant_directory,
-                                                      export_filename)
+                        complete_filename = path.join(complete_group_participant_directory, export_filename)
 
                         save_to_csv(complete_filename, per_participant_rows)
                         # path ex.NES_EXPORT/Per_experiment/Per_participant/Per_participant/Participant_P123
-                        export_directory = path.join(export_directory_group_per_participant,
-                                                     path_participant)
+                        export_directory = path.join(export_directory_group_per_participant, path_participant)
 
                         self.files_to_zip_list.append([complete_filename, export_directory])
         return error_msg
@@ -1373,6 +1418,26 @@ class ExportExecution:
                 export_rows_participants.append([self.handle_exported_field(field) for field in record])
 
         return export_rows_participants
+
+    def get_participant_data_per_id(self, patient_id, questionnaire_response_fields):
+
+        for row in self.get_input_data('participants'):
+            headers, fields = self.get_headers_and_fields(row["output_list"])
+
+            model_to_export = getattr(modules['patient.models'], 'Patient')
+
+            if model_to_export.objects.filter(id=patient_id):
+                db_data = model_to_export.objects.filter(id=patient_id).values_list(*fields)[0]
+            else:
+                db_data = ""
+
+            # export_participant_data = [headers]
+
+            # append participant data
+            for field in db_data:
+                questionnaire_response_fields.append(field)
+
+        return questionnaire_response_fields
 
     def process_participant_filtered_data(self, participants_filtered_list, base_export_directory, base_directory):
         error_msg = ""
@@ -1436,6 +1501,10 @@ class ExportExecution:
         base_export_directory = self.get_export_directory()
         # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data
         experiment_resume_directory = path.join(base_export_directory, self.get_input_data("experiment_data_directory"))
+        if not path.exists(experiment_resume_directory):
+            error_msg, experiment_resume_directory = create_directory(base_export_directory,
+                                                                      self.get_input_data("experiment_data_directory"))
+
         # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Experiment.csv
         complete_filename_experiment_resume = path.join(experiment_resume_directory, filename_experiment_resume)
         # /NES_EXPORT/
@@ -1468,6 +1537,10 @@ class ExportExecution:
                 # path ex.
                 # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Experimental_protocol_description.txt
                 complete_group_filename = path.join(group_file_directory, filename_group_for_export)
+                if not path.exists(group_file_directory):
+                    error_msg, group_file_directory = create_directory(experiment_resume_directory,
+                                                                       group_directory_name)
+
                 self.files_to_zip_list.append([complete_group_filename, export_group_directory])
 
                 with open(complete_group_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as txt_file:
@@ -1537,6 +1610,31 @@ class ExportExecution:
         self.questionnaires_data[questionnaire_id]["header"] = new_header
         self.questionnaires_data[questionnaire_id]["fields"] = new_fields
 
+    def redefine_header_and_fields_experiment(self, questionnaire_id, header_filtered, fields, header_list):
+
+        header = self.questionnaires_experiment_data[questionnaire_id]["header"]
+        header_questionnaire = self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"]
+        fields_saved = self.questionnaires_experiment_data[questionnaire_id]["fields"]
+
+        new_header = []
+        new_fields = []
+        new_header_questionnaire = []
+
+        for item in fields:
+            new_header_questionnaire.append(header_questionnaire[fields.index(item)])
+            new_fields.append(fields_saved[fields.index(item)])
+
+            if item in header_filtered:
+                new_header_questionnaire.append(header_questionnaire[fields.index(item)])
+                new_fields.append(fields_saved[fields.index(item)])
+
+        # for element in header_list:
+        #     new_header.append(header[element])
+
+        self.questionnaires_experiment_data[questionnaire_id]["header"] = header_list
+        self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"] = new_header_questionnaire
+        self.questionnaires_experiment_data[questionnaire_id]["fields"] = new_fields
+
     def get_response_type(self):
 
         response_type = self.get_input_data("response_type")
@@ -1555,117 +1653,73 @@ class ExportExecution:
 
         return heading_type
 
-    def define_questionnaire(self, questionnaire, questionnaire_lime_survey, group_id):
-        """
-        :param questionnaire:
-        :return: fields_description: (list)
-
-        """
-        # questionnaire exportation - evaluation questionnaire
-        # print("define_questionnaire:  ")
+    def define_experiment_questionnaire(self, questionnaire, questionnaire_lime_survey, group_id):
         questionnaire_id = questionnaire["id"]
         language = questionnaire["language"]
-
         response_type = self.get_response_type()
 
-        headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
-
         export_rows = []
-
         # verify if Lime Survey is running
         limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
 
-        if group_id != "":
+        if group_id:
             questionnaire_exists = False
             questionnaire_responses = \
                 self.get_experiment_questionnaire_response_per_questionnaire(questionnaire_id, group_id)
             if questionnaire_responses:
                 questionnaire_exists = True
-            step_header = ['Path identification', 'Step description', 'Path of the step', 'Data completed']
-        else:
-            questionnaire_exists = QuestionnaireResponse.objects.filter(
-                survey__lime_survey_id=questionnaire_id).exists()
-            # filter data (participants)
-            questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
+                headers, fields = self.set_questionnaire_experiment_header_and_fields(questionnaire)
+            step_header = ['Step', 'Step identification', 'Path of the step', 'Data completed']
 
-            #  include new filter that come from advanced search
-            filtered_data = self.get_participants_filtered_data()
-            questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
+            if questionnaire_exists and limesurvey_available:
+                # read all data for questionnaire_id from LimeSurvey
+                # responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+                responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                            response_type[0])
+                # fill_list = perform_csv_response(responses_string)
+                fill_list1 = perform_csv_response(responses_string1)
 
-        if questionnaire_exists and limesurvey_available:
+                # read "long" information, if necessary
+                if len(response_type) > 1:
+                    responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                                response_type[1])
+                    fill_list2 = perform_csv_response(responses_string2)
+                else:
+                    fill_list2 = fill_list1
 
-            # read all data for questionnaire_id from LimeSurvey
-            # responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
-            responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
-            # fill_list = perform_csv_response(responses_string)
-            fill_list1 = perform_csv_response(responses_string1)
+                # filter fields
+                subscripts = []
 
-            # read "long" information, if necessary
-            if len(response_type) > 1:
-                responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
-                                                                            response_type[1])
-                fill_list2 = perform_csv_response(responses_string2)
-            else:
-                fill_list2 = fill_list1
+                for field in fields:
+                    if field in fill_list1[0]:
+                        subscripts.append(fill_list1[0].index(field))
 
-            # filter fields
-            subscripts = []
-            # find fields that must be used for this process
-            # for field in fields:
-            #     if field in fill_list[0]:
-            #         subscripts.append(fill_list[0].index(field))
+                data_from_lime_survey = {}
 
-            for field in fields:
-                if field in fill_list1[0]:
-                    subscripts.append(fill_list1[0].index(field))
+                duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
 
-            data_from_lime_survey = {}
+                line_index = 1
+                line_total = len(fill_list1) - 1
+                header_filtered = set()
+                while line_index < line_total:
+                    data_fields_filtered = []
+                    line1 = fill_list1[line_index]
+                    line2 = fill_list2[line_index]
 
-            # do not consider first line, because it is header TODO: verificar token_id
-            # for line in fill_list[1:len(fill_list) - 1]:
-            #     token_id = int(line[fill_list[0].index("id")])
-            #     data_fields_filtered = [line[index] for index in subscripts]
-            #     data_from_lime_survey[token_id] = data_fields_filtered
+                    for index in subscripts:
+                        data_fields_filtered.append(line1[index])
+                        if index in duplicate_indices:
+                            data_fields_filtered.append(line2[index])
+                            header_filtered.add(fill_list1[0][index])
 
-            duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
+                    token = line1[fill_list1[0].index("token")]
+                    data_from_lime_survey[token] = list(data_fields_filtered)
+                    line_index += 1
+                # self.update_questionnaire_experiment_rules(questionnaire_id)
 
-            line_index = 1
-            line_total = len(fill_list1) - 1
-            header_filtered = set()
-            while line_index < line_total:
-                data_fields_filtered = []
-                line1 = fill_list1[line_index]
-                line2 = fill_list2[line_index]
-
-                for index in subscripts:
-                    data_fields_filtered.append(line1[index])
-                    if index in duplicate_indices:
-                        data_fields_filtered.append(line2[index])
-                        header_filtered.add(fill_list1[0][index])
-
-                token = line1[fill_list1[0].index("token")]
-                data_from_lime_survey[token] = list(data_fields_filtered)
-                line_index += 1
-
-            # filter data (participants)
-            # questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
-
-            #  include new filter that come from advanced search
-            # filtered_data = self.get_participants_filtered_data()
-            # questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
-
-            # process data fields
-
-            # data_rows = []
-            self.update_questionnaire_rules(questionnaire_id)
-
-            # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
-            for questionnaire_response in questionnaire_responses:
-
-                # transform data fields
-                # include new fieldsm
-
-                if group_id != "":
+                for questionnaire_response in questionnaire_responses:
+                    # transform data fields
+                    # include new fieldsm
                     token_id = questionnaire_response.token_id
                     survey_code = self.per_group_data[group_id][3][questionnaire_id][0]
                     questionnaire_data_list = self.per_group_data[group_id][3][questionnaire_id]
@@ -1687,12 +1741,176 @@ class ExportExecution:
                     data_completed = questionnaire_data['data_completed']
 
                     step_per_response = [path_identification, description, step_path, data_completed]
-                else:
-                    patient_id = questionnaire_response.patient_id
-                    survey_code = questionnaire_response.survey.code
-                    lime_survey_id = questionnaire_response.survey.lime_survey_id
-                    patient_code = questionnaire_response.patient.code
-                    token_id = questionnaire_response.token_id
+
+                    token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+
+                    if token in data_from_lime_survey:
+
+                        lm_data_row = data_from_lime_survey[token]
+
+                        if lm_data_row:
+                            # lm_row = lm_data_row
+                            for element in step_per_response:
+                                lm_data_row.append(element)
+
+                        data_fields = [smart_str(data) for data in lm_data_row]
+
+                        if self.get_input_data('participants')[0]['output_list']:
+                            transformed_fields = self.get_participant_data_per_id(patient_id, data_fields)
+                        else:
+                            transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
+                        # data_rows.append(transformed_fields)
+
+                        if len(transformed_fields) > 0:
+                            export_rows.append(transformed_fields)
+
+                            self.include_questionnaire_code_and_id(survey_code, lime_survey_id)
+
+                            self.include_in_per_participant_data_from_experiment([transformed_fields], patient_code,
+                                                                                     survey_code)
+
+                            self.include_participant_per_questionnaire(token_id, survey_code)
+
+                # build the header
+                for row in self.get_input_data('participants'):
+                    headers_participant_data, fields_participant_data = self.get_headers_and_fields(row["output_list"])
+
+                header = self.get_header_experiment_questionnaire(questionnaire_id)
+
+                # if header[len(header) - 1] == 'participant_code':
+                #     header = header[0:len(header) - 1]
+                for element in step_header:
+                    header.append(element)
+
+                for field in headers_participant_data:
+                    header.append(field)
+
+                self.redefine_header_and_fields_experiment(questionnaire_id, header_filtered, fields, header)
+
+                export_rows.insert(0, header)
+            return export_rows
+
+    def define_questionnaire(self, questionnaire, questionnaire_lime_survey):
+        """
+        :param questionnaire:
+        :return: fields_description: (list)
+
+        """
+        # questionnaire exportation - evaluation questionnaire
+        # print("define_questionnaire:  ")
+        questionnaire_id = questionnaire["id"]
+        language = questionnaire["language"]
+
+        response_type = self.get_response_type()
+
+        export_rows = []
+
+        # verify if Lime Survey is running
+        limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
+
+        # if group_id != "":
+        #     questionnaire_exists = False
+        #     questionnaire_responses = \
+        #         self.get_experiment_questionnaire_response_per_questionnaire(questionnaire_id, group_id)
+        #     if questionnaire_responses:
+        #         questionnaire_exists = True
+        #     headers, fields = self.set_questionnaire_experiment_header_and_fields(questionnaire)
+        #     step_header = ['Path identification', 'Step description', 'Path of the step', 'Data completed']
+        # else:
+        headers, fields = self.set_questionnaire_header_and_fields(questionnaire)
+        questionnaire_exists = QuestionnaireResponse.objects.filter(
+            survey__lime_survey_id=questionnaire_id).exists()
+        # filter data (participants)
+        questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
+
+        #  include new filter that come from advanced search
+        filtered_data = self.get_participants_filtered_data()
+        questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
+
+        if questionnaire_exists and limesurvey_available:
+
+            # read all data for questionnaire_id from LimeSurvey
+            # responses_string = questionnaire_lime_survey.get_responses(questionnaire_id, language)
+            responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
+            # fill_list = perform_csv_response(responses_string)
+            fill_list1 = perform_csv_response(responses_string1)
+
+            # read "long" information, if necessary
+            if len(response_type) > 1:
+                responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                            response_type[1])
+                fill_list2 = perform_csv_response(responses_string2)
+            else:
+                fill_list2 = fill_list1
+
+            # filter fields
+            subscripts = []
+
+            for field in fields:
+                if field in fill_list1[0]:
+                    subscripts.append(fill_list1[0].index(field))
+
+            data_from_lime_survey = {}
+
+            duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
+
+            line_index = 1
+            line_total = len(fill_list1) - 1
+            header_filtered = set()
+            while line_index < line_total:
+                data_fields_filtered = []
+                line1 = fill_list1[line_index]
+                line2 = fill_list2[line_index]
+
+                for index in subscripts:
+                    data_fields_filtered.append(line1[index])
+                    if index in duplicate_indices:
+                        data_fields_filtered.append(line2[index])
+                        header_filtered.add(fill_list1[0][index])
+
+                token = line1[fill_list1[0].index("token")]
+                data_from_lime_survey[token] = list(data_fields_filtered)
+                line_index += 1
+
+            # if group_id != "":
+            #     self.update_questionnaire_experiment_rules(questionnaire_id)
+            # else:
+            self.update_questionnaire_rules(questionnaire_id)
+
+            # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
+            for questionnaire_response in questionnaire_responses:
+
+                # transform data fields
+                # include new fieldsm
+
+                # if group_id != "":
+                #     token_id = questionnaire_response.token_id
+                #     survey_code = self.per_group_data[group_id][3][questionnaire_id][0]
+                #     questionnaire_data_list = self.per_group_data[group_id][3][questionnaire_id]
+                #     questionnaire_list = questionnaire_data_list[1:len(questionnaire_data_list)]
+                #     index = 0
+                #     for element in questionnaire_list:
+                #         for key in element:
+                #             index += 1
+                #             if key == token_id:
+                #                 questionnaire_per_group = self.per_group_data[group_id][3][questionnaire_id][index]
+                #
+                #     questionnaire_data = questionnaire_per_group[token_id][0]
+                #     patient_id = questionnaire_data['patient_id']
+                #     lime_survey_id = questionnaire_id
+                #     patient_code = questionnaire_data['patient_code']
+                #     description = questionnaire_data['step_description']
+                #     step_path = questionnaire_data['path_questionnaire']
+                #     path_identification = questionnaire_data['path_identification']
+                #     data_completed = questionnaire_data['data_completed']
+                #
+                #     step_per_response = [path_identification, description, step_path, data_completed]
+                # else:
+                patient_id = questionnaire_response.patient_id
+                survey_code = questionnaire_response.survey.code
+                lime_survey_id = questionnaire_response.survey.lime_survey_id
+                patient_code = questionnaire_response.patient.code
+                token_id = questionnaire_response.token_id
 
                 token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
 
@@ -1700,36 +1918,56 @@ class ExportExecution:
 
                     lm_data_row = data_from_lime_survey[token]
 
-                    if lm_data_row and group_id != "":
-                        # lm_row = lm_data_row
-                        for element in step_per_response:
-                            lm_data_row.append(element)
+                    # if lm_data_row and group_id != "":
+                    #     # lm_row = lm_data_row
+                    #     for element in step_per_response:
+                    #         lm_data_row.append(element)
                         # data_fields = [smart_str(data) for data in lm_row]
                         # fields_with_code = self.transform_questionnaire_data(patient_id, data_fields)
 
                     data_fields = [smart_str(data) for data in lm_data_row]
 
-                    transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
+                    if self.get_input_data('participants')[0]['output_list']:
+                        transformed_fields = self.get_participant_data_per_id(patient_id, data_fields)
+                    else:
+                        transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
                     # data_rows.append(transformed_fields)
 
                     if len(transformed_fields) > 0:
-                        # export_rows.append(transformed_fields)
                         export_rows.append(transformed_fields)
 
                         self.include_questionnaire_code_and_id(survey_code, lime_survey_id)
 
+                        # if group_id != "":
+                        #     self.include_in_per_participant_data_from_experiment([transformed_fields], patient_code,
+                        #                                                          survey_code)
+                        # else:
                         self.include_in_per_participant_data([transformed_fields], patient_code, survey_code)
 
                         self.include_participant_per_questionnaire(token_id, survey_code)
 
+            # if group_id != "":
+            #     self.redefine_header_and_fields_experiment(questionnaire_id, header_filtered, fields)
+            # else:
             self.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
+
+        for row in self.get_input_data('participants'):
+            headers_participant_data, fields = self.get_headers_and_fields(row["output_list"])
+
+        # if group_id != "":
+        #     if self.questionnaires_experiment_data:
+        #         header = self.questionnaires_experiment_data[questionnaire_id]['header']
+        #     else:
+        #         header = self.get_header_questionnaire(questionnaire_id)
+        #     if header[len(header)-1] == 'participant_code':
+        #         header = header[0:len(header)-1]
+        #         for element in step_header:
+        #             header.append(element)
+        # else:
         header = self.get_header_questionnaire(questionnaire_id)
-        if group_id != "":
-            if header[len(header)-1] == 'participant_code':
-                header = header[0:len(header)-1]
-                for element in step_header:
-                    header.append(element)
-                header.append('participant_code')
+        header = header[0:len(header) - 1]
+        for field in headers_participant_data:
+            header.append(field)
 
         export_rows.insert(0, header)
         return export_rows

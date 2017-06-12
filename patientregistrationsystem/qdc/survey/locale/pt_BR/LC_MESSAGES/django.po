@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-04 09:27-0300\n"
+"POT-Creation-Date: 2017-05-04 18:13-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,8 +29,8 @@ msgstr "Questionário"
 
 #: survey/templates/survey/survey_list.html:49
 #: survey/templates/survey/survey_register.html:94
-msgid "Entrance evaluation"
-msgstr "Avaliação de Entrada"
+msgid "Required fill"
+msgstr "Preenchimento obrigatório"
 
 #: survey/templates/survey/survey_list.html:55
 msgid "View"
@@ -69,8 +69,8 @@ msgid "Edit"
 msgstr "Editar"
 
 #: survey/templates/survey/survey_register.html:112
-msgid "Answered as entrance evaluation"
-msgstr "Respondido como avaliação de entrada"
+msgid "Answered by participants"
+msgstr "Respondido pelos participantes"
 
 #: survey/templates/survey/survey_register.html:119
 #: survey/templates/survey/survey_register.html:201
@@ -159,11 +159,11 @@ msgstr "Questionário atualizado com sucesso."
 msgid "There are no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: survey/views.py:409
+#: survey/views.py:412
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:412
+#: survey/views.py:415
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
@@ -171,19 +171,29 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:526
+#: survey/views.py:518
+msgid "Other"
+msgstr "Outros"
+
+#: survey/views.py:547
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:602 survey/views.py:617 survey/views.py:646
+#: survey/views.py:624 survey/views.py:639 survey/views.py:672
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:683
+#: survey/views.py:715
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:722
+#: survey/views.py:755
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
+
+#~ msgid "Entrance evaluation"
+#~ msgstr "Avaliação de Entrada"
+
+#~ msgid "Answered as entrance evaluation"
+#~ msgstr "Respondido como avaliação de entrada"

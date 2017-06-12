@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
 
-from .models import Person
+from .models import Person, Team, TeamPerson
 
 from custom_user.views import User
 
@@ -25,6 +25,41 @@ class ObjectsFactory(object):
         factory = RequestFactory()
         logged = instance.client.login(username=USER_USERNAME, password=USER_PWD)
         return logged, user, factory
+
+    @staticmethod
+    def create_basic_person():
+        """
+        Create a basic person to be used in the test
+        :return: Person
+        """
+
+        person = Person.objects.create(first_name="First name",
+                                       last_name="Last name",
+                                       email="first.last@foo.com")
+        person.save()
+        return person
+
+    @staticmethod
+    def create_team():
+        """
+        Create a team to be used in the test
+        :return: Team
+        """
+
+        team = Team.objects.create(name="Test team", acronym="TT")
+        team.save()
+        return team
+
+    @staticmethod
+    def create_team_person(team, person, is_coordinator=False):
+        """
+        Create a team_person to be used in the test
+        :return: TeamPerson
+        """
+
+        team_person = TeamPerson.objects.create(team=team, person=person, is_coordinator=is_coordinator)
+        team_person.save()
+        return team_person
 
 
 class PersonTest(TestCase):

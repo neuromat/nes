@@ -73,11 +73,12 @@
                             <h4>{% trans "General Information" %}</h4>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-xs-12 col-sm-7">
                             <label data-toggle="tooltip" data-placement="auto left"
                                    title="{% trans "At least one option must be selected" %}" for="directory_structure"
-                                   class="control-label">{% trans "Directory Structure" %} </label>
+                                   class="control-label">{% trans "Information's organization for exportation of questionnaires data" %} </label>
 
                             <div class="form-group {% if export_form.errors.per_participant %}has-error{% endif %}">
 
@@ -135,7 +136,7 @@
                     <h4>{% trans "Questionnaire information" %}</h4>
 
                         <div class="row">
-                        <label class="control-label">{% trans "Questionnaire - Entrance evaluation" %} </label>
+                        <label class="control-label">{% trans "Questionnaire - Answered by participants" %} </label>
 
                             <div class="panel-group" id="accordion">
                                 {% for survey in questionnaires_fields_list %}
