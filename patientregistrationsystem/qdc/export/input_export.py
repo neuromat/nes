@@ -62,7 +62,7 @@ class InputExport:
     def build_diagnosis_participant(self, strut_name, output_filename, field_header_list):
         print("participant or diagnosis")
         self.data[strut_name] = []
-        self.data[strut_name].append({"output_filename": output_filename, "output_list": []})
+        self.data[strut_name].append({"output_filename": output_filename, "output_list": [], "data_list": []})
 
         # field_header_list[0] -> field
         # field_header_list[1] -> header
@@ -83,18 +83,15 @@ class InputExport:
                 language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
 
                 # if sid not in self.data['questionnaires']:
-                    # self.data['questionnaires'][sid] = []
                 self.data["questionnaires"].append({"id": sid, "language": language,
-                                                         "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
-                                                         "questionnaire_name": title,
-                                                         "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
-                                                         "output_list": [], "responses_list": []})
+                                                    "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
+                                                    "questionnaire_name": title,
+                                                    "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
+                                                    "output_list": [], "responses_list": []})
                 for header, field in field_header_list:
                     output_data = {"header": header, "field": field}
                     self.data["questionnaires"][-1]["output_list"].append(output_data)
 
-                if sid not in self.data["questionnaire_list"]:
-                    self.data["questionnaire_list"].append(sid)
         else:
             # print("questionnaire from experiments")
             self.data["questionnaires_from_experiments"] = {}

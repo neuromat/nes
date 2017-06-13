@@ -390,6 +390,17 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             messages.error(request, error_msg)
             return render(request, template_name)
 
+        if export.get_input_data('participants')[0]['output_list']:
+            participants_input_data = export.get_input_data("participants")
+            participants_list = (export.get_participants_filtered_data())
+            export_rows_participants = export.process_participant_data(participants_input_data, participants_list)
+            export.get_input_data('participants')[0]['data_list'] = export_rows_participants
+            # create file participants.csv and diagnosis.csv
+            error_msg = export.process_participant_filtered_data('group_selected_list' in request.session)
+            if error_msg != "":
+                messages.error(request, error_msg)
+                return render(request, template_name)
+
         if 'group_selected_list' in request.session:
             # Export filter by experiments
             export.include_group_data(request.session['group_selected_list'])
@@ -398,6 +409,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 export.get_questionnaires_responses()
 
             error_msg = export.create_group_data_directory()
+            if error_msg != "":
+                messages.error(request, error_msg)
+                return render(request, template_name)
+
+            # create files protocolo experimental and diagnosis/participant csv file for each group
+            error_msg = export.process_experiment_data(language_code)
+
             if error_msg != "":
                 messages.error(request, error_msg)
                 return render(request, template_name)
@@ -439,38 +457,6 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 if error_msg != "":
                     messages.error(request, error_msg)
                     return render(request, template_name)
-
-        # process participants/diagnosis (Per_participant directory)
-        # path ex. Users/.../NES_EXPORT/
-        base_export_directory = export.get_export_directory()
-        # /NES_EXPORT/
-        base_directory = export.get_input_data("base_directory")
-        participant_data_directory = export.get_input_data("participant_data_directory")
-        if 'group_selected_list' in request.session:
-            participant_base_export_directory = path.join(base_export_directory, participant_data_directory)
-            base_directory = path.join(base_directory, participant_data_directory)
-            if not path.exists(participant_base_export_directory):
-                error_msg, participant_base_export_directory = create_directory(base_export_directory,
-                                                                                participant_data_directory)
-        else:
-            participant_base_export_directory = export.get_export_directory()
-        if export.get_input_data('participants')[0]['output_list']:
-            participant_selected_list = export.get_participants_filtered_data()
-            error_msg = export.process_participant_filtered_data(
-                participant_selected_list, participant_base_export_directory, base_directory)
-            if error_msg != "":
-                messages.error(request, error_msg)
-                return render(request, template_name)
-
-        # create arquivo de texto de protocolo experimental and diagnosis/participant csv file for each group
-        if 'group_selected_list' in request.session:
-            group_list = export.per_group_data
-
-            error_msg = export.process_experiment_data(group_list, language_code)
-
-            if error_msg != "":
-                messages.error(request, error_msg)
-                return render(request, template_name)
 
         # create zip file and include files
         export_complete_filename = ""
@@ -603,8 +589,11 @@ def export_view(request, template_name="export/export_data.html"):
                 per_experiment = 'group_selected_list' in request.session
                 per_participant = True
                 per_questionnaire = False
-                heading_type = None
                 responses_type = None
+                heading_type = export_form.cleaned_data['headings']
+
+                update_participants_list(participants_list, heading_type)
+                update_diagnosis_list(diagnosis_list, heading_type)
 
                 component_list['per_eeg_raw_data'] = export_form.cleaned_data['per_eeg_raw_data']
                 component_list['per_eeg_nwb_data'] = export_form.cleaned_data['per_eeg_nwb_data']
@@ -616,7 +605,6 @@ def export_view(request, template_name="export/export_data.html"):
                 if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data['per_participant']
                     per_questionnaire = export_form.cleaned_data['per_questionnaire']
-                    heading_type = export_form.cleaned_data['headings']
                     responses_type = export_form.cleaned_data['responses']
 
                     if questionnaires_selected_list:
@@ -627,9 +615,6 @@ def export_view(request, template_name="export/export_data.html"):
                         experiment_questionnaires_list = update_questionnaire_list(experiment_questionnaires_list,
                                                                                    heading_type, request.LANGUAGE_CODE)
                         per_experiment = True
-
-                    update_participants_list(participants_list, heading_type)
-                    update_diagnosis_list(diagnosis_list, heading_type)
 
                 export_instance = create_export_instance(request.user)
 

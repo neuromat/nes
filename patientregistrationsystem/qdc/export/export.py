@@ -1024,11 +1024,14 @@ class ExportExecution:
 
         # and save per_participant data
         if self.get_input_data("export_per_questionnaire"):
-            # path ex. /Users/.../NES_EXPORT/Participant_data
-            error_msg, path_participant_data = create_directory(self.get_export_directory(),
-                                                                self.get_input_data("participant_data_directory"))
-            if error_msg != "":
-                return error_msg
+            path_participant_data_directory = path.join(self.get_export_directory(),
+                                                        self.get_input_data("participant_data_directory"))
+            if not path.exists(path_participant_data_directory):
+                # path ex. /Users/.../NES_EXPORT/Participant_data
+                error_msg, path_participant_data = create_directory(self.get_export_directory(),
+                                                                    self.get_input_data("participant_data_directory"))
+                if error_msg != "":
+                    return error_msg
 
             # criar no path /qdc/media/export/#user/#export_instance/Participant_data/Per_questionnaire
             error_msg, path_per_questionnaire = create_directory(path_participant_data,
@@ -1247,6 +1250,9 @@ class ExportExecution:
                     #     fields_description.append(item)
                     fields_description = response_list
                     subject_data = []
+                    participants_input_data = self.get_input_data("participants")
+                    participants_list = (self.get_participants_filtered_data())
+                    export_rows_participants = self.process_participant_data(participants_input_data, participants_list)
                     # if self.get_input_data('participants')[0]['output_list']:
                     #     header = header[0:len(header)-1]
                     #
@@ -1435,9 +1441,21 @@ class ExportExecution:
             participant_list = self.per_group_data[group_id]['data_per_participant']
             for participant_code in participant_list:
                 prefix_filename_participant = "Participant_"
-                if participant_list[participant_code]['token_list']:
-                    # ex. Participant_P123
-                    participant_name = prefix_filename_participant + str(participant_code)
+                # ex. Participant_P123
+                participant_name = prefix_filename_participant + str(participant_code)
+                if 'token_list' in participant_list[participant_code] or 'eeg_data' in participant_list[participant_code]:
+                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    participant_data_directory = self.per_group_data[group_id]['group']['participant_data_directory']
+                    error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
+                    if error_msg != "":
+                        return error_msg
+
+                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    participant_data_export_directory = self.per_group_data[group_id]['group'][
+                        'participant_data_export_directory']
+                    participant_export_directory = path.join(participant_data_export_directory, participant_name)
+
+                if 'token_list' in participant_list[participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     participant_data_directory = self.per_group_data[group_id]['group']['participant_data_directory']
                     error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
@@ -1467,6 +1485,9 @@ class ExportExecution:
                         # path ex. Users/.../Group_xxx/Per_participant/Per_participant/Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
                         complete_filename = path.join(directory_step_participant, export_filename)
                         per_participant_rows = token_data['response_list']
+                        # if participant_data selected
+                        # per_participant_rows = self.get_per_participant_data_from_experiment(participant_code,
+                        #                                                                      questionnaire_code)
                         save_to_csv(complete_filename, per_participant_rows)
 
                         # path ex.NES_EXPORT/Per_experiment/Per_participant/Per_participant/Participant_P123/Step_X_aaa/
@@ -1567,32 +1588,44 @@ class ExportExecution:
 
         return questionnaire_response_fields
 
-    def process_participant_filtered_data(self, participants_filtered_list, base_export_directory, base_directory):
+    def process_participant_filtered_data(self, per_experiment):
         error_msg = ""
+        participants_filtered_list = self.get_participants_filtered_data()
+        # process participants/diagnosis (Per_participant directory)
+        # path ex. Users/.../NES_EXPORT/
+        base_export_directory = self.get_export_directory()
+        # /NES_EXPORT/
+        base_directory = self.get_input_data("base_directory")
+        # Participant_data directory
+        participant_data_directory = self.get_input_data("participant_data_directory")
+        if per_experiment:
+            # path ex. Users/.../NES_EXPORT/Participant_data/
+            participant_base_export_directory = path.join(base_export_directory, participant_data_directory)
+            # /NES_EXPORT/Participant_data
+            base_directory = path.join(base_directory, participant_data_directory)
+            if not path.exists(base_export_directory):
+                error_msg, base_export_directory = create_directory(participant_base_export_directory,
+                                                                    participant_data_directory)
 
-        self.set_participants_filtered_data(participants_filtered_list)
-        participants_input_data = self.get_input_data("participants")
-        participants_list = (self.get_participants_filtered_data())
-        if participants_input_data[0]["output_list"] and participants_list:
+        # create participant.csv file
+        export_rows_participants = self.get_input_data('participants')[0]['data_list']
 
-            export_rows_participants = self.process_participant_data(participants_input_data, participants_list)
+        export_filename = "%s.csv" % self.get_input_data('participants')[0]["output_filename"]  # "export.csv"
 
-            export_filename = "%s.csv" % self.get_input_data('participants')[0]["output_filename"]  # "export.csv"
+        complete_filename = path.join(base_export_directory, export_filename)
 
-            complete_filename = path.join(base_export_directory, export_filename)
+        self.files_to_zip_list.append([complete_filename, base_directory])
 
-            self.files_to_zip_list.append([complete_filename, base_directory])
-
-            with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-                export_writer = writer(csv_file)
-                for row in export_rows_participants:
-                    export_writer.writerow(row)
+        with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+            export_writer = writer(csv_file)
+            for row in export_rows_participants:
+                export_writer.writerow(row)
 
         # process  diagnosis file
         diagnosis_input_data = self.get_input_data("diagnosis")
 
-        if diagnosis_input_data[0]['output_list'] and participants_list:
-            export_rows_diagnosis = self.process_participant_data(diagnosis_input_data, participants_list)
+        if diagnosis_input_data[0]['output_list'] and participants_filtered_list:
+            export_rows_diagnosis = self.process_participant_data(diagnosis_input_data, participants_filtered_list)
 
             export_filename = "%s.csv" % self.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
 
@@ -1608,7 +1641,7 @@ class ExportExecution:
 
         return error_msg
 
-    def process_experiment_data(self, group_list, language_code):
+    def process_experiment_data(self, language_code):
         error_msg = ""
         # process of filename for experiment resume
         for group_id in self.per_group_data:
@@ -1692,9 +1725,9 @@ class ExportExecution:
                 for subject in subject_of_group:
                     participant_group_list.append(subject.subject.patient_id)
 
-                if participant_group_list:
-                    self.process_participant_filtered_data(participant_group_list, group_file_directory,
-                                                           export_group_directory)
+                # if participant_group_list:
+                #     self.process_participant_filtered_data(participant_group_list, group_file_directory,
+                #                                            export_group_directory)
 
         return error_msg
 
