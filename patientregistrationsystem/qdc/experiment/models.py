@@ -58,7 +58,7 @@ class Keyword(models.Model):
 
 
 class ResearchProject(models.Model):
-    title = models.CharField(max_length=150)
+    title = models.CharField(max_length=255)
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
@@ -86,7 +86,7 @@ def get_experiment_dir(instance, filename):
 
 
 class Experiment(models.Model):
-    title = models.CharField(null=False, max_length=150, blank=False)
+    title = models.CharField(null=False, max_length=255, blank=False)
     description = models.TextField(null=False, blank=False)
     research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
     is_public = models.BooleanField(default=False)

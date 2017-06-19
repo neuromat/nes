@@ -65,7 +65,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
             for phone in new_phone_list:
                 phone.changed_by = request.user
-                phone.patient_id = new_patient.id
+                phone.patient = new_patient
                 phone.save()
 
             messages.success(request, _('Personal data successfully written.'))
@@ -1416,18 +1416,17 @@ def questionnaire_response_view(request, questionnaire_response_id,
     if 'status' in request.GET:
         status = request.GET['status']
 
-    lime_survey_id = questionnaire_response.survey.lime_survey_id
-    token_id = questionnaire_response.token_id
-    language_code = request.LANGUAGE_CODE
-
-    survey_title, groups_of_questions = get_questionnaire_responses(language_code, lime_survey_id, token_id, request)
+    survey_title, groups_of_questions = get_questionnaire_responses(request.LANGUAGE_CODE,
+                                                                    questionnaire_response.survey.lime_survey_id,
+                                                                    questionnaire_response.token_id,
+                                                                    request)
 
     context = {
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": None,
         "questionnaire_response": questionnaire_response,
         "survey_title": survey_title,
-        "questionnaire_responsible": request.user.get_username(),
+        "questionnaire_responsible": questionnaire_response.questionnaire_responsible.username,
         "creating": False,
         "completed": survey_completed,
         "origin": origin,

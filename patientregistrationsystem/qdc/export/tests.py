@@ -518,12 +518,13 @@ class InputExportTest(TestCase):
         #                             diagnosis_field_header_list, questionnaires_list, response_type, heading_type,
         #                             output_filename, language=DEFAULT_LANGUAGE)
         experiment_questionnaires_list = []
+        component_list = []
         build_complete_export_structure(0, 1, 0,
                                         participant_field_header_list,
                                         diagnosis_field_header_list,
                                         questionnaires_list,
                                         experiment_questionnaires_list,
-                                        ["short"], "full", output_filename, "pt-BR")
+                                        ["short"], "full", output_filename, component_list,"pt-BR")
 
         self.assertTrue(path.isfile(output_filename))
 
@@ -535,7 +536,7 @@ class InputExportTest(TestCase):
                                         questionnaires_list,
                                         experiment_questionnaires_list,
                                         ["short", "long"], "full",
-                                        output_filename, "en")
+                                        output_filename, component_list, "en")
 
         self.assertTrue(path.isfile(output_filename))
         remove(output_filename)

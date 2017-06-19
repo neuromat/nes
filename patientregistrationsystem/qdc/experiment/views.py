@@ -74,7 +74,9 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
 
 from .portal import get_experiment_status_portal, send_experiment_to_portal, get_portal_status, \
-    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal
+    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
+    send_experimental_protocol_to_portal, send_participant_to_portal, send_collaborator_to_portal, \
+    send_researcher_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -710,61 +712,69 @@ def experiment_schedule_of_sending(request, experiment_id,
 @permission_required('experiment.view_researchproject')
 def schedule_of_sending_list(request, template_name="experiment/schedule_of_sending_list.html"):
 
-    list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
-
     if request.method == "POST":
         if request.POST['action'] == "send-to-portal":
-
-            # users_to_send = []
-            # research_projects_to_send = []
-            #
-            # for schedule_of_sending in list_of_schedule_of_sending:
-            #     if schedule_of_sending.experiment.research_project.owner not in users_to_send:
-            #         users_to_send.append(schedule_of_sending.experiment.research_project.owner)
-            #     if schedule_of_sending.experiment.research_project not in research_projects_to_send:
-            #         research_projects_to_send.append(schedule_of_sending.experiment.research_project)
-
-            # for user in users_to_send:
-            #     send_user_to_portal(user)
-
-            # for research_project in research_projects_to_send:
-            #     send_research_project_to_portal(research_project)
-
-            for schedule_of_sending in list_of_schedule_of_sending:
-                if send_experiment_to_portal(schedule_of_sending.experiment):
-
-                    schedule_of_sending.status = "sent"
-                    schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
-                    schedule_of_sending.save()
-
-                    experiment = schedule_of_sending.experiment
-                    experiment.last_sending = schedule_of_sending.sending_datetime
-                    experiment.save()
-
-                    # sending research project
-                    send_research_project_to_portal(schedule_of_sending.experiment)
-
-                    # sending groups
-                    for group in schedule_of_sending.experiment.group_set.all():
-                        send_group_to_portal(group)
-
-                    # end of sending
-                    send_experiment_end_message_to_portal(schedule_of_sending.experiment)
-
+            send_all_experiments_to_portal(request.LANGUAGE_CODE)
             messages.success(request, _('Experiments sent successfully.'))
 
-            list_of_schedule_of_sending = \
-                ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
+    list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
 
     portal_status = get_portal_status()
     if not portal_status:
         messages.warning(request, _("Portal is not available to send experiments"))
+
     context = {
         "list_of_schedule_of_sending": list_of_schedule_of_sending,
         "portal_status": portal_status
     }
 
     return render(request, template_name, context)
+
+
+def send_all_experiments_to_portal(language_code):
+    for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
+        if send_experiment_to_portal(schedule_of_sending.experiment):
+
+            schedule_of_sending.status = "sent"
+            schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
+            schedule_of_sending.save()
+
+            experiment = schedule_of_sending.experiment
+            experiment.last_sending = schedule_of_sending.sending_datetime
+            experiment.save()
+
+            # sending research project
+            created_research_project = send_research_project_to_portal(schedule_of_sending.experiment)
+
+            # sending researcher
+            send_researcher_to_portal(created_research_project['id'],
+                                      schedule_of_sending.experiment.research_project.owner)
+
+            # sending collaborators
+            for collaborator in schedule_of_sending.experiment.research_project.collaborators.all():
+                send_collaborator_to_portal(created_research_project['id'], collaborator.team_person)
+
+            # sending groups
+            for group in schedule_of_sending.experiment.group_set.all():
+                created_group = send_group_to_portal(group)
+
+                # participants
+                for subject_of_group in group.subjectofgroup_set.all():
+                    send_participant_to_portal(created_group['id'], subject_of_group.subject)
+
+                # experimental protocol
+                textual_description = None
+                image = None
+
+                if group.experimental_protocol:
+                    tree = get_block_tree(group.experimental_protocol, language_code)
+                    textual_description = get_description_from_experimental_protocol_tree(tree)
+                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+
+                send_experimental_protocol_to_portal(created_group['id'], textual_description, image=image)
+
+            # end of sending
+            send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
 
 @login_required
