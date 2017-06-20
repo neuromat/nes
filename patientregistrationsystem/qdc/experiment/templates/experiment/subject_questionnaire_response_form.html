@@ -31,7 +31,6 @@
                         <li><a href="/patient/{{ patient.id }}/?currentTab=4">{% if patient.name %}{{ patient.name }}{% else %}{{ patient.code }}{% endif %}</a></li>
                     {% endif %}
 
-                    <li class="active">{% if creating %}{% trans "New fill" %}{% elif completed %}{% trans "Answers" %}{% else %}{% trans "Continue filling" %}{% endif %}</li>
                 {% else %}
                     <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                     <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
@@ -44,9 +43,9 @@
                     {% else %}  {# origin == "experiment_questionnaire" #}
                         <li><a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
                     {% endif %}
-
-                    <li class="active">{% if creating %}{% trans "New fill" %}{% elif completed %}{% trans "Answers" %}{% else %}{% trans "Continue filling" %}{% endif %}</li>
                 {% endif %}
+                <li class="active">{{ survey_title }}</li>
+                <li class="active">{% if creating %}{% trans "New fill" %}{% elif completed %}{% trans "Answers" %}{% else %}{% trans "Continue filling" %}{% endif %}</li>
             </ol>
         </div>
     </div>
