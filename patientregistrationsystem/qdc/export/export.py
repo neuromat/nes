@@ -551,7 +551,8 @@ class ExportExecution:
                         subject_code = additional_data.subject_of_group.subject.patient.code
                         if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                             self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                        self.per_group_data[group_id]['data_per_participant'][subject_code]['additional_data'] = []
+                        if 'additional_data' not in self.per_group_data[group_id]['data_per_participant'][subject_code]:
+                            self.per_group_data[group_id]['data_per_participant'][subject_code]['additional_data'] = []
 
                         self.per_group_data[group_id]['data_per_participant'][subject_code]['additional_data'].append({
                             'description': additional_data.description,
@@ -561,9 +562,10 @@ class ExportExecution:
                 if self.get_input_data('component_list')['per_eeg_raw_data'] or \
                         self.get_input_data('component_list')['per_eeg_nwb_data']:
                     for path_eeg_experiment in create_list_of_trees(group.experimental_protocol, "eeg"):
-                        eeg_configuration = get_object_or_404(ComponentConfiguration, pk=path_eeg_experiment[-1][0])
+                        eeg_component_configuration = get_object_or_404(ComponentConfiguration,
+                                                                        pk=path_eeg_experiment[-1][0])
                         configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=eeg_configuration)
+                            component_configuration=eeg_component_configuration)
                         for data_configuration_tree in configuration_tree_list:
                             eeg_data_list = EEGData.objects.filter(
                                 data_configuration_tree_id=data_configuration_tree.id).distinct()
@@ -572,7 +574,8 @@ class ExportExecution:
 
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'] = []
+                                if 'eeg_data' not in self.per_group_data[group_id]['data_per_participant'][subject_code]:
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'] = []
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'].append({
                                     'step_number': path_eeg_experiment[0][4],
@@ -584,9 +587,9 @@ class ExportExecution:
 
                 if self.get_input_data('component_list')['per_emg_data']:
                     for path_emg_experiment in create_list_of_trees(group.experimental_protocol, "emg"):
-                        emg_configuration = get_object_or_404(ComponentConfiguration, pk=path_emg_experiment[-1][0])
+                        emg_component_configuration = get_object_or_404(ComponentConfiguration, pk=path_emg_experiment[-1][0])
                         configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=emg_configuration)
+                            component_configuration=emg_component_configuration)
                         for data_configuration_tree in configuration_tree_list:
                             emg_data_list = EMGData.objects.filter(
                                 data_configuration_tree_id=data_configuration_tree.id).distinct()
@@ -595,7 +598,8 @@ class ExportExecution:
 
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data'] = []
+                                if 'emg_data' not in self.per_group_data[group_id]['data_per_participant'][subject_code]:
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data'] = []
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data'].append({
                                     'step_number': path_emg_experiment[0][4],
@@ -607,9 +611,9 @@ class ExportExecution:
 
                 if self.get_input_data('component_list')['per_tms_data']:
                     for path_tms_experiment in create_list_of_trees(group.experimental_protocol, "tms"):
-                        tms_configuration = get_object_or_404(ComponentConfiguration, pk=path_tms_experiment[-1][0])
+                        tms_component_configuration = get_object_or_404(ComponentConfiguration, pk=path_tms_experiment[-1][0])
                         configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=tms_configuration)
+                            component_configuration=tms_component_configuration)
                         for data_configuration_tree in configuration_tree_list:
                             tms_data_list = TMSData.objects.filter(
                                 data_configuration_tree_id=data_configuration_tree.id).distinct()
@@ -618,7 +622,8 @@ class ExportExecution:
 
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['tms_data'] = []
+                                if 'tms_data' not in self.per_group_data[group_id]['data_per_participant'][subject_code]:
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code]['tms_data'] = []
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['tms_data'].append({
                                     'step_number': path_tms_experiment[0][4],
@@ -630,9 +635,15 @@ class ExportExecution:
 
                 if self.get_input_data('component_list')['per_goalkeeper_game_data']:
                     for path_tms_experiment in create_list_of_trees(group.experimental_protocol, "digital_game_phase"):
-                        game_configuration = get_object_or_404(ComponentConfiguration, pk=path_tms_experiment[-1][0])
+                        game_component_configuration = get_object_or_404(ComponentConfiguration, pk=path_tms_experiment[-1][0])
                         configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=game_configuration)
+                            component_configuration=game_component_configuration)
+
+                if self.get_input_data('component_list')['per_stimulus']:
+                    for path_tms_experiment in create_list_of_trees(group.experimental_protocol, "stimulus"):
+                        stimulus_component_configuration = get_object_or_404(ComponentConfiguration, pk=path_tms_experiment[-1][0])
+                        configuration_tree_list = DataConfigurationTree.objects.filter(
+                            component_configuration=stimulus_component_configuration)
 
     def get_experiment_questionnaire_response_per_questionnaire(self, questionnaire_id, group_id):
         experiment_questionnaire_response = []
