@@ -1611,6 +1611,25 @@ class ExportExecution:
                                           encoding='UTF-8') as outfile:
                                     json.dump(eeg_setting_description, outfile, indent=4)
 
+                            if component['data_configuration_tree_id']:
+                                eeg_additional_data = AdditionalData.objects.filter(
+                                    data_configuration_tree_id=component['data_configuration_tree_id'])
+                                additional_data_filename = path.join(settings.BASE_DIR, 'media') + '/' + \
+                                                      str(eeg_additional_data[0].file)
+                                additional_eeg_file_name = str(eeg_additional_data[0].file).split('/')[-1]
+
+                                complete_eeg_additional_data_filename = path.join(path_per_eeg_participant,
+                                                                                  additional_eeg_file_name)
+
+                                with open(additional_data_filename, 'rb') as f:
+                                    data = f.read()
+
+                                with open(complete_eeg_additional_data_filename, 'wb') as f:
+                                    f.write(data)
+
+                                self.files_to_zip_list.append([complete_eeg_additional_data_filename,
+                                                               export_eeg_step_directory])
+
                 if 'emg_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
@@ -1702,37 +1721,37 @@ class ExportExecution:
                                       encoding='UTF-8') as outfile:
                                 json.dump(tms_setting_description, outfile, indent=4)
 
-                if 'additional_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
-                    if not path.exists(path_per_participant):
-                        error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
-                        if error_msg != "":
-                            return error_msg
-
-                    additional_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
-                        'additional_data']
-                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Additional_data
-                    error_msg, path_additional_data = create_directory(path_per_participant, "Additional_data")
-                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Additional_data
-                    export_additional_data_directory = path.join(participant_export_directory, "Additional_data")
-                    if error_msg != "":
-                        return error_msg
-
-                    for additional_data in additional_data_list:
-                        file_name = str(additional_data['file']).split('/')[-1]
-                        # read file from repository
-                        additional_data_filename = path.join(settings.BASE_DIR, 'media') + '/' + str(additional_data['file'])
-                        # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
-                        # Additional_data/file_name
-                        complete_additional_data_filename = path.join(path_additional_data, file_name)
-                        with open(additional_data_filename, 'rb') as f:
-                            data = f.read()
-
-                        with open(complete_additional_data_filename, 'wb') as f:
-                            f.write(data)
-
-                        self.files_to_zip_list.append([complete_additional_data_filename,
-                                                       export_additional_data_directory])
+                # if 'additional_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
+                #     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                #     if not path.exists(path_per_participant):
+                #         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
+                #         if error_msg != "":
+                #             return error_msg
+                #
+                #     additional_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
+                #         'additional_data']
+                #     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Additional_data
+                #     error_msg, path_additional_data = create_directory(path_per_participant, "Additional_data")
+                #     # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Additional_data
+                #     export_additional_data_directory = path.join(participant_export_directory, "Additional_data")
+                #     if error_msg != "":
+                #         return error_msg
+                #
+                #     for additional_data in additional_data_list:
+                #         file_name = str(additional_data['file']).split('/')[-1]
+                #         # read file from repository
+                #         additional_data_filename = path.join(settings.BASE_DIR, 'media') + '/' + str(additional_data['file'])
+                #         # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
+                #         # Additional_data/file_name
+                #         complete_additional_data_filename = path.join(path_additional_data, file_name)
+                #         with open(additional_data_filename, 'rb') as f:
+                #             data = f.read()
+                #
+                #         with open(complete_additional_data_filename, 'wb') as f:
+                #             f.write(data)
+                #
+                #         self.files_to_zip_list.append([complete_additional_data_filename,
+                #                                        export_additional_data_directory])
 
         return error_msg
 
