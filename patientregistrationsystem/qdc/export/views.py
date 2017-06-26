@@ -37,7 +37,7 @@ from survey.views import get_questionnaire_language
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases, EEGData, EEGSetting, \
-    AdditionalData, EMGData, EMGSetting, TMSData, TMSSetting, DigitalGamePhaseData
+    AdditionalData, EMGData, TMSData, DigitalGamePhaseData, GenericDataCollectionData
 
 from experiment.views import get_block_tree as get_block_attributes_tree
 
@@ -600,7 +600,8 @@ def export_view(request, template_name="export/export_data.html"):
                 component_list['per_tms_data'] = export_form.cleaned_data['per_tms_data']
                 component_list['per_additional_data'] = export_form.cleaned_data['per_additional_data']
                 component_list['per_goalkeeper_game_data'] = export_form.cleaned_data['per_goalkeeper_game_data']
-                component_list['per_stimulus'] = export_form.cleaned_data['per_stimulus_data']
+                component_list['per_stimulus_data'] = export_form.cleaned_data['per_stimulus_data']
+                component_list['per_generic_data'] = export_form.cleaned_data['per_generic_data']
 
                 if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data['per_participant']
@@ -826,6 +827,10 @@ def get_component_with_data_and_metadata(group, component_list):
         stimulus_data_list = Stimulus.objects.filter(experiment=group.experiment)
         if stimulus_data_list:
             component_list.append('stimulus_data')
+    if 'generic_data' not in component_list:
+        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+        if generic_data_list:
+            component_list.append('generic_data')
 
     return component_list
 

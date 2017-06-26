@@ -26,9 +26,9 @@ from os import path, makedirs
 from patient.models import Patient, QuestionnaireResponse
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, \
     ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData, EEGSetting, EMGData, EMGSetting, TMSData, \
-    TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus
+    TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, TMSLocalizationSystem, GenericDataCollectionData
 from experiment.views import get_block_tree, get_experimental_protocol_image, \
-    get_description_from_experimental_protocol_tree
+    get_description_from_experimental_protocol_tree, get_sensors_position
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import is_limesurvey_available, get_questionnaire_language
@@ -590,6 +590,9 @@ class ExportExecution:
                         eeg_component_configuration = get_object_or_404(ComponentConfiguration,
                                                                         pk=path_eeg_experiment[-1][0])
                         component_step = eeg_component_configuration.component.component_type
+                        step_number = path_eeg_experiment[-1][4]
+                        step_identification = path_eeg_experiment[-1][3]
+
                         configuration_tree_list = DataConfigurationTree.objects.filter(
                             component_configuration=eeg_component_configuration)
                         for data_configuration_tree in configuration_tree_list:
@@ -604,13 +607,12 @@ class ExportExecution:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'] = []
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'].append({
-                                    'step_number': path_eeg_experiment[0][4],
-                                    'step_identification': path_eeg_experiment[0][3],
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
                                     'setting_id': eeg_data.eeg_setting_id,
                                     'eeg_data_id': eeg_data.id,
                                     'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(path_eeg_experiment[0][4]) + "_" +
-                                                           component_step.upper()
+                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper()
                                 })
 
                 if self.get_input_data('component_list')['per_emg_data']:
@@ -618,6 +620,9 @@ class ExportExecution:
                         emg_component_configuration = get_object_or_404(ComponentConfiguration,
                                                                         pk=path_emg_experiment[-1][0])
                         component_step = emg_component_configuration.component.component_type
+                        step_number = path_emg_experiment[-1][4]
+                        step_identification = path_emg_experiment[-1][3]
+
                         configuration_tree_list = DataConfigurationTree.objects.filter(
                             component_configuration=emg_component_configuration)
                         for data_configuration_tree in configuration_tree_list:
@@ -632,20 +637,22 @@ class ExportExecution:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data'] = []
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data'].append({
-                                    'step_number': path_emg_experiment[0][4],
-                                    'step_identification': path_emg_experiment[0][3],
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
                                     'setting_id': emg_data.emg_setting_id,
                                     'emg_data_id': emg_data.id,
                                     'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(path_emg_experiment[0][4]) + "_" +
-                                                           component_step.upper()
+                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper()
                                 })
 
                 if self.get_input_data('component_list')['per_tms_data']:
-                    for path_stimulus_experiment in create_list_of_trees(group.experimental_protocol, "tms"):
+                    for path_tms_experiment in create_list_of_trees(group.experimental_protocol, "tms"):
                         tms_component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                        pk=path_stimulus_experiment[-1][0])
+                                                                        pk=path_tms_experiment[-1][0])
                         component_step = tms_component_configuration.component.component_type
+                        step_number = path_tms_experiment[-1][4]
+                        step_identification = path_tms_experiment[-1][3]
+
                         configuration_tree_list = DataConfigurationTree.objects.filter(
                             component_configuration=tms_component_configuration)
                         for data_configuration_tree in configuration_tree_list:
@@ -660,13 +667,12 @@ class ExportExecution:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code]['tms_data'] = []
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['tms_data'].append({
-                                    'step_number': path_stimulus_experiment[0][4],
-                                    'step_identification': path_stimulus_experiment[0][3],
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
                                     'setting_id': tms_data.tms_setting_id,
                                     'tms_data_id': tms_data.id,
                                     'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(path_stimulus_experiment[0][4]) + "_" +
-                                                           component_step.upper()
+                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper()
                                 })
 
                 if self.get_input_data('component_list')['per_goalkeeper_game_data']:
@@ -675,6 +681,8 @@ class ExportExecution:
                         game_component_configuration = get_object_or_404(ComponentConfiguration,
                                                                          pk=path_goalkeeper_game_experiment[-1][0])
                         component_step = game_component_configuration.component.component_type
+                        step_number = path_goalkeeper_game_experiment[-1][4]
+                        step_identification = path_goalkeeper_game_experiment[-1][3]
                         configuration_tree_list = DataConfigurationTree.objects.filter(
                             component_configuration=game_component_configuration)
 
@@ -694,39 +702,67 @@ class ExportExecution:
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                     'goalkeeper_game_data'].append({
-                                        'step_number': path_goalkeeper_game_experiment[0][4],
-                                        'step_identification': path_goalkeeper_game_experiment[0][3],
-                                        'setting_id': goalkeeper_game_data.id,
+                                        'step_number': step_number,
+                                        'step_identification': step_identification,
                                         'goalkeeper_game_data_id': goalkeeper_game_data.id,
                                         'data_configuration_tree_id': data_configuration_tree.id,
-                                        'directory_step_name': "Step_" + str(path_goalkeeper_game_experiment[0][4]) +
-                                                               "_" + component_step.upper(),
+                                        'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper(),
                                         'goalkeeper_game_file': goalkeeper_game_data.file.name
                                     })
 
-                if self.get_input_data('component_list')['per_stimulus']:
+                if self.get_input_data('component_list')['per_stimulus_data']:
                     for path_stimulus_experiment in create_list_of_trees(group.experimental_protocol, "stimulus"):
                         stimulus_component_configuration = get_object_or_404(ComponentConfiguration,
                                                                              pk=path_stimulus_experiment[-1][0])
                         component_step = stimulus_component_configuration.component.component_type
-                        if component_step == 'stimulus':
-                            if len(path_stimulus_experiment) > 1:
-                                step_number = path_stimulus_experiment[-1][4]
-                                step_identification = path_stimulus_experiment[-1][3]
-                            else:
-                                step_number = path_stimulus_experiment[0][4]
-                                step_identification = path_stimulus_experiment[0][3]
+                        step_number = path_stimulus_experiment[-1][4]
+                        step_identification = path_stimulus_experiment[-1][3]
 
-                            stimulus_data_list = Stimulus.objects.filter(id=stimulus_component_configuration.component.id)
-                            for stimulus_data in stimulus_data_list:
-                                if 'stimulus_data' not in self.per_group_data[group_id]:
-                                    self.per_group_data[group_id]['stimulus_data'] = []
+                        stimulus_data_list = Stimulus.objects.filter(id=stimulus_component_configuration.component.id)
+                        for stimulus_data in stimulus_data_list:
+                            if 'stimulus_data' not in self.per_group_data[group_id]:
+                                self.per_group_data[group_id]['stimulus_data'] = []
 
-                                self.per_group_data[group_id]['stimulus_data'].append({
+                            self.per_group_data[group_id]['stimulus_data'].append({
+                                'step_number': step_number,
+                                'step_identification': step_identification,
+                                'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper(),
+                                'stimulus_file': stimulus_data.media_file.name
+                            })
+
+                if self.get_input_data('component_list')['per_generic_data']:
+                    for path_generic_experiment in create_list_of_trees(group.experimental_protocol,
+                                                                        "generic_data_collection"):
+                        generic_component_configuration = get_object_or_404(ComponentConfiguration,
+                                                                            pk=path_generic_experiment[-1][0])
+                        component_step = generic_component_configuration.component.component_type
+                        step_number = path_generic_experiment[-1][4]
+                        step_identification = path_generic_experiment[-1][3]
+
+                        configuration_tree_list = DataConfigurationTree.objects.filter(
+                            component_configuration=generic_component_configuration)
+
+                        for data_configuration_tree in configuration_tree_list:
+                            generic_data_collection_list = GenericDataCollectionData.objects.filter(
+                                data_configuration_tree_id=data_configuration_tree.id)
+                            for generic_data_collection in generic_data_collection_list:
+                                subject_code = generic_data_collection.subject_of_group.subject.patient.code
+
+                                if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+
+                                if 'generic_data_collection_data' not in self.per_group_data[
+                                    group_id]['data_per_participant'][subject_code]:
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                        'generic_data_collection_data'] = []
+
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['generic_data_collection_data'].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
+                                    'generic_data_collection_data_id': generic_data_collection.id,
+                                    'data_configuration_tree_id': data_configuration_tree.id,
                                     'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper(),
-                                    'stimulus_file': stimulus_data.media_file.name
+                                    'generic_data_collection_file': generic_data_collection.file.name
                                 })
 
     def get_experiment_questionnaire_response_per_questionnaire(self, questionnaire_id, group_id):
@@ -1700,6 +1736,25 @@ class ExportExecution:
                                           encoding='UTF-8') as outfile:
                                     json.dump(eeg_setting_description, outfile, indent=4)
 
+                            # if sensor position image exist
+                            sensors_positions_image = get_sensors_position(eeg_data)
+                            if sensors_positions_image:
+                                sensor_position_filename = sensors_positions_image.split('/')[-1]
+
+                                sensor_position_file = eeg_data_filename.split(".")[0] + "_" + sensor_position_filename
+                                complete_sensor_position_filename = path.join(path_per_eeg_participant,
+                                                                              sensor_position_file)
+                                path_sensor_position_filename = settings.BASE_DIR + sensors_positions_image
+
+                                with open(path_sensor_position_filename, 'rb') as f:
+                                    data = f.read()
+
+                                with open(complete_sensor_position_filename, 'wb') as f:
+                                    f.write(data)
+
+                                self.files_to_zip_list.append([complete_sensor_position_filename,
+                                                               export_eeg_step_directory])
+
                 if 'emg_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
@@ -1762,7 +1817,6 @@ class ExportExecution:
                     tms_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code]['tms_data']
                     for component in tms_data_list:
                         tms_data_description = get_tms_data_description(component['tms_data_id'])
-                        tms_setting_description = get_tms_setting_description(component['setting_id'])
                         if tms_data_description:
                             directory_step_name = component['directory_step_name']
                             path_per_tms_participant = path.join(path_per_participant, directory_step_name)
@@ -1790,11 +1844,27 @@ class ExportExecution:
                                       encoding='UTF-8') as outfile:
                                 json.dump(tms_data_description, outfile, indent=4)
 
-                            self.files_to_zip_list.append([complete_setting_filename, export_tms_step_directory])
+                            # TMS hotspot position image file
+                            tms_data = get_object_or_404(TMSData, pk=component['tms_data_id'])
+                            tms_localization_system = get_object_or_404(
+                                TMSLocalizationSystem, pk=tms_data.hotspot.tms_localization_system_id)
 
-                            with open(complete_setting_filename.encode('utf-8'), 'w', newline='',
-                                      encoding='UTF-8') as outfile:
-                                json.dump(tms_setting_description, outfile, indent=4)
+                            tms_localization_system_image = tms_localization_system.tms_localization_system_image.name
+                            if tms_localization_system_image:
+                                hotspot_position_image_filename = tms_localization_system_image.split('/')[-1]
+                                complete_hotspot_position_filename = path.join(path_per_tms_participant,
+                                                                               hotspot_position_image_filename)
+                                path_tms_localization_system_image = path.join(settings.BASE_DIR, "media") + "/" + \
+                                                                     tms_localization_system_image
+                                with open(path_tms_localization_system_image, 'rb') as f:
+                                    data = f.read()
+
+                                with open(complete_hotspot_position_filename, 'wb') as f:
+                                    f.write(data)
+
+                                self.files_to_zip_list.append([complete_hotspot_position_filename,
+                                                               export_tms_step_directory])
+
 
                 if 'additional_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
@@ -1960,9 +2030,8 @@ class ExportExecution:
             participant_base_export_directory = path.join(base_export_directory, participant_data_directory)
             # /NES_EXPORT/Participant_data
             base_directory = path.join(base_directory, participant_data_directory)
-            if not path.exists(base_export_directory):
-                error_msg, base_export_directory = create_directory(participant_base_export_directory,
-                                                                    participant_data_directory)
+            if not path.exists(participant_base_export_directory):
+                error_msg, base_export_directory = create_directory(base_export_directory, participant_data_directory)
 
                 if error_msg != "":
                     return error_msg
@@ -2585,9 +2654,13 @@ def get_emg_setting_description(emg_setting_id):
 def get_tms_data_description(tms_data_id):
     tms_data = get_object_or_404(TMSData, pk=tms_data_id)
 
-    description = {
-        # 'date': tms_data.date,
-        # 'time': tms_data.time,
+    tms_description = {
+        'setting_description': {},
+        'stimulation_description': {},
+        'hotspot_position': {},
+    }
+
+    tms_description['stimulation_description'] = {
         'tms_stimulation_description': tms_data.description,
         'pulse_stimulus': tms_data.tms_setting.tms_device_setting.pulse_stimulus_type,
         'resting_motor threshold-RMT(%)': tms_data.resting_motor_threshold,
@@ -2601,22 +2674,21 @@ def get_tms_data_description(tms_data_id):
         'time_between_mep_trials': tms_data.time_between_mep_trials,
         'time_between_mep_trials_unit': tms_data.time_between_mep_trials_unit,
     }
-
-    return description
-
-
-def get_tms_setting_description(tms_setting_id):
-    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
-
-    description = {
-        'name': tms_setting.name,
-        'description': tms_setting.description,
-        'tms_device_setting': [],
+    localization_system_selected = get_object_or_404(TMSLocalizationSystem,
+                                                     pk=tms_data.hotspot.tms_localization_system_id)
+    tms_description['hotspot_position'] = {
+        'tms_localization_system_name': localization_system_selected.name,
+        'tms_localization_system_description': localization_system_selected.description,
+        'brain_area': localization_system_selected.brain_area.name,
     }
 
-    tms_device_setting = description['tms_device_setting']
-    tms_device_setting.append({
-        'pulse_stimulus_type': tms_setting.tms_device_setting.pulse_stimulus_type,
-    })
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_data.tms_setting_id)
 
-    return description
+    tms_description['setting_description'] = {
+        'name': tms_setting.name,
+        'description': tms_setting.description,
+        'pulse_stimulus_type': tms_setting.tms_device_setting.pulse_stimulus_type,
+    }
+
+    return tms_description
+

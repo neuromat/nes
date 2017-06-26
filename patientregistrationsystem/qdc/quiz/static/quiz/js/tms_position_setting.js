@@ -155,3 +155,16 @@ function getPosition(event) {
     }
 
 }
+
+//Save Image
+function save_image() {
+    var canvas = document.getElementById('tmsMapCanvas');
+
+    // save canvas image as data url (png format by default)
+      var dataURL = canvas.toDataURL();
+
+      // set canvasImg image src to dataURL
+      // so it can be saved as an image
+      // document.getElementById('canvas').src = dataURL;
+
+}

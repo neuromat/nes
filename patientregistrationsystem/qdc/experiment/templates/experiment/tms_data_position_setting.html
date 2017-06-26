@@ -41,6 +41,9 @@
 
         <div id="div-localization_system_image">
             <canvas id="tmsMapCanvas" width="600" height="600" style="margin: auto; border:1px solid #000000;"></canvas>
+            {% if not editing and can_change %}
+                <div><button onclick="save_image()">Save Image</button></div>
+            {% endif %}
         </div>
 
     {% if not editing and can_change %}
