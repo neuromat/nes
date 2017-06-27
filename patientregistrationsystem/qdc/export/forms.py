@@ -34,7 +34,8 @@ class ExportForm(Form):
     per_tms_data = BooleanField(initial=False, required=False)
     per_additional_data = BooleanField(initial=False, required=False)
     per_goalkeeper_game_data = BooleanField(initial=False, required=False)
-    per_stimulus = BooleanField(initial=False, required=False)
+    per_stimulus_data = BooleanField(initial=False, required=False)
+    per_generic_data = BooleanField(initial=False, required=False)
 
     questionnaire_entrance_selected = []
 

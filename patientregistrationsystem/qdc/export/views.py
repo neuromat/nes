@@ -37,8 +37,7 @@ from survey.views import get_questionnaire_language
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases, EEGData, EEGSetting, \
-    AdditionalData, EMGData, EMGSetting, TMSData, TMSSetting, EEGAmplifierSetting, EEGElectrodeLayoutSetting, \
-    EEGFilterSetting, EEGSolutionSetting
+    AdditionalData, EMGData, TMSData, DigitalGamePhaseData, GenericDataCollectionData
 
 from experiment.views import get_block_tree as get_block_attributes_tree
 
@@ -601,7 +600,8 @@ def export_view(request, template_name="export/export_data.html"):
                 component_list['per_tms_data'] = export_form.cleaned_data['per_tms_data']
                 component_list['per_additional_data'] = export_form.cleaned_data['per_additional_data']
                 component_list['per_goalkeeper_game_data'] = export_form.cleaned_data['per_goalkeeper_game_data']
-                component_list['per_stimulus'] = export_form.cleaned_data['per_stimulus']
+                component_list['per_stimulus_data'] = export_form.cleaned_data['per_stimulus_data']
+                component_list['per_generic_data'] = export_form.cleaned_data['per_generic_data']
 
                 if questionnaires_selected_list or experiment_questionnaires_list:
                     per_participant = export_form.cleaned_data['per_participant']
@@ -800,8 +800,6 @@ def get_component_with_data_and_metadata(group, component_list):
 
     # data collection
     if 'eeg' not in component_list:
-        # eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct(
-        #     'data_configuration_tree')
         eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
         if eeg_data_list:
             component_list.append('eeg')
@@ -820,20 +818,19 @@ def get_component_with_data_and_metadata(group, component_list):
             'data_configuration_tree')
         if additional_data_list:
             component_list.append('additional_data')
-
-    # settings
-    if 'eeg_setting' not in component_list:
-        eeg_setting_list = EEGSetting.objects.filter(experiment_id=experiment_id)
-        if eeg_setting_list:
-            component_list.append('eeg_setting')
-    if 'emg_setting' not in component_list:
-        emg_setting_list = EMGSetting.objects.filter(experiment_id=experiment_id)
-        if emg_setting_list:
-            component_list.append('emg_setting')
-    if 'tms_setting' not in component_list:
-        tms_setting_list = TMSSetting.objects.filter(experiment_id=experiment_id)
-        if tms_setting_list:
-            component_list.append('tms_setting')
+    if 'goalkeeper_game_data' not in component_list:
+        goalkeeper_game_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group).distinct(
+            'data_configuration_tree')
+        if goalkeeper_game_data_list:
+            component_list.append('goalkeeper_game_data')
+    if 'stimulus_data' not in component_list:
+        stimulus_data_list = Stimulus.objects.filter(experiment=group.experiment)
+        if stimulus_data_list:
+            component_list.append('stimulus_data')
+    if 'generic_data' not in component_list:
+        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+        if generic_data_list:
+            component_list.append('generic_data')
 
     return component_list
 

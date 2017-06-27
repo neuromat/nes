@@ -196,6 +196,27 @@
                                                         <div class="help-block with-errors"></div>
                                                     </div>
                                                 {% endif %}
+                                                {% if 'goalkeeper_game_data' in component_list %}
+                                                    <div class="checkbox">
+                                                        {{ export_form.per_goalkeeper_game_data }}
+                                                        <label for="per_goalkeeper_game_data" class="control-label">{% trans "Goalkeeper game Data" %}</label>
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                {% endif %}
+                                                {% if 'stimulus_data' in component_list %}
+                                                    <div class="checkbox">
+                                                        {{ export_form.per_stimulus_data }}
+                                                        <label for="per_stimulus_data" class="control-label">{% trans "Stimulus Data" %}</label>
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                {% endif %}
+                                                {% if 'generic_data' in component_list %}
+                                                    <div class="checkbox">
+                                                        {{ export_form.per_generic_data }}
+                                                        <label for="per_generic_data" class="control-label">{% trans "Generic Data" %}</label>
+                                                        <div class="help-block with-errors"></div>
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
