@@ -19,10 +19,11 @@
             {{ hotspot_form.coordinate_x }}
             {{ hotspot_form.coordinate_y }}
             {{ hotspot_form.name }}
+            {{ hotspot_form.hot_spot_map }}
         </div>
 
         <div class="row">
-            <div class="col-xs-10 col-sm-10">
+            <div class="col-xs-7 col-sm-7">
                 <div class="form-group">
                     <label class="control-label">{% trans "TMS localization system" %}<b style="color: red;">*</b> </label>
 
@@ -40,10 +41,12 @@
         </div>
 
         <div id="div-localization_system_image">
-            <canvas id="tmsMapCanvas" width="600" height="600" style="margin: auto; border:1px solid #000000;"></canvas>
-            {% if not editing and can_change %}
-                <div><button onclick="save_image()">Save Image</button></div>
-            {% endif %}
+            <canvas id="tmsMapCanvas" width="500" height="590" style="margin: auto; border:1px solid #000000;}})"></canvas>
+{#            <canvas id="tmsMapCanvas" width="500" height="590" style="margin: auto; border:1px solid #000000;background:url({{ localization_system_selected.tms_localization_system_image.url }})"></canvas>#}
+
+            {#            {% if not editing and can_change %}#}
+{#                <div><button onclick="save_image()">Save Image</button></div>#}
+{#            {% endif %}#}
         </div>
 
     {% if not editing and can_change %}
