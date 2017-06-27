@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.utils import translation
 
-from .models import Experiment, Group, Subject, TeamPerson, User
+from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting
 
 
 class RestApiClient(object):
@@ -160,6 +160,30 @@ def send_experimental_protocol_to_portal(portal_group_id, textual_description, i
         portal_experimental_protocol = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_experimental_protocol
+
+
+def send_eeg_setting_to_portal(group: Group, eeg_setting: EEGSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    # general params
+    params = {"experiment_nes_id": str(group.experiment.id),
+              "title": group.title,
+              "description": group.description,
+              "inclusion_criteria": []
+              }
+
+    for criteria in group.classification_of_diseases.all():
+        params['inclusion_criteria'].append({'code': criteria.code})
+
+    action_keys = ['experiments', 'groups', 'create']
+
+    portal_group = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_group
 
 
 def send_participant_to_portal(portal_group_id, subject: Subject):
