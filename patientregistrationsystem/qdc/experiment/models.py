@@ -1204,7 +1204,7 @@ class HotSpot(models.Model):
     name = models.CharField(max_length=50)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    hot_spot_map = models.FileField(upload_to=get_data_file_dir, null=True)
+    hot_spot_map = models.FileField(upload_to=get_data_file_dir, null=True, blank=True)
     tms_data = models.OneToOneField(TMSData, primary_key=True)
     tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='hotspots')
 

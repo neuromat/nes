@@ -13,10 +13,12 @@ from nwb.nwbco import *
 
 # v1.5
 import mne
+import base64
 
 from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
 from functools import partial
+from binascii import a2b_base64
 
 from operator import itemgetter
 from os import path
@@ -6095,7 +6097,13 @@ def tms_data_edit(request, tms_data_id, tab):
                 redirect_url = reverse("tms_data_view", args=(tms_data_id,))
 
             if tab == "2":
-                hotspot_form = HotSpotForm(request.POST or None)
+                hotspot_form = HotSpotForm(request.POST or None, request.FILES)
+                if request.POST.get('spot_image'):
+                    data = request.POST.get('spot_image').split(',')[-1]
+                    binary_data = a2b_base64(data)
+                    # path_hot_spot_filename = path.join(settings.BASE_DIR, "media")
+                    with open("hot_spot_map.png", "wb") as f:
+                        f.write(base64.decodebytes(binary_data))
 
                 if hotspot_form.is_valid() and 'localization_system_selection':
                     if hotspot_form.has_changed():
@@ -6855,17 +6863,6 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
                }
 
     return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.change_experiment')
-# def get_tms_position_localization_system(request, tms_position_localization_system_id):
-#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_position_localization_system_id)
-#     tms_position_localization_system_list = TMSPosition.objects.filter(tms_localization_system=localization_system)
-#
-#     json_list = serializers.serialize("json", tms_position_localization_system_list)
-#     return HttpResponse(json_list, content_type='application/json')
-
 
 @login_required
 @permission_required('experiment.view_researchproject')
