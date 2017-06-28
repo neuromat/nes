@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.utils import translation
 
-from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting
+from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree
 
 
 class RestApiClient(object):
@@ -162,7 +162,7 @@ def send_experimental_protocol_to_portal(portal_group_id, textual_description, i
     return portal_experimental_protocol
 
 
-def send_eeg_setting_to_portal(group: Group, eeg_setting: EEGSetting):
+def send_eeg_setting_to_portal(portal_experiment_id, eeg_setting: EEGSetting):
 
     rest = RestApiClient()
 
@@ -170,16 +170,76 @@ def send_eeg_setting_to_portal(group: Group, eeg_setting: EEGSetting):
         return None
 
     # general params
-    params = {"experiment_nes_id": str(group.experiment.id),
-              "title": group.title,
-              "description": group.description,
-              "inclusion_criteria": []
+    params = {"id": portal_experiment_id,
+              "name": eeg_setting.name,
+              "description": eeg_setting.description,
               }
 
-    for criteria in group.classification_of_diseases.all():
-        params['inclusion_criteria'].append({'code': criteria.code})
+    action_keys = ['groups', 'eeg_setting', 'create']
 
-    action_keys = ['experiments', 'groups', 'create']
+    portal_group = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_group
+
+
+def send_emg_setting_to_portal(portal_experiment_id, emg_setting: EMGSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    # general params
+    params = {"id": portal_experiment_id,
+              "name": emg_setting.name,
+              "description": emg_setting.description,
+              'acquisition_software_version':
+                  emg_setting.acquisition_software_version.software.name + " " +
+                  emg_setting.acquisition_software_version.name
+              }
+
+    action_keys = ['groups', 'emg_setting', 'create']
+
+    portal_group = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_group
+
+
+def send_tms_setting_to_portal(portal_experiment_id, tms_setting: TMSSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    # general params
+    params = {"id": portal_experiment_id,
+              "name": tms_setting.name,
+              "description": tms_setting.description,
+              }
+
+    action_keys = ['groups', 'tms_setting', 'create']
+
+    portal_group = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_group
+
+
+def send_context_tree_to_portal(portal_experiment_id, context_tree: ContextTree):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    # general params
+    params = {"id": portal_experiment_id,
+              "name": context_tree.name,
+              "description": context_tree.description,
+              'setting_text': context_tree.setting_text
+              }
+
+    action_keys = ['groups', 'context_tree', 'create']
 
     portal_group = rest.client.action(rest.schema, action_keys, params=params)
 
