@@ -8,7 +8,6 @@ window.onload = function() {
     var tms_position_localization_system_id = $("#tms_position_localization_system_id");
     var localization_system_selected_id = $("#localization_system_selected_id");
     var localization_system_selected = localization_system_selected_id.val();
-    var select_tms_position_selection = $("#id_tms_position_selection");
     var editing_id = $("#editing_id");
     map_file="";
 
@@ -129,6 +128,7 @@ function getPosition(event) {
     var hotspot_x = document.getElementById("id_coordinate_x");
     var hotspot_y = document.getElementById("id_coordinate_y");
     var tms_position = document.getElementById("id_name");
+    var hotspot_map = document.getElementById("id_hot_spot_map");
 
     context = canvas.getContext("2d");
 
@@ -148,6 +148,7 @@ function getPosition(event) {
             hotspot_x.value = x;
             hotspot_y.value = y;
             tms_position.value = name;
+            hotspot_map.value = canvas.toDataURL()
 
             refresh_Screen(x,y,name);
         }
@@ -159,12 +160,11 @@ function getPosition(event) {
 //Save Image
 function save_image() {
     var canvas = document.getElementById('tmsMapCanvas');
-
+    var hotspot_map = document.getElementById('id_hot_spot_map');
+    var link = document.createElement('a');
     // save canvas image as data url (png format by default)
-      var dataURL = canvas.toDataURL();
-
-      // set canvasImg image src to dataURL
-      // so it can be saved as an image
-      // document.getElementById('canvas').src = dataURL;
+    link.href = canvas.toDataURL("image/png");
+    hotspot_map.value = link.href
+    // link.download = "mypainting.png";
 
 }

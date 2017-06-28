@@ -6877,8 +6877,8 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
                                                              pk=tms_data.hotspot.tms_localization_system_id)
 
         else:
-            hotspot_form = HotSpotForm(request.POST or None)
-            localization_system_selected = None
+            # hotspot_form = HotSpotForm(request.POST or None)
+            # localization_system_selected = None
             redirect_url = reverse("tms_data_position_setting_register", args=(tms_data_id,))
             return HttpResponseRedirect(redirect_url)
 

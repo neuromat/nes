@@ -1236,7 +1236,7 @@ class HotSpotForm(ModelForm):
     class Meta:
         model = HotSpot
 
-        fields = ['name', 'coordinate_x', 'coordinate_y']
+        fields = ['name', 'coordinate_x', 'coordinate_y', 'hot_spot_map']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
