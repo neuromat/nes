@@ -162,7 +162,7 @@ def send_experimental_protocol_to_portal(portal_group_id, textual_description, i
     return portal_experimental_protocol
 
 
-def send_eeg_setting_to_portal(portal_experiment_id, eeg_setting: EEGSetting):
+def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
 
     rest = RestApiClient()
 
@@ -170,7 +170,7 @@ def send_eeg_setting_to_portal(portal_experiment_id, eeg_setting: EEGSetting):
         return None
 
     # general params
-    params = {"id": portal_experiment_id,
+    params = {"experiment_nes_id": str(eeg_setting.experiment_id),
               "name": eeg_setting.name,
               "description": eeg_setting.description,
               }
@@ -182,7 +182,7 @@ def send_eeg_setting_to_portal(portal_experiment_id, eeg_setting: EEGSetting):
     return portal_group
 
 
-def send_emg_setting_to_portal(portal_experiment_id, emg_setting: EMGSetting):
+def send_emg_setting_to_portal(emg_setting: EMGSetting):
 
     rest = RestApiClient()
 
@@ -190,7 +190,7 @@ def send_emg_setting_to_portal(portal_experiment_id, emg_setting: EMGSetting):
         return None
 
     # general params
-    params = {"id": portal_experiment_id,
+    params = {"experiment_nes_id": str(emg_setting.experiment_id),
               "name": emg_setting.name,
               "description": emg_setting.description,
               'acquisition_software_version':
@@ -205,7 +205,7 @@ def send_emg_setting_to_portal(portal_experiment_id, emg_setting: EMGSetting):
     return portal_group
 
 
-def send_tms_setting_to_portal(portal_experiment_id, tms_setting: TMSSetting):
+def send_tms_setting_to_portal(tms_setting: TMSSetting):
 
     rest = RestApiClient()
 
@@ -213,7 +213,7 @@ def send_tms_setting_to_portal(portal_experiment_id, tms_setting: TMSSetting):
         return None
 
     # general params
-    params = {"id": portal_experiment_id,
+    params = {"experiment_nes_id": str(tms_setting.experiment_id),
               "name": tms_setting.name,
               "description": tms_setting.description,
               }
@@ -225,7 +225,7 @@ def send_tms_setting_to_portal(portal_experiment_id, tms_setting: TMSSetting):
     return portal_group
 
 
-def send_context_tree_to_portal(portal_experiment_id, context_tree: ContextTree):
+def send_context_tree_to_portal(context_tree: ContextTree):
 
     rest = RestApiClient()
 
@@ -233,7 +233,7 @@ def send_context_tree_to_portal(portal_experiment_id, context_tree: ContextTree)
         return None
 
     # general params
-    params = {"id": portal_experiment_id,
+    params = {"experiment_nes_id": str(context_tree.experiment_id),
               "name": context_tree.name,
               "description": context_tree.description,
               'setting_text': context_tree.setting_text

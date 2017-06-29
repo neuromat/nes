@@ -769,8 +769,8 @@ def send_all_experiments_to_portal(language_code):
                 for path in list_of_eeg_configuration:
                     component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
                     eeg_setting = EEG.objects.get(pk=component_id).eeg_setting
-                    if not eeg_setting.id in list_of_eeg_setting:
-                        send_eeg_setting_to_portal(created_group['id'], eeg_setting)
+                    if eeg_setting.id not in list_of_eeg_setting:
+                        send_eeg_setting_to_portal(eeg_setting)
                         list_of_eeg_setting.append(eeg_setting.id)
 
                 # emg settings
@@ -778,8 +778,8 @@ def send_all_experiments_to_portal(language_code):
                 for path in list_of_emg_configuration:
                     component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
                     emg_setting = EMG.objects.get(pk=component_id).emg_setting
-                    if not emg_setting.id in list_of_emg_setting:
-                        send_emg_setting_to_portal(created_group['id'], emg_setting)
+                    if emg_setting.id not in list_of_emg_setting:
+                        send_emg_setting_to_portal(emg_setting)
                         list_of_emg_setting.append(emg_setting.id)
 
                 # tms settings
@@ -787,8 +787,8 @@ def send_all_experiments_to_portal(language_code):
                 for path in list_of_tms_configuration:
                     component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
                     tms_setting = TMS.objects.get(pk=component_id).tms_setting
-                    if not tms_setting.id in list_of_tms_setting:
-                        send_tms_setting_to_portal(created_group['id'], tms_setting)
+                    if tms_setting.id not in list_of_tms_setting:
+                        send_tms_setting_to_portal(tms_setting)
                         list_of_tms_setting.append(tms_setting.id)
 
                 # context trees
@@ -797,8 +797,8 @@ def send_all_experiments_to_portal(language_code):
                 for path in list_of_digital_game_phase_configuration:
                     component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
                     context_tree = DigitalGamePhase.objects.get(pk=component_id).context_tree
-                    if not context_tree.id in list_of_context_tree:
-                        send_context_tree_to_portal(created_group['id'], context_tree)
+                    if context_tree.id not in list_of_context_tree:
+                        send_context_tree_to_portal(context_tree)
                         list_of_context_tree.append(context_tree.id)
 
                 # participants
