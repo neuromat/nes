@@ -1028,8 +1028,14 @@ def get_data_file_dir(instance, filename):
             directory = path.join(directory, 'emg')
         elif isinstance(instance, AdditionalData):
             directory = path.join(directory, 'additional')
-        elif isinstance(instance, HotSpot):
-            directory = path.join(directory, 'tms_hot_spot')
+    if isinstance(instance, HotSpot):
+        directory = path.join('data_collection_files',
+                              str(instance.tms_data.subject_of_group.group.experiment.id),
+                              str(instance.tms_data.subject_of_group.group.id),
+                              str(instance.tms_data.subject_of_group.subject.id),
+                              str(instance.tms_data.data_configuration_tree.id if
+                                  instance.tms_data.data_configuration_tree else 0))
+        directory = path.join(directory, 'tms_hot_spot')
     return path.join(directory, filename)
 
 
@@ -1204,7 +1210,7 @@ class HotSpot(models.Model):
     name = models.CharField(max_length=50)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    hot_spot_map = models.FileField(upload_to=get_data_file_dir, null=True)
+    hot_spot_map = models.FileField(upload_to=get_data_file_dir, null=True, blank=True)
     tms_data = models.OneToOneField(TMSData, primary_key=True)
     tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='hotspots')
 

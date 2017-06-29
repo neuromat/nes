@@ -1724,10 +1724,10 @@ class ExportExecution:
 
                             if eeg_setting_description:
 
-                                eeg_setting_filename = "%s.txt" % "eeg_setting_description"
+                                eeg_setting_filename = "%s.json" % "eeg_setting_description"
 
                                 # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
-                                # eeg_setting_description.txt #
+                                # eeg_setting_description.json#
                                 complete_setting_filename = path.join(path_per_eeg_participant, eeg_setting_filename)
 
                                 self.files_to_zip_list.append([complete_setting_filename, export_eeg_step_directory])
@@ -1739,7 +1739,7 @@ class ExportExecution:
                             # if sensor position image exist
                             sensors_positions_image = get_sensors_position(eeg_data)
                             if sensors_positions_image:
-                                sensor_position_filename = sensors_positions_image.split('/')[-1]
+                                sensor_position_filename = "%s.png" % "sensor_position"
 
                                 sensor_position_file = eeg_data_filename.split(".")[0] + "_" + sensor_position_filename
                                 complete_sensor_position_filename = path.join(path_per_eeg_participant,
@@ -1795,7 +1795,7 @@ class ExportExecution:
 
                             if emg_setting_description:
 
-                                emg_setting_filename = "%s.txt" % "emg_setting_description"
+                                emg_setting_filename = "%s.json" % "emg_setting_description"
 
                                 # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
                                 # emg_setting_description.txt #
@@ -1830,13 +1830,9 @@ class ExportExecution:
                             # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_tms_step_directory = path.join(participant_export_directory, directory_step_name)
 
-                            tms_data_filename = "%s.txt" % "tms_data_description"
+                            tms_data_filename = "%s.json" % "tms_data_description"
                             # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/tms_data_description.txt #
                             complete_data_filename = path.join(path_per_tms_participant, tms_data_filename)
-
-                            tms_setting_filename = "%s.txt" % "tms_setting_description"
-                            # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/tms_setting_description.txt #
-                            complete_setting_filename = path.join(path_per_tms_participant, tms_setting_filename)
 
                             self.files_to_zip_list.append([complete_data_filename, export_tms_step_directory])
 
@@ -1846,25 +1842,21 @@ class ExportExecution:
 
                             # TMS hotspot position image file
                             tms_data = get_object_or_404(TMSData, pk=component['tms_data_id'])
-                            tms_localization_system = get_object_or_404(
-                                TMSLocalizationSystem, pk=tms_data.hotspot.tms_localization_system_id)
 
-                            tms_localization_system_image = tms_localization_system.tms_localization_system_image.name
-                            if tms_localization_system_image:
-                                hotspot_position_image_filename = tms_localization_system_image.split('/')[-1]
-                                complete_hotspot_position_filename = path.join(path_per_tms_participant,
-                                                                               hotspot_position_image_filename)
-                                path_tms_localization_system_image = path.join(settings.BASE_DIR, "media") + "/" + \
-                                                                     tms_localization_system_image
-                                with open(path_tms_localization_system_image, 'rb') as f:
-                                    data = f.read()
+                            if hasattr(tms_data,'hotspot'):
+                                hotspot_image = tms_data.hotspot.hot_spot_map.name
+                                if hotspot_image:
+                                    hotspot_map_filename = "%s.png" % "hotspot_map"
+                                    complete_hotspot_filename = path.join(path_per_tms_participant, hotspot_map_filename)
+                                    path_hot_spot_image = path.join(settings.BASE_DIR, "media") + "/" + hotspot_image
+                                    with open(path_hot_spot_image, 'rb') as f:
+                                        data = f.read()
 
-                                with open(complete_hotspot_position_filename, 'wb') as f:
-                                    f.write(data)
+                                    with open(complete_hotspot_filename, 'wb') as f:
+                                        f.write(data)
 
-                                self.files_to_zip_list.append([complete_hotspot_position_filename,
-                                                               export_tms_step_directory])
-
+                                    self.files_to_zip_list.append([complete_hotspot_filename,
+                                                                   export_tms_step_directory])
 
                 if 'additional_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
@@ -2072,7 +2064,7 @@ class ExportExecution:
 
     def process_experiment_data(self, language_code):
         error_msg = ""
-        # process of filename for experiment resume
+        # process of experiment description
         for group_id in self.per_group_data:
             group = get_object_or_404(Group, pk=group_id)
 
@@ -2123,11 +2115,19 @@ class ExportExecution:
                 group_file_directory = self.per_group_data[group_id]['group']['directory']
                 # path ex. /NES_EXPORT/Experiment_data/Group_xxxx/
                 export_group_directory = self.per_group_data[group_id]['group']['export_directory']
-                # path ex.
-                # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Experimental_protocol_description.txt
-                complete_group_filename = path.join(group_file_directory, filename_group_for_export)
+                # ex. Users/..../NES_EXPORT/Experiment_data/Group_xxx/Experimental_protocol
+                error_msg, directory_experimental_protocol = create_directory(group_file_directory,
+                                                                              "Experimental_protocol")
+                if error_msg != "":
+                    return error_msg
 
-                self.files_to_zip_list.append([complete_group_filename, export_group_directory])
+                # path ex. /NES_EXPORT/Experiment_data/Group_xxx
+                export_directory_experimental_protocol = path.join(export_group_directory, "Experimental_protocol")
+
+                # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Experimental_protocol/Experimental_protocol_description.txt
+                complete_group_filename = path.join(directory_experimental_protocol, filename_group_for_export)
+
+                self.files_to_zip_list.append([complete_group_filename, export_directory_experimental_protocol])
 
                 with open(complete_group_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as txt_file:
                     txt_file.writelines(group_resume)
@@ -2135,7 +2135,7 @@ class ExportExecution:
 
                 # save protocol image
                 filename_protocol_image = "Protocol_image.png"
-                complete_protocol_image_filename = path.join(group_file_directory, filename_protocol_image)
+                complete_protocol_image_filename = path.join(directory_experimental_protocol, filename_protocol_image)
                 # self.files_to_zip_list.append([complete_group_filename, complete_protocol_image_filename])
 
                 experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
@@ -2146,7 +2146,7 @@ class ExportExecution:
                 with open(complete_protocol_image_filename, 'wb') as f:
                     f.write(data)
 
-                self.files_to_zip_list.append([complete_protocol_image_filename, export_group_directory])
+                self.files_to_zip_list.append([complete_protocol_image_filename, export_directory_experimental_protocol])
 
                 # process participant/diagnosis per Participant of each group
                 participant_group_list = []

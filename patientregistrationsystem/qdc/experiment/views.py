@@ -13,6 +13,7 @@ from nwb.nwbco import *
 
 # v1.5
 import mne
+import base64
 
 from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
@@ -26,6 +27,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import PermissionDenied
 from django.core import serializers
+from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -51,7 +53,7 @@ from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, 
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, \
     EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
-    GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending
+    GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending, HotSpot, get_data_file_dir
 
 from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -6138,7 +6140,7 @@ def tms_data_edit(request, tms_data_id, tab):
                 redirect_url = reverse("tms_data_view", args=(tms_data_id,))
 
             if tab == "2":
-                hotspot_form = HotSpotForm(request.POST or None)
+                hotspot_form = HotSpotForm(request.POST or None, request.FILES)
 
                 if hotspot_form.is_valid() and 'localization_system_selection':
                     if hotspot_form.has_changed():
@@ -6148,7 +6150,19 @@ def tms_data_edit(request, tms_data_id, tab):
                         hotspot_to_update = hotspot_form.save(commit=False)
                         hotspot_to_update.tms_localization_system = localization_system
                         hotspot_to_update.tms_data = tms_data
+                        # hotspot_to_update.hot_spot_map = hotspot_image.png
                         hotspot_to_update.save()
+
+                        if request.POST.get('spot_image'):
+                            data = request.POST.get('spot_image').split(',')[-1]
+                            binary_data = base64.encodebytes(base64.b64decode(data))
+                            # path_hot_spot_filename = get_data_file_dir(tms_data, "hotspot_image.png")
+                            with open("hotspot_tmp.png", "wb") as f:
+                                f.write(base64.decodebytes(binary_data))
+
+                            with open("hotspot_tmp.png", "rb") as f:
+                                image_file = File(f)
+                                hotspot_to_update.hot_spot_map.save("hotspot_image.png", image_file)
 
                         messages.success(request, _('TMS position updated sucessfully.'))
 
@@ -6898,17 +6912,6 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
                }
 
     return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.change_experiment')
-# def get_tms_position_localization_system(request, tms_position_localization_system_id):
-#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_position_localization_system_id)
-#     tms_position_localization_system_list = TMSPosition.objects.filter(tms_localization_system=localization_system)
-#
-#     json_list = serializers.serialize("json", tms_position_localization_system_list)
-#     return HttpResponse(json_list, content_type='application/json')
-
 
 @login_required
 @permission_required('experiment.view_researchproject')

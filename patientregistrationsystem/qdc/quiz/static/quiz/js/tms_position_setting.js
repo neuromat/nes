@@ -16,6 +16,7 @@ window.onload = function() {
     }else{
         var canvas = document.getElementById("tmsMapCanvas");
         if(canvas != null){
+            var b64;
             var ctx = canvas.getContext("2d");
             var imageObj = new Image();
             hotspot_x = $("#id_coordinate_x");
@@ -25,15 +26,20 @@ window.onload = function() {
             var x = parseInt(hotspot_x.val());
             var y = parseInt(hotspot_y.val());
             var name = tms_name.val();
-
+            imageObj.crossOrigin = "Anonymous";
             imageObj.onload = function(){
                 ctx.drawImage(imageObj, 0,0,600,600);
                 pintar(x,y,name);
+                b64 = canvas.toDataURL("image/png");
+                // document.getElementById('b-pre').innerText = b64;
+                document.getElementById('id_spot_image').value = b64;
+                // document.getElementById('id_spot_map').src = b64;
             };
             imageObj.src = localization_system_selected_id.val();
             map_file = imageObj.src;
             if(editing_id.val() == "True")
                 canvas.addEventListener("mousedown", getPosition, false);
+
         }
         
     }
@@ -67,7 +73,7 @@ window.onload = function() {
                 var canvas = document.getElementById("tmsMapCanvas");
                 var ctx = canvas.getContext("2d");
                 var imageObj = new Image();
-
+                imageObj.crossOrigin = "Anonymous";
                 imageObj.onload = function(){
                     ctx.drawImage(imageObj, 0,0,600,600);
                 };
@@ -97,27 +103,23 @@ function pintar(x,y,name)
 function refresh_Screen(x,y,name){
     var canvas = document.getElementById("tmsMapCanvas");
     var ctx = canvas.getContext("2d");
+    var b64;
     ctx.clearRect(0, 0, canvas.width,canvas.height);
 
     var imageObj = new Image();
-
+    imageObj.crossOrigin = "Anonymous";
     imageObj.onload = function() {
         ctx.drawImage(imageObj, 0, 0, 600, 600);
         pintar(x,y,name);
+        b64 = canvas.toDataURL("image/png");
+        // document.getElementById('b-pre').innerText = b64;
+        document.getElementById('id_spot_image').value = b64;
+        // document.getElementById('id_spot_map').src = b64;
+
     };
-    // if(localization_system_selected_id.value == ""){
-    //     var select_localization_system = $("#id_localization_system_selection");
-    //     var tms_localization_system = select_localization_system.val();
-    //     var split = tms_localization_system.split(",");
-    //     var tms_position_localization_system_id = $("#tms_position_localization_system_id");
-    //     tms_position_localization_system_id.value = parseInt(split[0]);
-    //     var tms_localization_system_image = split[1];
-    //     map_file = tms_localization_system_image;
-    // }else{
-    //     map_file = localization_system_selected_id.value;
-    // }
 
     imageObj.src = map_file;
+
 };
 
 // função que captura o evento 'click do mouse'
@@ -128,7 +130,6 @@ function getPosition(event) {
     var hotspot_x = document.getElementById("id_coordinate_x");
     var hotspot_y = document.getElementById("id_coordinate_y");
     var tms_position = document.getElementById("id_name");
-    var hotspot_map = document.getElementById("id_hot_spot_map");
 
     context = canvas.getContext("2d");
 
@@ -148,23 +149,11 @@ function getPosition(event) {
             hotspot_x.value = x;
             hotspot_y.value = y;
             tms_position.value = name;
-            hotspot_map.value = canvas.toDataURL()
-
             refresh_Screen(x,y,name);
+
         }
 
     }
 
 }
 
-//Save Image
-function save_image() {
-    var canvas = document.getElementById('tmsMapCanvas');
-    var hotspot_map = document.getElementById('id_hot_spot_map');
-    var link = document.createElement('a');
-    // save canvas image as data url (png format by default)
-    link.href = canvas.toDataURL("image/png");
-    hotspot_map.value = link.href
-    // link.download = "mypainting.png";
-
-}
