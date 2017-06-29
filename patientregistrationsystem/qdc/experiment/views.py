@@ -78,7 +78,8 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
 from .portal import get_experiment_status_portal, send_experiment_to_portal, get_portal_status, \
     send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
     send_experimental_protocol_to_portal, send_participant_to_portal, send_collaborator_to_portal, \
-    send_researcher_to_portal
+    send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
+    send_tms_setting_to_portal, send_context_tree_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -756,9 +757,51 @@ def send_all_experiments_to_portal(language_code):
             for collaborator in schedule_of_sending.experiment.research_project.collaborators.all():
                 send_collaborator_to_portal(created_research_project['id'], collaborator.team_person)
 
+            list_of_eeg_setting = []
+            list_of_emg_setting = []
+            list_of_tms_setting = []
+            list_of_context_tree = []
+
             # sending groups
             for group in schedule_of_sending.experiment.group_set.all():
                 created_group = send_group_to_portal(group)
+
+                # eeg settings
+                list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
+                for path in list_of_eeg_configuration:
+                    component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
+                    eeg_setting = EEG.objects.get(pk=component_id).eeg_setting
+                    if eeg_setting.id not in list_of_eeg_setting:
+                        send_eeg_setting_to_portal(eeg_setting)
+                        list_of_eeg_setting.append(eeg_setting.id)
+
+                # emg settings
+                list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
+                for path in list_of_emg_configuration:
+                    component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
+                    emg_setting = EMG.objects.get(pk=component_id).emg_setting
+                    if emg_setting.id not in list_of_emg_setting:
+                        send_emg_setting_to_portal(emg_setting)
+                        list_of_emg_setting.append(emg_setting.id)
+
+                # tms settings
+                list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
+                for path in list_of_tms_configuration:
+                    component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
+                    tms_setting = TMS.objects.get(pk=component_id).tms_setting
+                    if tms_setting.id not in list_of_tms_setting:
+                        send_tms_setting_to_portal(tms_setting)
+                        list_of_tms_setting.append(tms_setting.id)
+
+                # context trees
+                list_of_digital_game_phase_configuration = \
+                    create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+                for path in list_of_digital_game_phase_configuration:
+                    component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
+                    context_tree = DigitalGamePhase.objects.get(pk=component_id).context_tree
+                    if context_tree.id not in list_of_context_tree:
+                        send_context_tree_to_portal(context_tree)
+                        list_of_context_tree.append(context_tree.id)
 
                 # participants
                 for subject_of_group in group.subjectofgroup_set.all():
