@@ -9216,7 +9216,7 @@ def component_add_new(request, path_of_the_components, component_type):
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         duration_string = "0"
     elif component_type == 'digital_game_phase':
-        specific_form = DigitalGamePhaseForm(request.POST or None)
+        specific_form = DigitalGamePhaseForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'generic_data_collection':
         specific_form = GenericDataCollectionForm(request.POST or None)
 
