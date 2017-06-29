@@ -175,7 +175,7 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
               "description": eeg_setting.description,
               }
 
-    action_keys = ['groups', 'eeg_setting', 'create']
+    action_keys = ['experiments', 'eeg_setting', 'create']
 
     portal_group = rest.client.action(rest.schema, action_keys, params=params)
 
@@ -198,7 +198,7 @@ def send_emg_setting_to_portal(emg_setting: EMGSetting):
                   emg_setting.acquisition_software_version.name
               }
 
-    action_keys = ['groups', 'emg_setting', 'create']
+    action_keys = ['experiments', 'emg_setting', 'create']
 
     portal_group = rest.client.action(rest.schema, action_keys, params=params)
 
@@ -218,7 +218,7 @@ def send_tms_setting_to_portal(tms_setting: TMSSetting):
               "description": tms_setting.description,
               }
 
-    action_keys = ['groups', 'tms_setting', 'create']
+    action_keys = ['experiments', 'tms_setting', 'create']
 
     portal_group = rest.client.action(rest.schema, action_keys, params=params)
 
@@ -239,7 +239,7 @@ def send_context_tree_to_portal(context_tree: ContextTree):
               'setting_text': context_tree.setting_text
               }
 
-    action_keys = ['groups', 'context_tree', 'create']
+    action_keys = ['experiments', 'context_tree', 'create']
 
     portal_group = rest.client.action(rest.schema, action_keys, params=params)
 
