@@ -1028,8 +1028,14 @@ def get_data_file_dir(instance, filename):
             directory = path.join(directory, 'emg')
         elif isinstance(instance, AdditionalData):
             directory = path.join(directory, 'additional')
-        elif isinstance(instance, HotSpot):
-            directory = path.join(directory, 'tms_hot_spot')
+    if isinstance(instance, HotSpot):
+        directory = path.join('data_collection_files',
+                              str(instance.tms_data.subject_of_group.group.experiment.id),
+                              str(instance.tms_data.subject_of_group.group.id),
+                              str(instance.tms_data.subject_of_group.subject.id),
+                              str(instance.tms_data.data_configuration_tree.id if
+                                  instance.tms_data.data_configuration_tree else 0))
+        directory = path.join(directory, 'tms_hot_spot')
     return path.join(directory, filename)
 
 

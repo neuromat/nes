@@ -363,17 +363,9 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             return render(request, template_name)
         #
         # # Read initial json file
-        # json_filename = "json_export.json"
-        # path_source = path.join(settings.BASE_DIR, "export")
-        # input_name = path.join(path_source, json_filename)
         #
         input_export_file = path.join("export", path.join(str(request.user.id),
                                                           path.join(str(export_instance.id), str(input_filename))))
-        #
-        # # copy data to .../media/export/<user_id>/<export_id>/
-        # input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
-        #
-        # copy(input_name, input_filename)
 
         # prepare data to be processed
         input_data = export.read_configuration_data(input_filename)

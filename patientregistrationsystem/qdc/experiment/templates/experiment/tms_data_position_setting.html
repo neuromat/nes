@@ -14,7 +14,7 @@
 
         <div hidden="hidden">
             <input id="localization_system_selected_id" type="text" value="{{ localization_system_selected.tms_localization_system_image.url }}">
-
+            <input type="text" id="id_spot_image" name="spot_image">
             <input id="editing_id" type="text" value="{{ editing }}">
             {{ hotspot_form.coordinate_x }}
             {{ hotspot_form.coordinate_y }}
@@ -48,12 +48,12 @@
 {#                <div><button onclick="save_image()">Save Image</button></div>#}
 {#            {% endif %}#}
         </div>
-        <div id="result">
-            Result:
-            <img id="id_spot_map" name="spot_map" src="" />
-            <input type="text" id="id_spot_image" name="spot_image">
-            <p id="b-pre"></p>
-        </div>
+{#        <div id="result">#}
+{#            Result:#}
+{#            <img id="id_spot_map" name="spot_map" src="" />#}
+{#            <input type="text" id="id_spot_image" name="spot_image">#}
+{#            <p id="b-pre"></p>#}
+{#        </div>#}
 
     {% if not editing and can_change %}
         <div class="btn-group pull-left">

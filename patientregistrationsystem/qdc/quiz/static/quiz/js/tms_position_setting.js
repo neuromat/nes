@@ -31,9 +31,9 @@ window.onload = function() {
                 ctx.drawImage(imageObj, 0,0,600,600);
                 pintar(x,y,name);
                 b64 = canvas.toDataURL("image/png");
-                document.getElementById('b-pre').innerText = b64;
+                // document.getElementById('b-pre').innerText = b64;
                 document.getElementById('id_spot_image').value = b64;
-                document.getElementById('id_spot_map').src = b64;
+                // document.getElementById('id_spot_map').src = b64;
             };
             imageObj.src = localization_system_selected_id.val();
             map_file = imageObj.src;
@@ -112,9 +112,9 @@ function refresh_Screen(x,y,name){
         ctx.drawImage(imageObj, 0, 0, 600, 600);
         pintar(x,y,name);
         b64 = canvas.toDataURL("image/png");
-        document.getElementById('b-pre').innerText = b64;
+        // document.getElementById('b-pre').innerText = b64;
         document.getElementById('id_spot_image').value = b64;
-        document.getElementById('id_spot_map').src = b64;
+        // document.getElementById('id_spot_map').src = b64;
 
     };
 
