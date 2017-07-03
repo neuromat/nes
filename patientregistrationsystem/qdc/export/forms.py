@@ -28,14 +28,14 @@ class ExportForm(Form):
     title = CharField(required=False, widget=TextInput(attrs={'class': 'form-control', 'disabled': ''}))
     per_participant = BooleanField(initial=True, required=False)
     per_questionnaire = BooleanField(initial=True, required=False)
-    per_eeg_raw_data = BooleanField(initial=False, required=False)
-    per_eeg_nwb_data = BooleanField(initial=False, required=False)
-    per_emg_data = BooleanField(initial=False, required=False)
-    per_tms_data = BooleanField(initial=False, required=False)
-    per_additional_data = BooleanField(initial=False, required=False)
-    per_goalkeeper_game_data = BooleanField(initial=False, required=False)
-    per_stimulus_data = BooleanField(initial=False, required=False)
-    per_generic_data = BooleanField(initial=False, required=False)
+    per_eeg_raw_data = BooleanField(initial=True, required=False)
+    per_eeg_nwb_data = BooleanField(initial=True, required=False)
+    per_emg_data = BooleanField(initial=True, required=False)
+    per_tms_data = BooleanField(initial=True, required=False)
+    per_additional_data = BooleanField(initial=True, required=False)
+    per_goalkeeper_game_data = BooleanField(initial=True, required=False)
+    per_stimulus_data = BooleanField(initial=True, required=False)
+    per_generic_data = BooleanField(initial=True, required=False)
 
     questionnaire_entrance_selected = []
 

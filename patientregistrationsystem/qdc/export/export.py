@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import collections
 import json
+import random
 import re
+import mne
 
 from csv import writer, reader
 from sys import modules
@@ -28,7 +30,7 @@ from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireRe
     ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData, EEGSetting, EMGData, EMGSetting, TMSData, \
     TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, TMSLocalizationSystem, GenericDataCollectionData
 from experiment.views import get_block_tree, get_experimental_protocol_image, \
-    get_description_from_experimental_protocol_tree, get_sensors_position
+    get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, eeg_data_reading
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import is_limesurvey_available, get_questionnaire_language
@@ -612,7 +614,8 @@ class ExportExecution:
                                     'setting_id': eeg_data.eeg_setting_id,
                                     'eeg_data_id': eeg_data.id,
                                     'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper()
+                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper(),
+                                    'export_nwb': self.get_input_data('component_list')['per_eeg_nwb_data']
                                 })
 
                 if self.get_input_data('component_list')['per_emg_data']:
@@ -1754,6 +1757,31 @@ class ExportExecution:
 
                                 self.files_to_zip_list.append([complete_sensor_position_filename,
                                                                export_eeg_step_directory])
+
+                            if component['export_nwb']:
+                                process_requisition = int(random.random() * 10000)
+                                eeg_file_name = eeg_data_filename.split('.')[0]
+                                nwb_file_name = "%s.nwb" % eeg_file_name
+                                complete_nwb_file_name = path.join(path_per_eeg_participant, nwb_file_name)
+                                req = None
+                                # Open and read signal
+                                eeg_reading = eeg_data_reading(eeg_data, preload=True)
+
+                                # Was it open properly?
+                                ok_opening = False
+
+                                if eeg_reading:
+                                    if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+                                        ok_opening = True
+
+                                if ok_opening:
+                                    complete_nwb_file_name = create_nwb_file(eeg_data, eeg_reading, process_requisition,
+                                                                             req, complete_nwb_file_name)
+                                    if complete_nwb_file_name:
+                                        self.files_to_zip_list.append([complete_nwb_file_name,
+                                                                       export_eeg_step_directory])
+                                    else:
+                                        return error_msg
 
                 if 'emg_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
