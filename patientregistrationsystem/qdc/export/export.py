@@ -3,7 +3,6 @@ import collections
 import json
 import random
 import re
-import mne
 
 from csv import writer, reader
 from sys import modules
@@ -28,12 +27,13 @@ from os import path, makedirs
 from patient.models import Patient, QuestionnaireResponse
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, \
     ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData, EEGSetting, EMGData, EMGSetting, TMSData, \
-    TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, TMSLocalizationSystem, GenericDataCollectionData
-from experiment.views import get_block_tree, get_experimental_protocol_image, \
+    TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, TMSLocalizationSystem, GenericDataCollectionData, \
+    ContextTree
+from experiment.views import get_block_tree, get_experimental_protocol_image, EEG, EMG, TMS, DigitalGamePhase, \
     get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, eeg_data_reading
 
 from survey.abc_search_engine import Questionnaires
-from survey.views import is_limesurvey_available, get_questionnaire_language
+from survey.views import is_limesurvey_available
 
 
 DEFAULT_LANGUAGE = "pt-BR"
@@ -471,6 +471,10 @@ class ExportExecution:
                 'questionnaire_metadata_export_directory': '',
                 'participant_data_directory': '',
                 'participant_data_export_directory': '',
+                'eeg_default_setting_id': '',
+                'emg_default_setting_id': '',
+                'tms_default_setting_id': '',
+                'context_tree_default_id': ''
             }
 
             participant_group_list = Patient.objects.filter(subject__subjectofgroup__group=group).values('id')
@@ -591,7 +595,10 @@ class ExportExecution:
                     for path_eeg_experiment in create_list_of_trees(group.experimental_protocol, "eeg"):
                         eeg_component_configuration = get_object_or_404(ComponentConfiguration,
                                                                         pk=path_eeg_experiment[-1][0])
-                        component_step = eeg_component_configuration.component.component_type
+                        component_step = eeg_component_configuration.component
+
+                        self.per_group_data[group_id]['eeg_default_setting_id'] = EEG.objects.filter(
+                            id=component_step.id).values('eeg_setting_id')[0]['eeg_setting_id']
                         step_number = path_eeg_experiment[-1][4]
                         step_identification = path_eeg_experiment[-1][3]
 
@@ -614,7 +621,8 @@ class ExportExecution:
                                     'setting_id': eeg_data.eeg_setting_id,
                                     'eeg_data_id': eeg_data.id,
                                     'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper(),
+                                    'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                           component_step.component_type.upper(),
                                     'export_nwb': self.get_input_data('component_list')['per_eeg_nwb_data']
                                 })
 
@@ -622,7 +630,10 @@ class ExportExecution:
                     for path_emg_experiment in create_list_of_trees(group.experimental_protocol, "emg"):
                         emg_component_configuration = get_object_or_404(ComponentConfiguration,
                                                                         pk=path_emg_experiment[-1][0])
-                        component_step = emg_component_configuration.component.component_type
+                        component_step = emg_component_configuration.component
+                        self.per_group_data[group_id]['emg_default_setting_id'] = EMG.objects.filter(
+                            id=component_step.id).values('emg_setting_id')[0]['emg_setting_id']
+
                         step_number = path_emg_experiment[-1][4]
                         step_identification = path_emg_experiment[-1][3]
 
@@ -645,14 +656,18 @@ class ExportExecution:
                                     'setting_id': emg_data.emg_setting_id,
                                     'emg_data_id': emg_data.id,
                                     'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper()
+                                    'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                           component_step.component_type.upper()
                                 })
 
                 if self.get_input_data('component_list')['per_tms_data']:
                     for path_tms_experiment in create_list_of_trees(group.experimental_protocol, "tms"):
                         tms_component_configuration = get_object_or_404(ComponentConfiguration,
                                                                         pk=path_tms_experiment[-1][0])
-                        component_step = tms_component_configuration.component.component_type
+                        component_step = tms_component_configuration.component
+                        self.per_group_data[group_id]['tms_default_setting_id'] = TMS.objects.filter(
+                            id=component_step.id).values('tms_setting_id')[0]['tms_setting_id']
+
                         step_number = path_tms_experiment[-1][4]
                         step_identification = path_tms_experiment[-1][3]
 
@@ -675,7 +690,8 @@ class ExportExecution:
                                     'setting_id': tms_data.tms_setting_id,
                                     'tms_data_id': tms_data.id,
                                     'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper()
+                                    'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                           component_step.component_type.upper()
                                 })
 
                 if self.get_input_data('component_list')['per_goalkeeper_game_data']:
@@ -683,7 +699,10 @@ class ExportExecution:
                                                                                 "digital_game_phase"):
                         game_component_configuration = get_object_or_404(ComponentConfiguration,
                                                                          pk=path_goalkeeper_game_experiment[-1][0])
-                        component_step = game_component_configuration.component.component_type
+                        component_step = game_component_configuration.component
+                        self.per_group_data[group_id]['context_tree_default_id'] = DigitalGamePhase.objects.filter(
+                            id=component_step.id).values('context_tree_id')[0]['context_tree_id']
+
                         step_number = path_goalkeeper_game_experiment[-1][4]
                         step_identification = path_goalkeeper_game_experiment[-1][3]
                         configuration_tree_list = DataConfigurationTree.objects.filter(
@@ -709,7 +728,8 @@ class ExportExecution:
                                         'step_identification': step_identification,
                                         'goalkeeper_game_data_id': goalkeeper_game_data.id,
                                         'data_configuration_tree_id': data_configuration_tree.id,
-                                        'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper(),
+                                        'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                               component_step.component_type.upper(),
                                         'goalkeeper_game_file': goalkeeper_game_data.file.name
                                     })
 
@@ -1864,18 +1884,19 @@ class ExportExecution:
 
                             self.files_to_zip_list.append([complete_data_filename, export_tms_step_directory])
 
-                            with open(complete_data_filename.encode('utf-8'), 'w', newline='',
-                                      encoding='UTF-8') as outfile:
+                            with open(complete_data_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as \
+                                    outfile:
                                 json.dump(tms_data_description, outfile, indent=4)
 
                             # TMS hotspot position image file
                             tms_data = get_object_or_404(TMSData, pk=component['tms_data_id'])
 
-                            if hasattr(tms_data,'hotspot'):
+                            if hasattr(tms_data, 'hotspot'):
                                 hotspot_image = tms_data.hotspot.hot_spot_map.name
                                 if hotspot_image:
                                     hotspot_map_filename = "%s.png" % "hotspot_map"
-                                    complete_hotspot_filename = path.join(path_per_tms_participant, hotspot_map_filename)
+                                    complete_hotspot_filename = path.join(path_per_tms_participant,
+                                                                          hotspot_map_filename)
                                     path_hot_spot_image = path.join(settings.BASE_DIR, "media") + "/" + hotspot_image
                                     with open(path_hot_spot_image, 'rb') as f:
                                         data = f.read()
@@ -2174,7 +2195,73 @@ class ExportExecution:
                 with open(complete_protocol_image_filename, 'wb') as f:
                     f.write(data)
 
-                self.files_to_zip_list.append([complete_protocol_image_filename, export_directory_experimental_protocol])
+                self.files_to_zip_list.append([complete_protocol_image_filename,
+                                               export_directory_experimental_protocol])
+
+                # save eeg, emg, tms, context tree setting default in Experimental Protocol directory
+                if self.per_group_data[group_id]['eeg_default_setting_id']:
+                    eeg_default_setting_description = get_eeg_setting_description(self.per_group_data[group_id][
+                                                                          'eeg_default_setting_id'])
+                    eeg_setting_description = "%s.json" % "eeg_default_setting"
+                    complete_filename_eeg_setting = path.join(directory_experimental_protocol, eeg_setting_description)
+                    self.files_to_zip_list.append([complete_filename_eeg_setting,
+                                                   export_directory_experimental_protocol])
+
+                    with open(complete_filename_eeg_setting.encode('utf-8'), 'w', newline='',
+                              encoding='UTF-8') as outfile:
+                        json.dump(eeg_default_setting_description, outfile, indent=4)
+
+                if self.per_group_data[group_id]['emg_default_setting_id']:
+                    emg_default_setting_description = get_emg_setting_description(self.per_group_data[group_id][
+                                                                                  'emg_default_setting_id'])
+                    emg_setting_description = "%s.json" % "emg_default_setting"
+                    complete_filename_emg_setting = path.join(directory_experimental_protocol,
+                                                                      emg_setting_description)
+                    self.files_to_zip_list.append([complete_filename_emg_setting,
+                                                   export_directory_experimental_protocol])
+
+                    with open(complete_filename_emg_setting.encode('utf-8'), 'w', newline='',
+                              encoding='UTF-8') as outfile:
+                        json.dump(emg_default_setting_description, outfile, indent=4)
+
+                if self.per_group_data[group_id]['tms_default_setting_id']:
+                    tms_default_setting_description = get_tms_setting_description(self.per_group_data[group_id][
+                                                                                  'tms_default_setting_id'])
+                    tms_setting_description = "%s.json" % "tms_default_setting"
+                    complete_filename_tms_setting = path.join(directory_experimental_protocol,
+                                                                      tms_setting_description)
+                    self.files_to_zip_list.append([complete_filename_tms_setting,
+                                                   export_directory_experimental_protocol])
+
+                    with open(complete_filename_tms_setting.encode('utf-8'), 'w', newline='',
+                              encoding='UTF-8') as outfile:
+                        json.dump(tms_default_setting_description, outfile, indent=4)
+
+                if self.per_group_data[group_id]['context_tree_default_id']:
+                    context_tree_default_description = get_context_tree_description(self.per_group_data[group_id][
+                                                                                   'context_tree_default_id'])
+                    context_tree_description = "%s.json" % "context_tree_default"
+                    complete_filename_context_tree = path.join(directory_experimental_protocol,
+                                                               context_tree_description)
+                    self.files_to_zip_list.append([complete_filename_context_tree,
+                                                   export_directory_experimental_protocol])
+
+                    with open(complete_filename_context_tree.encode('utf-8'), 'w', newline='',
+                              encoding='UTF-8') as outfile:
+                        json.dump(context_tree_default_description, outfile, indent=4)
+
+                    context_tree = get_object_or_404(ContextTree, pk=self.per_group_data[group_id][
+                        'context_tree_default_id'])
+                    context_tree_filename = path.join(settings.BASE_DIR, "media") + "/" + context_tree.setting_file.name
+                    complete_context_tree_filename = path.join(directory_experimental_protocol,
+                                                               context_tree.setting_file.name.split('/')[-1])
+                    with open(context_tree_filename, "rb") as f:
+                        data = f.read()
+                    with open(complete_context_tree_filename, "wb") as f:
+                        f.write(data)
+
+                    self.files_to_zip_list.append([complete_context_tree_filename,
+                                                   export_directory_experimental_protocol])
 
                 # process participant/diagnosis per Participant of each group
                 participant_group_list = []
@@ -2720,3 +2807,28 @@ def get_tms_data_description(tms_data_id):
 
     return tms_description
 
+def get_tms_setting_description(tms_setting_id):
+    tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
+
+    tms_setting_description = {
+        'name': tms_setting.name,
+        'description': tms_setting.description,
+        'tms_device': tms_setting.tms_device_setting.coil_model.name,
+        'tms_device': tms_setting.tms_device_setting.tms_device.manufacturer.name,
+        'tms_device_description': tms_setting.tms_device_setting.tms_device.description,
+        'coil_model_description': tms_setting.tms_device_setting.coil_model.description,
+        'coil_model_design': tms_setting.tms_device_setting.coil_model.coil_design,
+        'pulse_stimulus_type': tms_setting.tms_device_setting.pulse_stimulus_type,
+    }
+
+    return tms_setting_description
+
+def get_context_tree_description(context_tree_id):
+    context_tree = get_object_or_404(ContextTree, pk=context_tree_id)
+    context_tree_description = {
+        'name': context_tree.name,
+        'description': context_tree.description,
+        'setting_text': context_tree.setting_text,
+    }
+
+    return context_tree_description

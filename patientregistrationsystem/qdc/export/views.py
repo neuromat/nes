@@ -1151,13 +1151,13 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
             participants_list = participants_list.filter(pk__in=subject_list)
             request.session['filtered_participant_data'] = [item.id for item in participants_list]
 
-            context = {
-                "total_of_participants": len(participants_list),
-                "participants_list": participants_list
-            }
-            return render(request, "export/show_selected_participants.html", context)
+            # context = {
+            #     "total_of_participants": len(participants_list),
+            #     "participants_list": participants_list
+            # }
+            # return render(request, "export/show_selected_participants.html", context)
 
-        if request.POST['action'] == "next-step-2":
+        # if request.POST['action'] == "next-step-2":
             redirect_url = reverse("export_view", args=())
             return HttpResponseRedirect(redirect_url)
 
