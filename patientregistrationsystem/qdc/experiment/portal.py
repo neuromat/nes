@@ -6,7 +6,8 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.utils import translation
 
-from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree
+from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
+    ComponentConfiguration
 
 
 class RestApiClient(object):
@@ -353,3 +354,50 @@ def get_experiment_status_portal(experiment_id):
             status = portal_experiment['status']
 
     return status
+
+
+def send_step_to_portal(portal_group_id, component_tree, component_configuration_id=None, parent=None):
+
+    component = component_tree['component']
+    component_configuration = None
+
+    if component_configuration_id:
+        component_configuration = ComponentConfiguration.objects.get(pk=component_configuration_id)
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {"id": portal_group_id,
+              'identification':
+                  component.identification + (' (' + component_configuration.name + ')'
+                                              if component_configuration and component_configuration.name else ''),
+              'description': component.description,
+              'duration_value': component.duration_value if component.duration_value else 0,
+              'duration_unit': component.duration_unit,
+              'numeration': component_tree['numeration'] if component_tree['numeration'] != '' else '0',
+              'type': component_tree['component_type'],
+              'parent': parent,
+              'order': component_configuration.order if component_configuration else 0,
+              'number_of_repetitions':
+                  component_configuration.number_of_repetitions if component_configuration else None,
+              'interval_between_repetitions_value':
+                  component_configuration.interval_between_repetitions_value if component_configuration else None,
+              'interval_between_repetitions_unit':
+                  component_configuration.interval_between_repetitions_unit if component_configuration else None,
+              'random_position':
+                  component_configuration.random_position if component_configuration else None}
+
+    action_keys = ['groups', 'step', 'create']
+
+    portal_step = rest.client.action(rest.schema, action_keys, params=params)
+
+    if component_tree['list_of_component_configuration']:
+        for component_configuration in component_tree['list_of_component_configuration']:
+            send_step_to_portal(portal_group_id,
+                                component_configuration['component'],
+                                component_configuration['id'],
+                                portal_step['id'])
+
+    return portal_step

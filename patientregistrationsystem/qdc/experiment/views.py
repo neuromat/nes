@@ -79,7 +79,7 @@ from .portal import get_experiment_status_portal, send_experiment_to_portal, get
     send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
     send_experimental_protocol_to_portal, send_participant_to_portal, send_collaborator_to_portal, \
     send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
-    send_tms_setting_to_portal, send_context_tree_to_portal
+    send_tms_setting_to_portal, send_context_tree_to_portal, send_step_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -815,6 +815,9 @@ def send_all_experiments_to_portal(language_code):
                     tree = get_block_tree(group.experimental_protocol, language_code)
                     textual_description = get_description_from_experimental_protocol_tree(tree)
                     image = get_experimental_protocol_image(group.experimental_protocol, tree)
+
+                    # steps
+                    send_step_to_portal(created_group['id'], tree)
 
                 send_experimental_protocol_to_portal(created_group['id'], textual_description, image=image)
 
