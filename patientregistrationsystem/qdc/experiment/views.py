@@ -5630,20 +5630,6 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
         if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
             ok_opening = True
 
-        # if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
-        #
-        #     # Trying to read the signals
-        #     if eeg_reading and eeg_data.eeg_setting.eeg_amplifier_setting \
-        #             and eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used > 0:
-        #
-        #         try:
-        #             segments = eeg_reading.reading.read_segment(
-        #                 lazy=False, cascade=True,
-        #                 nbchannel=eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used)
-        #             ok_opening = True
-        #         except:
-        #             ok_opening = False
-
     if not ok_opening:
         update_process_requisition(request, process_requisition, 'finished', _('Finished'))
 
@@ -5655,8 +5641,25 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
                         group_id=eeg_data.subject_of_group.group_id,
                         subject_id=eeg_data.subject_of_group.subject_id)
 
-    subject_of_group = eeg_data.subject_of_group
+    errors, path_complete = create_directory(settings.MEDIA_ROOT, "export_nwb")
+    errors, path_complete = create_directory(path_complete, str(request.user.id))
+    file_name = "EEG_" + eeg_data.subject_of_group.subject.patient.code + "_" + str(some_number) + ".nwb"
+    nwb_file_name = path.join(path_complete, file_name)
 
+    nwb_file_name = create_nwb_file(eeg_data, eeg_reading, process_requisition, request, nwb_file_name)
+
+    response = HttpResponse(open(nwb_file_name, "rb").read())
+    response['Content-Type'] = 'application/force-download'
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file_name)
+
+    update_process_requisition(request, process_requisition, 'finished', _('Finished'))
+
+    return response
+
+
+def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filename):
+
+    subject_of_group = eeg_data.subject_of_group
     social_demographic_data = None
     social_demographic_query = SocialDemographicData.objects.filter(patient=subject_of_group.subject.patient)
     if social_demographic_query:
@@ -5667,14 +5670,8 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     # several settings are specified when doing so. these can be supplied within
     #   the NWB constructor or defined in a dict, as in in this example
 
-    errors, path_complete = create_directory(settings.MEDIA_ROOT, "export_nwb")
-    errors, path_complete = create_directory(path_complete, str(request.user.id))
-
-    file_name = "EEG_" + subject_of_group.subject.patient.code + "_" + str(some_number) + ".nwb"
-
     nwb_file_settings = dict()
-    nwb_file_settings["filename"] = path.join(path_complete, file_name)
-
+    nwb_file_settings["filename"] = filename
     # each file should have a descriptive globally unique identifier
     #   that specifies the lab and this experiment session
     # the function nwb.create_identifier() is recommended to use as it takes
@@ -5682,33 +5679,27 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     nwb_file_settings["identifier"] = nwb.create_identifier(
         "Participant: " + subject_of_group.subject.patient.code +
         "; NES experiment: " + clean(eeg_data.subject_of_group.group.experiment.title))
-
     # indicate that it's OK to overwrite exting file
     nwb_file_settings["overwrite"] = True
-
     # specify the start time of the experiment. all times in the NWB file
     #   are relative to experiment start time
     # if the start time is not specified the present time will be used
     # settings["start_time"] = "Sat Jul 04 2015 3:14:16"
     nwb_file_settings["start_time"] = \
         eeg_data.date.strftime("%Y-%m-%d") + (' ' + eeg_data.time.strftime('%H:%M:%S') if eeg_data.time else '')
-
     # provide one or two sentences that describe the experiment and what
     #   data is in the file
-
     nwb_file_settings["description"] = clean(subject_of_group.group.experiment.description)
-
     # create the NWB object. this manages the file
     # print("Creating " + nwb_file_settings["filename"])
     neurodata = nwb.NWB(**nwb_file_settings)
-
     ########################################################################
     # general metadata section
     #
-    update_process_requisition(request, process_requisition, 'reading_metadata', _('Reading metadata'))
+    if request:
+        update_process_requisition(request, process_requisition, 'reading_metadata', _('Reading metadata'))
 
     neurodata.set_metadata(EXPERIMENT_DESCRIPTION, clean(subject_of_group.group.experiment.description))
-
     history_data = eeg_data.history.all().order_by('history_date')
     if history_data:
         experimenter = history_data.last().history_user
@@ -5722,13 +5713,11 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
             experimenter_description += ' - ' + experimenter.email
 
         neurodata.set_metadata(EXPERIMENTER, clean(experimenter_description))
-
     neurodata.set_metadata(SUBJECT_ID, subject_of_group.subject.patient.code)
     neurodata.set_metadata(SEX, clean(subject_of_group.subject.patient.gender.name))
     neurodata.set_metadata(SPECIES, "human")
     neurodata.set_metadata(
         AGE, str((date.today() - subject_of_group.subject.patient.date_birth) // timedelta(days=365.2425)))
-
     if social_demographic_data:
         if social_demographic_data.flesh_tone:
             neurodata.set_metadata(GENOTYPE, clean(social_demographic_data.flesh_tone.name))
@@ -5738,9 +5727,8 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     ########################################################################
     # general devices section
     #
-
-    update_process_requisition(request, process_requisition, 'reading_device_data', _('Reading device data'))
-
+    if request:
+        update_process_requisition(request, process_requisition, 'reading_device_data', _('Reading device data'))
     # Amplifier device setting
     if hasattr(eeg_data.eeg_setting, 'eeg_amplifier_setting'):
         device_identification = clean(eeg_data.eeg_setting.eeg_amplifier_setting.eeg_amplifier.identification)
@@ -5816,11 +5804,11 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
             electrode_map.append([position.coordinate_x, position.coordinate_y, 0])
             neurodata.set_metadata(EXTRA_SHANK_LOCATION(position_name),
                                    clean(_("Position: ") + position_name + "; " +
-                                   _("Coordinates: (") +
-                                   str(position.coordinate_x) + ", " +
-                                   str(position.coordinate_y) + "); " +
-                                   _("EEG electrode localization system: " +
-                                     eeg_electrode_net_system.eeg_electrode_localization_system.name)))
+                                         _("Coordinates: (") +
+                                         str(position.coordinate_x) + ", " +
+                                         str(position.coordinate_y) + "); " +
+                                         _("EEG electrode localization system: " +
+                                           eeg_electrode_net_system.eeg_electrode_localization_system.name)))
             neurodata.set_metadata(EXTRA_SHANK_DEVICE(position_name), device_identification)
 
         neurodata.set_metadata(EXTRA_ELECTRODE_MAP, electrode_map)
@@ -5830,8 +5818,9 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
     # acquisition section
     #
     ########################################################################
-    update_process_requisition(request, process_requisition, 'reading_acquisition_data', _('Reading acquisition data'))
-
+    if request:
+        update_process_requisition(request, process_requisition, 'reading_acquisition_data',
+                                   _('Reading acquisition data'))
     if eeg_reading:
 
         if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
@@ -5863,44 +5852,10 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
             acquisition.set_value("electrode_idx", list(range(number_of_channels)))
             acquisition.finalize()
 
-        # if eeg_reading.file_format.nes_code == "NEO-RawBinarySignalIO":
-        #
-        #     if segments:
-        #         number_of_samples = len(segments.analogsignals[0])
-        #         number_of_channels = eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used
-        #
-        #         sampling_rate = 0
-        #         if eeg_data.eeg_setting.eeg_amplifier_setting and \
-        #                 eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate:
-        #             sampling_rate = eeg_data.eeg_setting.eeg_amplifier_setting.sampling_rate
-        #
-        #         timestamps = np.arange(number_of_samples) * ((1/sampling_rate) if sampling_rate else 0)
-        #         acquisition = neurodata.create_timeseries("ElectricalSeries", "data_collection", "acquisition")
-        #         acquisition.set_comment(clean(eeg_data.description))
-        #
-        #         array_data = np.zeros((number_of_samples, number_of_channels))
-        #
-        #         for index_value in range(number_of_samples):
-        #             for index_channel in range(number_of_channels):
-        #                 array_data[index_value][index_channel] = segments.analogsignals[index_channel][index_value]
-        #
-        #         acquisition.set_data(array_data, resolution=1.2345e-6)
-        #
-        #         acquisition.set_time(timestamps)
-        #         acquisition.set_value("num_samples", number_of_samples)
-        #         acquisition.set_value("electrode_idx", list(range(number_of_channels)))
-        #         acquisition.finalize()
-
     # when all data is entered, close the file
     neurodata.close()
 
-    response = HttpResponse(open(nwb_file_settings["filename"], "rb").read())
-    response['Content-Type'] = 'application/force-download'
-    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file_name)
-
-    update_process_requisition(request, process_requisition, 'finished', _('Finished'))
-
-    return response
+    return neurodata.file_name
 
 
 def get_nwb_eeg_filter_description(eeg_filter_setting):
