@@ -414,21 +414,24 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             #If questionnaire from entrance evaluation was selected
             if export.get_input_data('questionnaires'):
                 # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
-                error_msg = export.process_per_entrance_questionnaire()
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
-                error_msg = export.process_per_participant_per_entrance_questionnaire()
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
+                if export.get_input_data("export_per_questionnaire"):
+                    error_msg = export.process_per_entrance_questionnaire()
+                    if error_msg != "":
+                        messages.error(request, error_msg)
+                        return render(request, template_name)
+                if export.get_input_data("export_per_participant"):
+                    error_msg = export.process_per_participant_per_entrance_questionnaire()
+                    if error_msg != "":
+                        messages.error(request, error_msg)
+                        return render(request, template_name)
 
             # If questionnaire from experiments was selected (Experiment data directory)
             if export.get_input_data('questionnaires_from_experiments'):
-                error_msg = export.process_per_experiment_questionnaire()
-                if error_msg != "":
-                    messages.error(request, error_msg)
-                    return render(request, template_name)
+                if export.get_input_data("export_per_questionnaire"):
+                    error_msg = export.process_per_experiment_questionnaire()
+                    if error_msg != "":
+                        messages.error(request, error_msg)
+                        return render(request, template_name)
             error_msg = export.process_per_participant_per_experiment()
             if error_msg != "":
                 messages.error(request, error_msg)
