@@ -11021,7 +11021,7 @@ def tms_localization_system_view(
 
             try:
                 localization_system.delete()
-                messages.success(request, _('Study removed successfully.'))
+                messages.success(request, _('TMS localization system removed successfully.'))
                 return redirect('tms_localization_system_list')
             except ProtectedError:
                 messages.error(request, _("Error trying to delete localization system."))
