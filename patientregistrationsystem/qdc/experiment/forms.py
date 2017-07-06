@@ -529,7 +529,7 @@ class TMSLocalizationSystemForm(ModelForm):
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'brain_area': Select(attrs={'class': 'form-control'}),
+            'brain_area': Select(attrs={'class': 'form-control', 'required': ""}),
         }
 
 
