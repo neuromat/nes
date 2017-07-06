@@ -531,7 +531,7 @@ class ExportExecution:
                                         'subject_code': subject_code,
                                         'directory_step_name': "Step_" + str(step_number) + "_" +
                                                                component_type.upper(),
-                                        'c': protocol_step_list,
+                                        'protocol_step_list': protocol_step_list,
                                         'response_list': []
                                     }
 
@@ -1447,26 +1447,21 @@ class ExportExecution:
 
                 # save file with data
                 fields_description = []
-                header = []
                 token_list = questionnaire['token_list']
                 for token in token_list:
-                    response_list = token['response_list']
-                    # fields_description = response_list[0]
-                    #
-                    # # step of the experimental protocol information
-                    # protocol_step_list = token['protocol_step_list']
-                    # fields_description.extend(protocol_step_list[1])
-                    # # participant data
-                    # participants_input_data = self.get_input_data("participants")
-                    # participants_list = [token['subject_id']]
-                    # export_rows_participants = self.process_participant_data(participants_input_data, participants_list)
-                    # fields_description.extend(export_rows_participants[1])
-                    # if not header:
-                    #     header = response_list[0]
-                    #     header.extend(protocol_step_list[0])
-                    #     header.extend(export_rows_participants[0])
-                    fields_description = response_list
+                    response_list = token['response_list'][1] + token['protocol_step_list'][1]
+                    # participant data
+                    participants_input_data = self.get_input_data("participants")
+                    participants_list = [token['subject_id']]
+                    export_rows_participants = self.process_participant_data(participants_input_data, participants_list)
+                    response_list.extend(export_rows_participants[1])
 
+                    index = len(fields_description) + 1
+                    fields_description.insert(index, response_list)
+                # insert header
+                header = token['response_list'][0] + token['protocol_step_list'][0] + export_rows_participants[0]
+                fields_description.insert(0, header)
+                # save array list into a file to export
                 save_to_csv(complete_filename, fields_description)
                 self.files_to_zip_list.append([complete_filename, export_directory])
 
@@ -1673,10 +1668,20 @@ class ExportExecution:
                         # path ex. Users/.../Group_xxx/Per_participant/Per_participant/Participant_P123/Step_X_aaa/
                         # P123_Q123_aaa.csv
                         complete_filename = path.join(directory_step_participant, export_filename)
-                        per_participant_rows = token_data['response_list']
-                        # if participant_data selected
-                        # per_participant_rows = self.get_per_participant_data_from_experiment(participant_code,
-                        #                                                                      questionnaire_code)
+                        # participan data
+                        participants_input_data = self.get_input_data("participants")
+                        participants_list = [token_data['subject_id']]
+                        export_rows_participants = self.process_participant_data(participants_input_data,
+                                                                                 participants_list)
+                        # questionnaire response
+                        per_participant_rows = [token_data['response_list'][1] + token_data['protocol_step_list'][1] +
+                                                export_rows_participants[1]]
+
+                        header = token_data['response_list'][0] + token_data['protocol_step_list'][0] + \
+                                 export_rows_participants[0]
+
+                        per_participant_rows.insert(0, header)
+
                         save_to_csv(complete_filename, per_participant_rows)
 
                         self.files_to_zip_list.append([complete_filename, step_participant_export_directory])
