@@ -944,6 +944,12 @@ class ContextTree(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.pk is None:
+            saved_file = self.setting_file
+            self.setting_file = None
+            super(ContextTree, self).save(*args, **kwargs)
+            self.setting_file = saved_file
+
         super(ContextTree, self).save(*args, **kwargs)
         self.experiment.save()
 
