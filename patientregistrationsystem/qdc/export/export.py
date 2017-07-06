@@ -1523,8 +1523,8 @@ class ExportExecution:
 
                 for questionnaire_code in self.get_per_participant_data(participant_code):
 
-                    questionnaire_id = self.get_questionnaire_id_from_code(questionnaire_code)
-                    title = self.get_title_reduced(questionnaire_id=questionnaire_id)
+                    questionnaire_id = int(self.get_questionnaire_id_from_code(questionnaire_code))
+                    title = self.get_title_reduced(questionnaire_id=int(questionnaire_id))
                     export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code), title)
                     header = self.get_header_questionnaire(questionnaire_id)
                     fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
