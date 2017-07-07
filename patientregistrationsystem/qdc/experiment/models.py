@@ -365,6 +365,15 @@ class EEGElectrodeLocalizationSystem(models.Model):
         self.map_image_file.delete()
         super(EEGElectrodeLocalizationSystem, self).delete(*args, **kwargs)
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            saved_file = self.map_image_file
+            self.map_image_file = None
+            super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
+            self.map_image_file = saved_file
+
+        super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
+
 
 class EEGElectrodePosition(models.Model):
     eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
@@ -796,6 +805,19 @@ class TMSLocalizationSystem(models.Model):
     def __str__(self):
         return self.name
 
+    def delete(self, *args, **kwargs):
+        self.tms_localization_system_image.delete()
+        super(TMSLocalizationSystem, self).delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            saved_file = self.tms_localization_system_image
+            self.tms_localization_system_image = None
+            super(TMSLocalizationSystem, self).save(*args, **kwargs)
+            self.tms_localization_system_image = saved_file
+
+        super(TMSLocalizationSystem, self).save(*args, **kwargs)
+
 
 class CoilOrientation(models.Model):
     name = models.CharField(max_length=150)
@@ -942,6 +964,10 @@ class ContextTree(models.Model):
 
     def __str__(self):
         return self.name
+
+    def delete(self, *args, **kwargs):
+        self.setting_file.delete()
+        super(ContextTree, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         if self.pk is None:
