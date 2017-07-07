@@ -79,7 +79,8 @@ from .portal import get_experiment_status_portal, send_experiment_to_portal, get
     send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
     send_experimental_protocol_to_portal, send_participant_to_portal, send_collaborator_to_portal, \
     send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
-    send_tms_setting_to_portal, send_context_tree_to_portal, send_step_to_portal
+    send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
+    send_file_to_portal, send_eeg_data_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -757,59 +758,63 @@ def send_all_experiments_to_portal(language_code):
             for collaborator in schedule_of_sending.experiment.research_project.collaborators.all():
                 send_collaborator_to_portal(created_research_project['id'], collaborator.team_person)
 
-            list_of_eeg_setting = []
-            list_of_emg_setting = []
-            list_of_tms_setting = []
-            list_of_context_tree = []
+            list_of_eeg_setting = {}
+            list_of_emg_setting = {}
+            list_of_tms_setting = {}
+            list_of_context_tree = {}
 
             # sending groups
             for group in schedule_of_sending.experiment.group_set.all():
-                created_group = send_group_to_portal(group)
+                portal_group = send_group_to_portal(group)
 
                 # eeg settings
                 list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
-                for path in list_of_eeg_configuration:
-                    component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
+                for path_tree in list_of_eeg_configuration:
+                    component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
                     eeg_setting = EEG.objects.get(pk=component_id).eeg_setting
                     if eeg_setting.id not in list_of_eeg_setting:
-                        send_eeg_setting_to_portal(eeg_setting)
-                        list_of_eeg_setting.append(eeg_setting.id)
+                        portal_eeg_setting = send_eeg_setting_to_portal(eeg_setting)
+                        list_of_eeg_setting[eeg_setting.id] = portal_eeg_setting['id']
 
                 # emg settings
                 list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
-                for path in list_of_emg_configuration:
-                    component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
+                for path_tree in list_of_emg_configuration:
+                    component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
                     emg_setting = EMG.objects.get(pk=component_id).emg_setting
                     if emg_setting.id not in list_of_emg_setting:
-                        send_emg_setting_to_portal(emg_setting)
-                        list_of_emg_setting.append(emg_setting.id)
+                        portal_emg_setting = send_emg_setting_to_portal(emg_setting)
+                        list_of_emg_setting[emg_setting.id] = portal_emg_setting
 
                 # tms settings
                 list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
-                for path in list_of_tms_configuration:
-                    component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
+                for path_tree in list_of_tms_configuration:
+                    component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
                     tms_setting = TMS.objects.get(pk=component_id).tms_setting
                     if tms_setting.id not in list_of_tms_setting:
-                        send_tms_setting_to_portal(tms_setting)
-                        list_of_tms_setting.append(tms_setting.id)
+                        portal_tms_setting = send_tms_setting_to_portal(tms_setting)
+                        list_of_tms_setting[tms_setting.id] = portal_tms_setting
 
                 # context trees
                 list_of_digital_game_phase_configuration = \
                     create_list_of_trees(group.experimental_protocol, "digital_game_phase")
-                for path in list_of_digital_game_phase_configuration:
-                    component_id = ComponentConfiguration.objects.get(pk=path[-1][0]).component_id
+                for path_tree in list_of_digital_game_phase_configuration:
+                    component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
                     context_tree = DigitalGamePhase.objects.get(pk=component_id).context_tree
                     if context_tree.id not in list_of_context_tree:
-                        send_context_tree_to_portal(context_tree)
-                        list_of_context_tree.append(context_tree.id)
+                        portal_context_tree = send_context_tree_to_portal(context_tree)
+                        list_of_context_tree[context_tree.id] = portal_context_tree
 
                 # participants
+                portal_participant_list = {}
                 for subject_of_group in group.subjectofgroup_set.all():
-                    send_participant_to_portal(created_group['id'], subject_of_group.subject)
+                    portal_participant = send_participant_to_portal(portal_group['id'], subject_of_group.subject)
+                    portal_participant_list[subject_of_group.id] = portal_participant['id']
 
                 # experimental protocol
                 textual_description = None
                 image = None
+                portal_step_list = {}
+                root_step_id = None
 
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
@@ -817,9 +822,39 @@ def send_all_experiments_to_portal(language_code):
                     image = get_experimental_protocol_image(group.experimental_protocol, tree)
 
                     # steps
-                    send_step_to_portal(created_group['id'], tree)
+                    step_list = send_steps_to_portal(portal_group['id'], tree)
+                    root_step_id = step_list['0']['portal_step_id']
 
-                send_experimental_protocol_to_portal(created_group['id'], textual_description, image=image)
+                    list_of_trees = create_list_of_trees(group.experimental_protocol, None)
+                    for tree in list_of_trees:
+                        path_tree = [item[0] for item in tree]
+                        data_configuration_tree_id = list_data_configuration_tree(path_tree[-1], path_tree)
+                        numeration = tree[-1][-1]
+                        step_list[numeration]['data_configuration_tree_id'] = data_configuration_tree_id
+                        if data_configuration_tree_id:
+                            portal_step_list[data_configuration_tree_id] = step_list[numeration]['portal_step_id']
+
+                    # eeg data
+                    eeg_data_files = EEGData.objects.filter(subject_of_group__group=group)
+
+                    for eeg_data_file in eeg_data_files:
+                        portal_file = send_file_to_portal(eeg_data_file.file.name)
+                        portal_eeg_data_file = send_eeg_data_to_portal(
+                            portal_participant_list[eeg_data_file.subject_of_group.id],
+                            portal_step_list[eeg_data_file.data_configuration_tree.id],
+                            portal_file['id'],
+                            list_of_eeg_setting[eeg_data_file.eeg_setting.id],
+                            eeg_data_file)
+
+                    # digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
+                    # if digital_game_phase_data_files:
+
+                send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
+                                                     textual_description=textual_description,
+                                                     image=image,
+                                                     root_step_id=root_step_id)
+
+                # eeg data
 
             # end of sending
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)

@@ -3,11 +3,13 @@ import os
 
 from datetime import date, timedelta
 
+from os import path
+
 from django.conf import settings
 from django.utils import translation
 
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
-    ComponentConfiguration
+    ComponentConfiguration, EEGData
 
 
 class RestApiClient(object):
@@ -138,7 +140,7 @@ def send_group_to_portal(group: Group):
     return portal_group
 
 
-def send_experimental_protocol_to_portal(portal_group_id, textual_description, image):
+def send_experimental_protocol_to_portal(portal_group_id, textual_description, image, root_step_id):
 
     rest = RestApiClient()
 
@@ -149,6 +151,9 @@ def send_experimental_protocol_to_portal(portal_group_id, textual_description, i
 
     if textual_description:
         params["textual_description"] = textual_description
+
+    if root_step_id:
+        params["root_step"] = root_step_id
 
     action_keys = ['groups', 'experimental_protocol', 'create']
 
@@ -178,9 +183,9 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
 
     action_keys = ['experiments', 'eeg_setting', 'create']
 
-    portal_group = rest.client.action(rest.schema, action_keys, params=params)
+    portal_eeg_setting = rest.client.action(rest.schema, action_keys, params=params)
 
-    return portal_group
+    return portal_eeg_setting
 
 
 def send_emg_setting_to_portal(emg_setting: EMGSetting):
@@ -356,7 +361,7 @@ def get_experiment_status_portal(experiment_id):
     return status
 
 
-def send_step_to_portal(portal_group_id, component_tree, component_configuration_id=None, parent=None):
+def send_steps_to_portal(portal_group_id, component_tree, component_configuration_id=None, parent=None):
 
     component = component_tree['component']
     component_configuration = None
@@ -369,6 +374,8 @@ def send_step_to_portal(portal_group_id, component_tree, component_configuration
     if not rest.active:
         return None
 
+    numeration = component_tree['numeration'] if component_tree['numeration'] != '' else '0'
+
     params = {"id": portal_group_id,
               'identification':
                   component.identification + (' (' + component_configuration.name + ')'
@@ -376,7 +383,7 @@ def send_step_to_portal(portal_group_id, component_tree, component_configuration
               'description': component.description,
               'duration_value': component.duration_value if component.duration_value else 0,
               'duration_unit': component.duration_unit,
-              'numeration': component_tree['numeration'] if component_tree['numeration'] != '' else '0',
+              'numeration': numeration,
               'type': component_tree['component_type'],
               'parent': parent,
               'order': component_configuration.order if component_configuration else 0,
@@ -393,11 +400,59 @@ def send_step_to_portal(portal_group_id, component_tree, component_configuration
 
     portal_step = rest.client.action(rest.schema, action_keys, params=params)
 
+    return_dict = {numeration: {'portal_step_id': portal_step['id']}}
+
     if component_tree['list_of_component_configuration']:
         for component_configuration in component_tree['list_of_component_configuration']:
-            send_step_to_portal(portal_group_id,
-                                component_configuration['component'],
-                                component_configuration['id'],
-                                portal_step['id'])
+            sub_step_list = send_steps_to_portal(portal_group_id,
+                                                 component_configuration['component'],
+                                                 component_configuration['id'],
+                                                 portal_step['id'])
+            return_dict.update(sub_step_list)
 
-    return portal_step
+    return return_dict
+
+
+def send_file_to_portal(file):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {}
+
+    action_keys = ['files', 'create']
+
+    with open(path.join(settings.MEDIA_ROOT, file), 'rb') as f:
+        params["file"] = coreapi.utils.File(os.path.basename(file), f)
+        portal_file = rest.client.action(rest.schema, action_keys, params=params, encoding="multipart/form-data")
+
+    return portal_file
+
+
+def send_eeg_data_to_portal(portal_participant_id, portal_step_id, portal_file_id, portal_eeg_setting_id,
+                            eeg_data: EEGData):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        "participant": portal_participant_id,
+        "step": portal_step_id,
+        "file": portal_file_id,
+        "date": eeg_data.date.strftime("%Y-%m-%d"),
+        "time": eeg_data.time.strftime('%H:%M:%S') if eeg_data.time else None,
+        "description": eeg_data.description,
+        "file_format": eeg_data.file_format.name,
+        "eeg_setting": portal_eeg_setting_id,
+        "eeg_cap_size": eeg_data.eeg_cap_size.size if eeg_data.eeg_cap_size else None
+    }
+
+    action_keys = ['eeg_data', 'create']
+
+    portal_eeg_data = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_eeg_data
