@@ -9,7 +9,7 @@ from django.conf import settings
 from django.utils import translation
 
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
-    ComponentConfiguration, EEGData
+    ComponentConfiguration, EEGData, DigitalGamePhaseData
 
 
 class RestApiClient(object):
@@ -84,9 +84,9 @@ def send_experiment_to_portal(experiment: Experiment):
     action_keys = ['experiments', 'create']
 
     if experiment.ethics_committee_project_file:
-        with open(settings.MEDIA_ROOT + '/' + str(experiment.ethics_committee_project_file), 'rb') as f:
-            # params["ethics_committee_project_file"] = \
-            #     coreapi.utils.File(os.path.basename(experiment.ethics_committee_project_file.name), f)
+        with open(path.join(settings.MEDIA_ROOT, experiment.ethics_committee_project_file.name), 'rb') as f:
+            params["ethics_committee_file"] = \
+                coreapi.utils.File(os.path.basename(experiment.ethics_committee_project_file.name), f)
 
             portal_experiment = rest.client.action(rest.schema, action_keys,
                                                    params=params, encoding="multipart/form-data")
@@ -247,7 +247,12 @@ def send_context_tree_to_portal(context_tree: ContextTree):
 
     action_keys = ['experiments', 'context_tree', 'create']
 
-    portal_group = rest.client.action(rest.schema, action_keys, params=params)
+    if context_tree.setting_file:
+        with open(path.join(settings.MEDIA_ROOT, context_tree.setting_file.name), 'rb') as f:
+            params["setting_file"] = coreapi.utils.File(os.path.basename(context_tree.setting_file.name), f)
+            portal_group = rest.client.action(rest.schema, action_keys, params=params, encoding="multipart/form-data")
+    else:
+        portal_group = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_group
 
@@ -376,6 +381,11 @@ def send_steps_to_portal(portal_group_id, component_tree, component_configuratio
 
     numeration = component_tree['numeration'] if component_tree['numeration'] != '' else '0'
 
+    # step type
+    step_type = component_tree['component_type']
+    if component_tree['component_type'] == "digital_game_phase":
+        step_type = "goalkeeper_game"
+
     params = {"id": portal_group_id,
               'identification':
                   component.identification + (' (' + component_configuration.name + ')'
@@ -384,7 +394,7 @@ def send_steps_to_portal(portal_group_id, component_tree, component_configuratio
               'duration_value': component.duration_value if component.duration_value else 0,
               'duration_unit': component.duration_unit,
               'numeration': numeration,
-              'type': component_tree['component_type'],
+              'type': step_type,
               'parent': parent,
               'order': component_configuration.order if component_configuration else 0,
               'number_of_repetitions':
@@ -452,6 +462,32 @@ def send_eeg_data_to_portal(portal_participant_id, portal_step_id, portal_file_i
     }
 
     action_keys = ['eeg_data', 'create']
+
+    portal_eeg_data = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_eeg_data
+
+
+def send_digital_game_phase_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,
+                                           digital_game_phase_data: DigitalGamePhaseData):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        "participant": portal_participant_id,
+        "step": portal_step_id,
+        "file": portal_file_id,
+        "date": digital_game_phase_data.date.strftime("%Y-%m-%d"),
+        "time": digital_game_phase_data.time.strftime('%H:%M:%S') if digital_game_phase_data.time else None,
+        "description": digital_game_phase_data.description,
+        "file_format": digital_game_phase_data.file_format.name,
+        "sequence_used_in_context_tree": digital_game_phase_data.sequence_used_in_context_tree
+    }
+
+    action_keys = ['goalkeeper_game_data', 'create']
 
     portal_eeg_data = rest.client.action(rest.schema, action_keys, params=params)
 
