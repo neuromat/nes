@@ -9,7 +9,7 @@ from django.conf import settings
 from django.utils import translation
 
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
-    ComponentConfiguration, EEGData, DigitalGamePhaseData
+    ComponentConfiguration, EEGData, DigitalGamePhaseData, QuestionnaireResponse
 
 
 class RestApiClient(object):
@@ -488,6 +488,29 @@ def send_digital_game_phase_data_to_portal(portal_participant_id, portal_step_id
     }
 
     action_keys = ['goalkeeper_game_data', 'create']
+
+    portal_eeg_data = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_eeg_data
+
+
+def send_questionnaire_response_to_portal(portal_participant_id, portal_step_id, limesurvey_response,
+                                          questionnaire_response: QuestionnaireResponse):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        "participant": portal_participant_id,
+        "step": portal_step_id,
+        "date": questionnaire_response.date.strftime("%Y-%m-%d"),
+        "time": questionnaire_response.time.strftime('%H:%M:%S') if questionnaire_response.time else None,
+        "limesurvey_response": limesurvey_response
+    }
+
+    action_keys = ['questionnaire_response', 'create']
 
     portal_eeg_data = rest.client.action(rest.schema, action_keys, params=params)
 
