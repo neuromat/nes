@@ -82,7 +82,8 @@ from .portal import get_experiment_status_portal, send_experiment_to_portal, get
     send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
     send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
     send_file_to_portal, send_eeg_data_to_portal, send_digital_game_phase_data_to_portal, \
-    send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal
+    send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal, \
+    send_generic_data_collection_data_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -873,6 +874,7 @@ def send_all_experiments_to_portal(language_code):
                             portal_file['id'],
                             digital_game_phase_data_file)
 
+                    # questionnaire response
                     surveys = Questionnaires()
                     if surveys.session_key:
 
@@ -909,6 +911,18 @@ def send_all_experiments_to_portal(language_code):
                                 questionnaire_response)
 
                         surveys.release_session_key()
+
+                    # generic data collecction data
+                    generic_data_collection_data_files = \
+                        GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+
+                    for generic_data_collection_data_file in generic_data_collection_data_files:
+                        portal_file = send_file_to_portal(generic_data_collection_data_file.file.name)
+                        portal_generic_data_collection_data_file = send_generic_data_collection_data_to_portal(
+                            portal_participant_list[generic_data_collection_data_file.subject_of_group.id],
+                            portal_step_list[generic_data_collection_data_file.data_configuration_tree.id],
+                            portal_file['id'],
+                            generic_data_collection_data_file)
 
                 send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
                                                      textual_description=textual_description,

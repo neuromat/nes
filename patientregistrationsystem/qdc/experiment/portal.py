@@ -9,7 +9,8 @@ from django.conf import settings
 from django.utils import translation
 
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
-    ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, QuestionnaireResponse
+    ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, QuestionnaireResponse, \
+    GenericDataCollectionData
 
 
 class RestApiClient(object):
@@ -605,3 +606,28 @@ def send_questionnaire_response_to_portal(portal_participant_id, portal_step_id,
     portal_eeg_data = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_eeg_data
+
+
+def send_generic_data_collection_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,
+                                                generic_data_collection_data: GenericDataCollectionData):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        "participant": portal_participant_id,
+        "step": portal_step_id,
+        "file": portal_file_id,
+        "date": generic_data_collection_data.date.strftime("%Y-%m-%d"),
+        "time": generic_data_collection_data.time.strftime('%H:%M:%S') if generic_data_collection_data.time else None,
+        "description": generic_data_collection_data.description,
+        "file_format": generic_data_collection_data.file_format.name,
+    }
+
+    action_keys = ['generic_data_collection_data', 'create']
+
+    generic_data_collection_data = rest.client.action(rest.schema, action_keys, params=params)
+
+    return generic_data_collection_data
