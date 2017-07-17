@@ -82,7 +82,7 @@ from .portal import get_experiment_status_portal, send_experiment_to_portal, get
     send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
     send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
     send_file_to_portal, send_eeg_data_to_portal, send_digital_game_phase_data_to_portal, \
-    send_questionnaire_response_to_portal
+    send_questionnaire_response_to_portal, send_emg_data_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -785,7 +785,7 @@ def send_all_experiments_to_portal(language_code):
                     emg_setting = EMG.objects.get(pk=component_id).emg_setting
                     if emg_setting.id not in list_of_emg_setting:
                         portal_emg_setting = send_emg_setting_to_portal(emg_setting)
-                        list_of_emg_setting[emg_setting.id] = portal_emg_setting
+                        list_of_emg_setting[emg_setting.id] = portal_emg_setting['id']
 
                 # tms settings
                 list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
@@ -794,7 +794,7 @@ def send_all_experiments_to_portal(language_code):
                     tms_setting = TMS.objects.get(pk=component_id).tms_setting
                     if tms_setting.id not in list_of_tms_setting:
                         portal_tms_setting = send_tms_setting_to_portal(tms_setting)
-                        list_of_tms_setting[tms_setting.id] = portal_tms_setting
+                        list_of_tms_setting[tms_setting.id] = portal_tms_setting['id']
 
                 # context trees
                 list_of_digital_game_phase_configuration = \
@@ -848,6 +848,18 @@ def send_all_experiments_to_portal(language_code):
                             list_of_eeg_setting[eeg_data_file.eeg_setting.id],
                             eeg_data_file)
 
+                    # emg data
+                    emg_data_files = EMGData.objects.filter(subject_of_group__group=group)
+
+                    for emg_data_file in emg_data_files:
+                        portal_file = send_file_to_portal(emg_data_file.file.name)
+                        portal_emg_data_file = send_emg_data_to_portal(
+                            portal_participant_list[emg_data_file.subject_of_group.id],
+                            portal_step_list[emg_data_file.data_configuration_tree.id],
+                            portal_file['id'],
+                            list_of_emg_setting[emg_data_file.emg_setting.id],
+                            emg_data_file)
+
                     # digital game phase data
                     digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
 
@@ -900,8 +912,6 @@ def send_all_experiments_to_portal(language_code):
                                                      textual_description=textual_description,
                                                      image=image,
                                                      root_step_id=root_step_id)
-
-                # eeg data
 
             # end of sending
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)

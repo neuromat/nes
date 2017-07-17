@@ -9,7 +9,7 @@ from django.conf import settings
 from django.utils import translation
 
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
-    ComponentConfiguration, EEGData, DigitalGamePhaseData, QuestionnaireResponse
+    ComponentConfiguration, EEGData, EMGData, DigitalGamePhaseData, QuestionnaireResponse
 
 
 class RestApiClient(object):
@@ -458,7 +458,8 @@ def send_eeg_data_to_portal(portal_participant_id, portal_step_id, portal_file_i
         "description": eeg_data.description,
         "file_format": eeg_data.file_format.name,
         "eeg_setting": portal_eeg_setting_id,
-        "eeg_cap_size": eeg_data.eeg_cap_size.size if eeg_data.eeg_cap_size else None
+        "eeg_cap_size": eeg_data.eeg_cap_size.size if eeg_data.eeg_cap_size else None,
+        "eeg_setting_reason_for_change": eeg_data.eeg_setting_reason_for_change
     }
 
     action_keys = ['eeg_data', 'create']
@@ -466,6 +467,33 @@ def send_eeg_data_to_portal(portal_participant_id, portal_step_id, portal_file_i
     portal_eeg_data = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_eeg_data
+
+
+def send_emg_data_to_portal(portal_participant_id, portal_step_id, portal_file_id, portal_emg_setting_id,
+                            emg_data: EMGData):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        "participant": portal_participant_id,
+        "step": portal_step_id,
+        "file": portal_file_id,
+        "date": emg_data.date.strftime("%Y-%m-%d"),
+        "time": emg_data.time.strftime('%H:%M:%S') if emg_data.time else None,
+        "description": emg_data.description,
+        "file_format": emg_data.file_format.name,
+        "emg_setting": portal_emg_setting_id,
+        "emg_setting_reason_for_change": emg_data.emg_setting_reason_for_change
+    }
+
+    action_keys = ['emg_data', 'create']
+
+    portal_emg_data = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_emg_data
 
 
 def send_digital_game_phase_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,
