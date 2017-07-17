@@ -9,7 +9,7 @@ from django.conf import settings
 from django.utils import translation
 
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
-    ComponentConfiguration, EEGData, EMGData, DigitalGamePhaseData, QuestionnaireResponse
+    ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, QuestionnaireResponse
 
 
 class RestApiClient(object):
@@ -494,6 +494,68 @@ def send_emg_data_to_portal(portal_participant_id, portal_step_id, portal_file_i
     portal_emg_data = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_emg_data
+
+
+def send_tms_data_to_portal(portal_participant_id, portal_step_id, portal_tms_setting_id,
+                            tms_data: TMSData):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        "participant": portal_participant_id,
+        "step": portal_step_id,
+        "date": tms_data.date.strftime("%Y-%m-%d"),
+        "time": tms_data.time.strftime('%H:%M:%S') if tms_data.time else None,
+        "tms_setting": portal_tms_setting_id,
+        "resting_motor_threshold": tms_data.resting_motor_threshold,
+        "test_pulse_intensity_of_simulation": tms_data.test_pulse_intensity_of_simulation,
+        "second_test_pulse_intensity": tms_data.second_test_pulse_intensity,
+        "interval_between_pulses": tms_data.interval_between_pulses,
+        "interval_between_pulses_unit": tms_data.interval_between_pulses_unit,
+        "time_between_mep_trials": tms_data.time_between_mep_trials,
+        "time_between_mep_trials_unit": tms_data.time_between_mep_trials_unit,
+        "repetitive_pulse_frequency": tms_data.repetitive_pulse_frequency,
+        "coil_orientation": tms_data.coil_orientation.name if tms_data.coil_orientation else None,
+        "coil_orientation_angle": tms_data.coil_orientation_angle,
+        "direction_of_induced_current":
+            tms_data.direction_of_induced_current.name if tms_data.direction_of_induced_current else None,
+        "description": tms_data.description,
+        "hotspot_name": tms_data.hotspot.name,
+        "coordinate_x": tms_data.hotspot.coordinate_x,
+        "coordinate_y": tms_data.hotspot.coordinate_y,
+        "localization_system_name": tms_data.hotspot.tms_localization_system.name,
+        "localization_system_description": tms_data.hotspot.tms_localization_system.description,
+        "brain_area_name": tms_data.hotspot.tms_localization_system.brain_area.name,
+        "brain_area_description": tms_data.hotspot.tms_localization_system.brain_area.description,
+        "brain_area_system_name": tms_data.hotspot.tms_localization_system.brain_area.brain_area_system.name,
+        "brain_area_system_description":
+            tms_data.hotspot.tms_localization_system.brain_area.brain_area_system.description
+    }
+
+    if tms_data.hotspot and tms_data.hotspot.hot_spot_map:
+        hotspot_map = open(path.join(settings.MEDIA_ROOT, tms_data.hotspot.hot_spot_map.name), 'rb')
+        params["hot_spot_map"] =\
+            coreapi.utils.File(
+                os.path.basename(tms_data.hotspot.hot_spot_map.name),
+                hotspot_map)
+
+    if tms_data.hotspot and tms_data.hotspot.tms_localization_system.tms_localization_system_image:
+        localization_system_image = \
+            open(path.join(settings.MEDIA_ROOT,
+                           tms_data.hotspot.tms_localization_system.tms_localization_system_image.name), 'rb')
+        params["localization_system_image"] = \
+            coreapi.utils.File(
+                os.path.basename(tms_data.hotspot.tms_localization_system.tms_localization_system_image.name),
+                localization_system_image)
+
+    action_keys = ['tms_data', 'create']
+
+    portal_tms_data = rest.client.action(rest.schema, action_keys, params=params, encoding="multipart/form-data")
+
+    return portal_tms_data
 
 
 def send_digital_game_phase_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,

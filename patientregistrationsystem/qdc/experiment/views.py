@@ -82,7 +82,7 @@ from .portal import get_experiment_status_portal, send_experiment_to_portal, get
     send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
     send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
     send_file_to_portal, send_eeg_data_to_portal, send_digital_game_phase_data_to_portal, \
-    send_questionnaire_response_to_portal, send_emg_data_to_portal
+    send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -741,14 +741,6 @@ def send_all_experiments_to_portal(language_code):
     for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
         if send_experiment_to_portal(schedule_of_sending.experiment):
 
-            schedule_of_sending.status = "sent"
-            schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
-            schedule_of_sending.save()
-
-            experiment = schedule_of_sending.experiment
-            experiment.last_sending = schedule_of_sending.sending_datetime
-            experiment.save()
-
             # sending research project
             created_research_project = send_research_project_to_portal(schedule_of_sending.experiment)
 
@@ -860,6 +852,16 @@ def send_all_experiments_to_portal(language_code):
                             list_of_emg_setting[emg_data_file.emg_setting.id],
                             emg_data_file)
 
+                    # tms data
+                    tms_data_files = TMSData.objects.filter(subject_of_group__group=group)
+
+                    for tms_data_file in tms_data_files:
+                        portal_tms_data_file = send_tms_data_to_portal(
+                            portal_participant_list[tms_data_file.subject_of_group.id],
+                            portal_step_list[tms_data_file.data_configuration_tree.id],
+                            list_of_tms_setting[tms_data_file.tms_setting.id],
+                            tms_data_file)
+
                     # digital game phase data
                     digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
 
@@ -915,6 +917,16 @@ def send_all_experiments_to_portal(language_code):
 
             # end of sending
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)
+
+            # update the schedule to 'sent'
+            schedule_of_sending.status = "sent"
+            schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
+            schedule_of_sending.save()
+
+            # update the last sending date
+            experiment = schedule_of_sending.experiment
+            experiment.last_sending = schedule_of_sending.sending_datetime
+            experiment.save()
 
 
 @login_required
