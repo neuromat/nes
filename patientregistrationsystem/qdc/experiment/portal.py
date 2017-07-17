@@ -10,7 +10,7 @@ from django.utils import translation
 
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
     ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, QuestionnaireResponse, \
-    GenericDataCollectionData
+    GenericDataCollectionData, AdditionalData
 
 
 class RestApiClient(object):
@@ -608,6 +608,31 @@ def send_questionnaire_response_to_portal(portal_participant_id, portal_step_id,
     return portal_eeg_data
 
 
+def send_additional_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,
+                                   additional_data: AdditionalData):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        "participant": portal_participant_id,
+        "step": portal_step_id,
+        "file": portal_file_id,
+        "date": additional_data.date.strftime("%Y-%m-%d"),
+        "time": additional_data.time.strftime('%H:%M:%S') if additional_data.time else None,
+        "description": additional_data.description,
+        "file_format": additional_data.file_format.name,
+    }
+
+    action_keys = ['additional_data', 'create']
+
+    portal_additional_data = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_additional_data
+
+
 def send_generic_data_collection_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,
                                                 generic_data_collection_data: GenericDataCollectionData):
 
@@ -628,6 +653,6 @@ def send_generic_data_collection_data_to_portal(portal_participant_id, portal_st
 
     action_keys = ['generic_data_collection_data', 'create']
 
-    generic_data_collection_data = rest.client.action(rest.schema, action_keys, params=params)
+    portal_generic_data_collection_data = rest.client.action(rest.schema, action_keys, params=params)
 
-    return generic_data_collection_data
+    return portal_generic_data_collection_data
