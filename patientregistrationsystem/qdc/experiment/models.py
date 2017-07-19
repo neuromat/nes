@@ -1346,6 +1346,30 @@ class GoalkeeperGameLog(models.Model):
         db_table = '"public"."results"'
 
 
+class GoalkeeperGameConfig(models.Model):
+    id_config = models.IntegerField(name="idconfig", primary_key=True)
+    experiment_group = models.CharField(name="experimentgroup", max_length=50)
+    phase = models.IntegerField(name="phase")
+    player_alias = models.CharField(name="playeralias", max_length=20)
+    sequence_executed = models.TextField(name="sequexecuted")
+    date = models.CharField(name="gamedata", max_length=6)
+    time = models.CharField(name="gametime", max_length=6)
+    result_id = models.IntegerField(name="idresult")
+
+    class Meta:
+        managed = False
+        db_table = '"public"."gameconfig"'
+
+
+class GoalkeeperGameResults(models.Model):
+    id = models.IntegerField(name="id", primary_key=True)
+    file_content = models.TextField(name='filecontent')
+
+    class Meta:
+        managed = False
+        db_table = '"public"."results"'
+
+
 class ScheduleOfSending(models.Model):
     SCHEDULE_STATUS_OPTIONS = (
         ("scheduled", _("scheduled")),
