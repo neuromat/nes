@@ -79,6 +79,8 @@ def send_experiment_to_portal(experiment: Experiment):
               "title": experiment.title,
               "description": experiment.description,
               "data_acquisition_done": str(experiment.data_acquisition_is_concluded),
+              "project_url": experiment.source_code_url,
+              "ethics_committee_url": experiment.ethics_committee_project_url
               }
 
     action_keys = ['experiments', 'create']
