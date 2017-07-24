@@ -6559,59 +6559,6 @@ def load_group_goalkeeper_game_data(request, group_id):
         experimental_group_code = \
             (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + group.code
 
-        # data structure
-        # game_group_data = {}
-
-        # Filtering the candidate registers from 'Goalkeeper repository'
-        # candidate_registers_from_goalkeeper_repository = \
-        #     GoalkeeperGameLog.objects.using('goalkeeper').filter(filecontent__icontains=experimental_group_code)
-
-        # # each register is a 'goalkeeper game data file'
-        # for register in candidate_registers_from_goalkeeper_repository:
-        #
-        #     lines = register.filecontent.splitlines()
-        #
-        #     if lines:
-        #
-        #         # Example of content:
-        #         #
-        #         # (optional) tree: 0;0;1 | 1;0;0 | 2;1;0
-        #         # (optional) sequExecutada: 10210210
-        #         # experimentGroup, game, playID, phase, gameTime, relaxTime, playerMachine, (...)
-        #         # Araguaia, JG, grupo1 - v1 - ph0, ph0, 42.92149, 0, USP, (...)
-        #
-        #         has_tree_information = (lines[0][:5] == 'tree:')
-        #         sequence_line = 1 if has_tree_information else 0
-        #         sequence_used = lines[sequence_line][15:] if (lines[sequence_line][:14] == 'sequExecutada:') else ''
-        #
-        #         header_line = sequence_line + 1 if sequence_used else sequence_line
-        #
-        #         header = lines[header_line].split(',')
-        #         values = lines[header_line + 1].split(',')
-        #
-        #         # checking if the first element is the experimental group
-        #         if header[0] == 'experimentGroup' and values[0] == experimental_group_code:
-        #
-        #             # getting fields of interest
-        #             if 'playerAlias' in header and \
-        #                             'phase' in header and \
-        #                             'YYMMDD' in header and \
-        #                             'HHMMSS' in header:
-        #
-        #                 player_alias_index = header.index('playerAlias')
-        #                 phase_index = header.index('phase')
-        #                 date_index = header.index('YYMMDD')
-        #                 time_index = header.index('HHMMSS')
-        #
-        #                 if values[player_alias_index] not in game_group_data:
-        #                     game_group_data[values[player_alias_index]] = {}
-        #
-        #                 game_group_data[values[player_alias_index]][values[phase_index]] = {
-        #                     'file_content': register.filecontent,
-        #                     'sequence_used': sequence_used,
-        #                     'date': datetime.strptime(values[date_index], '%y%m%d'),
-        #                     'time': datetime.strptime(values[time_index], '%H%M%S')}
-
         number_of_imported_data = 0
         list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
 
@@ -6631,18 +6578,10 @@ def load_group_goalkeeper_game_data(request, group_id):
                     # for each subject
                     for subject_of_group in group.subjectofgroup_set.all():
 
-                        # goalkeeper_game_configuration = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
-                        #     experimentgroup=experimental_group_code,
-                        #     phase=1,
-                        #     playeralias=subject_of_group.subject.patient.code).order_by('idconfig').last()
-
                         goalkeeper_game_configuration = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
                             experimentgroup=experimental_group_code,
-                            phase=1,
-                            playeralias="josi").order_by('idconfig').last()
-
-                        # if subject_of_group.subject.patient.code in game_group_data:
-                        #     if data_configuration_tree.code in game_group_data[subject_of_group.subject.patient.code]:
+                            phase=data_configuration_tree.code,
+                            playeralias=subject_of_group.subject.patient.code).order_by('idconfig').last()
 
                         if goalkeeper_game_configuration:
 
@@ -6651,28 +6590,19 @@ def load_group_goalkeeper_game_data(request, group_id):
 
                             if result:
 
-                                # game_data_collection = \
-                                #     game_group_data[subject_of_group.subject.patient.code][data_configuration_tree.code]
-
-
                                 game_date = datetime.strptime(goalkeeper_game_configuration.gamedata, '%y%m%d')
                                 game_time = datetime.strptime(goalkeeper_game_configuration.gametime, '%H%M%S')
-
 
                                 if not DigitalGamePhaseData.objects.filter(
                                         subject_of_group=subject_of_group,
                                         data_configuration_tree=data_configuration_tree,
                                         date=game_date, time=game_time):
-                                        # date = game_data_collection['date'],
-                                        # time = game_data_collection['time']):
 
                                     # saving data
                                     digital_game_phase_data = DigitalGamePhaseData()
                                     digital_game_phase_data.subject_of_group = subject_of_group
                                     digital_game_phase_data.data_configuration_tree = data_configuration_tree
 
-                                    # digital_game_phase_data.date = game_data_collection['date']
-                                    # digital_game_phase_data.time = game_data_collection['time']
                                     digital_game_phase_data.date = game_date
                                     digital_game_phase_data.time = game_time
 
@@ -6684,15 +6614,12 @@ def load_group_goalkeeper_game_data(request, group_id):
                                     # Data file
                                     file_name = "%s_%s.txt" % (experimental_group_code,
                                                                subject_of_group.subject.patient.code)
-                                    # file_content = game_data_collection['file_content']
                                     file_content = result.filecontent
 
                                     digital_game_phase_data.file.save(
                                         file_name,
                                         ContentFile(file_content))
 
-                                    # digital_game_phase_data.sequence_used_in_context_tree = \
-                                    #     game_data_collection['sequence_used']
                                     digital_game_phase_data.sequence_used_in_context_tree = \
                                         goalkeeper_game_configuration.sequexecuted
 

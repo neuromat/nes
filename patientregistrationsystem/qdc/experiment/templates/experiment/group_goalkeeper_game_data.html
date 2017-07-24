@@ -173,7 +173,7 @@
                                                             <div class="row">
                                                                 <div class="form-group">
                                                                     <label>{% trans "Phase code" %}</label>
-                                                                    <input class="form-control" id="phase_code" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" value="{% if digital_game_phase_collection.data_configuration_tree.code %}{{ digital_game_phase_collection.data_configuration_tree.code }}{% endif %}">
+                                                                    <input type="number" class="form-control" id="phase_code" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" value="{% if digital_game_phase_collection.data_configuration_tree.code %}{{ digital_game_phase_collection.data_configuration_tree.code }}{% endif %}">
                                                                 </div>
                                                             </div>
                                                         </div>

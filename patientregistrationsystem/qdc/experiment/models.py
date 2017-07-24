@@ -1087,7 +1087,7 @@ class SubjectOfGroup(models.Model):
 class DataConfigurationTree(models.Model):
     component_configuration = models.ForeignKey(ComponentConfiguration, on_delete=models.PROTECT)
     parent = models.ForeignKey('self', null=True, related_name='children')
-    code = models.CharField(null=True, blank=True, max_length=150)
+    code = models.IntegerField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         super(DataConfigurationTree, self).save(*args, **kwargs)
