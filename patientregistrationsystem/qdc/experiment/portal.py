@@ -10,7 +10,13 @@ from django.utils import translation
 
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
     ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, QuestionnaireResponse, \
-    GenericDataCollectionData, AdditionalData
+    GenericDataCollectionData, AdditionalData, EEG, EMG, TMS, Instruction, GenericDataCollection, Stimulus, \
+    DigitalGamePhase, Block, Questionnaire
+
+# from export.export import ExportExecution
+
+from survey.abc_search_engine import Questionnaires
+from survey.views import get_questionnaire_language
 
 
 class RestApiClient(object):
@@ -375,7 +381,10 @@ def get_experiment_status_portal(experiment_id):
     return status
 
 
-def send_steps_to_portal(portal_group_id, component_tree, component_configuration_id=None, parent=None):
+def send_steps_to_portal(portal_group_id, component_tree,
+                         list_of_eeg_setting, list_of_emg_setting, list_of_tms_setting, list_of_context_tree,
+                         language_code,
+                         component_configuration_id=None, parent=None,):
 
     component = component_tree['component']
     component_configuration = None
@@ -415,9 +424,88 @@ def send_steps_to_portal(portal_group_id, component_tree, component_configuratio
               'random_position':
                   component_configuration.random_position if component_configuration else None}
 
-    action_keys = ['groups', 'step', 'create']
+    api_step_method = 'step'
 
-    portal_step = rest.client.action(rest.schema, action_keys, params=params)
+    if step_type == "eeg":
+        api_step_method = 'eeg_step'
+        step_specialization = EEG.objects.get(pk=component.id)
+        params['eeg_setting'] = list_of_eeg_setting[step_specialization.eeg_setting_id]
+
+    elif step_type == "emg":
+        api_step_method = 'emg_step'
+        step_specialization = EMG.objects.get(pk=component.id)
+        params['emg_setting'] = list_of_emg_setting[step_specialization.emg_setting_id]
+
+    elif step_type == "tms":
+        api_step_method = 'tms_step'
+        step_specialization = TMS.objects.get(pk=component.id)
+        params['tms_setting'] = list_of_tms_setting[step_specialization.tms_setting_id]
+
+    elif step_type == "instruction":
+        api_step_method = 'instruction_step'
+        step_specialization = Instruction.objects.get(pk=component.id)
+        params['text'] = step_specialization.text
+
+    elif step_type == "pause":
+        api_step_method = 'pause_step'
+
+    elif step_type == "task":
+        api_step_method = 'task_step'
+
+    elif step_type == "task_experiment":
+        api_step_method = 'task_for_experimenter_step'
+
+    elif step_type == "generic_data_collection":
+        api_step_method = 'generic_data_collection_step'
+        step_specialization = GenericDataCollection.objects.get(pk=component.id)
+        params['information_type_name'] = step_specialization.information_type.name
+        params['information_type_description'] = step_specialization.information_type.description
+
+    elif step_type == "stimulus":
+        api_step_method = 'stimulus_step'
+        step_specialization = Stimulus.objects.get(pk=component.id)
+        params['stimulus_type_name'] = step_specialization.stimulus_type.name
+        if step_specialization.media_file:
+            media_file = open(path.join(settings.MEDIA_ROOT, step_specialization.media_file.name), 'rb')
+            params["media_file"] = \
+                coreapi.utils.File(
+                    os.path.basename(step_specialization.media_file.name),
+                    media_file)
+
+    elif step_type == "goalkeeper_game":
+        api_step_method = 'goalkeeper_game_step'
+        step_specialization = DigitalGamePhase.objects.get(pk=component.id)
+        params['software_name'] = step_specialization.software_version.software.name
+        params['software_description'] = step_specialization.software_version.software.description
+        params['software_version'] = step_specialization.software_version.name
+        params['context_tree'] = list_of_context_tree[step_specialization.context_tree_id]
+
+    elif step_type == "block":
+        api_step_method = 'set_of_step'
+        step_specialization = Block.objects.get(pk=component.id)
+        params['number_of_mandatory_steps'] = step_specialization.number_of_mandatory_components
+        params['is_sequential'] = True if step_specialization.type == Block.SEQUENCE else False
+
+    elif step_type == "questionnaire":
+        api_step_method = 'questionnaire_step'
+
+        surveys = Questionnaires()
+        step_specialization = Questionnaire.objects.get(pk=component.id)
+        language = get_questionnaire_language(surveys, step_specialization.survey.lime_survey_id, language_code)
+        params['survey_name'] = surveys.get_survey_title(step_specialization.survey.lime_survey_id, language)
+        params['survey_metadata'] = "teste"
+
+        # export = ExportExecution(0, 0)
+
+        # fields = export.get_questionnaire_experiment_fields(step_specialization.survey.id)
+        # questionnaire_fields = export.create_questionnaire_explanation_fields_file(
+        #     str(step_specialization.survey.id), language, surveys, fields, False)
+
+        surveys.release_session_key()
+
+    action_keys = ['groups', api_step_method, 'create']
+
+    portal_step = rest.client.action(rest.schema, action_keys, params=params, encoding="multipart/form-data")
 
     return_dict = {numeration: {'portal_step_id': portal_step['id']}}
 
@@ -425,6 +513,11 @@ def send_steps_to_portal(portal_group_id, component_tree, component_configuratio
         for component_configuration in component_tree['list_of_component_configuration']:
             sub_step_list = send_steps_to_portal(portal_group_id,
                                                  component_configuration['component'],
+                                                 list_of_eeg_setting,
+                                                 list_of_emg_setting,
+                                                 list_of_tms_setting,
+                                                 list_of_context_tree,
+                                                 language_code,
                                                  component_configuration['id'],
                                                  portal_step['id'])
             return_dict.update(sub_step_list)

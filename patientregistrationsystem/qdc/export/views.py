@@ -829,6 +829,7 @@ def get_component_with_data_and_metadata(group, component_list):
 
     return component_list
 
+
 def update_questionnaire_list(questionnaire_list, heading_type, current_language="pt-BR"):
 
     questionnaire_list_updated = []

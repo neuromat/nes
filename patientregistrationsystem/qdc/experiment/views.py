@@ -798,7 +798,7 @@ def send_all_experiments_to_portal(language_code):
                     context_tree = DigitalGamePhase.objects.get(pk=component_id).context_tree
                     if context_tree.id not in list_of_context_tree:
                         portal_context_tree = send_context_tree_to_portal(context_tree)
-                        list_of_context_tree[context_tree.id] = portal_context_tree
+                        list_of_context_tree[context_tree.id] = portal_context_tree['id']
 
                 # participants
                 portal_participant_list = {}
@@ -818,7 +818,10 @@ def send_all_experiments_to_portal(language_code):
                     image = get_experimental_protocol_image(group.experimental_protocol, tree)
 
                     # steps
-                    step_list = send_steps_to_portal(portal_group['id'], tree)
+                    step_list = send_steps_to_portal(portal_group['id'], tree,
+                                                     list_of_eeg_setting, list_of_emg_setting,
+                                                     list_of_tms_setting, list_of_context_tree,
+                                                     language_code)
                     root_step_id = step_list['0']['portal_step_id']
 
                     list_of_trees = create_list_of_trees(group.experimental_protocol, None)
