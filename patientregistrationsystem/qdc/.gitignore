@@ -5,3 +5,4 @@ media
 qdc/settings_local.py
 *.DS_Store
 qdc/wsgi.py
+db.sqlite3
