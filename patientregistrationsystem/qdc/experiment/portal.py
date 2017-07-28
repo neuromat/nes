@@ -24,8 +24,11 @@ class RestApiClient(object):
         self.client = coreapi.Client(auth=auth)
 
         try:
-            self.schema = self.client.get(settings.PORTAL_API['URL'] + ':' +
-                                          settings.PORTAL_API['PORT'] + '/api/schema/')
+            url = settings.PORTAL_API['URL'] + \
+                  (':' + settings.PORTAL_API['PORT'] if settings.PORTAL_API['PORT'] else '') + \
+                  '/api/schema/'
+
+            self.schema = self.client.get(url)
             self.active = True
         except:
             self.active = False
@@ -109,10 +112,13 @@ def send_experiment_end_message_to_portal(experiment: Experiment):
 
     # general params
     params = {"experiment_nes_id": str(experiment.id),
-              "status": "to_be_analysed"
+              "nes_id": str(experiment.id),
+              "status": "to_be_analysed",
+              "title": experiment.title,
+              "description": experiment.description
               }
 
-    action_keys = ['experiments', 'partial_update']
+    action_keys = ['experiments', 'update']
 
     portal_experiment = rest.client.action(rest.schema, action_keys, params=params)
 
