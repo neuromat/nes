@@ -1006,8 +1006,8 @@ class ExportExecution:
 
         return reduced_title
 
-    def create_questionnaire_explanation_fields_file(self, questionnaire_id, language, questionnaire_lime_survey,
-                                                     fields, entrance_questionnaire):
+    def create_questionnaire_explanation_fields(self, questionnaire_id, language, questionnaire_lime_survey,
+                                                fields, entrance_questionnaire):
 
         """
         :param questionnaire_id:
@@ -1213,9 +1213,9 @@ class ExportExecution:
 
                 # create questionnaire fields file ("fields.csv") - metadata directory
                 fields = self.get_questionnaire_fields(questionnaire_id, entrance_questionnaire)
-                questionnaire_fields = self.create_questionnaire_explanation_fields_file(questionnaire_id, language,
-                                                                                         questionnaire_lime_survey,
-                                                                                         fields, entrance_questionnaire)
+                questionnaire_fields = self.create_questionnaire_explanation_fields(questionnaire_id, language,
+                                                                                    questionnaire_lime_survey,
+                                                                                    fields, entrance_questionnaire)
 
                 export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_fields"], str(questionnaire_code))
 
@@ -1314,7 +1314,7 @@ class ExportExecution:
                 # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
                 fields = self.get_questionnaire_fields(questionnaire_id, entrance_questionnaire)
 
-                questionnaire_fields = self.create_questionnaire_explanation_fields_file(
+                questionnaire_fields = self.create_questionnaire_explanation_fields(
                     questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
                 export_filename = "%s_%s.csv" % (questionnaire["prefix_filename_fields"], str(questionnaire_code))
@@ -1471,7 +1471,7 @@ class ExportExecution:
                 language = questionnaire_data['language']
                 # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
                 fields = self.get_questionnaire_experiment_fields(questionnaire_id)
-                questionnaire_fields = self.create_questionnaire_explanation_fields_file(
+                questionnaire_fields = self.create_questionnaire_explanation_fields(
                     str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
                 # Fields_Q123.csv
                 export_filename = "%s_%s.csv" % (questionnaire_prefix_filename, str(questionnaire_code))
