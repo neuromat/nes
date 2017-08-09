@@ -191,20 +191,20 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
         return None
 
     # amplifier
-    amplifier = eeg_setting.eeg_amplifier_setting.eeg_amplifier
-    amplifier_dict = {
-        "manufacturer_name": amplifier.manufacturer.name,
-        "identification": amplifier.identification,
-        "description": amplifier.description,
-        "gain": amplifier.gain,
-        "number_of_channels": amplifier.number_of_channels,
-        "common_mode_rejection_ratio": amplifier.common_mode_rejection_ratio,
-        "input_impedance": amplifier.input_impedance,
-        "input_impedance_unit": amplifier.input_impedance_unit,
-        "amplifier_detection_type":
-            amplifier.amplifier_detection_type.name if amplifier.amplifier_detection_type else None,
-        "tethering_system_name": amplifier.tethering_system.name if amplifier.tethering_system else None
-    }
+    # amplifier = eeg_setting.eeg_amplifier_setting.eeg_amplifier
+    # amplifier_dict = {
+    #     "manufacturer_name": amplifier.manufacturer.name,
+    #     "identification": amplifier.identification,
+    #     "description": amplifier.description,
+    #     "gain": amplifier.gain,
+    #     "number_of_channels": amplifier.number_of_channels,
+    #     "common_mode_rejection_ratio": amplifier.common_mode_rejection_ratio,
+    #     "input_impedance": amplifier.input_impedance,
+    #     "input_impedance_unit": amplifier.input_impedance_unit,
+    #     "amplifier_detection_type":
+    #         amplifier.amplifier_detection_type.name if amplifier.amplifier_detection_type else None,
+    #     "tethering_system_name": amplifier.tethering_system.name if amplifier.tethering_system else None
+    # }
 
     # general params
     params = {"experiment_nes_id": str(eeg_setting.experiment_id),
