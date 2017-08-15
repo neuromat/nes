@@ -11,7 +11,10 @@ from django.utils import translation
 from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
     ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, QuestionnaireResponse, \
     GenericDataCollectionData, AdditionalData, EEG, EMG, TMS, Instruction, GenericDataCollection, Stimulus, \
-    DigitalGamePhase, Block, Questionnaire
+    DigitalGamePhase, Block, Questionnaire, Amplifier, \
+    EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeNet, \
+    ElectrodeModel, SurfaceElectrode, NeedleElectrode, IntramuscularElectrode, EEGElectrodeLocalizationSystem, \
+    EEGElectrodePositionSetting
 
 # from export.export import ExportExecution
 
@@ -190,39 +193,294 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
     if not rest.active:
         return None
 
-    # amplifier
-    # amplifier = eeg_setting.eeg_amplifier_setting.eeg_amplifier
-    # amplifier_dict = {
-    #     "manufacturer_name": amplifier.manufacturer.name,
-    #     "identification": amplifier.identification,
-    #     "description": amplifier.description,
-    #     "gain": amplifier.gain,
-    #     "number_of_channels": amplifier.number_of_channels,
-    #     "common_mode_rejection_ratio": amplifier.common_mode_rejection_ratio,
-    #     "input_impedance": amplifier.input_impedance,
-    #     "input_impedance_unit": amplifier.input_impedance_unit,
-    #     "amplifier_detection_type":
-    #         amplifier.amplifier_detection_type.name if amplifier.amplifier_detection_type else None,
-    #     "tethering_system_name": amplifier.tethering_system.name if amplifier.tethering_system else None
-    # }
-
     # general params
     params = {"experiment_nes_id": str(eeg_setting.experiment_id),
               "name": eeg_setting.name,
-              "description": eeg_setting.description,
-              # "eeg_amplifier_setting": {
-              #     "eeg_amplifier": amplifier_dict,
-              #     "gain": eeg_setting.eeg_amplifier_setting.gain,
-              #     "sampling_rate": eeg_setting.eeg_amplifier_setting.sampling_rate,
-              #     "number_of_channels_used": eeg_setting.eeg_amplifier_setting.number_of_channels_used
-              # }
-              }
+              "description": eeg_setting.description}
 
     action_keys = ['experiments', 'eeg_setting', 'create']
 
     portal_eeg_setting = rest.client.action(rest.schema, action_keys, params=params)
 
+    # amplifier setting
+    if eeg_setting.eeg_amplifier_setting:
+        portal_amplifier = \
+            send_amplifier_to_portal(eeg_setting.experiment_id,
+                                     eeg_setting.eeg_amplifier_setting.eeg_amplifier)
+        eeg_amplifier_setting = \
+            send_eeg_amplifier_setting_to_portal(portal_eeg_setting['id'],
+                                                 portal_amplifier['id'],
+                                                 eeg_setting.eeg_amplifier_setting)
+
+    # solution setting
+    if eeg_setting.eeg_solution_setting:
+        eeg_solution_setting = \
+            send_eeg_solution_setting_to_portal(portal_eeg_setting['id'], eeg_setting.eeg_solution_setting)
+
+    # filter setting
+    if eeg_setting.eeg_filter_setting:
+        eeg_filter_setting = \
+            send_eeg_filter_setting_to_portal(portal_eeg_setting['id'], eeg_setting.eeg_filter_setting)
+
+    # electrode layout setting
+    if eeg_setting.eeg_electrode_layout_setting:
+        # electrode net
+        eeg_electrode_net_setting = \
+            send_eeg_electrode_net_setting_to_portal(
+                portal_eeg_setting['id'],
+                eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_net)
+
+        electrode_models = {}
+        localization_system = \
+            eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system
+
+        # electrode localization system
+        localization_system_portal = \
+            send_eeg_electrode_localization_system_to_portal(portal_eeg_setting['id'], localization_system)
+
+        for position in eeg_setting.eeg_electrode_layout_setting.positions_setting.all():
+
+            if position.used:
+
+                # electrode model
+                if position.electrode_model.id not in electrode_models:
+                    electrode_model_portal = \
+                        send_electrode_model_to_portal(eeg_setting.experiment_id, position.electrode_model)
+                    electrode_models[position.electrode_model.id] = electrode_model_portal
+                else:
+                    electrode_model_portal = electrode_models[position.electrode_model.id]
+
+                # electrode position
+                electrode_position_portal = send_eeg_electrode_position_to_portal(
+                    portal_eeg_setting['id'], electrode_model_portal['id'] , position)
+
     return portal_eeg_setting
+
+
+def send_amplifier_to_portal(experiment_nes_id, amplifier: Amplifier):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(experiment_nes_id),
+              'manufacturer_name': amplifier.manufacturer.name,
+              'equipment_type': amplifier.equipment_type,
+              'identification': amplifier.identification,
+              'description': amplifier.description,
+              'serial_number': amplifier.serial_number,
+              'gain': amplifier.gain,
+              'number_of_channels': amplifier.number_of_channels,
+              'common_mode_rejection_ratio': amplifier.common_mode_rejection_ratio,
+              'input_impedance': amplifier.input_impedance,
+              'input_impedance_unit': amplifier.input_impedance_unit,
+              'amplifier_detection_type_name':
+                  amplifier.amplifier_detection_type.name if amplifier.amplifier_detection_type else None,
+              'tethering_system_name':
+                  amplifier.tethering_system.name if amplifier.tethering_system else None}
+
+    action_keys = ['experiments', 'amplifier', 'create']
+
+    portal_amplifier = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_amplifier
+
+
+def send_eeg_amplifier_setting_to_portal(portal_eeg_setting_id,
+                                         portal_amplifier_id,
+                                         eeg_amplifier_setting: EEGAmplifierSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_eeg_setting_id,
+              'eeg_amplifier': portal_amplifier_id,
+              'gain': eeg_amplifier_setting.gain,
+              'sampling_rate': eeg_amplifier_setting.sampling_rate,
+              'number_of_channels_used': eeg_amplifier_setting.number_of_channels_used}
+
+    action_keys = ['eeg_setting', 'eeg_amplifier_setting', 'create']
+
+    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_participant
+
+
+def send_eeg_solution_setting_to_portal(portal_eeg_setting_id,
+                                        eeg_solution_setting: EEGSolutionSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_eeg_setting_id,
+              'manufacturer_name': eeg_solution_setting.eeg_solution.manufacturer.name,
+              'name': eeg_solution_setting.eeg_solution.name,
+              'components': eeg_solution_setting.eeg_solution.components}
+
+    action_keys = ['eeg_setting', 'eeg_solution_setting', 'create']
+
+    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_participant
+
+
+def send_eeg_filter_setting_to_portal(portal_eeg_setting_id, eeg_filter_setting: EEGFilterSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_eeg_setting_id,
+              'eeg_filter_type_name': eeg_filter_setting.eeg_filter_type.name,
+              'eeg_filter_type_description': eeg_filter_setting.eeg_filter_type.description,
+              'high_pass': eeg_filter_setting.high_pass,
+              'low_pass': eeg_filter_setting.low_pass,
+              'high_band_pass': eeg_filter_setting.high_band_pass,
+              'low_band_pass': eeg_filter_setting.low_band_pass,
+              'high_notch': eeg_filter_setting.high_notch,
+              'low_notch': eeg_filter_setting.low_notch,
+              'order': eeg_filter_setting.order}
+
+    action_keys = ['eeg_setting', 'eeg_filter_setting', 'create']
+
+    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_participant
+
+
+def send_eeg_electrode_net_setting_to_portal(portal_eeg_setting_id, eeg_electrode_net: EEGElectrodeNet):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_eeg_setting_id,
+              'manufacturer_name': eeg_electrode_net.manufacturer.name,
+              'equipment_type': eeg_electrode_net.equipment_type,
+              'identification': eeg_electrode_net.identification,
+              'description': eeg_electrode_net.description,
+              'serial_number': eeg_electrode_net.serial_number}
+
+    action_keys = ['eeg_setting', 'eeg_electrode_net_setting', 'create']
+
+    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_participant
+
+
+def send_eeg_electrode_localization_system_to_portal(
+        portal_eeg_setting_id,
+        eeg_electrode_localization_system: EEGElectrodeLocalizationSystem):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_eeg_setting_id,
+              'name': eeg_electrode_localization_system.name,
+              'description': eeg_electrode_localization_system.description}
+
+    if eeg_electrode_localization_system.map_image_file:
+        map_image_file = open(path.join(settings.MEDIA_ROOT, eeg_electrode_localization_system.map_image_file.name), 'rb')
+        params["map_image_file"] = \
+            coreapi.utils.File(
+                os.path.basename(eeg_electrode_localization_system.map_image_file.name),
+                map_image_file)
+
+    action_keys = ['eeg_setting', 'eeg_electrode_localization_system', 'create']
+
+    portal_participant = rest.client.action(rest.schema, action_keys, params=params, encoding="multipart/form-data")
+
+    return portal_participant
+
+
+def send_eeg_electrode_position_to_portal(
+        portal_eeg_setting_id, portal_electrode_model_id,
+        eeg_electrode_position_setting: EEGElectrodePositionSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_eeg_setting_id,
+              'electrode_model': portal_electrode_model_id,
+              'name': eeg_electrode_position_setting.eeg_electrode_position.name,
+              'coordinate_x': eeg_electrode_position_setting.eeg_electrode_position.coordinate_x,
+              'coordinate_y': eeg_electrode_position_setting.eeg_electrode_position.coordinate_y,
+              'channel_index': eeg_electrode_position_setting.channel_index}
+
+    action_keys = ['eeg_setting', 'eeg_electrode_position', 'create']
+
+    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_participant
+
+
+def send_electrode_model_to_portal(experiment_nes_id, electrode_model: ElectrodeModel):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(experiment_nes_id),
+
+              'name': electrode_model.name,
+              'description': electrode_model.description,
+              'material': electrode_model.material.name,
+              'usability': electrode_model.usability,
+              'impedance': electrode_model.impedance,
+              'impedance_unit': electrode_model.impedance_unit,
+              'inter_electrode_distance': electrode_model.inter_electrode_distance,
+              'inter_electrode_distance_unit': electrode_model.inter_electrode_distance_unit,
+              'electrode_configuration_name':
+                  electrode_model.electrode_configuration.name if electrode_model.electrode_configuration else None,
+              'electrode_type': electrode_model.electrode_type,
+              }
+
+    if electrode_model.electrode_type == "surface":
+        action_keys = ['experiments', 'surface_electrode', 'create']
+        electrode_instance = SurfaceElectrode.objects.filter(id=electrode_model.id)
+        if electrode_instance:
+            electrode_instance = electrode_instance[0]
+            params['conduction_type'] = electrode_instance.conduction_type
+            params['electrode_mode'] = electrode_instance.electrode_mode
+            params['electrode_shape_name'] = electrode_instance.electrode_shape.name
+            if electrode_instance.electrodesurfacemeasure_set:
+                params['electrode_shape_measure_value'] = electrode_instance.electrodesurfacemeasure_set.first().value
+                params['electrode_shape_measure_unit'] = \
+                    electrode_instance.electrodesurfacemeasure_set.first().measure_unit.name
+
+    elif electrode_model.electrode_type == "needle":
+        action_keys = ['experiments', 'needle_electrode', 'create']
+        electrode_instance = NeedleElectrode.objects.get(pk=electrode_model.id)
+        params['size'] = electrode_instance.size
+        params['size_unit'] = electrode_instance.size_unit
+        params['number_of_conductive_contact_points_at_the_tip'] = \
+            electrode_instance.number_of_conductive_contact_points_at_the_tip
+        params['size_of_conductive_contact_points_at_the_tip'] = \
+            electrode_instance.size_of_conductive_contact_points_at_the_tip
+
+    else:
+        action_keys = ['experiments', 'intramuscular_electrode', 'create']
+        electrode_instance = IntramuscularElectrode.objects.get(pk=electrode_model.id)
+        params['strand'] = electrode_instance.strand
+        params['insulation_material_name'] = electrode_instance.insulation_material.name
+        params['insulation_material_description'] = electrode_instance.insulation_material.description
+        params['length_of_exposed_tip'] = electrode_instance.length_of_exposed_tip
+
+    portal_instance = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_instance
 
 
 def send_emg_setting_to_portal(emg_setting: EMGSetting):
