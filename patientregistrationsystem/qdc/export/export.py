@@ -2234,16 +2234,18 @@ class ExportExecution:
 
                     context_tree = get_object_or_404(ContextTree, pk=self.per_group_data[group_id][
                         'context_tree_default_id'])
-                    context_tree_filename = path.join(settings.BASE_DIR, "media") + "/" + context_tree.setting_file.name
-                    complete_context_tree_filename = path.join(directory_experimental_protocol,
-                                                               context_tree.setting_file.name.split('/')[-1])
-                    with open(context_tree_filename, "rb") as f:
-                        data = f.read()
-                    with open(complete_context_tree_filename, "wb") as f:
-                        f.write(data)
 
-                    self.files_to_zip_list.append([complete_context_tree_filename,
-                                                   export_directory_experimental_protocol])
+                    if context_tree.setting_file.name:
+                        context_tree_filename = path.join(settings.BASE_DIR, "media") + "/" + context_tree.setting_file.name
+                        complete_context_tree_filename = path.join(directory_experimental_protocol,
+                                                                   context_tree.setting_file.name.split('/')[-1])
+                        with open(context_tree_filename, "rb") as f:
+                            data = f.read()
+                        with open(complete_context_tree_filename, "wb") as f:
+                            f.write(data)
+
+                        self.files_to_zip_list.append([complete_context_tree_filename,
+                                                       export_directory_experimental_protocol])
 
                 # process participant/diagnosis per Participant of each group
                 participant_group_list = []
