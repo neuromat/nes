@@ -922,11 +922,14 @@ def send_all_experiments_to_portal(language_code):
 
                     for additional_data_file in additional_data_files:
                         portal_file = send_file_to_portal(additional_data_file.file.name)
-                        portal_additional_data_file = send_additional_data_to_portal(
-                            portal_participant_list[additional_data_file.subject_of_group.id],
-                            portal_step_list[additional_data_file.data_configuration_tree.id],
-                            portal_file['id'],
-                            additional_data_file)
+
+                        # TODO: send additional_file associated to the whole experiment
+                        if additional_data_file.data_configuration_tree:
+                            portal_additional_data_file = send_additional_data_to_portal(
+                                portal_participant_list[additional_data_file.subject_of_group.id],
+                                portal_step_list[additional_data_file.data_configuration_tree.id],
+                                portal_file['id'],
+                                additional_data_file)
 
                     # generic data collecction data
                     generic_data_collection_data_files = \
