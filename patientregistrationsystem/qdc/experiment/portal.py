@@ -203,7 +203,7 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
     portal_eeg_setting = rest.client.action(rest.schema, action_keys, params=params)
 
     # amplifier setting
-    if eeg_setting.eeg_amplifier_setting:
+    if hasattr(eeg_setting, "eeg_amplifier_setting:"):
         portal_amplifier = \
             send_amplifier_to_portal(eeg_setting.experiment_id,
                                      eeg_setting.eeg_amplifier_setting.eeg_amplifier)
@@ -213,17 +213,17 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
                                                  eeg_setting.eeg_amplifier_setting)
 
     # solution setting
-    if eeg_setting.eeg_solution_setting:
+    if hasattr(eeg_setting, 'eeg_solution_setting'):
         eeg_solution_setting = \
             send_eeg_solution_setting_to_portal(portal_eeg_setting['id'], eeg_setting.eeg_solution_setting)
 
     # filter setting
-    if eeg_setting.eeg_filter_setting:
+    if hasattr(eeg_setting, "eeg_filter_setting"):
         eeg_filter_setting = \
             send_eeg_filter_setting_to_portal(portal_eeg_setting['id'], eeg_setting.eeg_filter_setting)
 
     # electrode layout setting
-    if eeg_setting.eeg_electrode_layout_setting:
+    if hasattr(eeg_setting, "eeg_electrode_layout_setting"):
         # electrode net
         eeg_electrode_net_setting = \
             send_eeg_electrode_net_setting_to_portal(
