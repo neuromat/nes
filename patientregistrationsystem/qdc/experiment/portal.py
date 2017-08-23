@@ -14,7 +14,7 @@ from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EM
     DigitalGamePhase, Block, Questionnaire, Amplifier, \
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeNet, \
     ElectrodeModel, SurfaceElectrode, NeedleElectrode, IntramuscularElectrode, EEGElectrodeLocalizationSystem, \
-    EEGElectrodePositionSetting
+    EEGElectrodePositionSetting, TMSDevice, CoilModel, TMSDeviceSetting
 
 # from export.export import ExportExecution
 
@@ -506,6 +506,70 @@ def send_emg_setting_to_portal(emg_setting: EMGSetting):
     return portal_group
 
 
+def send_tms_device_to_portal(experiment_nes_id, tms_device: TMSDevice):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(experiment_nes_id),
+              'manufacturer_name': tms_device.manufacturer.name,
+              'equipment_type': tms_device.equipment_type,
+              'identification': tms_device.identification,
+              'description': tms_device.description,
+              'serial_number': tms_device.serial_number,
+              'pulse_type': tms_device.pulse_type}
+
+    action_keys = ['experiments', 'tms_device', 'create']
+
+    portal_tms_device = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_tms_device
+
+
+def send_coil_model_to_portal(experiment_nes_id, coil_model: CoilModel):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(experiment_nes_id),
+              'name': coil_model.name,
+              'description': coil_model.description,
+              'coil_shape_name': coil_model.coil_shape.name,
+              'material_name': coil_model.material.name,
+              'material_description': coil_model.material.description,
+              'coil_design': coil_model.coil_design}
+
+    action_keys = ['experiments', 'coil_model', 'create']
+
+    portal_coil_model = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_coil_model
+
+
+def send_tms_device_setting_to_portal(portal_tms_setting_id, portal_tms_device_id, portal_coil_model_id,
+                                      tms_device_setting: TMSDeviceSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_tms_setting_id,
+              'tms_device': portal_tms_device_id,
+              'pulse_stimulus_type': tms_device_setting.pulse_stimulus_type,
+              'coil_model': portal_coil_model_id}
+
+    action_keys = ['tms_setting', 'tms_device_setting', 'create']
+
+    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_participant
+
+
 def send_tms_setting_to_portal(tms_setting: TMSSetting):
 
     rest = RestApiClient()
@@ -521,9 +585,27 @@ def send_tms_setting_to_portal(tms_setting: TMSSetting):
 
     action_keys = ['experiments', 'tms_setting', 'create']
 
-    portal_group = rest.client.action(rest.schema, action_keys, params=params)
+    portal_tms_setting = rest.client.action(rest.schema, action_keys, params=params)
 
-    return portal_group
+    # tms device setting
+    if hasattr(tms_setting, "tms_device_setting"):
+
+        # tms device
+        portal_tms_device = \
+            send_tms_device_to_portal(tms_setting.experiment_id,
+                                      tms_setting.tms_device_setting.tms_device)
+
+        # coil model
+        portal_coil_model = send_coil_model_to_portal(tms_setting.experiment_id,
+                                                      tms_setting.tms_device_setting.coil_model)
+
+        # tms device setting
+        portal_tms_device_setting = \
+            send_tms_device_setting_to_portal(portal_tms_setting['id'],
+                                              portal_tms_device['id'], portal_coil_model['id'],
+                                              tms_setting.tms_device_setting)
+
+    return portal_tms_setting
 
 
 def send_context_tree_to_portal(context_tree: ContextTree):
