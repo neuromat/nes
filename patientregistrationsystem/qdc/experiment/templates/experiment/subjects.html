@@ -62,7 +62,7 @@
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <input id="group_id" value="{{ group.id }}" style="display: none;">
-                                <label>{% trans "Insert participant" %}</label>
+                                <label>{% trans "Add participant" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
@@ -74,6 +74,13 @@
                                 <ul id="search-results-subjects" style="list-style: none;">
                                 </ul>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row" align="right">
+                        <div class="col-md-12">
+                            <a href="/experiment/group/{{ group.id }}/search_subjects">
+                                {% trans "Advanced search" %}
+                            </a>
                         </div>
                     </div>
                 </div>

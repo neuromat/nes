@@ -259,8 +259,9 @@
                                 </div>
                                 {% if perms.experiment.add_subject and can_change %}
 {#                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">#}
-                                    <a href="/experiment/group/{{ group.id }}/search_subjects" class="btn btn-primary">
-                                        {% trans "Register" %}
+                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn
+                                    btn-primary">
+                                        {% trans "Add participant/s" %}
                                     </a>
                                 {% endif %}
                             {% endif %}

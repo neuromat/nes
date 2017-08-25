@@ -4634,10 +4634,14 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
     age_interval_form = AgeIntervalForm(None)
 
     if request.method == "POST":
-
+        patient_list = []
         if request.POST['action'] == "next-step-1":
+            subject_group_list = SubjectOfGroup.objects.filter(group=group)
+            for subject in subject_group_list:
+                patient_list.append(subject.subject.patient.id)
 
             participants_list = Patient.objects.filter(removed=False)
+
             # selecting participants according the study/experiment/group
             if 'study_selected_list' in request.session:
                 subject_list = []
@@ -4659,20 +4663,28 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                 if "gender_checkbox" in request.POST and 'gender' in request.POST:
                     gender_list = request.POST.getlist('gender')
                     participants_list = participants_list.filter(gender__id__in=gender_list)
+                    # participants_list = [item for item in participants_list if str(item.gender.id) in gender_list]
 
                 if "marital_status_checkbox" in request.POST and 'marital_status' in request.POST:
                     marital_status_list = request.POST.getlist('marital_status')
                     participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
+                    # participants_list = [item for item in participants_list if str(item.marital_status_id) in
+                    #                      marital_status_list]
 
                 if "age_checkbox" in request.POST and 'max_age' in request.POST and 'min_age' in request.POST:
                     date_birth_min = datetime.now() - relativedelta(years=int(request.POST['max_age']))
                     date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
+                    # participants_list = [item for item in participants_list if datetime.combine(item.date_birth, datetime.min.time()) in range(date_birth_min, date_birth_max)]
+                    # for participant in participants_list:
+                    #     date_birth = datetime.combine(participant.date_birth, datetime.min.time())
+                    #     # if date_birth in range():
 
                 if "location_checkbox" in request.POST:
                     if 'selected_locals' in request.POST:
                         locations_selected = request.POST.getlist('selected_locals')
                         participants_list = participants_list.filter(city__in=locations_selected)
+                        # participants_list = [item for item in participants_list if item.city in locations_selected]
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
@@ -4680,6 +4692,14 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                     participants_list = participants_list.filter(
                         medicalrecorddata__diagnosis__classification_of_diseases__in=classification_of_diseases_list). \
                         distinct()
+                    # participants_list = [item for item in participants_list if
+                    #                      item.medicalrecorddata__diagnosis__classification_of_diseases in
+                    #                      classification_of_diseases_list]
+
+            # participants that not is in group
+            filtered_participants_list = [item for item in participants_list if item.id not in patient_list]
+            participants_list = []
+            participants_list = filtered_participants_list
 
             # putting the list of participants in the user session
             request.session['filtered_participant_data'] = [item.id for item in participants_list]
