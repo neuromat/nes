@@ -10,7 +10,7 @@ class Institution (models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
 
     def __str__(self):
-        return '%s' % (self.name)
+        return '%s' % self.name
 
 
 class Person(models.Model):
