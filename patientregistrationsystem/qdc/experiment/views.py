@@ -5622,7 +5622,8 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
                                         EEGElectrodePositionCollectionStatus(
                                             eeg_data=eeg_data_to_update,
                                             eeg_electrode_position_setting=position_setting,
-                                            worked=position_setting.used
+                                            worked=position_setting.used,
+                                            channel_index=position_setting.channel_index
                                         ).save()
 
                         # Validate known eeg file formats
