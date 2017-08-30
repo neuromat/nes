@@ -72,6 +72,7 @@ class ResearchProject(models.Model):
         permissions = (
             ("view_researchproject", "Can view research project"),
             ("change_researchproject_from_others", "Can change research project created by others"),
+            ("change_researchproject_owner", "Can change research project owner"),
         )
 
 

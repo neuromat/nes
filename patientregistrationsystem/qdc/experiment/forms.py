@@ -299,7 +299,7 @@ class ResearchProjectForm(ModelForm):
 
     class Meta:
         model = ResearchProject
-        fields = ['start_date', 'end_date', 'title', 'description']
+        fields = ['start_date', 'end_date', 'title', 'description', 'owner']
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -314,6 +314,9 @@ class ResearchProjectForm(ModelForm):
                                            'required': "", 'data-error': _("Initial date must be filled.")},),
             'end_date': DateInput(format=_("%m/%d/%Y"),
                                   attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')}),
+
+            'owner': Select(attrs={'class': 'form-control', 'required': "",}),
+
         }
 
     def clean(self):

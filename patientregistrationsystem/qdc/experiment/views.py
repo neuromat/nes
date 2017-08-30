@@ -86,6 +86,8 @@ from .portal import get_experiment_status_portal, send_experiment_to_portal, get
     send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal, \
     send_generic_data_collection_data_to_portal, send_additional_data_to_portal
 
+from team.models import Person
+
 from configuration.models import LocalInstitution
 
 from export.directory_utils import create_directory
@@ -260,6 +262,7 @@ def get_owner_full_name(research_project):
     owners_full_name = ""
     if research_project.owner:
         owners_full_name = research_project.owner.get_full_name()
+        # owners_full_name = Person.objects.all()
     return owners_full_name
 
 
