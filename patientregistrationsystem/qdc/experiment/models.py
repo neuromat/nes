@@ -318,7 +318,7 @@ class NeedleElectrode(ElectrodeModel):
         ("cm", _("centimeter(s)")),
     )
     size = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
-    size_unit = models.CharField(max_length=10, choices=SIZE_UNIT)
+    size_unit = models.CharField(max_length=10, choices=SIZE_UNIT, null=True, blank=True)
     number_of_conductive_contact_points_at_the_tip = models.IntegerField(null=True, blank=True,
                                                                          validators=[MinValueValidator(0)])
     size_of_conductive_contact_points_at_the_tip = models.FloatField(null=True, blank=True,

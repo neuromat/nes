@@ -14,7 +14,10 @@ from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EM
     DigitalGamePhase, Block, Questionnaire, Amplifier, \
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeNet, \
     ElectrodeModel, SurfaceElectrode, NeedleElectrode, IntramuscularElectrode, EEGElectrodeLocalizationSystem, \
-    EEGElectrodePositionSetting, TMSDevice, CoilModel, TMSDeviceSetting
+    EEGElectrodePositionSetting, TMSDevice, CoilModel, TMSDeviceSetting, \
+    EMGDigitalFilterSetting, ADConverter, EMGADConverterSetting, EMGElectrodeSetting, \
+    EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, EMGAnalogFilterSetting, \
+    EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, EMGElectrodePlacementSetting
 
 # from export.export import ExportExecution
 
@@ -203,7 +206,7 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
     portal_eeg_setting = rest.client.action(rest.schema, action_keys, params=params)
 
     # amplifier setting
-    if hasattr(eeg_setting, "eeg_amplifier_setting:"):
+    if hasattr(eeg_setting, "eeg_amplifier_setting"):
         portal_amplifier = \
             send_amplifier_to_portal(eeg_setting.experiment_id,
                                      eeg_setting.eeg_amplifier_setting.eeg_amplifier)
@@ -304,9 +307,9 @@ def send_eeg_amplifier_setting_to_portal(portal_eeg_setting_id,
 
     action_keys = ['eeg_setting', 'eeg_amplifier_setting', 'create']
 
-    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
+    portal_eeg_amplifier_setting = rest.client.action(rest.schema, action_keys, params=params)
 
-    return portal_participant
+    return portal_eeg_amplifier_setting
 
 
 def send_eeg_solution_setting_to_portal(portal_eeg_setting_id,
@@ -474,13 +477,325 @@ def send_electrode_model_to_portal(experiment_nes_id, electrode_model: Electrode
         action_keys = ['experiments', 'intramuscular_electrode', 'create']
         electrode_instance = IntramuscularElectrode.objects.get(pk=electrode_model.id)
         params['strand'] = electrode_instance.strand
-        params['insulation_material_name'] = electrode_instance.insulation_material.name
-        params['insulation_material_description'] = electrode_instance.insulation_material.description
+        params['insulation_material_name'] = \
+            electrode_instance.insulation_material.name if electrode_instance.insulation_material else None
+        params['insulation_material_description'] = \
+            electrode_instance.insulation_material.description if electrode_instance.insulation_material else None
         params['length_of_exposed_tip'] = electrode_instance.length_of_exposed_tip
 
     portal_instance = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_instance
+
+
+def send_emg_digital_filter_setting_to_portal(portal_emg_setting_id,
+                                              emg_digital_filter_setting: EMGDigitalFilterSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_emg_setting_id,
+              'filter_type_name': emg_digital_filter_setting.filter_type.name,
+              'filter_type_description': emg_digital_filter_setting.filter_type.description,
+              'low_pass': emg_digital_filter_setting.low_pass,
+              'high_pass': emg_digital_filter_setting.high_pass,
+              'low_band_pass': emg_digital_filter_setting.low_band_pass,
+              'high_band_pass': emg_digital_filter_setting.high_band_pass,
+              'low_notch': emg_digital_filter_setting.low_notch,
+              'high_notch': emg_digital_filter_setting.high_notch,
+              'order': emg_digital_filter_setting.order}
+
+    action_keys = ['emg_setting', 'emg_digital_filter_setting', 'create']
+
+    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_participant
+
+
+def send_ad_converter_to_portal(experiment_nes_id, ad_converter: ADConverter):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(experiment_nes_id),
+              'manufacturer_name': ad_converter.manufacturer.name,
+              'equipment_type': ad_converter.equipment_type,
+              'identification': ad_converter.identification,
+              'description': ad_converter.description,
+              'serial_number': ad_converter.serial_number,
+              'signal_to_noise_rate': ad_converter.signal_to_noise_rate,
+              'sampling_rate': ad_converter.sampling_rate,
+              'resolution': ad_converter.resolution}
+
+    action_keys = ['experiments', 'ad_converter', 'create']
+
+    portal_ad_converter = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_ad_converter
+
+
+def send_emg_ad_converter_setting_to_portal(portal_emg_setting_id,
+                                            portal_ad_converter_id,
+                                            emg_ad_converter_setting: EMGADConverterSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_emg_setting_id,
+              'ad_converter': portal_ad_converter_id,
+              'sampling_rate': emg_ad_converter_setting.sampling_rate}
+
+    action_keys = ['emg_setting', 'emg_ad_converter_setting', 'create']
+
+    portal_ad_converter_setting = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_ad_converter_setting
+
+
+def send_emg_electrode_setting_to_portal(portal_emg_setting_id,
+                                         portal_electrode_model_id,
+                                         emg_electrode_setting: EMGElectrodeSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_emg_setting_id,
+              'electrode_model': portal_electrode_model_id}
+
+    action_keys = ['emg_setting', 'emg_electrode_setting', 'create']
+
+    portal_electrode_setting = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_electrode_setting
+
+
+def send_emg_preamplifier_setting_to_portal(portal_emg_electrode_setting_id,
+                                            portal_preamplifier_id,
+                                            emg_preamplifier_setting: EMGPreamplifierSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_emg_electrode_setting_id,
+              'amplifier': portal_preamplifier_id, 'gain': emg_preamplifier_setting.gain}
+
+    action_keys = ['emg_electrode_setting', 'emg_preamplifier_setting', 'create']
+
+    portal_preamplifier_setting = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_preamplifier_setting
+
+
+def send_emg_amplifier_setting_to_portal(portal_emg_electrode_setting_id,
+                                         portal_amplifier_id,
+                                         emg_amplifier_setting: EMGAmplifierSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_emg_electrode_setting_id,
+              'amplifier': portal_amplifier_id, 'gain': emg_amplifier_setting.gain}
+
+    action_keys = ['emg_electrode_setting', 'emg_amplifier_setting', 'create']
+
+    portal_amplifier_setting = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_amplifier_setting
+
+
+def send_emg_preamplifier_filter_setting_to_portal(portal_emg_electrode_setting_id,
+                                                   emg_preamplifier_filter_setting: EMGPreamplifierFilterSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_emg_electrode_setting_id,
+              'low_pass': emg_preamplifier_filter_setting.low_pass,
+              'high_pass': emg_preamplifier_filter_setting.high_pass,
+              'low_band_pass': emg_preamplifier_filter_setting.low_band_pass,
+              'low_notch': emg_preamplifier_filter_setting.low_notch,
+              'high_band_pass': emg_preamplifier_filter_setting.high_band_pass,
+              'high_notch': emg_preamplifier_filter_setting.high_notch,
+              'order': emg_preamplifier_filter_setting.order}
+
+    action_keys = ['emg_electrode_setting', 'emg_preamplifier_filter_setting', 'create']
+
+    portal_preamplifier_filter_setting = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_preamplifier_filter_setting
+
+
+def send_emg_analog_filter_setting_to_portal(portal_emg_electrode_setting_id,
+                                             emg_analog_filter_setting: EMGAnalogFilterSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_emg_electrode_setting_id,
+              'low_pass': emg_analog_filter_setting.low_pass,
+              'high_pass': emg_analog_filter_setting.high_pass,
+              'low_band_pass': emg_analog_filter_setting.low_band_pass,
+              'low_notch': emg_analog_filter_setting.low_notch,
+              'high_band_pass': emg_analog_filter_setting.high_band_pass,
+              'high_notch': emg_analog_filter_setting.high_notch,
+              'order': emg_analog_filter_setting.order}
+
+    action_keys = ['emg_electrode_setting', 'emg_analog_filter_setting', 'create']
+
+    portal_preamplifier_filter_setting = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_preamplifier_filter_setting
+
+
+def send_emg_surface_placement_to_portal(experiment_nes_id, emg_surface_placement: EMGSurfacePlacement):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(experiment_nes_id),
+
+              'standardization_system_name': emg_surface_placement.standardization_system.name,
+              'standardization_system_description': emg_surface_placement.standardization_system.description,
+              'muscle_anatomy_origin': emg_surface_placement.muscle_subdivision.anatomy_origin,
+              'muscle_anatomy_insertion': emg_surface_placement.muscle_subdivision.anatomy_insertion,
+              'muscle_anatomy_function': emg_surface_placement.muscle_subdivision.anatomy_function,
+              'location': emg_surface_placement.location,
+              'placement_type': emg_surface_placement.placement_type,
+
+              'start_posture': emg_surface_placement.start_posture,
+              'orientation': emg_surface_placement.orientation,
+              'fixation_on_the_skin': emg_surface_placement.fixation_on_the_skin,
+              'reference_electrode': emg_surface_placement.reference_electrode,
+              'clinical_test': emg_surface_placement.clinical_test}
+
+    if emg_surface_placement.photo:
+        photo_file = open(path.join(settings.MEDIA_ROOT, emg_surface_placement.photo.name), 'rb')
+        params["photo"] = \
+            coreapi.utils.File(
+                os.path.basename(emg_surface_placement.photo.name),
+                photo_file)
+
+    action_keys = ['experiments', 'emg_surface_placement', 'create']
+
+    portal_surface_placement = rest.client.action(rest.schema, action_keys,
+                                                  params=params, encoding="multipart/form-data")
+
+    return portal_surface_placement
+
+
+def send_emg_intramuscular_placement_to_portal(experiment_nes_id,
+                                               emg_intramuscular_placement: EMGIntramuscularPlacement):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(experiment_nes_id),
+
+              'standardization_system_name': emg_intramuscular_placement.standardization_system.name,
+              'standardization_system_description': emg_intramuscular_placement.standardization_system.description,
+              'muscle_anatomy_origin': emg_intramuscular_placement.muscle_subdivision.anatomy_origin,
+              'muscle_anatomy_insertion': emg_intramuscular_placement.muscle_subdivision.anatomy_insertion,
+              'muscle_anatomy_function': emg_intramuscular_placement.muscle_subdivision.anatomy_function,
+              'location': emg_intramuscular_placement.location,
+              'placement_type': emg_intramuscular_placement.placement_type,
+
+              'method_of_insertion': emg_intramuscular_placement.method_of_insertion,
+              'depth_of_insertion': emg_intramuscular_placement.depth_of_insertion}
+
+    if emg_intramuscular_placement.photo:
+        photo_file = open(path.join(settings.MEDIA_ROOT, emg_intramuscular_placement.photo.name), 'rb')
+        params["photo"] = \
+            coreapi.utils.File(
+                os.path.basename(emg_intramuscular_placement.photo.name),
+                photo_file)
+
+    action_keys = ['experiments', 'emg_intramuscular_placement', 'create']
+
+    portal_intramuscular_placement = rest.client.action(rest.schema, action_keys,
+                                                  params=params, encoding="multipart/form-data")
+
+    return portal_intramuscular_placement
+
+
+def send_emg_needle_placement_to_portal(experiment_nes_id,
+                                        emg_needle_placement: EMGNeedlePlacement):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(experiment_nes_id),
+
+              'standardization_system_name': emg_needle_placement.standardization_system.name,
+              'standardization_system_description': emg_needle_placement.standardization_system.description,
+              'muscle_anatomy_origin': emg_needle_placement.muscle_subdivision.anatomy_origin,
+              'muscle_anatomy_insertion': emg_needle_placement.muscle_subdivision.anatomy_insertion,
+              'muscle_anatomy_function': emg_needle_placement.muscle_subdivision.anatomy_function,
+              'location': emg_needle_placement.location,
+              'placement_type': emg_needle_placement.placement_type,
+
+              'depth_of_insertion': emg_needle_placement.depth_of_insertion}
+
+    if emg_needle_placement.photo:
+        photo_file = open(path.join(settings.MEDIA_ROOT, emg_needle_placement.photo.name), 'rb')
+        params["photo"] = \
+            coreapi.utils.File(
+                os.path.basename(emg_needle_placement.photo.name),
+                photo_file)
+
+    action_keys = ['experiments', 'emg_needle_placement', 'create']
+
+    portal_needle_placement = rest.client.action(rest.schema, action_keys,
+                                                  params=params, encoding="multipart/form-data")
+
+    return portal_needle_placement
+
+
+def send_emg_electrode_placement_setting_to_portal(portal_emg_electrode_setting_id,
+                                                   portal_electrode_placement_id,
+                                                   emg_electrode_placement_setting: EMGElectrodePlacementSetting):
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'id': portal_emg_electrode_setting_id,
+              'emg_electrode_placement': portal_electrode_placement_id,
+              'muscle_side':
+                  emg_electrode_placement_setting.muscle_side.name
+                  if emg_electrode_placement_setting.muscle_side else None,
+              'muscle_name':
+                  emg_electrode_placement_setting.muscle_side.muscle.name
+                  if emg_electrode_placement_setting.muscle_side else None,
+              'remarks': emg_electrode_placement_setting.remarks}
+
+    action_keys = ['emg_electrode_setting', 'emg_electrode_placement_setting', 'create']
+
+    portal_preamplifier_setting = rest.client.action(rest.schema, action_keys, params=params)
+
+    return portal_preamplifier_setting
 
 
 def send_emg_setting_to_portal(emg_setting: EMGSetting):
@@ -501,9 +816,124 @@ def send_emg_setting_to_portal(emg_setting: EMGSetting):
 
     action_keys = ['experiments', 'emg_setting', 'create']
 
-    portal_group = rest.client.action(rest.schema, action_keys, params=params)
+    portal_emg_setting = rest.client.action(rest.schema, action_keys, params=params)
 
-    return portal_group
+    # digital filter setting
+    if hasattr(emg_setting, "emg_digital_filter_setting"):
+        emg_digital_filter_setting = \
+            send_emg_digital_filter_setting_to_portal(portal_emg_setting['id'], emg_setting.emg_digital_filter_setting)
+
+    # ad converter setting
+    if hasattr(emg_setting, "emg_ad_converter_setting"):
+        portal_ad_converter = \
+            send_ad_converter_to_portal(emg_setting.experiment_id,
+                                        emg_setting.emg_ad_converter_setting.ad_converter)
+        emg_ad_converter_setting = \
+            send_emg_ad_converter_setting_to_portal(portal_emg_setting['id'],
+                                                    portal_ad_converter['id'],
+                                                    emg_setting.emg_ad_converter_setting)
+
+    electrode_models = {}
+
+    # electrode settings
+    for emg_electrode_setting in emg_setting.emg_electrode_settings.all():
+
+        # electrode model
+        if emg_electrode_setting.electrode.id not in electrode_models:
+            electrode_model_portal = \
+                send_electrode_model_to_portal(emg_setting.experiment_id, emg_electrode_setting.electrode)
+            electrode_models[emg_electrode_setting.electrode.id] = electrode_model_portal
+        else:
+            electrode_model_portal = electrode_models[emg_electrode_setting.electrode.id]
+
+        # electrode setting
+        portal_emg_electrode_setting = \
+            send_emg_electrode_setting_to_portal(portal_emg_setting['id'],
+                                                 electrode_model_portal['id'],
+                                                 emg_electrode_setting)
+
+        # preamplifier and preamplifier setting
+        if hasattr(emg_electrode_setting, "emg_preamplifier_setting"):
+
+            # preamplifier
+            portal_preamplifier = \
+                send_amplifier_to_portal(emg_setting.experiment_id,
+                                         emg_electrode_setting.emg_preamplifier_setting.amplifier)
+
+            # preamplifier setting
+            portal_emg_preamplifier_setting = \
+                send_emg_preamplifier_setting_to_portal(portal_emg_electrode_setting['id'],
+                                                        portal_preamplifier['id'],
+                                                        emg_electrode_setting.emg_preamplifier_setting)
+
+            # preamplifier filter setting
+            if hasattr(emg_electrode_setting.emg_preamplifier_setting, "emg_preamplifier_filter_setting"):
+
+                # preamplifier filter setting
+                emg_preamplifier_filter_setting = \
+                    send_emg_preamplifier_filter_setting_to_portal(
+                        portal_emg_electrode_setting['id'],
+                        emg_electrode_setting.emg_preamplifier_setting.emg_preamplifier_filter_setting)
+
+        # amplifier and amplifier setting
+        if hasattr(emg_electrode_setting, "emg_amplifier_setting"):
+
+            # amplifier
+            portal_amplifier = \
+                send_amplifier_to_portal(emg_setting.experiment_id,
+                                         emg_electrode_setting.emg_amplifier_setting.amplifier)
+
+            # amplifier setting
+            portal_emg_amplifier_setting = \
+                send_emg_amplifier_setting_to_portal(portal_emg_electrode_setting['id'],
+                                                     portal_amplifier['id'],
+                                                     emg_electrode_setting.emg_amplifier_setting)
+
+            # analog filter setting
+            portal_emg_amplifier_filter_setting = \
+                send_emg_analog_filter_setting_to_portal(
+                    portal_emg_electrode_setting['id'],
+                    emg_electrode_setting.emg_amplifier_setting.emg_analog_filter_setting)
+
+        # electrode placement setting
+        if hasattr(emg_electrode_setting, "emg_electrode_placement_setting"):
+
+            placement_setting = emg_electrode_setting.emg_electrode_placement_setting
+
+            portal_emg_electrode_placement = None
+
+            # surface placement
+            if placement_setting.emg_electrode_placement.placement_type == "surface":
+
+                emg_surface_placement = EMGSurfacePlacement.objects.get(pk=placement_setting.emg_electrode_placement.id)
+
+                portal_emg_electrode_placement = \
+                    send_emg_surface_placement_to_portal(emg_setting.experiment_id, emg_surface_placement)
+
+            # intramuscular placement
+            elif placement_setting.emg_electrode_placement.placement_type == "intramuscular":
+
+                emg_intramuscular_placement = \
+                    EMGIntramuscularPlacement.objects.get(pk=placement_setting.emg_electrode_placement.id)
+
+                portal_emg_electrode_placement = \
+                    send_emg_intramuscular_placement_to_portal(emg_setting.experiment_id, emg_intramuscular_placement)
+
+            # needle placement
+            else:
+                emg_needle_placement = \
+                    EMGNeedlePlacement.objects.get(pk=placement_setting.emg_electrode_placement.id)
+
+                portal_emg_electrode_placement = \
+                    send_emg_needle_placement_to_portal(emg_setting.experiment_id, emg_needle_placement)
+
+            # placement setting
+            portal_emg_electrode_placement_setting = \
+                send_emg_electrode_placement_setting_to_portal(portal_emg_electrode_setting['id'],
+                                                               portal_emg_electrode_placement['id'],
+                                                               emg_electrode_setting.emg_electrode_placement_setting)
+
+    return portal_emg_setting
 
 
 def send_tms_device_to_portal(experiment_nes_id, tms_device: TMSDevice):
