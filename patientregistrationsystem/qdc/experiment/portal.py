@@ -19,7 +19,7 @@ from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EM
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, EMGAnalogFilterSetting, \
     EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, EMGElectrodePlacementSetting
 
-# from export.export import ExportExecution
+from survey.survey_utils import QuestionnaireUtils
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import get_questionnaire_language
@@ -1285,13 +1285,23 @@ def send_steps_to_portal(portal_group_id, component_tree,
         step_specialization = Questionnaire.objects.get(pk=component.id)
         language = get_questionnaire_language(surveys, step_specialization.survey.lime_survey_id, language_code)
         params['survey_name'] = surveys.get_survey_title(step_specialization.survey.lime_survey_id, language)
-        params['survey_metadata'] = "teste"
 
-        # export = ExportExecution(0, 0)
+        questionnaire_utils = QuestionnaireUtils()
+        # fields = questionnaire_utils.get_questionnaire_experiment_fields(step_specialization.survey.id)
+        questionnaire_fields = questionnaire_utils.create_questionnaire_explanation_fields(
+            step_specialization.survey.lime_survey_id, language, surveys, [], False)
 
-        # fields = export.get_questionnaire_experiment_fields(step_specialization.survey.id)
-        # questionnaire_fields = export.create_questionnaire_explanation_fields_file(
-        #     str(step_specialization.survey.id), language, surveys, fields, False)
+        survey_metadata = ''
+        for row in questionnaire_fields:
+            first = True
+            for column in row:
+                survey_metadata += (',' if not first else '') + '"' + column + '"'
+                if first:
+                    first = False
+
+            survey_metadata += '\n'
+
+        params['survey_metadata'] = survey_metadata
 
         surveys.release_session_key()
 
