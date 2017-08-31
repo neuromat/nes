@@ -190,15 +190,19 @@ def get_can_change(user, research_project):
                  user.has_perm('experiment.change_researchproject_from_others')
 
 
+def get_can_change_researchproject_owner(user, research_project):
+    return (user.has_perm('experiment.change_researchproject_owner'))
+
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    owners_full_name = get_owner_full_name(research_project)
+    # owners_full_name = get_owner_full_name(research_project)
 
-    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,
-                                                initial={'owners_full_name': owners_full_name})
+    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,)
+                                                # initial={'owners_full_name': owners_full_name})
 
     for field in research_project_form.fields:
         research_project_form.fields[field].widget.attrs['disabled'] = True
@@ -273,10 +277,13 @@ def research_project_update(request, research_project_id, template_name="experim
 
     check_can_change(request.user, research_project)
 
-    owners_full_name = get_owner_full_name(research_project)
+    # owners_full_name = get_owner_full_name(research_project)
 
-    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,
-                                                initial={'owners_full_name': owners_full_name})
+    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,)
+                                                # initial={'owners_full_name': owners_full_name})
+
+    if not get_can_change_researchproject_owner(request.user, research_project):
+        research_project_form.fields['owner'].widget.attrs['disabled'] = True
 
     if request.method == "POST":
         if request.POST['action'] == "save":

@@ -1,8 +1,11 @@
 # coding=utf-8
 
+from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput, URLInput, CheckboxSelectMultiple
+    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput, URLInput, CheckboxSelectMultiple, \
+    ModelChoiceField
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
@@ -292,10 +295,16 @@ class BlockForm(ModelForm):
         }
 
 
+class UserFullnameChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return smart_text(obj.get_full_name())
+
+
 class ResearchProjectForm(ModelForm):
-    owners_full_name = CharField(label=_('Responsible'),
-                                 widget=TextInput(attrs={'class': 'form-control', 'disabled': 'True'}),
-                                 required=False)
+    # owners_full_name = CharField(label=_('Responsible'),
+    #                              widget=TextInput(attrs={'class': 'form-control', 'disabled': 'True'}),
+    #                              required=False)
+    owner = UserFullnameChoiceField(queryset=User.objects.all(), widget=Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = ResearchProject
@@ -315,7 +324,7 @@ class ResearchProjectForm(ModelForm):
             'end_date': DateInput(format=_("%m/%d/%Y"),
                                   attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')}),
 
-            'owner': Select(attrs={'class': 'form-control', 'required': "",}),
+            'owner': Select(attrs={'class': 'form-control', 'required': "", }),
 
         }
 
