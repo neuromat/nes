@@ -199,10 +199,7 @@ def get_can_change_researchproject_owner(user, research_project):
 def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    # owners_full_name = get_owner_full_name(research_project)
-
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,)
-                                                # initial={'owners_full_name': owners_full_name})
 
     for field in research_project_form.fields:
         research_project_form.fields[field].widget.attrs['disabled'] = True
@@ -266,7 +263,6 @@ def get_owner_full_name(research_project):
     owners_full_name = ""
     if research_project.owner:
         owners_full_name = research_project.owner.get_full_name()
-        # owners_full_name = Person.objects.all()
     return owners_full_name
 
 
@@ -277,10 +273,7 @@ def research_project_update(request, research_project_id, template_name="experim
 
     check_can_change(request.user, research_project)
 
-    # owners_full_name = get_owner_full_name(research_project)
-
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,)
-                                                # initial={'owners_full_name': owners_full_name})
 
     if not get_can_change_researchproject_owner(request.user, research_project):
         research_project_form.fields['owner'].widget.attrs['disabled'] = True

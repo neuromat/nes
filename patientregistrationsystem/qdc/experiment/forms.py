@@ -301,9 +301,7 @@ class UserFullnameChoiceField(ModelChoiceField):
 
 
 class ResearchProjectForm(ModelForm):
-    # owners_full_name = CharField(label=_('Responsible'),
-    #                              widget=TextInput(attrs={'class': 'form-control', 'disabled': 'True'}),
-    #                              required=False)
+
     owner = UserFullnameChoiceField(queryset=User.objects.all(), widget=Select(attrs={'class': 'form-control'}))
 
     class Meta:
