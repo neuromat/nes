@@ -152,8 +152,7 @@
 
                                         </td>
                                         <td>
-
-                                            {% if digital_game_phase_collection.data_configuration_tree.code %}
+                                            {% if digital_game_phase_collection.data_configuration_tree.code != None %}
                                                 <a data-toggle="tooltip" data-placement="right" title="{% trans "Change phase code" %}" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">
                                                     {{ digital_game_phase_collection.data_configuration_tree.code }}
                                                 </a>
@@ -173,7 +172,7 @@
                                                             <div class="row">
                                                                 <div class="form-group">
                                                                     <label>{% trans "Phase code" %}</label>
-                                                                    <input type="number" class="form-control" id="phase_code" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" value="{% if digital_game_phase_collection.data_configuration_tree.code %}{{ digital_game_phase_collection.data_configuration_tree.code }}{% endif %}">
+                                                                    <input type="number" class="form-control" id="phase_code" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" value="{% if digital_game_phase_collection.data_configuration_tree.code != None %}{{ digital_game_phase_collection.data_configuration_tree.code }}{% endif %}">
                                                                 </div>
                                                             </div>
                                                         </div>

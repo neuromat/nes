@@ -6538,7 +6538,11 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
             data_configuration_tree = get_object_or_404(DataConfigurationTree,
                                                         pk=data_configuration_tree_id)
 
-            data_configuration_tree.code = request.POST['code-' + path_of_configuration]
+            phase_code = request.POST['code-' + path_of_configuration]
+            if phase_code == '':
+                data_configuration_tree.code = None
+            else:
+                data_configuration_tree.code = phase_code
             data_configuration_tree.save()
 
     enable_upload = False
@@ -6563,7 +6567,7 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
              }
         )
 
-        if not enable_upload and group.code and data_configuration_tree.code:
+        if not enable_upload and group.code and data_configuration_tree and data_configuration_tree.code is not None:
             enable_upload = True
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
@@ -6603,7 +6607,7 @@ def load_group_goalkeeper_game_data(request, group_id):
             if data_configuration_tree_id:
                 data_configuration_tree = get_object_or_404(DataConfigurationTree,
                                                             pk=data_configuration_tree_id)
-                if data_configuration_tree.code:
+                if data_configuration_tree.code is not None:
 
                     # for each subject
                     for subject_of_group in group.subjectofgroup_set.all():
