@@ -7389,7 +7389,11 @@ def get_experimental_protocol_image(experimental_protocol, tree):
 
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
-    graph.write_png(path.join(path_complete, file_name))
+
+    try:
+        graph.write_png(path.join(path_complete, file_name))
+    except:
+        return None
 
     return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
 

@@ -317,14 +317,17 @@
                                         </div>
                                         <div class="col-md-5">
 
-                                            {% if experimental_protocol_image %}
+                                            <label class="control-label">{% trans "Graph representation" %}</label>
 
-                                                <label class="control-label">{% trans "Graph representation" %}</label>
+                                            {% if experimental_protocol_image %}
 
                                                 <a class="experimental-protocol-image-popup-link" href="{{ experimental_protocol_image }}">
                                                     <img src="{{ experimental_protocol_image }}" style="width: 100%" />
                                                 </a>
 
+                                            {% else %}
+                                                <br/>
+                                                {% trans "Image not available." %}
                                             {% endif %}
 
                                         </div>
