@@ -10,6 +10,7 @@ from survey.models import Survey
 header_explanation_fields = ['questionnaire_id',
                              'questionnaire_title',
                              'question_code',
+                             'question_limesurvey_type',
                              'question_description',
                              'subquestion_code',
                              'subquestion_description',
@@ -267,7 +268,8 @@ class QuestionnaireUtils:
                 properties['question'] = properties['question'].replace('&nbsp;', '').strip()
 
                 question_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title),
-                                    smart_str(properties['title']), smart_str(properties['question'])]
+                                    smart_str(properties['title']), smart_str(properties['type']),
+                                    smart_str(properties['question'])]
 
                 options_list = []
 
@@ -315,7 +317,7 @@ class QuestionnaireUtils:
                     description = self.get_header_description(
                         questionnaire_id, field, entrance_questionnaire)
                     question_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title),
-                                        smart_str(field), smart_str(description)]
+                                        smart_str(field), smart_str(''), smart_str(description)]
 
                     questionnaire_explanation_fields_list.append(question_to_list)
 
