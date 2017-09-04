@@ -314,6 +314,9 @@ urlpatterns = patterns(
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/'
         r'(?P<questionnaire_id>[0-9-]+)/add_response/$',
         'subject_questionnaire_response_create', name='subject_questionnaire_response'),
+    url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/questionnaire/'
+        r'(?P<questionnaire_id>[0-9-]+)/reuse_fill/(?P<patient_questionnaire_response_id>\d+)$',
+        'subject_questionnaire_response_reuse', name='subject_questionnaire_response_reuse'),
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_edit', name='questionnaire_response_edit'),
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',

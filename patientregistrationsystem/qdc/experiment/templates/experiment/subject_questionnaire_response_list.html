@@ -64,7 +64,7 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th>{% trans "Questionnaire" %}</th>
+                                <th class="col-md-6">{% trans "Questionnaire" %}</th>
                                 <th>{% trans "Fills" %}</th>
                             </tr>
                             </thead>
@@ -127,17 +127,53 @@
                                                             </td>
                                                         </tr>
                                                     {% endfor %}
-                                                    <tr>
-                                                        {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_repetitions %}
-                                                            {% if perms.experiment.add_questionnaireresponse and can_change %}
+                                                    {% if subject_questionnaire.questionnaire_configuration.number_of_repetitions == None or subject_questionnaire.questionnaire_responses|length < subject_questionnaire.questionnaire_configuration.number_of_repetitions %}
+                                                        {% if perms.experiment.add_questionnaireresponse and can_change %}
+
+                                                            {# allow to fill #}
+                                                            <tr>
                                                                 <td colspan="2">
                                                                     <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/add_response/?origin=experiment_subject" class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">
                                                                         {% trans "New fill" %}
                                                                     </a>
                                                                 </td>
+                                                            </tr>
+
+                                                            {# allow to reuse a fill #}
+                                                            {% if subject_questionnaire.patient_questionnaire_responses %}
+                                                                <tr>
+                                                                    <td colspan="2">
+                                                                        <a data-toggle="collapse" href="#collapse_{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}">
+                                                                            {% trans "Reuse fills" %} <span class="glyphicon glyphicon-chevron-right"></span>
+                                                                        </a>
+                                                                        <div id="collapse_{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}"
+                                                                             class="panel-collapse collapse out" role="tabpanel">
+
+                                                                            {% for patient_questionnaire_response in subject_questionnaire.patient_questionnaire_responses %}
+
+                                                                                <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}/questionnaire/{% for item in subject_questionnaire.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}/reuse_fill/{{ patient_questionnaire_response.patient_questionnaire_response.id }}" class="{% if not limesurvey_available %} disabled {% endif %}">
+                                                                                    <span class="glyphicon glyphicon-unchecked"></span>
+                                                                                </a>
+
+                                                                                {{ patient_questionnaire_response.patient_questionnaire_response.date }}
+                                                                                {% if patient_questionnaire_response != None %}
+                                                                                    {% if patient_questionnaire_response.completed %}
+                                                                                        <span class="label label-success">{% trans "Complete" %}</span>
+                                                                                    {% else %}
+                                                                                        <span class="label label-warning">{% trans "Incomplete" %}</span>
+                                                                                    {% endif %}
+                                                                                {% else %}
+                                                                                    <span class="label label-default">{% trans "No status" %}</span>
+                                                                                {% endif %}<br/>
+                                                                            {% endfor %}
+
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
                                                             {% endif %}
+
                                                         {% endif %}
-                                                    </tr>
+                                                    {% endif %}
                                                 </table>
                                             </td>
 

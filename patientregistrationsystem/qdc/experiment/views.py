@@ -86,8 +86,6 @@ from .portal import get_experiment_status_portal, send_experiment_to_portal, get
     send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal, \
     send_generic_data_collection_data_to_portal, send_additional_data_to_portal
 
-from team.models import Person
-
 from configuration.models import LocalInstitution
 
 from export.directory_utils import create_directory
@@ -4904,6 +4902,43 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
 
 
 @login_required
+@permission_required('experiment.add_questionnaireresponse')
+def subject_questionnaire_response_reuse(request, group_id, subject_id, questionnaire_id,
+                                         patient_questionnaire_response_id):
+    group = get_object_or_404(Group, id=group_id)
+
+    list_of_path = [int(item) for item in questionnaire_id.split('-')]
+    questionnaire_id = list_of_path[-1]
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
+                                                       id=patient_questionnaire_response_id)
+
+    data_configuration_tree_id = list_data_configuration_tree(questionnaire_id, list_of_path)
+    if not data_configuration_tree_id:
+        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+
+    subject = get_object_or_404(Subject, pk=subject_id)
+    subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+
+    questionnaire_response = QuestionnaireResponse.objects.create(
+        token_id=patient_questionnaire_response.token_id,
+        questionnaire_responsible=patient_questionnaire_response.questionnaire_responsible,
+        data_configuration_tree_id=data_configuration_tree_id,
+        subject_of_group=subject_of_group,
+        date=patient_questionnaire_response.date,
+    )
+    questionnaire_response.save()
+
+    messages.success(request, _('Fill reused successfully.'))
+
+    redirect_url = reverse("subject_questionnaire", args=(group.id, subject.id,))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
 @permission_required('experiment.change_questionnaireresponse')
 def questionnaire_response_edit(request, questionnaire_response_id,
                                 template_name="experiment/subject_questionnaire_response_form.html"):
@@ -5098,21 +5133,33 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
         if request.POST['action'] == "remove":
             if request.user.has_perm('experiment.delete_questionnaireresponse'):
-                surveys = Questionnaires()
-                result = surveys.delete_participant(
-                    questionnaire.survey.lime_survey_id,
-                    questionnaire_response.token_id)
-                surveys.release_session_key()
+
+                # checking if it is used by patient_questionnaire_response
+
+                token_is_used_patient_questionnaire_response = \
+                    PatientQuestionnaireResponse.objects.filter(patient=subject.patient,
+                                                                survey=questionnaire.survey,
+                                                                token_id=questionnaire_response.token_id).exists()
 
                 can_delete = False
 
-                if str(questionnaire_response.token_id) in result:
-                    result = result[str(questionnaire_response.token_id)]
-                    if result == 'Deleted' or result == 'Invalid token ID':
-                        can_delete = True
+                if token_is_used_patient_questionnaire_response:
+                    can_delete = True
                 else:
-                    if 'status' in result and result['status'] == 'Error: Invalid survey ID':
-                        can_delete = True
+                    # remove token from LimeSurvey
+                    surveys = Questionnaires()
+                    result = surveys.delete_participant(
+                        questionnaire.survey.lime_survey_id,
+                        questionnaire_response.token_id)
+                    surveys.release_session_key()
+
+                    if str(questionnaire_response.token_id) in result:
+                        result = result[str(questionnaire_response.token_id)]
+                        if result == 'Deleted' or result == 'Invalid token ID':
+                            can_delete = True
+                    else:
+                        if 'status' in result and result['status'] == 'Error: Invalid survey ID':
+                            can_delete = True
 
                 if can_delete:
                     questionnaire_response.delete()
@@ -5168,15 +5215,14 @@ def subject_questionnaire_view(request, group_id, subject_id,
 
         data_configuration_tree_id = list_data_configuration_tree(questionnaire_response.id, [item[0] for item in path])
 
-        questionnaire_responses = \
-            QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group,
-                                                 data_configuration_tree__id=data_configuration_tree_id)
-
-        questionnaire_responses_with_status = []
-
         questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path[-1][0])
         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
+        # Questionnaire Responses (in the experiment)
+        questionnaire_responses = \
+            QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group,
+                                                 data_configuration_tree__id=data_configuration_tree_id)
+        questionnaire_responses_with_status = []
         for questionnaire_response in questionnaire_responses:
             response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                                  questionnaire_response.token_id,
@@ -5186,6 +5232,24 @@ def subject_questionnaire_view(request, group_id, subject_id,
                  'completed': None if response_result is None else response_result != "N" and response_result != ""}
             )
 
+        # Patient Questionnaire Responses (in the participant functionality), in case of reuse
+        tokens_already_used = \
+            QuestionnaireResponse.objects.values('token_id').filter(subject_of_group=subject_of_group)
+        patient_questionnaire_responses = \
+            PatientQuestionnaireResponse.objects.filter(
+                patient=subject_of_group.subject.patient,
+                survey=questionnaire.survey).exclude(token_id__in=tokens_already_used)
+        patient_questionnaire_responses_with_status = []
+        for patient_questionnaire_response in patient_questionnaire_responses:
+            response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
+                                                                 patient_questionnaire_response.token_id,
+                                                                 "completed")
+            if response_result is not None and response_result != "N" and response_result != "":
+                patient_questionnaire_responses_with_status.append(
+                    {'patient_questionnaire_response': patient_questionnaire_response,
+                     'completed': True}
+                )
+
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
              'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id,
@@ -5193,7 +5257,8 @@ def subject_questionnaire_view(request, group_id, subject_id,
                                                                           questionnaire.survey.lime_survey_id,
                                                                           request.LANGUAGE_CODE)),
              'path': path,
-             'questionnaire_responses': questionnaire_responses_with_status}
+             'questionnaire_responses': questionnaire_responses_with_status,
+             'patient_questionnaire_responses': patient_questionnaire_responses_with_status}
         )
 
     surveys.release_session_key()
