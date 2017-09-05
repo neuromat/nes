@@ -114,14 +114,8 @@
                                                             {% endif %}
                                                         </td>
                                                         <td>
-                                                            {% if eeg_data_file.eeg_reading.file_format %}
-                                                                {% if eeg_data_file.eeg_reading.reading %}
-                                                                    <span class="label label-success">{% trans "Valid EEG file format" %}</span>
-                                                                {% else %}
-                                                                    <span class="label label-warning">{% trans "Not valid EEG file format" %}</span>
-                                                                {% endif %}
-                                                            {% else %}
-                                                                <span class="label label-default">{% trans "File format not validated" %}</span>
+                                                            {% if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading %}
+                                                                <span class="label label-success">{% trans "EEG file recognized by NES" %}</span>
                                                             {% endif %}
                                                         </td>
                                                     </tr>

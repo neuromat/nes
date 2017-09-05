@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-04 18:13-0300\n"
+"POT-Creation-Date: 2017-09-05 12:06-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid "Name must be included"
 msgstr ""
 
 #: patient/forms.py:37 patient/forms.py:151 patient/forms.py:176
-#: patient/views.py:772 patient/views.py:1298
+#: patient/views.py:773 patient/views.py:1299
 msgid "%m/%d/%Y"
 msgstr ""
 
@@ -750,7 +750,7 @@ msgstr ""
 msgid "Social class was not calculated"
 msgstr ""
 
-#: patient/tests.py:457 patient/views.py:248
+#: patient/tests.py:457 patient/views.py:249
 msgid "Social demographic data successfully written."
 msgstr ""
 
@@ -766,89 +766,89 @@ msgstr ""
 msgid "Less than 1 year"
 msgstr ""
 
-#: patient/tests.py:512 patient/views.py:275
+#: patient/tests.py:512 patient/views.py:276
 msgid "Social history successfully recorded."
 msgstr ""
 
-#: patient/views.py:71 patient/views.py:171
+#: patient/views.py:72 patient/views.py:172
 msgid "Personal data successfully written."
 msgstr ""
 
-#: patient/views.py:79
+#: patient/views.py:80
 msgid "Participant with this CPF has already removed."
 msgstr ""
 
-#: patient/views.py:81
+#: patient/views.py:82
 msgid "There is already registered participant with this CPF."
 msgstr ""
 
-#: patient/views.py:242
+#: patient/views.py:243
 msgid ""
 "Social class was not calculated, because all the necessary fields were not "
 "filled."
 msgstr ""
 
-#: patient/views.py:777
+#: patient/views.py:778
 msgid "Diagnosis details successfully changed."
 msgstr ""
 
-#: patient/views.py:783
+#: patient/views.py:784
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr ""
 
-#: patient/views.py:804
+#: patient/views.py:805
 msgid "Medical evaluation successfully deleted."
 msgstr ""
 
-#: patient/views.py:817
+#: patient/views.py:818
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr ""
 
-#: patient/views.py:850
+#: patient/views.py:851
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr ""
 
-#: patient/views.py:855
+#: patient/views.py:856
 msgid "Diagnosis successfully deleted."
 msgstr ""
 
-#: patient/views.py:902 patient/views.py:973
+#: patient/views.py:903 patient/views.py:974
 msgid "Exam successfully saved."
 msgstr ""
 
-#: patient/views.py:918 patient/views.py:983
+#: patient/views.py:919 patient/views.py:984
 msgid "It is not possible to save exam without files."
 msgstr ""
 
-#: patient/views.py:1053
+#: patient/views.py:1054
 msgid "Exam successfully deleted."
 msgstr ""
 
-#: patient/views.py:1077
+#: patient/views.py:1078
 msgid "Attachment successfully deleted."
 msgstr ""
 
-#: patient/views.py:1216 patient/views.py:1404
+#: patient/views.py:1217 patient/views.py:1405
 msgid "Fill deleted successfully"
 msgstr ""
 
-#: patient/views.py:1218 patient/views.py:1406
+#: patient/views.py:1219 patient/views.py:1407
 msgid "Error trying to delete"
 msgstr ""
 
-#: patient/views.py:1272
+#: patient/views.py:1273
 msgid "Not available filling - tokens table not started"
 msgstr ""
 
-#: patient/views.py:1277
+#: patient/views.py:1278
 msgid "Not available filling - questionnaire not active"
 msgstr ""
 
-#: patient/views.py:1282
+#: patient/views.py:1283
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 
-#: patient/views.py:1291
+#: patient/views.py:1292
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
