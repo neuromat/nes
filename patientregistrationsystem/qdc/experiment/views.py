@@ -773,6 +773,11 @@ def send_all_experiments_to_portal(language_code):
                         portal_eeg_setting = send_eeg_setting_to_portal(eeg_setting)
                         list_of_eeg_setting[eeg_setting.id] = portal_eeg_setting['id']
 
+                for eeg_data in EEGData.objects.filter(subject_of_group__group__experiment=group.experiment):
+                    if eeg_data.eeg_setting.id not in list_of_eeg_setting:
+                        portal_eeg_setting = send_eeg_setting_to_portal(eeg_data.eeg_setting)
+                        list_of_eeg_setting[eeg_data.eeg_setting.id] = portal_eeg_setting['id']
+
                 # emg settings
                 list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
                 for path_tree in list_of_emg_configuration:
@@ -782,6 +787,11 @@ def send_all_experiments_to_portal(language_code):
                         portal_emg_setting = send_emg_setting_to_portal(emg_setting)
                         list_of_emg_setting[emg_setting.id] = portal_emg_setting['id']
 
+                for emg_data in EMGData.objects.filter(subject_of_group__group__experiment=group.experiment):
+                    if emg_data.emg_setting.id not in list_of_emg_setting:
+                        portal_emg_setting = send_emg_setting_to_portal(emg_data.emg_setting)
+                        list_of_emg_setting[emg_data.emg_setting.id] = portal_emg_setting['id']
+
                 # tms settings
                 list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
                 for path_tree in list_of_tms_configuration:
@@ -790,6 +800,11 @@ def send_all_experiments_to_portal(language_code):
                     if tms_setting.id not in list_of_tms_setting:
                         portal_tms_setting = send_tms_setting_to_portal(tms_setting)
                         list_of_tms_setting[tms_setting.id] = portal_tms_setting['id']
+
+                for tms_data in TMSData.objects.filter(subject_of_group__group__experiment=group.experiment):
+                    if tms_data.tms_setting.id not in list_of_tms_setting:
+                        portal_tms_setting = send_tms_setting_to_portal(tms_data.tms_setting)
+                        list_of_tms_setting[tms_data.tms_setting.id] = portal_tms_setting['id']
 
                 # context trees
                 list_of_digital_game_phase_configuration = \
