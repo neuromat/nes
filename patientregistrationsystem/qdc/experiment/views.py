@@ -149,7 +149,7 @@ def research_project_list(request, template_name="experiment/research_project_li
 def research_project_create(request, template_name="experiment/research_project_register.html"):
 
     research_project_form = ResearchProjectForm(request.POST or None,
-                                                initial={'owners_full_name': request.user.get_full_name()})
+                                                initial={'owner': request.user})
 
     if request.method == "POST":
 
