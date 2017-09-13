@@ -380,7 +380,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         if error_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
-
+        # export participants data
         if export.get_input_data('participants')[0]['output_list']:
             participants_input_data = export.get_input_data("participants")
             participants_list = (export.get_participants_filtered_data())
@@ -393,7 +393,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 return render(request, template_name)
 
         if 'group_selected_list' in request.session:
-            # Export filter by experiments
+            # Export method: filter by experiments
             export.include_group_data(request.session['group_selected_list'])
             # if fields from questionnaires were selected
             if export.get_input_data("questionnaire_list"):
@@ -404,7 +404,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # create files protocolo experimental and diagnosis/participant csv file for each group
+            # create files of experimental protocol and diagnosis/participant csv file for each group
             error_msg = export.process_experiment_data(language_code)
 
             if error_msg != "":

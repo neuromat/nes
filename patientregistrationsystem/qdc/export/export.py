@@ -1856,14 +1856,12 @@ class ExportExecution:
 
         study = group.experiment.research_project
         experiment = group.experiment
-        experiment_resume_header = 'Study' + '\t' + 'Study description' + '\t' + 'Start date' + '\t' + \
-                                   'End date' + '\t' + 'Experiment' + '\t' + \
-                                   'Experiment description' + '\t' + 'Data aquisition concluded' + "\n"
-        experiment_resume = \
-            study.title + '\t' + study.description + '\t' + \
-            str(study.start_date) + '\t' + str(study.end_date) + '\t' + \
-            experiment.title + '\t' + experiment.description + '\t' + \
-            str(experiment.data_acquisition_is_concluded) + "\n"
+
+        experiment_resume_header = ['Study', 'Study description', 'Start date', 'End date', 'Experiment Title',
+                                    'Experiment description']
+
+        experiment_resume = [study.title, study.description, str(study.start_date), str(study.end_date),
+                             experiment.title, experiment.description]
 
         filename_experiment_resume = "%s.csv" % "Experiment"
 
@@ -1878,12 +1876,12 @@ class ExportExecution:
         # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Experiment.csv
         complete_filename_experiment_resume = path.join(experiment_resume_directory, filename_experiment_resume)
 
-        self.files_to_zip_list.append([complete_filename_experiment_resume, export_experiment_data])
+        experiment_description_fields = []
+        experiment_description_fields.insert(0, experiment_resume_header)
+        experiment_description_fields.insert(1, experiment_resume)
+        save_to_csv(complete_filename_experiment_resume, experiment_description_fields)
 
-        with open(complete_filename_experiment_resume.encode('utf-8'), 'w', newline='',
-                  encoding='UTF-8') as csv_file:
-            csv_file.writelines(experiment_resume_header)
-            csv_file.writelines(experiment_resume)
+        self.files_to_zip_list.append([complete_filename_experiment_resume, export_experiment_data])
 
         # process of filename for description of each group
         for group_id in self.per_group_data:
