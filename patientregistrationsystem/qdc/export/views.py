@@ -635,7 +635,6 @@ def export_view(request, template_name="export/export_data.html"):
                     messages.success(request, _("Export was finished correctly"))
 
                     print("antes do fim: httpResponse")
-
                     zip_file = open(complete_filename, 'rb')
                     response = HttpResponse(zip_file, content_type='application/zip')
                     response['Content-Disposition'] = 'attachment; filename="export.zip"'
