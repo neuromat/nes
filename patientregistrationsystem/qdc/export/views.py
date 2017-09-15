@@ -793,22 +793,20 @@ def get_component_with_data_and_metadata(group, component_list):
 
     # data collection
     if 'eeg' not in component_list:
-        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         if eeg_data_list:
             component_list.append('eeg')
     if 'eeg_nwb' not in component_list:
-        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         export_nwb = can_export_nwb(eeg_data_list)
         if export_nwb:
             component_list.append('eeg_nwb')
     if 'emg' not in component_list:
-        emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         if emg_data_list:
             component_list.append('emg')
     if 'tms' not in component_list:
-        tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         if tms_data_list:
             component_list.append('tms')
     if 'additional_data' not in component_list:
@@ -822,11 +820,16 @@ def get_component_with_data_and_metadata(group, component_list):
         if goalkeeper_game_data_list:
             component_list.append('goalkeeper_game_data')
     if 'stimulus_data' not in component_list:
+        stimulus_file_exist = False
         stimulus_data_list = Stimulus.objects.filter(experiment=group.experiment)
-        if stimulus_data_list:
+        for stimulus_file in stimulus_data_list:
+            if hasattr(stimulus_file, 'media_file.file'):
+                stimulus_file_exist = True
+        if stimulus_file_exist:
             component_list.append('stimulus_data')
     if 'generic_data' not in component_list:
-        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group).distinct(
+            'data_configuration_tree')
         if generic_data_list:
             component_list.append('generic_data')
 
