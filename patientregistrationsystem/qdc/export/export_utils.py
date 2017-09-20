@@ -1,4 +1,7 @@
+import mne
+
 from experiment.models import ComponentConfiguration
+from experiment.views import eeg_data_reading
 
 
 def create_list_of_trees(block_id, component_type, numeration=''):
@@ -36,3 +39,25 @@ def create_list_of_trees(block_id, component_type, numeration=''):
         counter += 1
 
     return list_of_path
+
+
+def can_export_nwb(eeg_data_files):
+    export_nwb = False
+    for eeg_data_file in eeg_data_files:
+
+        eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file, preload=False)
+        eeg_data_file.can_export_to_nwb = False
+
+        # v1.5
+        # can export to nwb?
+        if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading:
+            if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
+                    hasattr(eeg_data_file.eeg_setting, 'eeg_amplifier_setting') and \
+                    eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
+                            eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
+                            len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
+                eeg_data_file.can_export_to_nwb = True
+                if eeg_data_file.can_export_to_nwb:
+                    export_nwb = True
+
+    return export_nwb

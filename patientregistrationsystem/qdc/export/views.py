@@ -25,7 +25,7 @@ from .models import Export
 from .export import ExportExecution, perform_csv_response, create_directory
 
 from export.input_export import build_complete_export_structure
-from export.export_utils import create_list_of_trees
+from export.export_utils import create_list_of_trees, can_export_nwb
 
 from patient.models import QuestionnaireResponse, Patient, Diagnosis
 from patient.views import check_limesurvey_access
@@ -380,7 +380,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         if error_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
-
+        # export participants data
         if export.get_input_data('participants')[0]['output_list']:
             participants_input_data = export.get_input_data("participants")
             participants_list = (export.get_participants_filtered_data())
@@ -393,7 +393,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 return render(request, template_name)
 
         if 'group_selected_list' in request.session:
-            # Export filter by experiments
+            # Export method: filter by experiments
             export.include_group_data(request.session['group_selected_list'])
             # if fields from questionnaires were selected
             if export.get_input_data("questionnaire_list"):
@@ -404,7 +404,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # create files protocolo experimental and diagnosis/participant csv file for each group
+            # create files of experimental protocol and diagnosis/participant csv file for each group
             error_msg = export.process_experiment_data(language_code)
 
             if error_msg != "":
@@ -635,7 +635,6 @@ def export_view(request, template_name="export/export_data.html"):
                     messages.success(request, _("Export was finished correctly"))
 
                     print("antes do fim: httpResponse")
-
                     zip_file = open(complete_filename, 'rb')
                     response = HttpResponse(zip_file, content_type='application/zip')
                     response['Content-Disposition'] = 'attachment; filename="export.zip"'
@@ -791,21 +790,23 @@ def export_view(request, template_name="export/export_data.html"):
 
 
 def get_component_with_data_and_metadata(group, component_list):
-    experiment_id = group.experiment.id
 
     # data collection
     if 'eeg' not in component_list:
-        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         if eeg_data_list:
             component_list.append('eeg')
+    if 'eeg_nwb' not in component_list:
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        export_nwb = can_export_nwb(eeg_data_list)
+        if export_nwb:
+            component_list.append('eeg_nwb')
     if 'emg' not in component_list:
-        emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         if emg_data_list:
             component_list.append('emg')
     if 'tms' not in component_list:
-        tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         if tms_data_list:
             component_list.append('tms')
     if 'additional_data' not in component_list:
@@ -819,11 +820,16 @@ def get_component_with_data_and_metadata(group, component_list):
         if goalkeeper_game_data_list:
             component_list.append('goalkeeper_game_data')
     if 'stimulus_data' not in component_list:
+        stimulus_file_exist = False
         stimulus_data_list = Stimulus.objects.filter(experiment=group.experiment)
-        if stimulus_data_list:
+        for stimulus_file in stimulus_data_list:
+            if hasattr(stimulus_file, 'media_file.file'):
+                stimulus_file_exist = True
+        if stimulus_file_exist:
             component_list.append('stimulus_data')
     if 'generic_data' not in component_list:
-        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group).distinct(
+            'data_configuration_tree')
         if generic_data_list:
             component_list.append('generic_data')
 
