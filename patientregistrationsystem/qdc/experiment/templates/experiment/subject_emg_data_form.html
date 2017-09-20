@@ -192,132 +192,126 @@
 
                 <h4>{% trans "EMG data collection" %}</h4>
 
-{#                <ul class="nav nav-tabs">#}
-{##}
-{#                    {% if creating or editing %}#}
-{#                        <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>#}
-{#                        <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrode positions status" %}</a>#}
-{#                        </li>#}
-{#                    {% else %}#}
-{#                        <li {% if tab == '1' %}class="active"{% endif %}>#}
-{#                            <a data-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>#}
-{#                        </li>#}
-{#                        <li {% if tab == '2' %}class="active"{% endif %}>#}
-{#                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#electrode_position_status">{% trans "Electrode positions status" %}</a>#}
-{#                        </li>#}
-{#                    {% endif %}#}
-{##}
-{#                </ul>#}
-
-{#                <div class="tab-content">#}
-
-{#                    <div id="data_collection" {% if tab == '1' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>#}
-
-                        <h4></h4>
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group {% if emg_data_form.errors.date %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "Date" %}<b style="color: red;">*</b></label>
-                                    {{ emg_data_form.date }}
-                                    <div class="help-block with-errors">
-                                        {% for error in emg_data_form.date.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group {% if emg_data_form.errors.time %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "Hour" %}</label>
-                                    {{ emg_data_form.time }}
-                                    <div class="help-block with-errors">
-                                        {% for error in emg_data_form.time.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                </div>
+                <h4></h4>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if emg_data_form.errors.date %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Date" %}<b style="color: red;">*</b></label>
+                            {{ emg_data_form.date }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_data_form.date.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "EMG setting" %}<b style="color: red;">*</b></label>
-                                        {{ emg_data_form.emg_setting }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group {% if emg_data_form.errors.time %}has-error{% endif %}">
+                            <label class="control-label">{% trans "Hour" %}</label>
+                            {{ emg_data_form.time }}
+                            <div class="help-block with-errors">
+                                {% for error in emg_data_form.time.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="row" id="div-reason-for-change">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "Reason for change the EMG setting" %} <b style="color: red;">*</b></label>
-                                    {{ emg_data_form.emg_setting_reason_for_change }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "EMG setting" %}<b style="color: red;">*</b></label>
+                                {{ emg_data_form.emg_setting }}
+                            <div class="help-block with-errors"></div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
-                                    {{ emg_data_form.file_format }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
+                <div class="row" id="div-reason-for-change">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "Reason for change the EMG setting" %} <b style="color: red;">*</b></label>
+                            {{ emg_data_form.emg_setting_reason_for_change }}
+                            <div class="help-block with-errors"></div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="row" id="div-file-format-description">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
-                                    {{ emg_data_form.file_format_description }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "File format" %} <b style="color: red;">*</b></label>
+                            {{ emg_data_form.file_format }}
+                            <div class="help-block with-errors"></div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group">
-                                    <label class="control-label">{% trans "EMG data collection description" %} <b style="color: red;">*</b></label>
-                                    {{ emg_data_form.description }}
-                                    <div class="help-block with-errors"></div>
-                                </div>
-                            </div>
+                <div class="row" id="div-file-format-description">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "File format description" %} <b style="color: red;">*</b></label>
+                            {{ emg_data_form.file_format_description }}
+                            <div class="help-block with-errors"></div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <div class="form-group {% if emg_data_form.errors.file %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">{% trans "EMG data collection description" %} <b style="color: red;">*</b></label>
+                            {{ emg_data_form.description }}
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group {% if emg_data_form.errors.file %}has-error{% endif %}">
+
+                            {% if creating or editing %}
+                                <label class="control-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
+                                <br/>
+                                <input type="file" name="emg_files" multiple>
+                                <br/>
+                            {% endif %}
+
+                            {% if not creating %}
+                                {% if emg_data.emg_files %}
+                                    <label class="control-label">{% trans "Uploaded files" %} <b style="color: red;">*</b></label>
                                     <br/>
-                                    {% if editing %}
-                                        {{ emg_data_form.file }}
-                                    {% else %}
-                                        {{ emg_data_form.file.value }}
-                                        <button class="btn btn-default" type="button" onclick="location.href='{{ emg_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
-                                    {% endif %}
-                                    <div class="help-block with-errors">
-                                        {% for error in emg_data_form.file.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
+                                    <table><tbody>
+                                    {% for emg_file in emg_data.emg_files.all %}
+                                        <tr>
+                                        <td>{{ emg_file.file.url }}</td>
+                                        <td>
+                                            <button class="btn btn-default" type="button" onclick="location.href='{{ emg_file.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                        </td>
+                                        <td>{{ emg_file.file.size|filesizeformat }}</td>
+                                        {% if editing %}
+                                            <td>
+                                                <input type="checkbox" name="remove_emg_file_{{ emg_file.id }}"/>
+                                                {% trans "Delete" %}</td>
+                                        {% endif %}
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody></table>
+                                {% endif %}
+                            {% endif %}
+
                         </div>
+                    </div>
+                </div>
 
-                        {% if not editing and can_change %}
-                            <div class="btn-group pull-left">
-                                <a href="/experiment/emg_data/edit/{{ emg_data.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
-                            </div>
-                        {% endif %}
-
-{#                    </div>#}
-
-{#                </div>#}
+                {% if not editing and can_change %}
+                    <div class="btn-group pull-left">
+                        <a href="/experiment/emg_data/edit/{{ emg_data.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                    </div>
+                {% endif %}
 
             </div>
 

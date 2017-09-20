@@ -1049,19 +1049,72 @@ def get_eeg_dir(instance, filename):
 
 def get_data_file_dir(instance, filename):
     directory = 'data_files'
-    if isinstance(instance, DataCollection):
-        directory = path.join('data_collection_files',
-                              str(instance.subject_of_group.group.experiment.id),
-                              str(instance.subject_of_group.group.id),
-                              str(instance.subject_of_group.subject.id),
-                              str(instance.data_configuration_tree.id if instance.data_configuration_tree else 0))
-        if isinstance(instance, EEGData):
-            directory = path.join(directory, 'eeg')
-        elif isinstance(instance, EMGData):
-            directory = path.join(directory, 'emg')
-        elif isinstance(instance, AdditionalData):
-            directory = path.join(directory, 'additional')
-    if isinstance(instance, HotSpot):
+
+    if isinstance(instance, EEGFile):
+
+        directory = path.join(
+            'data_collection_files',
+            str(instance.eeg_data.subject_of_group.group.experiment.id),
+            str(instance.eeg_data.subject_of_group.group.id),
+            str(instance.eeg_data.subject_of_group.subject.id),
+            str(instance.eeg_data.data_configuration_tree.id
+                if instance.eeg_data.data_configuration_tree else 0),
+            'eeg')
+
+    elif isinstance(instance, EMGFile):
+        directory = path.join(
+            'data_collection_files',
+            str(instance.emg_data.subject_of_group.group.experiment.id),
+            str(instance.emg_data.subject_of_group.group.id),
+            str(instance.emg_data.subject_of_group.subject.id),
+            str(instance.emg_data.data_configuration_tree.id
+                if instance.emg_data.data_configuration_tree else 0),
+            'emg')
+
+    elif isinstance(instance, AdditionalDataFile):
+        directory = path.join(
+            'data_collection_files',
+            str(instance.additional_data.subject_of_group.group.experiment.id),
+            str(instance.additional_data.subject_of_group.group.id),
+            str(instance.additional_data.subject_of_group.subject.id),
+            str(instance.additional_data.data_configuration_tree.id
+                if instance.additional_data.data_configuration_tree else 0),
+            'additional')
+
+    elif isinstance(instance, GenericDataCollectionFile):
+        directory = path.join(
+            'data_collection_files',
+            str(instance.generic_data_collection_data.subject_of_group.group.experiment.id),
+            str(instance.generic_data_collection_data.subject_of_group.group.id),
+            str(instance.generic_data_collection_data.subject_of_group.subject.id),
+            str(instance.generic_data_collection_data.data_configuration_tree.id
+                if instance.generic_data_collection_data.data_configuration_tree else 0),
+            'generic_data_collection')
+
+    elif isinstance(instance, DigitalGamePhaseFile):
+        directory = path.join(
+            'data_collection_files',
+            str(instance.digital_game_phase_data.subject_of_group.group.experiment.id),
+            str(instance.digital_game_phase_data.subject_of_group.group.id),
+            str(instance.digital_game_phase_data.subject_of_group.subject.id),
+            str(instance.digital_game_phase_data.data_configuration_tree.id
+                if instance.digital_game_phase_data.data_configuration_tree else 0),
+            'digital_game_phase')
+
+    # if isinstance(instance, DataCollection):
+    #     directory = path.join('data_collection_files',
+    #                           str(instance.subject_of_group.group.experiment.id),
+    #                           str(instance.subject_of_group.group.id),
+    #                           str(instance.subject_of_group.subject.id),
+    #                           str(instance.data_configuration_tree.id if instance.data_configuration_tree else 0))
+    #     if isinstance(instance, EEGData):
+    #         directory = path.join(directory, 'eeg')
+    #     elif isinstance(instance, EMGData):
+    #         directory = path.join(directory, 'emg')
+    #     elif isinstance(instance, AdditionalData):
+    #         directory = path.join(directory, 'additional')
+
+    elif isinstance(instance, HotSpot):
         directory = path.join('data_collection_files',
                               str(instance.tms_data.subject_of_group.group.experiment.id),
                               str(instance.tms_data.subject_of_group.group.id),
@@ -1069,6 +1122,7 @@ def get_data_file_dir(instance, filename):
                               str(instance.tms_data.data_configuration_tree.id if
                                   instance.tms_data.data_configuration_tree else 0))
         directory = path.join(directory, 'tms_hot_spot')
+
     return path.join(directory, filename)
 
 
@@ -1173,16 +1227,12 @@ class FileFormat(models.Model):
 
 class DataFile(models.Model):
     description = models.TextField(null=False, blank=False)
-    file = models.FileField(upload_to=get_data_file_dir, null=False)
+    # file = models.FileField(upload_to=get_data_file_dir, null=False)
     file_format = models.ForeignKey(FileFormat, null=False, blank=False)
     file_format_description = models.TextField(null=True, blank=True, default='')
 
     class Meta:
         abstract = True
-
-    def get_dir(self, filename):
-        return "eeg_data_files/%s/%s/%s/%s" % \
-               (self.group.experiment.id, self.group.id, self.subject.id, filename)
 
 
 class EEGData(DataFile, DataCollection):
@@ -1324,6 +1374,32 @@ class GenericDataCollectionData(DataFile, DataCollection):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
+
+
+class EEGFile(models.Model):
+    eeg_data = models.ForeignKey(EEGData, related_name='eeg_files')
+    file = models.FileField(upload_to=get_data_file_dir)
+
+
+class EMGFile(models.Model):
+    emg_data = models.ForeignKey(EMGData, related_name='emg_files')
+    file = models.FileField(upload_to=get_data_file_dir)
+
+
+class AdditionalDataFile(models.Model):
+    additional_data = models.ForeignKey(AdditionalData, related_name='additional_data_files')
+    file = models.FileField(upload_to=get_data_file_dir)
+
+
+class DigitalGamePhaseFile(models.Model):
+    digital_game_phase_data = models.ForeignKey(DigitalGamePhaseData, related_name='digital_game_phase_files')
+    file = models.FileField(upload_to=get_data_file_dir)
+
+
+class GenericDataCollectionFile(models.Model):
+    generic_data_collection_data = models.ForeignKey(GenericDataCollectionData,
+                                                     related_name='generic_data_collection_files')
+    file = models.FileField(upload_to=get_data_file_dir)
 
 
 class EEGElectrodePositionCollectionStatus(models.Model):

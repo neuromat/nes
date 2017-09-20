@@ -369,7 +369,8 @@ class EEGDataForm(ModelForm):
     class Meta:
         model = EEGData
 
-        fields = ['date', 'time', 'file_format', 'eeg_setting', 'eeg_cap_size', 'description', 'file',
+        fields = ['date', 'time', 'file_format', 'eeg_setting', 'eeg_cap_size', 'description',
+                  # 'file',
                   'file_format_description', 'eeg_setting_reason_for_change']
 
         widgets = {
@@ -903,8 +904,9 @@ class EMGDataForm(ModelForm):
     class Meta:
         model = EMGData
 
-        fields = ['date', 'time', 'file_format', 'emg_setting', 'description', 'file', 'file_format_description',
-                  'emg_setting_reason_for_change']
+        fields = ['date', 'time', 'file_format', 'emg_setting', 'description',
+                  # 'file',
+                  'file_format_description', 'emg_setting_reason_for_change']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -947,7 +949,9 @@ class AdditionalDataForm(ModelForm):
     class Meta:
         model = AdditionalData
 
-        fields = ['date', 'file_format', 'description', 'file', 'file_format_description']
+        fields = ['date', 'file_format', 'description',
+                  # 'file',
+                  'file_format_description']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -1325,8 +1329,9 @@ class DigitalGamePhaseDataForm(ModelForm):
     class Meta:
         model = DigitalGamePhaseData
 
-        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description',
-                  'sequence_used_in_context_tree']
+        fields = ['date', 'time', 'file_format', 'description',
+                  # 'file',
+                  'file_format_description', 'sequence_used_in_context_tree']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -1355,7 +1360,9 @@ class GenericDataCollectionDataForm(ModelForm):
     class Meta:
         model = GenericDataCollectionData
 
-        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description']
+        fields = ['date', 'time', 'file_format', 'description',
+                  # 'file',
+                  'file_format_description']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),

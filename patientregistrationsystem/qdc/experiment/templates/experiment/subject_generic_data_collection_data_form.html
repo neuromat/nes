@@ -291,19 +291,38 @@
                         <div class="row">
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group {% if generic_data_collection_data_form.errors.file %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
-                                    <br/>
-                                    {% if editing %}
-                                        {{ generic_data_collection_data_form.file }}
-                                    {% else %}
-                                        {{ generic_data_collection_data_form.file.value }}
-                                        <button class="btn btn-default" type="button" onclick="location.href='{{ generic_data_collection_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+
+                                    {% if creating or editing %}
+                                        <label class="control-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
+                                        <br/>
+                                        <input type="file" name="generic_data_collection_files" multiple>
+                                        <br/>
                                     {% endif %}
-                                    <div class="help-block with-errors">
-                                        {% for error in generic_data_collection_data_form.file.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
+
+                                    {% if not creating %}
+                                        {% if generic_data_collection_data.generic_data_collection_files %}
+                                            <label class="control-label">{% trans "Uploaded files" %} <b style="color: red;">*</b></label>
+                                            <br/>
+                                            <table><tbody>
+                                            {% for generic_data_collection_file in generic_data_collection_data.generic_data_collection_files.all %}
+                                                <tr>
+                                                <td>{{ generic_data_collection_file.file.url }}</td>
+                                                <td>
+                                                    <button class="btn btn-default" type="button" onclick="location.href='{{ generic_data_collection_file.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                                </td>
+                                                <td>{{ generic_data_collection_file.file.size|filesizeformat }}</td>
+                                                {% if editing %}
+                                                    <td>
+                                                        <input type="checkbox" name="remove_generic_data_collection_file_{{ generic_data_collection_file.id }}"/>
+                                                        {% trans "Delete" %}</td>
+                                                {% endif %}
+                                                </tr>
+                                            {% endfor %}
+
+                                            </tbody></table>
+                                        {% endif %}
+                                    {% endif %}
+
                                 </div>
                             </div>
                         </div>

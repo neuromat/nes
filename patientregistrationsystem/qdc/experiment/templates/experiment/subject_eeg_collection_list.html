@@ -92,32 +92,35 @@
                                         </td>
                                         <td>
                                             <table>
-                                                {% for eeg_data_file in eeg_collection.eeg_data_files %}
+                                                {% for eeg_data in eeg_collection.eeg_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/eeg_data/{{ eeg_data_file.id }}/1" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
-                                                                {{ eeg_data_file.description }}
+                                                            <a href="/experiment/eeg_data/{{ eeg_data.id }}/1" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                                {{ eeg_data.description }}
                                                             </a>
                                                         </td>
-                                                        <td>{{ eeg_data_file.date }}</td>
-                                                        <td>{{ eeg_data_file.file_format.name }}</td>
-                                                        <td>{{ eeg_data_file.file.size|filesizeformat }}</td>
-                                                        <td><a href="{{ eeg_data_file.file.url }}" data-toggle="tooltip" data-placement="top" title="{% trans "Download file" %}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                        <td>{{ eeg_data.date }}</td>
+                                                        <td>{{ eeg_data.file_format.name }}</td>
                                                         <td>
-{#                                                            {% if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading and eeg_data_file.eeg_setting.eeg_amplifier_setting and eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used %}#}
-                                                            {% if eeg_data_file.can_export_to_nwb %}
-                                                                <a onclick="handle_processing();" href="/experiment/eeg_data/{{ eeg_data_file.id }}/export_nwb/{{ eeg_collection.eeg_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}" data-toggle="tooltip" data-placement="top" title="{% trans "Export nwb file format" %}">
-                                                                    <span class="glyphicon glyphicon-export"></span>
-                                                                </a>
-                                                            {% else %}
-                                                                <span data-toggle="tooltip" data-placement="top" title="{% trans "Unable to export as nwb file. The uploaded data file is not an EEG file. Its format is not valid, or the number of channels is not set." %}" style="color: grey" class="glyphicon glyphicon-export"></span>
-                                                            {% endif %}
+                                                            <table>
+                                                                {% for eeg_file in eeg_data.eeg_file_list %}
+                                                                    <tr>
+                                                                        <td>{{ eeg_file.file.size|filesizeformat }}</td>
+                                                                        <td><a href="{{ eeg_file.file.url }}" data-toggle="tooltip" data-placement="top" title="{% trans "Download file" %}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                                        <td>
+                                                                            {% if eeg_file.can_export_to_nwb %}
+                                                                                <a onclick="handle_processing();" href="/experiment/eeg_file/{{ eeg_file.id }}/export_nwb/{{ eeg_collection.eeg_configuration.id }}{{ forloop.counter }}/{{ process_requisition }}" data-toggle="tooltip" data-placement="top" title="{% trans "Export nwb file format" %}">
+                                                                                    <span class="glyphicon glyphicon-export"></span>
+                                                                                </a>
+                                                                            {% else %}
+                                                                                <span data-toggle="tooltip" data-placement="top" title="{% trans "Unable to export as nwb file. The uploaded data file is not an EEG file. Its format is not valid, or the number of channels is not set." %}" style="color: grey" class="glyphicon glyphicon-export"></span>
+                                                                            {% endif %}
+                                                                        </td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </table>
                                                         </td>
-                                                        <td>
-                                                            {% if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading %}
-                                                                <span class="label label-success">{% trans "EEG file recognized by NES" %}</span>
-                                                            {% endif %}
-                                                        </td>
+
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>

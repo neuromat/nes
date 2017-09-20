@@ -92,17 +92,28 @@
                                         </td>
                                         <td>
                                             <table>
-                                                {% for emg_data_file in emg_collection.emg_data_files %}
+                                                {% for emg_data in emg_collection.emg_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/emg_data/{{ emg_data_file.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
-                                                                {{ emg_data_file.description }}
+                                                            <a href="/experiment/emg_data/{{ emg_data.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                                {{ emg_data.description }}
                                                             </a>
                                                         </td>
-                                                        <td>{{ emg_data_file.date }}</td>
-                                                        <td>{{ emg_data_file.file_format.name }}</td>
-                                                        <td>{{ emg_data_file.file.size|filesizeformat }}</td>
-                                                        <td><a href="{{ emg_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                        <td>{{ emg_data.date }}</td>
+                                                        <td>{{ emg_data.file_format.name }}</td>
+
+                                                        <td>
+                                                            <table>
+                                                                {% for emg_file in emg_data.emg_files.all %}
+                                                                    <tr>
+                                                                        <td>{{ emg_file.file.size|filesizeformat }}</td>
+                                                                        <td><a href="{{ emg_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                                    </tr>
+                                                                {% endfor %}
+
+                                                            </table>
+                                                        </td>
+
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>

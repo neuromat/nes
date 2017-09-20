@@ -301,19 +301,38 @@
                         <div class="row">
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group {% if digital_game_phase_data_form.errors.file %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
+
+                                {% if creating or editing %}
+                                    <label class="control-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
                                     <br/>
-                                    {% if editing %}
-                                        {{ digital_game_phase_data_form.file }}
-                                    {% else %}
-                                        {{ digital_game_phase_data_form.file.value }}
-                                        <button class="btn btn-default" type="button" onclick="location.href='{{ digital_game_phase_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
-                                    {% endif %}
-                                    <div class="help-block with-errors">
-                                        {% for error in digital_game_phase_data_form.file.errors %}
-                                            {{ error }}
+                                    <input type="file" name="digital_game_phase_files" multiple>
+                                    <br/>
+                                {% endif %}
+
+                                {% if not creating %}
+                                    {% if digital_game_phase_data.digital_game_phase_files %}
+                                        <label class="control-label">{% trans "Uploaded files" %} <b style="color: red;">*</b></label>
+                                        <br/>
+                                        <table><tbody>
+                                        {% for digital_game_phase_file in digital_game_phase_data.digital_game_phase_files.all %}
+                                            <tr>
+                                            <td>{{ digital_game_phase_file.file.url }}</td>
+                                            <td>
+                                                <button class="btn btn-default" type="button" onclick="location.href='{{ digital_game_phase_file.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                            </td>
+                                            <td>{{ digital_game_phase_file.file.size|filesizeformat }}</td>
+                                            {% if editing %}
+                                                <td>
+                                                    <input type="checkbox" name="remove_digital_game_phase_file_{{ digital_game_phase_file.id }}"/>
+                                                    {% trans "Delete" %}</td>
+                                            {% endif %}
+                                            </tr>
                                         {% endfor %}
-                                    </div>
+
+                                        </tbody></table>
+                                    {% endif %}
+                                {% endif %}
+
                                 </div>
                             </div>
                         </div>

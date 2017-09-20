@@ -55,7 +55,8 @@ from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, 
     EMGElectrodePlacementSetting, TMSData, ResearchProjectCollaboration, TMSLocalizationSystem, \
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
     GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending, \
-    GoalkeeperGameConfig, GoalkeeperGameResults
+    GoalkeeperGameConfig, GoalkeeperGameResults, EEGFile, EMGFile, AdditionalDataFile, GenericDataCollectionFile, \
+    DigitalGamePhaseFile
 
 from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -5306,29 +5307,36 @@ def subject_eeg_view(request, group_id, subject_id,
 
         data_configuration_tree_id = list_data_configuration_tree(eeg_configuration.id, [item[0] for item in path])
 
-        eeg_data_files = EEGData.objects.filter(subject_of_group=subject_of_group,
+        eeg_data_list = EEGData.objects.filter(subject_of_group=subject_of_group,
                                                 data_configuration_tree__id=data_configuration_tree_id)
 
-        for eeg_data_file in eeg_data_files:
+        for eeg_data in eeg_data_list:
 
-            eeg_data_file.eeg_reading = eeg_data_reading(eeg_data_file, preload=False)
-            eeg_data_file.can_export_to_nwb = False
+            eeg_data.eeg_file_list = []
 
-            # v1.5
-            # can export to nwb?
-            if eeg_data_file.eeg_reading.file_format and eeg_data_file.eeg_reading.reading:
-                if eeg_data_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
-                        hasattr(eeg_data_file.eeg_setting, 'eeg_amplifier_setting') and \
-                        eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
-                        eeg_data_file.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
-                        len(mne.pick_types(eeg_data_file.eeg_reading.reading.info, eeg=True)):
+            for eeg_file in eeg_data.eeg_files.all():
 
-                    eeg_data_file.can_export_to_nwb = True
+                eeg_file.eeg_reading = eeg_data_reading(eeg_file, preload=False)
+                eeg_file.can_export_to_nwb = False
+
+                # v1.5
+                # can export to nwb?
+                if eeg_file.eeg_reading.file_format and eeg_file.eeg_reading.reading:
+                    if eeg_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and \
+                            hasattr(eeg_data.eeg_setting, 'eeg_amplifier_setting') and \
+                            eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
+                            eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
+                            len(mne.pick_types(eeg_file.eeg_reading.reading.info, eeg=True)):
+
+                        eeg_file.can_export_to_nwb = True
+
+                eeg_data.eeg_file_list.append(eeg_file)
 
         eeg_collections.append(
             {'eeg_configuration': eeg_configuration,
              'path': path,
-             'eeg_data_files': eeg_data_files}
+             'eeg_data_list': eeg_data_list
+             }
         )
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
@@ -5440,14 +5448,15 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
                 eeg_data_added.save()
 
-                has_position_status = False
+                # saving uploaded files
+                files_to_upload_list = request.FILES.getlist('eeg_files')
+                for file_to_upload in files_to_upload_list:
+                    eeg_file = EEGFile(eeg_data=eeg_data_added, file=file_to_upload)
+                    eeg_file.save()
 
                 # creating position status
                 if hasattr(eeg_data_added.eeg_setting, 'eeg_electrode_layout_setting'):
                     eeg_electrode_layout_setting = eeg_data_added.eeg_setting.eeg_electrode_layout_setting
-
-                    if eeg_electrode_layout_setting.positions_setting:
-                        has_position_status = True
 
                     for position_setting in eeg_electrode_layout_setting.positions_setting.all():
                         EEGElectrodePositionCollectionStatus(
@@ -5456,9 +5465,6 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
                             eeg_electrode_position_setting=position_setting,
                             channel_index=position_setting.channel_index
                         ).save()
-
-                # Validate known eeg file formats
-                reading_for_eeg_validation(eeg_data_added, request)
 
                 messages.success(request, _('EEG data collection created successfully.'))
                 messages.info(request, _('Now you can configure each electrode position'))
@@ -5481,110 +5487,95 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
     return render(request, template_name, context)
 
 
-def reading_for_eeg_validation(eeg_data_added, request):
-    eeg_reading = eeg_data_reading(eeg_data_added)
-    if eeg_reading.file_format:
-        if eeg_reading.reading:
-            messages.success(request, _('EEG data file format validated.'))
-        else:
-            messages.warning(request, _('Not valid EEG file format.'))
-
-
 # v1.5
 def get_sensors_position(eeg_data):
     # Geração da imagem de localização dos electrodos
     # Validate if EGI
     # raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
-    reading = eeg_data_reading(eeg_data, preload=False)
+
     file_path = None
-    raw = reading.reading
 
-    if raw is not None:
-        picks = mne.pick_types(raw.info, eeg=True)
-        ch_names = raw.info['ch_names']
-        channels = len(picks)
-        montage = ""
+    # getting the first eeg_file, if exists
+    eeg_file = EEGFile.objects.filter(eeg_data=eeg_data).first()
 
-        # If EGI 129 channels
-        if channels == 129:
-            montage = mne.channels.read_montage('GSN-HydroCel-129')
-        else:
-            if channels == 128:
-                montage = mne.channels.read_montage('GSN-HydroCel-128')
-        # label_names = montage.ch_names
-        if montage != "":
-            i = 0
-            list1 = []
-            list2 = []
+    if eeg_file:
 
-            for ch_name in ch_names:
-                i = i + 1
-                if i < 10:
-                    label = 'EEG' + ' 00' + str(i)
-                if i > 9 and i < 100:
-                    label = 'EEG' + ' 0' + str(i)
-                if i > 99 and i < channels:
-                    label = 'EEG' + ' ' + str(i)
+        reading = eeg_data_reading(eeg_file, preload=False)
+        raw = reading.reading
 
-                if ch_name == label:
-                    list1.insert(i, 'E' + str(i))
-                    list2.insert(i, ch_name)
+        if raw is not None:
+            picks = mne.pick_types(raw.info, eeg=True)
+            ch_names = raw.info['ch_names']
+            channels = len(picks)
+            montage = ""
 
-            list1.insert(i + 1, 'Cz')
-            list2.insert(i + 1, 'EEG ' + str(channels))
-            mapping = dict(zip(list2, list1))
+            # If EGI 129 channels
+            if channels == 129:
+                montage = mne.channels.read_montage('GSN-HydroCel-129')
+            else:
+                if channels == 128:
+                    montage = mne.channels.read_montage('GSN-HydroCel-128')
+            # label_names = montage.ch_names
+            if montage != "":
+                i = 0
+                list1 = []
+                list2 = []
 
-            raw.rename_channels(mapping)
-            raw.set_montage(montage)
+                for ch_name in ch_names:
+                    i = i + 1
+                    if i < 10:
+                        label = 'EEG' + ' 00' + str(i)
+                    if i > 9 and i < 100:
+                        label = 'EEG' + ' 0' + str(i)
+                    if i > 99 and i < channels:
+                        label = 'EEG' + ' ' + str(i)
 
-            file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
-            # writing
-            errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+                    if ch_name == label:
+                        list1.insert(i, 'E' + str(i))
+                        list2.insert(i, ch_name)
 
-            # the operation below ensures that the properly backend is set
-            import matplotlib as mpl
-            mpl.use('agg')
+                list1.insert(i + 1, 'Cz')
+                list2.insert(i + 1, 'EEG ' + str(channels))
+                mapping = dict(zip(list2, list1))
 
-            fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False,
-                                   title="Sensor positions", ch_groups='position')
-            fig.savefig(path.join(path_complete, file_name))
+                raw.rename_channels(mapping)
+                raw.set_montage(montage)
 
-            file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+                file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
+                # writing
+                errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
+
+                # the operation below ensures that the properly backend is set
+                import matplotlib as mpl
+                mpl.use('agg')
+
+                fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False,
+                                       title="Sensor positions", ch_groups='position')
+                fig.savefig(path.join(path_complete, file_name))
+
+                file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
 
     return file_path
 
 
-def eeg_data_reading(eeg_data, preload=False):
+def eeg_data_reading(eeg_file: EEGFile, preload=False):
 
     eeg_reading = EEGReading()
 
     # For known formats, try to access data in order to validate the format
 
     # v1.5
-    if eeg_data.file_format.nes_code == "MNE-RawFromEGI":
+    if eeg_file.eeg_data.file_format.nes_code == "MNE-RawFromEGI":
 
-        eeg_reading.file_format = eeg_data.file_format
+        eeg_reading.file_format = eeg_file.eeg_data.file_format
 
         try:
             # Trying to read the segments
-            reading = mne.io.read_raw_egi(eeg_data.file.path, preload=preload)
+            reading = mne.io.read_raw_egi(eeg_file.file.path, preload=preload)
         except:
             reading = None
 
         eeg_reading.reading = reading
-
-    # if eeg_data.file_format.nes_code == "NEO-RawBinarySignalIO":
-    #
-    #     eeg_reading.file_format = eeg_data.file_format
-    #     reading = io.RawBinarySignalIO(filename=eeg_data.file.path)
-    #
-    #     try:
-    #         # Trying to read the segments
-    #         reading.read_segment(lazy=(not preload), cascade=True, )
-    #     except:
-    #         reading = None
-    #
-    #     eeg_reading.reading = reading
 
     return eeg_reading
 
@@ -5634,7 +5625,11 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
             check_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project)
 
             subject_of_group = eeg_data.subject_of_group
-            eeg_data.file.delete()
+
+            # removing uploaded files
+            for eeg_uploaded_file in eeg_data.eeg_files.all():
+                eeg_uploaded_file.file.delete()
+
             eeg_data.delete()
             messages.success(request, _('EEG data removed successfully.'))
             return redirect('subject_eeg_view',
@@ -5679,7 +5674,11 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
 
                 if tab == "1":
 
+                    has_changed = False
+
                     if eeg_data_form.has_changed():
+
+                        has_changed = True
 
                         # if the eeg-setting changed
                         if current_eeg_setting_id != int(request.POST['eeg_setting']):
@@ -5709,12 +5708,23 @@ def eeg_data_edit(request, eeg_data_id, tab, template_name="experiment/subject_e
                                             channel_index=position_setting.channel_index
                                         ).save()
 
-                        # Validate known eeg file formats
-                        reading_for_eeg_validation(eeg_data_to_update, request)
+                    # removing checked files
+                    for current_eeg_file in eeg_data.eeg_files.all():
+                        if "remove_eeg_file_" + str(current_eeg_file.id) in request.POST:
+                            has_changed = True
+                            current_eeg_file.delete()
 
+                    # new files to upload
+                    files_to_upload_list = request.FILES.getlist('eeg_files')
+                    for file_to_upload in files_to_upload_list:
+                        has_changed = True
+                        eeg_file = EEGFile(eeg_data=eeg_data, file=file_to_upload)
+                        eeg_file.save()
+
+                    if has_changed:
                         messages.success(request, _('EEG data updated successfully.'))
                     else:
-                        messages.success(request, _('There is no changes to save.'))
+                        messages.info(request, _('There is no changes to save.'))
 
                 if tab == "3":
                     for position_worked in eeg_data.electrode_positions.all():
@@ -5853,14 +5863,15 @@ def clean(input_string):
 
 @login_required
 @permission_required('experiment.change_experiment')
-def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
+def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
 
     update_process_requisition(request, process_requisition, 'reading_source_file', _('Reading source file'))
 
-    eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+    # eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
+    eeg_file = get_object_or_404(EEGFile, pk=eeg_file_id)
 
     # Open and read signal
-    eeg_reading = eeg_data_reading(eeg_data, preload=True)
+    eeg_reading = eeg_data_reading(eeg_file, preload=True)
 
     # Was it open properly?
     ok_opening = False
@@ -5879,15 +5890,15 @@ def eeg_data_export_nwb(request, eeg_data_id, some_number, process_requisition):
             _("It was not possible to open the data file. Check if the number of channels configured is correct."))
 
         return redirect('subject_eeg_view',
-                        group_id=eeg_data.subject_of_group.group_id,
-                        subject_id=eeg_data.subject_of_group.subject_id)
+                        group_id=eeg_file.eeg_data.subject_of_group.group_id,
+                        subject_id=eeg_file.eeg_data.subject_of_group.subject_id)
 
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "export_nwb")
     errors, path_complete = create_directory(path_complete, str(request.user.id))
-    file_name = "EEG_" + eeg_data.subject_of_group.subject.patient.code + "_" + str(some_number) + ".nwb"
+    file_name = "EEG_" + eeg_file.eeg_data.subject_of_group.subject.patient.code + "_" + str(some_number) + ".nwb"
     nwb_file_name = path.join(path_complete, file_name)
 
-    nwb_file_name = create_nwb_file(eeg_data, eeg_reading, process_requisition, request, nwb_file_name)
+    nwb_file_name = create_nwb_file(eeg_file.eeg_data, eeg_reading, process_requisition, request, nwb_file_name)
 
     response = HttpResponse(open(nwb_file_name, "rb").read())
     response['Content-Type'] = 'application/force-download'
@@ -6428,13 +6439,13 @@ def subject_digital_game_phase_view(request, group_id, subject_id,
         data_configuration_tree_id = \
             list_data_configuration_tree(digital_game_phase_configuration.id, [item[0] for item in path])
 
-        digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(
+        digital_game_phase_data_list = DigitalGamePhaseData.objects.filter(
             subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
 
         digital_game_phase_collections.append(
             {'digital_game_phase_configuration': digital_game_phase_configuration,
              'path': path,
-             'digital_game_phase_data_files': digital_game_phase_data_files}
+             'digital_game_phase_data_list': digital_game_phase_data_list}
         )
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
@@ -6492,6 +6503,13 @@ def subject_digital_game_phase_data_create(request, group_id, subject_id, digita
 
                 digital_game_phase_data_added.save()
 
+                # saving uploaded files
+                files_to_upload_list = request.FILES.getlist('digital_game_phase_files')
+                for file_to_upload in files_to_upload_list:
+                    digital_game_phase_file = DigitalGamePhaseFile(
+                        digital_game_phase_data=digital_game_phase_data_added, file=file_to_upload)
+                    digital_game_phase_file.save()
+
                 messages.success(request, _('Goalkeeper game phase data collection created successfully.'))
 
                 redirect_url = reverse("digital_game_phase_data_view", args=(digital_game_phase_data_added.id,))
@@ -6531,6 +6549,11 @@ def digital_game_phase_data_view(request, digital_game_phase_data_id,
             check_can_change(request.user, digital_game_phase_data.subject_of_group.group.experiment.research_project)
 
             subject_of_group = digital_game_phase_data.subject_of_group
+
+            # removing uploaded files
+            for digital_game_phase_uploaded_file in digital_game_phase_data.digital_game_phase_files.all():
+                digital_game_phase_uploaded_file.file.delete()
+
             digital_game_phase_data.delete()
             messages.success(request, _('Goalkeeper game phase data removed successfully.'))
             return redirect('subject_digital_game_phase_view',
@@ -6562,13 +6585,33 @@ def digital_game_phase_data_edit(request, digital_game_phase_data_id):
 
         digital_game_phase_data_form = DigitalGamePhaseDataForm(request.POST, request.FILES,
                                                                 instance=digital_game_phase_data)
+
+        has_changed = False
+
         if digital_game_phase_data_form.is_valid() and digital_game_phase_data_form.has_changed():
+
+            has_changed = True
 
             digital_game_phase_data_to_update = digital_game_phase_data_form.save(commit=False)
             digital_game_phase_data_to_update.group = digital_game_phase_data.subject_of_group.group
             digital_game_phase_data_to_update.subject = digital_game_phase_data.subject_of_group.subject
             digital_game_phase_data_to_update.save()
 
+        # removing checked files
+        for current_digital_game_phase_file in digital_game_phase_data.digital_game_phase_files.all():
+            if "remove_digital_game_phase_file_" + str(current_digital_game_phase_file.id) in request.POST:
+                has_changed = True
+                current_digital_game_phase_file.delete()
+
+        # new files to upload
+        files_to_upload_list = request.FILES.getlist('digital_game_phase_files')
+        for file_to_upload in files_to_upload_list:
+            has_changed = True
+            digital_game_phase_file = DigitalGamePhaseFile(
+                digital_game_phase_data=digital_game_phase_data, file=file_to_upload)
+            digital_game_phase_file.save()
+
+        if has_changed:
             messages.success(request, _('Goalkeeper game phase data updated successfully.'))
         else:
             messages.success(request, _('There is no changes to save.'))
@@ -6725,19 +6768,22 @@ def load_group_goalkeeper_game_data(request, group_id):
 
                                     digital_game_phase_data.file_format = get_object_or_404(FileFormat, nes_code='txt')
 
-                                    # Data file
-                                    file_name = "%s_%s.txt" % (experimental_group_code,
-                                                               subject_of_group.subject.patient.code)
-                                    file_content = result.filecontent
-
-                                    digital_game_phase_data.file.save(
-                                        file_name,
-                                        ContentFile(file_content))
-
                                     digital_game_phase_data.sequence_used_in_context_tree = \
                                         goalkeeper_game_configuration.sequexecuted
 
                                     digital_game_phase_data.save()
+
+                                    # Digital Game Phase File
+                                    file_name = "%s_%s.txt" % (experimental_group_code,
+                                                               subject_of_group.subject.patient.code)
+                                    file_content = result.filecontent
+
+                                    digital_game_phase_file = DigitalGamePhaseFile(
+                                        digital_game_phase_data=digital_game_phase_data)
+                                    digital_game_phase_file.file.save(
+                                        file_name,
+                                        ContentFile(file_content))
+                                    digital_game_phase_file.save()
 
                                     number_of_imported_data += 1
 
@@ -6774,13 +6820,13 @@ def subject_generic_data_collection_view(
         data_configuration_tree_id = \
             list_data_configuration_tree(generic_data_collection_configuration.id, [item[0] for item in path])
 
-        generic_data_collection_data_files = GenericDataCollectionData.objects.filter(
+        generic_data_collection_data_list = GenericDataCollectionData.objects.filter(
             subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
 
         generic_data_collection_collections.append(
             {'generic_data_collection_configuration': generic_data_collection_configuration,
              'path': path,
-             'generic_data_collection_data_files': generic_data_collection_data_files}
+             'generic_data_collection_data_list': generic_data_collection_data_list}
         )
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
@@ -6840,6 +6886,14 @@ def subject_generic_data_collection_data_create(
 
                 generic_data_collection_data_added.save()
 
+                # saving uploaded files
+                files_to_upload_list = request.FILES.getlist('generic_data_collection_files')
+                for file_to_upload in files_to_upload_list:
+                    generic_data_collection_file = GenericDataCollectionFile(
+                        generic_data_collection_data=generic_data_collection_data_added,
+                        file=file_to_upload)
+                    generic_data_collection_file.save()
+
                 messages.success(request, _('Generic data collection created successfully.'))
 
                 redirect_url = reverse("generic_data_collection_data_view",
@@ -6880,6 +6934,11 @@ def generic_data_collection_data_view(request, generic_data_collection_data_id,
                              generic_data_collection_data.subject_of_group.group.experiment.research_project)
 
             subject_of_group = generic_data_collection_data.subject_of_group
+
+            # removing uploaded files
+            for generic_data_collection_uploaded_file in generic_data_collection_data.generic_data_collection_files.all():
+                generic_data_collection_uploaded_file.file.delete()
+
             generic_data_collection_data.delete()
             messages.success(request, _('Generic data collection removed successfully.'))
             return redirect('subject_generic_data_collection_view',
@@ -6910,13 +6969,36 @@ def generic_data_collection_data_edit(request, generic_data_collection_data_id):
 
         generic_data_collection_data_form = GenericDataCollectionDataForm(
             request.POST, request.FILES, instance=generic_data_collection_data)
+
+        has_changed = False
+
         if generic_data_collection_data_form.is_valid() and generic_data_collection_data_form.has_changed():
+
+            has_changed = True
 
             generic_data_collection_data_to_update = generic_data_collection_data_form.save(commit=False)
             generic_data_collection_data_to_update.group = generic_data_collection_data.subject_of_group.group
             generic_data_collection_data_to_update.subject = generic_data_collection_data.subject_of_group.subject
             generic_data_collection_data_to_update.save()
 
+        # removing checked files
+        for current_generic_data_collection_file in \
+                generic_data_collection_data.generic_data_collection_files.all():
+            if "remove_generic_data_collection_file_" + \
+                    str(current_generic_data_collection_file.id) in request.POST:
+                has_changed = True
+                current_generic_data_collection_file.delete()
+
+        # new files to upload
+        files_to_upload_list = request.FILES.getlist('generic_data_collection_files')
+        for file_to_upload in files_to_upload_list:
+            has_changed = True
+            generic_data_collection_file = GenericDataCollectionFile(
+                generic_data_collection_data=generic_data_collection_data,
+                file=file_to_upload)
+            generic_data_collection_file.save()
+
+        if has_changed:
             messages.success(request, _('Generic data collection updated successfully.'))
         else:
             messages.success(request, _('There is no changes to save.'))
@@ -7071,6 +7153,7 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
 
     return render(request, template_name, context)
 
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def subject_emg_view(request, group_id, subject_id,
@@ -7091,13 +7174,13 @@ def subject_emg_view(request, group_id, subject_id,
 
         data_configuration_tree_id = list_data_configuration_tree(emg_configuration.id, [item[0] for item in path])
 
-        emg_data_files = EMGData.objects.filter(subject_of_group=subject_of_group,
-                                                data_configuration_tree__id=data_configuration_tree_id)
+        emg_data_list = EMGData.objects.filter(subject_of_group=subject_of_group,
+                                               data_configuration_tree__id=data_configuration_tree_id)
 
         emg_collections.append(
             {'emg_configuration': emg_configuration,
              'path': path,
-             'emg_data_files': emg_data_files}
+             'emg_data_list': emg_data_list}
         )
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
@@ -7158,10 +7241,15 @@ def subject_emg_data_create(request, group_id, subject_id, emg_configuration_id,
 
                 emg_data_added.save()
 
+                # saving uploaded files
+                files_to_upload_list = request.FILES.getlist('emg_files')
+                for file_to_upload in files_to_upload_list:
+                    emg_file = EMGFile(emg_data=emg_data_added, file=file_to_upload)
+                    emg_file.save()
+
                 messages.success(request, _('EMG data collection created successfully.'))
 
                 redirect_url = reverse("emg_data_view", args=(emg_data_added.id,))
-                # redirect_url = reverse("subjects", args=(group.id,))
                 return HttpResponseRedirect(redirect_url)
 
     context = {"can_change": True,
@@ -7200,7 +7288,11 @@ def emg_data_view(request, emg_data_id, template_name="experiment/subject_emg_da
             check_can_change(request.user, emg_data.subject_of_group.group.experiment.research_project)
 
             subject_of_group = emg_data.subject_of_group
-            emg_data.file.delete()
+
+            # removing uploaded files
+            for emg_uploaded_file in emg_data.emg_files.all():
+                emg_uploaded_file.file.delete()
+
             emg_data.delete()
             messages.success(request, _('EMG data removed successfully.'))
             return redirect('subject_emg_view',
@@ -7236,13 +7328,31 @@ def emg_data_edit(request, emg_data_id, template_name="experiment/subject_emg_da
         if request.POST['action'] == "save":
             if emg_data_form.is_valid():
 
+                has_changed = False
+
                 if emg_data_form.has_changed():
+
+                    has_changed = True
 
                     emg_data_to_update = emg_data_form.save(commit=False)
                     emg_data_to_update.group = emg_data.subject_of_group.group
                     emg_data_to_update.subject = emg_data.subject_of_group.subject
                     emg_data_to_update.save()
 
+                # removing checked files
+                for current_emg_file in emg_data.emg_files.all():
+                    if "remove_emg_file_" + str(current_emg_file.id) in request.POST:
+                        has_changed = True
+                        current_emg_file.delete()
+
+                # new files to upload
+                files_to_upload_list = request.FILES.getlist('emg_files')
+                for file_to_upload in files_to_upload_list:
+                    has_changed = True
+                    emg_file = EMGFile(emg_data=emg_data, file=file_to_upload)
+                    emg_file.save()
+
+                if has_changed:
                     messages.success(request, _('EMG data updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
@@ -7284,7 +7394,7 @@ def subject_additional_data_view(request, group_id, subject_id,
         {'component_configuration': None,
          'path': None,
          'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
-         'additional_data_files': AdditionalData.objects.filter(
+         'additional_data_list': AdditionalData.objects.filter(
              subject_of_group=subject_of_group, data_configuration_tree=None),
          'icon_class': icon_class['experimental_protocol']}
     ]
@@ -7302,9 +7412,9 @@ def subject_additional_data_view(request, group_id, subject_id,
             SubjectStepData.objects.filter(subject_of_group=subject_of_group,
                                            data_configuration_tree=data_configuration_tree_id)
 
-        additional_data_files = None
+        additional_data_list = None
         if data_configuration_tree_id:
-            additional_data_files = \
+            additional_data_list = \
                 AdditionalData.objects.filter(subject_of_group=subject_of_group,
                                               data_configuration_tree__id=data_configuration_tree_id)
 
@@ -7312,7 +7422,7 @@ def subject_additional_data_view(request, group_id, subject_id,
             {'component_configuration': component_configuration,
              'path': path,
              'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
-             'additional_data_files': additional_data_files,
+             'additional_data_list': additional_data_list,
              'icon_class': icon_class[component_configuration.component.component_type]}
         )
 
@@ -7706,6 +7816,13 @@ def subject_additional_data_create(request, group_id, subject_id, path_of_config
 
                 additional_data_added.save()
 
+                # saving uploaded files
+                files_to_upload_list = request.FILES.getlist('additional_data_files')
+                for file_to_upload in files_to_upload_list:
+                    additional_data_file = AdditionalDataFile(additional_data=additional_data_added,
+                                                              file=file_to_upload)
+                    additional_data_file.save()
+
                 messages.success(request, _('Additional data collection created successfully.'))
 
                 redirect_url = reverse("additional_data_view", args=(additional_data_added.id,))
@@ -7741,7 +7858,11 @@ def additional_data_view(request, additional_data_id, template_name="experiment/
             check_can_change(request.user, additional_data.subject_of_group.group.experiment.research_project)
 
             subject_of_group = additional_data.subject_of_group
-            additional_data.file.delete()
+
+            # removing uploaded files
+            for additional_data_uploaded_file in additional_data.additional_data_files.all():
+                additional_data_uploaded_file.file.delete()
+
             additional_data.delete()
             messages.success(request, _('Additional data removed successfully.'))
             return redirect('subject_additional_data_view',
@@ -7776,14 +7897,33 @@ def additional_data_edit(request, additional_data_id, template_name="experiment/
         additional_data_form = AdditionalDataForm(request.POST, request.FILES, instance=additional_data)
 
         if request.POST['action'] == "save":
+
+            has_changed = False
+
             if additional_data_form.is_valid():
                 if additional_data_form.has_changed():
+
+                    has_changed = True
 
                     additional_data_to_update = additional_data_form.save(commit=False)
                     additional_data_to_update.group = additional_data.subject_of_group.group
                     additional_data_to_update.subject = additional_data.subject_of_group.subject
                     additional_data_to_update.save()
 
+                # removing checked files
+                for current_additional_data_file in additional_data.additional_data_files.all():
+                    if "remove_additional_data_file_" + str(current_additional_data_file.id) in request.POST:
+                        has_changed = True
+                        current_additional_data_file.delete()
+
+                # new files to upload
+                files_to_upload_list = request.FILES.getlist('additional_data_files')
+                for file_to_upload in files_to_upload_list:
+                    has_changed = True
+                    additional_data_file = AdditionalDataFile(additional_data=additional_data, file=file_to_upload)
+                    additional_data_file.save()
+
+                if has_changed:
                     messages.success(request, _('Additional data updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
