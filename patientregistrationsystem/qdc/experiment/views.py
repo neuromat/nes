@@ -4994,21 +4994,32 @@ def questionnaire_response_edit(request, questionnaire_response_id,
 
         elif request.POST['action'] == "remove":
             if request.user.has_perm('experiment.delete_questionnaireresponse'):
-                surveys = Questionnaires()
-                result = surveys.delete_participant(
-                    questionnaire.survey.lime_survey_id,
-                    questionnaire_response.token_id)
-                surveys.release_session_key()
 
                 can_delete = False
 
-                if str(questionnaire_response.token_id) in result:
-                    result = result[str(questionnaire_response.token_id)]
-                    if result == 'Deleted' or result == 'Invalid token ID':
-                        can_delete = True
+                token_is_used_patient_questionnaire_response = \
+                    PatientQuestionnaireResponse.objects.filter(patient=subject.patient,
+                                                                survey=questionnaire.survey,
+                                                                token_id=questionnaire_response.token_id).exists()
+
+                if token_is_used_patient_questionnaire_response:
+                    can_delete = True
                 else:
-                    if 'status' in result and result['status'] == 'Error: Invalid survey ID':
-                        can_delete = True
+
+                    # remove token from Limesurvey
+                    surveys = Questionnaires()
+                    result = surveys.delete_participant(
+                        questionnaire.survey.lime_survey_id,
+                        questionnaire_response.token_id)
+                    surveys.release_session_key()
+
+                    if str(questionnaire_response.token_id) in result:
+                        result = result[str(questionnaire_response.token_id)]
+                        if result == 'Deleted' or result == 'Invalid token ID':
+                            can_delete = True
+                    else:
+                        if 'status' in result and result['status'] == 'Error: Invalid survey ID':
+                            can_delete = True
 
                 if can_delete:
                     questionnaire_response.delete()
@@ -5259,10 +5270,10 @@ def subject_questionnaire_view(request, group_id, subject_id,
             response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
                                                                  patient_questionnaire_response.token_id,
                                                                  "completed")
-            if response_result is not None and response_result != "N" and response_result != "":
+            if response_result is not None and response_result != "":
                 patient_questionnaire_responses_with_status.append(
                     {'patient_questionnaire_response': patient_questionnaire_response,
-                     'completed': True}
+                     'completed': True if response_result != "N" else False}
                 )
 
         subject_questionnaires.append(
