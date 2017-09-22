@@ -5314,50 +5314,52 @@ def load_questionnaire_data(request, group_id):
         data_configuration_tree_id = \
             list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path])
 
-        if data_configuration_tree_id:
-            data_configuration_tree = get_object_or_404(DataConfigurationTree, pk=data_configuration_tree_id)
+        if not data_configuration_tree_id:
+            data_configuration_tree_id = create_data_configuration_tree([item[0] for item in path])
 
-            questionnaire = get_object_or_404(Questionnaire, pk=questionnaire_configuration.component_id)
+        data_configuration_tree = get_object_or_404(DataConfigurationTree, pk=data_configuration_tree_id)
 
-            # for each subject
-            for subject_of_group in group.subjectofgroup_set.all():
+        questionnaire = get_object_or_404(Questionnaire, pk=questionnaire_configuration.component_id)
 
-                # check if there is no response for this "subject + step"
-                if not QuestionnaireResponse.objects.filter(
-                        subject_of_group=subject_of_group,
-                        data_configuration_tree=data_configuration_tree).exists():
+        # for each subject
+        for subject_of_group in group.subjectofgroup_set.all():
 
-                    # getting patient-questionnaire-response
-                    patient_questionnaire_responses = PatientQuestionnaireResponse.objects.filter(
-                        patient=subject_of_group.subject.patient,
-                        survey=questionnaire.survey)
+            # check if there is no response for this "subject + step"
+            if not QuestionnaireResponse.objects.filter(
+                    subject_of_group=subject_of_group,
+                    data_configuration_tree=data_configuration_tree).exists():
 
-                    # check if there is response in patient-questionnaire-response to reuse
-                    if patient_questionnaire_responses:
+                # getting patient-questionnaire-response
+                patient_questionnaire_responses = PatientQuestionnaireResponse.objects.filter(
+                    patient=subject_of_group.subject.patient,
+                    survey=questionnaire.survey)
 
-                        # check if there is just one response
-                        if len(patient_questionnaire_responses) == 1:
+                # check if there is response in patient-questionnaire-response to reuse
+                if patient_questionnaire_responses:
 
-                            # getting the response to reuse
-                            patient_questionnaire_response = patient_questionnaire_responses[0]
+                    # check if there is just one response
+                    if len(patient_questionnaire_responses) == 1:
 
-                            # check if this token is not used by another step
-                            if not QuestionnaireResponse.objects.filter(
-                                    subject_of_group=subject_of_group,
-                                    token_id=patient_questionnaire_response.token_id).exists():
+                        # getting the response to reuse
+                        patient_questionnaire_response = patient_questionnaire_responses[0]
 
-                                # reuse the response
-                                new_questionnaire_response = QuestionnaireResponse.objects.create(
-                                    token_id=patient_questionnaire_response.token_id,
-                                    questionnaire_responsible=patient_questionnaire_response.questionnaire_responsible,
-                                    data_configuration_tree_id=data_configuration_tree_id,
-                                    subject_of_group=subject_of_group,
-                                    date=patient_questionnaire_response.date,
-                                )
-                                new_questionnaire_response.save()
+                        # check if this token is not used by another step
+                        if not QuestionnaireResponse.objects.filter(
+                                subject_of_group=subject_of_group,
+                                token_id=patient_questionnaire_response.token_id).exists():
 
-                                # increments number of imported data
-                                number_of_imported_data += 1
+                            # reuse the response
+                            new_questionnaire_response = QuestionnaireResponse.objects.create(
+                                token_id=patient_questionnaire_response.token_id,
+                                questionnaire_responsible=patient_questionnaire_response.questionnaire_responsible,
+                                data_configuration_tree_id=data_configuration_tree_id,
+                                subject_of_group=subject_of_group,
+                                date=patient_questionnaire_response.date,
+                            )
+                            new_questionnaire_response.save()
+
+                            # increments number of imported data
+                            number_of_imported_data += 1
 
     if number_of_imported_data:
         if number_of_imported_data == 1:
