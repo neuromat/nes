@@ -322,6 +322,10 @@ urlpatterns = patterns(
     url(r'^questionnaire_response/(?P<questionnaire_response_id>\d+)/$',
         'questionnaire_response_view', name='questionnaire_response_view'),
 
+    # subject + questionnaire data
+    url(r'^group/(?P<group_id>\d+)/load_questionnaire_data/$',
+        'load_questionnaire_data', name='load_questionnaire_data'),
+
     # subject + eeg data
     url(r'^group/(?P<group_id>\d+)/subject/(?P<subject_id>\d+)/eeg/$',
         'subject_eeg_view', name='subject_eeg_view'),

@@ -4428,7 +4428,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                            data_configuration_tree_id=data_configuration_tree_id)
 
                 questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path[-1])
-                # This is a shortcut that allows to avid the delay of the connection to LimeSurvey.
+                # This is a shortcut that allows to avoid the delay of the connection to LimeSurvey.
                 if (questionnaire_configuration.number_of_repetitions is None and subject_responses.count() > 0) or \
                         (questionnaire_configuration.number_of_repetitions is not None and
                          subject_responses.count() >= questionnaire_configuration.number_of_repetitions):
@@ -5295,6 +5295,80 @@ def subject_questionnaire_view(request, group_id, subject_id,
                    'limesurvey_available': check_limesurvey_access(request, surveys),
                    'subject': subject_of_group.subject,
                    'subject_questionnaires': subject_questionnaires})
+
+
+@login_required
+@permission_required('experiment.view_researchproject')
+def load_questionnaire_data(request, group_id):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    number_of_imported_data = 0
+    list_of_paths = create_list_of_trees(group.experimental_protocol, "questionnaire")
+
+    # for each questionnaire step
+    for path in list_of_paths:
+
+        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+
+        data_configuration_tree_id = \
+            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path])
+
+        if data_configuration_tree_id:
+            data_configuration_tree = get_object_or_404(DataConfigurationTree, pk=data_configuration_tree_id)
+
+            questionnaire = get_object_or_404(Questionnaire, pk=questionnaire_configuration.component_id)
+
+            # for each subject
+            for subject_of_group in group.subjectofgroup_set.all():
+
+                # check if there is no response for this "subject + step"
+                if not QuestionnaireResponse.objects.filter(
+                        subject_of_group=subject_of_group,
+                        data_configuration_tree=data_configuration_tree).exists():
+
+                    # getting patient-questionnaire-response
+                    patient_questionnaire_responses = PatientQuestionnaireResponse.objects.filter(
+                        patient=subject_of_group.subject.patient,
+                        survey=questionnaire.survey)
+
+                    # check if there is response in patient-questionnaire-response to reuse
+                    if patient_questionnaire_responses:
+
+                        # check if there is just one response
+                        if len(patient_questionnaire_responses) == 1:
+
+                            # getting the response to reuse
+                            patient_questionnaire_response = patient_questionnaire_responses[0]
+
+                            # check if this token is not used by another step
+                            if not QuestionnaireResponse.objects.filter(
+                                    subject_of_group=subject_of_group,
+                                    token_id=patient_questionnaire_response.token_id).exists():
+
+                                # reuse the response
+                                new_questionnaire_response = QuestionnaireResponse.objects.create(
+                                    token_id=patient_questionnaire_response.token_id,
+                                    questionnaire_responsible=patient_questionnaire_response.questionnaire_responsible,
+                                    data_configuration_tree_id=data_configuration_tree_id,
+                                    subject_of_group=subject_of_group,
+                                    date=patient_questionnaire_response.date,
+                                )
+                                new_questionnaire_response.save()
+
+                                # increments number of imported data
+                                number_of_imported_data += 1
+
+    if number_of_imported_data:
+        if number_of_imported_data == 1:
+            messages.success(request, _('1 new response was imported.'))
+        else:
+            messages.success(request, _('%s new responses were imported.') % (str(number_of_imported_data)))
+    else:
+        messages.info(request, _('No new data loaded.'))
+
+    redirect_url = reverse("subjects", args=(group_id,))
+    return HttpResponseRedirect(redirect_url)
 
 
 @login_required
