@@ -5235,19 +5235,23 @@ def subject_questionnaire_view(request, group_id, subject_id,
     surveys = Questionnaires()
     subject_of_group = get_object_or_404(SubjectOfGroup, group_id=group_id, subject_id=subject_id)
 
-    for path in create_list_of_trees(subject_of_group.group.experimental_protocol, "questionnaire"):
+    list_of_trees = create_list_of_trees(subject_of_group.group.experimental_protocol, "questionnaire")
 
-        questionnaire_response = ComponentConfiguration.objects.get(pk=path[-1][0])
+    used_tokens = {}
 
-        data_configuration_tree_id = list_data_configuration_tree(questionnaire_response.id, [item[0] for item in path])
+    for path in list_of_trees:
 
         questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path[-1][0])
-        questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
         # Questionnaire Responses (in the experiment)
+        data_configuration_tree_id = \
+            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path])
         questionnaire_responses = \
             QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group,
                                                  data_configuration_tree__id=data_configuration_tree_id)
+
+        questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+
         questionnaire_responses_with_status = []
         for questionnaire_response in questionnaire_responses:
             response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
@@ -5258,9 +5262,33 @@ def subject_questionnaire_view(request, group_id, subject_id,
                  'completed': None if response_result is None else response_result != "N" and response_result != ""}
             )
 
-        # Patient Questionnaire Responses (in the participant functionality), in case of reuse
-        tokens_already_used = \
-            QuestionnaireResponse.objects.values('token_id').filter(subject_of_group=subject_of_group)
+            # saving used tokens by questionnaire
+            if questionnaire.survey.lime_survey_id not in used_tokens:
+                used_tokens[questionnaire.survey.lime_survey_id] = [questionnaire_response.token_id]
+            else:
+                if questionnaire_response.token_id not in used_tokens[questionnaire.survey.lime_survey_id]:
+                    used_tokens[questionnaire.survey.lime_survey_id].append(questionnaire_response.token_id)
+
+        # saving information about the step
+        subject_questionnaires.append(
+            {'questionnaire_configuration': questionnaire_configuration,
+             'questionnaire': questionnaire,
+             'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id,
+                                               get_questionnaire_language(surveys,
+                                                                          questionnaire.survey.lime_survey_id,
+                                                                          request.LANGUAGE_CODE)),
+             'path': path,
+             'questionnaire_responses': questionnaire_responses_with_status,
+             }
+        )
+
+    # responses that could be reused
+    for subject_questionnaire in subject_questionnaires:
+        questionnaire = subject_questionnaire['questionnaire']
+
+        tokens_already_used = used_tokens[
+            questionnaire.survey.lime_survey_id] if questionnaire.survey.lime_survey_id in used_tokens else []
+
         patient_questionnaire_responses = \
             PatientQuestionnaireResponse.objects.filter(
                 patient=subject_of_group.subject.patient,
@@ -5275,17 +5303,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
                     {'patient_questionnaire_response': patient_questionnaire_response,
                      'completed': True if response_result != "N" else False}
                 )
-
-        subject_questionnaires.append(
-            {'questionnaire_configuration': questionnaire_configuration,
-             'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id,
-                                               get_questionnaire_language(surveys,
-                                                                          questionnaire.survey.lime_survey_id,
-                                                                          request.LANGUAGE_CODE)),
-             'path': path,
-             'questionnaire_responses': questionnaire_responses_with_status,
-             'patient_questionnaire_responses': patient_questionnaire_responses_with_status}
-        )
+        subject_questionnaire['patient_questionnaire_responses'] = patient_questionnaire_responses_with_status
 
     surveys.release_session_key()
 
@@ -5306,7 +5324,25 @@ def load_questionnaire_data(request, group_id):
     number_of_imported_data = 0
     list_of_paths = create_list_of_trees(group.experimental_protocol, "questionnaire")
 
-    # for each questionnaire step
+    reused_tokens = {}
+    # first loop: knowing tokens that was already reused
+    for path in list_of_paths:
+        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        questionnaire_responses = \
+            QuestionnaireResponse.objects.filter(
+                data_configuration_tree__component_configuration=questionnaire_configuration)
+        for questionnaire_response in questionnaire_responses:
+            questionnaire = get_object_or_404(
+                Questionnaire, pk=questionnaire_response.data_configuration_tree.component_configuration.component_id)
+
+            # saving used tokens by questionnaire
+            if questionnaire.survey.lime_survey_id not in reused_tokens:
+                reused_tokens[questionnaire.survey.lime_survey_id] = [questionnaire_response.token_id]
+            else:
+                if questionnaire_response.token_id not in reused_tokens[questionnaire.survey.lime_survey_id]:
+                    reused_tokens[questionnaire.survey.lime_survey_id].append(questionnaire_response.token_id)
+
+    # main loop: importing
     for path in list_of_paths:
 
         questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
@@ -5329,10 +5365,13 @@ def load_questionnaire_data(request, group_id):
                     subject_of_group=subject_of_group,
                     data_configuration_tree=data_configuration_tree).exists():
 
+                tokens_already_reused = reused_tokens[
+                    questionnaire.survey.lime_survey_id] if questionnaire.survey.lime_survey_id in reused_tokens else []
+
                 # getting patient-questionnaire-response
                 patient_questionnaire_responses = PatientQuestionnaireResponse.objects.filter(
                     patient=subject_of_group.subject.patient,
-                    survey=questionnaire.survey)
+                    survey=questionnaire.survey).exclude(token_id__in=tokens_already_reused)
 
                 # check if there is response in patient-questionnaire-response to reuse
                 if patient_questionnaire_responses:
@@ -5343,7 +5382,7 @@ def load_questionnaire_data(request, group_id):
                         # getting the response to reuse
                         patient_questionnaire_response = patient_questionnaire_responses[0]
 
-                        # check if this token is not used by another step
+                        # check if this token is not used by another step (with the same questionnaire)
                         if not QuestionnaireResponse.objects.filter(
                                 subject_of_group=subject_of_group,
                                 token_id=patient_questionnaire_response.token_id).exists():
@@ -5360,6 +5399,16 @@ def load_questionnaire_data(request, group_id):
 
                             # increments number of imported data
                             number_of_imported_data += 1
+
+                            # update list of reused tokens
+                            if questionnaire.survey.lime_survey_id not in reused_tokens:
+                                reused_tokens[questionnaire.survey.lime_survey_id] = [
+                                    new_questionnaire_response.token_id]
+                            else:
+                                if new_questionnaire_response.token_id not in \
+                                        reused_tokens[questionnaire.survey.lime_survey_id]:
+                                    reused_tokens[questionnaire.survey.lime_survey_id].append(
+                                        new_questionnaire_response.token_id)
 
     if number_of_imported_data:
         if number_of_imported_data == 1:
@@ -8942,7 +8991,8 @@ def create_component(component, new_experiment):
 
     elif component_type == 'digital_game_phase':
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
-        clone = DigitalGamePhase(context_tree_id=digital_game_phase.context_tree_id)
+        clone = DigitalGamePhase(context_tree_id=digital_game_phase.context_tree_id,
+                                 software_version_id=digital_game_phase.software_version_id)
 
     elif component_type == 'generic_data_collection':
         generic_data_collection = get_object_or_404(GenericDataCollection, pk=component.id)

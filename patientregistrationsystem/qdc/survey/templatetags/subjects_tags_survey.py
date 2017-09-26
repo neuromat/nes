@@ -10,6 +10,6 @@ def get_name_or_code(context, patient_id):
     patient = Patient.objects.get(id=patient_id)
 
     if context.request.user.has_perm('patient.sensitive_data_patient'):
-        return patient.name
+        return patient.name if patient.name else patient.code
     else:
         return patient.code
