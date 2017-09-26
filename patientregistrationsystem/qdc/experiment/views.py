@@ -5382,33 +5382,28 @@ def load_questionnaire_data(request, group_id):
                         # getting the response to reuse
                         patient_questionnaire_response = patient_questionnaire_responses[0]
 
-                        # check if this token is not used by another step (with the same questionnaire)
-                        if not QuestionnaireResponse.objects.filter(
-                                subject_of_group=subject_of_group,
-                                token_id=patient_questionnaire_response.token_id).exists():
+                        # reuse the response
+                        new_questionnaire_response = QuestionnaireResponse.objects.create(
+                            token_id=patient_questionnaire_response.token_id,
+                            questionnaire_responsible=patient_questionnaire_response.questionnaire_responsible,
+                            data_configuration_tree_id=data_configuration_tree_id,
+                            subject_of_group=subject_of_group,
+                            date=patient_questionnaire_response.date,
+                        )
+                        new_questionnaire_response.save()
 
-                            # reuse the response
-                            new_questionnaire_response = QuestionnaireResponse.objects.create(
-                                token_id=patient_questionnaire_response.token_id,
-                                questionnaire_responsible=patient_questionnaire_response.questionnaire_responsible,
-                                data_configuration_tree_id=data_configuration_tree_id,
-                                subject_of_group=subject_of_group,
-                                date=patient_questionnaire_response.date,
-                            )
-                            new_questionnaire_response.save()
+                        # increments number of imported data
+                        number_of_imported_data += 1
 
-                            # increments number of imported data
-                            number_of_imported_data += 1
-
-                            # update list of reused tokens
-                            if questionnaire.survey.lime_survey_id not in reused_tokens:
-                                reused_tokens[questionnaire.survey.lime_survey_id] = [
-                                    new_questionnaire_response.token_id]
-                            else:
-                                if new_questionnaire_response.token_id not in \
-                                        reused_tokens[questionnaire.survey.lime_survey_id]:
-                                    reused_tokens[questionnaire.survey.lime_survey_id].append(
-                                        new_questionnaire_response.token_id)
+                        # update list of reused tokens
+                        if questionnaire.survey.lime_survey_id not in reused_tokens:
+                            reused_tokens[questionnaire.survey.lime_survey_id] = [
+                                new_questionnaire_response.token_id]
+                        else:
+                            if new_questionnaire_response.token_id not in \
+                                    reused_tokens[questionnaire.survey.lime_survey_id]:
+                                reused_tokens[questionnaire.survey.lime_survey_id].append(
+                                    new_questionnaire_response.token_id)
 
     if number_of_imported_data:
         if number_of_imported_data == 1:
