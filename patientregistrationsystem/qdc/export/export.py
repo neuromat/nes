@@ -1456,8 +1456,8 @@ class ExportExecution:
                     eeg_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code]['eeg_data']
                     for component in eeg_data_list:
                         eeg_data = get_object_or_404(EEGData, pk=component['eeg_data_id'])
-                        if eeg_data:
-                            eeg_data_file = path.join(settings.BASE_DIR, 'media') + '/' + eeg_data.file.name
+                        for eeg_file in eeg_data.eeg_files.all():
+                            eeg_data_file = path.join(settings.BASE_DIR, 'media') + '/' + eeg_file.file.name
 
                             directory_step_name = component['directory_step_name']
                             path_per_eeg_participant = path.join(path_per_participant, directory_step_name)
@@ -1472,7 +1472,7 @@ class ExportExecution:
                             # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_eeg_step_directory = path.join(participant_export_directory, directory_step_name)
 
-                            eeg_data_filename = eeg_data.file.name.split('/')[-1]
+                            eeg_data_filename = eeg_file.file.name.split('/')[-1]
                             complete_eeg_data_filename = path.join(path_per_eeg_participant, eeg_data_filename)
 
                             with open(eeg_data_file, 'rb') as f:
