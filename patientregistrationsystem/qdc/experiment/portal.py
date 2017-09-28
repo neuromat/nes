@@ -1345,7 +1345,7 @@ def send_file_to_portal(file):
     return portal_file
 
 
-def send_eeg_data_to_portal(portal_participant_id, portal_step_id, portal_file_id, portal_eeg_setting_id,
+def send_eeg_data_to_portal(portal_participant_id, portal_step_id, portal_file_id_list, portal_eeg_setting_id,
                             eeg_data: EEGData):
 
     rest = RestApiClient()
@@ -1356,15 +1356,18 @@ def send_eeg_data_to_portal(portal_participant_id, portal_step_id, portal_file_i
     params = {
         "participant": portal_participant_id,
         "step": portal_step_id,
-        "file": portal_file_id,
         "date": eeg_data.date.strftime("%Y-%m-%d"),
         "time": eeg_data.time.strftime('%H:%M:%S') if eeg_data.time else None,
         "description": eeg_data.description,
         "file_format": eeg_data.file_format.name,
         "eeg_setting": portal_eeg_setting_id,
         "eeg_cap_size": eeg_data.eeg_cap_size.size if eeg_data.eeg_cap_size else None,
-        "eeg_setting_reason_for_change": eeg_data.eeg_setting_reason_for_change
+        "eeg_setting_reason_for_change": eeg_data.eeg_setting_reason_for_change,
+        "files": []
     }
+
+    for portal_file_id in portal_file_id_list:
+        params['files'].append({'id': portal_file_id})
 
     action_keys = ['eeg_data', 'create']
 
@@ -1373,7 +1376,7 @@ def send_eeg_data_to_portal(portal_participant_id, portal_step_id, portal_file_i
     return portal_eeg_data
 
 
-def send_emg_data_to_portal(portal_participant_id, portal_step_id, portal_file_id, portal_emg_setting_id,
+def send_emg_data_to_portal(portal_participant_id, portal_step_id, portal_file_id_list, portal_emg_setting_id,
                             emg_data: EMGData):
 
     rest = RestApiClient()
@@ -1384,14 +1387,17 @@ def send_emg_data_to_portal(portal_participant_id, portal_step_id, portal_file_i
     params = {
         "participant": portal_participant_id,
         "step": portal_step_id,
-        "file": portal_file_id,
         "date": emg_data.date.strftime("%Y-%m-%d"),
         "time": emg_data.time.strftime('%H:%M:%S') if emg_data.time else None,
         "description": emg_data.description,
         "file_format": emg_data.file_format.name,
         "emg_setting": portal_emg_setting_id,
-        "emg_setting_reason_for_change": emg_data.emg_setting_reason_for_change
+        "emg_setting_reason_for_change": emg_data.emg_setting_reason_for_change,
+        "files": []
     }
+
+    for portal_file_id in portal_file_id_list:
+        params['files'].append({'id': portal_file_id})
 
     action_keys = ['emg_data', 'create']
 
@@ -1462,7 +1468,7 @@ def send_tms_data_to_portal(portal_participant_id, portal_step_id, portal_tms_se
     return portal_tms_data
 
 
-def send_digital_game_phase_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,
+def send_digital_game_phase_data_to_portal(portal_participant_id, portal_step_id, portal_file_id_list,
                                            digital_game_phase_data: DigitalGamePhaseData):
 
     rest = RestApiClient()
@@ -1473,13 +1479,16 @@ def send_digital_game_phase_data_to_portal(portal_participant_id, portal_step_id
     params = {
         "participant": portal_participant_id,
         "step": portal_step_id,
-        "file": portal_file_id,
         "date": digital_game_phase_data.date.strftime("%Y-%m-%d"),
         "time": digital_game_phase_data.time.strftime('%H:%M:%S') if digital_game_phase_data.time else None,
         "description": digital_game_phase_data.description,
         "file_format": digital_game_phase_data.file_format.name,
-        "sequence_used_in_context_tree": digital_game_phase_data.sequence_used_in_context_tree
+        "sequence_used_in_context_tree": digital_game_phase_data.sequence_used_in_context_tree,
+        "files": []
     }
+
+    for portal_file_id in portal_file_id_list:
+        params['files'].append({'id': portal_file_id})
 
     action_keys = ['goalkeeper_game_data', 'create']
 
@@ -1511,7 +1520,7 @@ def send_questionnaire_response_to_portal(portal_participant_id, portal_step_id,
     return portal_eeg_data
 
 
-def send_additional_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,
+def send_additional_data_to_portal(portal_participant_id, portal_step_id, portal_file_id_list,
                                    additional_data: AdditionalData):
 
     rest = RestApiClient()
@@ -1522,12 +1531,15 @@ def send_additional_data_to_portal(portal_participant_id, portal_step_id, portal
     params = {
         "participant": portal_participant_id,
         "step": portal_step_id,
-        "file": portal_file_id,
         "date": additional_data.date.strftime("%Y-%m-%d"),
         "time": additional_data.time.strftime('%H:%M:%S') if additional_data.time else None,
         "description": additional_data.description,
         "file_format": additional_data.file_format.name,
+        "files": []
     }
+
+    for portal_file_id in portal_file_id_list:
+        params['files'].append({'id': portal_file_id})
 
     action_keys = ['additional_data', 'create']
 
@@ -1536,7 +1548,7 @@ def send_additional_data_to_portal(portal_participant_id, portal_step_id, portal
     return portal_additional_data
 
 
-def send_generic_data_collection_data_to_portal(portal_participant_id, portal_step_id, portal_file_id,
+def send_generic_data_collection_data_to_portal(portal_participant_id, portal_step_id, portal_file_id_list,
                                                 generic_data_collection_data: GenericDataCollectionData):
 
     rest = RestApiClient()
@@ -1547,12 +1559,15 @@ def send_generic_data_collection_data_to_portal(portal_participant_id, portal_st
     params = {
         "participant": portal_participant_id,
         "step": portal_step_id,
-        "file": portal_file_id,
         "date": generic_data_collection_data.date.strftime("%Y-%m-%d"),
         "time": generic_data_collection_data.time.strftime('%H:%M:%S') if generic_data_collection_data.time else None,
         "description": generic_data_collection_data.description,
         "file_format": generic_data_collection_data.file_format.name,
+        "files": []
     }
+
+    for portal_file_id in portal_file_id_list:
+        params['files'].append({'id': portal_file_id})
 
     action_keys = ['generic_data_collection_data', 'create']
 

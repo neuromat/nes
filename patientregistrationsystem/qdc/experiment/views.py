@@ -851,28 +851,38 @@ def send_all_experiments_to_portal(language_code):
                             portal_step_list[data_configuration_tree_id] = step_list[numeration]['portal_step_id']
 
                     # eeg data
-                    eeg_data_files = EEGData.objects.filter(subject_of_group__group=group)
+                    eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
 
-                    for eeg_data_file in eeg_data_files:
-                        portal_file = send_file_to_portal(eeg_data_file.file.name)
+                    for eeg_data in eeg_data_list:
+
+                        portal_file_id_list = []
+                        for eeg_file in eeg_data.eeg_files.all():
+                            portal_file = send_file_to_portal(eeg_file.file.name)
+                            portal_file_id_list.append(portal_file['id'])
+
                         portal_eeg_data_file = send_eeg_data_to_portal(
-                            portal_participant_list[eeg_data_file.subject_of_group.id],
-                            portal_step_list[eeg_data_file.data_configuration_tree.id],
-                            portal_file['id'],
-                            list_of_eeg_setting[eeg_data_file.eeg_setting.id],
-                            eeg_data_file)
+                            portal_participant_list[eeg_data.subject_of_group.id],
+                            portal_step_list[eeg_data.data_configuration_tree.id],
+                            portal_file_id_list,
+                            list_of_eeg_setting[eeg_data.eeg_setting.id],
+                            eeg_data)
 
                     # emg data
-                    emg_data_files = EMGData.objects.filter(subject_of_group__group=group)
+                    emg_data_list = EMGData.objects.filter(subject_of_group__group=group)
 
-                    for emg_data_file in emg_data_files:
-                        portal_file = send_file_to_portal(emg_data_file.file.name)
+                    for emg_data in emg_data_list:
+
+                        portal_file_id_list = []
+                        for emg_file in emg_data.emg_files.all():
+                            portal_file = send_file_to_portal(emg_file.file.name)
+                            portal_file_id_list.append(portal_file['id'])
+
                         portal_emg_data_file = send_emg_data_to_portal(
-                            portal_participant_list[emg_data_file.subject_of_group.id],
-                            portal_step_list[emg_data_file.data_configuration_tree.id],
-                            portal_file['id'],
-                            list_of_emg_setting[emg_data_file.emg_setting.id],
-                            emg_data_file)
+                            portal_participant_list[emg_data.subject_of_group.id],
+                            portal_step_list[emg_data.data_configuration_tree.id],
+                            portal_file_id_list,
+                            list_of_emg_setting[emg_data.emg_setting.id],
+                            emg_data)
 
                     # tms data
                     tms_data_files = TMSData.objects.filter(subject_of_group__group=group)
@@ -885,15 +895,20 @@ def send_all_experiments_to_portal(language_code):
                             tms_data_file)
 
                     # digital game phase data
-                    digital_game_phase_data_files = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
+                    digital_game_phase_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
 
-                    for digital_game_phase_data_file in digital_game_phase_data_files:
-                        portal_file = send_file_to_portal(digital_game_phase_data_file.file.name)
+                    for digital_game_phase_data in digital_game_phase_data_list:
+
+                        portal_file_id_list = []
+                        for digital_game_phase_file in digital_game_phase_data.digital_game_phase_files.all():
+                            portal_file = send_file_to_portal(digital_game_phase_file.file.name)
+                            portal_file_id_list.append(portal_file['id'])
+
                         portal_digital_game_phase_data_file = send_digital_game_phase_data_to_portal(
-                            portal_participant_list[digital_game_phase_data_file.subject_of_group.id],
-                            portal_step_list[digital_game_phase_data_file.data_configuration_tree.id],
-                            portal_file['id'],
-                            digital_game_phase_data_file)
+                            portal_participant_list[digital_game_phase_data.subject_of_group.id],
+                            portal_step_list[digital_game_phase_data.data_configuration_tree.id],
+                            portal_file_id_list,
+                            digital_game_phase_data)
 
                     # questionnaire response
                     surveys = Questionnaires()
@@ -934,31 +949,40 @@ def send_all_experiments_to_portal(language_code):
                         surveys.release_session_key()
 
                     # additional data
-                    additional_data_files = \
+                    additional_data_list = \
                         AdditionalData.objects.filter(subject_of_group__group=group)
 
-                    for additional_data_file in additional_data_files:
-                        portal_file = send_file_to_portal(additional_data_file.file.name)
+                    for additional_data in additional_data_list:
+
+                        portal_file_id_list = []
+                        for additional_data_file in additional_data.additional_data_files.all():
+                            portal_file = send_file_to_portal(additional_data_file.file.name)
+                            portal_file_id_list.append(portal_file['id'])
 
                         # TODO: send additional_file associated to the whole experiment
-                        if additional_data_file.data_configuration_tree:
+                        if additional_data.data_configuration_tree:
                             portal_additional_data_file = send_additional_data_to_portal(
-                                portal_participant_list[additional_data_file.subject_of_group.id],
-                                portal_step_list[additional_data_file.data_configuration_tree.id],
-                                portal_file['id'],
-                                additional_data_file)
+                                portal_participant_list[additional_data.subject_of_group.id],
+                                portal_step_list[additional_data.data_configuration_tree.id],
+                                portal_file_id_list,
+                                additional_data)
 
-                    # generic data collecction data
-                    generic_data_collection_data_files = \
+                    # generic data collection data
+                    generic_data_collection_data_list = \
                         GenericDataCollectionData.objects.filter(subject_of_group__group=group)
 
-                    for generic_data_collection_data_file in generic_data_collection_data_files:
-                        portal_file = send_file_to_portal(generic_data_collection_data_file.file.name)
+                    for generic_data_collection_data in generic_data_collection_data_list:
+
+                        portal_file_id_list = []
+                        for generic_data_collection_file in generic_data_collection_data.generic_data_collection_files.all():
+                            portal_file = send_file_to_portal(generic_data_collection_file.file.name)
+                            portal_file_id_list.append(portal_file['id'])
+
                         portal_generic_data_collection_data_file = send_generic_data_collection_data_to_portal(
-                            portal_participant_list[generic_data_collection_data_file.subject_of_group.id],
-                            portal_step_list[generic_data_collection_data_file.data_configuration_tree.id],
-                            portal_file['id'],
-                            generic_data_collection_data_file)
+                            portal_participant_list[generic_data_collection_data.subject_of_group.id],
+                            portal_step_list[generic_data_collection_data.data_configuration_tree.id],
+                            portal_file_id_list,
+                            generic_data_collection_data)
 
                 send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
                                                      textual_description=textual_description,
