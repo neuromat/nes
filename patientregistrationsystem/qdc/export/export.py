@@ -28,7 +28,7 @@ from patient.models import Patient, QuestionnaireResponse
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, \
     ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData, EEGSetting, EMGData, EMGSetting, TMSData, \
     TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, TMSLocalizationSystem, GenericDataCollectionData, \
-    ContextTree
+    ContextTree, SubjectStepData
 from experiment.views import get_block_tree, get_experimental_protocol_image, EEG, EMG, TMS, DigitalGamePhase, \
     get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, eeg_data_reading, \
     list_data_configuration_tree
@@ -425,47 +425,70 @@ class ExportExecution:
                     surveys.release_session_key()
 
                 if self.get_input_data('component_list')['per_additional_data']:
-                    subject_of_group = SubjectOfGroup.objects.filter(group=group)
-                    additional_data_list = AdditionalData.objects.filter(subject_of_group=subject_of_group)
-                    if additional_data_list:
-                        component_configuration_list = create_list_of_trees(group.experimental_protocol, "")
-                        steps_dictionary = {}
-                        for component_configuration_item in component_configuration_list:
-                            component_configuration_id = component_configuration_item[-1][0]
-                            component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                        pk=component_configuration_id)
-                            if component_configuration_id not in steps_dictionary:
-                                steps_dictionary[component_configuration_id] = {
-                                    'step_number': component_configuration_item[-1][-1],
-                                    'component_type': component_configuration.component.component_type
-                                }
+                    subject_step_data_query = \
+                        SubjectStepData.objects.filter(subject_of_group=subject_of_group,
+                                                       data_configuration_tree=None)
+                    data_collections = [
+                        {'component_configuration': None,
+                         'path': None,
+                         'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
+                         'additional_data_list': AdditionalData.objects.filter(
+                             subject_of_group=subject_of_group, data_configuration_tree=None),
+                         }
+                    ]
+                    for additional_data_path in create_list_of_trees(group.experimental_protocol, None):
+                        component_configuration = ComponentConfiguration.objects.get(pk=additional_data_path[-1][0])
+                        data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
+                                                                                  [item[0] for item in
+                                                                                   additional_data_path])
 
-                    for additional_data in additional_data_list:
-                        subject_code = additional_data.subject_of_group.subject.patient.code
-                        if subject_code not in self.per_group_data[group_id]['data_per_participant']:
-                            self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                        if 'additional_data' not in self.per_group_data[group_id]['data_per_participant'][subject_code]:
-                            self.per_group_data[group_id]['data_per_participant'][subject_code]['additional_data'] = []
+                        additional_data_list = None
+                        if data_configuration_tree_id:
+                            additional_data_list = \
+                                AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                                                              data_configuration_tree__id=data_configuration_tree_id)
 
-                        step_number = 0
-                        component_type = 'root'
+                        data_collections.append(
+                            {'component_configuration': component_configuration,
+                             'path': path,
+                             'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
+                             'additional_data_list': additional_data_list,
+                             'step_number': additional_data_path[-1][-1],
+                             }
+                        )
 
-                        if additional_data.data_configuration_tree_id:
-                            data_configuration_tree = get_object_or_404(DataConfigurationTree,
-                                                                        pk=additional_data.data_configuration_tree_id)
-                            component_configuration_id = data_configuration_tree.component_configuration_id
-                            if component_configuration_id in steps_dictionary:
-                                step_number = steps_dictionary[component_configuration_id]['step_number']
-                                component_type = steps_dictionary[component_configuration_id]['component_type']
+                    for data in data_collections:
+                        if data['additional_data_list']:
+                            component_type = data['component_configuration'].component.component_type
+                            step_number = data['step_number']
+                            for additional_data in data['additional_data_list']:
+                                subject_code = additional_data.subject_of_group.subject.patient.code
+                                additional_data_file_list = []
+                                for additional_data_file in additional_data.additional_data_files.all():
+                                    additional_data_file_list.append({
+                                        'additional_data_filename': settings.BASE_DIR + settings.MEDIA_URL +
+                                                                    additional_data_file.file.name
+                                    })
+                                if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                                if 'additional_data_list' not in self.per_group_data[group_id]['data_per_participant'][
+                                    subject_code]:
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                        'additional_data_list'] = []
 
-                            self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                'additional_data'].append({
-                                    'description': additional_data.description,
-                                    'additional_file_name': additional_data.file.name,
-                                    'step_number': step_number,
-                                    'component_type': component_type,
-                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_type.upper()
-                                })
+                                # step_number = 0
+                                # component_type = 'root'
+
+                                self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                    'additional_data_list'].append({
+                                        'description': additional_data.description,
+                                        'step_number': step_number,
+                                        'component_type': component_type,
+                                        'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                               component_type.upper(),
+                                        'additional_data_directory': "AdditionalData_" + str(additional_data.id),
+                                        'additional_data_file_list': additional_data_file_list,
+                                    })
 
                 if self.get_input_data('component_list')['per_eeg_raw_data'] or \
                         self.get_input_data('component_list')['per_eeg_nwb_data']:
@@ -533,119 +556,136 @@ class ExportExecution:
                             })
 
                 if self.get_input_data('component_list')['per_emg_data']:
-                    for path_emg_experiment in create_list_of_trees(group.experimental_protocol, "emg"):
-                        emg_component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                        pk=path_emg_experiment[-1][0])
+                    for path_emg in create_list_of_trees(group.experimental_protocol, "emg"):
+                        emg_component_configuration = ComponentConfiguration.objects.get(pk=path_emg[-1][0])
                         component_step = emg_component_configuration.component
-                        self.per_group_data[group_id]['emg_default_setting_id'] = EMG.objects.filter(
-                            id=component_step.id).values('emg_setting_id')[0]['emg_setting_id']
 
-                        step_number = path_emg_experiment[-1][4]
-                        step_identification = path_emg_experiment[-1][3]
+                        self.per_group_data[group_id]['emg_default_setting_id'] = \
+                            emg_component_configuration.component.emg.emg_setting.id
 
-                        configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=emg_component_configuration)
-                        for data_configuration_tree in configuration_tree_list:
-                            emg_data_list = EMGData.objects.filter(
-                                data_configuration_tree_id=data_configuration_tree.id).distinct()
-                            for emg_data in emg_data_list:
-                                subject_code = emg_data.subject_of_group.subject.patient.code
+                        step_number = path_emg[-1][4]
+                        step_identification = path_emg[-1][3]
 
-                                if subject_code not in self.per_group_data[group_id]['data_per_participant']:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                if 'emg_data' not in self.per_group_data[group_id]['data_per_participant'][subject_code]:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data'] = []
+                        data_configuration_tree_id = list_data_configuration_tree(emg_component_configuration.id,
+                                                                                  [item[0] for item in path_emg])
+                        emg_data_list = EMGData.objects.filter(subject_of_group=subject_of_group,
+                                                               data_configuration_tree_id=data_configuration_tree_id)
 
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data'].append({
+                        for emg_data in emg_data_list:
+                            subject_code = emg_data.subject_of_group.subject.patient.code
+                            emg_file_list = []
+                            for emg_file in emg_data.emg_files.all():
+                                emg_file_list.append({
+                                    'file_name': settings.BASE_DIR + settings.MEDIA_URL + emg_file.file.name,
+                                })
+
+                            if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                            if 'emg_data_list' not in self.per_group_data[group_id]['data_per_participant'][
+                                subject_code]:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data_list'] \
+                                    = []
+
+                            self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                'emg_data_list'].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
-                                    'setting_id': emg_data.emg_setting_id,
-                                    'emg_data_id': emg_data.id,
-                                    'data_configuration_tree_id': data_configuration_tree.id,
+                                    'emg_data_directory_name': "EMGData_" + str(emg_data.id),
+                                    'setting_id': emg_data.emg_setting.id,
                                     'directory_step_name': "Step_" + str(step_number) + "_" +
-                                                           component_step.component_type.upper()
+                                                           component_step.component_type.upper(),
+                                    'emg_file_list': emg_file_list,
                                 })
 
                 if self.get_input_data('component_list')['per_tms_data']:
-                    for path_tms_experiment in create_list_of_trees(group.experimental_protocol, "tms"):
-                        tms_component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                        pk=path_tms_experiment[-1][0])
+                    for path_tms in create_list_of_trees(group.experimental_protocol, "tms"):
+                        tms_component_configuration = ComponentConfiguration.objects.get(pk=path_tms[-1][0])
                         component_step = tms_component_configuration.component
-                        self.per_group_data[group_id]['tms_default_setting_id'] = TMS.objects.filter(
-                            id=component_step.id).values('tms_setting_id')[0]['tms_setting_id']
+                        self.per_group_data[group_id]['tms_default_setting_id'] = \
+                            tms_component_configuration.component.tms.tms_setting_id
 
-                        step_number = path_tms_experiment[-1][4]
-                        step_identification = path_tms_experiment[-1][3]
+                        step_number = path_tms[-1][4]
+                        step_identification = path_tms[-1][3]
 
-                        configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=tms_component_configuration)
-                        for data_configuration_tree in configuration_tree_list:
-                            tms_data_list = TMSData.objects.filter(
-                                data_configuration_tree_id=data_configuration_tree.id).distinct()
-                            for tms_data in tms_data_list:
-                                subject_code = tms_data.subject_of_group.subject.patient.code
+                        data_configuration_tree_id = list_data_configuration_tree(tms_component_configuration.id,
+                                                                                  [item[0] for item in path_tms])
 
-                                if subject_code not in self.per_group_data[group_id]['data_per_participant']:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                if 'tms_data' not in self.per_group_data[group_id]['data_per_participant'][subject_code]:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code]['tms_data'] = []
+                        tms_data_list = TMSData.objects.filter(subject_of_group=subject_of_group,
+                                                               data_configuration_tree_id=data_configuration_tree_id)
+                        for tms_data in tms_data_list:
+                            subject_code = tms_data.subject_of_group.subject.patient.code
 
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['tms_data'].append({
+                            if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                            if 'tms_data_list' not in self.per_group_data[group_id]['data_per_participant'][
+                                subject_code]:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['tms_data_list'] \
+                                    = []
+
+                            self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                'tms_data_list'].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
                                     'setting_id': tms_data.tms_setting_id,
                                     'tms_data_id': tms_data.id,
-                                    'data_configuration_tree_id': data_configuration_tree.id,
+                                    'data_configuration_tree_id': data_configuration_tree_id,
                                     'directory_step_name': "Step_" + str(step_number) + "_" +
                                                            component_step.component_type.upper()
                                 })
 
                 if self.get_input_data('component_list')['per_goalkeeper_game_data']:
-                    for path_goalkeeper_game_experiment in create_list_of_trees(group.experimental_protocol,
-                                                                                "digital_game_phase"):
-                        game_component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                         pk=path_goalkeeper_game_experiment[-1][0])
-                        component_step = game_component_configuration.component
-                        self.per_group_data[group_id]['context_tree_default_id'] = DigitalGamePhase.objects.filter(
-                            id=component_step.id).values('context_tree_id')[0]['context_tree_id']
+                    for path_goalkeeper_game in create_list_of_trees(group.experimental_protocol, "digital_game_phase"):
+                        digital_game_component_configuration = ComponentConfiguration.objects.get(
+                            pk=path_goalkeeper_game[-1][0])
 
-                        step_number = path_goalkeeper_game_experiment[-1][4]
-                        step_identification = path_goalkeeper_game_experiment[-1][3]
-                        configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=game_component_configuration)
+                        component_step = digital_game_component_configuration.component
+                        self.per_group_data[group_id]['context_tree_default_id'] = \
+                            digital_game_component_configuration.component.digitalgamephase.context_tree_id
 
-                        for data_configuration_tree in configuration_tree_list:
-                            goalkeeper_game_data_list = DigitalGamePhaseData.objects.filter(
-                                data_configuration_tree_id=data_configuration_tree.id)
-                            for goalkeeper_game_data in goalkeeper_game_data_list:
-                                subject_code = goalkeeper_game_data.subject_of_group.subject.patient.code
+                        step_number = path_goalkeeper_game[-1][4]
+                        step_identification = path_goalkeeper_game[-1][3]
+                        data_configuration_tree_id = \
+                            list_data_configuration_tree(digital_game_component_configuration.id,
+                                                         [item[0] for item in path_goalkeeper_game])
 
-                                if subject_code not in self.per_group_data[group_id]['data_per_participant']:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                        digital_game_data_list = DigitalGamePhaseData.objects.filter(
+                            subject_of_group=subject_of_group, data_configuration_tree_id=data_configuration_tree_id)
 
-                                if 'goalkeeper_game_data' not in self.per_group_data[group_id]['data_per_participant'][
-                                    subject_code]:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                        'goalkeeper_game_data'] = []
+                        for digital_game_data in digital_game_data_list:
+                            subject_code = digital_game_data.subject_of_group.subject.patient.code
+                            digital_game_file_list = []
+                            for digital_game_file in digital_game_data.digital_game_phase_files.all():
+                                digital_game_file_list.append({
+                                    'digital_game_filename': settings.BASE_DIR + settings.MEDIA_URL +
+                                                             digital_game_file.file.name
+                                })
 
+                            if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+
+                            if 'digital_game_data_list' not in self.per_group_data[group_id]['data_per_participant'][
+                                subject_code]:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                    'goalkeeper_game_data'].append({
-                                        'step_number': step_number,
-                                        'step_identification': step_identification,
-                                        'goalkeeper_game_data_id': goalkeeper_game_data.id,
-                                        'data_configuration_tree_id': data_configuration_tree.id,
-                                        'directory_step_name': "Step_" + str(step_number) + "_" +
-                                                               component_step.component_type.upper(),
-                                        'goalkeeper_game_file': goalkeeper_game_data.file.name
-                                    })
+                                    'digital_game_data_list'] = []
+
+                            self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                'digital_game_data_list'].append({
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
+                                    'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                           component_step.component_type.upper(),
+                                    'digital_game_data_directory': "DigitalGamePhaseData_" + str(
+                                        digital_game_data.id),
+                                    'digital_game_file_list': digital_game_file_list,
+                                })
 
                 if self.get_input_data('component_list')['per_stimulus_data']:
-                    for path_stimulus_experiment in create_list_of_trees(group.experimental_protocol, "stimulus"):
-                        stimulus_component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                             pk=path_stimulus_experiment[-1][0])
-                        component_step = stimulus_component_configuration.component.component_type
-                        step_number = path_stimulus_experiment[-1][4]
-                        step_identification = path_stimulus_experiment[-1][3]
+                    for path_stimulus in create_list_of_trees(group.experimental_protocol, "stimulus"):
+                        stimulus_component_configuration = ComponentConfiguration.objects.get(pk=path_stimulus[-1][0])
+
+                        component_step = stimulus_component_configuration.component
+                        step_number = path_stimulus[-1][4]
+                        step_identification = path_stimulus[-1][3]
 
                         stimulus_data_list = Stimulus.objects.filter(id=stimulus_component_configuration.component.id)
                         for stimulus_data in stimulus_data_list:
@@ -660,38 +700,44 @@ class ExportExecution:
                             })
 
                 if self.get_input_data('component_list')['per_generic_data']:
-                    for path_generic_experiment in create_list_of_trees(group.experimental_protocol,
-                                                                        "generic_data_collection"):
-                        generic_component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                            pk=path_generic_experiment[-1][0])
-                        component_step = generic_component_configuration.component.component_type
-                        step_number = path_generic_experiment[-1][4]
-                        step_identification = path_generic_experiment[-1][3]
+                    for path_generic in create_list_of_trees(group.experimental_protocol, "generic_data_collection"):
+                        generic_component_configuration = ComponentConfiguration.objects.get(pk=path_generic[-1][0])
+                        component_step = generic_component_configuration.component
+                        step_number = path_generic[-1][4]
+                        step_identification = path_generic[-1][3]
 
-                        configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=generic_component_configuration)
+                        data_configuration_tree_id = \
+                            list_data_configuration_tree(generic_component_configuration.id, [item[0] for item in
+                                                                                              path_generic])
+                        generic_data_collection_data_list = GenericDataCollectionData.objects.filter(
+                            subject_of_group=subject_of_group, data_configuration_tree__id=data_configuration_tree_id)
 
-                        for data_configuration_tree in configuration_tree_list:
-                            generic_data_collection_list = GenericDataCollectionData.objects.filter(
-                                data_configuration_tree_id=data_configuration_tree.id)
-                            for generic_data_collection in generic_data_collection_list:
-                                subject_code = generic_data_collection.subject_of_group.subject.patient.code
+                        for generic_data_collection_data in generic_data_collection_data_list:
+                            subject_code = generic_data_collection_data.subject_of_group.subject.patient.code
+                            generic_data_collection_data_list = []
+                            for generic_data in generic_data_collection_data.generic_data_collection_files.all():
+                                generic_data_collection_data_list.append({
+                                    'generic_data_filename': settings.BASE_DIR + settings.MEDIA_URL +
+                                                             generic_data.file.name,
+                                })
 
-                                if subject_code not in self.per_group_data[group_id]['data_per_participant']:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                            if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
 
-                                if 'generic_data_collection_data' not in self.per_group_data[
-                                    group_id]['data_per_participant'][subject_code]:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                        'generic_data_collection_data'] = []
+                            if 'generic_data_collection_data_list' not in self.per_group_data[group_id][
+                                'data_per_participant'][subject_code]:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                    'generic_data_collection_data_list'] = []
 
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['generic_data_collection_data'].append({
+                            self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                'generic_data_collection_data_list'].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
-                                    'generic_data_collection_data_id': generic_data_collection.id,
-                                    'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper(),
-                                    'generic_data_collection_file': generic_data_collection.file.name
+                                    'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                           component_step.component_type.upper(),
+                                    'generic_data_collection_directory': "Generic_Collection_Data_" +
+                                                                         str(generic_data_collection_data.id),
+                                    'generic_data_collection_file_list': generic_data_collection_data_list,
                                 })
 
     def get_experiment_questionnaire_response_per_questionnaire(self, questionnaire_id, group_id):
@@ -1477,7 +1523,6 @@ class ExportExecution:
                         self.files_to_zip_list.append([complete_filename, step_participant_export_directory])
 
                 # for component_list
-
                 if 'eeg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
@@ -1562,48 +1607,48 @@ class ExportExecution:
 
                                 self.files_to_zip_list.append([complete_eeg_data_filename, export_eeg_data_directory])
 
-                                if eeg_file['can_export_nwb']:
-                                    process_requisition = int(random.random() * 10000)
-                                    eeg_file_name = eeg_data_filename.split('.')[0]
-                                    nwb_file_name = "%s.nwb" % eeg_file_name
-                                    complete_nwb_file_name = path.join(path_per_eeg_data, nwb_file_name)
-                                    req = None
-                                    # Open and read signal
-                                    eeg_reading = eeg_file['eeg_reading']
+                                # if eeg_file['can_export_nwb']:
+                                #     process_requisition = int(random.random() * 10000)
+                                #     eeg_file_name = eeg_data_filename.split('.')[0]
+                                #     nwb_file_name = "%s.nwb" % eeg_file_name
+                                #     complete_nwb_file_name = path.join(path_per_eeg_data, nwb_file_name)
+                                #     req = None
+                                #     # Open and read signal
+                                #     eeg_reading = eeg_file['eeg_reading']
+                                #
+                                #     # Was it open properly?
+                                #     ok_opening = False
+                                #
+                                #     if eeg_reading.file_format:
+                                #         if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+                                #             ok_opening = True
 
-                                    # Was it open properly?
-                                    ok_opening = False
+                                    # if ok_opening:
+                                        # complete_nwb_file_name = create_nwb_file(eeg_file, eeg_reading,
+                                        #                                          process_requisition,
+                                        #                                          req, complete_nwb_file_name)
+                                        # if complete_nwb_file_name:
+                                        #     self.files_to_zip_list.append([complete_nwb_file_name,
+                                        #                                    export_eeg_data_directory])
+                                        # else:
+                                        #     return error_msg
 
-                                    if eeg_reading.file_format:
-                                        if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
-                                            ok_opening = True
-
-                                    if ok_opening:
-                                        complete_nwb_file_name = create_nwb_file(eeg_file, eeg_reading,
-                                                                                 process_requisition,
-                                                                                 req, complete_nwb_file_name)
-                                        if complete_nwb_file_name:
-                                            self.files_to_zip_list.append([complete_nwb_file_name,
-                                                                           export_eeg_data_directory])
-                                        else:
-                                            return error_msg
-
-                if 'emg_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
+                if 'emg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
                             return error_msg
 
-                    emg_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code]['emg_data']
-                    for eeg_data in emg_data_list:
-                        emg_data = get_object_or_404(EMGData, pk=eeg_data['emg_data_id'])
-                        if emg_data:
-                            directory_step_name = eeg_data['directory_step_name']
-                            # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
-                            # Step_X_aaa
+                    emg_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
+                        'emg_data_list']
+                    for emg_data in emg_data_list:
+                        if emg_data['emg_file_list']:
+                            directory_step_name = emg_data['directory_step_name']
                             path_per_emg_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_emg_participant):
+                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # /Step_X_aaa
                                 error_msg, path_per_emg_participant = create_directory(path_per_participant,
                                                                                        directory_step_name)
                                 if error_msg != "":
@@ -1612,19 +1657,37 @@ class ExportExecution:
                             # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_emg_step_directory = path.join(participant_export_directory, directory_step_name)
 
-                            emg_data_filename = emg_data.file.name.split('/')[-1]
-                            emg_data_file = path.join(settings.BASE_DIR, 'media') + '/' + emg_data.file.name
-                            complete_emg_data_filename = path.join(path_per_emg_participant, emg_data_filename)
+                            # to create EMGData directory
+                            directory_data_name = emg_data['emg_data_directory_name']
+                            path_per_emg_data = path.join(path_per_emg_participant, directory_data_name)
+                            if not path.exists(path_per_emg_data):
+                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # /Step_X_aaa/EMGDATA_#
+                                error_msg, path_per_emg_data = create_directory(path_per_emg_participant,
+                                                                                directory_data_name)
+                                if error_msg != "":
+                                    return error_msg
 
-                            with open(emg_data_file, 'rb') as f:
-                                data = f.read()
+                            # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                            # /EMGData_#
+                            export_emg_data_directory = path.join(export_emg_step_directory, directory_data_name)
 
-                            with open(complete_emg_data_filename, 'wb') as f:
-                                f.write(data)
+                            for emg_file in emg_data['emg_file_list']:
+                                path_emg_data_file = emg_file['file_name']
 
-                            self.files_to_zip_list.append([complete_emg_data_filename, export_emg_step_directory])
+                                emg_data_filename = path_emg_data_file.split('/')[-1]
+                                complete_emg_data_filename = path.join(path_per_emg_data, emg_data_filename)
 
-                            emg_setting_description = get_emg_setting_description(eeg_data['setting_id'])
+                                with open(path_emg_data_file, 'rb') as f:
+                                    data = f.read()
+
+                                with open(complete_emg_data_filename, 'wb') as f:
+                                    f.write(data)
+
+                                self.files_to_zip_list.append([complete_emg_data_filename, export_emg_data_directory])
+
+                            # Create documento json with emg settings
+                            emg_setting_description = get_emg_setting_description(emg_data['setting_id'])
 
                             if emg_setting_description:
 
@@ -1632,29 +1695,31 @@ class ExportExecution:
 
                                 # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
                                 # emg_setting_description.txt #
-                                complete_setting_filename = path.join(path_per_emg_participant, emg_setting_filename)
+                                complete_setting_filename = path.join(path_per_emg_data, emg_setting_filename)
 
-                                self.files_to_zip_list.append([complete_setting_filename, export_emg_step_directory])
+                                self.files_to_zip_list.append([complete_setting_filename, export_emg_data_directory])
 
                                 with open(complete_setting_filename.encode('utf-8'), 'w', newline='',
                                           encoding='UTF-8') as outfile:
                                     json.dump(emg_setting_description, outfile, indent=4)
 
-                if 'tms_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
+                if 'tms_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
                             return error_msg
 
-                    tms_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code]['tms_data']
-                    for eeg_data in tms_data_list:
-                        tms_data_description = get_tms_data_description(eeg_data['tms_data_id'])
+                    tms_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
+                        'tms_data_list']
+                    for tms_data in tms_data_list:
+                        tms_data_description = get_tms_data_description(tms_data['tms_data_id'])
                         if tms_data_description:
-                            directory_step_name = eeg_data['directory_step_name']
+                            directory_step_name = tms_data['directory_step_name']
                             path_per_tms_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_tms_participant):
-                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # /Step_X_aaa
                                 error_msg, path_per_tms_participant = create_directory(path_per_participant,
                                                                                        directory_step_name)
                                 if error_msg != "":
@@ -1664,7 +1729,7 @@ class ExportExecution:
                             export_tms_step_directory = path.join(participant_export_directory, directory_step_name)
 
                             tms_data_filename = "%s.json" % "tms_data_description"
-                            # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/tms_data_description.txt #
+                            # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/tms_data_description.txt
                             complete_data_filename = path.join(path_per_tms_participant, tms_data_filename)
 
                             self.files_to_zip_list.append([complete_data_filename, export_tms_step_directory])
@@ -1674,7 +1739,7 @@ class ExportExecution:
                                 json.dump(tms_data_description, outfile, indent=4)
 
                             # TMS hotspot position image file
-                            tms_data = get_object_or_404(TMSData, pk=eeg_data['tms_data_id'])
+                            tms_data = get_object_or_404(TMSData, pk=tms_data['tms_data_id'])
 
                             if hasattr(tms_data, 'hotspot'):
                                 hotspot_image = tms_data.hotspot.hot_spot_map.name
@@ -1692,7 +1757,7 @@ class ExportExecution:
                                     self.files_to_zip_list.append([complete_hotspot_filename,
                                                                    export_tms_step_directory])
 
-                if 'additional_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
+                if 'additional_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
@@ -1700,7 +1765,7 @@ class ExportExecution:
                             return error_msg
 
                     additional_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
-                        'additional_data']
+                        'additional_data_list']
 
                     for additional_data in additional_data_list:
                         directory_step_name = additional_data['directory_step_name']
@@ -1714,25 +1779,39 @@ class ExportExecution:
                                 return error_msg
 
                         # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_COMPONENT_TYPE
-                        export_additional_data_directory = path.join(participant_export_directory, directory_step_name)
+                        export_step_additional_data_directory = path.join(participant_export_directory,
+                                                                       directory_step_name)
 
-                        file_name = additional_data['additional_file_name'].split('/')[-1]
-                        # read file from repository
-                        additional_data_filename = path.join(settings.BASE_DIR, 'media') + '/' + \
-                                                   additional_data['additional_file_name']
-                        # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
-                        # Step_X_COMPONENT_TYPE/file_name.format_type
-                        complete_additional_data_filename = path.join(path_additional_data, file_name)
-                        with open(additional_data_filename, 'rb') as f:
-                            data = f.read()
+                        # to create AdditionalData directory
+                        directory_data_name = additional_data['additional_data_directory']
+                        path_per_additional_data = path.join(path_additional_data, directory_data_name)
+                        if not path.exists(path_per_additional_data):
+                            error_msg, path_per_additional_data = create_directory(path_additional_data,
+                                                                                   directory_data_name)
+                            if error_msg != "":
+                                return error_msg
 
-                        with open(complete_additional_data_filename, 'wb') as f:
-                            f.write(data)
+                        export_additional_data_directory = path.join(export_step_additional_data_directory,
+                                                                     directory_data_name)
 
-                        self.files_to_zip_list.append([complete_additional_data_filename,
-                                                       export_additional_data_directory])
+                        for additional_file in additional_data['additional_data_file_list']:
+                            path_additional_data_file = additional_file['additional_data_filename']
 
-                if 'goalkeeper_game_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
+                            file_name = path_additional_data_file.split('/')[-1]
+
+                            # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
+                            # Step_X_COMPONENT_TYPE/file_name.format_type
+                            complete_additional_data_filename = path.join(path_per_additional_data, file_name)
+                            with open(path_additional_data_file, 'rb') as f:
+                                data = f.read()
+
+                            with open(complete_additional_data_filename, 'wb') as f:
+                                f.write(data)
+
+                            self.files_to_zip_list.append([complete_additional_data_filename,
+                                                           export_additional_data_directory])
+
+                if 'digital_game_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
@@ -1740,39 +1819,60 @@ class ExportExecution:
                             return error_msg
 
                     goalkeeper_game_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
-                        'goalkeeper_game_data']
+                        'digital_game_data_list']
 
                     for goalkeeper_game_data in goalkeeper_game_data_list:
-                        directory_step_name = goalkeeper_game_data['directory_step_name']
-                        path_goalkeeper_game_data = path.join(path_per_participant, directory_step_name)
-                        if not path.exists(path_goalkeeper_game_data):
-                            # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
-                            # /Step_X_COMPONENT_TYPE
-                            error_msg, path_goalkeeper_game_data = create_directory(path_per_participant,
-                                                                                    directory_step_name)
+                        if goalkeeper_game_data['digital_game_file_list']:
+                            directory_step_name = goalkeeper_game_data['directory_step_name']
+                            path_goalkeeper_game_data = path.join(path_per_participant, directory_step_name)
+                            if not path.exists(path_goalkeeper_game_data):
+                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # /Step_X_COMPONENT_TYPE
+                                error_msg, path_goalkeeper_game_data = create_directory(path_per_participant,
+                                                                                        directory_step_name)
 
-                            if error_msg != "":
-                                return error_msg
+                                if error_msg != "":
+                                    return error_msg
 
-                            # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_COMPONENT_TYPE
-                            export_goalkeeper_game_directory = path.join(participant_export_directory,
-                                                                         directory_step_name)
+                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # /Step_X_COMPONENT_TYPE
+                                export_goalkeeper_game_directory = path.join(participant_export_directory,
+                                                                             directory_step_name)
 
-                            file_name = goalkeeper_game_data['goalkeeper_game_file'].split('/')[-1]
-                            # read file from repository
-                            goalkeeper_game_data_filename = path.join(settings.BASE_DIR, 'media') + '/' + \
-                                                            goalkeeper_game_data['goalkeeper_game_file']
-                            # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
-                            # Step_X_COMPONENT_TYPE/file_name.format_type
-                            complete_goalkeeper_game_filename = path.join(path_goalkeeper_game_data, file_name)
-                            with open(goalkeeper_game_data_filename, 'rb') as f:
-                                data = f.read()
+                                # to create Game_digital_dataData directory 
+                                directory_data_name = goalkeeper_game_data['digital_game_data_directory']
 
-                            with open(complete_goalkeeper_game_filename, 'wb') as f:
-                                f.write(data)
+                                path_per_emg_data = path.join(path_goalkeeper_game_data, directory_data_name)
+                                if not path.exists(path_per_emg_data):
+                                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
+                                    #  /Step_X_aaa/GoalkeeperDATA_# 
+                                    error_msg, path_per_goalkeeper_game_data = create_directory(
+                                        path_goalkeeper_game_data, directory_data_name)
 
-                            self.files_to_zip_list.append([complete_goalkeeper_game_filename,
-                                                           export_goalkeeper_game_directory])
+                                    if error_msg != "":
+                                        return error_msg
+
+                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # /Step_X_aaa /GoalkeeperDATA_# 
+                                export_goalkeeper_data_directory = path.join(export_goalkeeper_game_directory,
+                                                                             directory_data_name)
+
+                                for context_tree_file in goalkeeper_game_data['digital_game_file_list']:
+                                    path_context_tree_file = context_tree_file['digital_game_filename']
+                                    file_name = path_context_tree_file.split('/')[-1]
+
+                                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant
+                                    # /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
+                                    complete_goalkeeper_game_filename = path.join(path_per_goalkeeper_game_data,
+                                                                                  file_name)
+                                    with open(path_context_tree_file, 'rb') as f:
+                                        data = f.read()
+
+                                    with open(complete_goalkeeper_game_filename, 'wb') as f:
+                                        f.write(data)
+
+                                    self.files_to_zip_list.append([complete_goalkeeper_game_filename,
+                                                                   export_goalkeeper_data_directory])
 
         return error_msg
 

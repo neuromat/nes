@@ -477,7 +477,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
         # delete temporary directory: from base_directory and below
         base_export_directory = export.get_export_directory()
-        rmtree(base_export_directory)
+        rmtree(base_export_directory, ignore_errors=True)
 
         # messages.success(request, _("Export was finished correctly"))
         print("finalizado corretamente 2")
