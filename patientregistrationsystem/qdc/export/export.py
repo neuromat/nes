@@ -2,6 +2,7 @@
 import json
 import random
 import re
+import mne
 
 from csv import writer, reader
 from sys import modules
@@ -29,7 +30,8 @@ from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireRe
     TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, TMSLocalizationSystem, GenericDataCollectionData, \
     ContextTree
 from experiment.views import get_block_tree, get_experimental_protocol_image, EEG, EMG, TMS, DigitalGamePhase, \
-    get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, eeg_data_reading
+    get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, eeg_data_reading, \
+    list_data_configuration_tree
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import is_limesurvey_available
@@ -321,6 +323,7 @@ class ExportExecution:
         header_step_list = ['Step', 'Step identification', 'Path questionnaire', 'Data completed']
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
+            subject_of_group = SubjectOfGroup.objects.filter(group=group)
             title = group.title
             description = group.description
             if group_id not in self.per_group_data:
@@ -466,39 +469,68 @@ class ExportExecution:
 
                 if self.get_input_data('component_list')['per_eeg_raw_data'] or \
                         self.get_input_data('component_list')['per_eeg_nwb_data']:
-                    for path_eeg_experiment in create_list_of_trees(group.experimental_protocol, "eeg"):
-                        eeg_component_configuration = get_object_or_404(ComponentConfiguration,
-                                                                        pk=path_eeg_experiment[-1][0])
+
+                    for path_eeg in create_list_of_trees(group.experimental_protocol, "eeg"):
+                        eeg_component_configuration = ComponentConfiguration.objects.get(pk=path_eeg[-1][0])
                         component_step = eeg_component_configuration.component
 
-                        self.per_group_data[group_id]['eeg_default_setting_id'] = EEG.objects.filter(
-                            id=component_step.id).values('eeg_setting_id')[0]['eeg_setting_id']
-                        step_number = path_eeg_experiment[-1][4]
-                        step_identification = path_eeg_experiment[-1][3]
+                        self.per_group_data[group_id]['eeg_default_setting_id'] = \
+                            eeg_component_configuration.component.eeg.eeg_setting.id
+                        step_number = path_eeg[-1][4]
+                        step_identification = path_eeg[-1][3]
 
-                        configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=eeg_component_configuration)
-                        for data_configuration_tree in configuration_tree_list:
-                            eeg_data_list = EEGData.objects.filter(
-                                data_configuration_tree_id=data_configuration_tree.id).distinct()
-                            for eeg_data in eeg_data_list:
-                                subject_code = eeg_data.subject_of_group.subject.patient.code
+                        data_configuration_tree_id = list_data_configuration_tree(eeg_component_configuration.id,
+                                                                                  [item[0] for item in path_eeg])
 
-                                if subject_code not in self.per_group_data[group_id]['data_per_participant']:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                if 'eeg_data' not in self.per_group_data[group_id]['data_per_participant'][subject_code]:
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'] = []
+                        eeg_data_list = EEGData.objects.filter(subject_of_group=subject_of_group,
+                                                               data_configuration_tree_id=data_configuration_tree_id)
+                        for eeg_data in eeg_data_list:
+                            subject_code = eeg_data.subject_of_group.subject.patient.code
+                            sensors_positions_image = get_sensors_position(eeg_data)
+                            if sensors_positions_image:
+                                sensors_positions_filename = settings.BASE_DIR + str(sensors_positions_image)
+                            else:
+                                sensors_positions_filename = ''
 
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data'].append({
-                                    'step_number': step_number,
-                                    'step_identification': step_identification,
-                                    'setting_id': eeg_data.eeg_setting_id,
-                                    'eeg_data_id': eeg_data.id,
-                                    'data_configuration_tree_id': data_configuration_tree.id,
-                                    'directory_step_name': "Step_" + str(step_number) + "_" +
-                                                           component_step.component_type.upper(),
-                                    'export_nwb': self.get_input_data('component_list')['per_eeg_nwb_data']
+                            eeg_file_list = []
+                            for eeg_file in eeg_data.eeg_files.all():
+                                eeg_file.eeg_reading = eeg_data_reading(eeg_file, preload=False)
+                                eeg_file.can_export_to_nwb = False
+
+                                # v1.5
+                                # can export to nwb?
+                                if eeg_file.eeg_reading.file_format and eeg_file.eeg_reading.reading:
+                                    if eeg_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" and hasattr(
+                                            eeg_data.eeg_setting, 'eeg_amplifier_setting') and \
+                                            eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used and \
+                                            eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used == \
+                                            len(mne.pick_types(eeg_file.eeg_reading.reading.info, eeg=True)):
+                                        eeg_file.can_export_to_nwb = True
+
+                                eeg_file_list.append({
+                                    'file_name': settings.BASE_DIR + settings.MEDIA_URL + eeg_file.file.name,
+                                    'can_export_nwb': eeg_file.can_export_to_nwb,
+                                    'eeg_reading': eeg_file.eeg_reading,
                                 })
+
+                            if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                            if 'eeg_data_list' not in self.per_group_data[group_id]['data_per_participant'][
+                                subject_code]:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data_list'] = []
+
+                            self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data_list'].append({
+                                'step_number': step_number,
+                                'step_identification': step_identification,
+                                'setting_id': eeg_data.eeg_setting_id,
+                                'sensor_filename': sensors_positions_filename,
+                                'eeg_data_directory_name': "EEGData_" + str(eeg_data.id),
+                                'data_configuration_tree_id': data_configuration_tree_id,
+                                'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                       component_step.component_type.upper(),
+                                'export_nwb': self.get_input_data('component_list')['per_eeg_nwb_data'],
+                                'eeg_file_list': eeg_file_list,
+                            })
 
                 if self.get_input_data('component_list')['per_emg_data']:
                     for path_emg_experiment in create_list_of_trees(group.experimental_protocol, "emg"):
@@ -1446,20 +1478,17 @@ class ExportExecution:
 
                 # for component_list
 
-                if 'eeg_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
+                if 'eeg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
                             return error_msg
 
-                    eeg_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code]['eeg_data']
-                    for component in eeg_data_list:
-                        eeg_data = get_object_or_404(EEGData, pk=component['eeg_data_id'])
-                        for eeg_file in eeg_data.eeg_files.all():
-                            eeg_data_file = path.join(settings.BASE_DIR, 'media') + '/' + eeg_file.file.name
-
-                            directory_step_name = component['directory_step_name']
+                    eeg_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code]['eeg_data_list']
+                    for eeg_data in eeg_data_list:
+                        if eeg_data['eeg_file_list']:
+                            directory_step_name = eeg_data['directory_step_name']
                             path_per_eeg_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_eeg_participant):
                                 # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
@@ -1472,76 +1501,92 @@ class ExportExecution:
                             # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_eeg_step_directory = path.join(participant_export_directory, directory_step_name)
 
-                            eeg_data_filename = eeg_file.file.name.split('/')[-1]
-                            complete_eeg_data_filename = path.join(path_per_eeg_participant, eeg_data_filename)
+                            # to create EEGData directory
+                            directory_data_name = eeg_data['eeg_data_directory_name']
+                            path_per_eeg_data = path.join(path_per_eeg_participant, directory_data_name)
+                            if not path.exists(path_per_eeg_data):
+                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # /Step_X_aaa/EEGDATA_#
+                                error_msg, path_per_eeg_data = create_directory(path_per_eeg_participant,
+                                                                                directory_data_name)
+                                if error_msg != "":
+                                    return error_msg
 
-                            with open(eeg_data_file, 'rb') as f:
-                                data = f.read()
+                            # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                            # /EEGData_#
+                            export_eeg_data_directory = path.join(export_eeg_step_directory, directory_data_name)
 
-                            with open(complete_eeg_data_filename, 'wb') as f:
-                                f.write(data)
-
-                            self.files_to_zip_list.append([complete_eeg_data_filename, export_eeg_step_directory])
-
-                            eeg_setting_description = get_eeg_setting_description(component['setting_id'])
+                            eeg_setting_description = get_eeg_setting_description(eeg_data['setting_id'])
 
                             if eeg_setting_description:
-
                                 eeg_setting_filename = "%s.json" % "eeg_setting_description"
 
                                 # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
                                 # eeg_setting_description.json#
-                                complete_setting_filename = path.join(path_per_eeg_participant, eeg_setting_filename)
+                                complete_setting_filename = path.join(path_per_eeg_data, eeg_setting_filename)
 
-                                self.files_to_zip_list.append([complete_setting_filename, export_eeg_step_directory])
+                                self.files_to_zip_list.append([complete_setting_filename, export_eeg_data_directory])
 
                                 with open(complete_setting_filename.encode('utf-8'), 'w', newline='',
                                           encoding='UTF-8') as outfile:
                                     json.dump(eeg_setting_description, outfile, indent=4)
 
                             # if sensor position image exist
-                            sensors_positions_image = get_sensors_position(eeg_data)
+                            sensors_positions_image = eeg_data['sensor_filename']
                             if sensors_positions_image:
                                 sensor_position_filename = "%s.png" % "sensor_position"
 
-                                sensor_position_file = eeg_data_filename.split(".")[0] + "_" + sensor_position_filename
-                                complete_sensor_position_filename = path.join(path_per_eeg_participant,
-                                                                              sensor_position_file)
-                                path_sensor_position_filename = settings.BASE_DIR + sensors_positions_image
+                                complete_sensor_position_filename = path.join(path_per_eeg_data,
+                                                                              sensor_position_filename)
 
-                                with open(path_sensor_position_filename, 'rb') as f:
+                                with open(sensors_positions_image, 'rb') as f:
                                     data = f.read()
 
                                 with open(complete_sensor_position_filename, 'wb') as f:
                                     f.write(data)
 
                                 self.files_to_zip_list.append([complete_sensor_position_filename,
-                                                               export_eeg_step_directory])
+                                                               export_eeg_data_directory])
 
-                            if component['export_nwb']:
-                                process_requisition = int(random.random() * 10000)
-                                eeg_file_name = eeg_data_filename.split('.')[0]
-                                nwb_file_name = "%s.nwb" % eeg_file_name
-                                complete_nwb_file_name = path.join(path_per_eeg_participant, nwb_file_name)
-                                req = None
-                                # Open and read signal
-                                eeg_reading = eeg_data_reading(eeg_data, preload=True)
+                            for eeg_file in eeg_data['eeg_file_list']:
+                                path_eeg_data_file = eeg_file['file_name']
 
-                                # Was it open properly?
-                                ok_opening = False
+                                eeg_data_filename = path_eeg_data_file.split('/')[-1]
+                                complete_eeg_data_filename = path.join(path_per_eeg_data, eeg_data_filename)
 
-                                if eeg_reading.file_format:
-                                    if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
-                                        ok_opening = True
+                                with open(path_eeg_data_file, 'rb') as f:
+                                    data = f.read()
 
-                                if ok_opening:
-                                    complete_nwb_file_name = create_nwb_file(eeg_data, eeg_reading, process_requisition,
-                                                                             req, complete_nwb_file_name)
-                                    if complete_nwb_file_name:
-                                        self.files_to_zip_list.append([complete_nwb_file_name,
-                                                                       export_eeg_step_directory])
-                                    else:
-                                        return error_msg
+                                with open(complete_eeg_data_filename, 'wb') as f:
+                                    f.write(data)
+
+                                self.files_to_zip_list.append([complete_eeg_data_filename, export_eeg_data_directory])
+
+                                if eeg_file['can_export_nwb']:
+                                    process_requisition = int(random.random() * 10000)
+                                    eeg_file_name = eeg_data_filename.split('.')[0]
+                                    nwb_file_name = "%s.nwb" % eeg_file_name
+                                    complete_nwb_file_name = path.join(path_per_eeg_data, nwb_file_name)
+                                    req = None
+                                    # Open and read signal
+                                    eeg_reading = eeg_file['eeg_reading']
+
+                                    # Was it open properly?
+                                    ok_opening = False
+
+                                    if eeg_reading.file_format:
+                                        if eeg_reading.file_format.nes_code == "MNE-RawFromEGI":
+                                            ok_opening = True
+
+                                    if ok_opening:
+                                        complete_nwb_file_name = create_nwb_file(eeg_file, eeg_reading,
+                                                                                 process_requisition,
+                                                                                 req, complete_nwb_file_name)
+                                        if complete_nwb_file_name:
+                                            self.files_to_zip_list.append([complete_nwb_file_name,
+                                                                           export_eeg_data_directory])
+                                        else:
+                                            return error_msg
 
                 if 'emg_data' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
@@ -1551,10 +1596,10 @@ class ExportExecution:
                             return error_msg
 
                     emg_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code]['emg_data']
-                    for component in emg_data_list:
-                        emg_data = get_object_or_404(EMGData, pk=component['emg_data_id'])
+                    for eeg_data in emg_data_list:
+                        emg_data = get_object_or_404(EMGData, pk=eeg_data['emg_data_id'])
                         if emg_data:
-                            directory_step_name = component['directory_step_name']
+                            directory_step_name = eeg_data['directory_step_name']
                             # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
                             # Step_X_aaa
                             path_per_emg_participant = path.join(path_per_participant, directory_step_name)
@@ -1579,7 +1624,7 @@ class ExportExecution:
 
                             self.files_to_zip_list.append([complete_emg_data_filename, export_emg_step_directory])
 
-                            emg_setting_description = get_emg_setting_description(component['setting_id'])
+                            emg_setting_description = get_emg_setting_description(eeg_data['setting_id'])
 
                             if emg_setting_description:
 
@@ -1603,10 +1648,10 @@ class ExportExecution:
                             return error_msg
 
                     tms_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code]['tms_data']
-                    for component in tms_data_list:
-                        tms_data_description = get_tms_data_description(component['tms_data_id'])
+                    for eeg_data in tms_data_list:
+                        tms_data_description = get_tms_data_description(eeg_data['tms_data_id'])
                         if tms_data_description:
-                            directory_step_name = component['directory_step_name']
+                            directory_step_name = eeg_data['directory_step_name']
                             path_per_tms_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_tms_participant):
                                 # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
@@ -1629,7 +1674,7 @@ class ExportExecution:
                                 json.dump(tms_data_description, outfile, indent=4)
 
                             # TMS hotspot position image file
-                            tms_data = get_object_or_404(TMSData, pk=component['tms_data_id'])
+                            tms_data = get_object_or_404(TMSData, pk=eeg_data['tms_data_id'])
 
                             if hasattr(tms_data, 'hotspot'):
                                 hotspot_image = tms_data.hotspot.hot_spot_map.name
@@ -1944,6 +1989,7 @@ class ExportExecution:
                 if 'eeg_default_setting_id' in self.per_group_data[group_id]:
                     eeg_default_setting_description = get_eeg_setting_description(self.per_group_data[group_id][
                                                                                   'eeg_default_setting_id'])
+
                     if eeg_default_setting_description:
                         eeg_setting_description = "%s.json" % "eeg_default_setting"
                         complete_filename_eeg_setting = path.join(directory_experimental_protocol, eeg_setting_description)
