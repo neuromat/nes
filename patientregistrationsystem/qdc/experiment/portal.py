@@ -1302,6 +1302,7 @@ def send_steps_to_portal(portal_group_id, component_tree,
             survey_metadata += '\n'
 
         params['survey_metadata'] = survey_metadata
+        params['code'] = step_specialization.survey.code
 
         surveys.release_session_key()
 
