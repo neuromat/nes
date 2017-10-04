@@ -472,14 +472,21 @@ class ExportExecution:
                                     })
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+
                                 if 'additional_data_list' not in self.per_group_data[group_id]['data_per_participant'][
-                                    subject_code]:
+                                        subject_code]:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code][
                                         'additional_data_list'] = []
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                        'data_index'] = 1
+                                else:
+                                    self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                        'data_index'] += 1
 
                                 # step_number = 0
                                 # component_type = 'root'
-
+                                index = str(self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                                'data_index'])
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                     'additional_data_list'].append({
                                         'description': additional_data.description,
@@ -487,7 +494,7 @@ class ExportExecution:
                                         'component_type': component_type,
                                         'directory_step_name': "Step_" + str(step_number) + "_" +
                                                                component_type.upper(),
-                                        'additional_data_directory': "AdditionalData_" + str(additional_data.id),
+                                        'additional_data_directory': "AdditionalData_" + index,
                                         'additional_data_file_list': additional_data_file_list,
                                     })
 
@@ -508,6 +515,7 @@ class ExportExecution:
 
                         eeg_data_list = EEGData.objects.filter(subject_of_group=subject_of_group,
                                                                data_configuration_tree_id=data_configuration_tree_id)
+
                         for eeg_data in eeg_data_list:
                             subject_code = eeg_data.subject_of_group.subject.patient.code
                             sensors_positions_image = get_sensors_position(eeg_data)
@@ -539,22 +547,29 @@ class ExportExecution:
 
                             if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                            if 'eeg_data_list' not in self.per_group_data[group_id]['data_per_participant'][
-                                subject_code]:
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data_list'] = []
 
-                            self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data_list'].append({
-                                'step_number': step_number,
-                                'step_identification': step_identification,
-                                'setting_id': eeg_data.eeg_setting_id,
-                                'sensor_filename': sensors_positions_filename,
-                                'eeg_data_directory_name': "EEGData_" + str(eeg_data.id),
-                                'data_configuration_tree_id': data_configuration_tree_id,
-                                'directory_step_name': "Step_" + str(step_number) + "_" +
-                                                       component_step.component_type.upper(),
-                                'export_nwb': self.get_input_data('component_list')['per_eeg_nwb_data'],
-                                'eeg_file_list': eeg_file_list,
-                            })
+                            if 'eeg_data_list' not in self.per_group_data[group_id]['data_per_participant'][
+                                    subject_code]:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['eeg_data_list']\
+                                    = []
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] = 1
+                            else:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] += 1
+                            index = str(self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                            'data_index'])
+                            self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                'eeg_data_list'].append({
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
+                                    'setting_id': eeg_data.eeg_setting_id,
+                                    'sensor_filename': sensors_positions_filename,
+                                    'eeg_data_directory_name': "EEGData_" + index,
+                                    'data_configuration_tree_id': data_configuration_tree_id,
+                                    'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                           component_step.component_type.upper(),
+                                    'export_nwb': self.get_input_data('component_list')['per_eeg_nwb_data'],
+                                    'eeg_file_list': eeg_file_list,
+                                })
 
                 if self.get_input_data('component_list')['per_emg_data']:
                     for path_emg in create_list_of_trees(group.experimental_protocol, "emg"):
@@ -586,12 +601,16 @@ class ExportExecution:
                                 subject_code]:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data_list'] \
                                     = []
-
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] = 1
+                            else:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] += 1
+                            index = str(self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                            'data_index'])
                             self.per_group_data[group_id]['data_per_participant'][subject_code][
                                 'emg_data_list'].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
-                                    'emg_data_directory_name': "EMGData_" + str(emg_data.id),
+                                    'emg_data_directory_name': "EMGData_" + index,
                                     'setting_id': emg_data.emg_setting.id,
                                     'directory_step_name': "Step_" + str(step_number) + "_" +
                                                            component_step.component_type.upper(),
@@ -613,6 +632,7 @@ class ExportExecution:
 
                         tms_data_list = TMSData.objects.filter(subject_of_group=subject_of_group,
                                                                data_configuration_tree_id=data_configuration_tree_id)
+
                         for tms_data in tms_data_list:
                             subject_code = tms_data.subject_of_group.subject.patient.code
 
@@ -668,15 +688,18 @@ class ExportExecution:
                                 subject_code]:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                     'digital_game_data_list'] = []
-
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] = 1
+                            else:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] += 1
+                            index = str(self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                            'data_index'])
                             self.per_group_data[group_id]['data_per_participant'][subject_code][
                                 'digital_game_data_list'].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
                                     'directory_step_name': "Step_" + str(step_number) + "_" +
                                                            component_step.component_type.upper(),
-                                    'digital_game_data_directory': "DigitalGamePhaseData_" + str(
-                                        digital_game_data.id),
+                                    'digital_game_data_directory': "DigitalGamePhaseData_" + index,
                                     'digital_game_file_list': digital_game_file_list,
                                 })
 
@@ -726,18 +749,21 @@ class ExportExecution:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
 
                             if 'generic_data_collection_data_list' not in self.per_group_data[group_id][
-                                'data_per_participant'][subject_code]:
+                                    'data_per_participant'][subject_code]:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                     'generic_data_collection_data_list'] = []
-
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] = 1
+                            else:
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] += 1
+                            index = str(self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                            'data_index'])
                             self.per_group_data[group_id]['data_per_participant'][subject_code][
                                 'generic_data_collection_data_list'].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
                                     'directory_step_name': "Step_" + str(step_number) + "_" +
                                                            component_step.component_type.upper(),
-                                    'generic_data_collection_directory': "Generic_Collection_Data_" +
-                                                                         str(generic_data_collection_data.id),
+                                    'generic_data_collection_directory': "Generic_Collection_Data_" + index,
                                     'generic_data_collection_file_list': generic_data_collection_data_list,
                                 })
 
