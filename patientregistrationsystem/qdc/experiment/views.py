@@ -31,7 +31,7 @@ from django.core import serializers
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
-from django.db.models import Q
+from django.db.models import Q, Min
 from django.db.models.loading import get_model
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
@@ -741,6 +741,27 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
     return render(request, template_name, context)
 
 
+def date_of_first_data_collection(subject_of_group):
+
+    result = None
+
+    dates_to_compare = [
+        QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        EEGData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        EMGData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        AdditionalData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        TMSData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        DigitalGamePhaseData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        GenericDataCollectionData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min']
+    ]
+
+    for date_to_compare in dates_to_compare:
+        if date_to_compare:
+            result = min(result, date_to_compare) if result else date_to_compare
+
+    return result
+
+
 def send_all_experiments_to_portal(language_code):
     for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
         if send_experiment_to_portal(schedule_of_sending.experiment):
@@ -820,7 +841,10 @@ def send_all_experiments_to_portal(language_code):
                 # participants
                 portal_participant_list = {}
                 for subject_of_group in group.subjectofgroup_set.all():
-                    portal_participant = send_participant_to_portal(portal_group['id'], subject_of_group.subject)
+                    first_data_collection = date_of_first_data_collection(subject_of_group)
+                    portal_participant = send_participant_to_portal(portal_group['id'],
+                                                                    subject_of_group.subject,
+                                                                    first_data_collection)
                     portal_participant_list[subject_of_group.id] = portal_participant['id']
 
                 # experimental protocol
@@ -1177,7 +1201,10 @@ def group_has_data_collection(group_id):
         QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
         EEGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
         EMGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
-        AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
+        AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        TMSData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        DigitalGamePhaseData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        GenericDataCollectionData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
 
 
 @login_required

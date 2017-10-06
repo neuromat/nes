@@ -1064,7 +1064,7 @@ def send_context_tree_to_portal(context_tree: ContextTree):
     return portal_group
 
 
-def send_participant_to_portal(portal_group_id, subject: Subject):
+def send_participant_to_portal(portal_group_id, subject: Subject, first_data_collection):
 
     rest = RestApiClient()
 
@@ -1076,10 +1076,12 @@ def send_participant_to_portal(portal_group_id, subject: Subject):
     gender_name = subject.patient.gender.name.lower()
     translation.activate(current_language)
 
+    date_reference = first_data_collection if first_data_collection else date.today()
+
     params = {"id": portal_group_id,
               "code": subject.patient.code,
               "gender": gender_name,
-              "age": format((date.today() - subject.patient.date_birth) / timedelta(days=365.2425), '.4')}
+              "age": format((date_reference - subject.patient.date_birth) / timedelta(days=365.2425), '.4')}
 
     action_keys = ['groups', 'participant', 'create']
 
