@@ -31,7 +31,7 @@ from django.core import serializers
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
-from django.db.models import Q
+from django.db.models import Q, Min
 from django.db.models.loading import get_model
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
@@ -741,6 +741,27 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
     return render(request, template_name, context)
 
 
+def date_of_first_data_collection(subject_of_group):
+
+    result = None
+
+    dates_to_compare = [
+        QuestionnaireResponse.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        EEGData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        EMGData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        AdditionalData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        TMSData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        DigitalGamePhaseData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min'],
+        GenericDataCollectionData.objects.filter(subject_of_group=subject_of_group).aggregate(Min('date'))['date__min']
+    ]
+
+    for date_to_compare in dates_to_compare:
+        if date_to_compare:
+            result = min(result, date_to_compare) if result else date_to_compare
+
+    return result
+
+
 def send_all_experiments_to_portal(language_code):
     for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
         if send_experiment_to_portal(schedule_of_sending.experiment):
@@ -820,7 +841,10 @@ def send_all_experiments_to_portal(language_code):
                 # participants
                 portal_participant_list = {}
                 for subject_of_group in group.subjectofgroup_set.all():
-                    portal_participant = send_participant_to_portal(portal_group['id'], subject_of_group.subject)
+                    first_data_collection = date_of_first_data_collection(subject_of_group)
+                    portal_participant = send_participant_to_portal(portal_group['id'],
+                                                                    subject_of_group.subject,
+                                                                    first_data_collection)
                     portal_participant_list[subject_of_group.id] = portal_participant['id']
 
                 # experimental protocol
@@ -1177,7 +1201,10 @@ def group_has_data_collection(group_id):
         QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
         EEGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
         EMGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
-        AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
+        AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        TMSData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        DigitalGamePhaseData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+        GenericDataCollectionData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
 
 
 @login_required
@@ -5361,11 +5388,7 @@ def load_questionnaire_data(request, group_id):
                 Questionnaire, pk=questionnaire_response.data_configuration_tree.component_configuration.component_id)
 
             # saving used tokens by questionnaire
-            if questionnaire.survey.lime_survey_id not in reused_tokens:
-                reused_tokens[questionnaire.survey.lime_survey_id] = [questionnaire_response.token_id]
-            else:
-                if questionnaire_response.token_id not in reused_tokens[questionnaire.survey.lime_survey_id]:
-                    reused_tokens[questionnaire.survey.lime_survey_id].append(questionnaire_response.token_id)
+            update_list_of_reused_tokens(questionnaire_response, questionnaire, reused_tokens)
 
     # main loop: importing
     for path in list_of_paths:
@@ -5385,50 +5408,53 @@ def load_questionnaire_data(request, group_id):
         # for each subject
         for subject_of_group in group.subjectofgroup_set.all():
 
-            # check if there is no response for this "subject + step"
-            if not QuestionnaireResponse.objects.filter(
-                    subject_of_group=subject_of_group,
-                    data_configuration_tree=data_configuration_tree).exists():
+            tokens_already_reused = reused_tokens[
+                questionnaire.survey.lime_survey_id] if questionnaire.survey.lime_survey_id in reused_tokens else []
 
-                tokens_already_reused = reused_tokens[
-                    questionnaire.survey.lime_survey_id] if questionnaire.survey.lime_survey_id in reused_tokens else []
+            # getting patient-questionnaire-response
+            patient_questionnaire_responses = PatientQuestionnaireResponse.objects.filter(
+                patient=subject_of_group.subject.patient,
+                survey=questionnaire.survey).exclude(token_id__in=tokens_already_reused)
 
-                # getting patient-questionnaire-response
-                patient_questionnaire_responses = PatientQuestionnaireResponse.objects.filter(
-                    patient=subject_of_group.subject.patient,
-                    survey=questionnaire.survey).exclude(token_id__in=tokens_already_reused)
+            # check if there is response in patient-questionnaire-response to reuse
+            if patient_questionnaire_responses:
 
-                # check if there is response in patient-questionnaire-response to reuse
-                if patient_questionnaire_responses:
+                # when configured with 1 repetition, check if there is just one response
+                if questionnaire_configuration.number_of_repetitions == 1 and \
+                                len(patient_questionnaire_responses) == 1:
 
-                    # check if there is just one response
-                    if len(patient_questionnaire_responses) == 1:
+                    # check if there is no response for this "subject + step"
+                    if not QuestionnaireResponse.objects.filter(
+                            subject_of_group=subject_of_group,
+                            data_configuration_tree=data_configuration_tree).exists():
 
                         # getting the response to reuse
                         patient_questionnaire_response = patient_questionnaire_responses[0]
 
                         # reuse the response
-                        new_questionnaire_response = QuestionnaireResponse.objects.create(
-                            token_id=patient_questionnaire_response.token_id,
-                            questionnaire_responsible=patient_questionnaire_response.questionnaire_responsible,
-                            data_configuration_tree_id=data_configuration_tree_id,
-                            subject_of_group=subject_of_group,
-                            date=patient_questionnaire_response.date,
-                        )
-                        new_questionnaire_response.save()
+                        new_questionnaire_response = reuse_questionnaire_response(data_configuration_tree_id,
+                                                                                  patient_questionnaire_response,
+                                                                                  subject_of_group)
+
+                        # update list of reused tokens
+                        update_list_of_reused_tokens(new_questionnaire_response, questionnaire, reused_tokens)
+
+                        # increments number of imported data
+                        number_of_imported_data += 1
+
+                # when configured with unlimited responses, iterate all responses
+                if questionnaire_configuration.number_of_repetitions is None:
+
+                    for patient_questionnaire_response in patient_questionnaire_responses:
+                        new_questionnaire_response = reuse_questionnaire_response(data_configuration_tree_id,
+                                                                                  patient_questionnaire_response,
+                                                                                  subject_of_group)
 
                         # increments number of imported data
                         number_of_imported_data += 1
 
                         # update list of reused tokens
-                        if questionnaire.survey.lime_survey_id not in reused_tokens:
-                            reused_tokens[questionnaire.survey.lime_survey_id] = [
-                                new_questionnaire_response.token_id]
-                        else:
-                            if new_questionnaire_response.token_id not in \
-                                    reused_tokens[questionnaire.survey.lime_survey_id]:
-                                reused_tokens[questionnaire.survey.lime_survey_id].append(
-                                    new_questionnaire_response.token_id)
+                        update_list_of_reused_tokens(new_questionnaire_response, questionnaire, reused_tokens)
 
     if number_of_imported_data:
         if number_of_imported_data == 1:
@@ -5440,6 +5466,29 @@ def load_questionnaire_data(request, group_id):
 
     redirect_url = reverse("subjects", args=(group_id,))
     return HttpResponseRedirect(redirect_url)
+
+
+def update_list_of_reused_tokens(new_questionnaire_response, questionnaire, reused_tokens):
+    if questionnaire.survey.lime_survey_id not in reused_tokens:
+        reused_tokens[questionnaire.survey.lime_survey_id] = [
+            new_questionnaire_response.token_id]
+    else:
+        if new_questionnaire_response.token_id not in \
+                reused_tokens[questionnaire.survey.lime_survey_id]:
+            reused_tokens[questionnaire.survey.lime_survey_id].append(
+                new_questionnaire_response.token_id)
+
+
+def reuse_questionnaire_response(data_configuration_tree_id, patient_questionnaire_response, subject_of_group):
+    new_questionnaire_response = QuestionnaireResponse.objects.create(
+        token_id=patient_questionnaire_response.token_id,
+        questionnaire_responsible=patient_questionnaire_response.questionnaire_responsible,
+        data_configuration_tree_id=data_configuration_tree_id,
+        subject_of_group=subject_of_group,
+        date=patient_questionnaire_response.date,
+    )
+    new_questionnaire_response.save()
+    return new_questionnaire_response
 
 
 @login_required
