@@ -63,6 +63,14 @@
 		inner join patient_classificationofdiseases cat on cat.code = left(subcat.subcat,3) 
 		where cat.parent_id is null and cat.code <> subcat.subcat;
 
+    -- copying to columns related to translation
+    update patient_classificationofdiseases
+        set
+        description_pt_br = description,
+        description_en = description,
+        abbreviated_description_pt_br = abbreviated_description,
+        abbreviated_description_en = abbreviated_description;
+
 -- Removing temporary tables
 
 	DROP TABLE cid10_cat;
