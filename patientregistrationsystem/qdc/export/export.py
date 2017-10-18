@@ -1845,7 +1845,6 @@ class ExportExecution:
                                 # /Step_X_COMPONENT_TYPE
                                 error_msg, path_goalkeeper_game_data = create_directory(path_per_participant,
                                                                                         directory_step_name)
-
                                 if error_msg != "":
                                     return error_msg
 
@@ -1875,7 +1874,6 @@ class ExportExecution:
                                 for context_tree_file in goalkeeper_game_data['digital_game_file_list']:
                                     path_context_tree_file = context_tree_file['digital_game_filename']
                                     file_name = path_context_tree_file.split('/')[-1]
-
                                     # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant
                                     # /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
                                     complete_goalkeeper_game_filename = path.join(path_per_goalkeeper_game_data,
