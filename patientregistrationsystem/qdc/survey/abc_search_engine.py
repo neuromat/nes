@@ -242,9 +242,10 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def get_responses(self, sid, language, response_type='short', fields=None):
-        """ obtains responses from a determined token
+        """ obtains responses from a determined survey
         :param sid: survey ID
         :param language: language
+        :param response_type: response type
         :param fields: filter fields that must be returned
         :return: responses in the txt format
         """

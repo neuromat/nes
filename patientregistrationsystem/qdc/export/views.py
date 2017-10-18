@@ -158,6 +158,7 @@ questionnaire_evaluation_fields_excluded = [
     "startdate",
     "datestamp",
     "ipaddr",
+    "refurl"
 ]
 
 '''
@@ -951,12 +952,12 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
     return questionnaires_included
 
 
-def get_questionnaire_fields(questionnaire_code_list, language_current="pt-BR"):
+def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
 
     """
     :param questionnaire_code_list: list with questionnaire id to be formatted with json file
+    :param current_language: current language used by the caller, indicating the preferred language
     :return: 1 list: questionnaires_included - questionnaire_id that was included in the .txt file
-
     """
 
     questionnaires_included = []
@@ -966,7 +967,7 @@ def get_questionnaire_fields(questionnaire_code_list, language_current="pt-BR"):
 
         questionnaire_id = questionnaire["sid"]
 
-        language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_current)
+        language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
 
         # get a valid token (anyone)
         survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
