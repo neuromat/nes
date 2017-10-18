@@ -1,8 +1,10 @@
 import coreapi
 import os
 
+from csv import reader
 from datetime import date, timedelta
 
+from io import StringIO
 from os import path
 
 from django.conf import settings
@@ -23,6 +25,21 @@ from survey.survey_utils import QuestionnaireUtils
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import get_questionnaire_language
+
+
+questionnaire_evaluation_fields_excluded = [
+    "subjectid",
+    "responsibleid",
+    "id",
+    "submitdate",
+    "lastpage",
+    "startlanguage",
+    "token",
+    "startdate",
+    "datestamp",
+    "ipaddr",
+    "refurl"
+]
 
 
 class RestApiClient(object):
@@ -1285,13 +1302,15 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
         surveys = Questionnaires()
         step_specialization = Questionnaire.objects.get(pk=component.id)
-        language = get_questionnaire_language(surveys, step_specialization.survey.lime_survey_id, language_code)
+        language = get_questionnaire_language(surveys, step_specialization.survey.lime_survey_id, "en")
         params['survey_name'] = surveys.get_survey_title(step_specialization.survey.lime_survey_id, language)
 
         questionnaire_utils = QuestionnaireUtils()
-        # fields = questionnaire_utils.get_questionnaire_experiment_fields(step_specialization.survey.id)
+
+        fields = get_questionnaire_fields_for_portal(surveys, step_specialization.survey.lime_survey_id, language)
+
         questionnaire_fields = questionnaire_utils.create_questionnaire_explanation_fields(
-            step_specialization.survey.lime_survey_id, language, surveys, [], False)
+            step_specialization.survey.lime_survey_id, language, surveys, fields, False)
 
         survey_metadata = ''
         for row in questionnaire_fields:
@@ -1328,6 +1347,26 @@ def send_steps_to_portal(portal_group_id, component_tree,
             return_dict.update(sub_step_list)
 
     return return_dict
+
+
+def get_questionnaire_fields_for_portal(questionnaire_lime_survey, lime_survey_id, language_code):
+    """
+    :param questionnaire_lime_survey: object to get limesurvey info
+    :param lime_survey_id: limesurvey id
+    :param language_code: the preferred language
+    :return: list of fields
+    """
+
+    fields = []
+    responses_text = questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
+    if responses_text:
+        # header
+        header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
+        for field in header_fields:
+            if field not in questionnaire_evaluation_fields_excluded:
+                fields.append(field)
+
+    return fields
 
 
 def send_file_to_portal(file):

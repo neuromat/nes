@@ -231,7 +231,7 @@ class QuestionnaireUtils:
         :param questionnaire_id:
         :param language:
         :param questionnaire_lime_survey:
-        :param fields: fields from questionnaire that are to be exported. Empty means all fields (used by portal.py)
+        :param fields: fields from questionnaire that are to be exported
         :param entrance_questionnaire: boolean
         :return: header, formatted according to fields
                  data_rows, formatted according to fields
@@ -259,7 +259,7 @@ class QuestionnaireUtils:
 
             properties = questionnaire_lime_survey.get_question_properties(question, language)
 
-            if ('title' in properties) and (not fields_cleared or properties['title'] in fields_cleared):
+            if ('title' in properties) and (properties['title'] in fields_cleared):
 
                 fields_from_questions.append(properties['title'])
 
