@@ -705,7 +705,6 @@ def export_view(request, template_name="export/export_data.html"):
         patient_id__in=request.session['filtered_participant_data'])
 
     surveys_with_ev_list = []
-    participants_list_from_entrance_questionnaire = []
     surveys_id_list = []
     # verificar se os questionnarios estão completos
     for patient_questionnaire_response in patient_questionnaire_response_list:

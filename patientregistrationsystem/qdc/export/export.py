@@ -35,7 +35,7 @@ from experiment.views import get_block_tree, get_experimental_protocol_image, EE
     list_data_configuration_tree
 
 from survey.abc_search_engine import Questionnaires
-from survey.views import is_limesurvey_available
+from survey.views import is_limesurvey_available, get_questionnaire_language
 
 
 DEFAULT_LANGUAGE = "pt-BR"
@@ -381,11 +381,9 @@ class ExportExecution:
 
                             for questionnaire_response in experiment_questionnaire_response_list:
                                 token_id = questionnaire_response.token_id
-                                # completed = surveys.get_participant_properties(questionnaire_id, token_id, "completed")
-                                completed =True
+                                completed = surveys.get_participant_properties(questionnaire_id, token_id, "completed")
                                 # carrega dados de questionarios completos
-                                # if completed is not None and completed != "N" and completed != "":
-                                if completed:
+                                if completed is not None and completed != "N" and completed != "":
                                     subject_code = questionnaire_response.subject_of_group.subject.patient.code
                                     step_number = path_experiment[0][4]
                                     path_questionnaire = path_questionnaire
@@ -1123,13 +1121,19 @@ class ExportExecution:
         for questionnaire in self.get_input_data("questionnaires"):
 
             questionnaire_id = questionnaire["id"]
-            language = questionnaire["language"]
 
             print(questionnaire_id)
 
-            # per_participant_data is updated by define_questionnaire method
-            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey)
+            # defining language to be showed
+            languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+            language = languages['language']
+            additional_languages = languages['additional_languages']
 
+            # per_participant_data is updated by define_questionnaire method
+            fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
+            for additional_language in additional_languages:
+                fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey,
+                                                               additional_language)
             # create directory for questionnaire: <per_questionnaire>/<q_code_title>
             if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
 
@@ -1260,86 +1264,90 @@ class ExportExecution:
         error_msg = ""
 
         for group_id in self.per_group_data:
-            questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group']
-            for questionnaire_id in questionnaire_list:
-                # create questionnaire_name_directory
-                questionnaire = questionnaire_list[questionnaire_id]
-                questionnaire_data = self.get_input_data('questionnaires_from_experiments')[group_id][
-                    str(questionnaire_id)][0]
-                questionnaire_code = questionnaire['questionnaire_code']
-                questionnaire_title = self.redefine_questionnaire_title(questionnaire_data['questionnaire_name'])
+            if 'questionnaires_per_group' in self.per_group_data[group_id]:
+                questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group']
+                for questionnaire_id in questionnaire_list:
+                    # create questionnaire_name_directory
+                    questionnaire = questionnaire_list[questionnaire_id]
+                    questionnaire_data = self.get_input_data('questionnaires_from_experiments')[group_id][
+                        str(questionnaire_id)][0]
+                    questionnaire_code = questionnaire['questionnaire_code']
+                    questionnaire_title = self.redefine_questionnaire_title(questionnaire_data['questionnaire_name'])
 
-                questionnaire_prefix_filename = questionnaire_data['prefix_filename_responses']
-                # Ex. Q123_aaa
-                directory_questionnaire_name = "%s_%s" % (str(questionnaire_code), questionnaire_title)
+                    questionnaire_prefix_filename = questionnaire_data['prefix_filename_responses']
+                    # Ex. Q123_aaa
+                    directory_questionnaire_name = "%s_%s" % (str(questionnaire_code), questionnaire_title)
 
-                # create directory with the code and name of each questionnaire
-                # Ex. Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/
-                path_group_per_questionnaire = self.per_group_data[group_id]['group']['questionnaire_data_directory']
-                error_msg, complete_export_path = create_directory(path_group_per_questionnaire,
-                                                                   directory_questionnaire_name)
-                if error_msg != "":
-                    return error_msg
-                # Responses_Q123.csv
-                export_filename = "%s_%s.csv" % (questionnaire_prefix_filename, str(questionnaire_code))
+                    # create directory with the code and name of each questionnaire
+                    # Ex. Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/
+                    path_group_per_questionnaire = self.per_group_data[group_id]['group'][
+                        'questionnaire_data_directory']
+                    error_msg, complete_export_path = create_directory(path_group_per_questionnaire,
+                                                                       directory_questionnaire_name)
+                    if error_msg != "":
+                        return error_msg
+                    # Responses_Q123.csv
+                    export_filename = "%s_%s.csv" % (questionnaire_prefix_filename, str(questionnaire_code))
 
-                # Ex. NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaaa/
-                export_directory_per_questionnaire = self.per_group_data[group_id]['group'][
-                    'questionnaire_data_export_directory']
-                export_directory = path.join(export_directory_per_questionnaire, directory_questionnaire_name)
-                # Ex.
-                # Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/Responses_Q123.csv
-                complete_filename = path.join(complete_export_path, export_filename)
+                    # Ex. NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaaa/
+                    export_directory_per_questionnaire = self.per_group_data[group_id]['group'][
+                        'questionnaire_data_export_directory']
+                    export_directory = path.join(export_directory_per_questionnaire, directory_questionnaire_name)
+                    # Ex.
+                    # Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/Responses_Q123.csv
+                    complete_filename = path.join(complete_export_path, export_filename)
 
-                # save file with data
-                fields_description = []
-                token_list = questionnaire['token_list']
-                for token in token_list:
-                    response_list = token['response_list'][1] + token['protocol_step_list'][1]
-                    # participant data
-                    participants_input_data = self.get_input_data("participants")
-                    participants_list = [token['subject_id']]
-                    export_rows_participants = self.process_participant_data(participants_input_data, participants_list)
-                    response_list.extend(export_rows_participants[1])
+                    # save file with data
+                    fields_description = []
+                    token_list = questionnaire['token_list']
+                    for token in token_list:
+                        response_list = token['response_list'][1] + token['protocol_step_list'][1]
+                        # participant data
+                        participants_input_data = self.get_input_data("participants")
+                        participants_list = [token['subject_id']]
+                        export_rows_participants = self.process_participant_data(participants_input_data,
+                                                                                 participants_list)
+                        response_list.extend(export_rows_participants[1])
 
-                    index = len(fields_description) + 1
-                    fields_description.insert(index, response_list)
-                # insert header
-                header = token['response_list'][0] + token['protocol_step_list'][0] + export_rows_participants[0]
-                fields_description.insert(0, header)
-                # save array list into a file to export
-                save_to_csv(complete_filename, fields_description)
-                self.files_to_zip_list.append([complete_filename, export_directory])
+                        index = len(fields_description) + 1
+                        fields_description.insert(index, response_list)
+                    # insert header
+                    header = token['response_list'][0] + token['protocol_step_list'][0] + export_rows_participants[0]
+                    fields_description.insert(0, header)
+                    # save array list into a file to export
+                    save_to_csv(complete_filename, fields_description)
+                    self.files_to_zip_list.append([complete_filename, export_directory])
 
-                # questionnaire metadata directory
-                entrance_questionnaire = False
-                questionnaire_lime_survey = Questionnaires()
-                language = questionnaire_data['language']
-                # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
-                fields = self.questionnaire_utils.get_questionnaire_experiment_fields(questionnaire_id)
-                questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
-                    str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
-                # Fields_Q123.csv
-                export_filename = "%s_%s.csv" % (questionnaire_prefix_filename, str(questionnaire_code))
+                    # questionnaire metadata directory
+                    entrance_questionnaire = False
+                    questionnaire_lime_survey = Questionnaires()
+                    language = questionnaire_data['language']
+                    # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
+                    fields = self.questionnaire_utils.get_questionnaire_experiment_fields(questionnaire_id)
+                    questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
+                        str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
+                    # Fields_Q123.csv
+                    export_filename = "%s_%s.csv" % (questionnaire_prefix_filename, str(questionnaire_code))
 
-                # metadata directory para export
-                # ('NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/')
-                export_metadata_directory = self.per_group_data[group_id]['group']['questionnaire_metadata_directory']
-                # Ex. 'NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/'
-                export_directory = self.per_group_data[group_id]['group']['questionnaire_metadata_export_directory']
-                # path ex. /Users/.../NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
-                error_msg, complete_export_metadata_path = create_directory(export_metadata_directory,
-                                                                            directory_questionnaire_name)
-                if error_msg != "":
-                    return error_msg
+                    # metadata directory para export
+                    # ('NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/')
+                    export_metadata_directory = self.per_group_data[group_id]['group'][
+                        'questionnaire_metadata_directory']
+                    # Ex. 'NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/'
+                    export_directory = self.per_group_data[group_id]['group']['questionnaire_metadata_export_directory']
+                    # path ex. /Users/.../NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
+                    error_msg, complete_export_metadata_path = create_directory(export_metadata_directory,
+                                                                                directory_questionnaire_name)
+                    if error_msg != "":
+                        return error_msg
 
-                complete_filename = path.join(complete_export_metadata_path, export_filename)
+                    complete_filename = path.join(complete_export_metadata_path, export_filename)
 
-                save_to_csv(complete_filename, questionnaire_fields)
+                    save_to_csv(complete_filename, questionnaire_fields)
 
-                self.files_to_zip_list.append([complete_filename, export_directory])
+                    self.files_to_zip_list.append([complete_filename, export_directory])
 
-                questionnaire_lime_survey.release_session_key()
+                    questionnaire_lime_survey.release_session_key()
 
         return error_msg
 
@@ -2247,7 +2255,11 @@ class ExportExecution:
         response_type = self.get_response_type()
         for group_id in self.get_input_data('questionnaires_from_experiments'):
             for questionnaire_id in self.get_input_data('questionnaires_from_experiments')[group_id]:
-                language = questionnaire_lime_survey.get_survey_languages(questionnaire_id)['language']
+                # language = questionnaire_lime_survey.get_survey_languages(questionnaire_id)['language']
+                languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+                language_list = [languages['language'], languages['additional_languages']]
+                # for additional_language in languages['additional_languages']:
+                #     language_list.append(additional_language)
                 questionnaire = self.get_input_data('questionnaires_from_experiments')[group_id][
                     str(questionnaire_id)][0]
 
@@ -2258,62 +2270,71 @@ class ExportExecution:
                 # verify if Lime Survey is running
                 limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
                 if limesurvey_available:
-                    # read all data for questionnaire_id from LimeSurvey
-                    responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
-                                                                                response_type[0])
-                    # all the answer from the questionnaire_id in csv format
-                    fill_list1 = perform_csv_response(responses_string1)
-
-                    # read "long" information, if necessary
-                    if len(response_type) > 1:
-                        responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
-                                                                                    response_type[1])
-                        fill_list2 = perform_csv_response(responses_string2)
-                    else:
-                        fill_list2 = fill_list1
-
                     data_from_lime_survey = {}
+                    for language in language_list:
+                        # read all data for questionnaire_id from LimeSurvey
+                        responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                                    response_type[0])
+                        # all the answer from the questionnaire_id in csv format
+                        fill_list1 = perform_csv_response(responses_string1)
 
-                    duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
+                        # read "long" information, if necessary
+                        if len(response_type) > 1:
+                            responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
+                                                                                        response_type[1])
+                            fill_list2 = perform_csv_response(responses_string2)
+                        else:
+                            fill_list2 = fill_list1
 
-                    line_index = 1
-                    line_total = len(fill_list1) - 1
-                    header_filtered = set()
-                    while line_index < line_total:
-                        data_fields_filtered = []
-                        line1 = fill_list1[line_index]
-                        line2 = fill_list2[line_index]
+                        data_from_lime_survey[language] = {}
 
-                        data_fields_filtered.append(line1)
-                        if duplicate_indices:
-                            data_fields_filtered.append(line2)
-                            header_filtered.add(fill_list1[0])
+                        duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
 
-                        token = line1[fill_list1[0].index("token")]
-                        data_from_lime_survey[token] = list(data_fields_filtered)
-                        line_index += 1
+                        line_index = 1
+                        line_total = len(fill_list1) - 1
+                        header_filtered = set()
+                        while line_index < line_total:
+                            data_fields_filtered = []
+                            line1 = fill_list1[line_index]
+                            line2 = fill_list2[line_index]
 
-                questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group'][int(questionnaire_id)]['token_list']
-                for questionnaire_data in questionnaire_list:
-                    token_id = questionnaire_data['token_id']
-                    token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+                            data_fields_filtered.append(line1)
+                            if duplicate_indices:
+                                data_fields_filtered.append(line2)
+                                header_filtered.add(fill_list1[0])
 
-                    # filter fields
-                    subscripts = []
-                    # identify the index of the fields selected on the fill_list1[0]
-                    for field in fields:
-                        if field in fill_list1[0]:
-                            subscripts.append(fill_list1[0].index(field))
-                    fields_filtered_list = []
-                    fields_filtered_list.append(headers)
-                    fields_filtered_list.append([])
-                    for index in subscripts:
-                        fields_filtered_list[1].append(data_from_lime_survey[token][0][index])
-                    # data_fields_filtered.insert(0, headers)
+                            token = line1[fill_list1[0].index("token")]
+                            data_from_lime_survey[language][token] = list(data_fields_filtered)
+                            line_index += 1
 
-                    questionnaire_data['response_list'] = list(fields_filtered_list)
-                    if token_id not in self.questionnaires_experiment_responses:
-                        self.questionnaires_experiment_responses[token_id] = list(fields_filtered_list)
+                    questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group'][int(
+                        questionnaire_id)]['token_list']
+                    for questionnaire_data in questionnaire_list:
+                        token_id = questionnaire_data['token_id']
+                        completed = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id,
+                                                                                         "completed")
+                        if completed is not None and completed != "N" and completed != "":
+                            token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id,
+                                                                                         "token")
+                            # filter fields
+                            subscripts = []
+                            # identify the index of the fields selected on the fill_list1[0]
+                            for field in fields:
+                                if field in fill_list1[0]:
+                                    subscripts.append(fill_list1[0].index(field))
+                            fields_filtered_list = []
+                            fields_filtered_list.append(headers)
+                            fields_filtered_list.append([])
+                            for language in data_from_lime_survey:
+                                for index in subscripts:
+                                    fields_filtered_list[1].append(data_from_lime_survey[language][token][0][index])
+                            # data_fields_filtered.insert(0, headers)
+
+                                questionnaire_data['response_list'] = list(fields_filtered_list)
+                                if token_id not in self.questionnaires_experiment_responses:
+                                    self.questionnaires_experiment_responses[language] = {}
+                                    self.questionnaires_experiment_responses[language][token_id] = list(
+                                        fields_filtered_list)
 
     def define_experiment_questionnaire(self, questionnaire, questionnaire_lime_survey):
         questionnaire_id = questionnaire["id"]
@@ -2437,7 +2458,7 @@ class ExportExecution:
             export_rows.insert(0, header)
         return export_rows
 
-    def define_questionnaire(self, questionnaire, questionnaire_lime_survey):
+    def define_questionnaire(self, questionnaire, questionnaire_lime_survey, language):
         """
         :param questionnaire:
         :return: fields_description: (list)
@@ -2446,7 +2467,7 @@ class ExportExecution:
         # questionnaire exportation - evaluation questionnaire
         # print("define_questionnaire:  ")
         questionnaire_id = questionnaire["id"]
-        language = questionnaire["language"]
+        # language = questionnaire["language"]
 
         response_type = self.get_response_type()
 
