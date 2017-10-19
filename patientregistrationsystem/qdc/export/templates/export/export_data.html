@@ -67,70 +67,70 @@
 
             {% if perms.patient.export_patient %}
                 {% if questionnaires_fields_list %}
-                <div class="container span6 offset3 well ">
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12">
-                            <h4>{% trans "General Information" %}</h4>
+                    <div class="container span6 offset3 well ">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <h4>{% trans "General Information" %}</h4>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-7">
-                            <label data-toggle="tooltip" data-placement="auto left"
-                                   title="{% trans "At least one option must be selected" %}" for="directory_structure"
-                                   class="control-label">{% trans "Information's organization for exportation of questionnaires data" %} </label>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-7">
+                                <label data-toggle="tooltip" data-placement="auto left"
+                                       title="{% trans "At least one option must be selected" %}" for="directory_structure"
+                                       class="control-label">{% trans "Information's organization for exportation of questionnaires data" %} </label>
 
-                            <div class="form-group {% if export_form.errors.per_participant %}has-error{% endif %}">
-
-                                <div class="checkbox">
-                                    {{ export_form.per_participant }}
-                                    <label for="per_participant"
-                                           class="control-label">{% trans "Per participant" %}</label>
-                                     <div class="help-block with-errors"> </div>
-                                </div>
+                                <div class="form-group {% if export_form.errors.per_participant %}has-error{% endif %}">
 
                                     <div class="checkbox">
-                                        {{ export_form.per_questionnaire }}
-                                        <label for="per_questionnaire"
-                                               class="control-label">{% trans "Per questionnaire" %}</label>
+                                        {{ export_form.per_participant }}
+                                        <label for="per_participant"
+                                               class="control-label">{% trans "Per participant" %}</label>
+                                         <div class="help-block with-errors"> </div>
                                     </div>
 
-                                <div class="help-block with-errors">
-                                    {% for error in export_form.errors.per_questionnaire %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
+                                        <div class="checkbox">
+                                            {{ export_form.per_questionnaire }}
+                                            <label for="per_questionnaire"
+                                                   class="control-label">{% trans "Per questionnaire" %}</label>
+                                        </div>
+
+                                    <div class="help-block with-errors">
+                                        {% for error in export_form.errors.per_questionnaire %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+
                                 </div>
 
                             </div>
-
                         </div>
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-6">
+                                        <label for="headings"
+                                            class="control-label">{% trans "Headings" %}</label>
+
+                                   <div class="form-group {% if export_form.errors.headings %}has-error{% endif %}">
+                                       {% for radio in export_form.headings %}
+                                           <div class="radio">
+                                               {{ radio }}
+                                           </div>
+                                       {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-6">
+                                        <label>{% trans "Responses" %}</label>
+
+                                        <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">
+                                                {% for check in export_form.responses %}
+                                                    <div class="checkbox">
+                                                        {{ check }}
+                                                    </div>
+                                                {% endfor %}
+                                        </div>
+                                </div>
+                            </div>
                     </div>
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-6">
-                                    <label for="headings"
-                                        class="control-label">{% trans "Headings" %}</label>
-
-                               <div class="form-group {% if export_form.errors.headings %}has-error{% endif %}">
-                                   {% for radio in export_form.headings %}
-                                       <div class="radio">
-                                           {{ radio }}
-                                       </div>
-                                   {% endfor %}
-                                </div>
-                            </div>
-                            <div class="col-xs-6 col-sm-6">
-                                    <label>{% trans "Responses" %}</label>
-
-                                    <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">
-                                            {% for check in export_form.responses %}
-                                                <div class="checkbox">
-                                                    {{ check }}
-                                                </div>
-                                            {% endfor %}
-                                    </div>
-                            </div>
-                        </div>
-                </div>
 
                     <div class="container span6 offset3 well ">
                     <h4>{% trans "Questionnaire information" %}</h4>

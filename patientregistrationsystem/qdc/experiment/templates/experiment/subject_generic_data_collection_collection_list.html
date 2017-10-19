@@ -92,17 +92,25 @@
                                         </td>
                                         <td>
                                             <table>
-                                                {% for generic_data_collection_data_file in generic_data_collection_collection.generic_data_collection_data_files %}
+                                                {% for generic_data_collection_data in generic_data_collection_collection.generic_data_collection_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/generic_data_collection_data/{{ generic_data_collection_data_file.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
-                                                                {{ generic_data_collection_data_file.description }}
+                                                            <a href="/experiment/generic_data_collection_data/{{ generic_data_collection_data.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                                {{ generic_data_collection_data.description }}
                                                             </a>
                                                         </td>
-                                                        <td>{{ generic_data_collection_data_file.date }}</td>
-                                                        <td>{{ generic_data_collection_data_file.file_format.name }}</td>
-                                                        <td>{{ generic_data_collection_data_file.file.size|filesizeformat }}</td>
-                                                        <td><a href="{{ generic_data_collection_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                        <td>{{ generic_data_collection_data.date }}</td>
+                                                        <td>{{ generic_data_collection_data.file_format.name }}</td>
+                                                        <td>
+                                                            <table>
+                                                                {% for generic_data_collection_file in generic_data_collection_data.generic_data_collection_files.all %}
+                                                                    <tr>
+                                                                        <td>{{ generic_data_collection_file.file.size|filesizeformat }}</td>
+                                                                        <td><a href="{{ generic_data_collection_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </table>
+                                                        </td>
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>

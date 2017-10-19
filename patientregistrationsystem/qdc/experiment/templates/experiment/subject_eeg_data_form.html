@@ -343,19 +343,38 @@
                         <div class="row">
                             <div class="col-xs-12 col-sm-12">
                                 <div class="form-group {% if eeg_data_form.errors.file %}has-error{% endif %}">
-                                    <label class="control-label">{% trans "File" %} <b style="color: red;">*</b></label>
-                                    <br/>
-                                    {% if editing %}
-                                        {{ eeg_data_form.file }}
-                                    {% else %}
-                                        {{ eeg_data_form.file.value }}
-                                        <button class="btn btn-default" type="button" onclick="location.href='{{ eeg_data.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+
+                                    {% if creating or editing %}
+                                        <label class="control-label">{% trans "Files to upload" %} <b style="color: red;">*</b></label>
+                                        <br/>
+                                        <input type="file" name="eeg_files" multiple>
+                                        <br/>
                                     {% endif %}
-                                    <div class="help-block with-errors">
-                                        {% for error in eeg_data_form.file.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
+
+                                    {% if not creating %}
+                                        {% if eeg_data.eeg_files %}
+                                            <label class="control-label">{% trans "Uploaded files" %} <b style="color: red;">*</b></label>
+                                            <br/>
+                                            <table><tbody>
+                                            {% for eeg_file in eeg_data.eeg_files.all %}
+                                                <tr>
+                                                <td>{{ eeg_file.file.url }}</td>
+                                                <td>
+                                                    <button class="btn btn-default" type="button" onclick="location.href='{{ eeg_file.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
+                                                </td>
+                                                <td>{{ eeg_file.file.size|filesizeformat }}</td>
+                                                {% if editing %}
+                                                    <td>
+                                                        <input type="checkbox" name="remove_eeg_file_{{ eeg_file.id }}"/>
+                                                        {% trans "Delete" %}</td>
+                                                {% endif %}
+                                                </tr>
+                                            {% endfor %}
+
+                                            </tbody></table>
+                                        {% endif %}
+                                    {% endif %}
+
                                 </div>
                             </div>
                         </div>

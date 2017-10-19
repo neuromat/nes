@@ -7,6 +7,13 @@
 {% load subjects_tags %}
 
 {% block header %}
+    <script type="text/javascript">
+
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+
+    </script>
     <script src="{% static 'quiz/js/subject_questionnaire_response_form.js' %}"></script>
 {% endblock %}
 
@@ -31,7 +38,6 @@
                         <li><a href="/patient/{{ patient.id }}/?currentTab=4">{% if patient.name %}{{ patient.name }}{% else %}{{ patient.code }}{% endif %}</a></li>
                     {% endif %}
 
-                    <li class="active">{% if creating %}{% trans "New fill" %}{% elif completed %}{% trans "Answers" %}{% else %}{% trans "Continue filling" %}{% endif %}</li>
                 {% else %}
                     <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
                     <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
@@ -44,9 +50,9 @@
                     {% else %}  {# origin == "experiment_questionnaire" #}
                         <li><a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
                     {% endif %}
-
-                    <li class="active">{% if creating %}{% trans "New fill" %}{% elif completed %}{% trans "Answers" %}{% else %}{% trans "Continue filling" %}{% endif %}</li>
                 {% endif %}
+                <li class="active">{{ survey_title }}</li>
+                <li class="active">{% if creating %}{% trans "New fill" %}{% elif completed %}{% trans "Answers" %}{% else %}{% trans "Continue filling" %}{% endif %}</li>
             </ol>
         </div>
     </div>
@@ -287,10 +293,12 @@
         </div>
 
         <div class="btn-toolbar">
-            <div class="btn-group pull-left">
+            <div class="btn-group pull-left" {% if response_is_reused_in_experiment %}data-toggle="tooltip" data-placement="right" title="{% trans "This response cannot be deleted because it is used in an experiment." %}{% endif %}">
                 {% if not creating and can_change %}
                     {% if origin == 'experiment_subject' and perms.experiment.delete_questionnaireresponse or origin == 'subject' and perms.patient.delete_questionnaireresponse %}
-                        <button type="button" id="id_remove_button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
+                        <button type="button" id="id_remove_button" class="btn btn-danger"
+                                {% if response_is_reused_in_experiment %}disabled{% endif %}
+                                onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
                     {% endif %}
                 {% endif %}
             </div>

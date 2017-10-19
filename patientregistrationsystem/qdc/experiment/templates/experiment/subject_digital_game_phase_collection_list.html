@@ -92,17 +92,28 @@
                                         </td>
                                         <td>
                                             <table>
-                                                {% for digital_game_phase_data_file in digital_game_phase_collection.digital_game_phase_data_files %}
+                                                {% for digital_game_phase_data in digital_game_phase_collection.digital_game_phase_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/digital_game_phase_data/{{ digital_game_phase_data_file.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
-                                                                {{ digital_game_phase_data_file.description }}
+                                                            <a href="/experiment/digital_game_phase_data/{{ digital_game_phase_data.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                                {{ digital_game_phase_data.description }}
                                                             </a>
                                                         </td>
-                                                        <td>{{ digital_game_phase_data_file.date }}</td>
-                                                        <td>{{ digital_game_phase_data_file.file_format.name }}</td>
-                                                        <td>{{ digital_game_phase_data_file.file.size|filesizeformat }}</td>
-                                                        <td><a href="{{ digital_game_phase_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                        <td>{{ digital_game_phase_data.date }}</td>
+                                                        <td>{{ digital_game_phase_data.file_format.name }}</td>
+
+                                                        <td>
+                                                            <table>
+                                                                {% for digital_game_phase_files in digital_game_phase_data.digital_game_phase_files.all %}
+                                                                    <tr>
+                                                                        <td>{{ digital_game_phase_files.file.size|filesizeformat }}</td>
+                                                                        <td><a href="{{ digital_game_phase_files.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                                    </tr>
+                                                                {% endfor %}
+
+                                                            </table>
+                                                        </td>
+
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>

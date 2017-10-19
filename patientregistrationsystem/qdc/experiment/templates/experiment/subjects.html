@@ -62,7 +62,7 @@
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
                                 <input id="group_id" value="{{ group.id }}" style="display: none;">
-                                <label>{% trans "Insert participant" %}</label>
+                                <label>{% trans "Add participant" %}</label>
 
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
@@ -76,20 +76,34 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            {% endif %}
-
-            {% if goalkeeper %}
-
-                <div class="col-xs-12 col-sm-12">
-                <div class="row">
-                    <div class="pull-right">
-                        <span class="fa fa-lg fa-soccer-ball-o"></span> <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data" class="btn btn-primary">{% trans "Goalkeeper game data" %}</a>
+                    <div class="row" align="right">
+                        <div class="col-md-12">
+                            <a href="/experiment/group/{{ group.id }}/search_subjects">
+                                {% trans "Advanced search" %}
+                            </a>
+                        </div>
                     </div>
                 </div>
-                </div>
-
             {% endif %}
+
+            <div class="col-xs-12 col-sm-12">
+            <div class="row">
+                {% if experimental_protocol_info.number_of_questionnaires %}
+                <div class="pull-right">
+                    <a onclick="$('#modalImportQuestionnaireResponses').modal('show');" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="{% trans "Import questionnaire responses" %}">
+                        <span class="glyphicon glyphicon-list-alt"></span>
+                    </a>
+                </div>
+                {% endif %}
+                {% if goalkeeper %}
+                <div class="pull-right">
+                    <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="{% trans "Import goalkeeper game data" %}">
+                        <span class="fa fa-lg fa-soccer-ball-o"></span>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            </div>
 
             <div class="row">
                 <div class="col-xs-12 col-sm-12">
@@ -295,6 +309,25 @@
                     <div class="modal-footer">
                         <button onclick="disable_remove_button();" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
                         <button disabled="disabled" type="submit" id="remove-participant" class="btn btn-danger" value="remove" name="action">{% trans "Delete" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if experimental_protocol_info.number_of_questionnaires %}
+        <div class="modal fade" id="modalImportQuestionnaireResponses"
+             tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        {% trans "Are you sure import questionnaire responses?" %}
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="disable_import_questionnaire_responses_button();" type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                        <a href="/experiment/group/{{ group.id }}/load_questionnaire_data" class="btn btn-primary">
+                            {% trans "Import questionnaire responses" %}
+                        </a>
                     </div>
                 </div>
             </div>

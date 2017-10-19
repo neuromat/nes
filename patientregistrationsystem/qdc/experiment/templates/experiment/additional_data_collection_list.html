@@ -116,17 +116,29 @@
                                         </td>
                                         <td>
                                             <table>
-                                                {% for additional_data_file in data_collection.additional_data_files %}
+                                                {% for additional_data in data_collection.additional_data_list %}
                                                     <tr>
                                                         <td>
-                                                            <a href="/experiment/additional_data/{{ additional_data_file.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
-                                                                {{ additional_data_file.description }}
+                                                            <a href="/experiment/additional_data/{{ additional_data.id }}" data-toggle="tooltip" data-placement="left" title="{% trans "See details" %}">
+                                                                {{ additional_data.description }}
                                                             </a>
                                                         </td>
-                                                        <td>{{ additional_data_file.date }}</td>
-                                                        <td>{{ additional_data_file.file_format.name }}</td>
-                                                        <td>{{ additional_data_file.file.size|filesizeformat }}</td>
-                                                        <td><a href="{{ additional_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                        <td>{{ additional_data.date }}</td>
+                                                        <td>{{ additional_data.file_format.name }}</td>
+
+                                                        <td>
+                                                            <table>
+                                                                {% for additional_data_file in additional_data.additional_data_files.all %}
+                                                                    <tr>
+                                                                        <td>{{ additional_data_file.file.size|filesizeformat }}</td>
+                                                                        <td><a href="{{ additional_data_file.file.url }}"><span class="glyphicon glyphicon-download"></span></a></td>
+                                                                    </tr>
+                                                                {% endfor %}
+
+                                                            </table>
+                                                        </td>
+
+
                                                     </tr>
                                                 {% endfor %}
                                                 <tr>

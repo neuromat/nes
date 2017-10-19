@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-04 18:13-0300\n"
+"POT-Creation-Date: 2017-09-05 12:06-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -677,6 +677,10 @@ msgstr ""
 msgid "Type a new username"
 msgstr ""
 
+#: team/forms.py:44
+msgid "Type password"
+msgstr ""
+
 #: team/models.py:17
 msgid "first name"
 msgstr ""
@@ -708,12 +712,12 @@ msgstr ""
 #: team/templates/team/registers.html:43 team/templates/team/team_list.html:43
 #: team/templates/team/team_list.html:44
 #: team/templates/team/team_register.html:52
-#: team/templates/team/team_register.html:53 team/views.py:30
+#: team/templates/team/team_register.html:53 team/views.py:31
 msgid "Teams"
 msgstr ""
 
 #: team/templates/team/institution_list.html:44
-#: team/templates/team/institution_register.html:53 team/views.py:35
+#: team/templates/team/institution_register.html:53 team/views.py:36
 msgid "Institutions"
 msgstr ""
 
@@ -837,7 +841,7 @@ msgstr ""
 
 #: team/templates/team/person_list.html:44
 #: team/templates/team/person_register.html:89
-#: team/templates/team/team_register.html:103 team/views.py:25
+#: team/templates/team/team_register.html:103 team/views.py:26
 msgid "Persons"
 msgstr ""
 
@@ -1007,99 +1011,99 @@ msgstr ""
 msgid "Change Is_coordinator"
 msgstr ""
 
-#: team/tests.py:72 team/tests.py:170 team/views.py:113 team/views.py:180
-#: team/views.py:321 team/views.py:436 team/views.py:471
+#: team/tests.py:107 team/tests.py:205 team/views.py:114 team/views.py:181
+#: team/views.py:322 team/views.py:437 team/views.py:472
 msgid "Action not available."
 msgstr ""
 
-#: team/tests.py:88 team/tests.py:103 team/tests.py:197 team/views.py:89
-#: team/views.py:110 team/views.py:319 team/views.py:434 team/views.py:469
+#: team/tests.py:123 team/tests.py:138 team/tests.py:232 team/views.py:90
+#: team/views.py:111 team/views.py:320 team/views.py:435 team/views.py:470
 msgid "Information not saved."
 msgstr ""
 
-#: team/tests.py:217 team/views.py:86
+#: team/tests.py:252 team/views.py:87
 msgid "E-mail already exists."
 msgstr ""
 
-#: team/views.py:105
+#: team/views.py:106
 msgid "Person created successfully."
 msgstr ""
 
-#: team/views.py:177
+#: team/views.py:178
 msgid "Person removed successfully."
 msgstr ""
 
-#: team/views.py:241
+#: team/views.py:242
 msgid "Error while updating person. Please correct the highlighted fields."
 msgstr ""
 
-#: team/views.py:253
+#: team/views.py:254
 msgid "Person updated successfully."
 msgstr ""
 
-#: team/views.py:255 team/views.py:407 team/views.py:530
+#: team/views.py:256 team/views.py:408 team/views.py:531
 msgid "There is no changes to save."
 msgstr ""
 
-#: team/views.py:267
+#: team/views.py:268
 msgid "User deactivated successfully."
 msgstr ""
 
-#: team/views.py:315
+#: team/views.py:316
 msgid "Team created successfully."
 msgstr ""
 
-#: team/views.py:349
+#: team/views.py:350
 msgid "Is coordinator status successfully changed."
 msgstr ""
 
-#: team/views.py:351
+#: team/views.py:352
 msgid "Error trying to the status of the coordinator."
 msgstr ""
 
-#: team/views.py:359
+#: team/views.py:360
 msgid "Person removed successfully from the Team."
 msgstr ""
 
-#: team/views.py:361
+#: team/views.py:362
 msgid "Error trying to delete a persom from the team."
 msgstr ""
 
-#: team/views.py:369
+#: team/views.py:370
 msgid "Team removed successfully."
 msgstr ""
 
-#: team/views.py:372
+#: team/views.py:373
 msgid "Error trying to delete a team."
 msgstr ""
 
-#: team/views.py:381
+#: team/views.py:382
 msgid "Person added to the team successfully."
 msgstr ""
 
-#: team/views.py:405
+#: team/views.py:406
 msgid "Team updated successfully."
 msgstr ""
 
-#: team/views.py:430
+#: team/views.py:431
 msgid "Team person created successfully."
 msgstr ""
 
-#: team/views.py:465
+#: team/views.py:466
 msgid "Institution created successfully."
 msgstr ""
 
-#: team/views.py:500
+#: team/views.py:501
 msgid ""
 "This institution cannot be removed because there is (are) person(s) "
 "associated with it."
 msgstr ""
 
-#: team/views.py:506
+#: team/views.py:507
 msgid "Institution removed successfully."
 msgstr ""
 
-#: team/views.py:528
+#: team/views.py:529
 msgid "Institution updated successfully."
 msgstr ""
 

@@ -16,7 +16,8 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse
+from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse, \
+    Questionnaire
 
 from patient.forms import QuestionnaireResponseForm
 from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
@@ -65,7 +66,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
             for phone in new_phone_list:
                 phone.changed_by = request.user
-                phone.patient_id = new_patient.id
+                phone.patient = new_patient
                 phone.save()
 
             messages.success(request, _('Personal data successfully written.'))
@@ -1416,18 +1417,27 @@ def questionnaire_response_view(request, questionnaire_response_id,
     if 'status' in request.GET:
         status = request.GET['status']
 
-    lime_survey_id = questionnaire_response.survey.lime_survey_id
-    token_id = questionnaire_response.token_id
-    language_code = request.LANGUAGE_CODE
+    response_is_reused_in_experiment = False
+    # steps that use this survey
+    questionnaire_component_list = Questionnaire.objects.filter(survey=questionnaire_response.survey)
+    if questionnaire_component_list:
+        # experiment questionnaire responses that reused this token
+        response_is_reused_in_experiment = \
+            ExperimentQuestionnaireResponse.objects.filter(
+                token_id=questionnaire_response.token_id,
+                data_configuration_tree__component_configuration__component__in=questionnaire_component_list).exists()
 
-    survey_title, groups_of_questions = get_questionnaire_responses(language_code, lime_survey_id, token_id, request)
+    survey_title, groups_of_questions = get_questionnaire_responses(request.LANGUAGE_CODE,
+                                                                    questionnaire_response.survey.lime_survey_id,
+                                                                    questionnaire_response.token_id,
+                                                                    request)
 
     context = {
         "questionnaire_response_form": questionnaire_response_form,
         "questionnaire_configuration": None,
         "questionnaire_response": questionnaire_response,
         "survey_title": survey_title,
-        "questionnaire_responsible": request.user.get_username(),
+        "questionnaire_responsible": questionnaire_response.questionnaire_responsible.username,
         "creating": False,
         "completed": survey_completed,
         "origin": origin,
@@ -1438,6 +1448,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "showing": showing,
         "updating": True,
         "status": status,
+        "response_is_reused_in_experiment": response_is_reused_in_experiment,
         "can_change": True  # This is related to permission to change an experiment, which is not the case in here.
     }
 

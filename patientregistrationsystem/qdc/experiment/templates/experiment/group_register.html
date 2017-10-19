@@ -259,8 +259,9 @@
                                 </div>
                                 {% if perms.experiment.add_subject and can_change %}
 {#                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn btn-primary">#}
-                                    <a href="/experiment/group/{{ group.id }}/search_subjects" class="btn btn-primary">
-                                        {% trans "Register" %}
+                                    <a href="/experiment/group/{{ group.id }}/subjects" class="btn
+                                    btn-primary">
+                                        {% trans "Add participant/s" %}
                                     </a>
                                 {% endif %}
                             {% endif %}
@@ -316,14 +317,17 @@
                                         </div>
                                         <div class="col-md-5">
 
-                                            {% if experimental_protocol_image %}
+                                            <label class="control-label">{% trans "Graph representation" %}</label>
 
-                                                <label class="control-label">{% trans "Graph representation" %}</label>
+                                            {% if experimental_protocol_image %}
 
                                                 <a class="experimental-protocol-image-popup-link" href="{{ experimental_protocol_image }}">
                                                     <img src="{{ experimental_protocol_image }}" style="width: 100%" />
                                                 </a>
 
+                                            {% else %}
+                                                <br/>
+                                                {% trans "Image not available." %}
                                             {% endif %}
 
                                         </div>

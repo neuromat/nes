@@ -8,7 +8,6 @@ window.onload = function() {
     var tms_position_localization_system_id = $("#tms_position_localization_system_id");
     var localization_system_selected_id = $("#localization_system_selected_id");
     var localization_system_selected = localization_system_selected_id.val();
-    var select_tms_position_selection = $("#id_tms_position_selection");
     var editing_id = $("#editing_id");
     map_file="";
 
@@ -17,6 +16,7 @@ window.onload = function() {
     }else{
         var canvas = document.getElementById("tmsMapCanvas");
         if(canvas != null){
+            var b64;
             var ctx = canvas.getContext("2d");
             var imageObj = new Image();
             hotspot_x = $("#id_coordinate_x");
@@ -26,15 +26,20 @@ window.onload = function() {
             var x = parseInt(hotspot_x.val());
             var y = parseInt(hotspot_y.val());
             var name = tms_name.val();
-
+            imageObj.crossOrigin = "Anonymous";
             imageObj.onload = function(){
                 ctx.drawImage(imageObj, 0,0,600,600);
                 pintar(x,y,name);
+                b64 = canvas.toDataURL("image/png");
+                // document.getElementById('b-pre').innerText = b64;
+                document.getElementById('id_spot_image').value = b64;
+                // document.getElementById('id_spot_map').src = b64;
             };
             imageObj.src = localization_system_selected_id.val();
             map_file = imageObj.src;
             if(editing_id.val() == "True")
                 canvas.addEventListener("mousedown", getPosition, false);
+
         }
         
     }
@@ -48,15 +53,6 @@ window.onload = function() {
             var split = tms_localization_system.split(",");
             tms_position_localization_system_id.value = parseInt(split[0]);
             var tms_localization_system_image = split[1];
-            // var url = "/experiment/get_tms_position_localization_system/" + tms_position_localization_system_id.value;
-            //
-            // $.getJSON(url, function (all_positions) {
-            //     var options = '<option value="" selected="selected">---------</option>';
-            //     for (var i = 0; i < all_positions.length; i++) {
-            //         options += '<option value="' + all_positions[i].pk + '">' + all_positions[i].fields['name'] + '</option>';
-            //     }
-            //     select_tms_position_selection.html(options);
-            // });
 
             if(tms_localization_system_image==""){
                 div_localization_system_image.hide();
@@ -68,7 +64,7 @@ window.onload = function() {
                 var canvas = document.getElementById("tmsMapCanvas");
                 var ctx = canvas.getContext("2d");
                 var imageObj = new Image();
-
+                imageObj.crossOrigin = "Anonymous";
                 imageObj.onload = function(){
                     ctx.drawImage(imageObj, 0,0,600,600);
                 };
@@ -98,27 +94,23 @@ function pintar(x,y,name)
 function refresh_Screen(x,y,name){
     var canvas = document.getElementById("tmsMapCanvas");
     var ctx = canvas.getContext("2d");
+    var b64;
     ctx.clearRect(0, 0, canvas.width,canvas.height);
 
     var imageObj = new Image();
-
+    imageObj.crossOrigin = "Anonymous";
     imageObj.onload = function() {
         ctx.drawImage(imageObj, 0, 0, 600, 600);
         pintar(x,y,name);
+        b64 = canvas.toDataURL("image/png");
+        // document.getElementById('b-pre').innerText = b64;
+        document.getElementById('id_spot_image').value = b64;
+        // document.getElementById('id_spot_map').src = b64;
+
     };
-    // if(localization_system_selected_id.value == ""){
-    //     var select_localization_system = $("#id_localization_system_selection");
-    //     var tms_localization_system = select_localization_system.val();
-    //     var split = tms_localization_system.split(",");
-    //     var tms_position_localization_system_id = $("#tms_position_localization_system_id");
-    //     tms_position_localization_system_id.value = parseInt(split[0]);
-    //     var tms_localization_system_image = split[1];
-    //     map_file = tms_localization_system_image;
-    // }else{
-    //     map_file = localization_system_selected_id.value;
-    // }
 
     imageObj.src = map_file;
+
 };
 
 // função que captura o evento 'click do mouse'
@@ -148,10 +140,11 @@ function getPosition(event) {
             hotspot_x.value = x;
             hotspot_y.value = y;
             tms_position.value = name;
-
             refresh_Screen(x,y,name);
+
         }
 
     }
 
 }
+

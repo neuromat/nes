@@ -1,8 +1,11 @@
 # coding=utf-8
 
+from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput, URLInput, CheckboxSelectMultiple
+    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput, URLInput, CheckboxSelectMultiple, \
+    ModelChoiceField
 from django.shortcuts import get_object_or_404
+from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
@@ -292,14 +295,18 @@ class BlockForm(ModelForm):
         }
 
 
+class UserFullnameChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return smart_text(obj.get_full_name())
+
+
 class ResearchProjectForm(ModelForm):
-    owners_full_name = CharField(label=_('Responsible'),
-                                 widget=TextInput(attrs={'class': 'form-control', 'disabled': 'True'}),
-                                 required=False)
+
+    owner = UserFullnameChoiceField(queryset=User.objects.all(), widget=Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = ResearchProject
-        fields = ['start_date', 'end_date', 'title', 'description']
+        fields = ['start_date', 'end_date', 'title', 'description', 'owner']
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -314,6 +321,9 @@ class ResearchProjectForm(ModelForm):
                                            'required': "", 'data-error': _("Initial date must be filled.")},),
             'end_date': DateInput(format=_("%m/%d/%Y"),
                                   attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')}),
+
+            'owner': Select(attrs={'class': 'form-control', 'required': "", }),
+
         }
 
     def clean(self):
@@ -359,7 +369,8 @@ class EEGDataForm(ModelForm):
     class Meta:
         model = EEGData
 
-        fields = ['date', 'time', 'file_format', 'eeg_setting', 'eeg_cap_size', 'description', 'file',
+        fields = ['date', 'time', 'file_format', 'eeg_setting', 'eeg_cap_size', 'description',
+                  # 'file',
                   'file_format_description', 'eeg_setting_reason_for_change']
 
         widgets = {
@@ -529,7 +540,7 @@ class TMSLocalizationSystemForm(ModelForm):
                                      'data-error': _('Name field must be filled.'),
                                      'autofocus': ''}),
             'description': Textarea(attrs={'class': 'form-control', 'rows': '4'}),
-            'brain_area': Select(attrs={'class': 'form-control'}),
+            'brain_area': Select(attrs={'class': 'form-control', 'required': ""}),
         }
 
 
@@ -893,8 +904,9 @@ class EMGDataForm(ModelForm):
     class Meta:
         model = EMGData
 
-        fields = ['date', 'time', 'file_format', 'emg_setting', 'description', 'file', 'file_format_description',
-                  'emg_setting_reason_for_change']
+        fields = ['date', 'time', 'file_format', 'emg_setting', 'description',
+                  # 'file',
+                  'file_format_description', 'emg_setting_reason_for_change']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -937,7 +949,9 @@ class AdditionalDataForm(ModelForm):
     class Meta:
         model = AdditionalData
 
-        fields = ['date', 'file_format', 'description', 'file', 'file_format_description']
+        fields = ['date', 'file_format', 'description',
+                  # 'file',
+                  'file_format_description']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -1236,7 +1250,7 @@ class HotSpotForm(ModelForm):
     class Meta:
         model = HotSpot
 
-        fields = ['name', 'coordinate_x', 'coordinate_y']
+        fields = ['name', 'coordinate_x', 'coordinate_y', 'hot_spot_map']
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
@@ -1315,8 +1329,9 @@ class DigitalGamePhaseDataForm(ModelForm):
     class Meta:
         model = DigitalGamePhaseData
 
-        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description',
-                  'sequence_used_in_context_tree']
+        fields = ['date', 'time', 'file_format', 'description',
+                  # 'file',
+                  'file_format_description', 'sequence_used_in_context_tree']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),
@@ -1345,7 +1360,9 @@ class GenericDataCollectionDataForm(ModelForm):
     class Meta:
         model = GenericDataCollectionData
 
-        fields = ['date', 'time', 'file_format', 'description', 'file', 'file_format_description']
+        fields = ['date', 'time', 'file_format', 'description',
+                  # 'file',
+                  'file_format_description']
 
         widgets = {
             'date': DateInput(format=_("%m/%d/%Y"),

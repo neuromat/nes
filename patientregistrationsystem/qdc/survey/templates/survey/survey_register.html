@@ -124,7 +124,6 @@
                                 {% for patient_questionnaire in patients_questionnaire_data_list %}
                                     <tr>
                                         <td>
-{#                                            {{ patient_questionnaire.patient_name }}#}
                                             {% get_name_or_code patient_questionnaire.patient_id %}
 
                                             {% if patient_questionnaire.questionnaire_responses|length == 0 %}

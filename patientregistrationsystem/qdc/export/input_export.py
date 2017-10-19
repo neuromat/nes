@@ -62,7 +62,7 @@ class InputExport:
     def build_diagnosis_participant(self, strut_name, output_filename, field_header_list):
         print("participant or diagnosis")
         self.data[strut_name] = []
-        self.data[strut_name].append({"output_filename": output_filename, "output_list": []})
+        self.data[strut_name].append({"output_filename": output_filename, "output_list": [], "data_list": []})
 
         # field_header_list[0] -> field
         # field_header_list[1] -> header
@@ -82,30 +82,39 @@ class InputExport:
             for index, sid, title, field_header_list in questionnaire_list:
                 language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
 
-                self.data["questionnaires"].append({"group_id": "", "id": sid, "language": language,
+                # if sid not in self.data['questionnaires']:
+                self.data["questionnaires"].append({"id": sid, "language": language,
                                                     "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
                                                     "questionnaire_name": title,
                                                     "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
-                                                    "output_list": []})
+                                                    "output_list": [], "responses_list": []})
                 for header, field in field_header_list:
                     output_data = {"header": header, "field": field}
                     self.data["questionnaires"][-1]["output_list"].append(output_data)
 
         else:
             # print("questionnaire from experiments")
-            self.data["questionnaires_from_experiments"] = []
+            self.data["questionnaires_from_experiments"] = {}
 
             for index, group_id, sid, title, field_header_list in questionnaire_list:
                 language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
 
-                self.data["questionnaires_from_experiments"].\
-                    append({"group_id": group_id, "id": sid, "language": language,
-                            "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
+                if group_id not in self.data['questionnaires_from_experiments']:
+                    self.data['questionnaires_from_experiments'][group_id] = {}
+
+                if sid not in self.data['questionnaires_from_experiments'][group_id]:
+                    self.data['questionnaires_from_experiments'][group_id][sid] = []
+
+                self.data["questionnaires_from_experiments"][group_id][sid].\
+                    append({"language": language, "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
                             "questionnaire_name": title, "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
                             "output_list": []})
                 for header, field in field_header_list:
                     output_data = {"header": header, "field": field}
-                    self.data["questionnaires_from_experiments"][-1]["output_list"].append(output_data)
+                    self.data["questionnaires_from_experiments"][group_id][sid][-1]["output_list"].append(output_data)
+
+                if sid not in self.data["questionnaire_list"]:
+                    self.data["questionnaire_list"].append(sid)
 
         questionnaire_lime_survey.release_session_key()
 
@@ -126,7 +135,7 @@ def build_partial_export_structure(export_per_participant, participant_field_hea
 def build_complete_export_structure(export_per_participant, export_per_questionnaire, export_per_experiment,
                                     participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
                                     experiment_questionnaires_list, response_type, heading_type, output_filename,
-                                    language=DEFAULT_LANGUAGE):
+                                    component_list, language=DEFAULT_LANGUAGE):
 
     json_data = InputExport()
 
@@ -144,10 +153,14 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
 
     json_data.build_diagnosis_participant("diagnosis", OUTPUT_FILENAME_DIAGNOSIS, diagnosis_field_header_list)
 
+    json_data.data["questionnaire_list"] = []
+
     json_data.build_questionnaire(questionnaires_list, language, entrance_questionnaire=True)
 
     if export_per_experiment:
         json_data.build_dynamic_header("export_per_experiment", export_per_experiment)
         json_data.build_questionnaire(experiment_questionnaires_list, language, entrance_questionnaire=False)
-
+        json_data.data["component_list"] = component_list
+        # for component in component_list:
+        #     json_data.build_dynamic_header(component, component_list[component])
     json_data.write(output_filename)
