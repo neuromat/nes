@@ -80,10 +80,12 @@ class InputExport:
             self.data["questionnaires"] = []
 
             for index, sid, title, field_header_list in questionnaire_list:
-                language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
                 languages = questionnaire_lime_survey.get_survey_languages(sid)
                 language_list = [languages['language']]
-                language_list.extend(languages['additional_languages'].split(','))
+                additional_language = languages['additional_languages'].split(' ')
+                for item in additional_language:
+                    if item != '':
+                        language_list.append(item)
 
                 # if sid not in self.data['questionnaires']:
                 self.data["questionnaires"].append({"id": sid, "language_list": language_list,
@@ -100,10 +102,12 @@ class InputExport:
             self.data["questionnaires_from_experiments"] = {}
 
             for index, group_id, sid, title, field_header_list in questionnaire_list:
-                language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
                 languages = questionnaire_lime_survey.get_survey_languages(sid)
                 language_list = [languages['language']]
-                language_list.extend(languages['additional_languages'].split(','))
+                additional_language = languages['additional_languages'].split(' ')
+                for item in additional_language:
+                    if item != '':
+                        language_list.append(item)
 
                 if group_id not in self.data['questionnaires_from_experiments']:
                     self.data['questionnaires_from_experiments'][group_id] = {}
@@ -117,10 +121,6 @@ class InputExport:
                         "output_list": []
                     }
 
-                # self.data["questionnaires_from_experiments"][group_id][sid].\
-                #     append({"language": language_list, "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
-                #             "questionnaire_name": title, "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
-                #             "output_list": []})
                 for header, field in field_header_list:
                     output_data = {"header": header, "field": field}
                     self.data["questionnaires_from_experiments"][group_id][sid]["output_list"].append(output_data)
