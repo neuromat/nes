@@ -1017,7 +1017,7 @@ class ExportExecution:
         for questionnaire in self.get_input_data("questionnaires"):
 
             questionnaire_id = questionnaire["id"]
-            language_list = self.get_input_data("questionnaires")['language_list']
+            language_list = questionnaire['language_list']
             questionnaire_code = self.questionnaire_utils.get_questionnaire_code_from_id(questionnaire_id)
             questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
             # ex. Per_questionnaire.Q123_aaa
@@ -1037,7 +1037,7 @@ class ExportExecution:
                 return error_msg
 
             # path: /NES_EXPORT/Questionnaire_metadata/Q123_aaa
-            export_metadata_directory = path.join(export_metadata_directory, path_questionnaire)
+            export_questionnaire_metadata_directory = path.join(export_metadata_directory, path_questionnaire)
 
             print(questionnaire_id)
             for language in language_list:
@@ -1072,7 +1072,7 @@ class ExportExecution:
 
                     save_to_csv(complete_filename, questionnaire_fields)
 
-                    self.files_to_zip_list.append([complete_filename, export_metadata_directory])
+                    self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
 
         questionnaire_lime_survey.release_session_key()
 
