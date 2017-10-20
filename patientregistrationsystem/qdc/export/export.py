@@ -353,8 +353,8 @@ class ExportExecution:
 
             self.per_group_data[group_id]['data_per_participant'] = {}
             self.per_group_data[group_id]['questionnaires_per_group'] = {}
-            if group.experimental_protocol is not None:
-                if self.get_input_data('questionnaires_from_experiments'):
+            if group.experimental_protocol is not None and self.get_input_data('questionnaires_from_experiments'):
+                if group_id in self.get_input_data('questionnaires_from_experiments'):
                     for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
                         path_questionnaire = ''
                         size = len(path_experiment[0])
@@ -1306,23 +1306,27 @@ class ExportExecution:
                         complete_filename = path.join(complete_export_path, export_filename)
                         # save file with data
                         fields_description = []
-
+                        header = []
                         token_list = questionnaire['token_list']
                         for token_data in token_list:
                             token_id = token_data['token_id']
-                            response_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
-
+                            fields_responses = []
+                            answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
                             participants_list = [token_data['subject_id']]
                             export_rows_participants = self.process_participant_data(participants_input_data,
                                                                                      participants_list)
-                            fields_responses = response_list[1]
-                            fields_responses.extend(export_rows_participants[1])
+                            for answer in answer_list[1]:
+                                fields_responses.append(answer)
+                            for field in export_rows_participants[1]:
+                                fields_responses.append(field)
                             index = len(fields_description) + 1
                             fields_description.insert(index, fields_responses)
 
                         # header
-                        header = response_list[0]
-                        header.extend(export_rows_participants[0])
+                        for answer in answer_list[0]:
+                            header.append(answer)
+                        for field in export_rows_participants[0]:
+                            header.append(field)
                         fields_description.insert(0, header)
                         # save array list into a file to export
                         save_to_csv(complete_filename, fields_description)
@@ -1545,10 +1549,16 @@ class ExportExecution:
                                                                                      participants_list)
                             # questionnaire response
                             token_id = token_data['token_id']
-                            per_participant_rows = self.questionnaires_responses[str(questionnaire_id)][token_id][
-                                language]
-                            per_participant_rows[0].extend(export_rows_participants[0])
-                            per_participant_rows[1].extend(export_rows_participants[1])
+                            per_participant_rows = [[],[]]
+                            answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
+                            for field in answer_list[1]:
+                                per_participant_rows[1].append(field)
+                            for field in export_rows_participants[1]:
+                                per_participant_rows[1].append(field)
+                            for field in answer_list[0]:
+                                per_participant_rows[0].append(field)
+                            for field in export_rows_participants[0]:
+                                per_participant_rows[0].append(field)
 
                             save_to_csv(complete_filename, per_participant_rows)
 
@@ -2317,37 +2327,38 @@ class ExportExecution:
                             data_from_lime_survey[language][token] = list(data_fields_filtered)
                             line_index += 1
 
-                    questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group'][int(
-                        questionnaire_id)]['token_list']
-                    for questionnaire_data in questionnaire_list:
-                        token_id = questionnaire_data['token_id']
-                        completed = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id,
-                                                                                         "completed")
-                        if completed is not None and completed != "N" and completed != "":
-                            token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id,
-                                                                                         "token")
-                            self.questionnaires_responses= {}
-                            if questionnaire_id not in self.questionnaires_responses:
-                                self.questionnaires_responses[questionnaire_id] = {}
-                            if token not in self.questionnaires_responses[questionnaire_id]:
-                                self.questionnaires_responses[questionnaire_id][token_id] = {}
+                    if self.per_group_data[group_id]['questionnaires_per_group']:
+                        questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group'][int(
+                            questionnaire_id)]['token_list']
+                        for questionnaire_data in questionnaire_list:
+                            token_id = questionnaire_data['token_id']
+                            completed = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id,
+                                                                                             "completed")
+                            if completed is not None and completed != "N" and completed != "":
+                                token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id,
+                                                                                             "token")
+                                self.questionnaires_responses= {}
+                                if questionnaire_id not in self.questionnaires_responses:
+                                    self.questionnaires_responses[questionnaire_id] = {}
+                                if token not in self.questionnaires_responses[questionnaire_id]:
+                                    self.questionnaires_responses[questionnaire_id][token_id] = {}
 
-                            # filter fields
-                            subscripts = []
-                            # identify the index of the fields selected on the fill_list1[0]
-                            for field in fields:
-                                if field in fill_list1[0]:
-                                    subscripts.append(fill_list1[0].index(field))
-                            fields_filtered_list = []
-                            fields_filtered_list.append(headers)
-                            fields_filtered_list.append([])
-                            for language in data_from_lime_survey:
-                                fields_filtered_list[1] = []
-                                for index in subscripts:
-                                    fields_filtered_list[1].append(data_from_lime_survey[language][token][0][index])
-                            # data_fields_filtered.insert(0, headers)
-                                    self.questionnaires_responses[questionnaire_id][token_id][language] = list(
-                                        fields_filtered_list)
+                                # filter fields
+                                subscripts = []
+                                # identify the index of the fields selected on the fill_list1[0]
+                                for field in fields:
+                                    if field in fill_list1[0]:
+                                        subscripts.append(fill_list1[0].index(field))
+                                fields_filtered_list = []
+                                fields_filtered_list.append(headers)
+                                fields_filtered_list.append([])
+                                for language in data_from_lime_survey:
+                                    fields_filtered_list[1] = []
+                                    for index in subscripts:
+                                        fields_filtered_list[1].append(data_from_lime_survey[language][token][0][index])
+                                # data_fields_filtered.insert(0, headers)
+                                        self.questionnaires_responses[questionnaire_id][token_id][language] = list(
+                                            fields_filtered_list)
 
     def define_experiment_questionnaire(self, questionnaire, questionnaire_lime_survey):
         questionnaire_id = questionnaire["id"]
