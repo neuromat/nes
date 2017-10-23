@@ -1327,7 +1327,7 @@ def send_steps_to_portal(portal_group_id, component_tree,
                   "survey_name": survey_name,
                   "survey_metadata": survey_metadata,
                   "language_code": language,
-                  # "is_default": True
+                  "is_default": True
                   }
 
         action_keys = ['questionnaire_step', 'questionnaire_language', 'create']
@@ -1335,7 +1335,7 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
         if survey_languages['additional_languages']:
             # additional are not default language
-            # params['default'] = False
+            params['is_default'] = False
             for additional_language in survey_languages['additional_languages'].split(' '):
                 if additional_language != '':
                     survey_metadata, survey_name = get_survey_information(additional_language, survey, surveys)
