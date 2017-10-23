@@ -410,6 +410,7 @@ class ExportExecution:
                                     if questionnaire_id not in self.per_group_data[group_id]['questionnaires_per_group']:
                                         self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id] = {
                                             'questionnaire_code': questionnaire_code,
+                                            'header_filtered_list': [],
                                             'token_list': []
                                         }
 
@@ -2280,6 +2281,7 @@ class ExportExecution:
                 headers, fields = \
                     self.questionnaire_utils.set_questionnaire_experiment_header_and_fields(
                         questionnaire_id, questionnaire)
+                # headers, fields = self.questionnaire_utils.set_questionnaire_header_and_fields(questionnaire, True)
 
                 # verify if Lime Survey is running
                 limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
@@ -2300,6 +2302,13 @@ class ExportExecution:
                         else:
                             fill_list2 = fill_list1
 
+                        # filter fields
+                        subscripts = []
+
+                        for field in fields:
+                            if field in fill_list1[0]:
+                                subscripts.append(fill_list1[0].index(field))
+
                         data_from_lime_survey[language] = {}
 
                         duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
@@ -2312,14 +2321,17 @@ class ExportExecution:
                             line1 = fill_list1[line_index]
                             line2 = fill_list2[line_index]
 
-                            data_fields_filtered.append(line1)
-                            if duplicate_indices:
-                                data_fields_filtered.append(line2)
-                                header_filtered.add(fill_list1[0])
+                            for index in subscripts:
+                                data_fields_filtered.append(line1[index])
+                                if index in duplicate_indices:
+                                    data_fields_filtered.append(line2[index])
+                                    header_filtered.add(fill_list1[0][index])
 
                             token = line1[fill_list1[0].index("token")]
                             data_from_lime_survey[language][token] = list(data_fields_filtered)
                             line_index += 1
+                    self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id][
+                        'header_filtered_list'] = header_filtered
 
                     if self.per_group_data[group_id]['questionnaires_per_group']:
                         questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group'][int(
@@ -2349,7 +2361,7 @@ class ExportExecution:
                                 for language in data_from_lime_survey:
                                     fields_filtered_list[1] = []
                                     for index in subscripts:
-                                        fields_filtered_list[1].append(data_from_lime_survey[language][token][0][index])
+                                        fields_filtered_list[1].append(data_from_lime_survey[language][token][index])
                                 # data_fields_filtered.insert(0, headers)
                                         self.questionnaires_responses[questionnaire_id][token_id][language] = list(
                                             fields_filtered_list)
@@ -2547,9 +2559,6 @@ class ExportExecution:
                 data_from_lime_survey[token] = list(data_fields_filtered)
                 line_index += 1
 
-            # if group_id != "":
-            #     self.update_questionnaire_experiment_rules(questionnaire_id)
-            # else:
             self.update_questionnaire_rules(questionnaire_id)
 
             # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
