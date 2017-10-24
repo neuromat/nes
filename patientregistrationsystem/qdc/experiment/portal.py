@@ -1,8 +1,10 @@
 import coreapi
 import os
 
+from csv import reader
 from datetime import date, timedelta
 
+from io import StringIO
 from os import path
 
 from django.conf import settings
@@ -23,6 +25,21 @@ from survey.survey_utils import QuestionnaireUtils
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import get_questionnaire_language
+
+
+questionnaire_evaluation_fields_excluded = [
+    "subjectid",
+    "responsibleid",
+    "id",
+    "submitdate",
+    "lastpage",
+    "startlanguage",
+    "token",
+    "startdate",
+    "datestamp",
+    "ipaddr",
+    "refurl"
+]
 
 
 class RestApiClient(object):
@@ -1193,6 +1210,8 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
     numeration = component_tree['numeration'] if component_tree['numeration'] != '' else '0'
 
+    survey = None
+
     # step type
     step_type = component_tree['component_type']
     if component_tree['component_type'] == "digital_game_phase":
@@ -1282,31 +1301,9 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
     elif step_type == "questionnaire":
         api_step_method = 'questionnaire_step'
-
-        surveys = Questionnaires()
         step_specialization = Questionnaire.objects.get(pk=component.id)
-        language = get_questionnaire_language(surveys, step_specialization.survey.lime_survey_id, language_code)
-        params['survey_name'] = surveys.get_survey_title(step_specialization.survey.lime_survey_id, language)
-
-        questionnaire_utils = QuestionnaireUtils()
-        # fields = questionnaire_utils.get_questionnaire_experiment_fields(step_specialization.survey.id)
-        questionnaire_fields = questionnaire_utils.create_questionnaire_explanation_fields(
-            step_specialization.survey.lime_survey_id, language, surveys, [], False)
-
-        survey_metadata = ''
-        for row in questionnaire_fields:
-            first = True
-            for column in row:
-                survey_metadata += (',' if not first else '') + '"' + column + '"'
-                if first:
-                    first = False
-
-            survey_metadata += '\n'
-
-        params['survey_metadata'] = survey_metadata
         params['code'] = step_specialization.survey.code
-
-        surveys.release_session_key()
+        survey = step_specialization.survey
 
     action_keys = ['groups', api_step_method, 'create']
 
@@ -1314,6 +1311,42 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
     return_dict = {numeration: {'portal_step_id': portal_step['id']}}
 
+    # Questionnaire step has languages
+    if step_type == "questionnaire":
+
+        surveys = Questionnaires()
+
+        # get the main language
+        survey_languages = surveys.get_survey_languages(survey.lime_survey_id)
+
+        language = survey_languages['language']
+
+        survey_metadata, survey_name = get_survey_information(language, survey, surveys)
+
+        params = {"id": portal_step['id'],
+                  "survey_name": survey_name,
+                  "survey_metadata": survey_metadata,
+                  "language_code": language,
+                  "is_default": True
+                  }
+
+        action_keys = ['questionnaire_step', 'questionnaire_language', 'create']
+        rest.client.action(rest.schema, action_keys, params=params)
+
+        if survey_languages['additional_languages']:
+            # additional are not default language
+            params['is_default'] = False
+            for additional_language in survey_languages['additional_languages'].split(' '):
+                if additional_language != '':
+                    survey_metadata, survey_name = get_survey_information(additional_language, survey, surveys)
+                    params['survey_name'] = survey_name
+                    params['survey_metadata'] = survey_metadata
+                    params['language_code'] = additional_language
+                    rest.client.action(rest.schema, action_keys, params=params)
+
+        surveys.release_session_key()
+
+    # sending sub-steps
     if component_tree['list_of_component_configuration']:
         for component_configuration in component_tree['list_of_component_configuration']:
             sub_step_list = send_steps_to_portal(portal_group_id,
@@ -1328,6 +1361,44 @@ def send_steps_to_portal(portal_group_id, component_tree,
             return_dict.update(sub_step_list)
 
     return return_dict
+
+
+def get_survey_information(language, survey, surveys):
+    survey_name = surveys.get_survey_title(survey.lime_survey_id, language)
+    questionnaire_utils = QuestionnaireUtils()
+    fields = get_questionnaire_fields_for_portal(surveys, survey.lime_survey_id, language)
+    questionnaire_fields = questionnaire_utils.create_questionnaire_explanation_fields(
+        survey.lime_survey_id, language, surveys, fields, False)
+    survey_metadata = ''
+    for row in questionnaire_fields:
+        first = True
+        for column in row:
+            survey_metadata += (',' if not first else '') + '"' + column + '"'
+            if first:
+                first = False
+
+        survey_metadata += '\n'
+    return survey_metadata, survey_name
+
+
+def get_questionnaire_fields_for_portal(questionnaire_lime_survey, lime_survey_id, language_code):
+    """
+    :param questionnaire_lime_survey: object to get limesurvey info
+    :param lime_survey_id: limesurvey id
+    :param language_code: the preferred language
+    :return: list of fields
+    """
+
+    fields = []
+    responses_text = questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
+    if responses_text:
+        # header
+        header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
+        for field in header_fields:
+            if field not in questionnaire_evaluation_fields_excluded:
+                fields.append(field)
+
+    return fields
 
 
 def send_file_to_portal(file):
