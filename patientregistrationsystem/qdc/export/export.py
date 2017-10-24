@@ -2265,6 +2265,7 @@ class ExportExecution:
     def get_questionnaires_responses(self):
         questionnaire_lime_survey = Questionnaires()
         response_type = self.get_response_type()
+        self.questionnaires_responses = {}
         for group_id in self.get_input_data('questionnaires_from_experiments'):
             for questionnaire_id in self.get_input_data('questionnaires_from_experiments')[group_id]:
                 language_list = self.get_input_data('questionnaires_from_experiments')[group_id][questionnaire_id][
@@ -2339,7 +2340,7 @@ class ExportExecution:
                                                                                              "token")
                                 new_header = self.questionnaire_utils.questionnaires_experiment_data[questionnaire_id][
                                     "header_questionnaire"]
-                                self.questionnaires_responses= {}
+
                                 if questionnaire_id not in self.questionnaires_responses:
                                     self.questionnaires_responses[questionnaire_id] = {}
                                 if token not in self.questionnaires_responses[questionnaire_id]:
