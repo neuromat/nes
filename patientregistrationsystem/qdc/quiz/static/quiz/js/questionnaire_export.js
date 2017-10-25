@@ -17,19 +17,33 @@ jQuery(document).ready(function ($) {
     var multiselect_buttons = $("button[id ^='multiselect']");
     $(multiselect_buttons).on('click', function(){
         updateFieldsSelectionCounter();
+        if($('li#questionnaires_from_experiments_tab').hasClass("active")){
+            updateFieldsSelectionCounter_Experiment();
+        }
     });
 
 });
 
 
 function updateFieldsSelectionCounter() {
+
     var multiselect_to = $("select[name='to[]']");
     var fields_counter = $("span[id ^='badge']");
 
     $(fields_counter).each(function (index, element){
-
         $(element).text(multiselect_to.eq(index).children().length);
     });
+
+}
+
+function updateFieldsSelectionCounter_Experiment() {
+    var multiselect_to = $("select[name='to_experiment[]']");
+    var fields_counter = $("span[id ^='badge_experiment']");
+
+    $(fields_counter).each(function (index, element){
+        $(element).text(multiselect_to.eq(index).children().length);
+    });
+
 }
 
 function validateFormExport() {

@@ -242,7 +242,7 @@ class ExportExecution:
         return ""
 
 
-    def include_in_per_participant_data(self, to_be_included_list, participant_id, questionnaire_id):
+    def include_in_per_participant_data(self, to_be_included_list, participant_id, questionnaire_id, language):
         """
         :param to_be_included_list: list with information to be included in include_data dict
         :param participant_id: participant identification (number)
@@ -259,10 +259,13 @@ class ExportExecution:
             self.per_participant_data[participant_id] = {}
 
         if questionnaire_id not in self.per_participant_data[participant_id]:
-            self.per_participant_data[participant_id][questionnaire_id] = []
+            self.per_participant_data[participant_id][questionnaire_id] = {}
+
+        if language not in self.per_participant_data[participant_id][questionnaire_id]:
+            self.per_participant_data[participant_id][questionnaire_id][language] = []
 
         for element in to_be_included_list:
-            self.per_participant_data[participant_id][questionnaire_id].append(element)
+            self.per_participant_data[participant_id][questionnaire_id][language].append(element)
 
     def include_in_per_participant_data_from_experiment(self, to_be_included_list, participant_id, questionnaire_id,
                                                         token_id, step):
@@ -1457,28 +1460,40 @@ class ExportExecution:
                         for questionnaire in self.get_input_data("questionnaires"):
                             if questionnaire_id == questionnaire['id']:
                                 title = self.get_title_reduced(questionnaire_id=questionnaire_id)
-                                export_filename = "%s_%s.csv" % (str(questionnaire_code), title)
+                                language_list = questionnaire['language_list']
+                                # create questionnaire directory
+                                path_questionnaire = "%s_%s" % (str(questionnaire_code), title)
+                                # /Users/.../NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
+                                error_msg, questionnaire_path_directory = create_directory(participant_path,
+                                                                                           path_questionnaire)
+                                if error_msg != '':
+                                    return error_msg
+                                export_participant_directory = path.join(export_directory_base, path_participant)
+                                # NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
+                                export_directory = path.join(export_participant_directory, path_questionnaire)
 
-                                header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
+                                for language in language_list:
+                                    export_filename = "%s_%s_%s.csv" % (questionnaire["prefix_filename_responses"],
+                                                                               str(questionnaire_code), language)
 
-                                for row in self.get_input_data('participants'):
-                                    headers_participant_data, fields = self.get_headers_and_fields(
-                                        row["output_list"])
-                                header = header[0:len(header) - 1]
-                                for field in headers_participant_data:
-                                    header.append(field)
+                                    header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
 
-                                per_participant_rows = self.get_per_participant_data(participant_code,
-                                                                                     questionnaire_code)
-                                per_participant_rows.insert(0, header)
-                                # path ex. /Users/.../NES_EXPORT/Participant_data/Per_participant/
-                                complete_filename = path.join(participant_path, export_filename)
+                                    for row in self.get_input_data('participants'):
+                                        headers_participant_data, fields = self.get_headers_and_fields(
+                                            row["output_list"])
+                                    header = header[0:len(header) - 1]
+                                    for field in headers_participant_data:
+                                        header.append(field)
 
-                                save_to_csv(complete_filename, per_participant_rows)
+                                    per_participant_rows = self.per_participant_data[participant_code][
+                                        questionnaire_code][language]
+                                    per_participant_rows.insert(0, header)
+                                    # path ex. /Users/.../NES_EXPORT/Participant_data/Per_participant/Q123_title
+                                    complete_filename = path.join(questionnaire_path_directory, export_filename)
 
-                                export_directory = path.join(export_directory_base, path_participant)
+                                    save_to_csv(complete_filename, per_participant_rows)
 
-                                self.files_to_zip_list.append([complete_filename, export_directory])
+                                    self.files_to_zip_list.append([complete_filename, export_directory])
 
         return error_msg
 
@@ -2577,7 +2592,7 @@ class ExportExecution:
 
                         self.questionnaire_utils.include_questionnaire_code_and_id(survey_code, lime_survey_id)
 
-                        self.include_in_per_participant_data([transformed_fields], patient_code, survey_code)
+                        self.include_in_per_participant_data([transformed_fields], patient_code, survey_code, language)
 
                         self.include_participant_per_questionnaire(token_id, survey_code)
 
