@@ -134,7 +134,7 @@ def research_project_list(request, template_name="experiment/research_project_li
     research_projects = ResearchProject.objects.order_by('start_date')
 
     can_send_to_portal = False
-    if settings.PORTAL_API['URL']:
+    if settings.PORTAL_API['URL'] and settings.SHOW_SEND_TO_PORTAL_BUTTON:
         can_send_to_portal = True
 
     context = {
@@ -764,6 +764,10 @@ def date_of_first_data_collection(subject_of_group):
 
 def send_all_experiments_to_portal(language_code):
     for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
+
+        print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
+                                          schedule_of_sending.experiment.title))
+
         if send_experiment_to_portal(schedule_of_sending.experiment):
 
             # sending research project
@@ -1025,6 +1029,8 @@ def send_all_experiments_to_portal(language_code):
             experiment = schedule_of_sending.experiment
             experiment.last_sending = schedule_of_sending.sending_datetime
             experiment.save()
+
+            print('experiment sent.\n')
 
 
 @login_required
