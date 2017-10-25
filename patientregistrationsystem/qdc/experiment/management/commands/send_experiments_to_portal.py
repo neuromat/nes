@@ -8,6 +8,6 @@ class Command(BaseCommand):
     help = 'Send all experiments that were scheduled to portal'
 
     def handle(self, *args, **options):
-        print('sending...')
+        print('Start of sending...')
         send_all_experiments_to_portal(settings.LANGUAGE_CODE)
-        print('sent')
+        print('End of sending.')
