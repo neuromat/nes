@@ -765,7 +765,7 @@ def export_view(request, template_name="export/export_data.html"):
 
         # index = 0
         for questionnaire in questionnaires_experiment_fields_list:
-            questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+            questionnaire["selected_field_counter"] = questionnaire_ids.count(questionnaire["sid"])
             questionnaire["index"] = index
             index += 1
             for output_list in questionnaire["output_list"]:
@@ -773,7 +773,6 @@ def export_view(request, template_name="export/export_data.html"):
                     output_list["selected"] = True
 
     context = {
-
         "export_form": export_form,
         "patient_fields": patient_fields,
         "diagnosis_fields": diagnosis_fields,
