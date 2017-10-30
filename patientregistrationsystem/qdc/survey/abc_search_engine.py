@@ -241,15 +241,16 @@ class ABCSearchEngine(ABC):
         return responses_txt
 
     @abstractmethod
-    def get_responses(self, sid, language, response_type='short', fields=None):
+    def get_responses(self, sid, language, response_type='short', fields=None, heading_type='code'):
         """ obtains responses from a determined survey
         :param sid: survey ID
         :param language: language
-        :param response_type: response type
+        :param response_type: (optional)'short' or 'long' Optional defaults to 'short'
         :param fields: filter fields that must be returned
+        :param heading_type: (optional) 'code','full' or 'abbreviated' Optional defaults to 'code'
         :return: responses in the txt format
         """
-        responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', 'code',
+        responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', heading_type,
                                                  response_type)   # , 1,9999999, fields)
 
         if isinstance(responses, str):
@@ -419,8 +420,8 @@ class Questionnaires(ABCSearchEngine):
     def get_responses_by_token(self, sid, token, language):
         return super(Questionnaires, self).get_responses_by_token(sid, token, language)
 
-    def get_responses(self, sid, language, response_type='short', fields=None):
-        return super(Questionnaires, self).get_responses(sid, language, response_type, fields)
+    def get_responses(self, sid, language, response_type='short', fields=None, heading_type='code'):
+        return super(Questionnaires, self).get_responses(sid, language, response_type, fields, heading_type)
 
     def get_header_response(self, sid, language, token=1, heading_type='code'):
         return super(Questionnaires, self).get_header_response(sid, language, token, heading_type)

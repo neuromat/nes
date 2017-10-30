@@ -21,25 +21,9 @@ from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EM
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, EMGAnalogFilterSetting, \
     EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, EMGElectrodePlacementSetting
 
-from survey.survey_utils import QuestionnaireUtils
-
 from survey.abc_search_engine import Questionnaires
-from survey.views import get_questionnaire_language
-
-
-questionnaire_evaluation_fields_excluded = [
-    "subjectid",
-    "responsibleid",
-    "id",
-    "submitdate",
-    "lastpage",
-    "startlanguage",
-    "token",
-    "startdate",
-    "datestamp",
-    "ipaddr",
-    "refurl"
-]
+from survey.survey_utils import QuestionnaireUtils
+from survey.views import questionnaire_evaluation_fields_excluded
 
 
 class RestApiClient(object):
