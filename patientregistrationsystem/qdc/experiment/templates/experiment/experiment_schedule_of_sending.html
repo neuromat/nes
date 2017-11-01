@@ -65,8 +65,6 @@
 
                 <div class="form-group">
 
-{#                    <div class="alert alert-info" role="alert">bla bla bla</div>#}
-
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <h3 class="panel-title">{% trans "Committee responsible for the Portal" %}</h3>
@@ -91,16 +89,92 @@
 
                 </div>
 
-                    <div class="btn-group pull-left">
-                        <button type="submit" name="action" value="send" class="btn btn-primary">{% trans "Send to Portal" %}</button>
-                    </div>
-            </div>
-
-{#            {% if can_send_to_portal and perms.experiment.add_researchproject %}#}
-{#                <div class="btn-group pull-left">#}
-{#                    <a href="/experiment/research_project/new/" class="btn btn-primary">{% trans "Send experiments to Portal" %}</a>#}
+{#                <h5>{% trans "Questionnaires and questions to send" %}</h5>#}
+{#                <div class="panel-group" id="accordion">#}
+{#                    {% for survey in experiment_questionnaires %}#}
+{#                        <div class="panel panel-default">#}
+{#                            <div class="panel-heading">#}
+{#                                <h9 class="panel-title">#}
+{#                                    <a data-toggle="collapse" data-parent="#accordion"#}
+{#                                       href="#collapse_{{ survey.index }}">#}
+{#                                    <span style="background-color: #428bca" id="badge_{{ survey.index }}"#}
+{#                                          class="badge">{{ survey.selected_counter }} </span> #}
+{#                                        {{ survey.lime_survey_id }}#}
+{#                                        - {{ survey.title }} </a>#}
+{#                                </h9>#}
+{#                            </div>#}
+{#                            <div id="collapse_{{ survey.index }}" class="panel-collapse collapse">#}
+{#                                <div class="panel-body">#}
+{##}
+{#                                    <div class="col-md-5 col-sm-12">#}
+{#                                        <div class="form-group">#}
+{#                                            <label class="control-label">{% trans "Fields available:" %} </label>#}
+{##}
+{#                                            <select class="form-control" size="13"#}
+{#                                                    id="multiselect_{{ survey.index }}"#}
+{#                                                    name="from[]" multiple="multiple"#}
+{#                                                    data-error={% trans "Please, select a questionnaire from the list." %}>#}
+{#                                                {% for field in survey.fields %}#}
+                                                    {#                                            {% if selected_ev_quest %}#}
+{#                                                    {% if not field.selected %}#}
+{#                                                        <option title="{{ field.description }}"#}
+{#                                                                value="{{ survey.index }}*{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">#}
+{#                                                            [{{ field.field }}] {{ field.description }}#}
+{#                                                        </option>#}
+{#                                                    {% endif %}#}
+{##}
+{#                                                {% endfor %}#}
+{#                                            </select>#}
+{##}
+{#                                        </div>#}
+{#                                    </div>#}
+{##}
+{#                                    <div class="col-md-2 col-sm-2">#}
+{#                                        <button type="button" id="multiselect_{{ survey.index }}_rightAll"#}
+{#                                                class="btn btn-block"><i#}
+{#                                                class="glyphicon glyphicon-forward"></i></button>#}
+{#                                        <button type="button" id="multiselect_{{ survey.index }}_rightSelected"#}
+{#                                                class="btn btn-block"><i#}
+{#                                                class="glyphicon glyphicon-chevron-right"></i></button>#}
+{#                                        <button type="button" id="multiselect_{{ survey.index }}_leftSelected"#}
+{#                                                class="btn btn-block"><i#}
+{#                                                class="glyphicon glyphicon-chevron-left"></i></button>#}
+{#                                        <button type="button" id="multiselect_{{ survey.index }}_leftAll"#}
+{#                                                class="btn btn-block"><i#}
+{#                                                class="glyphicon glyphicon-backward"></i></button>#}
+{#                                    </div>#}
+{##}
+{#                                    <div class="col-md-5 col-sm-10">#}
+{#                                        <label class="control-label">{% trans "Fields chosen:" %} </label>#}
+{##}
+{#                                        <select name="to[]" id="multiselect_{{ survey.index }}_to"#}
+{#                                                class="form-control" size="13"#}
+{#                                                multiple="multiple">#}
+{#                                            {% for field in survey.output_list %}#}
+{#                                                {% if field.selected %}#}
+{#                                                    <option title="{{ field.description }}"#}
+{#                                                            value="{{ survey.index }}*{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">#}
+{#                                                        [{{ field.field }}] {{ field.description }}#}
+{#                                                    </option>#}
+{#                                                {% endif %}#}
+{#                                            {% endfor %}#}
+{##}
+{#                                        </select>#}
+{#                                    </div>#}
+{##}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
 {#                </div>#}
-{#            {% endif %}#}
+
+
+
+
+                <div class="btn-group pull-left">
+                    <button type="submit" name="action" value="send" class="btn btn-primary">{% trans "Send to Portal" %}</button>
+                </div>
+            </div>
 
         </div>
     </div>

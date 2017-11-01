@@ -182,23 +182,13 @@ def survey_update_sensitive_questions(request, survey_id, template_name="survey/
 
     current_selected_fields = SensitiveQuestion.objects.filter(survey=survey)
 
-    available_fields = []
-
-    field_code = []
-    responses_text = surveys.get_responses(survey.lime_survey_id, language)
-    header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
-    for field in header_fields:
-        field_code.append(field)
-
-    field_text = []
-    responses_text = surveys.get_responses(survey.lime_survey_id, language, heading_type="full")
-    header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
-    for field in header_fields:
-        field_text.append(field)
+    field_code = get_survey_header(surveys, survey, language, 'code')
+    field_text = get_survey_header(surveys, survey, language, 'full')
 
     surveys.release_session_key()
 
     counter = 0
+    available_fields = []
     while counter < len(field_code):
         if field_code[counter] not in questionnaire_evaluation_fields_excluded:
             available_fields.append(
@@ -255,6 +245,22 @@ def survey_update_sensitive_questions(request, survey_id, template_name="survey/
         "survey_title": survey_title}
 
     return render(request, template_name, context)
+
+
+def get_survey_header(surveys, survey, language, heading_type):
+    """
+    :param surveys:
+    :param survey:
+    :param language:
+    :param heading_type: 'code' or 'full'
+    :return:
+    """
+    result = []
+    responses_text = surveys.get_responses(survey.lime_survey_id, language, heading_type)
+    header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
+    for field in header_fields:
+        result.append(field)
+    return result
 
 
 def create_list_of_trees(block_id, component_type, numeration=''):

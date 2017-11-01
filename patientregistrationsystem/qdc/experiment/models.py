@@ -1461,3 +1461,12 @@ class ScheduleOfSending(models.Model):
     status = models.CharField(max_length=50, choices=SCHEDULE_STATUS_OPTIONS)
     sending_datetime = models.DateTimeField(null=True)
     reason_for_resending = models.CharField(null=True, max_length=500)
+
+
+class PortalSelectedQuestion(models.Model):
+    experiment = models.ForeignKey(Experiment, related_name='portal_selected_questions')
+    survey = models.ForeignKey(Survey)
+    question_code = models.CharField(max_length=150)
+
+    class Meta:
+        unique_together = ('experiment', 'survey', 'question_code')
