@@ -93,6 +93,7 @@ patient_fields = [
     # {"field": 'id', "header": 'id', "description": _("Identification")},
     # {"field": 'name', "header": 'name', "description": _("Full name")},
     {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
+    {"field": 'age', "header": 'age', "description": _("Age")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
     {"field": 'marital_status__name', "header": 'marital_status', "description": _("Marital status")},
     {"field": 'origin', "header": 'origin', "description": _("Origin")},

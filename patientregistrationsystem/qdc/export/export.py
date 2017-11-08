@@ -2,12 +2,10 @@
 import json
 import random
 import re
-import mne
 
 from csv import writer, reader
+from datetime import date, datetime, timedelta
 from sys import modules
-
-from datetime import datetime
 
 from django.conf import settings
 from django.core.files import File
@@ -1317,12 +1315,16 @@ class ExportExecution:
                             token_id = token_data['token_id']
                             fields_responses = []
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
-                            participants_list = [token_data['subject_id']]
-                            export_rows_participants = self.process_participant_data(participants_input_data,
-                                                                                     participants_list)
+                            # participants_list = [token_data['subject_id']]
+                            # export_rows_participants = self.process_participant_data(participants_input_data,
+                            #                                                          participants_list)
+                            for record in self.get_input_data('participants')[0]['data_list']:
+                                if record[-1] == token_data['subject_code']:
+                                    export_rows_participants = record
+
                             for answer in answer_list[1]:
                                 fields_responses.append(answer)
-                            for field in export_rows_participants[1]:
+                            for field in export_rows_participants:
                                 fields_responses.append(field)
                             index = len(fields_description) + 1
                             fields_description.insert(index, fields_responses)
@@ -1330,8 +1332,8 @@ class ExportExecution:
                         # header
                         for answer in answer_list[0]:
                             header.append(answer)
-                        for field in export_rows_participants[0]:
-                            header.append(field)
+                        # for field in export_rows_participants[0]:
+                        header.extend(self.get_input_data('participants')[0]['data_list'][0])
                         fields_description.insert(0, header)
                         # save array list into a file to export
                         save_to_csv(complete_filename, fields_description)
@@ -1548,20 +1550,23 @@ class ExportExecution:
                             # P123_Q123_aaa.csv
                             complete_filename = path.join(directory_step_participant, export_filename)
 
-                            participants_list = [token_data['subject_id']]
-                            export_rows_participants = self.process_participant_data(participants_input_data,
-                                                                                     participants_list)
+                            # participants_list = [token_data['subject_id']]
+                            # export_rows_participants = self.process_participant_data(participants_input_data,
+                            #                                                          participants_list)
+                            for record in self.get_input_data('participants')[0]['data_list']:
+                                if record[-1] == token_data['subject_code']:
+                                    export_rows_participants = record
                             # questionnaire response
                             token_id = token_data['token_id']
                             per_participant_rows = [[],[]]
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
                             for field in answer_list[1]:
                                 per_participant_rows[1].append(field)
-                            for field in export_rows_participants[1]:
+                            for field in export_rows_participants:
                                 per_participant_rows[1].append(field)
                             for field in answer_list[0]:
                                 per_participant_rows[0].append(field)
-                            for field in export_rows_participants[0]:
+                            for field in self.get_input_data('participants')[0]['data_list'][0]:
                                 per_participant_rows[0].append(field)
 
                             save_to_csv(complete_filename, per_participant_rows)
@@ -1955,8 +1960,21 @@ class ExportExecution:
 
         for participant in participants:
             headers, fields = self.get_headers_and_fields(participant["output_list"])
-
             model_to_export = getattr(modules['patient.models'], 'Patient')
+            if 'age' in fields:
+                fields.remove('age')
+                headers.remove('age')
+                date_reference = date.today()
+                age_value_dict = {}
+                for participant_id in participants_list:
+                    subject = get_object_or_404(Patient, pk=participant_id[0])
+                    age_value = format((date_reference - subject.date_birth) / timedelta(days=365.2425), '.4')
+                    if subject.code not in age_value_dict:
+                        age_value_dict[subject.code] = age_value
+                header = headers[0:-1]
+                header.append('age')
+                header.append(headers[-1])
+                headers = header
 
             db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
                 order_by=['id'])
@@ -1965,27 +1983,37 @@ class ExportExecution:
 
             # transform data
             for record in db_data:
-                export_rows_participants.append([self.handle_exported_field(field) for field in record])
+                participant_rows = []
+                for value in record[0:-1]:
+                    participant_rows.append(value)
+                participant_rows.append(age_value_dict[record[-1]])
+                # export_rows_participants.append([self.handle_exported_field(field) for field in record])
+                participant_rows.append(record[-1])
+                export_rows_participants.append(participant_rows)
 
         return export_rows_participants
 
-    def get_participant_data_per_id(self, patient_id, questionnaire_response_fields):
+    def get_participant_data_per_id(self, subject_code, questionnaire_response_fields):
 
-        for row in self.get_input_data('participants'):
-            headers, fields = self.get_headers_and_fields(row["output_list"])
+        for record in self.get_input_data('participants')[0]['data_list']:
+            if record[-1] == subject_code:
+                db_data = record
 
-            model_to_export = getattr(modules['patient.models'], 'Patient')
+        # for row in self.get_input_data('participants'):
+        #     headers, fields = self.get_headers_and_fields(row["output_list"])
 
-            if model_to_export.objects.filter(id=patient_id):
-                db_data = model_to_export.objects.filter(id=patient_id).values_list(*fields)[0]
-            else:
-                db_data = ""
+            # model_to_export = getattr(modules['patient.models'], 'Patient')
+            #
+            # if model_to_export.objects.filter(id=patient_id):
+            #     db_data = model_to_export.objects.filter(id=patient_id).values_list(*fields)[0]
+            # else:
+            #     db_data = ""
 
             # export_participant_data = [headers]
 
             # append participant data
-            for field in db_data:
-                questionnaire_response_fields.append(field)
+        for field in db_data:
+            questionnaire_response_fields.append(field)
 
         return questionnaire_response_fields
 
@@ -2582,7 +2610,7 @@ class ExportExecution:
                     data_fields = [smart_str(data) for data in lm_data_row]
 
                     if self.get_input_data('participants')[0]['output_list']:
-                        transformed_fields = self.get_participant_data_per_id(patient_id, data_fields)
+                        transformed_fields = self.get_participant_data_per_id(patient_code, data_fields)
                     else:
                         transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
                     # data_rows.append(transformed_fields)
