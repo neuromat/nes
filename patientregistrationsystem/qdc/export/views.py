@@ -563,8 +563,33 @@ def export_view(request, template_name="export/export_data.html"):
 
         participants_list = []
 
-        for participant in participant_selected_list:
-            participants_list.append(participant.split("*"))
+        if language_code == 'en':
+            for participant in participant_selected_list:
+                field, header = participant.split("*")
+                if field == 'gender__name':
+                    field = 'gender__name_en'
+                if field == 'marital_status__name':
+                    field = 'marital_status__name_en'
+                if field == 'socialdemographicdata__religion__name':
+                    field = 'socialdemographicdata__religion__name_en'
+                if field == 'socialdemographicdata__payment__name':
+                    field = 'socialdemographicdata__payment__name_en'
+                if field == 'socialdemographicdata__patient_schooling__name':
+                    field = 'socialdemographicdata__patient_schooling__name_en'
+                if field == 'socialdemographicdata__schooling__name':
+                    field = 'socialdemographicdata__schooling__name_en'
+                if field == 'socialdemographicdata__flesh_tone__name':
+                    field = 'socialdemographicdata__flesh_tone__name_en'
+                if field == 'socialhistorydata__amount_cigarettes__name':
+                    field = 'socialhistorydata__amount_cigarettes__name_en'
+                if field == 'socialhistorydata__alcohol_period__name':
+                    field = 'socialhistorydata__alcohol_period__name_en'
+                if field == 'socialhistorydata__alcohol_frequency__name':
+                    field = 'socialhistorydata__alcohol_frequency__name_en'
+                participants_list.append([field, header])
+        else:
+            for participant in participant_selected_list:
+                participants_list.append(participant.split("*"))
 
         # get diagnosis list
         diagnosis_selected_list = request.POST.getlist('diagnosis_selected')
@@ -672,8 +697,6 @@ def export_view(request, template_name="export/export_data.html"):
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
                 component_list = get_component_with_data_and_metadata(group, component_list)
-                # questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                #     subject_of_group__group=group).distinct('data_configuration_tree')
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
                     subject_of_group__group=group)
 
