@@ -970,21 +970,27 @@ class ExportExecution:
 
         return export_fields_list
 
-    def merge_participant_data_per_participant_process(self, questionnaire_code, participant_code,
-                                                       export_participant_row):
-        export_fields_list = []
+    # def merge_participant_data_per_participant_process(self, questionnaire_code, participant_code, language):
+    #     export_participant_row = []
+    #
+    #     fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)[language][0]
+    #
+    #     for record in self.get_input_data('participants')[0]['data_list']:
+    #         if record[-1] == participant_code:
+    #             export_participant_row = record
+    #
+    #     for field in export_participant_row:
+    #         fields_rows.append(field)
 
-        fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
+        # for rows in fields_rows:
+        #     export_rows = rows[0:len(rows) - 1]
+        #     for fields in export_participant_row[1:export_participant_row.__len__()]:
+        #         if rows[len(rows)-1] == fields[len(fields) - 1]:
+        #             for field in fields:
+        #                 export_rows.append(field)
+        #     export_fields_list.append(export_rows)
 
-        for rows in fields_rows:
-            export_rows = rows[0:len(rows) - 1]
-            for fields in export_participant_row[1:export_participant_row.__len__()]:
-                if rows[len(rows)-1] == fields[len(fields) - 1]:
-                    for field in fields:
-                        export_rows.append(field)
-            export_fields_list.append(export_rows)
-
-        return export_fields_list
+        # return fields_rows
 
     def process_per_questionnaire(self):
 
@@ -1318,6 +1324,7 @@ class ExportExecution:
                             # participants_list = [token_data['subject_id']]
                             # export_rows_participants = self.process_participant_data(participants_input_data,
                             #                                                          participants_list)
+                            export_rows_participants = []
                             for record in self.get_input_data('participants')[0]['data_list']:
                                 if record[-1] == token_data['subject_code']:
                                     export_rows_participants = record
@@ -1385,33 +1392,19 @@ class ExportExecution:
                     return error_msg
 
                 for questionnaire_code in self.get_per_participant_data(participant_code):
-
                     questionnaire_id = int(self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code))
                     title = self.get_title_reduced(questionnaire_id=int(questionnaire_id))
                     export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code), title)
+
                     header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
-                    fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)
+                    language = self.get_input_data('output_language')
+                    header = header[0:len(header)-1]
+                    for field in self.get_input_data('participants')[0]['data_list'][0]:
+                        header.append(field)
+                    participant_rows = self.get_per_participant_data(participant_code, questionnaire_code)[
+                        language][0]
+                    per_participant_rows = [header, participant_rows]
 
-                    if self.get_input_data('participants')[0]['output_list']:
-                        header = header[0:len(header)-1]
-
-                        patient_id = Patient.objects.filter(code=participant_code)
-                        if patient_id:
-                            participant_list = [patient_id.values('id')[0]['id']]
-                            # get fields from patient 
-                            export_participant_row = self.process_participant_data(
-                                self.get_input_data('participants'), participant_list)
-                            for field in export_participant_row[0]:
-                                header.append(field)
-                            per_participant_rows = [header]
-                            # export_fields_row = self.merge_participant_data_per_participant_process(
-                            #     questionnaire_code, participant_code, export_participant_row)
-                            for field in fields_rows:
-                                per_participant_rows.append(field)
-                    else:
-                        per_participant_rows = [header]
-                        for fields in fields_rows:
-                            per_participant_rows.append(fields)
                     # path ex. /Users/.../NES_EXPORT/Per_participant/Participant_P123/P123_Q123_aaa.csv
                     complete_filename = path.join(participant_path, export_filename)
 
@@ -1959,13 +1952,13 @@ class ExportExecution:
         export_rows_participants = []
 
         for participant in participants:
+            age_value_dict = {}
             headers, fields = self.get_headers_and_fields(participant["output_list"])
             model_to_export = getattr(modules['patient.models'], 'Patient')
             if 'age' in fields:
                 fields.remove('age')
                 headers.remove('age')
                 date_reference = date.today()
-                age_value_dict = {}
                 for participant_id in participants_list:
                     subject = get_object_or_404(Patient, pk=participant_id[0])
                     age_value = format((date_reference - subject.date_birth) / timedelta(days=365.2425), '.4')
@@ -1986,7 +1979,8 @@ class ExportExecution:
                 participant_rows = []
                 for value in record[0:-1]:
                     participant_rows.append(value)
-                participant_rows.append(age_value_dict[record[-1]])
+                if age_value_dict:
+                    participant_rows.append(age_value_dict[record[-1]])
                 # export_rows_participants.append([self.handle_exported_field(field) for field in record])
                 participant_rows.append(record[-1])
                 export_rows_participants.append(participant_rows)
@@ -2626,12 +2620,9 @@ class ExportExecution:
 
             self.questionnaire_utils.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
 
-        for row in self.get_input_data('participants'):
-            headers_participant_data, fields = self.get_headers_and_fields(row["output_list"])
-
         header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
         header = header[0:len(header) - 1]
-        for field in headers_participant_data:
+        for field in self.get_input_data('participants')[0]['data_list'][0]:
             header.append(field)
 
         export_rows.insert(0, header)

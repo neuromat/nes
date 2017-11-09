@@ -653,7 +653,7 @@ def export_view(request, template_name="export/export_data.html"):
                 build_complete_export_structure(per_participant, per_questionnaire, per_experiment, participants_list,
                                                 diagnosis_list, questionnaires_list, experiment_questionnaires_list,
                                                 responses_type, heading_type, input_filename, component_list,
-                                                request.LANGUAGE_CODE)
+                                                language_code)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 

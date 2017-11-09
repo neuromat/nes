@@ -71,7 +71,7 @@ class InputExport:
             self.data[strut_name][0]["output_list"].append(output_data)
             # self.data[strut_name][0]["output_list"]
 
-    def build_questionnaire(self, questionnaire_list, language, entrance_questionnaire):
+    def build_questionnaire(self, questionnaire_list, entrance_questionnaire):
 
         print("questionnaire")
         questionnaire_lime_survey = Questionnaires()
@@ -147,7 +147,7 @@ def build_partial_export_structure(export_per_participant, participant_field_hea
 def build_complete_export_structure(export_per_participant, export_per_questionnaire, export_per_experiment,
                                     participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
                                     experiment_questionnaires_list, response_type, heading_type, output_filename,
-                                    component_list, language=DEFAULT_LANGUAGE):
+                                    component_list, language):
 
     json_data = InputExport()
 
@@ -161,18 +161,18 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
 
     json_data.build_dynamic_header("heading_type", heading_type)
 
+    json_data.build_dynamic_header("output_language", language)
+
     json_data.build_diagnosis_participant("participants", OUTPUT_FILENAME_PARTICIPANTS, participant_field_header_list)
 
     json_data.build_diagnosis_participant("diagnosis", OUTPUT_FILENAME_DIAGNOSIS, diagnosis_field_header_list)
 
     json_data.data["questionnaire_list"] = []
 
-    json_data.build_questionnaire(questionnaires_list, language, entrance_questionnaire=True)
+    json_data.build_questionnaire(questionnaires_list, entrance_questionnaire=True)
 
     if export_per_experiment:
         json_data.build_dynamic_header("export_per_experiment", export_per_experiment)
-        json_data.build_questionnaire(experiment_questionnaires_list, language, entrance_questionnaire=False)
+        json_data.build_questionnaire(experiment_questionnaires_list, entrance_questionnaire=False)
         json_data.data["component_list"] = component_list
-        # for component in component_list:
-        #     json_data.build_dynamic_header(component, component_list[component])
     json_data.write(output_filename)
