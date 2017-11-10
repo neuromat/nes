@@ -1987,7 +1987,7 @@ class ExportExecution:
 
         return export_rows_participants
 
-    def get_participant_data_per_id(self, subject_code, questionnaire_response_fields):
+    def get_participant_data_per_code(self, subject_code, questionnaire_response_fields):
 
         for record in self.get_input_data('participants')[0]['data_list']:
             if record[-1] == subject_code:
@@ -2475,7 +2475,7 @@ class ExportExecution:
                 data_fields = [smart_str(data) for data in lm_data_row]
 
                 if self.get_input_data('participants')[0]['output_list']:
-                    transformed_fields = self.get_participant_data_per_id(patient_id, data_fields)
+                    transformed_fields = self.get_participant_data_per_code(patient_code, data_fields)
                 else:
                     transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
                 # data_rows.append(transformed_fields)
@@ -2604,7 +2604,7 @@ class ExportExecution:
                     data_fields = [smart_str(data) for data in lm_data_row]
 
                     if self.get_input_data('participants')[0]['output_list']:
-                        transformed_fields = self.get_participant_data_per_id(patient_code, data_fields)
+                        transformed_fields = self.get_participant_data_per_code(patient_code, data_fields)
                     else:
                         transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
                     # data_rows.append(transformed_fields)
