@@ -61,14 +61,18 @@ class InputExport:
 
     def build_diagnosis_participant(self, strut_name, output_filename, field_header_list):
         print("participant or diagnosis")
-        self.data[strut_name] = []
-        self.data[strut_name].append({"output_filename": output_filename, "output_list": [], "data_list": []})
+        self.data[strut_name] = {
+            "output_filename": output_filename,
+            "output_list": [],
+            "data_list": []
+        }
+        # self.data[strut_name].append({"output_filename": output_filename, "output_list": [], "data_list": []})
 
         # field_header_list[0] -> field
         # field_header_list[1] -> header
         for field, header in field_header_list:
             output_data = {"header": header, "field": field}
-            self.data[strut_name][0]["output_list"].append(output_data)
+            self.data[strut_name]["output_list"].append(output_data)
             # self.data[strut_name][0]["output_list"]
 
     def build_questionnaire(self, questionnaire_list, entrance_questionnaire):

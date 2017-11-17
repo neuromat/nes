@@ -383,11 +383,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             messages.error(request, error_msg)
             return render(request, template_name)
         # export participants data
-        if export.get_input_data('participants')[0]['output_list']:
-            participants_input_data = export.get_input_data("participants")
+        if export.get_input_data('participants')['output_list']:
+            participants_input_data = export.get_input_data("participants")['output_list']
             participants_list = (export.get_participants_filtered_data())
             export_rows_participants = export.process_participant_data(participants_input_data, participants_list)
-            export.get_input_data('participants')[0]['data_list'] = export_rows_participants
+            export.get_input_data('participants')['data_list'] = export_rows_participants
             # create file participants.csv and diagnosis.csv
             error_msg = export.process_participant_filtered_data('group_selected_list' in request.session)
             if error_msg != "":
@@ -564,33 +564,33 @@ def export_view(request, template_name="export/export_data.html"):
 
         participants_list = []
 
-        if language_code == 'en':
-            for participant in participant_selected_list:
-                field, header = participant.split("*")
-                if field == 'gender__name':
-                    field = 'gender__name_en'
-                if field == 'marital_status__name':
-                    field = 'marital_status__name_en'
-                if field == 'socialdemographicdata__religion__name':
-                    field = 'socialdemographicdata__religion__name_en'
-                if field == 'socialdemographicdata__payment__name':
-                    field = 'socialdemographicdata__payment__name_en'
-                if field == 'socialdemographicdata__patient_schooling__name':
-                    field = 'socialdemographicdata__patient_schooling__name_en'
-                if field == 'socialdemographicdata__schooling__name':
-                    field = 'socialdemographicdata__schooling__name_en'
-                if field == 'socialdemographicdata__flesh_tone__name':
-                    field = 'socialdemographicdata__flesh_tone__name_en'
-                if field == 'socialhistorydata__amount_cigarettes__name':
-                    field = 'socialhistorydata__amount_cigarettes__name_en'
-                if field == 'socialhistorydata__alcohol_period__name':
-                    field = 'socialhistorydata__alcohol_period__name_en'
-                if field == 'socialhistorydata__alcohol_frequency__name':
-                    field = 'socialhistorydata__alcohol_frequency__name_en'
-                participants_list.append([field, header])
-        else:
-            for participant in participant_selected_list:
-                participants_list.append(participant.split("*"))
+        # if language_code == 'en':
+        #     for participant in participant_selected_list:
+        #         field, header = participant.split("*")
+        #         if field == 'gender__name':
+        #             field = 'gender__name_en'
+        #         if field == 'marital_status__name':
+        #             field = 'marital_status__name_en'
+        #         if field == 'socialdemographicdata__religion__name':
+        #             field = 'socialdemographicdata__religion__name_en'
+        #         if field == 'socialdemographicdata__payment__name':
+        #             field = 'socialdemographicdata__payment__name_en'
+        #         if field == 'socialdemographicdata__patient_schooling__name':
+        #             field = 'socialdemographicdata__patient_schooling__name_en'
+        #         if field == 'socialdemographicdata__schooling__name':
+        #             field = 'socialdemographicdata__schooling__name_en'
+        #         if field == 'socialdemographicdata__flesh_tone__name':
+        #             field = 'socialdemographicdata__flesh_tone__name_en'
+        #         if field == 'socialhistorydata__amount_cigarettes__name':
+        #             field = 'socialhistorydata__amount_cigarettes__name_en'
+        #         if field == 'socialhistorydata__alcohol_period__name':
+        #             field = 'socialhistorydata__alcohol_period__name_en'
+        #         if field == 'socialhistorydata__alcohol_frequency__name':
+        #             field = 'socialhistorydata__alcohol_frequency__name_en'
+        #         participants_list.append([field, header])
+        # else:
+        for participant in participant_selected_list:
+            participants_list.append(participant.split("*"))
 
         # get diagnosis list
         diagnosis_selected_list = request.POST.getlist('diagnosis_selected')

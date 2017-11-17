@@ -368,57 +368,59 @@ class ExportExecution:
                         component_type = questionnaire_configuration.component.component_type
                         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                         questionnaire_id = questionnaire.survey.lime_survey_id
-                        questionnaire_code = questionnaire.survey.code
-                        self.questionnaire_utils.include_questionnaire_code_and_id(
-                            questionnaire_code, str(questionnaire_id))
-                        configuration_tree_list = DataConfigurationTree.objects.filter(
-                            component_configuration=questionnaire_configuration)
+                        if questionnaire_id in self.get_input_data('questionnaires_from_experiments')[group_id]:
+                            questionnaire_code = questionnaire.survey.code
+                            self.questionnaire_utils.include_questionnaire_code_and_id(questionnaire_code,
+                                                                                       str(questionnaire_id))
+                            configuration_tree_list = DataConfigurationTree.objects.filter(
+                                component_configuration=questionnaire_configuration)
 
-                        for data_configuration_tree in configuration_tree_list:
-                            experiment_questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                                data_configuration_tree_id=data_configuration_tree.id)
-                            for questionnaire_response in experiment_questionnaire_response_list:
-                                token_id = questionnaire_response.token_id
-                                completed = surveys.get_participant_properties(questionnaire_id, token_id, "completed")
-                                # carrega dados de questionarios completos
-                                if completed is not None and completed != "N" and completed != "":
-                                    subject_code = questionnaire_response.subject_of_group.subject.patient.code
-                                    step_number = path_experiment[0][4]
-                                    path_questionnaire = path_questionnaire
-                                    step_identification = questionnaire_configuration.component.identification
-                                    protocol_step_list = [header_step_list, [step_number, step_identification,
-                                                                             path_questionnaire, completed]]
-                                    questionnaire_response_dic = {
-                                        'token_id': token_id,
-                                        'questionnaire_id': questionnaire_id,
-                                        'questionnaire_code': questionnaire_code,
-                                        'data_configuration_tree_id': data_configuration_tree.id,
-                                        'subject_id': questionnaire_response.subject_of_group.subject.patient.id,
-                                        'subject_code': subject_code,
-                                        'directory_step_name': "Step_" + str(step_number) + "_" +
-                                                               component_type.upper(),
-                                        'protocol_step_list': protocol_step_list,
-                                    }
-
-                                    if subject_code not in self.per_group_data[group_id]['data_per_participant']:
-                                        self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                        self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                            'token_list'] = []
-
-                                    self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                        'token_list'].append(questionnaire_response_dic)
-
-                                    if questionnaire_id not in self.per_group_data[group_id]['questionnaires_per_group']:
-                                        self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id] = {
+                            for data_configuration_tree in configuration_tree_list:
+                                experiment_questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                                    data_configuration_tree_id=data_configuration_tree.id)
+                                for questionnaire_response in experiment_questionnaire_response_list:
+                                    token_id = questionnaire_response.token_id
+                                    completed = surveys.get_participant_properties(
+                                        questionnaire_id, token_id, "completed")
+                                    # carrega dados de questionarios completos
+                                    if completed is not None and completed != "N" and completed != "":
+                                        subject_code = questionnaire_response.subject_of_group.subject.patient.code
+                                        step_number = path_experiment[0][4]
+                                        path_questionnaire = path_questionnaire
+                                        step_identification = questionnaire_configuration.component.identification
+                                        protocol_step_list = [header_step_list, [step_number, step_identification,
+                                                                                 path_questionnaire, completed]]
+                                        questionnaire_response_dic = {
+                                            'token_id': token_id,
+                                            'questionnaire_id': questionnaire_id,
                                             'questionnaire_code': questionnaire_code,
-                                            'header_filtered_list': [],
-                                            'token_list': []
+                                            'data_configuration_tree_id': data_configuration_tree.id,
+                                            'subject_id': questionnaire_response.subject_of_group.subject.patient.id,
+                                            'subject_code': subject_code,
+                                            'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                                   component_type.upper(),
+                                            'protocol_step_list': protocol_step_list,
                                         }
 
-                                    if token_id not in self.per_group_data[group_id]['questionnaires_per_group'][
-                                        questionnaire_id]['token_list']:
-                                        self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id][
+                                        if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                            self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                                            self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                                'token_list'] = []
+
+                                        self.per_group_data[group_id]['data_per_participant'][subject_code][
                                             'token_list'].append(questionnaire_response_dic)
+
+                                        if questionnaire_id not in self.per_group_data[group_id]['questionnaires_per_group']:
+                                            self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id] = {
+                                                'questionnaire_code': questionnaire_code,
+                                                'header_filtered_list': [],
+                                                'token_list': []
+                                            }
+
+                                        if token_id not in self.per_group_data[group_id]['questionnaires_per_group'][
+                                            questionnaire_id]['token_list']:
+                                            self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id][
+                                                'token_list'].append(questionnaire_response_dic)
 
                     surveys.release_session_key()
 
@@ -1025,7 +1027,11 @@ class ExportExecution:
         for questionnaire in self.get_input_data("questionnaires"):
 
             questionnaire_id = questionnaire["id"]
-            language_list = questionnaire['language_list']
+            # if it was selected ful answer for questionnaire responses
+            if 'long' in self.get_input_data('response_type'):
+                language_list = questionnaire['language_list']
+            else:
+                language_list = [self.get_input_data('output_language')]
             questionnaire_code = self.questionnaire_utils.get_questionnaire_code_from_id(questionnaire_id)
             questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
             # ex. Per_questionnaire.Q123_aaa
@@ -1266,7 +1272,7 @@ class ExportExecution:
             if 'questionnaires_per_group' in self.per_group_data[group_id]:
                 questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group']
                 # participant data
-                participants_input_data = self.get_input_data("participants")
+                # participants_input_data = self.get_input_data("participants")
                 for questionnaire_id in questionnaire_list:
                     # create questionnaire_name_directory
                     questionnaire = questionnaire_list[questionnaire_id]
@@ -1325,7 +1331,7 @@ class ExportExecution:
                             # export_rows_participants = self.process_participant_data(participants_input_data,
                             #                                                          participants_list)
                             export_rows_participants = []
-                            for record in self.get_input_data('participants')[0]['data_list']:
+                            for record in self.get_input_data('participants')['data_list']:
                                 if record[-1] == token_data['subject_code']:
                                     export_rows_participants = record
 
@@ -1340,7 +1346,7 @@ class ExportExecution:
                         for answer in answer_list[0]:
                             header.append(answer)
                         # for field in export_rows_participants[0]:
-                        header.extend(self.get_input_data('participants')[0]['data_list'][0])
+                        header.extend(self.get_input_data('participants')['data_list'][0])
                         fields_description.insert(0, header)
                         # save array list into a file to export
                         save_to_csv(complete_filename, fields_description)
@@ -1399,7 +1405,7 @@ class ExportExecution:
                     header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
                     language = self.get_input_data('output_language')
                     header = header[0:len(header)-1]
-                    for field in self.get_input_data('participants')[0]['data_list'][0]:
+                    for field in self.get_input_data('participants')['data_list'][0]:
                         header.append(field)
                     participant_rows = self.get_per_participant_data(participant_code, questionnaire_code)[
                         language][0]
@@ -1473,9 +1479,9 @@ class ExportExecution:
 
                                     header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
 
-                                    for row in self.get_input_data('participants'):
-                                        headers_participant_data, fields = self.get_headers_and_fields(
-                                            row["output_list"])
+                                    # for row in self.get_input_data('participants'):
+                                    headers_participant_data, fields = self.get_headers_and_fields(
+                                        self.get_input_data('participants')["output_list"])
                                     header = header[0:len(header) - 1]
                                     for field in headers_participant_data:
                                         header.append(field)
@@ -1499,7 +1505,7 @@ class ExportExecution:
         for group_id in self.per_group_data:
             participant_list = self.per_group_data[group_id]['data_per_participant']
             # participan data
-            participants_input_data = self.get_input_data("participants")
+            # participants_input_data = self.get_input_data("participants")
             for participant_code in participant_list:
                 prefix_filename_participant = "Participant_"
                 # ex. Participant_P123
@@ -1546,7 +1552,7 @@ class ExportExecution:
                             # participants_list = [token_data['subject_id']]
                             # export_rows_participants = self.process_participant_data(participants_input_data,
                             #                                                          participants_list)
-                            for record in self.get_input_data('participants')[0]['data_list']:
+                            for record in self.get_input_data('participants')['data_list']:
                                 if record[-1] == token_data['subject_code']:
                                     export_rows_participants = record
                             # questionnaire response
@@ -1948,64 +1954,65 @@ class ExportExecution:
 
         return headers, fields
 
-    def process_participant_data(self, participants, participants_list):
+    def process_participant_data(self, participants_output_fields, participants_list):
         export_rows_participants = []
 
-        for participant in participants:
-            age_value_dict = {}
-            headers, fields = self.get_headers_and_fields(participant["output_list"])
-            model_to_export = getattr(modules['patient.models'], 'Patient')
-            if 'age' in fields:
-                fields.remove('age')
-                headers.remove('age')
-                date_reference = date.today()
-                for participant_id in participants_list:
-                    subject = get_object_or_404(Patient, pk=participant_id[0])
-                    age_value = format((date_reference - subject.date_birth) / timedelta(days=365.2425), '.4')
-                    if subject.code not in age_value_dict:
-                        age_value_dict[subject.code] = age_value
-                header = headers[0:-1]
-                header.append('age')
-                header.append(headers[-1])
-                headers = header
+        # for participant in participants_output_fields:
+        age_value_dict = {}
+        headers, fields = self.get_headers_and_fields(participants_output_fields)
+        model_to_export = getattr(modules['patient.models'], 'Patient')
+        if 'age' in fields:
+            fields.remove('age')
+            headers.remove('age')
+            for participant_id in participants_list:
+                subject = get_object_or_404(Patient, pk=participant_id[0])
+                age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
+                if subject.code not in age_value_dict:
+                    age_value_dict[subject.code] = age_value
+            header = headers[0:-1]
+            header.append('age')
+            header.append(headers[-1])
+            headers = header
 
-            db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
-                order_by=['id'])
+        db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
+            order_by=['id'])
 
-            export_rows_participants = [headers]
+        export_rows_participants = [headers]
 
-            # transform data
-            for record in db_data:
-                participant_rows = []
-                for value in record[0:-1]:
-                    participant_rows.append(value)
-                if age_value_dict:
-                    participant_rows.append(age_value_dict[record[-1]])
-                # export_rows_participants.append([self.handle_exported_field(field) for field in record])
-                participant_rows.append(record[-1])
-                export_rows_participants.append(participant_rows)
+        # transform data
+        for record in db_data:
+            participant_rows = []
+            for value in record[0:-1]:
+                participant_rows.append(value)
+            if age_value_dict:
+                participant_rows.append(age_value_dict[record[-1]])
+            # export_rows_participants.append([self.handle_exported_field(field) for field in record])
+            participant_rows.append(record[-1])
+            export_rows_participants.append(participant_rows)
+
+        return export_rows_participants
+
+    def process_diagnosis_data(self, participants_output_fields, participants_list):
+        headers, fields = self.get_headers_and_fields(participants_output_fields)
+        model_to_export = getattr(modules['patient.models'], 'Patient')
+        db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
+            order_by=['id'])
+
+        export_rows_participants = [headers]
+
+        # transform data
+        for record in db_data:
+            export_rows_participants.append([self.handle_exported_field(field) for field in record])
 
         return export_rows_participants
 
     def get_participant_data_per_code(self, subject_code, questionnaire_response_fields):
-
-        for record in self.get_input_data('participants')[0]['data_list']:
+        db_data =[]
+        for record in self.get_input_data('participants')['data_list']:
             if record[-1] == subject_code:
                 db_data = record
 
-        # for row in self.get_input_data('participants'):
-        #     headers, fields = self.get_headers_and_fields(row["output_list"])
-
-            # model_to_export = getattr(modules['patient.models'], 'Patient')
-            #
-            # if model_to_export.objects.filter(id=patient_id):
-            #     db_data = model_to_export.objects.filter(id=patient_id).values_list(*fields)[0]
-            # else:
-            #     db_data = ""
-
-            # export_participant_data = [headers]
-
-            # append participant data
+        # append participant data to questionnaire response
         for field in db_data:
             questionnaire_response_fields.append(field)
 
@@ -2033,9 +2040,9 @@ class ExportExecution:
                     return error_msg
 
         # create participant.csv file
-        export_rows_participants = self.get_input_data('participants')[0]['data_list']
+        export_rows_participants = self.get_input_data('participants')['data_list']
 
-        export_filename = "%s.csv" % self.get_input_data('participants')[0]["output_filename"]  # "export.csv"
+        export_filename = "%s.csv" % self.get_input_data('participants')["output_filename"]  # "participants.csv"
 
         complete_filename = path.join(base_export_directory, export_filename)
 
@@ -2049,10 +2056,10 @@ class ExportExecution:
         # process  diagnosis file
         diagnosis_input_data = self.get_input_data("diagnosis")
 
-        if diagnosis_input_data[0]['output_list'] and participants_filtered_list:
-            export_rows_diagnosis = self.process_participant_data(diagnosis_input_data, participants_filtered_list)
+        if diagnosis_input_data['output_list'] and participants_filtered_list:
+            export_rows_diagnosis = self.process_diagnosis_data(diagnosis_input_data['output_list'], participants_filtered_list)
 
-            export_filename = "%s.csv" % self.get_input_data('diagnosis')[0]["output_filename"]  # "export.csv"
+            export_filename = "%s.csv" % self.get_input_data('diagnosis')["output_filename"]  # "Diagnosis.csv"
 
             complete_filename = path.join(base_export_directory, export_filename)
 
@@ -2559,73 +2566,75 @@ class ExportExecution:
                 if field in fill_list1[0]:
                     subscripts.append(fill_list1[0].index(field))
 
-            data_from_lime_survey = {}
+            # if responses exits
+            if subscripts:
+                data_from_lime_survey = {}
 
-            duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
+                duplicate_indices = self.find_duplicates(fill_list1, fill_list2)
 
-            line_index = 1
-            line_total = len(fill_list1) - 1
-            header_filtered = set()
-            while line_index < line_total:
-                data_fields_filtered = []
-                line1 = fill_list1[line_index]
-                line2 = fill_list2[line_index]
+                line_index = 1
+                line_total = len(fill_list1) - 1
+                header_filtered = set()
+                while line_index < line_total:
+                    data_fields_filtered = []
+                    line1 = fill_list1[line_index]
+                    line2 = fill_list2[line_index]
 
-                for index in subscripts:
-                    data_fields_filtered.append(line1[index])
-                    if index in duplicate_indices:
-                        data_fields_filtered.append(line2[index])
-                        header_filtered.add(fill_list1[0][index])
+                    for index in subscripts:
+                        data_fields_filtered.append(line1[index])
+                        if index in duplicate_indices:
+                            data_fields_filtered.append(line2[index])
+                            header_filtered.add(fill_list1[0][index])
 
-                token = line1[fill_list1[0].index("token")]
-                data_from_lime_survey[token] = list(data_fields_filtered)
-                line_index += 1
+                    token = line1[fill_list1[0].index("token")]
+                    data_from_lime_survey[token] = list(data_fields_filtered)
+                    line_index += 1
 
-            self.update_questionnaire_rules(questionnaire_id)
+                self.update_questionnaire_rules(questionnaire_id)
 
-            # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
-            for questionnaire_response in questionnaire_responses:
+                # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
+                for questionnaire_response in questionnaire_responses:
 
-                # transform data fields
-                # include new fieldsm
+                    # transform data fields
+                    # include new fieldsm
 
-                patient_id = questionnaire_response.patient_id
-                survey_code = questionnaire_response.survey.code
-                lime_survey_id = questionnaire_response.survey.lime_survey_id
-                patient_code = questionnaire_response.patient.code
-                token_id = questionnaire_response.token_id
+                    patient_id = questionnaire_response.patient_id
+                    survey_code = questionnaire_response.survey.code
+                    lime_survey_id = questionnaire_response.survey.lime_survey_id
+                    patient_code = questionnaire_response.patient.code
+                    token_id = questionnaire_response.token_id
 
-                token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+                    token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
 
-                if token in data_from_lime_survey:
+                    if token in data_from_lime_survey:
 
-                    lm_data_row = data_from_lime_survey[token]
+                        lm_data_row = data_from_lime_survey[token]
 
-                    data_fields = [smart_str(data) for data in lm_data_row]
+                        data_fields = [smart_str(data) for data in lm_data_row]
 
-                    if self.get_input_data('participants')[0]['output_list']:
-                        transformed_fields = self.get_participant_data_per_code(patient_code, data_fields)
-                    else:
-                        transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
-                    # data_rows.append(transformed_fields)
+                        if self.get_input_data('participants'):
+                            transformed_fields = self.get_participant_data_per_code(patient_code, data_fields)
+                        else:
+                            transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
+                        # data_rows.append(transformed_fields)
 
-                    if len(transformed_fields) > 0:
-                        export_rows.append(transformed_fields)
+                        if len(transformed_fields) > 0:
+                            export_rows.append(transformed_fields)
 
-                        self.questionnaire_utils.include_questionnaire_code_and_id(survey_code, lime_survey_id)
+                            self.questionnaire_utils.include_questionnaire_code_and_id(survey_code, lime_survey_id)
 
-                        self.include_in_per_participant_data([transformed_fields], patient_code, survey_code, language)
+                            self.include_in_per_participant_data([transformed_fields], patient_code, survey_code, language)
 
-                        self.include_participant_per_questionnaire(token_id, survey_code)
+                            self.include_participant_per_questionnaire(token_id, survey_code)
 
-            self.questionnaire_utils.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
+                self.questionnaire_utils.redefine_header_and_fields(questionnaire_id, header_filtered, fields)
 
-        header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
-        header = header[0:len(header) - 1]
-        for field in self.get_input_data('participants')[0]['data_list'][0]:
-            header.append(field)
+            header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
+            header = header[0:len(header) - 1]
+            for field in self.get_input_data('participants')['data_list'][0]:
+                header.append(field)
 
-        export_rows.insert(0, header)
+            export_rows.insert(0, header)
         return export_rows
 
 
