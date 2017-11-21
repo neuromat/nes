@@ -510,7 +510,11 @@ def export_view(request, template_name="export/export_data.html"):
     selected_ev_quest_experiments = []
     questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
+    # if request.LANGUAGE_CODE == "pt-br":
+    #     language_code = "pt-BR"
+    # else:
     language_code = request.LANGUAGE_CODE
+
     component_list = []
 
     if request.method == "POST":
