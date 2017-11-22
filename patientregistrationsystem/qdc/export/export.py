@@ -368,7 +368,7 @@ class ExportExecution:
                         component_type = questionnaire_configuration.component.component_type
                         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                         questionnaire_id = questionnaire.survey.lime_survey_id
-                        if questionnaire_id in self.get_input_data('questionnaires_from_experiments')[group_id]:
+                        if str(questionnaire_id) in self.get_input_data('questionnaires_from_experiments')[group_id]:
                             questionnaire_code = questionnaire.survey.code
                             self.questionnaire_utils.include_questionnaire_code_and_id(questionnaire_code,
                                                                                        str(questionnaire_id))
@@ -1511,10 +1511,10 @@ class ExportExecution:
                                     header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
 
                                     # for row in self.get_input_data('participants'):
-                                    headers_participant_data, fields = self.get_headers_and_fields(
-                                        self.get_input_data('participants')["output_list"])
+                                    # headers_participant_data, fields = self.get_headers_and_fields(
+                                    #     self.get_input_data('participants')["output_list"])
                                     header = header[0:len(header) - 1]
-                                    for field in headers_participant_data:
+                                    for field in self.get_input_data('participants')['data_list'][0]:
                                         header.append(field)
 
                                     per_participant_rows = self.per_participant_data[participant_code][
@@ -1593,7 +1593,7 @@ class ExportExecution:
                                     export_rows_participants = record
                             # questionnaire response
                             token_id = token_data['token_id']
-                            per_participant_rows = [[],[]]
+                            per_participant_rows = [[], []]
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
                             for field in answer_list[1]:
                                 per_participant_rows[1].append(field)
@@ -1601,7 +1601,7 @@ class ExportExecution:
                                 per_participant_rows[1].append(field)
                             for field in answer_list[0]:
                                 per_participant_rows[0].append(field)
-                            for field in self.get_input_data('participants')[0]['data_list'][0]:
+                            for field in self.get_input_data('participants')['data_list'][0]:
                                 per_participant_rows[0].append(field)
 
                             save_to_csv(complete_filename, per_participant_rows)
