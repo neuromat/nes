@@ -1070,13 +1070,13 @@ class ExportExecution:
                     save_to_csv(complete_filename, fields_description)
                     self.files_to_zip_list.append([complete_filename, export_directory])
 
-                    entrance_questionnaire = True
+            # questionnaire metadata
+            entrance_questionnaire = True
+            # create questionnaire fields file ("fields.csv") - metadata directory
+            fields = self.questionnaire_utils.get_questionnaire_fields(
+                questionnaire_id, entrance_questionnaire, self.get_input_data('questionnaires_from_experiments'))
 
-                    # create questionnaire fields file ("fields.csv") - metadata directory
-                    fields = self.questionnaire_utils.get_questionnaire_fields(
-                        questionnaire_id, entrance_questionnaire,
-                        self.get_input_data('questionnaires_from_experiments'))
-
+            for language in questionnaire_language['language_list']:
                     questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
                         questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
@@ -1174,25 +1174,26 @@ class ExportExecution:
                     save_to_csv(complete_filename, fields_description)
                     self.files_to_zip_list.append([complete_filename, export_directory])
 
-                    entrance_questionnaire = True
+            entrance_questionnaire = True
 
-                    # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
-                    fields = self.questionnaire_utils.get_questionnaire_fields(
-                        questionnaire_id, entrance_questionnaire,
-                        self.get_input_data('questionnaires_from_experiments'))
+            # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
+            fields = self.questionnaire_utils.get_questionnaire_fields(
+                questionnaire_id, entrance_questionnaire, self.get_input_data(
+                    'questionnaires_from_experiments'))
 
-                    questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
+            for language in questionnaire_language['language_list']:
+                questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
                         questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
-                    export_filename = "%s_%s_%s.csv" % (questionnaire["prefix_filename_fields"],
-                                                        str(questionnaire_code), language)
+                export_filename = "%s_%s_%s.csv" % (questionnaire["prefix_filename_fields"],
+                                                    str(questionnaire_code), language)
 
-                    # path ex. '/User/.../NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
-                    complete_filename = path.join(export_metadata_path, export_filename)
+                # path ex. '/User/.../NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
+                complete_filename = path.join(export_metadata_path, export_filename)
 
-                    save_to_csv(complete_filename, questionnaire_fields)
+                save_to_csv(complete_filename, questionnaire_fields)
 
-                    self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
+                self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
 
         questionnaire_lime_survey.release_session_key()
 
@@ -1362,11 +1363,13 @@ class ExportExecution:
                         # save array list into a file to export
                         save_to_csv(complete_filename, fields_description)
                         self.files_to_zip_list.append([complete_filename, export_directory])
-                        # questionnaire metadata directory
-                        entrance_questionnaire = False
-                        questionnaire_lime_survey = Questionnaires()
-                        # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
-                        fields = self.questionnaire_utils.get_questionnaire_experiment_fields(questionnaire_id)
+
+                    # questionnaire metadata directory
+                    entrance_questionnaire = False
+                    questionnaire_lime_survey = Questionnaires()
+                    # create questionnaire fields file ("fields.csv") in Questionnaire_metadata directory
+                    fields = self.questionnaire_utils.get_questionnaire_experiment_fields(questionnaire_id)
+                    for language in questionnaire_language['language_list']:
                         questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
                             str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
@@ -1380,7 +1383,7 @@ class ExportExecution:
 
                         self.files_to_zip_list.append([complete_filename, export_metadata_directory])
 
-                        questionnaire_lime_survey.release_session_key()
+                    questionnaire_lime_survey.release_session_key()
 
         return error_msg
 

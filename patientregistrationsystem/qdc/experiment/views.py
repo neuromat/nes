@@ -5757,6 +5757,7 @@ def get_sensors_position(eeg_data):
 
         reading = eeg_data_reading(eeg_file, preload=False)
         raw = reading.reading
+        nes_code = reading.file_format.nes_code
 
         if raw is not None:
             picks = mne.pick_types(raw.info, eeg=True)
@@ -5765,11 +5766,18 @@ def get_sensors_position(eeg_data):
             montage = ""
 
             # If EGI 129 channels
-            if channels == 129:
-                montage = mne.channels.read_montage('GSN-HydroCel-129')
+            if nes_code == 'MNE-RawFromEGI':
+                if channels == 129:
+                    montage = mne.channels.read_montage('GSN-HydroCel-129')
+                else:
+                    if channels == 128:
+                        montage = mne.channels.read_montage('GSN-HydroCel-128')
+            if nes_code == 'MNE-RawFromBrainVision':
+                if channels == 32:
+                    montage = mne.channels.read_montage('standard_1020')
             else:
-                if channels == 128:
-                    montage = mne.channels.read_montage('GSN-HydroCel-128')
+                montage = mne.channels.read_montage('standard_1020')
+
             # label_names = montage.ch_names
             if montage != "":
                 i = 0
@@ -5827,6 +5835,18 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False):
         try:
             # Trying to read the segments
             reading = mne.io.read_raw_egi(eeg_file.file.path, preload=preload)
+        except:
+            reading = None
+
+        eeg_reading.reading = reading
+
+    if eeg_file.eeg_data.file_format.nes_code == "MNE-RawFromBrainVision":
+
+        eeg_reading.file_format = eeg_file.eeg_data.file_format
+
+        try:
+            # Trying to read the segments
+            reading = mne.io.read_raw_brainvision(eeg_file.file.path, preload=preload)
         except:
             reading = None
 
