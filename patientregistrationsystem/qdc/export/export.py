@@ -30,7 +30,7 @@ from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireRe
     NeedleElectrode, EMGElectrodeSetting, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement
 from experiment.views import get_block_tree, get_experimental_protocol_image, EEG, EMG, TMS, DigitalGamePhase, \
     get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, eeg_data_reading, \
-    list_data_configuration_tree
+    list_data_configuration_tree, get_questionnaire_language
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import is_limesurvey_available, get_questionnaire_language
@@ -368,7 +368,7 @@ class ExportExecution:
                         component_type = questionnaire_configuration.component.component_type
                         questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                         questionnaire_id = questionnaire.survey.lime_survey_id
-                        if questionnaire_id in self.get_input_data('questionnaires_from_experiments')[group_id]:
+                        if str(questionnaire_id) in self.get_input_data('questionnaires_from_experiments')[group_id]:
                             questionnaire_code = questionnaire.survey.code
                             self.questionnaire_utils.include_questionnaire_code_and_id(questionnaire_code,
                                                                                        str(questionnaire_id))
@@ -1028,10 +1028,12 @@ class ExportExecution:
 
             questionnaire_id = questionnaire["id"]
             # if it was selected ful answer for questionnaire responses
+            questionnaire_language = self.get_input_data("questionnaire_language")[str(questionnaire_id)]
             if 'long' in self.get_input_data('response_type'):
-                language_list = questionnaire['language_list']
+                language_list = questionnaire_language['language_list']
             else:
-                language_list = [self.get_input_data('output_language')]
+                language_list = [questionnaire_language['output_language']]
+
             questionnaire_code = self.questionnaire_utils.get_questionnaire_code_from_id(questionnaire_id)
             questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
             # ex. Per_questionnaire.Q123_aaa
@@ -1153,7 +1155,11 @@ class ExportExecution:
             export_questionnaire_metadata_directory = path.join(export_metadata_directory, path_questionnaire)
 
             # defining language to be showed
-            language_list = questionnaire['language_list']
+            questionnaire_language = self.get_input_data("questionnaire_language")[str(questionnaire_id)]
+            if 'long' in self.get_input_data('response_type'):
+                language_list = questionnaire_language['language_list']
+            else:
+                language_list = [questionnaire_language['output_language']]
             for language in language_list:
                 # per_participant_data is updated by define_questionnaire method
                 fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
@@ -1311,8 +1317,13 @@ class ExportExecution:
                     if error_msg != "":
                         return error_msg
 
-                    for language in self.get_input_data('questionnaires_from_experiments')[group_id][
-                        str(questionnaire_id)]['language_list']:
+                    questionnaire_language = self.get_input_data("questionnaire_language")[str(questionnaire_id)]
+                    if 'long' in self.get_input_data('response_type'):
+                        language_list = questionnaire_language['language_list']
+                    else:
+                        language_list = [questionnaire_language['output_language']]
+
+                    for language in language_list:
                         # Responses_Q123.csv
                         export_filename = "%s_%s_%s.csv" % (questionnaire_prefix_filename,
                                                             str(questionnaire_code), language)
@@ -1400,25 +1411,40 @@ class ExportExecution:
                 for questionnaire_code in self.get_per_participant_data(participant_code):
                     questionnaire_id = int(self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code))
                     title = self.get_title_reduced(questionnaire_id=int(questionnaire_id))
-                    export_filename = "%s_%s_%s.csv" % (str(participant_code), str(questionnaire_code), title)
+                    questionnaire_directory_name = "%s_%s" % (str(questionnaire_code), title)
+                    # create questionnaire directory
+                    # path ex. /Users/.../NES_EXPORT/Per_participant/Participant_PCode/QCode_Title/
+                    error_msg, path_per_questionnaire = create_directory(participant_path, questionnaire_directory_name)
+                    # path ex. /NES_EXPORT/Per_participant/QCode_Title/
+                    export_questionnaire_directory = path.join(path.join(export_directory_base, path_participant),
+                                                               questionnaire_directory_name)
 
+                    # add participant personal data header
                     header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
-                    language = self.get_input_data('output_language')
-                    header = header[0:len(header)-1]
+                    header = header[0:len(header) - 1]
                     for field in self.get_input_data('participants')['data_list'][0]:
                         header.append(field)
-                    participant_rows = self.get_per_participant_data(participant_code, questionnaire_code)[
-                        language][0]
-                    per_participant_rows = [header, participant_rows]
+                    # select language list
+                    questionnaire_language = self.get_input_data("questionnaire_language")[str(questionnaire_id)]
+                    if 'long' in self.get_input_data('response_type'):
+                        language_list = questionnaire_language['language_list']
+                    else:
+                        language_list = [questionnaire_language['output_language']]
 
-                    # path ex. /Users/.../NES_EXPORT/Per_participant/Participant_P123/P123_Q123_aaa.csv
-                    complete_filename = path.join(participant_path, export_filename)
+                    for language in language_list:
+                        export_filename = "%s_%s_%s.csv" % ("Responses", str(questionnaire_code), language)
 
-                    save_to_csv(complete_filename, per_participant_rows)
-                    # path ex. /NES_EXPORT/Per_participant/Participant_P123/
-                    export_directory = path.join(export_directory_base, path_participant)
+                        participant_rows = self.get_per_participant_data(participant_code, questionnaire_code)[
+                            language][0]
+                        per_participant_rows = [header, participant_rows]
 
-                    self.files_to_zip_list.append([complete_filename, export_directory])
+                        # path ex. /Users/.../NES_EXPORT/Per_participant/Participant_P123/QCode_Title
+                        # /Responses_Q123_aaa.csv
+                        complete_filename = path.join(path_per_questionnaire, export_filename)
+
+                        save_to_csv(complete_filename, per_participant_rows)
+
+                        self.files_to_zip_list.append([complete_filename, export_questionnaire_directory])
 
         return error_msg
 
@@ -1461,7 +1487,12 @@ class ExportExecution:
                         for questionnaire in self.get_input_data("questionnaires"):
                             if questionnaire_id == questionnaire['id']:
                                 title = self.get_title_reduced(questionnaire_id=questionnaire_id)
-                                language_list = questionnaire['language_list']
+                                questionnaire_language = self.get_input_data("questionnaire_language")[
+                                    str(questionnaire_id)]
+                                if 'long' in self.get_input_data('response_type'):
+                                    language_list = questionnaire_language['language_list']
+                                else:
+                                    language_list = [questionnaire_language['output_language']]
                                 # create questionnaire directory
                                 path_questionnaire = "%s_%s" % (str(questionnaire_code), title)
                                 # /Users/.../NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
@@ -1480,10 +1511,10 @@ class ExportExecution:
                                     header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
 
                                     # for row in self.get_input_data('participants'):
-                                    headers_participant_data, fields = self.get_headers_and_fields(
-                                        self.get_input_data('participants')["output_list"])
+                                    # headers_participant_data, fields = self.get_headers_and_fields(
+                                    #     self.get_input_data('participants')["output_list"])
                                     header = header[0:len(header) - 1]
-                                    for field in headers_participant_data:
+                                    for field in self.get_input_data('participants')['data_list'][0]:
                                         header.append(field)
 
                                     per_participant_rows = self.per_participant_data[participant_code][
@@ -1540,8 +1571,13 @@ class ExportExecution:
                         # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         step_participant_export_directory = path.join(participant_export_directory,
                                                                       token_data['directory_step_name'])
-                        for language in self.get_input_data('questionnaires_from_experiments')[group_id][
-                            str(questionnaire_id)]['language_list']:
+                        # select questionnaire language
+                        questionnaire_language = self.get_input_data("questionnaire_language")[str(questionnaire_id)]
+                        if 'long' in self.get_input_data('response_type'):
+                            language_list = questionnaire_language['language_list']
+                        else:
+                            language_list = [questionnaire_language['output_language']]
+                        for language in language_list:
                             # Responses_Q123.csv
                             export_filename = "%s_%s_%s.csv" % (str(questionnaire_code), questionnaire_title, language)
 
@@ -1557,7 +1593,7 @@ class ExportExecution:
                                     export_rows_participants = record
                             # questionnaire response
                             token_id = token_data['token_id']
-                            per_participant_rows = [[],[]]
+                            per_participant_rows = [[], []]
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
                             for field in answer_list[1]:
                                 per_participant_rows[1].append(field)
@@ -1565,7 +1601,7 @@ class ExportExecution:
                                 per_participant_rows[1].append(field)
                             for field in answer_list[0]:
                                 per_participant_rows[0].append(field)
-                            for field in self.get_input_data('participants')[0]['data_list'][0]:
+                            for field in self.get_input_data('participants')['data_list'][0]:
                                 per_participant_rows[0].append(field)
 
                             save_to_csv(complete_filename, per_participant_rows)
@@ -2312,8 +2348,7 @@ class ExportExecution:
         self.questionnaires_responses = {}
         for group_id in self.get_input_data('questionnaires_from_experiments'):
             for questionnaire_id in self.get_input_data('questionnaires_from_experiments')[group_id]:
-                language_list = self.get_input_data('questionnaires_from_experiments')[group_id][questionnaire_id][
-                    'language_list']
+                language_list = self.get_input_data('questionnaire_language')[questionnaire_id]['language_list']
                 questionnaire = self.get_input_data('questionnaires_from_experiments')[group_id][
                     str(questionnaire_id)]
 
