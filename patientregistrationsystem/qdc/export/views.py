@@ -93,6 +93,7 @@ patient_fields = [
     # {"field": 'id', "header": 'id', "description": _("Identification")},
     # {"field": 'name', "header": 'name', "description": _("Full name")},
     {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
+    {"field": 'age', "header": 'age', "description": _("Age")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
     {"field": 'marital_status__name', "header": 'marital_status', "description": _("Marital status")},
     {"field": 'origin', "header": 'origin', "description": _("Origin")},
@@ -158,6 +159,7 @@ questionnaire_evaluation_fields_excluded = [
     "startdate",
     "datestamp",
     "ipaddr",
+    "refurl"
 ]
 
 '''
@@ -381,11 +383,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             messages.error(request, error_msg)
             return render(request, template_name)
         # export participants data
-        if export.get_input_data('participants')[0]['output_list']:
-            participants_input_data = export.get_input_data("participants")
+        if export.get_input_data('participants')['output_list']:
+            participants_input_data = export.get_input_data("participants")['output_list']
             participants_list = (export.get_participants_filtered_data())
             export_rows_participants = export.process_participant_data(participants_input_data, participants_list)
-            export.get_input_data('participants')[0]['data_list'] = export_rows_participants
+            export.get_input_data('participants')['data_list'] = export_rows_participants
             # create file participants.csv and diagnosis.csv
             error_msg = export.process_participant_filtered_data('group_selected_list' in request.session)
             if error_msg != "":
@@ -508,7 +510,11 @@ def export_view(request, template_name="export/export_data.html"):
     selected_ev_quest_experiments = []
     questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
+    # if request.LANGUAGE_CODE == "pt-br":
+    #     language_code = "pt-BR"
+    # else:
     language_code = request.LANGUAGE_CODE
+
     component_list = []
 
     if request.method == "POST":
@@ -562,6 +568,31 @@ def export_view(request, template_name="export/export_data.html"):
 
         participants_list = []
 
+        # if language_code == 'en':
+        #     for participant in participant_selected_list:
+        #         field, header = participant.split("*")
+        #         if field == 'gender__name':
+        #             field = 'gender__name_en'
+        #         if field == 'marital_status__name':
+        #             field = 'marital_status__name_en'
+        #         if field == 'socialdemographicdata__religion__name':
+        #             field = 'socialdemographicdata__religion__name_en'
+        #         if field == 'socialdemographicdata__payment__name':
+        #             field = 'socialdemographicdata__payment__name_en'
+        #         if field == 'socialdemographicdata__patient_schooling__name':
+        #             field = 'socialdemographicdata__patient_schooling__name_en'
+        #         if field == 'socialdemographicdata__schooling__name':
+        #             field = 'socialdemographicdata__schooling__name_en'
+        #         if field == 'socialdemographicdata__flesh_tone__name':
+        #             field = 'socialdemographicdata__flesh_tone__name_en'
+        #         if field == 'socialhistorydata__amount_cigarettes__name':
+        #             field = 'socialhistorydata__amount_cigarettes__name_en'
+        #         if field == 'socialhistorydata__alcohol_period__name':
+        #             field = 'socialhistorydata__alcohol_period__name_en'
+        #         if field == 'socialhistorydata__alcohol_frequency__name':
+        #             field = 'socialhistorydata__alcohol_frequency__name_en'
+        #         participants_list.append([field, header])
+        # else:
         for participant in participant_selected_list:
             participants_list.append(participant.split("*"))
 
@@ -626,7 +657,7 @@ def export_view(request, template_name="export/export_data.html"):
                 build_complete_export_structure(per_participant, per_questionnaire, per_experiment, participants_list,
                                                 diagnosis_list, questionnaires_list, experiment_questionnaires_list,
                                                 responses_type, heading_type, input_filename, component_list,
-                                                request.LANGUAGE_CODE)
+                                                language_code)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 
@@ -672,7 +703,7 @@ def export_view(request, template_name="export/export_data.html"):
             if group.experimental_protocol is not None:
                 component_list = get_component_with_data_and_metadata(group, component_list)
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                    subject_of_group__group=group).distinct('data_configuration_tree')
+                    subject_of_group__group=group)
 
                 questionnaire_in_list = []
                 for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
@@ -705,7 +736,6 @@ def export_view(request, template_name="export/export_data.html"):
         patient_id__in=request.session['filtered_participant_data'])
 
     surveys_with_ev_list = []
-    participants_list_from_entrance_questionnaire = []
     surveys_id_list = []
     # verificar se os questionnarios estão completos
     for patient_questionnaire_response in patient_questionnaire_response_list:
@@ -763,7 +793,7 @@ def export_view(request, template_name="export/export_data.html"):
 
         # index = 0
         for questionnaire in questionnaires_experiment_fields_list:
-            questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+            questionnaire["selected_field_counter"] = questionnaire_ids.count(questionnaire["sid"])
             questionnaire["index"] = index
             index += 1
             for output_list in questionnaire["output_list"]:
@@ -771,7 +801,6 @@ def export_view(request, template_name="export/export_data.html"):
                     output_list["selected"] = True
 
     context = {
-
         "export_form": export_form,
         "patient_fields": patient_fields,
         "diagnosis_fields": diagnosis_fields,
@@ -793,30 +822,36 @@ def get_component_with_data_and_metadata(group, component_list):
 
     # data collection
     if 'eeg' not in component_list:
-        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        # eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
         if eeg_data_list:
             component_list.append('eeg')
     if 'eeg_nwb' not in component_list:
-        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        # eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
         export_nwb = can_export_nwb(eeg_data_list)
         if export_nwb:
             component_list.append('eeg_nwb')
     if 'emg' not in component_list:
-        emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        # emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        emg_data_list = EMGData.objects.filter(subject_of_group__group=group)
         if emg_data_list:
             component_list.append('emg')
     if 'tms' not in component_list:
-        tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        # tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
+        tms_data_list = TMSData.objects.filter(subject_of_group__group=group)
         if tms_data_list:
             component_list.append('tms')
     if 'additional_data' not in component_list:
-        additional_data_list = AdditionalData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        # additional_data_list = AdditionalData.objects.filter(subject_of_group__group=group).distinct(
+            # 'data_configuration_tree')
+        additional_data_list = AdditionalData.objects.filter(subject_of_group__group=group)
         if additional_data_list:
             component_list.append('additional_data')
     if 'goalkeeper_game_data' not in component_list:
-        goalkeeper_game_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        # goalkeeper_game_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group).distinct(
+            # 'data_configuration_tree')
+        goalkeeper_game_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
         if goalkeeper_game_data_list:
             component_list.append('goalkeeper_game_data')
     if 'stimulus_data' not in component_list:
@@ -828,8 +863,9 @@ def get_component_with_data_and_metadata(group, component_list):
         if stimulus_file_exist:
             component_list.append('stimulus_data')
     if 'generic_data' not in component_list:
-        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group).distinct(
-            'data_configuration_tree')
+        # generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group).distinct(
+        #     'data_configuration_tree')
+        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group)
         if generic_data_list:
             component_list.append('generic_data')
 
@@ -951,12 +987,12 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
     return questionnaires_included
 
 
-def get_questionnaire_fields(questionnaire_code_list, language_current="pt-BR"):
+def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
 
     """
     :param questionnaire_code_list: list with questionnaire id to be formatted with json file
+    :param current_language: current language used by the caller, indicating the preferred language
     :return: 1 list: questionnaires_included - questionnaire_id that was included in the .txt file
-
     """
 
     questionnaires_included = []
@@ -966,7 +1002,7 @@ def get_questionnaire_fields(questionnaire_code_list, language_current="pt-BR"):
 
         questionnaire_id = questionnaire["sid"]
 
-        language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_current)
+        language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
 
         # get a valid token (anyone)
         survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()

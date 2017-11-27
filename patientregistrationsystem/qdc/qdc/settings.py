@@ -128,6 +128,9 @@ PORTAL_API = {
     'PASSWORD': ''
 }
 
+# Show button to send experiments to Portal
+SHOW_SEND_TO_PORTAL_BUTTON = False
+
 # AUTH_USER_MODEL = 'quiz.UserProfile'
 # AUTH_PROFILE_MODULE = 'quiz.UserProfile'
 
@@ -204,4 +207,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.25.0'
+VERSION = '1.27.0'

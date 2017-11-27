@@ -172,7 +172,6 @@ class QuestionnaireUtils:
         self.questionnaires_data[questionnaire_id]["fields"] = new_fields
 
     def redefine_header_and_fields_experiment(self, questionnaire_id, header_filtered, fields, header_list):
-
         # header = self.questionnaires_experiment_data[questionnaire_id]["header"]
         header_questionnaire = self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"]
         fields_saved = self.questionnaires_experiment_data[questionnaire_id]["fields"]
@@ -231,7 +230,7 @@ class QuestionnaireUtils:
         :param questionnaire_id:
         :param language:
         :param questionnaire_lime_survey:
-        :param fields: fields from questionnaire that are to be exported. Empty means all fields (used by portal.py)
+        :param fields: fields from questionnaire that are to be exported
         :param entrance_questionnaire: boolean
         :return: header, formatted according to fields
                  data_rows, formatted according to fields
@@ -259,7 +258,7 @@ class QuestionnaireUtils:
 
             properties = questionnaire_lime_survey.get_question_properties(question, language)
 
-            if ('title' in properties) and (not fields_cleared or properties['title'] in fields_cleared):
+            if ('title' in properties) and (properties['title'] in fields_cleared):
 
                 fields_from_questions.append(properties['title'])
 

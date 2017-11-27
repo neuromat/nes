@@ -56,7 +56,7 @@ from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, 
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
     GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending, \
     GoalkeeperGameConfig, GoalkeeperGameResults, EEGFile, EMGFile, AdditionalDataFile, GenericDataCollectionFile, \
-    DigitalGamePhaseFile
+    DigitalGamePhaseFile, PortalSelectedQuestion
 
 from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -95,9 +95,9 @@ from export.forms import ParticipantsSelectionForm, AgeIntervalForm
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
 
 from survey.abc_search_engine import Questionnaires
-from survey.models import Survey
+from survey.models import Survey, SensitiveQuestion
 from survey.views import get_questionnaire_responses, check_limesurvey_access, create_list_of_trees, \
-    get_questionnaire_language
+    get_questionnaire_language, get_survey_header, questionnaire_evaluation_fields_excluded
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -134,7 +134,7 @@ def research_project_list(request, template_name="experiment/research_project_li
     research_projects = ResearchProject.objects.order_by('start_date')
 
     can_send_to_portal = False
-    if settings.PORTAL_API['URL']:
+    if settings.PORTAL_API['URL'] and settings.SHOW_SEND_TO_PORTAL_BUTTON:
         can_send_to_portal = True
 
     context = {
@@ -692,6 +692,50 @@ def experiment_schedule_of_sending(request, experiment_id,
     last_schedule_of_sending = \
         ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last()
 
+    surveys = Questionnaires()
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    experiment_questionnaires = {}
+    for group in experiment.group_set.all():
+
+        list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "questionnaire")
+        for path_tree in list_of_eeg_configuration:
+            component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
+            questionnaire = Questionnaire.objects.get(pk=component_id)
+            if questionnaire.survey.lime_survey_id not in experiment_questionnaires:
+
+                language = get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id,
+                                                      request.LANGUAGE_CODE)
+                questionnaire_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id, language)
+
+                current_sensitive_questions = SensitiveQuestion.objects.filter(survey=questionnaire.survey)
+                current_portal_selected_questions = PortalSelectedQuestion.objects.filter(experiment=experiment,
+                                                                                          survey=questionnaire.survey)
+
+                field_code = get_survey_header(surveys, questionnaire.survey, language, 'code')
+                field_text = get_survey_header(surveys, questionnaire.survey, language, 'full')
+
+                counter = 0
+                available_fields = []
+                while counter < len(field_code):
+                    if field_code[counter] not in questionnaire_evaluation_fields_excluded:
+                        available_fields.append(
+                            {'code': field_code[counter],
+                             'text': field_text[counter],
+                             'is_sensitive':
+                                 current_sensitive_questions.filter(code=field_code[counter]).exists(),
+                             'is_selected_to_send':
+                                 current_portal_selected_questions.filter(question_code=field_code[counter]).exists()})
+                    counter += 1
+
+                experiment_questionnaires[questionnaire.survey.lime_survey_id] = {
+                    'lime_survey_id': questionnaire.survey.lime_survey_id,
+                    'title': questionnaire_title,
+                    'fields': available_fields
+                }
+
+    surveys.release_session_key()
+
     if request.method == "POST":
         if request.POST['action'] == "send":
 
@@ -712,7 +756,8 @@ def experiment_schedule_of_sending(request, experiment_id,
     context = {
         "experiment": experiment,
         "last_schedule_of_sending": last_schedule_of_sending,
-        "resend_experiment_form": resend_experiment_form
+        "resend_experiment_form": resend_experiment_form,
+        "experiment_questionnaires": experiment_questionnaires
     }
 
     return render(request, template_name, context)
@@ -764,6 +809,10 @@ def date_of_first_data_collection(subject_of_group):
 
 def send_all_experiments_to_portal(language_code):
     for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
+
+        print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
+                                          schedule_of_sending.experiment.title))
+
         if send_experiment_to_portal(schedule_of_sending.experiment):
 
             # sending research project
@@ -1025,6 +1074,8 @@ def send_all_experiments_to_portal(language_code):
             experiment = schedule_of_sending.experiment
             experiment.last_sending = schedule_of_sending.sending_datetime
             experiment.save()
+
+            print('experiment sent.\n')
 
 
 @login_required

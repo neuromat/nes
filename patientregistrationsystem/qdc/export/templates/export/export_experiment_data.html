@@ -80,7 +80,7 @@
                         <li {% if tab == '2' %}class="active"{% endif %}>
                             <a data-toggle="tab" href="#questionnaire_from_entrance_evaluation">{% trans "Questionnaire answered by participants" %}</a>
                         </li>
-                        <li {% if tab == '3' %}class="active"{% endif %}>
+                        <li id="questionnaires_from_experiments_tab" {% if tab == '3' %}class="active"{% endif %}>
                             <a {% if not creating %}data-toggle="tab"{% endif %} href="#questionnaires_from_experiments">{% trans "Questionnaires from experiments" %}</a>
                         </li>
                         <li {% if tab == '4' %}class="active"{% endif %}>
@@ -343,8 +343,11 @@
                                                                 <h9 class="panel-title">
                                                                     <a data-toggle="collapse" data-parent="#accordion"
                                                                        href="#collapse_{{ survey.index }}">
-                                                                    <span style="background-color: #428bca" id="badge_{{ survey.index }}"
-                                                                          class="badge">{{ survey.selected_counter }} </span> {{ survey.sid }}
+                                                                    <span style="background-color: #428bca"
+                                                                          id="badge_experiment_{{ survey.index }}"
+                                                                          class="badge">
+                                                                        {{ survey.selected_field_counter }} </span>
+                                                                        {{ survey.sid }}
                                                                         - {{ survey.title }} - {{ survey.group_title }} </a>
                                                                 </h9>
                                                             </div>

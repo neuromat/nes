@@ -6,6 +6,7 @@ import csv
 import datetime
 import json
 
+from csv import reader
 from io import StringIO
 from operator import itemgetter
 
@@ -18,13 +19,28 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import ugettext as _
 
-from .models import Survey
+from .models import Survey, SensitiveQuestion
 from .forms import SurveyForm
 from survey.abc_search_engine import Questionnaires
 
 from experiment.models import ComponentConfiguration, QuestionnaireResponse, Questionnaire, Group, Block
 
 from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse
+
+
+questionnaire_evaluation_fields_excluded = [
+    "subjectid",
+    "responsibleid",
+    "id",
+    "submitdate",
+    "lastpage",
+    "startlanguage",
+    "token",
+    "startdate",
+    "datestamp",
+    "ipaddr",
+    "refurl"
+]
 
 
 class GroupOfQuestions:
@@ -152,6 +168,99 @@ def survey_update(request, survey_id, template_name="survey/survey_register.html
         "creating": False}
 
     return render(request, template_name, context)
+
+
+@login_required
+@permission_required('survey.change_survey')
+def survey_update_sensitive_questions(request, survey_id, template_name="survey/survey_sensitive_fields.html"):
+    survey = get_object_or_404(Survey, pk=survey_id)
+
+    surveys = Questionnaires()
+    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
+    limesurvey_available = check_limesurvey_access(request, surveys)
+
+    current_selected_fields = SensitiveQuestion.objects.filter(survey=survey)
+
+    field_code = get_survey_header(surveys, survey, language, 'code')
+    field_text = get_survey_header(surveys, survey, language, 'full')
+
+    surveys.release_session_key()
+
+    counter = 0
+    available_fields = []
+    while counter < len(field_code):
+        if field_code[counter] not in questionnaire_evaluation_fields_excluded:
+            available_fields.append(
+                {'code': field_code[counter],
+                 'text': field_text[counter],
+                 'checked': current_selected_fields.filter(code=field_code[counter]).exists()})
+        counter += 1
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+
+            changed = False
+
+            # for each available fields
+            for field in available_fields:
+
+                field_code = field['code']
+                field_text = field['text']
+
+                # field was selected
+                if "field_" + str(field_code) in request.POST and request.POST["field_" + str(field_code)] == 'on':
+
+                    # field not in current configuration
+                    if not current_selected_fields.filter(code=str(field_code)).exists():
+                        # Add itens selected
+                        SensitiveQuestion.objects.create(survey=survey, code=field_code, question=field_text)
+                        changed = True
+                else:
+
+                    # field in current configuration
+                    if current_selected_fields.filter(code=str(field_code)).exists():
+                        current_selected_fields.filter(code=str(field_code)).delete()
+                        changed = True
+
+            # Exclude unknown items
+            unkown_items = SensitiveQuestion.objects.filter(survey=survey).exclude(
+                code__in=[field['code'] for field in available_fields])
+            if unkown_items.exists():
+                unkown_items.delete()
+                changed = True
+
+            if changed:
+                messages.success(request, _('Questionnaire was updated successfully.'))
+            else:
+                messages.success(request, _('There are no changes to save.'))
+
+            redirect_url = reverse("survey_view", args=(survey.id,))
+            return HttpResponseRedirect(redirect_url)
+
+    context = {
+        "available_fields": available_fields,
+        "limesurvey_available": limesurvey_available,
+        "survey": survey,
+        "survey_title": survey_title}
+
+    return render(request, template_name, context)
+
+
+def get_survey_header(surveys, survey, language, heading_type):
+    """
+    :param surveys:
+    :param survey:
+    :param language:
+    :param heading_type: 'code' or 'full'
+    :return:
+    """
+    result = []
+    responses_text = surveys.get_responses(survey.lime_survey_id, language, heading_type)
+    header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
+    for field in header_fields:
+        result.append(field)
+    return result
 
 
 def create_list_of_trees(block_id, component_type, numeration=''):
