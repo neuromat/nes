@@ -223,15 +223,21 @@ class ABCSearchEngine(ABC):
         return status['status']
 
     @abstractmethod
-    def get_responses_by_token(self, sid, token, language):
+    def get_responses_by_token(self, sid, token, language, fields=[]):
         """ obtains responses from a determined token
         :param sid: survey ID
         :param token: token
         :param language: language
+        :param fields: fields array, using SGQA identifier
         :return: responses in the txt format
         """
 
-        responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language, 'complete')
+        if fields:
+            responses = self.server.export_responses_by_token(
+                self.session_key, sid, 'csv', token, language, 'complete', 'code', 'short', fields)
+        else:
+            responses = self.server.export_responses_by_token(
+                self.session_key, sid, 'csv', token, language, 'complete')
 
         if isinstance(responses, str):
             responses_txt = b64decode(responses)
@@ -417,8 +423,8 @@ class Questionnaires(ABCSearchEngine):
     def activate_tokens(self, sid):
         return super(Questionnaires, self).activate_tokens(sid)
 
-    def get_responses_by_token(self, sid, token, language):
-        return super(Questionnaires, self).get_responses_by_token(sid, token, language)
+    def get_responses_by_token(self, sid, token, language, fields=[]):
+        return super(Questionnaires, self).get_responses_by_token(sid, token, language, fields)
 
     def get_responses(self, sid, language, response_type='short', fields=None, heading_type='code'):
         return super(Questionnaires, self).get_responses(sid, language, response_type, fields, heading_type)
