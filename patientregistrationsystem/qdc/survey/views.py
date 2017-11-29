@@ -256,7 +256,7 @@ def get_survey_header(surveys, survey, language, heading_type):
     :return:
     """
     result = []
-    responses_text = surveys.get_responses(survey.lime_survey_id, language, heading_type)
+    responses_text = surveys.get_responses(survey.lime_survey_id, language, heading_type=heading_type)
     header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
     for field in header_fields:
         result.append(field)

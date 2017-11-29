@@ -724,12 +724,15 @@ def experiment_schedule_of_sending(request, experiment_id,
                              'text': field_text[counter],
                              'is_sensitive':
                                  current_sensitive_questions.filter(code=field_code[counter]).exists(),
-                             'is_selected_to_send':
+                             'select_to_send':
+                                 not current_portal_selected_questions.exists() or
+                                 current_portal_selected_questions.filter(question_code=field_code[counter]).exists(),
+                             'is_selected_in_db':
                                  current_portal_selected_questions.filter(question_code=field_code[counter]).exists()})
                     counter += 1
 
                 experiment_questionnaires[questionnaire.survey.lime_survey_id] = {
-                    'lime_survey_id': questionnaire.survey.lime_survey_id,
+                    'survey': questionnaire.survey,
                     'title': questionnaire_title,
                     'fields': available_fields
                 }
@@ -738,6 +741,27 @@ def experiment_schedule_of_sending(request, experiment_id,
 
     if request.method == "POST":
         if request.POST['action'] == "send":
+
+            # save questionnaire configuration
+            for questionnaire_key, questionnaire_value in experiment_questionnaires.items():
+                for field in questionnaire_value['fields']:
+                    is_to_send = False
+                    if not field['is_sensitive'] \
+                            and 'field' + '_' + str(questionnaire_key) + '_' + field['code'] in request.POST \
+                            and request.POST['field' + '_' + str(questionnaire_key) + '_' + field['code']] == 'on':
+                        is_to_send = True
+                    if is_to_send and not field['is_selected_in_db']:
+                        PortalSelectedQuestion.objects.create(experiment=experiment,
+                                                              survey=questionnaire_value['survey'],
+                                                              question_code=field['code'])
+                    else:
+                        if not is_to_send and field['is_selected_in_db']:
+                            portal_selected_question = \
+                                PortalSelectedQuestion.objects.filter(experiment=experiment,
+                                                                      survey=questionnaire_value['survey'],
+                                                                      question_code=field['code'])
+                            if portal_selected_question.exists():
+                                portal_selected_question.delete()
 
             if experiment.last_sending:
                 new_schedule = resend_experiment_form.save(commit=False)
@@ -993,13 +1017,17 @@ def send_all_experiments_to_portal(language_code):
                         for questionnaire_response in questionnaire_responses:
                             component_id = \
                                 questionnaire_response.data_configuration_tree.component_configuration.component_id
-                            limesurvey_id = Questionnaire.objects.get(pk=component_id).survey.lime_survey_id
+                            questionnaire = Questionnaire.objects.get(pk=component_id)
+                            limesurvey_id = questionnaire.survey.lime_survey_id
                             token = surveys.get_participant_properties(limesurvey_id,
                                                                        questionnaire_response.token_id,
                                                                        "token")
+                            questionnaire_language = get_questionnaire_language(surveys, limesurvey_id, language_code)
+
+
                             responses_string = surveys.get_responses_by_token(limesurvey_id,
-                                                                          token,
-                                                                          language_code)
+                                                                              token,
+                                                                              questionnaire_language)
 
                             limesurvey_response = {'questions': '', 'answers': ''}
 
@@ -1010,8 +1038,23 @@ def send_all_experiments_to_portal(language_code):
                                     responses_list.append(row)
 
                                 if len(responses_list) > 1:
-                                    limesurvey_response['questions'] = responses_list[0]
-                                    limesurvey_response['answers'] = responses_list[1]
+
+                                    # limesurvey_response['questions'] = responses_list[0]
+                                    # limesurvey_response['answers'] = responses_list[1]
+
+                                    # get fields to send
+                                    fields_to_send = \
+                                        [item.question_code
+                                         for item in PortalSelectedQuestion.objects.filter(experiment=group.experiment,
+                                                                                           survey=questionnaire.survey)]
+
+                                    limesurvey_response['questions'] = []
+                                    limesurvey_response['answers'] = []
+
+                                    for question_index, question_name in  enumerate(responses_list[0]):
+                                        if question_name in fields_to_send:
+                                            limesurvey_response['questions'].append(question_name)
+                                            limesurvey_response['answers'].append(responses_list[1][question_index])
 
                             portal_questionnaire_response = send_questionnaire_response_to_portal(
                                 portal_participant_list[questionnaire_response.subject_of_group.id],
