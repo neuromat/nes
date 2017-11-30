@@ -836,7 +836,7 @@ def send_all_experiments_to_portal(language_code):
 
         print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
                                           schedule_of_sending.experiment.title))
-        # if not schedule_of_sending.experiment.id == 47:
+
         if send_experiment_to_portal(schedule_of_sending.experiment):
 
             # sending research project
