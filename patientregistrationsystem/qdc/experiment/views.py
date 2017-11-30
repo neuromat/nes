@@ -836,289 +836,289 @@ def send_all_experiments_to_portal(language_code):
 
         print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
                                           schedule_of_sending.experiment.title))
+        if not schedule_of_sending.experiment.id == 47:
+            if send_experiment_to_portal(schedule_of_sending.experiment):
 
-        if send_experiment_to_portal(schedule_of_sending.experiment):
+                # sending research project
+                created_research_project = send_research_project_to_portal(schedule_of_sending.experiment)
 
-            # sending research project
-            created_research_project = send_research_project_to_portal(schedule_of_sending.experiment)
+                # sending researcher
+                send_researcher_to_portal(created_research_project['id'],
+                                          schedule_of_sending.experiment.research_project.owner)
 
-            # sending researcher
-            send_researcher_to_portal(created_research_project['id'],
-                                      schedule_of_sending.experiment.research_project.owner)
+                # sending collaborators
+                for collaborator in schedule_of_sending.experiment.research_project.collaborators.all():
+                    send_collaborator_to_portal(created_research_project['id'], collaborator.team_person)
 
-            # sending collaborators
-            for collaborator in schedule_of_sending.experiment.research_project.collaborators.all():
-                send_collaborator_to_portal(created_research_project['id'], collaborator.team_person)
+                list_of_eeg_setting = {}
+                list_of_emg_setting = {}
+                list_of_tms_setting = {}
+                list_of_context_tree = {}
 
-            list_of_eeg_setting = {}
-            list_of_emg_setting = {}
-            list_of_tms_setting = {}
-            list_of_context_tree = {}
+                # sending groups
+                for group in schedule_of_sending.experiment.group_set.all():
+                    portal_group = send_group_to_portal(group)
 
-            # sending groups
-            for group in schedule_of_sending.experiment.group_set.all():
-                portal_group = send_group_to_portal(group)
+                    # eeg settings
+                    list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
+                    for path_tree in list_of_eeg_configuration:
+                        component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
+                        eeg_setting = EEG.objects.get(pk=component_id).eeg_setting
+                        if eeg_setting.id not in list_of_eeg_setting:
+                            portal_eeg_setting = send_eeg_setting_to_portal(eeg_setting)
+                            list_of_eeg_setting[eeg_setting.id] = portal_eeg_setting['id']
 
-                # eeg settings
-                list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "eeg")
-                for path_tree in list_of_eeg_configuration:
-                    component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
-                    eeg_setting = EEG.objects.get(pk=component_id).eeg_setting
-                    if eeg_setting.id not in list_of_eeg_setting:
-                        portal_eeg_setting = send_eeg_setting_to_portal(eeg_setting)
-                        list_of_eeg_setting[eeg_setting.id] = portal_eeg_setting['id']
+                    for eeg_data in EEGData.objects.filter(subject_of_group__group__experiment=group.experiment):
+                        if eeg_data.eeg_setting.id not in list_of_eeg_setting:
+                            portal_eeg_setting = send_eeg_setting_to_portal(eeg_data.eeg_setting)
+                            list_of_eeg_setting[eeg_data.eeg_setting.id] = portal_eeg_setting['id']
 
-                for eeg_data in EEGData.objects.filter(subject_of_group__group__experiment=group.experiment):
-                    if eeg_data.eeg_setting.id not in list_of_eeg_setting:
-                        portal_eeg_setting = send_eeg_setting_to_portal(eeg_data.eeg_setting)
-                        list_of_eeg_setting[eeg_data.eeg_setting.id] = portal_eeg_setting['id']
+                    # emg settings
+                    list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
+                    for path_tree in list_of_emg_configuration:
+                        component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
+                        emg_setting = EMG.objects.get(pk=component_id).emg_setting
+                        if emg_setting.id not in list_of_emg_setting:
+                            portal_emg_setting = send_emg_setting_to_portal(emg_setting)
+                            list_of_emg_setting[emg_setting.id] = portal_emg_setting['id']
 
-                # emg settings
-                list_of_emg_configuration = create_list_of_trees(group.experimental_protocol, "emg")
-                for path_tree in list_of_emg_configuration:
-                    component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
-                    emg_setting = EMG.objects.get(pk=component_id).emg_setting
-                    if emg_setting.id not in list_of_emg_setting:
-                        portal_emg_setting = send_emg_setting_to_portal(emg_setting)
-                        list_of_emg_setting[emg_setting.id] = portal_emg_setting['id']
+                    for emg_data in EMGData.objects.filter(subject_of_group__group__experiment=group.experiment):
+                        if emg_data.emg_setting.id not in list_of_emg_setting:
+                            portal_emg_setting = send_emg_setting_to_portal(emg_data.emg_setting)
+                            list_of_emg_setting[emg_data.emg_setting.id] = portal_emg_setting['id']
 
-                for emg_data in EMGData.objects.filter(subject_of_group__group__experiment=group.experiment):
-                    if emg_data.emg_setting.id not in list_of_emg_setting:
-                        portal_emg_setting = send_emg_setting_to_portal(emg_data.emg_setting)
-                        list_of_emg_setting[emg_data.emg_setting.id] = portal_emg_setting['id']
+                    # tms settings
+                    list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
+                    for path_tree in list_of_tms_configuration:
+                        component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
+                        tms_setting = TMS.objects.get(pk=component_id).tms_setting
+                        if tms_setting.id not in list_of_tms_setting:
+                            portal_tms_setting = send_tms_setting_to_portal(tms_setting)
+                            list_of_tms_setting[tms_setting.id] = portal_tms_setting['id']
 
-                # tms settings
-                list_of_tms_configuration = create_list_of_trees(group.experimental_protocol, "tms")
-                for path_tree in list_of_tms_configuration:
-                    component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
-                    tms_setting = TMS.objects.get(pk=component_id).tms_setting
-                    if tms_setting.id not in list_of_tms_setting:
-                        portal_tms_setting = send_tms_setting_to_portal(tms_setting)
-                        list_of_tms_setting[tms_setting.id] = portal_tms_setting['id']
+                    for tms_data in TMSData.objects.filter(subject_of_group__group__experiment=group.experiment):
+                        if tms_data.tms_setting.id not in list_of_tms_setting:
+                            portal_tms_setting = send_tms_setting_to_portal(tms_data.tms_setting)
+                            list_of_tms_setting[tms_data.tms_setting.id] = portal_tms_setting['id']
 
-                for tms_data in TMSData.objects.filter(subject_of_group__group__experiment=group.experiment):
-                    if tms_data.tms_setting.id not in list_of_tms_setting:
-                        portal_tms_setting = send_tms_setting_to_portal(tms_data.tms_setting)
-                        list_of_tms_setting[tms_data.tms_setting.id] = portal_tms_setting['id']
+                    # context trees
+                    list_of_digital_game_phase_configuration = \
+                        create_list_of_trees(group.experimental_protocol, "digital_game_phase")
+                    for path_tree in list_of_digital_game_phase_configuration:
+                        component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
+                        context_tree = DigitalGamePhase.objects.get(pk=component_id).context_tree
+                        if context_tree.id not in list_of_context_tree:
+                            portal_context_tree = send_context_tree_to_portal(context_tree)
+                            list_of_context_tree[context_tree.id] = portal_context_tree['id']
 
-                # context trees
-                list_of_digital_game_phase_configuration = \
-                    create_list_of_trees(group.experimental_protocol, "digital_game_phase")
-                for path_tree in list_of_digital_game_phase_configuration:
-                    component_id = ComponentConfiguration.objects.get(pk=path_tree[-1][0]).component_id
-                    context_tree = DigitalGamePhase.objects.get(pk=component_id).context_tree
-                    if context_tree.id not in list_of_context_tree:
-                        portal_context_tree = send_context_tree_to_portal(context_tree)
-                        list_of_context_tree[context_tree.id] = portal_context_tree['id']
+                    # participants
+                    portal_participant_list = {}
+                    for subject_of_group in group.subjectofgroup_set.all():
+                        first_data_collection = date_of_first_data_collection(subject_of_group)
+                        portal_participant = send_participant_to_portal(portal_group['id'],
+                                                                        subject_of_group.subject,
+                                                                        first_data_collection)
+                        portal_participant_list[subject_of_group.id] = portal_participant['id']
 
-                # participants
-                portal_participant_list = {}
-                for subject_of_group in group.subjectofgroup_set.all():
-                    first_data_collection = date_of_first_data_collection(subject_of_group)
-                    portal_participant = send_participant_to_portal(portal_group['id'],
-                                                                    subject_of_group.subject,
-                                                                    first_data_collection)
-                    portal_participant_list[subject_of_group.id] = portal_participant['id']
+                    # experimental protocol
+                    textual_description = None
+                    image = None
+                    portal_step_list = {}
+                    root_step_id = None
 
-                # experimental protocol
-                textual_description = None
-                image = None
-                portal_step_list = {}
-                root_step_id = None
+                    if group.experimental_protocol:
+                        tree = get_block_tree(group.experimental_protocol, language_code)
+                        textual_description = get_description_from_experimental_protocol_tree(tree)
+                        image = get_experimental_protocol_image(group.experimental_protocol, tree)
 
-                if group.experimental_protocol:
-                    tree = get_block_tree(group.experimental_protocol, language_code)
-                    textual_description = get_description_from_experimental_protocol_tree(tree)
-                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+                        # steps
+                        step_list = send_steps_to_portal(portal_group['id'], tree,
+                                                         list_of_eeg_setting, list_of_emg_setting,
+                                                         list_of_tms_setting, list_of_context_tree,
+                                                         language_code)
+                        root_step_id = step_list['0']['portal_step_id']
 
-                    # steps
-                    step_list = send_steps_to_portal(portal_group['id'], tree,
-                                                     list_of_eeg_setting, list_of_emg_setting,
-                                                     list_of_tms_setting, list_of_context_tree,
-                                                     language_code)
-                    root_step_id = step_list['0']['portal_step_id']
+                        list_of_trees = create_list_of_trees(group.experimental_protocol, None)
+                        for tree in list_of_trees:
+                            path_tree = [item[0] for item in tree]
+                            data_configuration_tree_id = list_data_configuration_tree(path_tree[-1], path_tree)
+                            numeration = tree[-1][-1]
+                            step_list[numeration]['data_configuration_tree_id'] = data_configuration_tree_id
+                            if data_configuration_tree_id:
+                                portal_step_list[data_configuration_tree_id] = step_list[numeration]['portal_step_id']
 
-                    list_of_trees = create_list_of_trees(group.experimental_protocol, None)
-                    for tree in list_of_trees:
-                        path_tree = [item[0] for item in tree]
-                        data_configuration_tree_id = list_data_configuration_tree(path_tree[-1], path_tree)
-                        numeration = tree[-1][-1]
-                        step_list[numeration]['data_configuration_tree_id'] = data_configuration_tree_id
-                        if data_configuration_tree_id:
-                            portal_step_list[data_configuration_tree_id] = step_list[numeration]['portal_step_id']
+                        # eeg data
+                        eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
 
-                    # eeg data
-                    eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
+                        for eeg_data in eeg_data_list:
 
-                    for eeg_data in eeg_data_list:
+                            portal_file_id_list = []
+                            for eeg_file in eeg_data.eeg_files.all():
+                                portal_file = send_file_to_portal(eeg_file.file.name)
+                                portal_file_id_list.append(portal_file['id'])
 
-                        portal_file_id_list = []
-                        for eeg_file in eeg_data.eeg_files.all():
-                            portal_file = send_file_to_portal(eeg_file.file.name)
-                            portal_file_id_list.append(portal_file['id'])
+                            portal_eeg_data_file = send_eeg_data_to_portal(
+                                portal_participant_list[eeg_data.subject_of_group.id],
+                                portal_step_list[eeg_data.data_configuration_tree.id],
+                                portal_file_id_list,
+                                list_of_eeg_setting[eeg_data.eeg_setting.id],
+                                eeg_data)
 
-                        portal_eeg_data_file = send_eeg_data_to_portal(
-                            portal_participant_list[eeg_data.subject_of_group.id],
-                            portal_step_list[eeg_data.data_configuration_tree.id],
-                            portal_file_id_list,
-                            list_of_eeg_setting[eeg_data.eeg_setting.id],
-                            eeg_data)
+                        # emg data
+                        emg_data_list = EMGData.objects.filter(subject_of_group__group=group)
 
-                    # emg data
-                    emg_data_list = EMGData.objects.filter(subject_of_group__group=group)
+                        for emg_data in emg_data_list:
 
-                    for emg_data in emg_data_list:
+                            portal_file_id_list = []
+                            for emg_file in emg_data.emg_files.all():
+                                portal_file = send_file_to_portal(emg_file.file.name)
+                                portal_file_id_list.append(portal_file['id'])
 
-                        portal_file_id_list = []
-                        for emg_file in emg_data.emg_files.all():
-                            portal_file = send_file_to_portal(emg_file.file.name)
-                            portal_file_id_list.append(portal_file['id'])
+                            portal_emg_data_file = send_emg_data_to_portal(
+                                portal_participant_list[emg_data.subject_of_group.id],
+                                portal_step_list[emg_data.data_configuration_tree.id],
+                                portal_file_id_list,
+                                list_of_emg_setting[emg_data.emg_setting.id],
+                                emg_data)
 
-                        portal_emg_data_file = send_emg_data_to_portal(
-                            portal_participant_list[emg_data.subject_of_group.id],
-                            portal_step_list[emg_data.data_configuration_tree.id],
-                            portal_file_id_list,
-                            list_of_emg_setting[emg_data.emg_setting.id],
-                            emg_data)
+                        # tms data
+                        tms_data_files = TMSData.objects.filter(subject_of_group__group=group)
 
-                    # tms data
-                    tms_data_files = TMSData.objects.filter(subject_of_group__group=group)
+                        for tms_data_file in tms_data_files:
+                            portal_tms_data_file = send_tms_data_to_portal(
+                                portal_participant_list[tms_data_file.subject_of_group.id],
+                                portal_step_list[tms_data_file.data_configuration_tree.id],
+                                list_of_tms_setting[tms_data_file.tms_setting.id],
+                                tms_data_file)
 
-                    for tms_data_file in tms_data_files:
-                        portal_tms_data_file = send_tms_data_to_portal(
-                            portal_participant_list[tms_data_file.subject_of_group.id],
-                            portal_step_list[tms_data_file.data_configuration_tree.id],
-                            list_of_tms_setting[tms_data_file.tms_setting.id],
-                            tms_data_file)
+                        # digital game phase data
+                        digital_game_phase_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
 
-                    # digital game phase data
-                    digital_game_phase_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
+                        for digital_game_phase_data in digital_game_phase_data_list:
 
-                    for digital_game_phase_data in digital_game_phase_data_list:
+                            portal_file_id_list = []
+                            for digital_game_phase_file in digital_game_phase_data.digital_game_phase_files.all():
+                                portal_file = send_file_to_portal(digital_game_phase_file.file.name)
+                                portal_file_id_list.append(portal_file['id'])
 
-                        portal_file_id_list = []
-                        for digital_game_phase_file in digital_game_phase_data.digital_game_phase_files.all():
-                            portal_file = send_file_to_portal(digital_game_phase_file.file.name)
-                            portal_file_id_list.append(portal_file['id'])
-
-                        portal_digital_game_phase_data_file = send_digital_game_phase_data_to_portal(
-                            portal_participant_list[digital_game_phase_data.subject_of_group.id],
-                            portal_step_list[digital_game_phase_data.data_configuration_tree.id],
-                            portal_file_id_list,
-                            digital_game_phase_data)
-
-                    # questionnaire response
-                    surveys = Questionnaires()
-                    if surveys.session_key:
+                            portal_digital_game_phase_data_file = send_digital_game_phase_data_to_portal(
+                                portal_participant_list[digital_game_phase_data.subject_of_group.id],
+                                portal_step_list[digital_game_phase_data.data_configuration_tree.id],
+                                portal_file_id_list,
+                                digital_game_phase_data)
 
                         # questionnaire response
-                        questionnaire_responses = QuestionnaireResponse.objects.filter(subject_of_group__group=group)
+                        surveys = Questionnaires()
+                        if surveys.session_key:
 
-                        for questionnaire_response in questionnaire_responses:
-                            component_id = \
-                                questionnaire_response.data_configuration_tree.component_configuration.component_id
-                            questionnaire = Questionnaire.objects.get(pk=component_id)
-                            limesurvey_id = questionnaire.survey.lime_survey_id
-                            token = surveys.get_participant_properties(limesurvey_id,
-                                                                       questionnaire_response.token_id,
-                                                                       "token")
-                            questionnaire_language = get_questionnaire_language(surveys, limesurvey_id, language_code)
+                            # questionnaire response
+                            questionnaire_responses = QuestionnaireResponse.objects.filter(subject_of_group__group=group)
+
+                            for questionnaire_response in questionnaire_responses:
+                                component_id = \
+                                    questionnaire_response.data_configuration_tree.component_configuration.component_id
+                                questionnaire = Questionnaire.objects.get(pk=component_id)
+                                limesurvey_id = questionnaire.survey.lime_survey_id
+                                token = surveys.get_participant_properties(limesurvey_id,
+                                                                           questionnaire_response.token_id,
+                                                                           "token")
+                                questionnaire_language = get_questionnaire_language(surveys, limesurvey_id, language_code)
 
 
-                            responses_string = surveys.get_responses_by_token(limesurvey_id,
-                                                                              token,
-                                                                              questionnaire_language)
+                                responses_string = surveys.get_responses_by_token(limesurvey_id,
+                                                                                  token,
+                                                                                  questionnaire_language)
 
-                            limesurvey_response = {'questions': '', 'answers': ''}
+                                limesurvey_response = {'questions': '', 'answers': ''}
 
-                            if isinstance(responses_string, bytes):
-                                reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
-                                responses_list = []
-                                for row in reader:
-                                    responses_list.append(row)
+                                if isinstance(responses_string, bytes):
+                                    reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
+                                    responses_list = []
+                                    for row in reader:
+                                        responses_list.append(row)
 
-                                if len(responses_list) > 1:
+                                    if len(responses_list) > 1:
 
-                                    # limesurvey_response['questions'] = responses_list[0]
-                                    # limesurvey_response['answers'] = responses_list[1]
+                                        # limesurvey_response['questions'] = responses_list[0]
+                                        # limesurvey_response['answers'] = responses_list[1]
 
-                                    # get fields to send
-                                    fields_to_send = \
-                                        [item.question_code
-                                         for item in PortalSelectedQuestion.objects.filter(experiment=group.experiment,
-                                                                                           survey=questionnaire.survey)]
+                                        # get fields to send
+                                        fields_to_send = \
+                                            [item.question_code
+                                             for item in PortalSelectedQuestion.objects.filter(experiment=group.experiment,
+                                                                                               survey=questionnaire.survey)]
 
-                                    limesurvey_response['questions'] = []
-                                    limesurvey_response['answers'] = []
+                                        limesurvey_response['questions'] = []
+                                        limesurvey_response['answers'] = []
 
-                                    for question_index, question_name in  enumerate(responses_list[0]):
-                                        if question_name in fields_to_send:
-                                            limesurvey_response['questions'].append(question_name)
-                                            limesurvey_response['answers'].append(responses_list[1][question_index])
+                                        for question_index, question_name in  enumerate(responses_list[0]):
+                                            if question_name in fields_to_send:
+                                                limesurvey_response['questions'].append(question_name)
+                                                limesurvey_response['answers'].append(responses_list[1][question_index])
 
-                            portal_questionnaire_response = send_questionnaire_response_to_portal(
-                                portal_participant_list[questionnaire_response.subject_of_group.id],
-                                portal_step_list[questionnaire_response.data_configuration_tree.id],
-                                json.dumps(limesurvey_response),
-                                questionnaire_response)
+                                portal_questionnaire_response = send_questionnaire_response_to_portal(
+                                    portal_participant_list[questionnaire_response.subject_of_group.id],
+                                    portal_step_list[questionnaire_response.data_configuration_tree.id],
+                                    json.dumps(limesurvey_response),
+                                    questionnaire_response)
 
-                        surveys.release_session_key()
+                            surveys.release_session_key()
 
-                    # additional data
-                    additional_data_list = \
-                        AdditionalData.objects.filter(subject_of_group__group=group)
+                        # additional data
+                        additional_data_list = \
+                            AdditionalData.objects.filter(subject_of_group__group=group)
 
-                    for additional_data in additional_data_list:
+                        for additional_data in additional_data_list:
 
-                        portal_file_id_list = []
-                        for additional_data_file in additional_data.additional_data_files.all():
-                            portal_file = send_file_to_portal(additional_data_file.file.name)
-                            portal_file_id_list.append(portal_file['id'])
+                            portal_file_id_list = []
+                            for additional_data_file in additional_data.additional_data_files.all():
+                                portal_file = send_file_to_portal(additional_data_file.file.name)
+                                portal_file_id_list.append(portal_file['id'])
 
-                        # TODO: send additional_file associated to the whole experiment
-                        if additional_data.data_configuration_tree:
-                            portal_additional_data_file = send_additional_data_to_portal(
-                                portal_participant_list[additional_data.subject_of_group.id],
-                                portal_step_list[additional_data.data_configuration_tree.id],
+                            # TODO: send additional_file associated to the whole experiment
+                            if additional_data.data_configuration_tree:
+                                portal_additional_data_file = send_additional_data_to_portal(
+                                    portal_participant_list[additional_data.subject_of_group.id],
+                                    portal_step_list[additional_data.data_configuration_tree.id],
+                                    portal_file_id_list,
+                                    additional_data)
+
+                        # generic data collection data
+                        generic_data_collection_data_list = \
+                            GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+
+                        for generic_data_collection_data in generic_data_collection_data_list:
+
+                            portal_file_id_list = []
+                            for generic_data_collection_file in generic_data_collection_data.generic_data_collection_files.all():
+                                portal_file = send_file_to_portal(generic_data_collection_file.file.name)
+                                portal_file_id_list.append(portal_file['id'])
+
+                            portal_generic_data_collection_data_file = send_generic_data_collection_data_to_portal(
+                                portal_participant_list[generic_data_collection_data.subject_of_group.id],
+                                portal_step_list[generic_data_collection_data.data_configuration_tree.id],
                                 portal_file_id_list,
-                                additional_data)
+                                generic_data_collection_data)
 
-                    # generic data collection data
-                    generic_data_collection_data_list = \
-                        GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+                    send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
+                                                         textual_description=textual_description,
+                                                         image=image,
+                                                         root_step_id=root_step_id)
 
-                    for generic_data_collection_data in generic_data_collection_data_list:
+                # end of sending
+                send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
-                        portal_file_id_list = []
-                        for generic_data_collection_file in generic_data_collection_data.generic_data_collection_files.all():
-                            portal_file = send_file_to_portal(generic_data_collection_file.file.name)
-                            portal_file_id_list.append(portal_file['id'])
+                # update the schedule to 'sent'
+                schedule_of_sending.status = "sent"
+                schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
+                schedule_of_sending.save()
 
-                        portal_generic_data_collection_data_file = send_generic_data_collection_data_to_portal(
-                            portal_participant_list[generic_data_collection_data.subject_of_group.id],
-                            portal_step_list[generic_data_collection_data.data_configuration_tree.id],
-                            portal_file_id_list,
-                            generic_data_collection_data)
+                # update the last sending date
+                experiment = schedule_of_sending.experiment
+                experiment.last_sending = schedule_of_sending.sending_datetime
+                experiment.save()
 
-                send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
-                                                     textual_description=textual_description,
-                                                     image=image,
-                                                     root_step_id=root_step_id)
-
-            # end of sending
-            send_experiment_end_message_to_portal(schedule_of_sending.experiment)
-
-            # update the schedule to 'sent'
-            schedule_of_sending.status = "sent"
-            schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
-            schedule_of_sending.save()
-
-            # update the last sending date
-            experiment = schedule_of_sending.experiment
-            experiment.last_sending = schedule_of_sending.sending_datetime
-            experiment.save()
-
-            print('experiment sent.\n')
+                print('experiment sent.\n')
 
 
 @login_required
