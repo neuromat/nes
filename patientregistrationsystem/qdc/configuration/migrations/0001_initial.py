@@ -8,28 +8,29 @@ import configuration.models
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('team', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Contact',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('email', models.EmailField(max_length=254, null=True, blank=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(blank=True, null=True, max_length=255)),
+                ('email', models.EmailField(blank=True, null=True, max_length=254)),
             ],
             options={
                 'abstract': False,
             },
         ),
         migrations.CreateModel(
-            name='Institution',
+            name='LocalInstitution',
             fields=[
-                ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('name', models.CharField(max_length=255, null=True, blank=True)),
-                ('url', models.URLField(null=True, blank=True)),
-                ('logo', models.FileField(upload_to=configuration.models.get_institution_logo_dir,
-                                          null=True, blank=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('code', models.CharField(blank=True, null=True, max_length=150)),
+                ('url', models.URLField(blank=True, null=True)),
+                ('logo', models.FileField(blank=True, null=True, upload_to=configuration.models.get_institution_logo_dir)),
+                ('institution', models.ForeignKey(to='team.Institution')),
             ],
             options={
                 'abstract': False,
