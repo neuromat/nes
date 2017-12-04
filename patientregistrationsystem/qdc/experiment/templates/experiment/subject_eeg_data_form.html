@@ -20,6 +20,7 @@
             var $div_reason_for_change = $("#div-reason-for-change");
             var $id_eeg_setting_reason_for_change = $("#id_eeg_setting_reason_for_change");
             var $id_eeg_setting = $("#id_eeg_setting");
+            var $div_info_raw_data = $("#info_raw_data");
 
             {% if eeg_setting_default_id %}
                 var $eeg_setting_default_id = {{ eeg_setting_default_id }};
@@ -38,7 +39,7 @@
                     {% elif item.code == 'txt' %}
                         $txt_code = {{ item.id }};
                         $txt_extension = "{{ item.extension }}";
-                    {% elif item.code == 'NEO-RawBinarySignalIO' %}
+                    {% elif item.code == 'MNE-RawFromBrainVision' %}
                         $raw_code = {{ item.id }};
                         $raw_extension = "{{ item.extension }}";
                     {% endif %}
@@ -81,6 +82,7 @@
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", false );
+                        $div_info_raw_data.hide();
                         $div_file_format_description.show();
                     }
                     else if ($id_file_format.val() == $txt_code)
@@ -88,18 +90,24 @@
                         $id_file.attr("accept", $txt_extension);
                         $id_file_format_description.prop( "disabled", true );
                         $div_file_format_description.hide();
+                        $div_info_raw_data.hide();
                     }
                     else if ($id_file_format.val() == $raw_code)
                     {
                         $id_file.attr("accept", $raw_extension);
                         $id_file_format_description.prop( "disabled", true );
                         $div_file_format_description.hide();
+                        $div_info_raw_data.show();
+                        $div_info_raw_data.html("Upload the three files(.avg, .vhdr, .vmrk) to visualize the raw data" +
+                                " from Brain " +
+                                "Vision");
                     }
                     else
                     {
                         $id_file.removeAttr("accept");
                         $id_file_format_description.prop( "disabled", true );
                         $div_file_format_description.hide();
+                        $div_info_raw_data.hide();
                     }
                 }));
             {% else %}
@@ -277,7 +285,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
                         <div class="row">
@@ -318,6 +325,10 @@
                                     <div class="help-block with-errors"></div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12" id="info_raw_data" style="color: green"></div>
                         </div>
 
                         <div class="row" id="div-file-format-description">
@@ -379,10 +390,18 @@
                             </div>
                         </div>
 
-                        {% if sensors_image != None and not creating %}
+{#                        {% if sensors_image != None and not creating %}#}
+{#                            <div class="row">#}
+{#                                <div class="panel-body">#}
+{#                                    <img src="{% static sensors_image %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+
+                        {% if raw_plot_image != None and not creating %}
                             <div class="row">
                                 <div class="panel-body">
-                                    <img src="{% static sensors_image %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
+                                    <img src="{% static raw_plot_image %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
                                 </div>
                             </div>
                         {% endif %}
@@ -454,75 +473,85 @@
                     </div>
 
                     <div id="electrodes_operating_status" {% if tab == '3' %}class="tab-pane fade in active"{% else %}class="tab-pane fade"{% endif %}>
-                        {% if image %}
-                            <div class="col-md-10">
-                                <div hidden="hidden">
-                                    <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
-                                    <input id="image_status" type="text" value="{{ editing }}">
-                                    <input id="map_file" type="text" value="{{ eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
-                                </div>
-                                <div class="container span6 offset3 well ">
-                                    <h4>{% trans "EEG electrode localization system basic information" %}</h4>
-                                    <div class="row">
-                                        <div style="width:100%;">
-                                             <table>
-                                                <tr>
-                                                    <td width="80%" valign="top">
-                                                        <div style="float:left; width: 80%">
-                                                            <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
-                                                            </canvas>
-                                                        </div>
-                                                    </td>
-                                                    <td width="20%" valign="top">
-                                                        <div style="width: 20%">
-                                                            <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
-                                                                <caption><b>{% trans "List of positions" %}</b></caption>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <td>{% trans "Name" %}</td>
-                                                                        <td>{% trans "Worked" %}</td>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {% for position_status in eeg_data.electrode_positions.all %}
-                                                                    <tr>
-                                                                        <td align="center">
-                                                                            {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
-                                                                        </td>
-                                                                        <td>
-                                                                            <input type="checkbox" id="position_worked_{{ position_status.id }}" name="position_worked_{{ position_status.id }}"
-                                                                                   {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
-                                                                                   {% if position_status.worked %}checked="checked"{% endif %} onclick="worked()"/>
-                                                                        </td>
-                                                                    </tr>
-                                                                    {% endfor %}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tfoot>
-                                                    <tr>
-                                                        <td colspan="3">{% trans "To mark or unmark any position as 'worked' or 'did not worked' you can click on the image on the selected position" %}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>{% trans "or you can check or uncheck the checkbox selected in the list of positions. " %}</td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="btn-toolbar">
-                                    {% if not editing and can_change %}
-                                        <div class="btn-group pull-left">
-                                            <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/3" class="btn btn-primary">{% trans "Edit" %}</a>
-                                        </div>
-                                    {% endif %}
+                        {% if sensors_image != None and not creating %}
+                            <div class="row">
+                                <div class="panel-body">
+                                    <img src="{% static sensors_image %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
                                 </div>
                             </div>
+
                         {% else %}
-                            <label>{% trans "There is not image" %}</label>
+
+                            {% if image %}
+                                <div class="col-md-10">
+                                    <div hidden="hidden">
+                                        <input id="eeg_electrode_position" type="text" value="{{ json_list }}">
+                                        <input id="image_status" type="text" value="{{ editing }}">
+                                        <input id="map_file" type="text" value="{{ eeg_data.eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_localization_system.map_image_file.url }}">
+                                    </div>
+                                    <div class="container span6 offset3 well ">
+                                        <h4>{% trans "EEG electrode localization system basic information" %}</h4>
+                                        <div class="row">
+                                            <div style="width:100%;">
+                                                 <table>
+                                                    <tr>
+                                                        <td width="80%" valign="top">
+                                                            <div style="float:left; width: 80%">
+                                                                <canvas id="electrodeMapCanvas" width="700" height="500" style="border:1px solid #000000;">
+                                                                </canvas>
+                                                            </div>
+                                                        </td>
+                                                        <td width="20%" valign="top">
+                                                            <div style="width: 20%">
+                                                                <table id="cap_positions"  class="table table-striped header-fixed" style="margin-top:10px; margin-left:10px;">
+                                                                    <caption><b>{% trans "List of positions" %}</b></caption>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <td>{% trans "Name" %}</td>
+                                                                            <td>{% trans "Worked" %}</td>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% for position_status in eeg_data.electrode_positions.all %}
+                                                                        <tr>
+                                                                            <td align="center">
+                                                                                {{ position_status.eeg_electrode_position_setting.eeg_electrode_position.name }}
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="checkbox" id="position_worked_{{ position_status.id }}" name="position_worked_{{ position_status.id }}"
+                                                                                       {% if not editing or not position_status.eeg_electrode_position_setting.used %}disabled{% endif %}
+                                                                                       {% if position_status.worked %}checked="checked"{% endif %} onclick="worked()"/>
+                                                                            </td>
+                                                                        </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td colspan="3">{% trans "To mark or unmark any position as 'worked' or 'did not worked' you can click on the image on the selected position" %}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>{% trans "or you can check or uncheck the checkbox selected in the list of positions. " %}</td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="btn-toolbar">
+                                        {% if not editing and can_change %}
+                                            <div class="btn-group pull-left">
+                                                <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/3" class="btn btn-primary">{% trans "Edit" %}</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <label>{% trans "There is not image" %}</label>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

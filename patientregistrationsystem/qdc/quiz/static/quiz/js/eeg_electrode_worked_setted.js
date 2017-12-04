@@ -8,10 +8,10 @@ radio = 25;
 
 function init(){
     var canvas = document.getElementById("electrodeMapCanvas");
-    var ctx = canvas.getContext("2d");
+    if(canvas) var ctx = canvas.getContext("2d");
 
     var eeg_positions = document.getElementById("eeg_electrode_position");
-    positions = eval(eeg_positions.value);
+    if(eeg_positions) positions = eval(eeg_positions.value);
     //positions.sort(compare);
 
     var imageObj = new Image();
@@ -21,10 +21,10 @@ function init(){
         pintar();
     };
     var map_file = document.getElementById("map_file");
-    imageObj.src = map_file.value;
+    if(map_file) imageObj.src = map_file.value;
 
     var editing = document.getElementById("image_status");
-    if(editing.value == "True") canvas.addEventListener("mousedown", getPosition, false);
+    if(editing) if(editing.value == "True") canvas.addEventListener("mousedown", getPosition, false);
 }
 
 function pintar(){
