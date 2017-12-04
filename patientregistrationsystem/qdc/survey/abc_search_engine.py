@@ -47,9 +47,12 @@ class ABCSearchEngine(ABC):
 
         list_active_survey = []
 
-        for survey in list_survey:
-            if survey['active'] == "Y" and self.survey_has_token_table(survey['sid']):
-                list_active_survey.append(survey)
+        if isinstance(list_survey, list):
+            for survey in list_survey:
+                if survey['active'] == "Y" and self.survey_has_token_table(survey['sid']):
+                    list_active_survey.append(survey)
+        else:
+            list_active_survey = None
 
         return list_active_survey
 

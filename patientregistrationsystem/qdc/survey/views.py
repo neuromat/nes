@@ -98,13 +98,16 @@ def survey_create(request, template_name="survey/survey_register.html"):
 
     surveys.release_session_key()
 
-    # removing surveys already registered
-    used_surveys = Survey.objects.all()
-    for used_survey in used_surveys:
-        for questionnaire in questionnaires_list:
-            if used_survey.lime_survey_id == questionnaire['sid']:
-                questionnaires_list.remove(questionnaire)
-                break
+    if questionnaires_list:
+        # removing surveys already registered
+        used_surveys = Survey.objects.all()
+        for used_survey in used_surveys:
+            for questionnaire in questionnaires_list:
+                if used_survey.lime_survey_id == questionnaire['sid']:
+                    questionnaires_list.remove(questionnaire)
+                    break
+    else:
+        messages.warning(request, _('No questionnaire found.'))
 
     if request.method == "POST":
         if request.POST['action'] == "save":
