@@ -5792,18 +5792,21 @@ def get_sensors_position(eeg_data):
     # raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
     reading = None
     file_path = None
+    file_plot_path = None
 
     # getting the eeg_file, if exists
     eeg_files = eeg_data.eeg_files.all()
 
-    for eeg_file in eeg_files:
-        nes_code = eeg_file.eeg_data.file_format.nes_code
-        if nes_code == 'MNE-RawFromEGI':
-            reading = eeg_data_reading(eeg_file, preload=False)
-
-        if nes_code == 'MNE-RawFromBrainVision':
+    if len(eeg_files) == 1:
+        for eeg_file in eeg_files:
+            nes_code = eeg_file.eeg_data.file_format.nes_code
+            if nes_code == 'MNE-RawFromEGI':
+                reading = eeg_data_reading(eeg_file, preload=False)
+    elif len(eeg_files) == 3:
+        for eeg_file in eeg_files:
+            nes_code = eeg_file.eeg_data.file_format.nes_code
             file_extension = eeg_file.file.path.split('.')[-1]
-            if file_extension == 'vhdr':
+            if nes_code == 'MNE-RawFromBrainVision' and file_extension == 'vhdr':
                 reading = eeg_data_reading(eeg_file, preload=False)
 
     if reading:
@@ -5868,7 +5871,10 @@ def get_sensors_position(eeg_data):
 
                 file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
 
-                fig_plot = raw.plot(block=True, lowpass=40)
+                if channels <= 40:
+                    fig_plot = raw.plot(title="Raw data visualization", n_channels=channels)
+                else:
+                    fig_plot = raw.plot(title="Raw data visualization")
 
                 file_plot_name = 'raw_plot_' + str(eeg_data.id) + ".png"
                 # writing
