@@ -406,6 +406,15 @@
                             </div>
                         {% endif %}
 
+                        {% if power_espectral_image != None and not creating %}
+                            <div class="row">
+                                <div class="panel-body">
+                                    <img src="{% static power_espectral_image %}" class="img-responsive center-block"
+                                         width="800" height="600" style="margin: auto">
+                                </div>
+                            </div>
+                        {% endif %}
+
                         {% if not editing and can_change %}
                             <div class="btn-group pull-left">
                                 <a href="/experiment/eeg_data/edit/{{ eeg_data.id }}/1" class="btn btn-primary">{% trans "Edit" %}</a>

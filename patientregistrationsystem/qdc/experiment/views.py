@@ -5793,6 +5793,7 @@ def get_sensors_position(eeg_data):
     reading = None
     file_path = None
     file_plot_path = None
+    file_power_espectral_path = None
 
     # getting the eeg_file, if exists
     eeg_files = eeg_data.eeg_files.all()
@@ -5871,19 +5872,39 @@ def get_sensors_position(eeg_data):
 
                 file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
 
+                # To visualize raw data
+                # As mentioned above, the unit of the raw data is in voltage, not micro-voltage, thus, the scaling
+                # for eeg is 20E-6"""
+                scaling_dict = dict(mag=1e-12, grad=4e-11, eeg=20e-6, eog=150e-6, ecg=5e-4, emg=1e-3, ref_meg=1e-12,
+                                    misc=1e-3, stim=1, resp=1, chpi=1e-4)
+
                 if channels <= 40:
-                    fig_plot = raw.plot(title="Raw data visualization", n_channels=channels)
+                    # fig_plot = raw.plot(title="Raw data visualization", n_channels=channels)
+                    fig_plot = raw.plot(title="Raw data visualization",
+                                        start=0.0,  # initial time to show
+                                        duration=10.0,  # time window (sec) to plot in a given time
+                                        n_channels=channels,  # number of channels to plot at once
+                                        )  # scaling factor for traces. MNE-python documentation
                 else:
                     fig_plot = raw.plot(title="Raw data visualization")
 
                 file_plot_name = 'raw_plot_' + str(eeg_data.id) + ".png"
                 # writing
-
                 fig_plot.savefig(path.join(path_complete, file_plot_name))
-
                 file_plot_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_plot_name)
 
-    return file_path, file_plot_path
+                # To visualize the power spectral density across data"""
+                fig_psd = raw.plot_psd(tmin=0.0,  # initial time to show
+                                       tmax=60.0,  # end time to show
+                                       fmin=0.0,  # initial frequency to show
+                                       fmax=200.0,  # end frequency to show
+                                       area_mode='std',)  # change to 'range'
+
+                file_power_espectral_name = 'power_spectral_' + str(eeg_data.id) + ".png"
+                fig_psd.savefig(path.join(path_complete, file_power_espectral_name))
+                file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_power_espectral_name)
+
+    return file_path, file_plot_path, file_power_espectral_path
 
 
 def eeg_data_reading(eeg_file: EEGFile, preload=False):
@@ -5956,7 +5977,7 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
     # Geração da imagem de localização dos electrodos
     # v1.5
     # sensors_positions_image = None
-    sensors_positions_image, raw_plot_image = get_sensors_position(eeg_data)
+    sensors_positions_image, raw_plot_image, file_power_espectral_path = get_sensors_position(eeg_data)
 
     if request.method == "POST":
 
@@ -5988,7 +6009,8 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
                "json_list": json.dumps(positions),
                "image": image,
                "sensors_image": sensors_positions_image,
-               "raw_plot_image": raw_plot_image,}
+               "raw_plot_image": raw_plot_image,
+               "power_espectral_image": file_power_espectral_path,}
 
     return render(request, template_name, context)
 
