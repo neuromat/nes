@@ -1,18 +1,10 @@
-SECRET_KEY = 'f#&1%$3(#1&9rb6dk7i@%vzr^wh8*&4x8m3*!g#v*w7ffa23kn'
+SECRET_KEY = 'your_secret_key'
 
 DEBUG = True
 
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
-
-JENKINS_TASKS = (
-    'django_jenkins.tasks.with_coverage',
-    'django_jenkins.tasks.run_pep8',
-    'django_jenkins.tasks.run_pyflakes',
-    'django_jenkins.tasks.run_sloccount',
-    'django_jenkins.tasks.run_pylint',
-)
 
 # https://docs.djangoproject.com/en/1.8/ref/settings/#std:setting-STATIC_ROOT
 STATIC_ROOT = ''
@@ -23,9 +15,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'database_name',
-        'USER': 'db_user_name',
-        'PASSWORD': 'db_user_pwd',
-        'HOST': 'host_name_or_ip',
+        'USER': 'user',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
     }
 }
 
@@ -33,8 +25,8 @@ DATABASES = {
 LIMESURVEY = {
     'URL_API': 'http://example.limesurvey.server.com',
     'URL_WEB': 'http://example.limesurvey.server.com',
-    'USER': 'limesurvey_user_name',
-    'PASSWORD': 'limesurvey_user_pwd'
+    'USER': 'limesurvey_user',
+    'PASSWORD': 'limesurvey_password'
 }
 
 # Settings to send emails
