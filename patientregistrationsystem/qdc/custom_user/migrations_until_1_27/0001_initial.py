@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import models, migrations
 from django.conf import settings
 
 
@@ -15,9 +15,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('force_password_change', models.BooleanField(default=True)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, related_name='user_profile')),
+                ('user', models.ForeignKey(unique=True, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
