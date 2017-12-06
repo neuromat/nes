@@ -241,7 +241,8 @@
                     {% if creating or editing %}
                         <li {% if tab == '1' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Data collection" %}</a></li>
                         <li {% if tab == '2' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrodes position status" %}</a></li>
-                        <li {% if tab == '3' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">{% trans "Electrodes operating status" %}</a></li>
+                        <li {% if tab == '3' %}class="active"{% else %}class="disabled"{% endif %}><a href="#">
+                            {% trans "Image of the position of the electrodes" %}</a></li>
                     {% else %}
                         <li {% if tab == '1' %}class="active"{% endif %}>
                             <a data-toggle="tab" href="#data_collection">{% trans "Data collection" %}</a>
@@ -250,7 +251,8 @@
                             <a {% if not creating %}data-toggle="tab"{% endif %} href="#electrode_position_status">{% trans "Electrodes position status" %}</a>
                         </li>
                         <li {% if tab == '3' %}class="active"{% endif %}>
-                            <a {% if not creating %}data-toggle="tab"{% endif %} href="#electrodes_operating_status">{% trans "Electrodes operating status" %}</a>
+                            <a {% if not creating %}data-toggle="tab"{% endif %}
+                               href="#electrodes_operating_status">{% trans "Image of the position of the electrodes" %}</a>
                         </li>
                     {% endif %}
 
@@ -400,6 +402,7 @@
 
                         {% if raw_plot_image != None and not creating %}
                             <div class="row">
+                                <h4 class="text-center">{% trans "Raw data Visualization" %}</h4>
                                 <div class="panel-body">
                                     <img src="{% static raw_plot_image %}" class="img-responsive center-block" width="800" height="600" style="margin: auto" >
                                 </div>
@@ -408,6 +411,7 @@
 
                         {% if power_espectral_image != None and not creating %}
                             <div class="row">
+                                <h4 class="text-center">{% trans "Power espectral density across data" %}</h4>
                                 <div class="panel-body">
                                     <img src="{% static power_espectral_image %}" class="img-responsive center-block"
                                          width="800" height="600" style="margin: auto">

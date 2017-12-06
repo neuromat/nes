@@ -5875,8 +5875,8 @@ def get_sensors_position(eeg_data):
                 # To visualize raw data
                 # As mentioned above, the unit of the raw data is in voltage, not micro-voltage, thus, the scaling
                 # for eeg is 20E-6"""
-                scaling_dict = dict(mag=1e-12, grad=4e-11, eeg=20e-6, eog=150e-6, ecg=5e-4, emg=1e-3, ref_meg=1e-12,
-                                    misc=1e-3, stim=1, resp=1, chpi=1e-4)
+                # scaling_dict = dict(mag=1e-12, grad=4e-11, eeg=20e-6, eog=150e-6, ecg=5e-4, emg=1e-3, ref_meg=1e-12,
+                #                     misc=1e-3, stim=1, resp=1, chpi=1e-4)
 
                 if channels <= 40:
                     # fig_plot = raw.plot(title="Raw data visualization", n_channels=channels)
