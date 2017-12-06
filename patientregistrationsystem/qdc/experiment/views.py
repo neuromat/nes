@@ -85,7 +85,8 @@ from .portal import get_experiment_status_portal, send_experiment_to_portal, get
     send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
     send_file_to_portal, send_eeg_data_to_portal, send_digital_game_phase_data_to_portal, \
     send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal, \
-    send_generic_data_collection_data_to_portal, send_additional_data_to_portal
+    send_generic_data_collection_data_to_portal, \
+    send_additional_data_to_portal, send_publication_to_portal
 
 from configuration.models import LocalInstitution
 
@@ -186,7 +187,7 @@ def check_can_change(user, research_project):
 
 def get_can_change(user, research_project):
     return (user.has_perm('experiment.change_researchproject') and user == research_project.owner) or \
-                 user.has_perm('experiment.change_researchproject_from_others')
+           user.has_perm('experiment.change_researchproject_from_others')
 
 
 def get_can_change_researchproject_owner(user, research_project):
@@ -855,6 +856,13 @@ def send_all_experiments_to_portal(language_code):
                 list_of_tms_setting = {}
                 list_of_context_tree = {}
 
+                # sending publications
+                for publication in \
+                        schedule_of_sending.experiment.publication_set.all():
+                    send_publication_to_portal(
+                        publication, schedule_of_sending.experiment.id
+                    )
+
                 # sending groups
                 for group in schedule_of_sending.experiment.group_set.all():
                     portal_group = send_group_to_portal(group)
@@ -1292,13 +1300,13 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
 
 def group_has_data_collection(group_id):
     return (
-        QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
-        EEGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
-        EMGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
-        AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
-        TMSData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
-        DigitalGamePhaseData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
-        GenericDataCollectionData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
+            QuestionnaireResponse.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+            EEGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+            EMGData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+            AdditionalData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+            TMSData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+            DigitalGamePhaseData.objects.filter(subject_of_group__group_id=group_id).count() > 0 or
+            GenericDataCollectionData.objects.filter(subject_of_group__group_id=group_id).count() > 0)
 
 
 @login_required
@@ -4446,7 +4454,7 @@ def questionnaire_view(request, group_id, component_configuration_id,
     subject_list_with_status = []
 
     for subject_of_group in SubjectOfGroup.objects.filter(group=group).order_by('subject__patient__name'):
-        subject_responses = QuestionnaireResponse.objects.\
+        subject_responses = QuestionnaireResponse.objects. \
             filter(subject_of_group=subject_of_group,
                    data_configuration_tree__component_configuration=questionnaire_configuration)
         amount_of_completed_questionnaires = 0
@@ -4601,7 +4609,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     # response, or it is limited and the amount of completed response is greater than or equal to
                     # the number of expected responses.
                     if (questionnaire_configuration.number_of_repetitions is None and
-                            amount_of_completed_responses > 0) or \
+                        amount_of_completed_responses > 0) or \
                             (questionnaire_configuration.number_of_repetitions is not None and
                              amount_of_completed_responses >= questionnaire_configuration.number_of_repetitions):
                         number_of_questionnaires_filled += 1
@@ -5515,7 +5523,7 @@ def load_questionnaire_data(request, group_id):
 
                 # when configured with 1 repetition, check if there is just one response
                 if questionnaire_configuration.number_of_repetitions == 1 and \
-                                len(patient_questionnaire_responses) == 1:
+                        len(patient_questionnaire_responses) == 1:
 
                     # check if there is no response for this "subject + step"
                     if not QuestionnaireResponse.objects.filter(
@@ -5606,7 +5614,7 @@ def subject_eeg_view(request, group_id, subject_id,
         data_configuration_tree_id = list_data_configuration_tree(eeg_configuration.id, [item[0] for item in path])
 
         eeg_data_list = EEGData.objects.filter(subject_of_group=subject_of_group,
-                                                data_configuration_tree__id=data_configuration_tree_id)
+                                               data_configuration_tree__id=data_configuration_tree_id)
 
         for eeg_data in eeg_data_list:
 
@@ -5825,7 +5833,7 @@ def get_sensors_position(eeg_data):
                     montage = mne.channels.read_montage('GSN-HydroCel-129')
 
                 if channels == 128:
-                        montage = mne.channels.read_montage('GSN-HydroCel-128')
+                    montage = mne.channels.read_montage('GSN-HydroCel-128')
 
                 if montage != "":
                     i = 0
@@ -6180,8 +6188,8 @@ def eeg_image_edit(request, eeg_data_id, tab, template_name="experiment/subject_
     if request.method == "POST":
         if request.POST['action'] == "save":
             for position_status in eeg_data.electrode_positions.all():
-                    position_status.worked = 'position_status_' + str(position_status.id) in request.POST
-                    position_status.save()
+                position_status.worked = 'position_status_' + str(position_status.id) in request.POST
+                position_status.save()
 
             messages.success(request, _('Setting saved successfully.'))
 
@@ -7428,25 +7436,25 @@ def tms_data_position_setting_register(request, tms_data_id, template_name="expe
 
     if request.method == "POST":
 
-            if request.POST['action'] == "save":
+        if request.POST['action'] == "save":
 
-                if hotspot_form.is_valid() and 'localization_system_selection':
-                    localization_system_val = request.POST['localization_system_selection']
-                    localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val.split(',')[0])
+            if hotspot_form.is_valid() and 'localization_system_selection':
+                localization_system_val = request.POST['localization_system_selection']
+                localization_system = TMSLocalizationSystem.objects.get(pk=localization_system_val.split(',')[0])
 
-                    hotspot_to_update = hotspot_form.save(commit=False)
-                    hotspot_to_update.tms_localization_system = localization_system
-                    hotspot_to_update.tms_data = tms_data
-                    hotspot_to_update.save()
-                    # Se der erro aqui, como fazer reverse de tms_position????
+                hotspot_to_update = hotspot_form.save(commit=False)
+                hotspot_to_update.tms_localization_system = localization_system
+                hotspot_to_update.tms_data = tms_data
+                hotspot_to_update.save()
+                # Se der erro aqui, como fazer reverse de tms_position????
 
-                    messages.success(request, _('TMS position updated successfully.'))
+                messages.success(request, _('TMS position updated successfully.'))
 
-                else:
-                    messages.success(request, _('There is no changes to save.'))
+            else:
+                messages.success(request, _('There is no changes to save.'))
 
-                redirect_url = reverse("tms_data_position_setting_view", args=(tms_data_id,))
-                return HttpResponseRedirect(redirect_url)
+            redirect_url = reverse("tms_data_position_setting_view", args=(tms_data_id,))
+            return HttpResponseRedirect(redirect_url)
 
     context = {
         "can_change": True,
@@ -8424,12 +8432,12 @@ def set_worked_positions(request):
     worked_positions = json.loads(request.GET.get('positions'))
 
     for position in worked_positions:
-            EEGElectrodePositionCollectionStatus.objects.filter(pk=position['id']).update(worked=position['worked'])
+        EEGElectrodePositionCollectionStatus.objects.filter(pk=position['id']).update(worked=position['worked'])
 
     json_response = []
     json_response.append({
-            'new': 128,
-        })
+        'new': 128,
+    })
     return HttpResponse(json.dumps(json_response), content_type='application/json')
 
 
@@ -8797,7 +8805,7 @@ def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
 
             list_of_breadcrumbs.append({
                 "name": name, "url":
-                reverse(view_name, args=(delimiter.join(list_of_ids_of_components_and_configurations[:idx+1]),))})
+                    reverse(view_name, args=(delimiter.join(list_of_ids_of_components_and_configurations[:idx+1]),))})
 
     return list_of_breadcrumbs
 
@@ -8908,7 +8916,7 @@ def convert_to_string(duration_in_milliseconds):
 
     if duration_in_milliseconds >= 1:
         string += str(duration_in_milliseconds) + \
-            (_(" miliseconds ") if duration_in_milliseconds > 1 else _(" milisecond "))
+                  (_(" miliseconds ") if duration_in_milliseconds > 1 else _(" milisecond "))
 
     if string == "":
         string = "0"
@@ -8955,7 +8963,7 @@ def calculate_block_duration(block):
                     component_configuration.interval_between_repetitions_unit)
 
             component_duration = component_duration * component_configuration.number_of_repetitions + \
-                interval_in_milliseconds * (component_configuration.number_of_repetitions - 1)
+                                 interval_in_milliseconds * (component_configuration.number_of_repetitions - 1)
 
         if block.type == Block.SEQUENCE:
             # Add duration of the children
@@ -9006,9 +9014,9 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     back_cancel_url = create_back_cancel_url(component_type, component_configuration, path_of_the_components,
                                              list_of_ids_of_components_and_configurations, experiment, updating)
 
-    return component, component_configuration, component_form, configuration_form, experiment, component_type,\
-        template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group,\
-        back_cancel_url
+    return component, component_configuration, component_form, configuration_form, experiment, component_type, \
+           template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, \
+           back_cancel_url
 
 
 def remove_component_and_related_configurations(component,
@@ -9388,8 +9396,8 @@ def component_view(request, path_of_the_components):
     # It will always be a block because we don't have a view screen for other components.
     # This view is also use to show the use of a set of steps (component configuration of a block).
 
-    component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
-        list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
+    component, component_configuration, component_form, configuration_form, experiment, component_type, template_name, \
+    list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url = \
         access_objects_for_view_and_update(request, path_of_the_components)
 
     experiment_in_use = check_experiment(experiment)
@@ -9592,8 +9600,8 @@ def create_configuration_list_of_random_components(block):
 @login_required
 @permission_required('experiment.change_experiment')
 def component_update(request, path_of_the_components):
-    component, component_configuration, component_form, configuration_form, experiment, component_type, template_name,\
-        list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url =\
+    component, component_configuration, component_form, configuration_form, experiment, component_type, template_name, \
+    list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url = \
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
     experiment_in_use = check_experiment(experiment)
@@ -9839,8 +9847,8 @@ def access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 @login_required
 @permission_required('experiment.change_experiment')
 def component_add_new(request, path_of_the_components, component_type):
-    existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name,\
-        specific_form, list_of_ids_of_components_and_configurations, back_cancel_url = \
+    existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, \
+    specific_form, list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     check_can_change(request.user, experiment.research_project)
@@ -9856,7 +9864,7 @@ def component_add_new(request, path_of_the_components, component_type):
     component_form.component_type = component_type
 
     # Check if we are configuring a new experimental protocol
-    is_configuring_new_experimental_protocol =\
+    is_configuring_new_experimental_protocol = \
         group is not None and len(list_of_ids_of_components_and_configurations) == 1
 
     number_of_uses_form = None
@@ -9988,7 +9996,7 @@ def component_reuse(request, path_of_the_components, component_id):
     component_to_add = get_object_or_404(Component, pk=component_id)
     component_type = component_to_add.component_type
     existing_component_list, experiment, group, list_of_breadcrumbs, block, template_name, specific_form, \
-        list_of_ids_of_components_and_configurations, back_cancel_url = \
+    list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
     # check_can_change(request.user, experiment.research_project)
@@ -10005,7 +10013,7 @@ def component_reuse(request, path_of_the_components, component_id):
     component_form.component_type = component_type
 
     # Check if we are configuring a new experimental protocol
-    is_configuring_new_experimental_protocol =\
+    is_configuring_new_experimental_protocol = \
         group is not None and len(list_of_ids_of_components_and_configurations) == 1
 
     number_of_uses_form = None
