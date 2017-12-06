@@ -10,16 +10,23 @@ from os import path
 from django.conf import settings
 from django.utils import translation
 
-from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, EMGSetting, TMSSetting, ContextTree, \
-    ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, QuestionnaireResponse, \
-    GenericDataCollectionData, AdditionalData, EEG, EMG, TMS, Instruction, GenericDataCollection, Stimulus, \
+from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, \
+    EMGSetting, TMSSetting, ContextTree, \
+    ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, \
+    QuestionnaireResponse, \
+    GenericDataCollectionData, AdditionalData, EEG, EMG, TMS, Instruction, \
+    GenericDataCollection, Stimulus, \
     DigitalGamePhase, Block, Questionnaire, Amplifier, \
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeNet, \
-    ElectrodeModel, SurfaceElectrode, NeedleElectrode, IntramuscularElectrode, EEGElectrodeLocalizationSystem, \
+    ElectrodeModel, SurfaceElectrode, NeedleElectrode, IntramuscularElectrode, \
+    EEGElectrodeLocalizationSystem, \
     EEGElectrodePositionSetting, TMSDevice, CoilModel, TMSDeviceSetting, \
-    EMGDigitalFilterSetting, ADConverter, EMGADConverterSetting, EMGElectrodeSetting, \
-    EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, EMGAnalogFilterSetting, \
-    EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, EMGElectrodePlacementSetting
+    EMGDigitalFilterSetting, ADConverter, EMGADConverterSetting, \
+    EMGElectrodeSetting, \
+    EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, \
+    EMGAnalogFilterSetting, \
+    EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, \
+    EMGElectrodePlacementSetting, Publication
 
 from survey.abc_search_engine import Questionnaires
 from survey.survey_utils import QuestionnaireUtils
@@ -160,6 +167,31 @@ def send_group_to_portal(group: Group):
     portal_group = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_group
+
+
+def send_publication_to_portal(publication, experiment_id):
+
+    # if publication is not associated with Experiment.objects.get(
+    # pk=experiment_id), generate exception DoesNotExist
+    publication.experiments.get(pk=experiment_id)
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {
+        'experiment_nes_id': str(experiment_id),
+        'title': publication.title,
+        'citation': publication.citation,
+        'url': publication.url
+    }
+    action_keys = ['experiments', 'publications', 'create']
+    portal_publications = rest.client.action(
+        rest.schema, action_keys, params=params
+    )
+
+    return portal_publications
 
 
 def send_experimental_protocol_to_portal(portal_group_id, textual_description, image, root_step_id):
