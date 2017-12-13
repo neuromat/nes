@@ -10,6 +10,7 @@ from sys import modules
 from django.conf import settings
 from django.core.files import File
 from django.utils.encoding import smart_str
+from django.utils import translation
 from django.utils.translation import ugettext as _
 from django.apps import apps
 from django.shortcuts import get_object_or_404
@@ -1985,16 +1986,20 @@ class ExportExecution:
 
         headers = []
         fields = []
+        fields_en = []
 
         for element in output_list:
             if element["field"]:
                 headers.append(element["header"])
                 fields.append(element["field"])
+                if "field_en" in element:
+                    fields_en.append(element["field_en"])
+                else:
+                    fields_en.append(element["field"])
 
         return headers, fields
 
     def process_participant_data(self, participants_output_fields, participants_list):
-        export_rows_participants = []
 
         # for participant in participants_output_fields:
         age_value_dict = {}
@@ -2013,8 +2018,19 @@ class ExportExecution:
             header.append(headers[-1])
             headers = header
 
-        db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
+        language_list = ['en', 'pt-BR']
+        data_language_dict = {
+            'en': [],
+            'pt-BR': [],
+        }
+        default_language = translation.get_language()
+        for language in language_list:
+            translation.activate(language)
+            db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
             order_by=['id'])
+            data_language_dict[language] = db_data
+
+        translation.activate(default_language)
 
         export_rows_participants = [headers]
 
