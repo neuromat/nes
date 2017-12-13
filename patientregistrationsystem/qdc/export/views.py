@@ -92,17 +92,20 @@ EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 patient_fields = [
     # {"field": 'id', "header": 'id', "description": _("Identification")},
     # {"field": 'name', "header": 'name', "description": _("Full name")},
-    {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
+    {"field": 'gender__name', "field_en": 'gender__name_en', "header": 'gender', "description": _("Gender")},
     {"field": 'age', "header": 'age', "description": _("Age")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
-    {"field": 'marital_status__name', "header": 'marital_status', "description": _("Marital status")},
+    {"field": 'marital_status__name', "field_en": 'marital_status__name_en', "header": 'marital_status',
+     "description": _("Marital status")},
     {"field": 'origin', "header": 'origin', "description": _("Origin")},
     {"field": 'city', "header": 'city', "description": _("City")},
     {"field": 'state', "header": 'state', "description": _("State")},
     {"field": 'country', "header": 'country', "description": _("Country")},
     {"field": 'socialdemographicdata__natural_of', "header": 'natural_of', "description": _("Natural of")},
-    {"field": 'socialdemographicdata__schooling__name', "header": 'schooling', "description": _("Schooling")},
-    {"field": 'socialdemographicdata__patient_schooling__name', "header": 'patient_schooling',
+    {"field": 'socialdemographicdata__schooling__name', "field_en": 'socialdemographicdata__schooling__name_en',
+     "header": 'schooling', "description": _("Schooling")},
+    {"field": 'socialdemographicdata__patient_schooling__name', "field_en":
+        'socialdemographicdata__patient_schooling__name_en', "header": 'patient_schooling',
      "description": _("Schooling of the patient")},
     {"field": 'socialdemographicdata__profession', "header": 'profession', "description": _("Profession")},
     {"field": 'socialdemographicdata__social_class', "header": 'social_class',
@@ -110,19 +113,23 @@ patient_fields = [
     {"field": 'socialdemographicdata__occupation', "header": 'occupation', "description": _("Occupation")},
     {"field": 'socialdemographicdata__benefit_government', "header": 'benefit_government',
      "description": _("Do you receive some benefit from the municipal level, state or federal government?")},
-    {"field": 'socialdemographicdata__religion__name', "header": 'religion', "description": _("Religion")},
-    {"field": 'socialdemographicdata__flesh_tone__name', "header": 'flesh_tone', "description": _("Flesh tone")},
+    {"field": 'socialdemographicdata__religion__name', "field_en": 'socialdemographicdata__religion__name_en',
+     "header": 'religion', "description": _("Religion")},
+    {"field": 'socialdemographicdata__flesh_tone__name', "field_en": 'socialdemographicdata__flesh_tone__name_en',
+     "header": 'flesh_tone', "description": _("Flesh tone")},
     {"field": 'socialdemographicdata__citizenship', "header": 'citizenship', "description": _("Citizenship")},
-    {"field": 'socialdemographicdata__payment__name', "header": 'payment',
-     "description": _("What form of payment of the treatment performed")},
+    {"field": 'socialdemographicdata__payment__name', "field_en": 'socialdemographicdata__payment__name_en',
+     "header": 'payment', "description": _("What form of payment of the treatment performed")},
     {"field": 'socialhistorydata__smoker', "header": 'smoker', "description": _("Smoker")},
-    {"field": 'socialhistorydata__amount_cigarettes__name', "header": 'amount_cigarettes',
-     "description": _("Cigarretes/Day")},
+    {"field": 'socialhistorydata__amount_cigarettes__name', "field_en":
+        'socialhistorydata__amount_cigarettes__name_en', "header": 'amount_cigarettes', "description": _(
+        "Cigarretes/Day")},
     {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker', "description": _("Former smoker")},
     {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic', "description": _("Alcoholic")},
-    {"field": 'socialhistorydata__alcohol_frequency__name', "header": 'alcohol_frequency',
-     "description": _("Frequency")},
-    {"field": 'socialhistorydata__alcohol_period__name', "header": 'alcohol_period', "description": _("Period")},
+    {"field": 'socialhistorydata__alcohol_frequency__name', "field_en":
+        'socialhistorydata__alcohol_frequency__name_en', "header": 'alcohol_frequency', "description": _("Frequency")},
+    {"field": 'socialhistorydata__alcohol_period__name', "field_en": 'socialhistorydata__alcohol_period__name_en',
+     "header": 'alcohol_period', "description": _("Period")},
     {"field": 'socialhistorydata__drugs', "header": 'drugs', "description": _("Drugs")},
 ]
 
@@ -510,9 +517,6 @@ def export_view(request, template_name="export/export_data.html"):
     selected_ev_quest_experiments = []
     questionnaires_fields_list = []
     questionnaires_experiment_fields_list = []
-    # if request.LANGUAGE_CODE == "pt-br":
-    #     language_code = "pt-BR"
-    # else:
     language_code = request.LANGUAGE_CODE
 
     component_list = []
