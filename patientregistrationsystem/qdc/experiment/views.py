@@ -5902,15 +5902,15 @@ def get_sensors_position(eeg_data):
                 file_plot_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_plot_name)
 
                 # To visualize the power spectral density across data"""
-                fig_psd = raw.plot_psd(tmin=0.0,  # initial time to show
-                                       tmax=60.0,  # end time to show
-                                       fmin=0.0,  # initial frequency to show
-                                       fmax=200.0,  # end frequency to show
-                                       area_mode='std',)  # change to 'range'
-
-                file_power_espectral_name = 'power_spectral_' + str(eeg_data.id) + ".png"
-                fig_psd.savefig(path.join(path_complete, file_power_espectral_name))
-                file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_power_espectral_name)
+                # fig_psd = raw.plot_psd(tmin=0.0,  # initial time to show
+                #                        tmax=60.0,  # end time to show
+                #                        fmin=0.0,  # initial frequency to show
+                #                        fmax=200.0,  # end frequency to show
+                #                        area_mode='std',)  # change to 'range'
+                #
+                # file_power_espectral_name = 'power_spectral_' + str(eeg_data.id) + ".png"
+                # fig_psd.savefig(path.join(path_complete, file_power_espectral_name))
+                # file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_power_espectral_name)
 
     return file_path, file_plot_path, file_power_espectral_path
 
