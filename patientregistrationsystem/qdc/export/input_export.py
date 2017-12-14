@@ -64,7 +64,7 @@ class InputExport:
         self.data[strut_name] = {
             "output_filename": output_filename,
             "output_list": [],
-            "data_list": []
+            "data_list": {}
         }
         # self.data[strut_name].append({"output_filename": output_filename, "output_list": [], "data_list": []})
 
