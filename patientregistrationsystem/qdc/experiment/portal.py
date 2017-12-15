@@ -1362,6 +1362,15 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
         surveys.release_session_key()
 
+    # Send Step Additional File
+    if len(component.component_additional_files.all()) > 0:
+        for additional_file in component.component_additional_files.all():
+            file = open(path.join(settings.MEDIA_ROOT, additional_file.file.name), 'rb')
+            params = {"id": portal_step['id'],
+                      "file": coreapi.utils.File(os.path.basename(additional_file.file.name), file)}
+            action_keys = ['step', 'step_additional_file', 'create']
+            rest.client.action(rest.schema, action_keys, params=params, encoding="multipart/form-data")
+
     # sending sub-steps
     if component_tree['list_of_component_configuration']:
         for component_configuration in component_tree['list_of_component_configuration']:
