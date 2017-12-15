@@ -154,13 +154,16 @@
                             <label class="control-label">{% trans "Additional files" %}</label>
                             <br/>
 
-{#                            {% if creating or editing or updating %}#}
-                            {% if creating or updating %}
+                            {% if creating %}
                                 <input type="file" name="additional_files" multiple>
                                 <br/>
+                            {% else %}
+                                {% if updating and not component_configuration%}
+                                    <input type="file" name="additional_files" multiple>
+                                    <br/>
+                                {% endif %}
                             {% endif %}
 
-{#                            {% if not creating %}#}
                             {% if updating %}
                                 {% if component_additional_files %}
                                     {% for additional_file in component_additional_files.all %}
@@ -170,14 +173,19 @@
                                             <button class="btn btn-default" type="button" onclick="location.href='{{ additional_file.file.url }}'"><span class="glyphicon glyphicon-download-alt" style="color: royalblue"></span></button>
                                         </td>
                                         <td>{{ additional_file.file.size|filesizeformat }}</td>
-                                        {% if updating %}
+                                        {% if not component_configuration %}
                                             <td>
-                                                <input type="checkbox" name="remove_eeg_file_{{ additional_file.id }}"/>
+                                                <input type="checkbox" name="remove_additional_file_{{ additional_file.id }}"/>
                                                 {% trans "Delete" %}</td>
                                         {% endif %}
+                                        <br/>
                                         </tr>
                                     {% endfor %}
                                 {% endif %}
+                            {% endif %}
+
+                            {% if not creating and not updating and not component_additional_files %}
+                                {% trans "No file configured" %}
                             {% endif %}
 
                         </div>
@@ -185,8 +193,6 @@
                 </div>
 
                 </tbody></table>
-
-
 
                 {# If component_configuration, buttom is shown further bellow #}
                 {% if not component_configuration and not creating and not updating and can_change %}
