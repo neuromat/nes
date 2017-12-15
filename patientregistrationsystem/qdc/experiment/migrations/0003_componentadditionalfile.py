@@ -8,7 +8,7 @@ import experiment.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('experiment', '0002_load_brainvision_fileformat'),
+        ('experiment', '0002_load_brainvision_file_format'),
     ]
 
     operations = [
