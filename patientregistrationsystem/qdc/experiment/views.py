@@ -9651,6 +9651,22 @@ def component_update(request, path_of_the_components):
         if can_change:
             if request.POST['action'] == "save":
                 if configuration_form is None:
+
+                    has_changed = False
+
+                    # removing checked files
+                    for current_additional_file in component.component_additional_files.all():
+                        if "remove_additional_file_" + str(current_additional_file.id) in request.POST:
+                            has_changed = True
+                            current_additional_file.delete()
+
+                    # new files to upload
+                    files_to_upload_list = request.FILES.getlist('additional_files')
+                    for file_to_upload in files_to_upload_list:
+                        has_changed = True
+                        additional_file = ComponentAdditionalFile(component=component, file=file_to_upload)
+                        additional_file.save()
+
                     # There is no specific form for a these component types.
                     if component.component_type in ["questionnaire", "task", "task_experiment", 'pause']:
                         if component_form.is_valid():
@@ -9671,8 +9687,12 @@ def component_update(request, path_of_the_components):
                             specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
                             # specific_form.save()
 
+
                         # Only save if there was a change.
                         if component_form.has_changed() or specific_form.has_changed():
+
+                            has_changed = True
+
                             if component.component_type == 'block':
                                 block = specific_form.save(commit=False)
 
@@ -9687,19 +9707,7 @@ def component_update(request, path_of_the_components):
 
                             component_form.save()
 
-                            # removing checked files
-                            # for current_eeg_file in eeg_data.eeg_files.all():
-                            #     if "remove_eeg_file_" + str(current_eeg_file.id) in request.POST:
-                            #         has_changed = True
-                            #         current_eeg_file.delete()
-                            #
-                            # # new files to upload
-                            # files_to_upload_list = request.FILES.getlist('eeg_files')
-                            # for file_to_upload in files_to_upload_list:
-                            #     has_changed = True
-                            #     eeg_file = EEGFile(eeg_data=eeg_data, file=file_to_upload)
-                            #     eeg_file.save()
-
+                        if has_changed:
                             messages.success(request, _('Step updated successfully.'))
                         else:
                             messages.success(request, _('There is no changes to save.'))
