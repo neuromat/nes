@@ -862,6 +862,16 @@ class Component(models.Model):
         self.experiment.save()
 
 
+def get_step_file_dir(instance, filename):
+    return "step/%s/%s" % \
+           (instance.component.id, filename)
+
+
+class ComponentAdditionalFile(models.Model):
+    component = models.ForeignKey(Component, related_name="component_additional_files")
+    file = models.FileField(upload_to=get_step_file_dir)
+
+
 class Task(Component):
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
