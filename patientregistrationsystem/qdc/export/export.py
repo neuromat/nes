@@ -2132,6 +2132,8 @@ class ExportExecution:
 
         # create participant.csv file
         default_language = translation.get_language()
+        if default_language == 'pt-br':
+            default_language = 'pt-BR'
         for record in self.get_input_data('participants')['data_list'][default_language]:
             export_rows_participants.append(record)
         export_rows_participants.insert(0, self.get_input_data('participants')['data_list']['header'][0])
