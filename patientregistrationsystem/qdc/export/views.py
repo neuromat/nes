@@ -895,27 +895,29 @@ def get_questionnaire_header(questionnaire_lime_survey,
 
     # get a valid token (anyone)
     survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
-    token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
-    token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+    questionnaire_response_list = QuestionnaireResponse.objects.filter(survey=survey)
+    if questionnaire_response_list:
+        token_id = questionnaire_response_list.first().token_id
+        token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
 
-    responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
+        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
 
-    if not isinstance(responses_string, dict):
+        if not isinstance(responses_string, dict):
 
-        questionnaire_questions = perform_csv_response(responses_string)
+            questionnaire_questions = perform_csv_response(responses_string)
 
-        responses_heading_type = questionnaire_lime_survey.get_header_response(questionnaire_id,
-                                                                               language_new, token,
-                                                                               heading_type=heading_type)
+            responses_heading_type = questionnaire_lime_survey.get_header_response(questionnaire_id,
+                                                                                   language_new, token,
+                                                                                   heading_type=heading_type)
 
-        questionnaire_questions_heading_type = perform_csv_response(responses_heading_type)
+            questionnaire_questions_heading_type = perform_csv_response(responses_heading_type)
 
-        questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
+            questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
 
-        # line 0 - header information
-        for question in questionnaire_header:
-            if question[1] in fields:
-                questionnaire_list.append(question)
+            # line 0 - header information
+            for question in questionnaire_header:
+                if question[1] in fields:
+                    questionnaire_list.append(question)
 
     return questionnaire_list
 
