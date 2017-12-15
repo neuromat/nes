@@ -56,7 +56,7 @@ from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, 
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
     GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending, \
     GoalkeeperGameConfig, GoalkeeperGameResults, EEGFile, EMGFile, AdditionalDataFile, GenericDataCollectionFile, \
-    DigitalGamePhaseFile, PortalSelectedQuestion
+    DigitalGamePhaseFile, PortalSelectedQuestion, ComponentAdditionalFile
 
 from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -9686,6 +9686,20 @@ def component_update(request, path_of_the_components):
                                 specific_form.save()
 
                             component_form.save()
+
+                            # removing checked files
+                            # for current_eeg_file in eeg_data.eeg_files.all():
+                            #     if "remove_eeg_file_" + str(current_eeg_file.id) in request.POST:
+                            #         has_changed = True
+                            #         current_eeg_file.delete()
+                            #
+                            # # new files to upload
+                            # files_to_upload_list = request.FILES.getlist('eeg_files')
+                            # for file_to_upload in files_to_upload_list:
+                            #     has_changed = True
+                            #     eeg_file = EEGFile(eeg_data=eeg_data, file=file_to_upload)
+                            #     eeg_file.save()
+
                             messages.success(request, _('Step updated successfully.'))
                         else:
                             messages.success(request, _('There is no changes to save.'))
@@ -9759,6 +9773,7 @@ def component_update(request, path_of_the_components):
                "can_change": can_change,
                "component_configuration": component_configuration,
                "component_form": component_form,
+               "component_additional_files": component.component_additional_files,
                "configuration_form": configuration_form,
                "configuration_list": configuration_list,
                "configuration_list_of_random_components": configuration_list_of_random_components,
@@ -9948,6 +9963,13 @@ def component_add_new(request, path_of_the_components, component_type):
                         new_specific_component.survey = survey
 
                     new_specific_component.save()
+
+                    # saving uploaded files
+                    files_to_upload_list = request.FILES.getlist('additional_files')
+                    for file_to_upload in files_to_upload_list:
+                        additional_file = ComponentAdditionalFile(component=new_specific_component, file=file_to_upload)
+                        additional_file.save()
+
                     number_of_uses = number_of_uses_form.cleaned_data['number_of_uses_to_insert']
 
                     for i in range(number_of_uses):
