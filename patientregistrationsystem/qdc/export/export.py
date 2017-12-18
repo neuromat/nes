@@ -2035,6 +2035,8 @@ class ExportExecution:
             fields.remove('age')
             if 'Age' in headers:
                 headers.remove('Age')
+            if 'Idade' in headers:
+                headers.remove('Idade')
             for participant_id in participants_list:
                 subject = get_object_or_404(Patient, pk=participant_id[0])
                 age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
