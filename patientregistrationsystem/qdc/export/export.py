@@ -2033,17 +2033,21 @@ class ExportExecution:
         model_to_export = getattr(modules['patient.models'], 'Patient')
         if 'age' in fields:
             fields.remove('age')
-            if 'Age' in headers:
-                headers.remove('Age')
-            if 'Idade' in headers:
-                headers.remove('Idade')
             for participant_id in participants_list:
                 subject = get_object_or_404(Patient, pk=participant_id[0])
                 age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
                 if subject.code not in age_value_dict:
                     age_value_dict[subject.code] = age_value
-            header = headers[0:-1]
-            header.append('Age')
+
+            if 'Age' in headers:
+                headers.remove('Age')
+                header = headers[0:-1]
+                header.append('Age')
+            if 'Idade' in headers:
+                headers.remove('Idade')
+                header = headers[0:-1]
+                header.append('Idade')
+
             header.append(headers[-1])
             headers = header
 
