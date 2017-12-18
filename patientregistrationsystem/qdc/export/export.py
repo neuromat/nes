@@ -2025,62 +2025,65 @@ class ExportExecution:
 
         return fields_en
 
-    def process_participant_data(self, participants_output_fields, participants_list):
-
+    def process_participant_data(self, participants_output_fields, participants_list, language):
+        # TODO: fix translation model functionality
         # for participant in participants_output_fields:
         age_value_dict = {}
         headers, fields = self.get_headers_and_fields(participants_output_fields)
         model_to_export = getattr(modules['patient.models'], 'Patient')
         if 'age' in fields:
             fields.remove('age')
-            if 'age' in headers:
-                headers.remove('age')
+            if 'Age' in headers:
+                headers.remove('Age')
             for participant_id in participants_list:
                 subject = get_object_or_404(Patient, pk=participant_id[0])
                 age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
                 if subject.code not in age_value_dict:
                     age_value_dict[subject.code] = age_value
             header = headers[0:-1]
-            header.append('age')
+            header.append('Age')
             header.append(headers[-1])
             headers = header
 
-        fields_en = self.get_field_en(fields)
+        if language != 'pt-BR':
+            fields = self.get_field_en(fields)
 
-        language_list = ['en', 'pt-BR']
-        data_language_dict = {
-            'header': [headers],
-            'en': [],
-            'pt-BR': [],
-        }
-        default_language = translation.get_language()
-        for language in language_list:
-            translation.activate(language)
-            if language == 'pt-BR':
-                db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
-                    order_by=['id'])
-            else:
-                db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields_en).extra(
-                order_by=['id'])
+        db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(order_by=['id'])
 
-            export_rows_participants = [headers]
+        # language_list = ['en', 'pt-BR']
+        # data_language_dict = {
+        #     'header': [headers],
+        #     'en': [],
+        #     'pt-BR': [],
+        # }
+        # default_language = translation.get_language()
+        # for language in language_list:
+        #     translation.activate(language)
+        #     if language == 'pt-BR':
+        #         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
+        #             order_by=['id'])
+        #     else:
+        #         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields_en).extra(
+        #         order_by=['id'])
 
-            # transform data
-            for record in db_data:
-                participant_rows = []
-                for value in record[0:-1]:
-                    participant_rows.append(value)
-                if age_value_dict:
-                    participant_rows.append(age_value_dict[record[-1]])
-                # export_rows_participants.append([self.handle_exported_field(field) for field in record])
-                participant_rows.append(record[-1])
-                export_rows_participants.append(participant_rows)
+        export_rows_participants = [headers]
 
-                data_language_dict[language].append(participant_rows)
+        # transform data
+        for record in db_data:
+            participant_rows = []
+            for value in record[0:-1]:
+                participant_rows.append(value)
+            if age_value_dict:
+                participant_rows.append(age_value_dict[record[-1]])
+            # export_rows_participants.append([self.handle_exported_field(field) for field in record])
+            participant_rows.append(record[-1])
+            export_rows_participants.append(participant_rows)
 
-        translation.activate(default_language)
+            # data_language_dict[language].append(participant_rows)
 
-        return data_language_dict
+        # translation.activate(default_language)
+
+        return export_rows_participants
 
     def process_diagnosis_data(self, participants_output_fields, participants_list):
         headers, fields = self.get_headers_and_fields(participants_output_fields)
@@ -2098,7 +2101,7 @@ class ExportExecution:
 
     def get_participant_data_per_code(self, subject_code, questionnaire_response_fields, language):
         db_data =[]
-        for record in self.get_input_data('participants')['data_list'][language]:
+        for record in self.get_input_data('participants')['data_list']:
             if record[-1] == subject_code:
                 db_data = record
 
@@ -2131,25 +2134,24 @@ class ExportExecution:
                     return error_msg
 
         # create participant.csv file
-        default_language = translation.get_language()
-        if default_language == 'pt-br':
-            default_language = 'pt-BR'
-        for record in self.get_input_data('participants')['data_list'][default_language]:
-            export_rows_participants.append(record)
-        export_rows_participants.insert(0, self.get_input_data('participants')['data_list']['header'][0])
+        # for record in self.get_input_data('participants')['data_list']:
+        #     export_rows_participants.append(record)
+        # export_rows_participants.insert(0, self.get_input_data('participants')['data_list']['header'][0])
 
         export_filename = "%s.csv" % self.get_input_data('participants')["output_filename"]  # "participants.csv"
 
         complete_filename = path.join(base_export_directory, export_filename)
 
-        save_to_csv(complete_filename, export_rows_participants)
+        # save_to_csv(complete_filename, export_rows_participants)
 
         self.files_to_zip_list.append([complete_filename, base_directory])
 
-        # with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-        #     export_writer = writer(csv_file)
-        #     for row in export_rows_participants:
-        #         export_writer.writerow(row)
+        export_rows_participants = self.get_input_data('participants')['data_list']
+
+        with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+            export_writer = writer(csv_file)
+            for row in export_rows_participants:
+                export_writer.writerow(row)
 
         # process  diagnosis file
         diagnosis_input_data = self.get_input_data("diagnosis")
