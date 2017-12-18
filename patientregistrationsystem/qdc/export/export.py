@@ -2033,15 +2033,15 @@ class ExportExecution:
         model_to_export = getattr(modules['patient.models'], 'Patient')
         if 'age' in fields:
             fields.remove('age')
-            if 'age' in headers:
-                headers.remove('age')
+            if 'Age' in headers:
+                headers.remove('Age')
             for participant_id in participants_list:
                 subject = get_object_or_404(Patient, pk=participant_id[0])
                 age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
                 if subject.code not in age_value_dict:
                     age_value_dict[subject.code] = age_value
             header = headers[0:-1]
-            header.append('age')
+            header.append('Age')
             header.append(headers[-1])
             headers = header
 
@@ -2710,11 +2710,10 @@ class ExportExecution:
                         data_fields = [smart_str(data) for data in lm_data_row]
 
                         if self.get_input_data('participants'):
-                            current_language = translation.get_language()
-                            if current_language == 'pt-br':
-                                current_language = 'pt-BR'
-                            transformed_fields = self.get_participant_data_per_code(patient_code, data_fields,
-                                                                                    current_language)
+                            # current_language = translation.get_language()
+                            # if current_language == 'pt-br':
+                            #     current_language = 'pt-BR'
+                            transformed_fields = self.get_participant_data_per_code(patient_code, data_fields, language)
                         else:
                             transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
                         # data_rows.append(transformed_fields)
