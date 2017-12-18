@@ -387,7 +387,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         if export.get_input_data('participants')['output_list']:
             participants_input_data = export.get_input_data("participants")['output_list']
             participants_list = (export.get_participants_filtered_data())
-            export_rows_participants = export.process_participant_data(participants_input_data, participants_list)
+            export_rows_participants = export.process_participant_data(participants_input_data, participants_list,
+                                                                       language_code)
             export.get_input_data('participants')['data_list'] = export_rows_participants
             # create file participants.csv and diagnosis.csv
             error_msg = export.process_participant_filtered_data('group_selected_list' in request.session)
