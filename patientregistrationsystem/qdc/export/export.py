@@ -2020,6 +2020,44 @@ class ExportExecution:
 
         return fields_en
 
+    def calculate_age_by_participant(self, participants_list):
+        age_value_dict = {}
+        for participant_id in participants_list:
+            subject = get_object_or_404(Patient, pk=participant_id[0])
+            age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
+            if subject.code not in age_value_dict:
+                age_value_dict[subject.code] = age_value
+
+        return age_value_dict
+
+    def include_age_field_and_header(self, fields, headers):
+        fields.remove('age')
+        header = []
+        if 'Age' in headers:
+            headers.remove('Age')
+            header = headers[0:-1]
+            header.append('Age')
+            header.append(headers[-1])
+        if 'age' in headers:
+            headers.remove('age')
+            header = headers[0:-1]
+            header.append('age')
+            header.append(headers[-1])
+        if 'Idade' in headers:
+            headers.remove('Idade')
+            header = headers[0:-1]
+            header.append('Idade')
+            header.append(headers[-1])
+        if 'idade' in headers:
+            headers.remove('idade')
+            header = headers[0:-1]
+            header.append('idade')
+            header.append(headers[-1])
+        if header:
+            headers = header
+
+        return fields, headers
+
     def process_participant_data(self, participants_output_fields, participants_list, language):
         # TODO: fix translation model functionality
         # for participant in participants_output_fields:
@@ -2027,56 +2065,13 @@ class ExportExecution:
         headers, fields = self.get_headers_and_fields(participants_output_fields)
         model_to_export = getattr(modules['patient.models'], 'Patient')
         if 'age' in fields:
-            fields.remove('age')
+            age_value_dict = self.calculate_age_by_participant(participants_list)
+            fields, headers = self.include_age_field_and_header(fields, headers)
 
-            for participant_id in participants_list:
-                subject = get_object_or_404(Patient, pk=participant_id[0])
-                age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
-                if subject.code not in age_value_dict:
-                    age_value_dict[subject.code] = age_value
-            if 'Age' in headers:
-                headers.remove('Age')
-                header = headers[0:-1]
-                header.append('Age')
-                header.append(headers[-1])
-            if 'age' in headers:
-                headers.remove('age')
-                header = headers[0:-1]
-                header.append('age')
-                header.append(headers[-1])
-            if 'Idade' in headers:
-                headers.remove('Idade')
-                header = headers[0:-1]
-                header.append('Idade')
-                header.append(headers[-1])
-            if 'idade' in headers:
-                headers.remove('idade')
-                header = headers[0:-1]
-                header.append('idade')
-                header.append(headers[-1])
-
-            headers = header
-
-        if language != 'pt-br':
+        if language != 'pt-br':  # read english fields
             fields = self.get_field_en(fields)
 
         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(order_by=['id'])
-
-        # language_list = ['en', 'pt-BR']
-        # data_language_dict = {
-        #     'header': [headers],
-        #     'en': [],
-        #     'pt-BR': [],
-        # }
-        # default_language = translation.get_language()
-        # for language in language_list:
-        #     translation.activate(language)
-        #     if language == 'pt-BR':
-        #         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
-        #             order_by=['id'])
-        #     else:
-        #         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields_en).extra(
-        #         order_by=['id'])
 
         export_rows_participants = [headers]
 
@@ -2087,13 +2082,8 @@ class ExportExecution:
                 participant_rows.append(value)
             if age_value_dict:
                 participant_rows.append(age_value_dict[record[-1]])
-            # export_rows_participants.append([self.handle_exported_field(field) for field in record])
             participant_rows.append(record[-1])
             export_rows_participants.append(participant_rows)
-
-            # data_language_dict[language].append(participant_rows)
-
-        # translation.activate(default_language)
 
         return export_rows_participants
 
