@@ -1342,10 +1342,8 @@ class ExportExecution:
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
 
                             export_rows_participants = []
-                            if language != 'pt-BR':
-                                participant_data_list = self.get_input_data('participants')['data_list']['en']
-                            else:
-                                participant_data_list = self.get_input_data('participants')['data_list']['pt-BR']
+                            participant_data_list = self.get_input_data('participants')['data_list']
+
                             for record in participant_data_list:
                                 if record[-1] == token_data['subject_code']:
                                     export_rows_participants = record
@@ -1361,7 +1359,7 @@ class ExportExecution:
                         for answer in answer_list[0]:
                             header.append(answer)
                         # for field in export_rows_participants[0]:
-                        header.extend(self.get_input_data('participants')['data_list']['header'][0])
+                        header.extend(self.get_input_data('participants')['data_list'][0])
                         fields_description.insert(0, header)
                         # save array list into a file to export
                         save_to_csv(complete_filename, fields_description)
@@ -1428,7 +1426,7 @@ class ExportExecution:
                     # add participant personal data header
                     header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
                     header = header[0:len(header) - 1]
-                    for field in self.get_input_data('participants')['data_list']['header'][0]:
+                    for field in self.get_input_data('participants')['data_list'][0]:
                         header.append(field)
                     # select language list
                     questionnaire_language = self.get_input_data("questionnaire_language")[str(questionnaire_id)]
@@ -1520,7 +1518,7 @@ class ExportExecution:
                                     # headers_participant_data, fields = self.get_headers_and_fields(
                                     #     self.get_input_data('participants')["output_list"])
                                     header = header[0:len(header) - 1]
-                                    for field in self.get_input_data('participants')['data_list']['header'][0]:
+                                    for field in self.get_input_data('participants')['data_list'][0]:
                                         header.append(field)
 
                                     per_participant_rows = self.per_participant_data[participant_code][
@@ -1591,10 +1589,7 @@ class ExportExecution:
                             # P123_Q123_aaa.csv
                             complete_filename = path.join(directory_step_participant, export_filename)
 
-                            if language != 'pt-BR':
-                                participant_data_list = self.get_input_data('participants')['data_list']['en']
-                            else:
-                                participant_data_list = self.get_input_data('participants')['data_list']['pt-BR']
+                            participant_data_list = self.get_input_data('participants')['data_list']
                             for record in participant_data_list:
                                 if record[-1] == token_data['subject_code']:
                                     export_rows_participants = record
@@ -1608,7 +1603,7 @@ class ExportExecution:
                                 per_participant_rows[1].append(field)
                             for field in answer_list[0]:
                                 per_participant_rows[0].append(field)
-                            for field in self.get_input_data('participants')['data_list']['header'][0]:
+                            for field in self.get_input_data('participants')['data_list'][0]:
                                 per_participant_rows[0].append(field)
 
                             save_to_csv(complete_filename, per_participant_rows)
@@ -2033,19 +2028,36 @@ class ExportExecution:
         model_to_export = getattr(modules['patient.models'], 'Patient')
         if 'age' in fields:
             fields.remove('age')
-            if 'Age' in headers:
-                headers.remove('Age')
+
             for participant_id in participants_list:
                 subject = get_object_or_404(Patient, pk=participant_id[0])
                 age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
                 if subject.code not in age_value_dict:
                     age_value_dict[subject.code] = age_value
-            header = headers[0:-1]
-            header.append('Age')
-            header.append(headers[-1])
+            if 'Age' in headers:
+                headers.remove('Age')
+                header = headers[0:-1]
+                header.append('Age')
+                header.append(headers[-1])
+            if 'age' in headers:
+                headers.remove('age')
+                header = headers[0:-1]
+                header.append('age')
+                header.append(headers[-1])
+            if 'Idade' in headers:
+                headers.remove('Idade')
+                header = headers[0:-1]
+                header.append('Idade')
+                header.append(headers[-1])
+            if 'idade' in headers:
+                headers.remove('idade')
+                header = headers[0:-1]
+                header.append('idade')
+                header.append(headers[-1])
+
             headers = header
 
-        if language != 'pt-BR':
+        if language != 'pt-br':
             fields = self.get_field_en(fields)
 
         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(order_by=['id'])
@@ -2099,7 +2111,7 @@ class ExportExecution:
 
         return export_rows_participants
 
-    def get_participant_data_per_code(self, subject_code, questionnaire_response_fields, language):
+    def get_participant_data_per_code(self, subject_code, questionnaire_response_fields):
         db_data =[]
         for record in self.get_input_data('participants')['data_list']:
             if record[-1] == subject_code:
@@ -2581,7 +2593,7 @@ class ExportExecution:
                 data_fields = [smart_str(data) for data in lm_data_row]
 
                 if self.get_input_data('participants')[0]['output_list']:
-                    transformed_fields = self.get_participant_data_per_code(patient_code, data_fields, language)
+                    transformed_fields = self.get_participant_data_per_code(patient_code, data_fields)
                 else:
                     transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
                 # data_rows.append(transformed_fields)
@@ -2712,11 +2724,8 @@ class ExportExecution:
                         data_fields = [smart_str(data) for data in lm_data_row]
 
                         if self.get_input_data('participants'):
-                            current_language = translation.get_language()
-                            if current_language == 'pt-br':
-                                current_language = 'pt-BR'
-                            transformed_fields = self.get_participant_data_per_code(patient_code, data_fields,
-                                                                                    current_language)
+
+                            transformed_fields = self.get_participant_data_per_code(patient_code, data_fields)
                         else:
                             transformed_fields = self.transform_questionnaire_data(patient_id, data_fields)
                         # data_rows.append(transformed_fields)
@@ -2734,7 +2743,7 @@ class ExportExecution:
 
             header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
             header = header[0:len(header) - 1]
-            for field in self.get_input_data('participants')['data_list']['header'][0]:
+            for field in self.get_input_data('participants')['data_list'][0]:
                 header.append(field)
 
             export_rows.insert(0, header)
