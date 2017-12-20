@@ -387,7 +387,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         if export.get_input_data('participants')['output_list']:
             participants_input_data = export.get_input_data("participants")['output_list']
             participants_list = (export.get_participants_filtered_data())
-            export_rows_participants = export.process_participant_data(participants_input_data, participants_list)
+            export_rows_participants = export.process_participant_data(participants_input_data, participants_list,
+                                                                       language_code)
             export.get_input_data('participants')['data_list'] = export_rows_participants
             # create file participants.csv and diagnosis.csv
             error_msg = export.process_participant_filtered_data('group_selected_list' in request.session)
@@ -555,7 +556,7 @@ def export_view(request, template_name="export/export_data.html"):
                     if previous_questionnaire_id != 0:
                         output_list = []
 
-                        experiment_questionnaires_list.append([index, group_id, sid, title, output_list])
+                    experiment_questionnaires_list.append([index, group_id, sid, title, output_list])
 
                     previous_questionnaire_id = index
 
@@ -846,6 +847,68 @@ def get_component_with_data_and_metadata(group, component_list):
     return component_list
 
 
+def get_experiment_questionnaire_response_list(group_id):
+    experiment_questionnaire_response_dict = {}
+    group = get_object_or_404(Group, pk=group_id)
+    if group.experimental_protocol:
+        for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
+
+            questionnaire_configuration = get_object_or_404(ComponentConfiguration,
+                                                            pk=path_experiment[-1][0])
+            questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+            lime_survey_id = questionnaire.survey.lime_survey_id
+            if lime_survey_id not in experiment_questionnaire_response_dict:
+                experiment_questionnaire_response_dict[lime_survey_id] = []
+
+            configuration_tree_list = DataConfigurationTree.objects.filter(
+                component_configuration=questionnaire_configuration)
+            experiment_questionnaire_response_list = []
+
+            for data_configuration_tree in configuration_tree_list:
+                experiment_questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                    data_configuration_tree_id=data_configuration_tree.id)
+
+            if experiment_questionnaire_response_list:
+                if group_id not in experiment_questionnaire_response_dict:
+                    experiment_questionnaire_response_dict[group_id] = {}
+                if lime_survey_id not in experiment_questionnaire_response_dict[group_id]:
+                    experiment_questionnaire_response_dict[group_id][lime_survey_id] = []
+                experiment_questionnaire_response_dict[group_id][lime_survey_id] = \
+                    experiment_questionnaire_response_list
+
+    return experiment_questionnaire_response_dict
+
+
+def get_questionnaire_experiment_header(questionnaire_lime_survey, questionnaire_id, token_id, fields,
+                                        heading_type="code", current_language="pt-BR"):
+
+    questionnaire_list = []
+    language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
+
+    token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+
+    responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
+
+    if not isinstance(responses_string, dict):
+
+        questionnaire_questions = perform_csv_response(responses_string)
+
+        responses_heading_type = questionnaire_lime_survey.get_header_response(questionnaire_id,
+                                                                               language_new, token,
+                                                                               heading_type=heading_type)
+
+        questionnaire_questions_heading_type = perform_csv_response(responses_heading_type)
+
+        questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
+
+        # line 0 - header information
+        for question in questionnaire_header:
+            if question[1] in fields:
+                questionnaire_list.append(question)
+
+    return questionnaire_list
+
+
 def update_questionnaire_list(questionnaire_list, heading_type, experiment_questionnaire, current_language="pt-BR"):
 
     questionnaire_list_updated = []
@@ -854,17 +917,25 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
         return questionnaire_list
 
     questionnaire_lime_survey = Questionnaires()
-
+    experiment_questionnaire_response_dict = {}
     for questionnaire in questionnaire_list:
 
         if experiment_questionnaire:  # position 2: id, position 3: title, position 4: output_list (field, header)
+            questionnaire_field_header = []
             questionnaire_id = questionnaire[2]
             fields, headers = zip(*questionnaire[4])
             index = questionnaire[0]
             title = questionnaire[3]
             group_id = questionnaire[1]
-            questionnaire_field_header = get_questionnaire_header(questionnaire_lime_survey, questionnaire_id,
-                                                                  fields, heading_type, current_language)
+            if not experiment_questionnaire_response_dict:
+                experiment_questionnaire_response_dict = get_experiment_questionnaire_response_list(group_id)
+            elif group_id not in experiment_questionnaire_response_dict:
+                experiment_questionnaire_response_dict = get_experiment_questionnaire_response_list(group_id)
+            elif questionnaire_id in experiment_questionnaire_response_dict[group_id]:
+                token_id = experiment_questionnaire_response_dict[group_id][questionnaire_id][0].token_id
+                questionnaire_field_header = get_questionnaire_experiment_header(questionnaire_lime_survey,
+                                                                                 questionnaire_id, token_id, fields,
+                                                                                 heading_type, current_language)
 
             questionnaire_list_updated.append([index, group_id, questionnaire_id, title, questionnaire_field_header])
         else:  # position 1: id, postion 2: title, position 2: output_list (field, header)
@@ -883,8 +954,8 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
     return questionnaire_list_updated
 
 
-def get_questionnaire_header(questionnaire_lime_survey,
-                             questionnaire_id, fields, heading_type="code", current_language="pt-BR"):
+def get_questionnaire_header(questionnaire_lime_survey, questionnaire_id, fields, heading_type="code",
+                             current_language="pt-BR"):
     # return: {"<question_code>": "question_heading_type", "<question_code1>": "question_heading_type1"...}
     # ("<question_code>": "question_heading_type")
 
