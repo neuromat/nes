@@ -76,7 +76,7 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
     HotSpotForm, CollaborationForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
-    GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm
+    GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm, ResearchProjectOwnerForm
 
 from .portal import get_experiment_status_portal, send_experiment_to_portal, get_portal_status, \
     send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
@@ -150,8 +150,8 @@ def research_project_list(request, template_name="experiment/research_project_li
 @permission_required('experiment.add_researchproject')
 def research_project_create(request, template_name="experiment/research_project_register.html"):
 
-    research_project_form = ResearchProjectForm(request.POST or None,
-                                                initial={'owner': request.user})
+    research_project_form = ResearchProjectForm(request.POST or None)
+    research_project_owner_form = ResearchProjectOwnerForm(request.POST or None, initial={'owner': request.user})
 
     if request.method == "POST":
 
@@ -160,7 +160,7 @@ def research_project_create(request, template_name="experiment/research_project_
             if research_project_form.is_valid():
 
                 research_project_added = research_project_form.save(commit=False)
-                research_project_added.owner = request.user
+                research_project_added.owner_id = request.POST['owner']
                 research_project_added.save()
 
                 messages.success(request, _('Study created successfully.'))
@@ -174,6 +174,7 @@ def research_project_create(request, template_name="experiment/research_project_
             messages.warning(request, _('Action not available.'))
 
     context = {"research_project_form": research_project_form,
+               "research_project_owner_form": research_project_owner_form,
                "creating": True,
                "editing": True}
 
@@ -190,8 +191,8 @@ def get_can_change(user, research_project):
            user.has_perm('experiment.change_researchproject_from_others')
 
 
-def get_can_change_researchproject_owner(user, research_project):
-    return (user.has_perm('experiment.change_researchproject_owner'))
+def get_can_change_research_project_owner(user, research_project):
+    return user.has_perm('experiment.change_researchproject_owner')
 
 
 @login_required
@@ -199,10 +200,14 @@ def get_can_change_researchproject_owner(user, research_project):
 def research_project_view(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,)
+    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
+    research_project_owner_form = ResearchProjectOwnerForm(request.POST or None, instance=research_project)
 
     for field in research_project_form.fields:
         research_project_form.fields[field].widget.attrs['disabled'] = True
+
+    for field in research_project_owner_form.fields:
+        research_project_owner_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
 
@@ -254,7 +259,8 @@ def research_project_view(request, research_project_id, template_name="experimen
                "collaborators": research_project.collaborators.order_by('team_person__person__first_name'),
                "keywords": research_project.keywords.order_by('name'),
                "research_project": research_project,
-               "research_project_form": research_project_form}
+               "research_project_form": research_project_form,
+               "research_project_owner_form": research_project_owner_form}
 
     return render(request, template_name, context)
 
@@ -273,16 +279,36 @@ def research_project_update(request, research_project_id, template_name="experim
 
     check_can_change(request.user, research_project)
 
-    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project,)
+    research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
+    research_project_owner_form = ResearchProjectOwnerForm(request.POST or None, instance=research_project)
 
-    if not get_can_change_researchproject_owner(request.user, research_project):
-        research_project_form.fields['owner'].widget.attrs['disabled'] = True
+    can_change_research_project_owner = get_can_change_research_project_owner(request.user, research_project)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
+
+            changed = False
+            form_error = False
+
+            # owner field
+            if can_change_research_project_owner:
+                if research_project_owner_form.is_valid():
+                    if research_project_owner_form.has_changed():
+                        research_project_owner_form.save()
+                        changed = True
+                else:
+                    form_error = True
+
+            # other fields
             if research_project_form.is_valid():
                 if research_project_form.has_changed():
                     research_project_form.save()
+                    changed = True
+            else:
+                form_error = True
+
+            if not form_error:
+                if changed:
                     messages.success(request, _('Research updated successfully.'))
                 else:
                     messages.success(request, _('There is no changes to save.'))
@@ -290,8 +316,12 @@ def research_project_update(request, research_project_id, template_name="experim
                 redirect_url = reverse("research_project_view", args=(research_project.id,))
                 return HttpResponseRedirect(redirect_url)
 
+    if not can_change_research_project_owner:
+        research_project_owner_form.fields['owner'].widget.attrs['disabled'] = True
+
     context = {"research_project": research_project,
                "research_project_form": research_project_form,
+               "research_project_owner_form": research_project_owner_form,
                "editing": True}
 
     return render(request, template_name, context)

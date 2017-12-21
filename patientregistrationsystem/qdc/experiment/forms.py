@@ -300,13 +300,20 @@ class UserFullnameChoiceField(ModelChoiceField):
         return smart_text(obj.get_full_name())
 
 
-class ResearchProjectForm(ModelForm):
-
-    owner = UserFullnameChoiceField(queryset=User.objects.all(), widget=Select(attrs={'class': 'form-control'}))
+class ResearchProjectOwnerForm(ModelForm):
+    owner = UserFullnameChoiceField(queryset=User.objects.all(),
+                                    widget=Select(attrs={'class': 'form-control', 'required': ""}))
 
     class Meta:
         model = ResearchProject
-        fields = ['start_date', 'end_date', 'title', 'description', 'owner']
+        fields = ['owner']
+
+
+class ResearchProjectForm(ModelForm):
+
+    class Meta:
+        model = ResearchProject
+        fields = ['start_date', 'end_date', 'title', 'description']
 
         widgets = {
             'title': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -321,8 +328,6 @@ class ResearchProjectForm(ModelForm):
                                            'required': "", 'data-error': _("Initial date must be filled.")},),
             'end_date': DateInput(format=_("%m/%d/%Y"),
                                   attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')}),
-
-            'owner': Select(attrs={'class': 'form-control', 'required': "", }),
 
         }
 
