@@ -959,10 +959,7 @@ def send_all_experiments_to_portal(language_code):
                     portal_participant_list[subject_of_group.id] = portal_participant['id']
 
                 # experimental protocol
-                textual_description = None
-                image = None
                 portal_step_list = {}
-                root_step_id = None
 
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
@@ -1138,10 +1135,10 @@ def send_all_experiments_to_portal(language_code):
                             portal_file_id_list,
                             generic_data_collection_data)
 
-                send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
-                                                     textual_description=textual_description,
-                                                     image=image,
-                                                     root_step_id=root_step_id)
+                    send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
+                                                         textual_description=textual_description,
+                                                         image=image,
+                                                         root_step_id=root_step_id)
 
             # end of sending
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)
