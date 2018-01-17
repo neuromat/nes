@@ -49,6 +49,8 @@
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
                 <li class="active">{% trans "Schedule of sending" %}</li>
             </ol>
         </div>
