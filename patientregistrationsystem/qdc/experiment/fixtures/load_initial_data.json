@@ -70,16 +70,15 @@
   {
     "fields": {
       "tags": [
-        1,
-        2
+        1
       ],
-      "name_en": "EEG raw data",
-      "name": "Dados brutos de EEG",
+      "name_en": "EEG raw data - EGI simple binary (MNE)",
+      "name": "EEG raw data - EGI simple binary (MNE)",
       "description_en": null,
       "description": null,
-      "name_pt_br": "Dados brutos de EEG",
-      "extension": ".raw",
-      "nes_code": "NEO-RawBinarySignalIO",
+      "name_pt_br": "Dados brutos de EEG - arquivo binário EGI (MNE)",
+      "extension": ".raw .egi",
+      "nes_code": "MNE-RawFromEGI",
       "description_pt_br": null
     },
     "pk": 1,
@@ -96,11 +95,1448 @@
       "description_en": null,
       "description": null,
       "name_pt_br": "Outro",
-      "extension": "*.*",
+      "extension": ".*",
       "nes_code": "other",
       "description_pt_br": null
     },
     "pk": 2,
     "model": "experiment.fileformat"
+  },
+  {
+    "fields": {
+      "tags": [
+        1,
+        2
+      ],
+      "name_en": "Text file",
+      "name": "Text file",
+      "description_en": null,
+      "description": null,
+      "name_pt_br": "Arquivo texto",
+      "extension": ".txt",
+      "nes_code": "txt",
+      "description_pt_br": null
+    },
+    "pk": 3,
+    "model": "experiment.fileformat"
+  },
+  {
+    "model": "experiment.tetheringsystem",
+    "pk": 1,
+    "fields": {
+      "name_en": "Wired",
+      "name_pt_br": "Com fio",
+      "name": "Com fio"
+    }
+  },
+  {
+    "model": "experiment.tetheringsystem",
+    "pk": 2,
+    "fields": {
+      "name_en": "Wireless",
+      "name_pt_br": "Sem fio",
+      "name": "Sem fio"
+    }
+  },
+  {
+    "model": "experiment.tetheringsystem",
+    "pk": 3,
+    "fields": {
+      "name_en": "Telemetric",
+      "name_pt_br": "Telem\u00e9trico",
+      "name": "Telem\u00e9trico"
+    }
+  },
+  {
+    "model": "experiment.amplifierdetectiontype",
+    "pk": 1,
+    "fields": {
+      "name_en": "Monopolar",
+      "name_pt_br": "Monopolar",
+      "name": "Monopolar"
+    }
+  },
+  {
+    "model": "experiment.amplifierdetectiontype",
+    "pk": 2,
+    "fields": {
+      "name_en": "Differential",
+      "name_pt_br": "Diferencial",
+      "name": "Diferencial"
+    }
+  },
+  {
+    "model": "experiment.amplifierdetectiontype",
+    "pk": 3,
+    "fields": {
+      "name_en": "Double differential",
+      "name_pt_br": "Diferencial duplo",
+      "name": "Diferencial duplo"
+    }
+  },
+  {
+    "model": "experiment.electrodeconfiguration",
+    "pk": 1,
+    "fields": {
+      "name_en": "Monopolar",
+      "name_pt_br": "Monopolar",
+      "name": "Monopolar"
+    }
+  },
+  {
+    "model": "experiment.electrodeconfiguration",
+    "pk": 2,
+    "fields": {
+      "name_en": "Bipolar",
+      "name_pt_br": "Bipolar",
+      "name": "Bipolar"
+    }
+  },
+  {
+    "model": "experiment.electrodeconfiguration",
+    "pk": 3,
+    "fields": {
+      "name_en": "Tripolar",
+      "name_pt_br": "Tripolar",
+      "name": "Tripolar"
+    }
+  },
+  {
+    "model": "experiment.electrodeconfiguration",
+    "pk": 4,
+    "fields": {
+      "name_en": "Multipolar",
+      "name_pt_br": "Multipolar",
+      "name": "Multipolar"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 1,
+    "fields": {
+      "name_en": "Area",
+      "name_pt_br": "\u00c1rea",
+      "name": "\u00c1rea"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 2,
+    "fields": {
+      "name_en": "Diameter",
+      "name_pt_br": "Di\u00e2metro",
+      "name": "Di\u00e2metro"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 3,
+    "fields": {
+      "name_en": "Size",
+      "name_pt_br": "Tamanho",
+      "name": "Tamanho"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 4,
+    "fields": {
+      "name_en": "Width",
+      "name_pt_br": "Largura",
+      "name": "Largura"
+    }
+  },
+  {
+    "model": "experiment.measuresystem",
+    "pk": 5,
+    "fields": {
+      "name_en": "Height",
+      "name_pt_br": "Altura",
+      "name": "Altura"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 1,
+    "fields": {
+      "measure_system": 1,
+      "name": "cm\u00b2"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 2,
+    "fields": {
+      "measure_system": 1,
+      "name": "mm\u00b2"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 3,
+    "fields": {
+      "measure_system": 2,
+      "name": "cm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 4,
+    "fields": {
+      "measure_system": 2,
+      "name": "mm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 5,
+    "fields": {
+      "measure_system": 3,
+      "name": "cm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 6,
+    "fields": {
+      "measure_system": 3,
+      "name": "mm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 7,
+    "fields": {
+      "measure_system": 4,
+      "name": "cm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 8,
+    "fields": {
+      "measure_system": 4,
+      "name": "mm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 9,
+    "fields": {
+      "measure_system": 5,
+      "name": "cm"
+    }
+  },
+  {
+    "model": "experiment.measureunit",
+    "pk": 10,
+    "fields": {
+      "measure_system": 5,
+      "name": "mm"
+    }
+  },
+  {
+    "model": "experiment.electrodeshape",
+    "pk": 1,
+    "fields": {
+      "name_en": "Disc",
+      "name_pt_br": "Disco",
+      "name": "Disco",
+      "measure_systems": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "experiment.electrodeshape",
+    "pk": 2,
+    "fields": {
+      "name_en": "Bar",
+      "name_pt_br": "Barra",
+      "name": "Barra",
+      "measure_systems": [
+        3
+      ]
+    }
+  },
+  {
+    "model": "experiment.electrodeshape",
+    "pk": 3,
+    "fields": {
+      "name_en": "Rectangle",
+      "name_pt_br": "Ret\u00e2ngulo",
+      "name": "Ret\u00e2ngulo",
+      "measure_systems": [
+        1,
+        4,
+        5
+      ]
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 1,
+    "fields": {
+      "name_pt_br": "Bobina circular",
+      "name": "Bobina circular",
+      "name_en": "Round coil"
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 2,
+    "fields": {
+      "name_pt_br": "Bobina em forma de oito (borboleta)",
+      "name": "Bobina em forma de oito (borboleta)",
+      "name_en": "Figure-eight coil (butterfly)"
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 3,
+    "fields": {
+      "name_pt_br": "Double-cone coil",
+      "name": "Double-cone coil",
+      "name_en": "Double-cone coil"
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 4,
+    "fields": {
+      "name_pt_br": "Bobina de quatro folhas (four-leaf)",
+      "name": "Bobina de quatro folhas (four-leaf)",
+      "name_en": "Four-leaf coil"
+    }
+  },
+  {
+    "model": "experiment.coilshape",
+    "pk": 5,
+    "fields": {
+      "name_pt_br": "Bobina em forma de H (H-coil)",
+      "name": "Bobina em forma de H (H-coil)",
+      "name_en": "H-coil"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Arm or hand - Biceps brachii"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Shoulder or neck - Trapezius"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Shoulder or neck - Deltoideus"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Trunk or (lower) back - Erector Spinae"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Trunk or (lower) back - Multifidus"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Arm or hand - Triceps brachii"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": " Arm or hand - Abductor Policis Brevis"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Hip or upper leg - Gluteus"
+    }
+  },
+  {
+    "pk": 12,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Hip or upper leg - Tensor Fasciae Latae "
+    }
+  },
+  {
+    "pk": 13,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Hip or upper leg - Quadriceps Femoris"
+    }
+  },
+  {
+    "pk": 16,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Hip or upper leg - Biceps Femoris ( long head and short head) "
+    }
+  },
+  {
+    "pk": 17,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Hip or upper leg - Semitendinosus"
+    }
+  },
+  {
+    "pk": 18,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Lower leg or foot - Tibialis anterior"
+    }
+  },
+  {
+    "pk": 19,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Lower leg or foot - Peroneus longus"
+    }
+  },
+  {
+    "pk": 20,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Lower leg or foot - Peroneus Brevis"
+    }
+  },
+  {
+    "pk": 21,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Lower leg or foot - Soleus"
+    }
+  },
+  {
+    "pk": 23,
+    "model": "experiment.muscle",
+    "fields": {
+      "name": "Lower leg or foot - Gastrocnemius"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Tuberosity of radius and aponeurosis of biceps brachii (lacertus fibrosus).",
+      "anatomy_function": "",
+      "anatomy_origin": "Short head: apex of coracoid process of scapula.\r\nLong head: Supraglenoid tubercle of scapula.",
+      "name": "Short head and long head",
+      "muscle": 1
+    }
+  },
+  {
+    "pk": 2,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Lateral 13 of clavicle and acromion process of scapula.",
+      "anatomy_function": "With the origin fixed: stabilisation (together with descending fibres) of the adduction of the scapula (performed chiefly by the transversal fibres).\r\nRotation of the scapula so the glenoid cavity faces cranially (performed together with the descending fibres with stabilisation by the transversal fibres).\r\nIn addition the descending fibres elevate the scapula. With the insertion fixed and acting unilaterally the descending fibres extend, laterally flex and rotate the head and joints of the cervical vertebrae so that the face turns towards the opposite side. With the insertion fixed and acting bilaterally the descending trapezius extends the head and neck.\r\nRecommended sensor placement procedure",
+      "anatomy_origin": "External occipital protuberance, medial 1/3 of superior nuchal line, ligamentum nuchae, and spinous process of 7th cervical vertebra.",
+      "name": "Trapezius descendens (upper)",
+      "muscle": 2
+    }
+  },
+  {
+    "pk": 3,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Superior lip of spine of scapula.",
+      "anatomy_function": "With the origin fixed: the transversal fibers perform chiefly adduction of the scapula (with stabilization by the descending and ascending fibers). Stabilization of the rotation of the scapula so the glenoid cavity faces cranially.",
+      "anatomy_origin": "Spinous processes of first through fifth thoracic vertebrae.",
+      "name": "Transversalis (middle)",
+      "muscle": 2
+    }
+  },
+  {
+    "pk": 4,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Apex of spine of scapula.",
+      "anatomy_function": "With the origin fixed: stabilization (together with descending fibers) of the adduction of the scapula (performed chiefly by the transversal fibers). Rotation of the scapula so the glenoid cavity faces cranially (performed together with the descending fibers with stabilization by the transversal fibers). In addition the ascending fibers depress the scapula.",
+      "anatomy_origin": "Spinous processes of sixth to twelfth thoracic vertebrae.",
+      "name": "Trapezius Ascendens (lower)",
+      "muscle": 2
+    }
+  },
+  {
+    "pk": 8,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Deltoid tuberosity of humerus.\r\n",
+      "anatomy_function": "Abduction of shoulder joint, performed chiefly by the middle fibers with stabilization by the anterior and posterior fibers. In addition the anterior fibers flex and medially rotate the shoulder joint.\r\n",
+      "anatomy_origin": "Anterior border, superior surface , lateral 1/3 of clavicle.",
+      "name": "Anterior",
+      "muscle": 3
+    }
+  },
+  {
+    "pk": 9,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Deltoid tuberosity of humerus.\r\n",
+      "anatomy_function": "The deltoideus medius performs abduction of shoulder joint, with stabilisation by the anterior and posterior fibres.\r\n",
+      "anatomy_origin": "Lateral margin and superior surface of the acromion.",
+      "name": "Medius",
+      "muscle": 3
+    }
+  },
+  {
+    "pk": 10,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Deltoid tuberosity of humerus.\r\n",
+      "anatomy_function": "Abduction of shoulder joint, performed chiefly by the middle fibres with stabilisation by the anterior and posterior fibres. In addition the posterior fibres extend and laterally rotate.\r\n",
+      "anatomy_origin": "Inferior lip of posterior border of spine of scapula.\r\n",
+      "name": "Posterior",
+      "muscle": 3
+    }
+  },
+  {
+    "pk": 12,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "By tendons into inferior border of angles of lower 6 or 7 ribs.\r\n",
+      "anatomy_function": "Extension, lateral binding (unilateral activity)\r\n",
+      "anatomy_origin": "Anterior surface of broad tendon attached to medial crest of sacrum, spinous processes of lumbar and 11th and 12th thoracic vertebrae, posterior part of medial lip of iliac crest, supraspinous ligament and lateral crest of sacrum\r\n",
+      "name": "Iliocostalis",
+      "muscle": 5
+    }
+  },
+  {
+    "pk": 13,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Massillary processes L4-S1\r\nIliaccresr, dorsal surface of sacrum",
+      "anatomy_function": "Extension",
+      "anatomy_origin": "Spinous processes L1 - L5\r\n",
+      "name": "Multifudus",
+      "muscle": 6
+    }
+  },
+  {
+    "pk": 15,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Posterior surface of olecranon process of ulna and antebrachial fascia.\r\n",
+      "anatomy_function": "Extension of the elbow joint.\r\n",
+      "anatomy_origin": "Lateral and posterior surfaces of proximal 1/2 of body of humerus and lateral intramuscular septum.\r\n",
+      "name": "Lateral head",
+      "muscle": 8
+    }
+  },
+  {
+    "pk": 16,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Base of proximal phalanx of thumb, radial side, and extensor expansion.\r\n",
+      "anatomy_function": "Abduct the carpometacarpal and metacarpophalangeal joints of the thumb in a ventral direction perpendicular to the plane of the palm. By virtue of its attachment into the dorsal extensor expansion, may extend the interphalangeal joint of the thumb. Assists in opposition, and may assist in flexion of the metacarpophalangeal joint.\r\n",
+      "anatomy_origin": "Flexor retinaculum, tubercle of trapezium bone and tubercle of scaphoid bone.\r\n",
+      "name": "Abductor Policis Brevis",
+      "muscle": 9
+    }
+  },
+  {
+    "pk": 17,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Larger proximal portion and superficial fibres of distal portion of muscle into iliotibial tract of fascia lata. Deeper fibres of distal portion into gluteal tuberosity of femur.\r\n",
+      "anatomy_function": "Extends, laterally rotates and lower fibres assist in adduction of the hip joint. The upper fibres assist in adduction. Through its insertion into the iliotibial tract, helps to stabilise the knee in extension.\r\n",
+      "anatomy_origin": "Posterior gluteal line of ilium ad portion of bone superior and posterior to t, posterior surface of lower part of sacrum, side of coccyx, aponeurosis of erector spinea, sacrotuberous ligament and gluteal aponeurosis.\r\n",
+      "name": "Maximus",
+      "muscle": 10
+    }
+  },
+  {
+    "pk": 19,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Into iliotibial tract of fascia lata at junction of proximal and middle thirds of the thigh\r\n",
+      "anatomy_function": "Adduction, medial rotation and flexion of the hip, tenses the fascia lata and may assist in knee extension.\r\n",
+      "anatomy_origin": "Anterior part of external lip of iliac crest, outer surface of anterior superior iliac spine and deep surface of fascia lata.\r\n",
+      "name": "Tensor Fasciae Latae",
+      "muscle": 12
+    }
+  },
+  {
+    "pk": 20,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Proximal border of the patella and through patellar ligament.\r\n",
+      "anatomy_function": "Extension of the knee joint and flexion of the hip joint.\r\n",
+      "anatomy_origin": "Straight head from anterior inferior iliac spine. Reflected head from groove above rim of acetabulum.\r\n",
+      "name": "Rectus femoris",
+      "muscle": 13
+    }
+  },
+  {
+    "pk": 23,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Lateral side of head of fibula, lateral condyle of tibia, deep fascial on lateral side of leg.\r\n",
+      "anatomy_function": "Flexion and lateral rotation of the knee joint. The long head also extends and assists in lateral rotation of the hip joint.\r\n",
+      "anatomy_origin": "Long head: distal part of sacrotuberous ligament and posterior part of tuberosity\r\nShort head: lateral lip of linea aspera, proximal 2/3 of supracondylar line and lateral intermuscular septum.",
+      "name": "Long head and short head",
+      "muscle": 16
+    }
+  },
+  {
+    "pk": 24,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Proximal part of medial surface of body of tibia and deep fascia of leg.\r\n",
+      "anatomy_function": "Flexion and medial rotation of the knee joint. Semitendinosus also extends and assists in medial rotation of the hip joint.\r\n",
+      "anatomy_origin": "Tuberosity of ischium by tendon common with long head of biceps femoris.\r\n",
+      "name": "Semitendinosus",
+      "muscle": 17
+    }
+  },
+  {
+    "pk": 25,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Medial and plantar surface of medial cuneiform bone, base of first metatarsal bone.\r\n",
+      "anatomy_function": "Dorsiflexion of the ankle joint and assistance in inversion of the foot.\r\n",
+      "anatomy_origin": "Lateral condyle and proximal 1/2 of lateral surface of tibia, interosseus membrane, deep fascia and lateral intermuscular septum.\r\n",
+      "name": "Tibialis anterior",
+      "muscle": 18
+    }
+  },
+  {
+    "pk": 26,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Lateral side of base of first metatarsal and of medial cuneiform bone.\r\n",
+      "anatomy_function": "Eversion of the foot and assistance in plantar flexion of the ankle joint.\r\n",
+      "anatomy_origin": "Lateral condyle of tibia, head and proximal 2/3 of lateral surface of fibula, intermuscular septa, and adjacent deep fascia.\r\n",
+      "name": "Peroneus longus",
+      "muscle": 19
+    }
+  },
+  {
+    "pk": 27,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Tuberosity at base of fifth metatarsal bone, lateral side.\r\n",
+      "anatomy_function": "Eversion of the foot and assist in plantar flexion of ankle joint.\r\n",
+      "anatomy_origin": "Distal 2/3 of lateral surface of fibula and adjacent intermuscular septa.\r\n",
+      "name": "Peroneus Brevis",
+      "muscle": 20
+    }
+  },
+  {
+    "pk": 28,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "With tendon of gastrocnemius into posterior surface of calcaneus.\r\n",
+      "anatomy_function": "Plantar flexion of the ankle joint.\r\n",
+      "anatomy_origin": "Posterior surfaces of the head of the fibula and proximal 1/3 of its body, soleal line and middle 1/3 of medial border of tibia and tendinous arch between tibia and fibula.\r\n",
+      "name": "Soleus",
+      "muscle": 21
+    }
+  },
+  {
+    "pk": 30,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Middle part of posterior surface of calcaneus.\r\n",
+      "anatomy_function": "Flexion of the ankle joint and assist in flexion of the knee joint.\r\n",
+      "anatomy_origin": "Lateral condyle and posterior surface of femur, capsule of knee joint.\r\n",
+      "name": "Lateralis",
+      "muscle": 23
+    }
+  },
+  {
+    "pk": 31,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Posterior surface of olecranon process of ulna and antebrachial fascia.\r\n",
+      "anatomy_function": "Extension of the elbow joint. The long head also adducts and may assist in extension of the shoulder joint.\r\n",
+      "anatomy_origin": "Infraglenoid tubercle of scapula.\r\n",
+      "name": "Long head",
+      "muscle": 8
+    }
+  },
+  {
+    "pk": 32,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Oblique ridge on lateral surface of greater trochanter of femur.\r\n",
+      "anatomy_function": "Abduction of the hip joint. The anterior fibres medially rotate and may assist in flexion of the hip joint; the posterior fibres laterally rotate and may assist in extension.\r\n",
+      "anatomy_origin": "External surface of ilium between iliac crest and posterior gluteal line dorsally, and anterior gluteal line ventrally, gluteal aponeurosis.\r\n",
+      "name": "Medius",
+      "muscle": 10
+    }
+  },
+  {
+    "pk": 33,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Proximal border of the patella and through patellar ligament.\r\n",
+      "anatomy_function": "Extension of the knee joint.\r\n",
+      "anatomy_origin": "Proximal parts of intertrochanteric line, anterior and inferior borders of greater trochanter, lateral lip of gluteal tuberosity, proximal half of lateral lip of linea aspera, and lateral intermuscular septum.\r\n",
+      "name": "Vastus Lateralis",
+      "muscle": 13
+    }
+  },
+  {
+    "pk": 34,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Proximal border of the patella and through patellar ligament.\r\n",
+      "anatomy_function": "Extension of the knee joint.\r\n",
+      "anatomy_origin": "Distal half of the intertrochanteric line, medial lip of line aspera, proximal part of medial supracondylar line, tendons of adductor longus and adductor magnus and medial intermuscular septum.\r\n",
+      "name": "Vastus Medialis",
+      "muscle": 13
+    }
+  },
+  {
+    "pk": 35,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "Middle part of posterior surface of calcaneus.\r\n",
+      "anatomy_function": "Flexion of the ankle joint and assist in flexion of the knee joint.\r\n",
+      "anatomy_origin": "Proximal and posterior part of medial condyle and adjacent part of the femur, capsule of the knee joint.\r\n",
+      "name": "Medialis",
+      "muscle": 23
+    }
+  },
+  {
+    "pk": 36,
+    "model": "experiment.musclesubdivision",
+    "fields": {
+      "anatomy_insertion": "By tendons into tips of transverse process of all thoracic vertebrae, and by fleshy digitations anto lower 9 or 10 ribs between tubercles and angles.\r\n",
+      "anatomy_function": "Extension",
+      "anatomy_origin": "In lumbar region is blended with iliocostalis lumborum, posterior surfaces of transverse and accessory processes of lumbar vertebrae, and anterior layer of thoracolumbar fascia.\r\n",
+      "name": "Longissimus",
+      "muscle": 5
+    }
+  },
+  {
+    "pk": 1,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 1
+    }
+  },
+  {
+    "pk": 2,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 1
+    }
+  },
+  {
+    "pk": 3,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 2
+    }
+  },
+  {
+    "pk": 4,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 2
+    }
+  },
+  {
+    "pk": 5,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 9
+    }
+  },
+  {
+    "pk": 6,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 9
+    }
+  },
+  {
+    "pk": 7,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 8
+    }
+  },
+  {
+    "pk": 8,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 8
+    }
+  },
+  {
+    "pk": 11,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 16
+    }
+  },
+  {
+    "pk": 12,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 16
+    }
+  },
+  {
+    "pk": 13,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 10
+    }
+  },
+  {
+    "pk": 14,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 10
+    }
+  },
+  {
+    "pk": 17,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 13
+    }
+  },
+  {
+    "pk": 18,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 13
+    }
+  },
+  {
+    "pk": 23,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 17
+    }
+  },
+  {
+    "pk": 24,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 17
+    }
+  },
+  {
+    "pk": 25,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 12
+    }
+  },
+  {
+    "pk": 26,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 12
+    }
+  },
+  {
+    "pk": 27,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 3
+    }
+  },
+  {
+    "pk": 28,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 3
+    }
+  },
+  {
+    "pk": 29,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 18
+    }
+  },
+  {
+    "pk": 30,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 18
+    }
+  },
+  {
+    "pk": 31,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 19
+    }
+  },
+  {
+    "pk": 32,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 19
+    }
+  },
+  {
+    "pk": 33,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 20
+    }
+  },
+  {
+    "pk": 34,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 20
+    }
+  },
+  {
+    "pk": 35,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 21
+    }
+  },
+  {
+    "pk": 36,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 21
+    }
+  },
+  {
+    "pk": 39,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 23
+    }
+  },
+  {
+    "pk": 40,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 23
+    }
+  },
+  {
+    "pk": 41,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Left",
+      "muscle": 5
+    }
+  },
+  {
+    "pk": 42,
+    "model": "experiment.muscleside",
+    "fields": {
+      "name": "Right",
+      "muscle": 5
+    }
+  },
+  {
+    "pk": 1,
+    "model": "experiment.standardizationsystem",
+    "fields": {
+      "description": "The SENIAM project (Surface ElectroMyoGraphy for the Non-Invasive Assessment of Muscles) is a European concerted action in the Biomedical Health and Research Program (BIOMED II) of the European Union.",
+      "name": "SENIAM"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ArmHandLoc01_large.gif",
+      "muscle_subdivision": 1,
+      "location": "Electrodes need to be placed on the line between the medial acromion and the fossa cubit at 1/3 from the fossa cubit."
+    }
+  },
+  {
+    "pk": 8,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ArmHandLoc03.gif",
+      "muscle_subdivision": 15,
+      "location": "Electrodes need to be placed at 50 % on the line between the posterior crista of the acromion and the olecranon at 2 finger widths lateral to the line.\r\n"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ArmHandLoc04.gif",
+      "muscle_subdivision": 16,
+      "location": "Slightly medial of the distal 1/4 of the 1st ossa metacarpalia.\r\n"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ShoulderLoc01.gif",
+      "muscle_subdivision": 2,
+      "location": "The electrodes need to be placed at 50% on the line from the acromion to the spine on vertebra C7.\r\n"
+    }
+  },
+  {
+    "pk": 11,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ShoulderLoc02.gif",
+      "muscle_subdivision": 3,
+      "location": "The electrodes need to be placed at 50% between the medial border of the scapula and the spine, at the level of T3.\r\n"
+    }
+  },
+  {
+    "pk": 12,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ShoulderLoc03.gif",
+      "muscle_subdivision": 4,
+      "location": "The electrodes need to be placed at 2/3 on the line from the trigonum spinea to the 8th thoracic vertebra.\r\n"
+    }
+  },
+  {
+    "pk": 13,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ShoulderLoc04.gif",
+      "muscle_subdivision": 8,
+      "location": "The electrodes need to be placed at one finger width distal and anterior to the acromion.\r\n"
+    }
+  },
+  {
+    "pk": 14,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ShoulderLoc05.gif",
+      "muscle_subdivision": 9,
+      "location": "Electrodes need to be placed from the acromion to the lateral epicondyle of the elbow. This should correspond to the greatest bulge of the muscle.\r\n"
+    }
+  },
+  {
+    "pk": 15,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ShoulderLoc06.gif",
+      "muscle_subdivision": 10,
+      "location": "Center the electrodes in the area about two fingerbreaths behind the angle of the acromion.\r\n"
+    }
+  },
+  {
+    "pk": 16,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/UpperLegLoc01.gif",
+      "muscle_subdivision": 17,
+      "location": "The electrodes need to be placed at 50% on the line between the sacral vertebrae and the greater trochanter. This position corresponds with the greatest prominence of the middle of the buttocks well above the visible bulge of the greater trochanter.\r\n"
+    }
+  },
+  {
+    "pk": 18,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/UpperLegLoc03.gif",
+      "muscle_subdivision": 19,
+      "location": "On the line from the anterior spina iliaca superior to the lateral femoral condyle in the proximal 1/6.\r\n"
+    }
+  },
+  {
+    "pk": 19,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/UpperLegLoc04_large.gif",
+      "muscle_subdivision": 20,
+      "location": "Lift and abduct the leg against manual resistance.\r\n"
+    }
+  },
+  {
+    "pk": 22,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/UpperLegLoc07.gif",
+      "muscle_subdivision": 23,
+      "location": "The electrodes need to be placed at 50% on the line between the ischial tuberosity and the lateral epicondyle of the tibia.\r\n"
+    }
+  },
+  {
+    "pk": 23,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/UpperLegLoc08.gif",
+      "muscle_subdivision": 24,
+      "location": "Electrodes need to be placed at 50% on the line between the ischial tuberosity and the medial epycondyle of the tibia.\r\n"
+    }
+  },
+  {
+    "pk": 24,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerLegLoc01.gif",
+      "muscle_subdivision": 25,
+      "location": "The electrodes need to be placed at 1/3 on the line between the tip of the fibula and the tip of the medial malleolus.\r\n"
+    }
+  },
+  {
+    "pk": 25,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerLegLoc02.gif",
+      "muscle_subdivision": 26,
+      "location": "Electrodes need to be placed at 25% on the line between the tip of the head of the fibula to the tip of the lateral malleolus.\r\n"
+    }
+  },
+  {
+    "pk": 26,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerLegLoc03.gif",
+      "muscle_subdivision": 27,
+      "location": "Electrodes need to be placed anterior to the tendon of the m. peroneus longus at 25% of the line from the tip of the lateral malleolus to the fibula-head.\r\n"
+    }
+  },
+  {
+    "pk": 27,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerLegLoc04.gif",
+      "muscle_subdivision": 28,
+      "location": "The electrodes need to be placed at 2/3 of the line between the medial condylis of the femur to the medial malleolus.\r\n"
+    }
+  },
+  {
+    "pk": 29,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerLegLoc06.gif",
+      "muscle_subdivision": 30,
+      "location": "Electrodes need to be placed at 1/3 of the line between the head of the fibula and the heel.\r\n"
+    }
+  },
+  {
+    "pk": 30,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/UpperLegLoc06.gif",
+      "muscle_subdivision": 33,
+      "location": "Electrodes need to be placed at 2/3 on the line from the anterior spina iliaca superior to the lateral side of the patella.\r\n"
+    }
+  },
+  {
+    "pk": 31,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/UpperLegLoc05.gif",
+      "muscle_subdivision": 34,
+      "location": "Electrodes need to be placed at 80% on the line between the anterior spina iliaca superior and the joint space in front of the anterior border of the medial ligament.\r\n"
+    }
+  },
+  {
+    "pk": 32,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerLegLoc05.gif",
+      "muscle_subdivision": 35,
+      "location": "Electrodes need to be placed on the most prominent bulge of the muscle.\r\n"
+    }
+  },
+  {
+    "pk": 33,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerbackLoc01.gif",
+      "muscle_subdivision": 36,
+      "location": "The electrodes need to be placed at 2 finger width lateral from the proc. spin. of L1.\r\n"
+    }
+  },
+  {
+    "pk": 34,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerbackLoc02.gif",
+      "muscle_subdivision": 12,
+      "location": "The electrodes need to be placed 1 finger width medial from the line from the posterior spina iliaca superior to the lowest point of the lower rib, at the level of L2.\r\n"
+    }
+  },
+  {
+    "pk": 35,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/LowerbackLoc03.gif",
+      "muscle_subdivision": 13,
+      "location": "Electrodes need to be placed on and aligned with a line from caudal tip posterior spina iliaca superior to the interspace between L1 and L2 interspace at the level of L5 spinous process (i.e. about 2 - 3 cm from the midline).\r\n"
+    }
+  },
+  {
+    "pk": 36,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/ArmHandLoc02.gif",
+      "muscle_subdivision": 31,
+      "location": "Electrodes need to be placed at 50 % on the line between the posterior crista of the acromion and the olecranon at 2 finger widths medial to the line.\r\n"
+    }
+  },
+  {
+    "pk": 37,
+    "model": "experiment.emgelectrodeplacement",
+    "fields": {
+      "placement_reference": null,
+      "standardization_system": 1,
+      "placement_type": "surface",
+      "photo": "emg_placement_files/1/UpperLegLoc02.gif",
+      "muscle_subdivision": 32,
+      "location": "Electrodes need to be placed at 50% on the line from the crista iliaca to the trochanter.\r\n"
+    }
+  },
+  {
+    "model": "experiment.informationtype",
+    "fields": {
+      "name": "Medidas cinem\u00e1ticas",
+      "description_en": "Kinematic measures",
+      "description_pt_br": "Medidas cinem\u00e1ticas",
+      "description": "Medidas cinem\u00e1ticas",
+      "name_pt_br": "Medidas cinem\u00e1ticas",
+      "name_en": "Kinematic measures"
+    },
+    "pk": 1
+  },
+  {
+    "model": "experiment.informationtype",
+    "fields": {
+      "name": "Estabilometria",
+      "description_en": "Stabilometry",
+      "description_pt_br": "Estabilometria",
+      "description": "Estabilometria",
+      "name_pt_br": "Estabilometria",
+      "name_en": "Stabilometry"
+    },
+    "pk": 2
+  },
+  {
+    "model": "experiment.informationtype",
+    "fields": {
+      "name": "Tempo de resposta",
+      "description_en": "Response time",
+      "description_pt_br": "Tempo de resposta",
+      "description": "Tempo de resposta",
+      "name_pt_br": "Tempo de resposta",
+      "name_en": "Response time"
+    },
+    "pk": 3
+  },
+  {
+    "model": "experiment.informationtype",
+    "fields": {
+      "name": "Medidas psicof\u00edsicas",
+      "description_en": "Psychophysical measures",
+      "description_pt_br": "Medidas psicof\u00edsicas",
+      "description": "Medidas psicof\u00edsicas",
+      "name_pt_br": "Medidas psicof\u00edsicas",
+      "name_en": "Psychophysical measures"
+    },
+    "pk": 4
+  },
+  {
+    "model": "experiment.informationtype",
+    "fields": {
+      "name": "Resposta verbal",
+      "description_en": "Verbal response",
+      "description_pt_br": "Resposta verbal",
+      "description": "Resposta verbal",
+      "name_pt_br": "Resposta verbal",
+      "name_en": "Verbal response"
+    },
+    "pk": 5
+  },
+  {
+    "model": "experiment.informationtype",
+    "fields": {
+      "name": "Escalas psicom\u00e9tricas",
+      "description_en": "Psychometric scales",
+      "description_pt_br": "Escalas psicom\u00e9tricas",
+      "description": "Escalas psicom\u00e9tricas",
+      "name_pt_br": "Escalas psicom\u00e9tricas",
+      "name_en": "Psychometric scales"
+    },
+    "pk": 6
+  },
+  {
+    "model": "experiment.informationtype",
+    "fields": {
+      "name": "Registro unit\u00e1rio",
+      "description_en": "Unit recording",
+      "description_pt_br": "Registro unit\u00e1rio",
+      "description": "Registro unit\u00e1rio",
+      "name_pt_br": "Registro unit\u00e1rio",
+      "name_en": "Unit recording"
+    },
+    "pk": 7
+  },
+  {
+    "model": "experiment.informationtype",
+    "fields": {
+      "name": "Registro multiunit\u00e1rio",
+      "description_en": "Multiunit recording",
+      "description_pt_br": "Registro multiunit\u00e1rio",
+      "description": "Registro multiunit\u00e1rio",
+      "name_pt_br": "Registro multiunit\u00e1rio",
+      "name_en": "Multiunit recording"
+    },
+    "pk": 8
+  },
+  {
+    "model": "team.institution",
+    "pk": 1,
+    "fields": {
+      "acronym": "local",
+      "name": "Local institution",
+      "parent": null,
+      "country": "BR"
+    }
+  },
+  {
+    "model": "configuration.localinstitution",
+    "pk": 1,
+    "fields": {
+      "logo": "",
+      "code": null,
+      "url": null,
+      "institution": 1
+    }
   }
 ]
