@@ -1,8 +1,10 @@
 {% extends "quiz/template.html" %}
 
-{% load i18n %}
+{% load i18n admin_static %}
 
 {% block header %}
+    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
+    <script src="{% static 'quiz/js/questionnaire_export.js' %}"></script>
     <script>
         $(function(){
             $("[data-toggle=tooltip]").tooltip();
@@ -47,6 +49,8 @@
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
                 <li><a href="/experiment/research_project/list">{% trans "Studies" %}</a></li>
+                <li><a href="/experiment/research_project/{{ experiment.research_project.id }}">{{ experiment.research_project.title }}</a></li>
+                <li><a href="/experiment/{{ experiment.id }}">{{ experiment.title }}</a></li>
                 <li class="active">{% trans "Schedule of sending" %}</li>
             </ol>
         </div>
@@ -97,34 +101,64 @@
                                 <h9 class="panel-title">
                                     <a data-toggle="collapse" data-parent="#accordion"
                                        href="#collapse_{{ survey_key }}">
-                                        ({{ survey_key }}) {{ survey_value.title }} </a>
+
+                                        <span style="background-color: #428bca" id="badge_{{ survey_key }}"
+                                              class="badge">{{ survey_value.selected_counter }} </span>
+                                            ({{ survey_key }}) {{ survey_value.title }}
+                                    </a>
+
                                 </h9>
                             </div>
                             <div id="collapse_{{ survey_key }}" class="panel-collapse collapse">
                                 <div class="panel-body">
+                                    <div class="col-md-5 col-sm-12">
+                                        <div class="form-group">
+                                            <label class="control-label">{% trans "Fields available:" %} </label>
+                                                <select class="form-control" size="13" id="multiselect_{{ survey_key }}"
+                                                        name="from[]" multiple="multiple"
+                                                        data-error={% trans "Please, select a questionnaire from the list." %}>
+                                                    {% for field in survey_value.fields %}
+                                                        {% if not field.is_sensitive and not field.select_to_send %}
+                                                            <option title="{{ field.text }}"
+                                                                    value="{{ survey_key }}*{{ field.code }}">
+                                                                [{{ field.code }}] {{ field.text }}
+                                                            </option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                        </div>
+                                    </div>
 
-                                    <div class="form-group container">
-                                        <table class="table">
-                                        <tbody>
+                                    <div class="col-md-2 col-sm-2">
+                                        <button type="button" id="multiselect_{{ survey_key }}_rightAll"
+                                                class="btn btn-default btn-block"><i
+                                                class="glyphicon glyphicon-forward"></i></button>
+                                        <button type="button" id="multiselect_{{ survey_key }}_rightSelected"
+                                                class="btn btn-default btn-block"><i
+                                                class="glyphicon glyphicon-chevron-right"></i></button>
+                                        <button type="button" id="multiselect_{{ survey_key }}_leftSelected"
+                                                class="btn btn-default btn-block"><i
+                                                class="glyphicon glyphicon-chevron-left"></i></button>
+                                        <button type="button" id="multiselect_{{ survey_key }}_leftAll"
+                                                class="btn btn-default btn-block"><i
+                                                class="glyphicon glyphicon-backward"></i></button>
+                                    </div>
+
+                                    <div class="col-md-5 col-sm-10">
+                                        <label class="control-label">{% trans "Fields chosen:" %} </label>
+
+                                        <select name="to[]" id="multiselect_{{ survey_key }}_to"
+                                                class="form-control" size="13"
+                                                multiple="multiple">
                                             {% for field in survey_value.fields %}
-                                                <tr {% if field.is_sensitive %} class="text-muted" data-original-title="{% trans 'sensitive question' %}" data-toggle="tooltip" data-placement="left"{% endif %}>
-                                                    <td><label>
-                                                        <input type="checkbox"
-                                                                {% if field.is_sensitive %}
-                                                                    disabled="disabled"
-                                                                {% else %}
-                                                                    {% if field.select_to_send %}
-                                                                        checked="checked"
-                                                                    {% endif %}
-                                                               {% endif %}
-                                                                name="field_{{ survey_key }}_{{ field.code }}"/>
-                                                    </label></td>
-                                                    <td>{{ field.code }}</td>
-                                                    <td>{{ field.text }}</td>
-                                                </tr>
+                                                {% if field.select_to_send %}
+                                                    <option title="{{ field.text }}"
+                                                            value="{{ survey_key }}*{{ field.code }}">
+                                                        [{{ field.code }}] {{ field.text }}
+                                                    </option>
+                                                {% endif %}
                                             {% endfor %}
-                                        </tbody>
-                                        </table>
+                                        </select>
                                     </div>
 
                                 </div>

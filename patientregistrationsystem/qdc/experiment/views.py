@@ -748,16 +748,22 @@ def experiment_schedule_of_sending(request, experiment_id,
 
                 counter = 0
                 available_fields = []
+                amount_to_send = 0
                 while counter < len(field_code):
                     if field_code[counter] not in questionnaire_evaluation_fields_excluded:
+
+                        select_to_send = False
+                        if not current_portal_selected_questions.exists() \
+                                or current_portal_selected_questions.filter(question_code=field_code[counter]).exists():
+                            select_to_send = True
+                            amount_to_send += 1
+
                         available_fields.append(
                             {'code': field_code[counter],
                              'text': field_text[counter],
                              'is_sensitive':
                                  current_sensitive_questions.filter(code=field_code[counter]).exists(),
-                             'select_to_send':
-                                 not current_portal_selected_questions.exists() or
-                                 current_portal_selected_questions.filter(question_code=field_code[counter]).exists(),
+                             'select_to_send': select_to_send,
                              'is_selected_in_db':
                                  current_portal_selected_questions.filter(question_code=field_code[counter]).exists()})
                     counter += 1
@@ -765,7 +771,8 @@ def experiment_schedule_of_sending(request, experiment_id,
                 experiment_questionnaires[questionnaire.survey.lime_survey_id] = {
                     'survey': questionnaire.survey,
                     'title': questionnaire_title,
-                    'fields': available_fields
+                    'fields': available_fields,
+                    'selected_counter': amount_to_send
                 }
 
     surveys.release_session_key()
@@ -773,13 +780,22 @@ def experiment_schedule_of_sending(request, experiment_id,
     if request.method == "POST":
         if request.POST['action'] == "send":
 
+            selected_fields = {}
+            for field in request.POST.getlist('to[]'):
+                sid, field_name = field.split("*")
+                sid = int(sid)
+                if sid not in selected_fields:
+                    selected_fields[sid] = [field_name]
+                else:
+                    selected_fields[sid].append(field_name)
+
             # save questionnaire configuration
             for questionnaire_key, questionnaire_value in experiment_questionnaires.items():
                 for field in questionnaire_value['fields']:
                     is_to_send = False
                     if not field['is_sensitive'] \
-                            and 'field' + '_' + str(questionnaire_key) + '_' + field['code'] in request.POST \
-                            and request.POST['field' + '_' + str(questionnaire_key) + '_' + field['code']] == 'on':
+                            and questionnaire_key in selected_fields \
+                            and field['code'] in selected_fields[questionnaire_key]:
                         is_to_send = True
                     if is_to_send and not field['is_selected_in_db']:
                         PortalSelectedQuestion.objects.create(experiment=experiment,
