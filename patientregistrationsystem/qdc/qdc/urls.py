@@ -48,6 +48,8 @@ urlpatterns = patterns(
     url(r'^$', 'qdc.views.contact', name='contact'),
     url(r'^language/change/(?P<language_code>(?:(?:\w{2})|(?:\w{2}\-\w{2})))$', 'qdc.views.language_change', name='language_change'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
+    url(r'^home/check_upgrade/$', 'qdc.views.check_upgrade', name='check_upgrade'),
+    url(r'^home/upgrade_nes/$', 'qdc.views.upgrade_nes', name='check_upgrade'),
 
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
