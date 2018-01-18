@@ -6,7 +6,7 @@
 
 {% block header %}
     <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
-     <script src="{% static 'quiz/js/questionnaire_export.js' %}"></script>
+    <script src="{% static 'quiz/js/questionnaire_export.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
@@ -178,16 +178,16 @@
 
                                                 <div class="col-md-2 col-sm-2">
                                                     <button type="button" id="multiselect_{{ survey.index }}_rightAll"
-                                                            class="btn btn-block"><i
+                                                            class="btn btn-default btn-block"><i
                                                             class="glyphicon glyphicon-forward"></i></button>
                                                     <button type="button" id="multiselect_{{ survey.index }}_rightSelected"
-                                                            class="btn btn-block"><i
+                                                            class="btn btn-default btn-block"><i
                                                             class="glyphicon glyphicon-chevron-right"></i></button>
                                                     <button type="button" id="multiselect_{{ survey.index }}_leftSelected"
-                                                            class="btn btn-block"><i
+                                                            class="btn btn-default btn-block"><i
                                                             class="glyphicon glyphicon-chevron-left"></i></button>
                                                     <button type="button" id="multiselect_{{ survey.index }}_leftAll"
-                                                            class="btn btn-block"><i
+                                                            class="btn btn-default btn-block"><i
                                                             class="glyphicon glyphicon-backward"></i></button>
                                                 </div>
 
