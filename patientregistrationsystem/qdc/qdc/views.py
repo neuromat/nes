@@ -53,7 +53,6 @@ def password_changed(request):
 def check_upgrade(request):
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
-    new_version = False
     if '.git' in list_dir:
         repo = Repo(path_git_repo_local)
         current_branch = repo.active_branch.name
@@ -62,31 +61,38 @@ def check_upgrade(request):
 
         tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
         if tags:
-            remote_version = str(tags[-1]).split('-')[-1]
-            remote_version = remote_version.split('.')
-            local_current_version = settings.VERSION.split('.')
-            print(remote_version)
-            print(local_current_version)
-
-            if int(remote_version[0]) > int(local_current_version[0]):
-                new_version = True
-            elif int(remote_version[0]) == int(local_current_version[0]):
-                if int(remote_version[1]) > int(local_current_version[1]):
-                    new_version = True
-                elif int(remote_version[1]) == int(local_current_version[1]):
-                    if int(remote_version[2]) > int(local_current_version[2]):
-                        new_version = True
+            new_version = nes_new_version(tags)
+            if new_version:
+                messages.success(request, _("There is a new version of NES!"))
+                if 'TAG' not in current_branch.split('-'):
+                    messages.success(request, _("But it is not possible automatically upgrade it in your installation"
+                                                " (Branch name " + current_branch + " ). Please contact your "
+                                                "system administrator to upgrade NES to a new version."))
+                else:
+                    messages.success(request, _("Contact your system coordinator to upgrade NES to the new version."))
 
     else:
-        messages.success(request, _("Automatic upgrade can be done with git installation. Please contact your system "
-                                    "administrator to upgrade NES to a new version."))
+        messages.success(request, _("No NES Git installation. Automatic upgrade can be done with git installation. "
+                                    "Please contact your system administrator to upgrade NES to a new version."))
 
-    if new_version and 'TAG' not in current_branch.split('-'):
-        new_version = False
-        messages.success(request, _("There is a new version of NES, but it is not possible automatically upgrade it in "
-                                    "your installation (Branch name " + current_branch + " ). Please contact your "
-                                    "system administrator to upgrade NES to a new version."))
+    return render(request, 'quiz/contato.html')
 
+
+def nes_new_version(tags):
+    new_version = False
+    remote_version = str(tags[-1]).split('-')[-1]
+    remote_version = remote_version.split('.')
+    local_current_version = settings.VERSION.split('.')
+    print(remote_version)
+    print(local_current_version)
+    if int(remote_version[0]) > int(local_current_version[0]):
+        new_version = True
+    elif int(remote_version[0]) == int(local_current_version[0]):
+        if int(remote_version[1]) > int(local_current_version[1]):
+            new_version = True
+        elif int(remote_version[1]) == int(local_current_version[1]):
+            if int(remote_version[2]) > int(local_current_version[2]):
+                new_version = True
     return new_version
 
 
@@ -124,39 +130,41 @@ def upgrade_nes(request):
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
     if '.git' in list_dir:
+        new_version = ''
         repo = Repo(path_git_repo_local)
         branch = repo.active_branch
-        if 'TAG' in branch.name.split('-'):
-            for remote in repo.remotes:
-                remote.fetch()
+        # if 'TAG' in branch.name.split('-'):
+        for remote in repo.remotes:
+            remote.fetch()
 
-            git = repo.git
-            tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-            if tags:
-                last_tag = str(tags[-1])  # last version [-1] before last version [-2]
-                repo_version = last_tag.split('-')[-1]
-                print("repository last version: " + repo_version)
-                git.checkout(last_tag)
+        git = repo.git
+        tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+        if tags:
+            # if nes_new_version(tags):
+            last_tag = str(tags[-2])  # last version [-1] before last version [-2]
+            repo_version = last_tag.split('-')[-1]
+            print("repository last version: " + repo_version)
+            git.checkout(last_tag)
 
-                try:
-                    pip.main(['install', '-r', 'requirements.txt'])
-                except SystemExit as e:
-                    pass
+            try:
+                pip.main(['install', '-r', 'requirements.txt'])
+            except SystemExit as e:
+                pass
 
-                call_command('collectstatic', interactive=False, verbosity=0)
+            call_command('collectstatic', interactive=False, verbosity=0)
 
-                if get_pending_migrations():
-                    call_command('migrate')
+            if get_pending_migrations():
+                call_command('migrate')
 
-                # TODO start apache (opcao colocar um flag no setting local)
-                # check the current branch - a tag mais nova last_tag
-                if repo.active_branch.name == last_tag:
-                    messages.success(request, _("Upgrade to version " + repo_version + " was sucessful!"))
-                else:
-                    messages.success(request, _("An error ocurred when upgrade to the new version ! Please contact "
-                                                "your administrator system."))
-        else:
-            messages.success(request, _("NES git directory not found. Please contact your system administrator to "
-                                        "upgrade NES to the new version."))
+            # TODO start apache (opcao colocar um flag no setting local)
+            # check the current branch - a tag mais nova last_tag
+            if repo.active_branch.name == last_tag:
+                messages.success(request, _("Upgrade to version " + repo_version + " was sucessful!"))
+            else:
+                messages.success(request, _("An error ocurred when upgrade to the new version ! Please contact "
+                                            "your administrator system."))
+        # else:
+        #     messages.success(request, _("NES git branch different: " + branch.name + ". Please contact your system "
+        #                                 "administrator to upgrade NES to the new version."))
 
     return render(request, 'quiz/contato.html')
