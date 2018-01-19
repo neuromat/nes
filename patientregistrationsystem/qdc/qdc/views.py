@@ -1,3 +1,4 @@
+import os
 import sys
 
 from django.conf import settings
@@ -27,9 +28,6 @@ def contact(request):
     }
     if check_upgrade(request):
         messages.success(request, _("There is a new version, please contact your administrator to update !"))
-    else:
-        messages.success(request, _("There is not a new version !"))
-
 
     return render(request, 'quiz/contato.html', context)
 
@@ -53,53 +51,59 @@ def password_changed(request):
 
 @login_required
 def check_upgrade(request):
-    repo = Repo("/Users/mruizo/PycharmProjects/nes/.git")
-    # TODO: caso não exista .git
+    path_git_repo_local = get_nes_directory_path()
+    list_dir = os.listdir(path_git_repo_local)
+    new_version = False
+    if '.git' in list_dir:
+        repo = Repo(path_git_repo_local)
+        current_branch = repo.active_branch.name
+        for remote in repo.remotes:
+            remote.fetch()
 
-    for remote in repo.remotes:
-        remote.fetch()
+        tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+        if tags:
+            remote_version = str(tags[-1]).split('-')[-1]
+            remote_version = remote_version.split('.')
+            local_current_version = settings.VERSION.split('.')
+            print(remote_version)
+            print(local_current_version)
 
-    tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+            if int(remote_version[0]) > int(local_current_version[0]):
+                new_version = True
+            elif int(remote_version[0]) == int(local_current_version[0]):
+                if int(remote_version[1]) > int(local_current_version[1]):
+                    new_version = True
+                elif int(remote_version[1]) == int(local_current_version[1]):
+                    if int(remote_version[2]) > int(local_current_version[2]):
+                        new_version = True
 
-    remote_version = str(tags[-1]).split('-')[-1]
-    remote_version = remote_version.split('.')
-    local_current_version = settings.VERSION.split('.')
-    print(remote_version)
-    print(local_current_version)
-    if int(remote_version[0]) == int(local_current_version[0]):
-        if int(remote_version[1]) > int(local_current_version[1]):
-            # messages.success(request, _("There is a new version to upgrade!"))
-            return True
-        else:
-            if int(remote_version[1]) == int(local_current_version[1]):
-                if int(remote_version[2]) == int(local_current_version[2]):
-                    # messages.success(request, _("There is a new version to upgrade!"))
-                    return False
-                else:
-                    # se remoto for menor que local return False
-                    return False
     else:
-        if int(remote_version[0]) > int(local_current_version[0]):
-            # messages.success(request, _("There is a new version to upgrade!"))
-            return True
-        else:
-            # messages.success(request, _("There is not a new version to upgrade!"))
-            return False
-    # return render(request, "quiz/contato.html")
+        messages.success(request, _("Automatic upgrade can be done with git installation. Please contact your system "
+                                    "administrator to upgrade NES to a new version."))
+
+    if new_version and 'TAG' not in current_branch.split('-'):
+        new_version = False
+        messages.success(request, _("There is a new version of NES, but it is not possible automatically upgrade it in "
+                                    "your installation (Branch name " + current_branch + " ). Please contact your "
+                                    "system administrator to upgrade NES to a new version."))
+
+    return new_version
 
 
-def get_current_path():
-    base_dir = settings.BASE_DIR.split('/')
-    path_git_repo = []
-    for item in base_dir:
-        if item != 'nes' and item != '':
-            path_git_repo.append(item)
-        if item == 'nes':
-            path_git_repo.append(item)
-            break
+def get_nes_directory_path():
     path_repo = '/'
-    for item in path_git_repo:
-        path_repo = path_repo + item + '/'
+    base_dir = settings.BASE_DIR.split('/')
+    if 'nes' in base_dir:
+        path_git_repo = []
+        for item in base_dir:
+            if item != 'nes' and item != '':
+                path_git_repo.append(item)
+            if item == 'nes':
+                path_git_repo.append(item)
+                break
+
+        for item in path_git_repo:
+            path_repo = path_repo + item + '/'
 
     return path_repo
 
@@ -116,32 +120,43 @@ def get_pending_migrations():
 def upgrade_nes(request):
     log = open("upgrade.log", "a")
     sys.stdout = log
-    # TODO check which is a current TAG
-    path_git_repo_local = get_current_path()
-    # TODO: se nao existe .git directory
-    repo = Repo(path_git_repo_local)
 
-    for remote in repo.remotes:
-        remote.fetch()
+    path_git_repo_local = get_nes_directory_path()
+    list_dir = os.listdir(path_git_repo_local)
+    if '.git' in list_dir:
+        repo = Repo(path_git_repo_local)
+        branch = repo.active_branch
+        if 'TAG' in branch.name.split('-'):
+            for remote in repo.remotes:
+                remote.fetch()
 
-    git = repo.git
-    tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-    #TODO pode nao existir tag
-    last_tag = str(tags[-1]) # last version [-1] before last version [-2]
-    repo_version = last_tag.split('-')[-1]
-    print("repository last version: " + repo_version)
-    git.checkout(last_tag)
+            git = repo.git
+            tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+            if tags:
+                last_tag = str(tags[-1])  # last version [-1] before last version [-2]
+                repo_version = last_tag.split('-')[-1]
+                print("repository last version: " + repo_version)
+                git.checkout(last_tag)
 
-    try:
-        pip.main(['install', '-r', 'requirements.txt'])
-    except SystemExit as e:
-        pass
+                try:
+                    pip.main(['install', '-r', 'requirements.txt'])
+                except SystemExit as e:
+                    pass
 
-    call_command('collectstatic', interactive=False, verbosity=0)
+                call_command('collectstatic', interactive=False, verbosity=0)
 
-    if get_pending_migrations():
-        call_command('migrate')
+                if get_pending_migrations():
+                    call_command('migrate')
 
-    messages.success(request, _("Upgrade to version " + repo_version + " was sucessful!"))
+                # TODO start apache (opcao colocar um flag no setting local)
+                # check the current branch - a tag mais nova last_tag
+                if repo.active_branch.name == last_tag:
+                    messages.success(request, _("Upgrade to version " + repo_version + " was sucessful!"))
+                else:
+                    messages.success(request, _("An error ocurred when upgrade to the new version ! Please contact "
+                                                "your administrator system."))
+        else:
+            messages.success(request, _("NES git directory not found. Please contact your system administrator to "
+                                        "upgrade NES to the new version."))
 
     return render(request, 'quiz/contato.html')

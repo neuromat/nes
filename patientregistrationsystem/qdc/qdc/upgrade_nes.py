@@ -14,7 +14,7 @@ def get_current_path():
     path_git_repo = []
     for item in base_dir:
         if item != 'nes' and item != '':
-            path_git_repo.append(dir)
+            path_git_repo.append(item)
         if item == 'nes':
             path_git_repo.append(item)
             break
