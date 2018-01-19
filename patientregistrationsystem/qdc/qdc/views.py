@@ -1,3 +1,4 @@
+import sys
 
 from django.conf import settings
 from django.contrib import messages
@@ -24,6 +25,11 @@ def contact(request):
     context = {
         'logo_institution': settings.LOGO_INSTITUTION,
     }
+    if check_upgrade(request):
+        messages.success(request, _("There is a new version, please contact your administrator to update !"))
+    else:
+        messages.success(request, _("There is not a new version !"))
+
 
     return render(request, 'quiz/contato.html', context)
 
@@ -55,26 +61,28 @@ def check_upgrade(request):
 
     remote_version = str(tags[-1]).split('-')[-1]
     remote_version = remote_version.split('.')
-    current_version = settings.VERSION.split('.')
+    local_current_version = settings.VERSION.split('.')
     print(remote_version)
-    print(current_version)
-    if int(remote_version[0]) == int(current_version[0]):
-        if int(remote_version[1]) > int(current_version[1]):
-            messages.success(request, _("There is a new version to upgrade!"))
+    print(local_current_version)
+    if int(remote_version[0]) == int(local_current_version[0]):
+        if int(remote_version[1]) > int(local_current_version[1]):
+            # messages.success(request, _("There is a new version to upgrade!"))
+            return True
         else:
-            if int(remote_version[1]) == int(current_version[1]):
-                if int(remote_version[2]) > int(current_version[2]):
-                    messages.success(request, _("There is a new version to upgrade!"))
+            if int(remote_version[1]) == int(local_current_version[1]):
+                if int(remote_version[2]) == int(local_current_version[2]):
+                    # messages.success(request, _("There is a new version to upgrade!"))
+                    return False
                 else:
-                    if int(remote_version[2]) == int(current_version[2]):
-                        messages.success(request, _("There is not a new version to upgrade!"))
+                    return True
     else:
-        if int(remote_version[0]) > int(current_version[0]):
-            messages.success(request, _("There is a new version to upgrade!"))
+        if int(remote_version[0]) > int(local_current_version[0]):
+            # messages.success(request, _("There is a new version to upgrade!"))
+            return True
         else:
-            messages.success(request, _("There is not a new version to upgrade!"))
-
-    return render(request, "quiz/contato.html")
+            # messages.success(request, _("There is not a new version to upgrade!"))
+            return False
+    # return render(request, "quiz/contato.html")
 
 
 def get_current_path():
@@ -103,6 +111,8 @@ def get_pending_migrations():
 
 @login_required
 def upgrade_nes(request):
+    log = open("upgrade.log", "a")
+    sys.stdout = log
     path_git_repo_local = get_current_path()
     repo = Repo(path_git_repo_local)
 
@@ -111,8 +121,8 @@ def upgrade_nes(request):
 
     git = repo.git
     tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-    last_tag = str(tags[-1])
-    repo_version = last_tag.split('-')[-1]
+    last_tag = str(tags[-2]) # last version [-1] before last version [-2]
+    repo_version = last_tag.split('-')[-2]
     print("repository last version: " + repo_version)
     git.checkout(last_tag)
 
