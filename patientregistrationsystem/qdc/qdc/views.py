@@ -53,6 +53,7 @@ def password_changed(request):
 def check_upgrade(request):
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
+    new_version = False
     if '.git' in list_dir:
         repo = Repo(path_git_repo_local)
         current_branch = repo.active_branch.name
@@ -62,20 +63,16 @@ def check_upgrade(request):
         tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
         if tags:
             new_version = nes_new_version(tags)
-            if new_version:
-                messages.success(request, _("There is a new version of NES!"))
-                if 'TAG' not in current_branch.split('-'):
-                    messages.success(request, _("But it is not possible automatically upgrade it in your installation"
-                                                " (Branch name " + current_branch + " ). Please contact your "
-                                                "system administrator to upgrade NES to a new version."))
-                else:
-                    messages.success(request, _("Contact your system coordinator to upgrade NES to the new version."))
+            if new_version and 'TAG' not in current_branch.split('-'):
+                messages.success(request, _("Not is possible automatically upgrade NES in your installation"
+                                            " (Branch name " + current_branch + " ). Please contact your "
+                                            "system administrator to upgrade NES to a new version."))
 
     else:
         messages.success(request, _("No NES Git installation. Automatic upgrade can be done with git installation. "
                                     "Please contact your system administrator to upgrade NES to a new version."))
 
-    return render(request, 'quiz/contato.html')
+    return new_version
 
 
 def nes_new_version(tags):
@@ -130,7 +127,6 @@ def upgrade_nes(request):
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
     if '.git' in list_dir:
-        new_version = ''
         repo = Repo(path_git_repo_local)
         branch = repo.active_branch
         # if 'TAG' in branch.name.split('-'):
