@@ -54,6 +54,8 @@ def password_changed(request):
 @login_required
 def check_upgrade(request):
     repo = Repo("/Users/mruizo/PycharmProjects/nes/.git")
+    # TODO: caso não exista .git
+
     for remote in repo.remotes:
         remote.fetch()
 
@@ -74,7 +76,8 @@ def check_upgrade(request):
                     # messages.success(request, _("There is a new version to upgrade!"))
                     return False
                 else:
-                    return True
+                    # se remoto for menor que local return False
+                    return False
     else:
         if int(remote_version[0]) > int(local_current_version[0]):
             # messages.success(request, _("There is a new version to upgrade!"))
@@ -113,7 +116,9 @@ def get_pending_migrations():
 def upgrade_nes(request):
     log = open("upgrade.log", "a")
     sys.stdout = log
+    # TODO check which is a current TAG
     path_git_repo_local = get_current_path()
+    # TODO: se nao existe .git directory
     repo = Repo(path_git_repo_local)
 
     for remote in repo.remotes:
@@ -121,8 +126,9 @@ def upgrade_nes(request):
 
     git = repo.git
     tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-    last_tag = str(tags[-2]) # last version [-1] before last version [-2]
-    repo_version = last_tag.split('-')[-2]
+    #TODO pode nao existir tag
+    last_tag = str(tags[-1]) # last version [-1] before last version [-2]
+    repo_version = last_tag.split('-')[-1]
     print("repository last version: " + repo_version)
     git.checkout(last_tag)
 
