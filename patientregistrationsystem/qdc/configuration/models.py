@@ -26,6 +26,6 @@ class RightsSupport(models.Model):
         managed = False
 
         permissions = (
-            ('upgrade_rights', 'NES administrator rights'),
+            ('upgrade_rights', 'Can upgrade NES version'),
         )
 
