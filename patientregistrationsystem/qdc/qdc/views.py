@@ -123,7 +123,7 @@ def get_pending_migrations():
 
 
 @login_required
-@permission_required('')
+@permission_required('configuration.upgrade_rights')
 def upgrade_nes(request):
     log = open("upgrade.log", "a")
     sys.stdout = log
