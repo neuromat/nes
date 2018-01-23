@@ -3,7 +3,7 @@ import sys
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _
@@ -12,6 +12,9 @@ import pip
 from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS, connections
 from django.db.migrations.executor import MigrationExecutor
+from functools import partial
+
+permission_required = partial(permission_required, raise_exception=True)
 
 
 def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
@@ -120,6 +123,7 @@ def get_pending_migrations():
 
 
 @login_required
+@permission_required('')
 def upgrade_nes(request):
     log = open("upgrade.log", "a")
     sys.stdout = log

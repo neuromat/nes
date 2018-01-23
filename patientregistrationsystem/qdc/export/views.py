@@ -667,16 +667,18 @@ def export_view(request, template_name="export/export_data.html"):
             messages.error(request, _("No data was select. Export data was not generated."))
 
     surveys = Questionnaires()
+    questionnaires_experiment_list_final = []
     # Exportacao de experimentos
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
-        questionnaires_experiment_list_final = []
+
         # participants_list_from_experiment_questionnaire = []
         component_list = []
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
                 component_list = get_component_with_data_and_metadata(group, component_list)
+
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
                     subject_of_group__group=group)
 
@@ -706,60 +708,63 @@ def export_view(request, template_name="export/export_data.html"):
             questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
                 questionnaires_experiment_list_final, language_code)
 
-    # obter a lista dos participantes filtrados que tem questionarios de entrada preenchidos
-    patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
-        patient_id__in=request.session['filtered_participant_data'])
+    if surveys:
+        # obter a lista dos participantes filtrados que tem questionarios de entrada preenchidos
+        patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
+            patient_id__in=request.session['filtered_participant_data'])
 
-    surveys_with_ev_list = []
-    surveys_id_list = []
-    # verificar se os questionnarios estão completos
-    for patient_questionnaire_response in patient_questionnaire_response_list:
+        surveys_with_ev_list = []
+        surveys_id_list = []
+        # verificar se os questionnarios estão completos
+        for patient_questionnaire_response in patient_questionnaire_response_list:
 
-        lime_survey_id = patient_questionnaire_response.survey.lime_survey_id
-        if lime_survey_id not in surveys_id_list:
-            completed = surveys.get_participant_properties(lime_survey_id,
-                                                           patient_questionnaire_response.token_id, "completed")
-            # if completed is a data
-            if completed is not None and completed != "N" and completed != "":
-                surveys_id_list.append(lime_survey_id)
-                surveys_with_ev_list.append(get_object_or_404(Survey, pk=patient_questionnaire_response.survey_id))
+            lime_survey_id = patient_questionnaire_response.survey.lime_survey_id
+            if lime_survey_id not in surveys_id_list:
+                completed = surveys.get_participant_properties(lime_survey_id,
+                                                               patient_questionnaire_response.token_id, "completed")
+                # if completed is a data
+                if completed is not None and completed != "N" and completed != "":
+                    surveys_id_list.append(lime_survey_id)
+                    surveys_with_ev_list.append(get_object_or_404(Survey, pk=patient_questionnaire_response.survey_id))
 
-    # load the questionnaires_list_final with the lime_survey_id
-    index = 0
-    if surveys_with_ev_list:
-        # Check if limesurveyDB is available
-        limesurvey_available = check_limesurvey_access(request, surveys)
+        # load the questionnaires_list_final with the lime_survey_id
+        index = 0
+        if surveys_with_ev_list:
+            # Check if limesurveyDB is available
+            limesurvey_available = check_limesurvey_access(request, surveys)
 
-        questionnaires_list = []
-        # If available get all the questionnaires
-        if limesurvey_available:
-            questionnaires_list = surveys.find_all_active_questionnaires()
+            questionnaires_list = []
+            # If available get all the questionnaires
+            if limesurvey_available:
+                questionnaires_list = surveys.find_all_active_questionnaires()
 
-        surveys.release_session_key()
+            surveys.release_session_key()
 
-        questionnaires_list_final = []
-        for survey in surveys_with_ev_list:
-            for questionnaire in questionnaires_list:
-                if survey.lime_survey_id == questionnaire['sid']:
-                    questionnaires_list_final.append(questionnaire)
-                    break
+            questionnaires_list_final = []
+            for survey in surveys_with_ev_list:
+                for questionnaire in questionnaires_list:
+                    if survey.lime_survey_id == questionnaire['sid']:
+                        questionnaires_list_final.append(questionnaire)
+                        break
 
-        # get the questionnaire fields from the questionnaires_list_final and show them for selection
-        questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
+            # get the questionnaire fields from the questionnaires_list_final and show them for selection
+            questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
 
-        if len(selected_ev_quest):
-            questionnaire_ids, field_id = zip(*selected_ev_quest)
-        else:
-            questionnaire_ids = ()
+            if len(selected_ev_quest):
+                questionnaire_ids, field_id = zip(*selected_ev_quest)
+            else:
+                questionnaire_ids = ()
 
-        for questionnaire in questionnaires_fields_list:
-            questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
-            questionnaire["index"] = index
-            index += 1
-            for output_list in questionnaire["output_list"]:
-                if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
-                    output_list["selected"] = True
+            for questionnaire in questionnaires_fields_list:
+                questionnaire["selected_counter"] = questionnaire_ids.count(questionnaire["sid"])
+                questionnaire["index"] = index
+                index += 1
+                for output_list in questionnaire["output_list"]:
+                    if (questionnaire["sid"], output_list["field"]) in selected_ev_quest:
+                        output_list["selected"] = True
 
+    if not index:
+        index = 0
     if 'group_selected_list' in request.session and questionnaires_experiment_list_final:
         if len(selected_ev_quest_experiments):
             questionnaire_ids, field_id = zip(*selected_ev_quest_experiments)
@@ -774,6 +779,7 @@ def export_view(request, template_name="export/export_data.html"):
             for output_list in questionnaire["output_list"]:
                 if (questionnaire["sid"], output_list["field"]) in selected_ev_quest_experiments:
                     output_list["selected"] = True
+
 
     context = {
         "export_form": export_form,
