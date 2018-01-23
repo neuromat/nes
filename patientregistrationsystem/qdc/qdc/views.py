@@ -30,10 +30,13 @@ def contact(request):
     context = {
         'logo_institution': settings.LOGO_INSTITUTION,
     }
-    if not check_upgrade(request):
-        messages.success(request, _("There is a new version, please contact your administrator to update !"))
+    if check_upgrade(request):
         if request.user.has_perm('configuration.upgrade_rights'):
-            messages.info(request, mark_safe('<a href="/home/upgrade_nes/">Upgrade NES</a>'))
+            messages.info(request, mark_safe('<a href="/home/upgrade_nes/">There is a new version of NES. Click '
+                                             'for upgrade</a>'))
+
+        else:
+            messages.success(request, _("There is a new version, please contact your administrator to update !"))
 
     return render(request, 'quiz/contato.html', context)
 
