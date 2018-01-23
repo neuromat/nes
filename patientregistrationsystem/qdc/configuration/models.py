@@ -17,3 +17,15 @@ class LocalInstitution(SingletonModel):
 class Contact(SingletonModel):
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
+
+
+class RightsSupport(models.Model):
+
+    class Meta:
+
+        managed = False
+
+        permissions = (
+            ('upgrade_rights', 'NES administrator rights'),
+        )
+
