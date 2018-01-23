@@ -134,14 +134,16 @@
 
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="/home/check_upgrade/"><span class="glyphicon
-                    glyphicon-check"></span>Check_upgrade</a>
-                </li>
-                <li>
-                    <a href="/home/upgrade_nes/"><span class="glyphicon
-                    glyphicon-download-alt"></span>Upgrade_nes</a>
-                </li>
+{#                <li>#}
+{#                    <a href="/home/check_upgrade/"><span class="glyphicon#}
+{#                    glyphicon-check"></span>Check_upgrade</a>#}
+{#                </li>#}
+                {% if perms.configuration.upgrade_rights %}
+                    <li>
+                        <a href="/home/upgrade_nes/"><span class="glyphicon
+                        glyphicon-download-alt"></span>Upgrade_nes</a>
+                    </li>
+                {% endif %}
                 <li>
 
                     {% get_current_language as LANGUAGE_CODE %}
