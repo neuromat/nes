@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _
+from django.utils.safestring import mark_safe
 from git import Repo
 import pip
 from django.core.management import call_command
@@ -29,8 +30,10 @@ def contact(request):
     context = {
         'logo_institution': settings.LOGO_INSTITUTION,
     }
-    if check_upgrade(request):
+    if not check_upgrade(request):
         messages.success(request, _("There is a new version, please contact your administrator to update !"))
+        if request.user.has_perm('configuration.upgrade_rights'):
+            messages.info(request, mark_safe('<a href="/home/upgrade_nes/">Upgrade NES</a>'))
 
     return render(request, 'quiz/contato.html', context)
 
