@@ -1480,3 +1480,14 @@ class PortalSelectedQuestion(models.Model):
 
     class Meta:
         unique_together = ('experiment', 'survey', 'question_code')
+
+
+class RightsSupport(models.Model):
+
+    class Meta:
+
+        managed = False
+
+        permissions = (
+            ('upgrade_rights', 'NES administrator rights'),
+        )
