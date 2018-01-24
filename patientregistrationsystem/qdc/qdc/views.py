@@ -27,16 +27,20 @@ def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
 
 @login_required
 def contact(request):
-    context = {
-        'logo_institution': settings.LOGO_INSTITUTION,
-    }
+    if_upgrade = False
     if check_upgrade(request):
+        if_upgrade = True
         if request.user.has_perm('configuration.upgrade_rights'):
             messages.info(request, mark_safe('<a href="/home/upgrade_nes/">There is a new version of NES. Click '
                                              'for upgrade</a>'))
 
         else:
-            messages.success(request, _("There is a new version, please contact your administrator to update !"))
+            messages.success(request, _("There is a new version, please contact your NES administrator to update !"))
+
+    context = {
+        'logo_institution': settings.LOGO_INSTITUTION,
+        'if_upgrade': if_upgrade,
+    }
 
     return render(request, 'quiz/contato.html', context)
 
@@ -173,4 +177,8 @@ def upgrade_nes(request):
         #     messages.success(request, _("NES git branch different: " + branch.name + ". Please contact your system "
         #                                 "administrator to upgrade NES to the new version."))
 
-    return render(request, 'quiz/contato.html')
+    context = {
+        'if_upgrade': False,
+    }
+
+    return render(request, 'quiz/contato.html', context)
