@@ -138,7 +138,7 @@
 {#                    <a href="/home/check_upgrade/"><span class="glyphicon#}
 {#                    glyphicon-check"></span>Check_upgrade</a>#}
 {#                </li>#}
-                {% if perms.configuration.upgrade_rights %}
+                {% if perms.configuration.upgrade_rights and if_upgrade %}
                     <li>
                         <a href="/home/upgrade_nes/"><span class="glyphicon
                         glyphicon-download-alt"></span>Upgrade_nes</a>
