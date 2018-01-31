@@ -151,7 +151,7 @@ def upgrade_nes(request):
         tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
         if tags:
             # if nes_new_version(tags):
-            last_tag = str(tags[-1])  # last version [-1] before last version [-2]
+            last_tag = str(tags[-2])  # last version [-1] before last version [-2]
             repo_version = last_tag.split('-')[-1]
             print("repository last version: " + repo_version)
             git.checkout(last_tag)
@@ -176,6 +176,8 @@ def upgrade_nes(request):
         # else:
         #     messages.success(request, _("NES git branch different: " + branch.name + ". Please contact your system "
         #                                 "administrator to upgrade NES to the new version."))
+            # Restart apache
+            # sudo service apache2 restart
 
     context = {
         'if_upgrade': False,
