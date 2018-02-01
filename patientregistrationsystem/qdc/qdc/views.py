@@ -148,16 +148,16 @@ def upgrade_nes(request):
             sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
         # branch = repo.active_branch
         # if 'TAG' in branch.name.split('-'):
-        for remote in repo.remotes:
-            remote.fetch()
-            text_log += 'fetch-'
+        # for remote in repo.remotes:
+        #     remote.fetch()
+        repo.remotes.origin.fetch()
+        text_log += 'fetch-'
 
         # tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
         # if tags:
             # if nes_new_version(tags):
         # last_tag = str(tags[-1])  # last version [-1] before last version [-2]
-        repo_version = new_version_tag.split('-')[-1]
-        print("repository last version: " + repo_version)
+
         git.checkout(new_version_tag)
 
         text_log += 'checkout-'
