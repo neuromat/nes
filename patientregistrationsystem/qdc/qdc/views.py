@@ -134,8 +134,8 @@ def get_pending_migrations():
 @login_required
 @permission_required('configuration.upgrade_rights')
 def upgrade_nes(request):
-    log = open("upgrade.log", "a")
-    sys.stdout = log
+    # log = open("upgrade.log", "a")
+    # sys.stdout = log
 
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
