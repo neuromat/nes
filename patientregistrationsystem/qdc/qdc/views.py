@@ -27,6 +27,7 @@ def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
 
 @login_required
 def contact(request):
+    # messages.success(request, _("Test !"))
     if_upgrade = False
     if check_upgrade(request):
         if_upgrade = True
@@ -69,39 +70,37 @@ def check_upgrade(request):
     new_version = False
     if '.git' in list_dir:
         repo = Repo(path_git_repo_local)
-        current_branch = repo.active_branch.name
-        for remote in repo.remotes:
-            remote.fetch()
+        git = repo.git
+        current_tag = git.describe()
+        if 'TAG' in current_tag:
+            new_version_tag = \
+                sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
 
-        tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-        if tags:
-            new_version = nes_new_version(tags)
-            if new_version and 'TAG' not in current_branch.split('-'):
-                messages.success(request, _("Not is possible automatically upgrade NES in your installation"
-                                            " (Branch name " + current_branch + " ). Please contact your "
-                                            "system administrator to upgrade NES to a new version."))
+            # for remote in repo.remotes:
+            #     remote.fetch()
+
+            new_version = nes_new_version(current_tag.split('-')[-1], new_version_tag.split('-')[-1])
 
     else:
-        messages.success(request, _("No NES Git installation. Automatic upgrade can be done with git installation. "
+        messages.success(request, _("You dont have NES Git installation. Automatic upgrade can be done with git "
+                                    "installation. "
                                     "Please contact your system administrator to upgrade NES to a new version."))
 
     return new_version
 
 
-def nes_new_version(tags):
+def nes_new_version(current_tag, new_version_tag):
     new_version = False
-    remote_version = str(tags[-1]).split('-')[-1]
-    remote_version = remote_version.split('.')
-    local_current_version = settings.VERSION.split('.')
-    print(remote_version)
-    print(local_current_version)
-    if int(remote_version[0]) > int(local_current_version[0]):
+    local_version = list(map(int, current_tag.split('-')[-1].split('.')))
+    origin_version = list(map(int, new_version_tag.split('-')[-1].split('.')))
+
+    if origin_version[0] > local_version[0]:
         new_version = True
-    elif int(remote_version[0]) == int(local_current_version[0]):
-        if int(remote_version[1]) > int(local_current_version[1]):
+    elif origin_version[0] == local_version[0]:
+        if origin_version[1] > local_version[1]:
             new_version = True
-        elif int(remote_version[1]) == int(local_current_version[1]):
-            if int(remote_version[2]) > int(local_current_version[2]):
+        elif origin_version[1] == local_version[1]:
+            if origin_version[2] > local_version[2]:
                 new_version = True
     return new_version
 
@@ -142,42 +141,46 @@ def upgrade_nes(request):
     list_dir = os.listdir(path_git_repo_local)
     if '.git' in list_dir:
         repo = Repo(path_git_repo_local)
-        branch = repo.active_branch
+        git = repo.git
+        # current_tag = git.describe()
+        new_version_tag = \
+            sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
+        # branch = repo.active_branch
         # if 'TAG' in branch.name.split('-'):
         for remote in repo.remotes:
             remote.fetch()
 
-        git = repo.git
-        tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-        if tags:
+        # tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+        # if tags:
             # if nes_new_version(tags):
-            last_tag = str(tags[-1])  # last version [-1] before last version [-2]
-            repo_version = last_tag.split('-')[-1]
-            print("repository last version: " + repo_version)
-            git.checkout(last_tag)
+        # last_tag = str(tags[-1])  # last version [-1] before last version [-2]
+        repo_version = new_version_tag.split('-')[-1]
+        print("repository last version: " + repo_version)
+        git.checkout(new_version_tag)
 
-            try:
-                pip.main(['install', '-r', 'requirements.txt'])
-            except SystemExit as e:
-                pass
+        try:
+            pip.main(['install', '-r', 'requirements.txt'])
+        except SystemExit as e:
+            pass
 
-            call_command('collectstatic', interactive=False, verbosity=0)
+        call_command('collectstatic', interactive=False, verbosity=0)
 
-            if get_pending_migrations():
-                call_command('migrate')
+        if get_pending_migrations():
+            call_command('migrate')
 
-            # TODO start apache (opcao colocar um flag no setting local)
-            # check the current branch - a tag mais nova last_tag
-            if repo.active_branch.name == last_tag:
-                messages.success(request, _("Upgrade to version " + repo_version + " was sucessful!"))
-            else:
-                messages.success(request, _("An error ocurred when upgrade to the new version ! Please contact "
-                                            "your administrator system."))
+        # TODO start apache (opcao colocar um flag no setting local)
+        # check the current branch - a tag mais nova last_tag
+        # if repo.active_branch.name == last_tag:
+        #     messages.success(request, _("Upgrade to version " + repo_version + " was sucessful!"))
+        # else:
+        #     messages.success(request, _("An error ocurred when upgrade to the new version ! Please contact "
+        #                                 "your administrator system."))
         # else:
         #     messages.success(request, _("NES git branch different: " + branch.name + ". Please contact your system "
         #                                 "administrator to upgrade NES to the new version."))
-            # Restart apache
+            # Restart apache Não precisa
             # sudo service apache2 restart
+            # atualizar a data de modificacao do wsgi.py com: touch wsgi.py
 
     context = {
         'if_upgrade': False,
