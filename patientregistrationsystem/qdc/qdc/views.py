@@ -1,4 +1,5 @@
 import os
+import sys
 
 from django.conf import settings
 from django.contrib import messages
@@ -134,25 +135,16 @@ def get_pending_migrations():
 @login_required
 @permission_required('configuration.upgrade_rights')
 def upgrade_nes(request):
-    # log = open("upgrade.log", "a")
-    # sys.stdout = log
-
-    text_log = ""
 
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
 
-    if '.git' in list_dir:
+    # criate a log file in path_git_repo_local + 'patientregistrationsystem'
+    log_file = settings.BASE_DIR + '/upgrade.log'
+    log = open(log_file, "a")
+    sys.stdout = log
 
-        # path_git_repo_local = '/var/lib/nes-dev/nes/'
-        # repo = Repo(path_git_repo_local)
-        # git = repo.git
-        # new_version_tag = \
-        #     sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
-        # repo.remotes.origin.fetch()
-        # git.checkout(new_version_tag)
-        # # os.system('touch qdc/wsgi.py')
-        # os.system('touch /var/lib/nes-dev/nes/patientregistrationsystem/qdc/qdc/wsgi.py')
+    if '.git' in list_dir:
 
         repo = Repo(path_git_repo_local)
         git = repo.git
@@ -160,47 +152,26 @@ def upgrade_nes(request):
         new_version_tag = \
             sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
         repo.remotes.origin.fetch()
-        text_log += 'fetch-'
 
         git.checkout(new_version_tag)
-        text_log += 'checkout-'
 
         try:
             pip.main(['install', '-r', 'requirements.txt'])
-            text_log += 'requirements-'
         except SystemExit as e:
             pass
 
         call_command('collectstatic', interactive=False, verbosity=0)
-        text_log += 'collectstatic-'
 
         if get_pending_migrations():
             call_command('migrate')
-            text_log += 'migrate-'
 
-        # check the current branch - a tag mais nova last_tag
-        # if repo.active_branch.name == last_tag:
-        #     messages.success(request, _("Upgrade to version " + repo_version + " was sucessful!"))
-        # else:
-        #     messages.success(request, _("An error ocurred when upgrade to the new version ! Please contact "
-        #                                 "your administrator system."))
-        # else:
-        #     messages.success(request, _("NES git branch different: " + branch.name + ". Please contact your system "
-        #                                 "administrator to upgrade NES to the new version."))
-        # atualizar a data de modificacao do wsgi.py com: touch wsgi.py
-        # os.system('touch qdc/wsgi.py')
         os.system('touch %spatientregistrationsystem/qdc/qdc/wsgi.py' % path_git_repo_local)
-        text_log += 'touch-'
 
-        messages.info(request, path_git_repo_local)
-        messages.info(request, text_log)
-        messages.success(request, _("Updated!!! Enjoy the new version of NES  :-)"))
-
-    context = {
-        'if_upgrade': False,
-    }
-
-    # return render(request, 'quiz/contato.html', context)
+        # check if the current TAG is the latest tag
+        if git.describe() == new_version_tag:
+            messages.success(request, _("Updated!!! Enjoy the new version of NES  :-)"))
+        else:
+            messages.info(request, _("An unknown error ocurred ! Please contact your administrator system."))
 
     redirect_url = reverse("contact", args=())
     return HttpResponseRedirect(redirect_url)
