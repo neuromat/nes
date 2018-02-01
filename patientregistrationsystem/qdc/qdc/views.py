@@ -140,7 +140,9 @@ def upgrade_nes(request):
 
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
+
     if '.git' in list_dir:
+
         repo = Repo(path_git_repo_local)
         git = repo.git
         # current_tag = git.describe()
@@ -191,6 +193,7 @@ def upgrade_nes(request):
         os.system('touch qdc/wsgi.py')
         text_log += 'touch-'
 
+        messages.info(request, path_git_repo_local)
         messages.info(request, text_log)
         messages.success(request, _("Updated!!! Enjoy the new version of NES  :-)"))
 
