@@ -77,9 +77,6 @@ def check_upgrade(request):
             new_version_tag = \
                 sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
 
-            # for remote in repo.remotes:
-            #     remote.fetch()
-
             new_version = nes_new_version(current_tag.split('-')[-1], new_version_tag.split('-')[-1])
 
     else:
@@ -164,6 +161,7 @@ def upgrade_nes(request):
             pip.main(['install', '-r', 'requirements.txt'])
             print("Requirements OK")
         except SystemExit as e:
+            print("Requirements error: " + e)
             pass
 
         call_command('collectstatic', interactive=False, verbosity=0)
@@ -172,6 +170,8 @@ def upgrade_nes(request):
         if get_pending_migrations():
             call_command('migrate')
             print("Migrate OK")
+        else:
+            print("There are not migrations")
 
         os.system('touch %spatientregistrationsystem/qdc/qdc/wsgi.py' % path_git_repo_local)
         print("Modify wsgi.py OK")
@@ -182,6 +182,7 @@ def upgrade_nes(request):
             print("NES updated to " + new_version_tag)
         else:
             messages.info(request, _("An unknown error ocurred ! Please contact your administrator system."))
+            print("NES was not updated " + new_version_tag)
 
     redirect_url = reverse("contact", args=())
     return HttpResponseRedirect(redirect_url)
