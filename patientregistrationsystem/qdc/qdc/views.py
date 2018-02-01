@@ -151,25 +151,35 @@ def upgrade_nes(request):
 
         new_version_tag = \
             sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
+
+        print("new version TAG: ", new_version_tag)
+
         repo.remotes.origin.fetch()
+        print("Fetch OK")
 
         git.checkout(new_version_tag)
+        print("Checkout OK")
 
         try:
             pip.main(['install', '-r', 'requirements.txt'])
+            print("Requirements OK")
         except SystemExit as e:
             pass
 
         call_command('collectstatic', interactive=False, verbosity=0)
+        print("collectstatic OK")
 
         if get_pending_migrations():
             call_command('migrate')
+            print("Migrate OK")
 
         os.system('touch %spatientregistrationsystem/qdc/qdc/wsgi.py' % path_git_repo_local)
+        print("Modify wsgi.py OK")
 
         # check if the current TAG is the latest tag
         if git.describe() == new_version_tag:
             messages.success(request, _("Updated!!! Enjoy the new version of NES  :-)"))
+            print("NES updated to " + new_version_tag)
         else:
             messages.info(request, _("An unknown error ocurred ! Please contact your administrator system."))
 
