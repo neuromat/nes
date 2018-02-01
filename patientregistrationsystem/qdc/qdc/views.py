@@ -163,18 +163,18 @@ def upgrade_nes(request):
 
         text_log += 'checkout-'
 
-        try:
-            pip.main(['install', '-r', 'requirements.txt'])
-            text_log += 'requirements-'
-        except SystemExit as e:
-            pass
-
-        call_command('collectstatic', interactive=False, verbosity=0)
-        text_log += 'collectstatic-'
-
-        if get_pending_migrations():
-            call_command('migrate')
-            text_log += 'migrate-'
+        # try:
+        #     pip.main(['install', '-r', 'requirements.txt'])
+        #     text_log += 'requirements-'
+        # except SystemExit as e:
+        #     pass
+        #
+        # call_command('collectstatic', interactive=False, verbosity=0)
+        # text_log += 'collectstatic-'
+        #
+        # if get_pending_migrations():
+        #     call_command('migrate')
+        #     text_log += 'migrate-'
 
         # TODO start apache (opcao colocar um flag no setting local)
         # check the current branch - a tag mais nova last_tag
