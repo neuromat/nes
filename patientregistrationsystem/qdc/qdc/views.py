@@ -137,6 +137,8 @@ def upgrade_nes(request):
     # log = open("upgrade.log", "a")
     # sys.stdout = log
 
+    text_log = ""
+
     path_git_repo_local = get_nes_directory_path()
     list_dir = os.listdir(path_git_repo_local)
     if '.git' in list_dir:
@@ -149,6 +151,7 @@ def upgrade_nes(request):
         # if 'TAG' in branch.name.split('-'):
         for remote in repo.remotes:
             remote.fetch()
+            text_log += 'fetch-'
 
         # tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
         # if tags:
@@ -158,15 +161,20 @@ def upgrade_nes(request):
         print("repository last version: " + repo_version)
         git.checkout(new_version_tag)
 
+        text_log += 'checkout-'
+
         try:
             pip.main(['install', '-r', 'requirements.txt'])
+            text_log += 'requirements-'
         except SystemExit as e:
             pass
 
         call_command('collectstatic', interactive=False, verbosity=0)
+        text_log += 'collectstatic-'
 
         if get_pending_migrations():
             call_command('migrate')
+            text_log += 'migrate-'
 
         # TODO start apache (opcao colocar um flag no setting local)
         # check the current branch - a tag mais nova last_tag
@@ -182,6 +190,10 @@ def upgrade_nes(request):
         # sudo service apache2 restart
         # atualizar a data de modificacao do wsgi.py com: touch wsgi.py
         os.system('touch qdc/wsgi.py')
+        text_log += 'touch-'
+
+        messages.info(request, text_log)
+        messages.success(request, _("Updated!!! Enjoy the new version of NES  :-)"))
 
     context = {
         'if_upgrade': False,
