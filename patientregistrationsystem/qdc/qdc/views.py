@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import activate, LANGUAGE_SESSION_KEY, ugettext as _
@@ -143,39 +144,39 @@ def upgrade_nes(request):
 
     if '.git' in list_dir:
 
-        path_git_repo_local = '/var/lib/nes-dev/nes/'
-        repo = Repo(path_git_repo_local)
-        git = repo.git
-        new_version_tag = \
-            sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
-        repo.remotes.origin.fetch()
-        git.checkout(new_version_tag)
-        # os.system('touch qdc/wsgi.py')
-        os.system('touch /var/lib/nes-dev/nes/patientregistrationsystem/qdc/qdc/wsgi.py')
-
+        # path_git_repo_local = '/var/lib/nes-dev/nes/'
         # repo = Repo(path_git_repo_local)
         # git = repo.git
-        #
         # new_version_tag = \
         #     sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
         # repo.remotes.origin.fetch()
-        # text_log += 'fetch-'
-        #
         # git.checkout(new_version_tag)
-        # text_log += 'checkout-'
-        #
-        # try:
-        #     pip.main(['install', '-r', 'requirements.txt'])
-        #     text_log += 'requirements-'
-        # except SystemExit as e:
-        #     pass
-        #
-        # call_command('collectstatic', interactive=False, verbosity=0)
-        # text_log += 'collectstatic-'
-        #
-        # if get_pending_migrations():
-        #     call_command('migrate')
-        #     text_log += 'migrate-'
+        # # os.system('touch qdc/wsgi.py')
+        # os.system('touch /var/lib/nes-dev/nes/patientregistrationsystem/qdc/qdc/wsgi.py')
+
+        repo = Repo(path_git_repo_local)
+        git = repo.git
+
+        new_version_tag = \
+            sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
+        repo.remotes.origin.fetch()
+        text_log += 'fetch-'
+
+        git.checkout(new_version_tag)
+        text_log += 'checkout-'
+
+        try:
+            pip.main(['install', '-r', 'requirements.txt'])
+            text_log += 'requirements-'
+        except SystemExit as e:
+            pass
+
+        call_command('collectstatic', interactive=False, verbosity=0)
+        text_log += 'collectstatic-'
+
+        if get_pending_migrations():
+            call_command('migrate')
+            text_log += 'migrate-'
 
         # check the current branch - a tag mais nova last_tag
         # if repo.active_branch.name == last_tag:
@@ -188,7 +189,8 @@ def upgrade_nes(request):
         #                                 "administrator to upgrade NES to the new version."))
         # atualizar a data de modificacao do wsgi.py com: touch wsgi.py
         # os.system('touch qdc/wsgi.py')
-        # text_log += 'touch-'
+        os.system('touch %spatientregistrationsystem/qdc/qdc/wsgi.py' % path_git_repo_local)
+        text_log += 'touch-'
 
         messages.info(request, path_git_repo_local)
         messages.info(request, text_log)
@@ -198,4 +200,7 @@ def upgrade_nes(request):
         'if_upgrade': False,
     }
 
-    return render(request, 'quiz/contato.html', context)
+    # return render(request, 'quiz/contato.html', context)
+
+    redirect_url = reverse("contact", args=())
+    return HttpResponseRedirect(redirect_url)
