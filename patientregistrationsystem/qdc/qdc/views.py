@@ -178,9 +178,10 @@ def upgrade_nes(request):
         # else:
         #     messages.success(request, _("NES git branch different: " + branch.name + ". Please contact your system "
         #                                 "administrator to upgrade NES to the new version."))
-            # Restart apache Não precisa
-            # sudo service apache2 restart
-            # atualizar a data de modificacao do wsgi.py com: touch wsgi.py
+        # Restart apache Não precisa
+        # sudo service apache2 restart
+        # atualizar a data de modificacao do wsgi.py com: touch wsgi.py
+        os.system('touch qdc/wsgi.py')
 
     context = {
         'if_upgrade': False,

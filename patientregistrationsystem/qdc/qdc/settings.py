@@ -207,4 +207,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.30.1'
+VERSION = '1.27.4'
