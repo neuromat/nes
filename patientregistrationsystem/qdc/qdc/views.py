@@ -150,7 +150,8 @@ def upgrade_nes(request):
             sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
         repo.remotes.origin.fetch()
         git.checkout(new_version_tag)
-        os.system('touch qdc/wsgi.py')
+        # os.system('touch qdc/wsgi.py')
+        os.system('touch /var/lib/nes-dev/nes/patientregistrationsystem/qdc/qdc/wsgi.py')
 
         # repo = Repo(path_git_repo_local)
         # git = repo.git
