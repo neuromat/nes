@@ -89,8 +89,8 @@ def check_upgrade(request):
 
 def nes_new_version(current_tag, new_version_tag):
     new_version = False
-    local_version = list(map(int, current_tag.split('-')[-1].split('.')))
-    origin_version = list(map(int, new_version_tag.split('-')[-1].split('.')))
+    local_version = list(map(int, current_tag.split('.')))
+    origin_version = list(map(int, new_version_tag.split('.')))
 
     if origin_version[0] > local_version[0]:
         new_version = True
