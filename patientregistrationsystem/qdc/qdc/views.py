@@ -1,7 +1,5 @@
 import os
 
-from time import sleep
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -145,49 +143,39 @@ def upgrade_nes(request):
 
     if '.git' in list_dir:
 
+        path_git_repo_local = '/var/lib/nes-dev/nes/'
         repo = Repo(path_git_repo_local)
-
-        sleep(2)
         git = repo.git
-
-
-        # current_tag = git.describe()
         new_version_tag = \
             sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
-        # branch = repo.active_branch
-        # if 'TAG' in branch.name.split('-'):
-        # for remote in repo.remotes:
-        #     remote.fetch()
-        sleep(2)
         repo.remotes.origin.fetch()
-        text_log += 'fetch-'
-
-        # tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-        # if tags:
-            # if nes_new_version(tags):
-        # last_tag = str(tags[-1])  # last version [-1] before last version [-2]
-
-        sleep(2)
         git.checkout(new_version_tag)
+        os.system('touch qdc/wsgi.py')
 
-        text_log += 'checkout-'
+        # repo = Repo(path_git_repo_local)
+        # git = repo.git
+        #
+        # new_version_tag = \
+        #     sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
+        # repo.remotes.origin.fetch()
+        # text_log += 'fetch-'
+        #
+        # git.checkout(new_version_tag)
+        # text_log += 'checkout-'
+        #
+        # try:
+        #     pip.main(['install', '-r', 'requirements.txt'])
+        #     text_log += 'requirements-'
+        # except SystemExit as e:
+        #     pass
+        #
+        # call_command('collectstatic', interactive=False, verbosity=0)
+        # text_log += 'collectstatic-'
+        #
+        # if get_pending_migrations():
+        #     call_command('migrate')
+        #     text_log += 'migrate-'
 
-        try:
-            sleep(2)
-            pip.main(['install', '-r', 'requirements.txt'])
-            text_log += 'requirements-'
-        except SystemExit as e:
-            pass
-
-        sleep(2)
-        call_command('collectstatic', interactive=False, verbosity=0)
-        text_log += 'collectstatic-'
-
-        if get_pending_migrations():
-            call_command('migrate')
-            text_log += 'migrate-'
-
-        # TODO start apache (opcao colocar um flag no setting local)
         # check the current branch - a tag mais nova last_tag
         # if repo.active_branch.name == last_tag:
         #     messages.success(request, _("Upgrade to version " + repo_version + " was sucessful!"))
@@ -197,12 +185,9 @@ def upgrade_nes(request):
         # else:
         #     messages.success(request, _("NES git branch different: " + branch.name + ". Please contact your system "
         #                                 "administrator to upgrade NES to the new version."))
-        # Restart apache Não precisa
-        # sudo service apache2 restart
         # atualizar a data de modificacao do wsgi.py com: touch wsgi.py
-        sleep(2)
-        os.system('touch qdc/wsgi.py')
-        text_log += 'touch-'
+        # os.system('touch qdc/wsgi.py')
+        # text_log += 'touch-'
 
         messages.info(request, path_git_repo_local)
         messages.info(request, text_log)
