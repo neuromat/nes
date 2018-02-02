@@ -15,6 +15,7 @@ from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS, connections
 from django.db.migrations.executor import MigrationExecutor
 from functools import partial
+from distutils.version import LooseVersion, StrictVersion
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -76,8 +77,8 @@ def check_upgrade(request):
         if 'TAG' in current_tag:
             new_version_tag = \
                 sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
-
-            new_version = nes_new_version(current_tag.split('-')[-1], new_version_tag.split('-')[-1])
+            new_version = StrictVersion(current_tag.split('-')[-1]) < StrictVersion(new_version_tag.split('-')[-1])
+            # new_version = nes_new_version(current_tag.split('-')[-1], new_version_tag.split('-')[-1])
 
     else:
         messages.success(request, _("You dont have NES Git installation. Automatic upgrade can be done with git "
@@ -137,9 +138,9 @@ def upgrade_nes(request):
     list_dir = os.listdir(path_git_repo_local)
 
     # criate a log file in path_git_repo_local + 'patientregistrationsystem'
-    log_file = settings.BASE_DIR + '/upgrade.log'
-    log = open(log_file, "a")
-    sys.stdout = log
+    # log_file = settings.BASE_DIR + '/upgrade.log'
+    # log = open(log_file, "a")
+    # sys.stdout = log
 
     if '.git' in list_dir:
 
