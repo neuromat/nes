@@ -19,7 +19,6 @@ from distutils.version import LooseVersion, StrictVersion
 
 permission_required = partial(permission_required, raise_exception=True)
 
-
 def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
 
     context = {}
