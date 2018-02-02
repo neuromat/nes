@@ -75,6 +75,7 @@ def check_upgrade(request):
         git = repo.git
         current_tag = git.describe()
         if 'TAG' in current_tag:
+            repo.remotes.origin.fetch()
             new_version_tag = \
                 sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
             new_version = StrictVersion(current_tag.split('-')[-1]) < StrictVersion(new_version_tag.split('-')[-1])
