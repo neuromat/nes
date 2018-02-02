@@ -88,20 +88,20 @@ def check_upgrade(request):
     return new_version
 
 
-def nes_new_version(current_tag, new_version_tag):
-    new_version = False
-    local_version = list(map(int, current_tag.split('.')))
-    origin_version = list(map(int, new_version_tag.split('.')))
-
-    if origin_version[0] > local_version[0]:
-        new_version = True
-    elif origin_version[0] == local_version[0]:
-        if origin_version[1] > local_version[1]:
-            new_version = True
-        elif origin_version[1] == local_version[1]:
-            if origin_version[2] > local_version[2]:
-                new_version = True
-    return new_version
+# def nes_new_version(current_tag, new_version_tag):
+#     new_version = False
+#     local_version = list(map(int, current_tag.split('.')))
+#     origin_version = list(map(int, new_version_tag.split('.')))
+#
+#     if origin_version[0] > local_version[0]:
+#         new_version = True
+#     elif origin_version[0] == local_version[0]:
+#         if origin_version[1] > local_version[1]:
+#             new_version = True
+#         elif origin_version[1] == local_version[1]:
+#             if origin_version[2] > local_version[2]:
+#                 new_version = True
+#     return new_version
 
 
 def get_nes_directory_path():
