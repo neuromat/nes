@@ -139,7 +139,7 @@ def upgrade_nes(request):
 
     # criate a log file in path_git_repo_local + 'patientregistrationsystem'
     log_file = settings.BASE_DIR + '/upgrade.log'
-    log = open(log_file, "a")
+    log = open(log_file, "w")
     sys.stdout = log
 
     if '.git' in list_dir:
