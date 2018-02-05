@@ -280,3 +280,5 @@ senior_researcher_permission_list += [
 
 for p in senior_researcher_permission_list:
     g.permissions.add(p)
+
+# Do not remove this line. It is important the correct operation of the script
