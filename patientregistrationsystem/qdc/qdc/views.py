@@ -104,8 +104,8 @@ def check_upgrade(request):
 
 
 def get_nes_directory_path():
-    # path_repo = '/'
-    path_repo = ''
+    path_repo = '/'
+    # path_repo = ''
     base_dir = settings.BASE_DIR.split('/')
     if 'nes' in base_dir:
         path_git_repo = []
