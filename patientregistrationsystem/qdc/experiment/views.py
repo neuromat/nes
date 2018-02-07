@@ -5307,7 +5307,7 @@ def check_required_fields(surveys, lime_survey_id):
     if 'status' not in groups:
 
         for group in groups:
-            question_list = surveys.list_questions(lime_survey_id, group['id'])
+            question_list = surveys.list_questions(lime_survey_id, group['id']['gid'])
             for question in question_list:
                 question_properties = surveys.get_question_properties(question, None)
                 if question_properties['title'] in fields_to_validate:

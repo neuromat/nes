@@ -580,7 +580,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
 
-                question_list = surveys.list_questions(lime_survey_id, group['id'])
+                question_list = surveys.list_questions(lime_survey_id, group['id']['gid'])
                 question_list = sorted(question_list)
 
                 for question in question_list:
