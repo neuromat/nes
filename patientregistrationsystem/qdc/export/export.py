@@ -525,7 +525,8 @@ class ExportExecution:
                             subject_code = eeg_data.subject_of_group.subject.patient.code
                             sensors_positions_image = get_sensors_position(eeg_data)
                             if sensors_positions_image:
-                                sensors_positions_filename = settings.BASE_DIR + str(sensors_positions_image)
+                                # sensors_positions_filename = settings.BASE_DIR + str(sensors_positions_image)
+                                sensors_positions_filename = settings.BASE_DIR + sensors_positions_image[0]
                             else:
                                 sensors_positions_filename = ''
 
