@@ -18,20 +18,6 @@ class LoginTest(FunctionalTest):
         password.send_keys(TEST_PASSWORD)  # defined in create_user method
         password.send_keys(Keys.ENTER)
 
-        # As is the first time that she is entering in NES, she has to
-        # change your password
-        self.wait_for(
-            lambda: self.browser.find_element_by_name(
-                'old_password').send_keys(TEST_PASSWORD)
-        )
-        # define old password equals to new password to facilitate other tests
-        self.browser.find_element_by_name('new_password1').send_keys(
-            TEST_PASSWORD
-        )
-        repeat_password = self.browser.find_element_by_name('new_password2')
-        repeat_password.send_keys(TEST_PASSWORD)
-        repeat_password.send_keys(Keys.ENTER)
-
         # She's logged in!
         self.wait_to_be_logged_in(username=TEST_USERNAME)
 
