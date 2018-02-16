@@ -45,7 +45,6 @@ INSTALLED_APPS = (
     'django_jenkins',
 
     'simple_history',
-    # 'cep',
     'jsonrpc_requests',
     'solo'
 )
@@ -204,6 +203,7 @@ MEDIA_URL = '/media/'
 
 try:
     from .settings_local import *
+    INSTALLED_APPS += DEV_APPS
 except ImportError:
     pass
 

@@ -204,7 +204,7 @@ g, created = Group.objects.get_or_create(name='Physiotherapist')
 medicalrecorddata_content_type = ContentType.objects.get(app_label='patient', model='medicalrecorddata')
 survey_content_type = ContentType.objects.get(app_label='survey', model='survey')
 patient_quest_response_content_type = ContentType.objects.get(app_label='patient', model='questionnaireresponse')
-# Can do what a attendant does
+# Can do what an attendant does
 physiotherapist_permission_list = list(attendant_permission_list)
 # Plus
 physiotherapist_permission_list += [
@@ -281,4 +281,5 @@ senior_researcher_permission_list += [
 for p in senior_researcher_permission_list:
     g.permissions.add(p)
 
-# Do not remove this line. It is important the correct operation of the script
+# Do not remove this line. It is important to the correct operation of the
+# script
