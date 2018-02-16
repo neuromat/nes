@@ -1127,7 +1127,7 @@ msgstr "Acesso não autorizado"
 #: templates/registration/login.html:8
 #: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
-msgstr "Sistema de Experimentos de Neurociencia - NES"
+msgstr "Sistema de Experimentos de Neurociência - NES"
 
 #: templates/registration/change_password_custom.html:97
 msgid "Password change"

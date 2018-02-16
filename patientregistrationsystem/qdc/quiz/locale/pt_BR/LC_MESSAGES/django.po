@@ -20,7 +20,7 @@ msgstr ""
 
 #: quiz/templates/quiz/contato.html:41 quiz/templates/quiz/template.html:11
 msgid "Neuroscience Experiments System - NES"
-msgstr "Sistema de Experimentos de Neurociencia - NES"
+msgstr "Sistema de Experimentos de Neurociência - NES"
 
 #: quiz/templates/quiz/template.html:130
 msgid "NES"
