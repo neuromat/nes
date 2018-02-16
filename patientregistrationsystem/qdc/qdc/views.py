@@ -15,9 +15,10 @@ from django.core.management import call_command
 from django.db import DEFAULT_DB_ALIAS, connections
 from django.db.migrations.executor import MigrationExecutor
 from functools import partial
-from distutils.version import LooseVersion, StrictVersion
+from distutils.version import StrictVersion
 
 permission_required = partial(permission_required, raise_exception=True)
+
 
 def qdc_permission_denied_view(request, template_name="admin/qdc_403.html"):
 

@@ -27,9 +27,15 @@ class CopyExperimentTest(FunctionalTest):
         ))
 
     def test_can_see_copy_experiment_button(self):
-        # Suzana, a senior researcher categorized in NES, is trying to change
+
+        # Suzana, a senior researcher user in NES, is trying to change
         # an experiment with an already defined experimental protocol. The
         # system does not allow that, so a modal appears telling her that
         # she can copy the experiment with all experiment data.
+        username = TEST_USERNAME
+        self.browser.get(self.live_server_url)
+        self.wait_to_logged_out()
 
         self.create_pre_authenticated_session()
+        self.browser.get(self.live_server_url)
+        self.wait_to_be_logged_in(username)

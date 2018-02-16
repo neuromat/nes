@@ -1,6 +1,8 @@
 import os
 
 import time
+
+import sys
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.management import call_command
 from selenium import webdriver
@@ -13,7 +15,12 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def setUp(self):
         exec(open('add_initial_data.py').read())
+        # redirect sys.stderr to avoid display success message
+        # during test
+        stdout_backup, sys.stdout = sys.stdout, open('/tmp/tests.txt', 'w+')
         call_command('loaddata', 'load_initial_data.json')
+        sys.stdout.close()
+        sys.stdout = stdout_backup
 
         profile = webdriver.FirefoxProfile()
         profile.set_preference('intl.accept_languages', 'en')
