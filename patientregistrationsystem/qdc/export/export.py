@@ -524,11 +524,9 @@ class ExportExecution:
                         for eeg_data in eeg_data_list:
                             subject_code = eeg_data.subject_of_group.subject.patient.code
                             sensors_positions_image = get_sensors_position(eeg_data)
+                            sensors_positions_filename = None
                             if sensors_positions_image:
-                                # sensors_positions_filename = settings.BASE_DIR + str(sensors_positions_image)
-                                sensors_positions_filename = settings.BASE_DIR + sensors_positions_image[0]
-                            else:
-                                sensors_positions_filename = ''
+                                sensors_positions_filename = settings.BASE_DIR + str(sensors_positions_image)
 
                             if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
