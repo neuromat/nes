@@ -2037,26 +2037,30 @@ class ExportExecution:
         header = []
         if 'Age' in headers:
             headers.remove('Age')
-            header = headers[0:-1]
-            header.append('Age')
-            header.append(headers[-1])
+            headers.insert(1, 'Age')
+            # header = headers[0:-1]
+            # header.append('Age')
+            # header.append(headers[-1])
         if 'age' in headers:
             headers.remove('age')
-            header = headers[0:-1]
-            header.append('age')
-            header.append(headers[-1])
+            headers.insert(1, 'age')
+            # header = headers[0:-1]
+            # header.append('age')
+            # header.append(headers[-1])
         if 'Idade' in headers:
             headers.remove('Idade')
-            header = headers[0:-1]
-            header.append('Idade')
-            header.append(headers[-1])
+            headers.insert(1, 'Idade')
+            # header = headers[0:-1]
+            # header.append('Idade')
+            # header.append(headers[-1])
         if 'idade' in headers:
             headers.remove('idade')
-            header = headers[0:-1]
-            header.append('idade')
-            header.append(headers[-1])
-        if header:
-            headers = header
+            headers.insert(1, 'idade')
+            # header = headers[0:-1]
+            # header.append('idade')
+            # header.append(headers[-1])
+        # if header:
+        #     headers = header
 
         return fields, headers
 
@@ -2083,7 +2087,7 @@ class ExportExecution:
             for value in record[0:-1]:
                 participant_rows.append(value)
             if age_value_dict:
-                participant_rows.append(age_value_dict[record[-1]])
+                participant_rows.insert(1, age_value_dict[record[-1]])
             participant_rows.append(record[-1])
             export_rows_participants.append(participant_rows)
 
