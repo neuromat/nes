@@ -320,7 +320,7 @@ def update_participants_list(participants_list, heading_type):
 
         for field, header in patient_fields_inclusion:
             header_translated = ug_(header[heading_type])
-            participants_list.append([field, abbreviated_data(header_translated, heading_type)])
+            participants_list.insert(0,[field, abbreviated_data(header_translated, heading_type)])
 
 
 def update_diagnosis_list(diagnosis_list, heading_type):
@@ -335,7 +335,7 @@ def update_diagnosis_list(diagnosis_list, heading_type):
         # include participant_code
         for field, header in diagnosis_fields_inclusion:
             header_translated = ug_(header[heading_type])
-            diagnosis_list.append([field, abbreviated_data(header_translated, heading_type)])
+            diagnosis_list.insert(0,[field, abbreviated_data(header_translated, heading_type)])
 
 
 # @login_required
