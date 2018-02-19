@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import csv
 import json
 import random
 import re
@@ -10,7 +11,6 @@ from sys import modules
 from django.conf import settings
 from django.core.files import File
 from django.utils.encoding import smart_str
-from django.utils import translation
 from django.utils.translation import ugettext as _
 from django.apps import apps
 from django.shortcuts import get_object_or_404
@@ -35,6 +35,7 @@ from experiment.views import get_block_tree, get_experimental_protocol_image, EE
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import is_limesurvey_available, get_questionnaire_language
+from django.template.defaultfilters import slugify
 
 
 DEFAULT_LANGUAGE = "pt-BR"
@@ -92,7 +93,8 @@ def save_to_csv(complete_filename, rows_to_be_saved):
     :return:
     """
     with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-        export_writer = writer(csv_file)
+        # export_writer = writer(csv_file)
+        export_writer = csv.writer(csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         for row in rows_to_be_saved:
             export_writer.writerow(row)
 
@@ -327,7 +329,8 @@ class ExportExecution:
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             subject_of_group = SubjectOfGroup.objects.filter(group=group)
-            title = group.title
+            title = '_'.join(slugify(group.title).split('-'))
+
             description = group.description
             if group_id not in self.per_group_data:
                 self.per_group_data[group_id] = {}
@@ -2150,7 +2153,7 @@ class ExportExecution:
         export_rows_participants = self.get_input_data('participants')['data_list']
 
         with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-            export_writer = writer(csv_file)
+            export_writer = csv.writer(csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
             for row in export_rows_participants:
                 export_writer.writerow(row)
 
@@ -2168,7 +2171,7 @@ class ExportExecution:
             self.files_to_zip_list.append([complete_filename, base_directory])
 
             with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-                export_writer = writer(csv_file)
+                export_writer = writer(csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
                 for row in export_rows_diagnosis:
                     export_writer.writerow(row)
 
@@ -2186,8 +2189,12 @@ class ExportExecution:
         experiment_resume_header = ['Study', 'Study description', 'Start date', 'End date', 'Experiment Title',
                                     'Experiment description']
 
+        # experiment_resume_header = ["'" + item + "'" for item in experiment_resume_header]
+
         experiment_resume = [study.title, study.description, str(study.start_date), str(study.end_date),
                              experiment.title, experiment.description]
+
+        # experiment_resume = ["'" + item + "'" for item in experiment_resume]
 
         filename_experiment_resume = "%s.csv" % "Experiment"
 
@@ -2221,7 +2228,7 @@ class ExportExecution:
 
                     group_resume = "Group name: " + group.title + "\n" + "Group description: " + group.description \
                                    + "\n"
-                    group_directory_name = 'Group_' + group.title
+                    # group_directory_name = 'Group_' + group.title
                     filename_group_for_export = "%s.txt" % "Experimental_protocol_description"
                     # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
                     group_file_directory = self.per_group_data[group_id]['group']['directory']
