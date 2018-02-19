@@ -5,6 +5,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from custom_user.tests_helper import create_user
 from functional_tests.base import FunctionalTest
 from functional_tests.test_login import TEST_USERNAME
+from experiment.tests import ObjectsFactory
 
 
 class CopyExperimentTest(FunctionalTest):
@@ -26,12 +27,16 @@ class CopyExperimentTest(FunctionalTest):
             path='/'
         ))
 
+    @staticmethod
+    def create_objects():
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        # experimental_protocol = ObjectsFactory.
+        group = ObjectsFactory.create_group(experiment)
+
+
     def test_can_see_copy_experiment_button(self):
 
-        # Suzana, a senior researcher user in NES, is trying to change
-        # an experiment with an already defined experimental protocol. The
-        # system does not allow that, so a modal appears telling her that
-        # she can copy the experiment with all experiment data.
         username = TEST_USERNAME
         self.browser.get(self.live_server_url)
         self.wait_to_logged_out()
@@ -39,3 +44,10 @@ class CopyExperimentTest(FunctionalTest):
         self.create_pre_authenticated_session()
         self.browser.get(self.live_server_url)
         self.wait_to_be_logged_in(username)
+
+        # Suzana, a senior researcher user in NES, is trying to change
+        # an experiment with an experimental protocol that already has data
+        # collection. The system does not allow that, so a modal appears
+        # telling her that she can copy the experiment with all experiment
+        # data.
+        self.create_objects()
