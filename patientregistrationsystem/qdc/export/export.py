@@ -2034,7 +2034,7 @@ class ExportExecution:
 
     def include_age_field_and_header(self, fields, headers):
         fields.remove('age')
-        header = []
+        # header = []
         if 'Age' in headers:
             headers.remove('Age')
             headers.insert(1, 'Age')
@@ -2084,11 +2084,11 @@ class ExportExecution:
         # transform data
         for record in db_data:
             participant_rows = []
-            for value in record[0:-1]:
+            for value in record:
                 participant_rows.append(value)
             if age_value_dict:
-                participant_rows.insert(1, age_value_dict[record[-1]])
-            participant_rows.append(record[-1])
+                participant_rows.insert(1, age_value_dict[record[0]])
+            # participant_rows.append(record[-1])
             export_rows_participants.append(participant_rows)
 
         return export_rows_participants
