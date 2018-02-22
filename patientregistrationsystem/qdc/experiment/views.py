@@ -840,7 +840,7 @@ def schedule_of_sending_list(request, template_name="experiment/schedule_of_send
 
     if request.method == "POST":
         if request.POST['action'] == "send-to-portal":
-            send_all_experiments_to_portal(request.LANGUAGE_CODE)
+            send_all_experiments_to_portal()
             messages.success(request, _('Experiments sent successfully.'))
 
     list_of_schedule_of_sending = ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime")
@@ -878,7 +878,8 @@ def date_of_first_data_collection(subject_of_group):
     return result
 
 
-def send_all_experiments_to_portal(language_code):
+def send_all_experiments_to_portal():
+    language_code = 'en'
     for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
 
         print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
@@ -8173,8 +8174,11 @@ def get_component_configuration_attributes(configuration):
     attributes = []
     if configuration.name:
         attributes.append({_('Name of use'): configuration.name})
-    if configuration.number_of_repetitions:
-        attributes.append({_('Number of repetitions'): configuration.number_of_repetitions})
+
+    attributes.append({_(
+        'Number of repetitions'): configuration.number_of_repetitions if configuration.number_of_repetitions else _(
+        'Unlimited')})
+
     if configuration.interval_between_repetitions_value:
         attributes.append({_('Interval between repetitions value'): configuration.interval_between_repetitions_value})
         if configuration.interval_between_repetitions_unit:
