@@ -408,7 +408,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # create files of experimental protocol and diagnosis/participant csv file for each group
+            # create files of experimental protocol description file
             error_msg = export.process_experiment_data(language_code)
 
             if error_msg != "":
