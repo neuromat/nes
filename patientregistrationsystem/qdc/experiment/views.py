@@ -9185,7 +9185,20 @@ def check_experiment(experiment):
     return experiment_with_data
 
 
-def copy_experiment(experiment):
+def clone_dct(dct, orig_and_clone):
+    old_component_configuration_id = dct.component_configuration.id
+    old_dct_id = dct.id
+    dct.pk = None
+    dct.component_configuration_id = orig_and_clone[
+        old_component_configuration_id
+    ]
+    dct.save()
+    orig_and_clone[old_dct_id] = dct.id
+
+    return dct
+
+
+def copy_experiment(experiment, copy_data_collection=False):
     experiment_id = experiment.id
 
     new_experiment = experiment
@@ -9198,13 +9211,45 @@ def copy_experiment(experiment):
         clone_component = create_component(component, new_experiment)
         orig_and_clone[component.id] = clone_component.id
 
+    for component_configuration in ComponentConfiguration.objects.filter(
+            component_id__experiment_id=experiment_id).order_by(
+        'parent_id', 'order'):
+
+        old_component_id = component_configuration.component_id
+        parent_id = component_configuration.parent_id
+
+        old_component_configuration_id = component_configuration.id
+        component_configuration.pk = None
+        if component_configuration.name:
+            component_configuration.name = component_configuration.name
+
+        component_configuration.component_id = orig_and_clone[old_component_id]
+        component_configuration.parent_id = orig_and_clone[parent_id]
+        component_configuration.save()
+        orig_and_clone[old_component_configuration_id] = \
+            component_configuration.id
+
+    if copy_data_collection:
+        dct_list_new = []
+        for data_configuration_tree in DataConfigurationTree.objects.filter(
+                component_configuration_id__component_id__experiment_id
+                =experiment_id
+        ):
+            dct_list_new.append(
+                clone_dct(data_configuration_tree, orig_and_clone)
+            )
+
+        for dct in dct_list_new:
+            if dct.parent_id:
+                dct.parent_id = orig_and_clone[dct.parent.id]
+                dct.save()
+
     groups = Group.objects.filter(experiment_id=experiment_id)
     for group in groups:
         experimental_protocol_id = group.experimental_protocol_id
         subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
         new_group = group
         new_group.pk = None
-        # new_group.title = _('Copy of') + ' ' + new_group.title
         new_group.title = new_group.title
         new_group.experiment_id = new_experiment.id
         if experimental_protocol_id in orig_and_clone:
@@ -9218,31 +9263,19 @@ def copy_experiment(experiment):
                 subject_of_group.group_id = group.id
                 subject_of_group.save()
 
-    for component_configuration in ComponentConfiguration.objects.filter(
-            component_id__experiment_id=experiment_id).order_by('parent_id', 'order'):
-
-        component_id = component_configuration.component_id
-        parent_id = component_configuration.parent_id
-
-        component_configuration.pk = None
-        if component_configuration.name:
-            # component_configuration.name = _('Copy of') + ' ' + component_configuration.name
-            component_configuration.name = component_configuration.name
-
-        component_configuration.component_id = orig_and_clone[component_id]
-        component_configuration.parent_id = orig_and_clone[parent_id]
-        component_configuration.save()
-
     # eeg_setting
-    for eeg_setting in EEGSetting.objects.filter(experiment_id=experiment_id):
+    for eeg_setting in EEGSetting.objects.filter(
+            experiment_id=experiment_id):
         copy_eeg_setting(eeg_setting, new_experiment)
 
     # emg setting
-    for emg_setting in EMGSetting.objects.filter(experiment_id=experiment_id):
+    for emg_setting in EMGSetting.objects.filter(
+            experiment_id=experiment_id):
         copy_emg_setting(emg_setting, new_experiment)
 
     # tms setting
-    for tms_setting in TMSSetting.objects.filter(experiment_id=experiment_id):
+    for tms_setting in TMSSetting.objects.filter(
+            experiment_id=experiment_id):
         copy_tms_setting(tms_setting, new_experiment)
 
 
@@ -9287,6 +9320,23 @@ def copy_eeg_setting(eeg_setting, new_experiment):
         new_eeg_filter_setting.pk = None
         new_eeg_filter_setting.eeg_setting = new_eeg_setting
         new_eeg_filter_setting.save()
+
+    return new_eeg_setting
+
+
+def copy_eeg_data(new_eeg_setting, old_eeg_setting, new_experiment,
+                  old_experiment):
+    for eegdata in EEGData.objects.filter(eeg_setting__in=old_eeg_setting):
+
+
+        new_eegdata = EEGData.objects.create(
+            eeg_setting=new_eeg_setting,
+            eeg_setting_reason_for_change=eegdata.eeg_setting_reason_for_change,
+            eeg_cap_size=eegdata.eeg_cap_size,
+            description=eegdata.description,
+            file_format=eegdata.file_format,
+            file_format_description=eegdata.file_format_description
+        )
 
 
 def copy_emg_setting(emg_setting, new_experiment):
@@ -9387,7 +9437,7 @@ def create_component(component, new_experiment):
 
     elif component_type == 'tms':
         tms = get_object_or_404(TMS, pk=component.id)
-        clone = TMS(emg_setting_id=tms.tms_setting_id)
+        clone = TMS(tms_setting_id=tms.tms_setting_id)
 
     elif component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
@@ -9422,7 +9472,6 @@ def create_component(component, new_experiment):
     else:
         clone = Component()
 
-    # clone.identification = _('Copy of') + ' ' + component.identification
     clone.identification = component.identification
 
     clone.experiment = new_experiment
@@ -9504,6 +9553,12 @@ def component_view(request, path_of_the_components):
         elif request.POST['action'] == "copy_experiment":
             copy_experiment(experiment)
             messages.success(request, _('The experiment was copied.'))
+            redirect_url = reverse("experiment_view", args=(experiment.id,))
+            return HttpResponseRedirect(redirect_url)
+        elif request.POST['action'] == "copy_experiment_with_data":
+            copy_experiment(experiment, True)
+            messages.success(request, _('The experiment was copied with '
+                                        'all data collections'))
             redirect_url = reverse("experiment_view", args=(experiment.id,))
             return HttpResponseRedirect(redirect_url)
 

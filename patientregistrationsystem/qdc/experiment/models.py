@@ -1179,7 +1179,8 @@ class SubjectStepData(models.Model):
 
 
 class DataCollection(models.Model):
-    # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
+    # data_configuration_tree null means that the DataCollection is associated
+    # to the whole experimental protocol
     data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)
 
     subject_of_group = models.ForeignKey(SubjectOfGroup)
