@@ -1238,7 +1238,6 @@ class FileFormat(models.Model):
 
 class DataFile(models.Model):
     description = models.TextField(null=False, blank=False)
-    # file = models.FileField(upload_to=get_data_file_dir, null=False)
     file_format = models.ForeignKey(FileFormat, null=False, blank=False)
     file_format_description = models.TextField(null=True, blank=True, default='')
 

@@ -15,6 +15,7 @@ from nwb.nwbco import *
 # v1.5
 import mne
 import base64
+import os
 
 from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
@@ -39,6 +40,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
+from qdc.settings import MEDIA_ROOT
 from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
@@ -9185,17 +9187,70 @@ def check_experiment(experiment):
     return experiment_with_data
 
 
-def clone_dct(dct, orig_and_clone):
+def copy_dct(dct, orig_and_clone):
     old_component_configuration_id = dct.component_configuration.id
     old_dct_id = dct.id
     dct.pk = None
-    dct.component_configuration_id = orig_and_clone[
-        old_component_configuration_id
-    ]
+    new_component_configuration = ComponentConfiguration.objects.get(
+        pk=orig_and_clone[old_component_configuration_id]
+    )
+    dct.component_configuration = new_component_configuration
     dct.save()
-    orig_and_clone[old_dct_id] = dct.id
+    orig_and_clone['dct'][old_dct_id] = dct.id
 
     return dct
+
+
+def clone_data_configuration_tree(experiment_id, orig_and_clone):
+    dct_list_new = []
+    for data_configuration_tree in DataConfigurationTree.objects.filter(
+            component_configuration_id__component_id__experiment_id
+            =experiment_id
+    ):
+        dct_new = copy_dct(data_configuration_tree, orig_and_clone)
+        dct_list_new.append(dct_new)
+
+    for dct in dct_list_new:
+        if dct.parent:
+            new_dct_parent = DataConfigurationTree.objects.get(
+                pk=orig_and_clone['dct'][dct.parent.id]
+            )
+            dct.parent = new_dct_parent
+            dct.save()
+
+
+def clone_eeg_data(eeg_data, orig_and_clone):
+    old_eeg_data_id = eeg_data.id
+    eeg_data.pk = None
+    new_eeg_setting = EEGSetting.objects.get(
+        pk=orig_and_clone['eeg_setting'][eeg_data.eeg_setting.id]
+    )
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][eeg_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][eeg_data.data_configuration_tree.id]
+    )
+    eeg_data.eeg_setting = new_eeg_setting
+    eeg_data.subject_of_group = new_subject_of_group
+    eeg_data.data_configuration_tree = new_data_configuration_tree
+    eeg_data.save()
+    orig_and_clone['eeg_data'][old_eeg_data_id] = eeg_data.id
+
+    return eeg_data
+
+
+def clone_eeg_file(eeg_file, orig_and_clone):
+    eeg_file.pk = None
+    new_eeg_data = EEGData.objects.get(
+        pk=orig_and_clone['eeg_data'][eeg_file.eeg_data.id]
+    )
+    eeg_file.eeg_data = new_eeg_data
+    f = open(os.path.join(MEDIA_ROOT, eeg_file.file.name))
+    eeg_file.file.save(os.path.basename(f.name), File(f))
+    eeg_file.save()
+
+    return eeg_file
 
 
 def copy_experiment(experiment, copy_data_collection=False):
@@ -9207,6 +9262,10 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment.save()
 
     orig_and_clone = {}
+    orig_and_clone['dct'] = {}
+    orig_and_clone['eeg_setting'] = {}
+    orig_and_clone['subject_of_group'] = {}
+    orig_and_clone['eeg_data'] = {}
     for component in Component.objects.filter(experiment_id=experiment_id):
         clone_component = create_component(component, new_experiment)
         orig_and_clone[component.id] = clone_component.id
@@ -9229,20 +9288,10 @@ def copy_experiment(experiment, copy_data_collection=False):
         orig_and_clone[old_component_configuration_id] = \
             component_configuration.id
 
-    if copy_data_collection:
-        dct_list_new = []
-        for data_configuration_tree in DataConfigurationTree.objects.filter(
-                component_configuration_id__component_id__experiment_id
-                =experiment_id
-        ):
-            dct_list_new.append(
-                clone_dct(data_configuration_tree, orig_and_clone)
-            )
-
-        for dct in dct_list_new:
-            if dct.parent_id:
-                dct.parent_id = orig_and_clone[dct.parent.id]
-                dct.save()
+    # if copy_data_collection:
+        # TODO: check if groups has data collection before
+        # TODO: explain that orig_and_clone is modified
+        # clone_data_configuration_tree(experiment_id, orig_and_clone)
 
     groups = Group.objects.filter(experiment_id=experiment_id)
     for group in groups:
@@ -9259,14 +9308,20 @@ def copy_experiment(experiment, copy_data_collection=False):
         if subject_list:
             new_subject_of_group = SubjectOfGroup.objects.filter(id__in=subject_list)
             for subject_of_group in new_subject_of_group:
+                old_subject_of_group_id = subject_of_group.id
                 subject_of_group.pk = None
                 subject_of_group.group_id = group.id
                 subject_of_group.save()
+                orig_and_clone['subject_of_group'][old_subject_of_group_id] \
+                    = subject_of_group.id
 
-    # eeg_setting
+    # eeg setting
     for eeg_setting in EEGSetting.objects.filter(
             experiment_id=experiment_id):
-        copy_eeg_setting(eeg_setting, new_experiment)
+            old_eeg_setting_id = eeg_setting.id
+            new_eeg_setting = copy_eeg_setting(eeg_setting, new_experiment)
+            orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
+            copy_eeg_setting(eeg_setting, new_experiment)
 
     # emg setting
     for emg_setting in EMGSetting.objects.filter(
@@ -9277,6 +9332,19 @@ def copy_experiment(experiment, copy_data_collection=False):
     for tms_setting in TMSSetting.objects.filter(
             experiment_id=experiment_id):
         copy_tms_setting(tms_setting, new_experiment)
+
+    if copy_data_collection:
+        # TODO: check if groups has data collection before trying to copy
+        # TODO: explain that orig_and_clone is modified in method
+        clone_data_configuration_tree(experiment_id, orig_and_clone)
+        for eeg_data in EEGData.objects.filter(
+                eeg_setting_id__experiment_id=experiment_id
+        ):
+            clone_eeg_data(eeg_data, orig_and_clone)
+        for eeg_file in EEGFile.objects.filter(
+            eeg_data_id__eeg_setting_id__experiment_id=experiment_id
+        ):
+            clone_eeg_file(eeg_file, orig_and_clone)
 
 
 def copy_eeg_setting(eeg_setting, new_experiment):
