@@ -9301,6 +9301,67 @@ def clone_additional_data_file(additional_data_file, orig_and_clone):
     return additional_data_file
 
 
+def clone_digital_game_phase_data(dgp_data, orig_and_clone):
+    old_dgp_data_id = dgp_data.id
+    dgp_data.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][dgp_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][dgp_data.data_configuration_tree.id]
+    )
+    dgp_data.subject_of_group = new_subject_of_group
+    dgp_data.data_configuration_tree = new_data_configuration_tree
+    dgp_data.save()
+    orig_and_clone['digital_game_phase_data'][old_dgp_data_id] = dgp_data.id
+
+
+def clone_digital_game_phase_file(dgp_file, orig_and_clone):
+    dgp_file.pk = None
+    new_dgp_data = DigitalGamePhaseData.objects.get(
+        pk=orig_and_clone['digital_game_phase_data'][
+            dgp_file.digital_game_phase_data.id
+        ]
+    )
+    dgp_file.digital_game_phase_data = new_dgp_data
+    f = open(os.path.join(MEDIA_ROOT, dgp_file.file.name), 'rb')
+    dgp_file.file.save(os.path.basename(f.name), File(f))
+    dgp_file.save()
+
+    return dgp_file
+
+
+def clone_generic_data_collection_data(gdc_data, orig_and_clone):
+    old_gdc_data_id = gdc_data.id
+    gdc_data.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][gdc_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][gdc_data.data_configuration_tree.id]
+    )
+    gdc_data.subject_of_group = new_subject_of_group
+    gdc_data.data_configuration_tree = new_data_configuration_tree
+    gdc_data.save()
+    orig_and_clone['generic_data_collection_data'][old_gdc_data_id] = \
+        gdc_data.id
+
+
+def clone_generic_data_collection_file(gdc_file, orig_and_clone):
+    gdc_file.pk = None
+    new_gdc_data = GenericDataCollectionData.objects.get(
+        pk=orig_and_clone['generic_data_collection_data'][
+            gdc_file.generic_data_collection_data.id
+        ]
+    )
+    gdc_file.generic_data_collection_data = new_gdc_data
+    f = open(os.path.join(MEDIA_ROOT, gdc_file.file.name), 'rb')
+    gdc_file.file.save(os.path.basename(f.name), File(f))
+    gdc_file.save()
+
+    return gdc_file
+
+
 def copy_experiment(experiment, copy_data_collection=False):
     experiment_id = experiment.id
 
@@ -9317,6 +9378,8 @@ def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone['eeg_data'] = {}
     orig_and_clone['emg_data'] = {}
     orig_and_clone['additional_data'] = {}
+    orig_and_clone['digital_game_phase_data'] = {}
+    orig_and_clone['generic_data_collection_data'] = {}
     for component in Component.objects.filter(experiment_id=experiment_id):
         clone_component = create_component(component, new_experiment)
         orig_and_clone[component.id] = clone_component.id
@@ -9437,6 +9500,36 @@ def copy_experiment(experiment, copy_data_collection=False):
             additional_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
         ):
             clone_additional_data_file(additional_data_file, orig_and_clone)
+        # digital_game_phase_data
+        for digital_game_phase_data in DigitalGamePhaseData.objects.filter(
+                data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_digital_game_phase_data(
+                digital_game_phase_data, orig_and_clone
+            )
+        # digital_game_phase_file
+        for digital_game_phase_file in DigitalGamePhaseFile.objects.filter(
+            digital_game_phase_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_digital_game_phase_file(
+                digital_game_phase_file, orig_and_clone
+            )
+        # generic_data_collection_data
+        for generic_data_collection_data in \
+                GenericDataCollectionData.objects.filter(
+                    data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+                ):
+            clone_generic_data_collection_data(
+                generic_data_collection_data, orig_and_clone
+            )
+        # generic_data_collection_file
+        for generic_data_collection_file in \
+                GenericDataCollectionFile.objects.filter(
+                    generic_data_collection_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+                ):
+            clone_generic_data_collection_file(
+                generic_data_collection_file, orig_and_clone
+            )
 
 
 def copy_eeg_setting(eeg_setting, new_experiment):
