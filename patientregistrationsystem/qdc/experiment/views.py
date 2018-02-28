@@ -9268,6 +9268,39 @@ def clone_emg_file(emg_file, orig_and_clone):
     return emg_file
 
 
+def clone_additional_data(additional_data, orig_and_clone):
+    old_additional_data_id = additional_data.id
+    additional_data.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][
+            additional_data.subject_of_group.id
+        ]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][additional_data.data_configuration_tree.id]
+    )
+    additional_data.subject_of_group = new_subject_of_group
+    additional_data.data_configuration_tree = new_data_configuration_tree
+    additional_data.save()
+    orig_and_clone['additional_data'][old_additional_data_id] = \
+        additional_data.id
+
+
+def clone_additional_data_file(additional_data_file, orig_and_clone):
+    additional_data_file.pk = None
+    new_additional_data = AdditionalData.objects.get(
+        pk=orig_and_clone['additional_data'][
+            additional_data_file.additional_data.id
+        ]
+    )
+    additional_data_file.additional_data = new_additional_data
+    f = open(os.path.join(MEDIA_ROOT, additional_data_file.file.name), 'rb')
+    additional_data_file.file.save(os.path.basename(f.name), File(f))
+    additional_data_file.save()
+
+    return additional_data_file
+
+
 def copy_experiment(experiment, copy_data_collection=False):
     experiment_id = experiment.id
 
@@ -9278,11 +9311,12 @@ def copy_experiment(experiment, copy_data_collection=False):
 
     orig_and_clone = dict()
     orig_and_clone['dct'] = {}
+    orig_and_clone['subject_of_group'] = {}
     orig_and_clone['eeg_setting'] = {}
     orig_and_clone['emg_setting'] = {}
-    orig_and_clone['subject_of_group'] = {}
     orig_and_clone['eeg_data'] = {}
     orig_and_clone['emg_data'] = {}
+    orig_and_clone['additional_data'] = {}
     for component in Component.objects.filter(experiment_id=experiment_id):
         clone_component = create_component(component, new_experiment)
         orig_and_clone[component.id] = clone_component.id
@@ -9375,7 +9409,7 @@ def copy_experiment(experiment, copy_data_collection=False):
                 dct.save()
         # eeg_data
         for eeg_data in EEGData.objects.filter(
-                eeg_setting_id__experiment_id=experiment_id
+            eeg_setting_id__experiment_id=experiment_id
         ):
             clone_eeg_data(eeg_data, orig_and_clone)
         # eeg_file
@@ -9393,6 +9427,16 @@ def copy_experiment(experiment, copy_data_collection=False):
             emg_data_id__emg_setting_id__experiment_id=experiment_id
         ):
             clone_emg_file(emg_file, orig_and_clone)
+        # additional_data
+        for additional_data in AdditionalData.objects.filter(
+            data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_additional_data(additional_data, orig_and_clone)
+        # additional_data_file
+        for additional_data_file in AdditionalDataFile.objects.filter(
+            additional_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_additional_data_file(additional_data_file, orig_and_clone)
 
 
 def copy_eeg_setting(eeg_setting, new_experiment):
