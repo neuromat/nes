@@ -863,8 +863,7 @@ class Component(models.Model):
 
 
 def get_step_file_dir(instance, filename):
-    return "step/%s/%s" % \
-           (instance.component.id, filename)
+    return "step/%s/%s" % (instance.component.id, filename)
 
 
 class ComponentAdditionalFile(models.Model):

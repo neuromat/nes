@@ -9362,6 +9362,21 @@ def clone_generic_data_collection_file(gdc_file, orig_and_clone):
     return gdc_file
 
 
+def clone_component_additional_file(component_additional_file, orig_and_clone):
+    component_additional_file.pk = None
+    new_component = Component.objects.get(
+        pk=orig_and_clone['component'][component_additional_file.component.id]
+    )
+    component_additional_file.component = new_component
+    f = open(
+        os.path.join(MEDIA_ROOT, component_additional_file.file.name), 'rb'
+    )
+    component_additional_file.file.save(os.path.basename(f.name), File(f))
+    component_additional_file.save()
+
+    return component_additional_file
+
+
 def copy_experiment(experiment, copy_data_collection=False):
     experiment_id = experiment.id
 
@@ -9371,6 +9386,7 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment.save()
 
     orig_and_clone = dict()
+    orig_and_clone['component'] = {}
     orig_and_clone['dct'] = {}
     orig_and_clone['subject_of_group'] = {}
     orig_and_clone['eeg_setting'] = {}
@@ -9382,11 +9398,11 @@ def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone['generic_data_collection_data'] = {}
     for component in Component.objects.filter(experiment_id=experiment_id):
         clone_component = create_component(component, new_experiment)
-        orig_and_clone[component.id] = clone_component.id
+        orig_and_clone['component'][component.id] = clone_component.id
 
     for component_configuration in ComponentConfiguration.objects.filter(
-            component_id__experiment_id=experiment_id).order_by(
-        'parent_id', 'order'):
+            component_id__experiment_id=experiment_id
+    ).order_by('parent_id', 'order'):
 
         old_component_id = component_configuration.component_id
         parent_id = component_configuration.parent_id
@@ -9396,16 +9412,13 @@ def copy_experiment(experiment, copy_data_collection=False):
         if component_configuration.name:
             component_configuration.name = component_configuration.name
 
-        component_configuration.component_id = orig_and_clone[old_component_id]
-        component_configuration.parent_id = orig_and_clone[parent_id]
+        component_configuration.component_id = \
+            orig_and_clone['component'][old_component_id]
+        component_configuration.parent_id = \
+            orig_and_clone['component'][parent_id]
         component_configuration.save()
-        orig_and_clone[old_component_configuration_id] = \
+        orig_and_clone['component'][old_component_configuration_id] = \
             component_configuration.id
-
-    # if copy_data_collection:
-        # TODO: check if groups has data collection before
-        # TODO: explain that orig_and_clone is modified
-        # clone_data_configuration_tree(experiment_id, orig_and_clone)
 
     groups = Group.objects.filter(experiment_id=experiment_id)
     for group in groups:
@@ -9415,8 +9428,9 @@ def copy_experiment(experiment, copy_data_collection=False):
         new_group.pk = None
         new_group.title = new_group.title
         new_group.experiment_id = new_experiment.id
-        if experimental_protocol_id in orig_and_clone:
-            new_group.experimental_protocol_id = orig_and_clone[experimental_protocol_id]
+        if experimental_protocol_id in orig_and_clone['component']:
+            new_group.experimental_protocol_id = \
+                orig_and_clone['component'][experimental_protocol_id]
         new_group.save()
 
         if subject_list:
@@ -9452,7 +9466,6 @@ def copy_experiment(experiment, copy_data_collection=False):
     if copy_data_collection:
         # TODO: check if groups has data collection before trying to copy
         # TODO: explain that orig_and_clone is modified in method
-        # data_configuration_tree
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
                 component_configuration_id__component_id__experiment_id
@@ -9529,6 +9542,14 @@ def copy_experiment(experiment, copy_data_collection=False):
                 ):
             clone_generic_data_collection_file(
                 generic_data_collection_file, orig_and_clone
+            )
+        # component_additional_file
+        for component_additional_file in \
+                ComponentAdditionalFile.objects.filter(
+                    component_id__experiment_id=experiment_id
+                ):
+            clone_component_additional_file(
+                component_additional_file, orig_and_clone
             )
 
 
