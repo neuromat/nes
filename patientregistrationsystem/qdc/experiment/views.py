@@ -95,7 +95,7 @@ from configuration.models import LocalInstitution
 from export.directory_utils import create_directory
 from export.forms import ParticipantsSelectionForm, AgeIntervalForm
 
-from patient.models import Patient,
+from patient.models import Patient, \
     QuestionnaireResponse as PatientQuestionnaireResponse, \
     SocialDemographicData
 
@@ -9470,6 +9470,16 @@ def copy_experiment(experiment, copy_data_collection=False):
                 subject_of_group.pk = None
                 subject_of_group.group_id = group.id
                 subject_of_group.save()
+                old_subject_of_group = SubjectOfGroup.objects.get(
+                    pk=old_subject_of_group_id)
+                f = open(
+                    os.path.join(
+                        MEDIA_ROOT, old_subject_of_group.consent_form.name
+                    ), 'rb'
+                )
+                subject_of_group.consent_form.save(
+                    os.path.basename(f.name), File(f)
+                )
                 orig_and_clone['subject_of_group'][old_subject_of_group_id] \
                     = subject_of_group.id
 
