@@ -95,7 +95,9 @@ from configuration.models import LocalInstitution
 from export.directory_utils import create_directory
 from export.forms import ParticipantsSelectionForm, AgeIntervalForm
 
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
+from patient.models import Patient,
+    QuestionnaireResponse as PatientQuestionnaireResponse, \
+    SocialDemographicData
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey, SensitiveQuestion
@@ -8759,8 +8761,6 @@ def component_create(request, experiment_id, component_type):
         questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
-        # component_form.fields['duration_value'].widget.attrs['disabled'] = True
-        # component_form.fields['duration_unit'].widget.attrs['disabled'] = True
     elif component_type == 'digital_game_phase':
         specific_form = DigitalGamePhaseForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'generic_data_collection':
@@ -9377,9 +9377,34 @@ def clone_component_additional_file(component_additional_file, orig_and_clone):
     return component_additional_file
 
 
-def copy_experiment(experiment, copy_data_collection=False):
-    experiment_id = experiment.id
+def clone_context_tree(context_tree, new_experiment, orig_and_clone):
+    old_context_tree_id = context_tree.id
+    context_tree.pk = None
+    context_tree.experiment = new_experiment
+    context_tree.save()
+    old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
+    f = open(os.path.join(
+        MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
+    )
+    context_tree.setting_file.save(os.path.basename(f.name), File(f))
+    orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
 
+
+def copy_experiment(experiment, copy_data_collection=False):
+    orig_and_clone = dict()
+    orig_and_clone['component'] = {}
+    orig_and_clone['context_tree'] = {}
+    orig_and_clone['dct'] = {}
+    orig_and_clone['subject_of_group'] = {}
+    orig_and_clone['eeg_setting'] = {}
+    orig_and_clone['emg_setting'] = {}
+    orig_and_clone['eeg_data'] = {}
+    orig_and_clone['emg_data'] = {}
+    orig_and_clone['additional_data'] = {}
+    orig_and_clone['digital_game_phase_data'] = {}
+    orig_and_clone['generic_data_collection_data'] = {}
+
+    experiment_id = experiment.id
     new_experiment = experiment
     new_experiment.pk = None
     new_experiment.title = _('Copy of') + ' ' + new_experiment.title
@@ -9391,21 +9416,20 @@ def copy_experiment(experiment, copy_data_collection=False):
         os.path.basename(f.name), File(f)
     )
 
-    orig_and_clone = dict()
-    orig_and_clone['component'] = {}
-    orig_and_clone['dct'] = {}
-    orig_and_clone['subject_of_group'] = {}
-    orig_and_clone['eeg_setting'] = {}
-    orig_and_clone['emg_setting'] = {}
-    orig_and_clone['eeg_data'] = {}
-    orig_and_clone['emg_data'] = {}
-    orig_and_clone['additional_data'] = {}
-    orig_and_clone['digital_game_phase_data'] = {}
-    orig_and_clone['generic_data_collection_data'] = {}
+    # context tree
+    for context_tree in ContextTree.objects.filter(
+            experiment_id=experiment_id
+    ):
+        clone_context_tree(context_tree, new_experiment, orig_and_clone)
+
+    # component
     for component in Component.objects.filter(experiment_id=experiment_id):
-        clone_component = create_component(component, new_experiment)
+        clone_component = create_component(
+            component, new_experiment, orig_and_clone
+        )
         orig_and_clone['component'][component.id] = clone_component.id
 
+    # component configuration
     for component_configuration in ComponentConfiguration.objects.filter(
             component_id__experiment_id=experiment_id
     ).order_by('parent_id', 'order'):
@@ -9423,7 +9447,7 @@ def copy_experiment(experiment, copy_data_collection=False):
         component_configuration.parent_id = \
             orig_and_clone['component'][parent_id]
         component_configuration.save()
-        orig_and_clone['component'][old_component_configuration_id] = \
+        orig_and_clone[old_component_configuration_id] = \
             component_configuration.id
 
     groups = Group.objects.filter(experiment_id=experiment_id)
@@ -9701,7 +9725,7 @@ def copy_tms_setting(tms_setting, new_experiment):
     new_tms_setting.save()
 
 
-def create_component(component, new_experiment):
+def create_component(component, new_experiment, orig_and_clone):
 
     clone = None  # TODO: it's not necessary
     component_type = component.component_type
@@ -9747,8 +9771,12 @@ def create_component(component, new_experiment):
 
     elif component_type == 'digital_game_phase':
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
-        clone = DigitalGamePhase(context_tree_id=digital_game_phase.context_tree_id,
-                                 software_version_id=digital_game_phase.software_version_id)
+        clone = DigitalGamePhase(
+            context_tree_id=orig_and_clone['context_tree'][
+                digital_game_phase.context_tree_id
+            ],
+            software_version_id=digital_game_phase.software_version_id
+        )
 
     elif component_type == 'generic_data_collection':
         generic_data_collection = get_object_or_404(GenericDataCollection, pk=component.id)
@@ -9767,6 +9795,7 @@ def create_component(component, new_experiment):
 
     clone.save()
 
+    # Stimulus component has FileField
     if isinstance(clone, Stimulus) and file:
         clone.media_file.save(os.path.basename(file.name), File(file))
 
@@ -12204,115 +12233,6 @@ def tms_localization_system_update(
                "editing": True}
 
     return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.register_equipment')
-# def tms_localization_system_position_create(request,tms_localization_system_id,
-#                                             template_name="experiment/tms_localization_system_position.html"):
-#
-#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
-#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
-#     tms_position_form = TMSPositionForm(request.POST or None)
-#
-#     if request.method == "POST":
-#
-#         if request.POST['action'] == "save":
-#
-#             if tms_position_form.is_valid():
-#
-#                 tms_position_added = tms_position_form.save(commit=False)
-#                 tms_position_added.tms_localization_system = localization_system
-#                 tms_position_added.save()
-#
-#                 messages.success(request, _('TMS position created successfully.'))
-#                 redirect_url = reverse("tms_localization_system_view", args=(localization_system.id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#             else:
-#                 messages.warning(request, _('Information not saved.'))
-#
-#         else:
-#             messages.warning(request, _('Action not available.'))
-#
-#     context = {"localization_system": localization_system,
-#                "localization_system_form": localization_system_form,
-#                "tms_position_form": tms_position_form,
-#                "creating": True,
-#                "editing": True}
-#
-#     return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.register_equipment')
-# def tms_localization_system_position_update(request,tms_localization_system_id,tms_position_id,
-#                                             template_name="experiment/tms_localization_system_position.html"):
-#
-#     tms_position = get_object_or_404(TMSPosition, pk=tms_position_id)
-#     tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
-#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
-#
-#     if request.method == "POST":
-#
-#         if request.POST['action'] == "save":
-#
-#             if tms_position_form.is_valid():
-#                 if tms_position_form.has_changed():
-#                     tms_position_form.save()
-#                     messages.success(request, _('TMS position updated successfully.'))
-#                 else:
-#                     messages.success(request, _('There is no changes to save.'))
-#
-#                 redirect_url = reverse("tms_localization_system_view",
-#                                        args=(tms_localization_system_id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#     context = {"localization_system": localization_system,
-#                "localization_system_form": localization_system_form,
-#                "tms_position_form": tms_position_form,
-#                "creating": False,
-#                "editing": True}
-#
-#     return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.register_equipment')
-# def tms_localization_system_position_view(request, tms_localization_system_id, tms_position_id,
-#                                           template_name="experiment/tms_localization_system_position.html"):
-#
-#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
-#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
-#     tms_position = get_object_or_404(TMSPosition, pk=tms_position_id)
-#     tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-#
-#     for field in tms_position_form.fields:
-#         tms_position_form.fields[field].widget.attrs['disabled'] = True
-#
-#     if request.method == "POST":
-#         if request.POST['action'] == "remove":
-#
-#             try:
-#                 tms_position.delete()
-#                 messages.success(request, _('TMS Position removed successfully.'))
-#                 redirect_url = reverse("tms_localization_system_view", args=(localization_system.id,))
-#                 return HttpResponseRedirect(redirect_url)
-#             except ProtectedError:
-#                 messages.error(request, _("Error trying to delete TMS Position."))
-#                 redirect_url = reverse("tms_localization_system_view",
-#                                            args=(tms_localization_system_id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#     context = {"can_change": True,
-#                "localization_system": localization_system,
-#                "localization_system_form": localization_system_form,
-#                "tms_position": tms_position,
-#                "tms_position_form": tms_position_form,
-#                "editing": False}
-#
-#     return render(request, template_name, context)
 
 
 @login_required
