@@ -9464,7 +9464,9 @@ def copy_experiment(experiment, copy_data_collection=False):
         copy_tms_setting(tms_setting, new_experiment)
 
     if copy_data_collection:
-        # TODO: check if groups has data collection before trying to copy
+        # TODO: check if groups has data collection before trying to copy or
+        # TODO: check this in template so the option to copy with data
+        # TODO: doesn't appear;
         # TODO: explain that orig_and_clone is modified in method
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
@@ -9687,7 +9689,6 @@ def copy_emg_setting(emg_setting, new_experiment):
 
 
 def copy_tms_setting(tms_setting, new_experiment):
-    # tms_setting_id = tms_setting.id
     new_tms_setting = tms_setting
     new_tms_setting.pk = None
     new_tms_setting.experiment = new_experiment
@@ -9696,8 +9697,9 @@ def copy_tms_setting(tms_setting, new_experiment):
 
 def create_component(component, new_experiment):
 
-    clone = None
+    clone = None  # TODO: it's not necessary
     component_type = component.component_type
+    file = None  # define variable that can be used in conditionals below
 
     if component_type == 'block':
         block = get_object_or_404(Block, pk=component.id)
@@ -9729,6 +9731,7 @@ def create_component(component, new_experiment):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         clone = Stimulus(stimulus_type_id=stimulus.stimulus_type_id)
+        file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), 'rb')
 
     elif component_type == 'task':
         clone = Task()
@@ -9757,6 +9760,10 @@ def create_component(component, new_experiment):
     clone.component_type = component.component_type
 
     clone.save()
+
+    if isinstance(clone, Stimulus) and file:
+        clone.media_file.save(os.path.basename(file.name), File(file))
+        clone.save()
 
     return clone
 
@@ -10062,7 +10069,6 @@ def component_update(request, path_of_the_components):
                         if component_type == 'stimulus':
                             stimulus = get_object_or_404(Stimulus, pk=component.id)
                             specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
-                            # specific_form.save()
 
 
                         # Only save if there was a change.
