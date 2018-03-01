@@ -9384,6 +9384,12 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment.pk = None
     new_experiment.title = _('Copy of') + ' ' + new_experiment.title
     new_experiment.save()
+    f = open(os.path.join(
+        MEDIA_ROOT, experiment.ethics_committee_project_file.name), 'rb'
+    )
+    new_experiment.ethics_committee_project_file.save(
+        os.path.basename(f.name), File(f)
+    )
 
     orig_and_clone = dict()
     orig_and_clone['component'] = {}
@@ -9763,7 +9769,6 @@ def create_component(component, new_experiment):
 
     if isinstance(clone, Stimulus) and file:
         clone.media_file.save(os.path.basename(file.name), File(file))
-        clone.save()
 
     return clone
 
