@@ -1262,7 +1262,6 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     group = get_object_or_404(Group, pk=group_id)
 
     experiment = group.experiment
-    experiment_in_use = check_experiment(experiment)
 
     group_form = GroupForm(request.POST or None, instance=group)
 
@@ -1335,8 +1334,8 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
                "group_form": group_form,
                "questionnaires_configuration_list": list_of_questionnaires_configuration,
                "experiment": group.experiment,
-               "experiment_in_use": experiment_in_use,
                "group": group,
+               "group_has_data_collection": group_has_data_collection(group.id),
                "editing": False,
                "experimental_protocol_description": experimental_protocol_description,
                "number_of_subjects": SubjectOfGroup.objects.all().filter(group=group).count(),
@@ -8596,7 +8595,6 @@ def upload_file(request, subject_id, group_id, template_name="experiment/upload_
 def component_list(request, experiment_id, template_name="experiment/component_list.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
-    experiment_in_use = check_experiment(experiment)
     if request.method == "POST":
         if request.POST['action'] == "copy_experiment":
             copy_experiment(experiment)
@@ -8643,8 +8641,7 @@ def component_list(request, experiment_id, template_name="experiment/component_l
     context = {"can_change": get_can_change(request.user, experiment.research_project),
                "component_list": components,
                "component_type_choices": component_type_choices,
-               "experiment": experiment,
-               "experiment_in_use": experiment_in_use
+               "experiment": experiment
                }
 
     return render(request, template_name, context)
@@ -9188,6 +9185,47 @@ def check_experiment(experiment):
     return experiment_with_data
 
 
+def get_uses_of_step_with_data(experiment):
+    steps_questionnaire = \
+        [item['data_configuration_tree__component_configuration'] for item in QuestionnaireResponse.objects.filter(
+            data_configuration_tree__component_configuration__component__experiment=experiment).values(
+            'data_configuration_tree__component_configuration').distinct()]
+
+    steps_eeg = \
+        [item['data_configuration_tree__component_configuration'] for item in EEGData.objects.filter(
+            data_configuration_tree__component_configuration__component__experiment=experiment).values(
+            'data_configuration_tree__component_configuration').distinct()]
+
+    steps_emg = \
+        [item['data_configuration_tree__component_configuration'] for item in EMGData.objects.filter(
+            data_configuration_tree__component_configuration__component__experiment=experiment).values(
+            'data_configuration_tree__component_configuration').distinct()]
+
+    steps_tms = \
+        [item['data_configuration_tree__component_configuration'] for item in TMSData.objects.filter(
+            data_configuration_tree__component_configuration__component__experiment=experiment).values(
+            'data_configuration_tree__component_configuration').distinct()]
+
+    steps_goalkeeper_game = \
+        [item['data_configuration_tree__component_configuration'] for item in DigitalGamePhaseData.objects.filter(
+            data_configuration_tree__component_configuration__component__experiment=experiment).values(
+            'data_configuration_tree__component_configuration').distinct()]
+
+    steps_additional_data = \
+        [item['data_configuration_tree__component_configuration'] for item in AdditionalData.objects.filter(
+            data_configuration_tree__component_configuration__component__experiment=experiment).values(
+            'data_configuration_tree__component_configuration').distinct()]
+
+    steps_generic_data_collection = \
+        [item['data_configuration_tree__component_configuration'] for item in GenericDataCollectionData.objects.filter(
+            data_configuration_tree__component_configuration__component__experiment=experiment).values(
+            'data_configuration_tree__component_configuration').distinct()]
+
+    return steps_questionnaire + \
+           steps_eeg + steps_emg + steps_tms + \
+           steps_goalkeeper_game + steps_additional_data + steps_generic_data_collection
+
+
 def copy_experiment(experiment):
     experiment_id = experiment.id
 
@@ -9449,7 +9487,8 @@ def component_view(request, path_of_the_components):
     list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url = \
         access_objects_for_view_and_update(request, path_of_the_components)
 
-    experiment_in_use = check_experiment(experiment)
+    # when there are data collected, it is necessary to protect related "steps" and "uses of steps"
+    protected_steps, protected_uses_of_step = get_protected_steps_and_uses_of_steps(experiment, group)
 
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
@@ -9541,7 +9580,6 @@ def component_view(request, path_of_the_components):
                "configuration_list": configuration_list,
                "configuration_list_of_random_components": configuration_list_of_random_components,
                "experiment": experiment,
-               "experiment_in_use": experiment_in_use,
                "group": group,
                "has_unlimited": has_unlimited,
                "icon_class": icon_class,
@@ -9550,9 +9588,51 @@ def component_view(request, path_of_the_components):
                "specific_form": block_form,
                "type_of_the_parent_block": type_of_the_parent_block,
                "component_type_choices": component_type_choices,
-               "limesurvey_available": limesurvey_available}
+               "limesurvey_available": limesurvey_available,
+               "protected_uses_of_step": protected_uses_of_step,
+               "protected_steps": protected_steps}
 
     return render(request, template_name, context)
+
+
+def get_protected_steps_and_uses_of_steps(experiment: Experiment, group: Group):
+
+    groups = [group] if group else [item for item in Group.objects.filter(experiment=experiment)]
+
+    protected_uses_of_step_set = set()
+    related_steps = set()
+
+    for group in groups:
+
+        protected_uses_of_step = get_uses_of_step_with_data(group.experiment)
+
+        if protected_uses_of_step:
+
+            previous_use_of_steps = set()
+
+            # get all paths
+            list_of_trees = create_list_of_trees(group.experimental_protocol, None)
+
+            # find paths that contains use_of_steps_with_data in order to protect other "uses of steps"
+            for tree in list_of_trees:
+                tree_sequence = [item[0] for item in tree]
+                for use_of_step in protected_uses_of_step:
+                    if use_of_step in tree_sequence:
+                        previous_items = tree_sequence[:tree_sequence.index(use_of_step)]
+                        for previous_item in previous_items:
+                            previous_use_of_steps.add(previous_item)
+
+            protected_uses_of_step += list(previous_use_of_steps)
+
+        for item in protected_uses_of_step:
+            item_component_configuration = ComponentConfiguration.objects.get(id=item)
+            related_steps.add(item_component_configuration.component.id)
+            if item_component_configuration.parent:
+                related_steps.add(item_component_configuration.parent.id)
+
+        protected_uses_of_step_set |= set(protected_uses_of_step)
+
+    return list(related_steps), list(protected_uses_of_step_set)
 
 
 def sort_without_using_order(configuration_list_of_random_components):
@@ -9653,7 +9733,8 @@ def component_update(request, path_of_the_components):
     list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url = \
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
-    experiment_in_use = check_experiment(experiment)
+    # when there are data collected, it is necessary to protect related "steps" and "uses of steps"
+    protected_steps, protected_uses_of_step = get_protected_steps_and_uses_of_steps(experiment, group)
 
     questionnaire_id = None
     questionnaire_title = None
@@ -9804,9 +9885,6 @@ def component_update(request, path_of_the_components):
 
     type_of_the_parent_block = None
 
-    if experiment_in_use:
-        can_change = False
-
     # It is not possible to edit the component fields while editing a component configuration.
     if component_configuration or not can_change:
         if specific_form is not None:
@@ -9828,6 +9906,7 @@ def component_update(request, path_of_the_components):
     context = {"back_cancel_url": back_cancel_url,
                "block_duration": duration_string,
                "can_change": can_change,
+               "component": component,
                "component_configuration": component_configuration,
                "component_form": component_form,
                "component_additional_files": component.component_additional_files,
@@ -9836,7 +9915,7 @@ def component_update(request, path_of_the_components):
                "configuration_list_of_random_components": configuration_list_of_random_components,
                "icon_class": icon_class,
                "experiment": experiment,
-               "experiment_in_use": experiment_in_use,
+               "protected_steps": protected_steps,
                "group": group,
                "has_unlimited": has_unlimited,
                "list_of_breadcrumbs": list_of_breadcrumbs,
