@@ -9390,6 +9390,16 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
 
 
+def clone_hotspot(hotspot, new_tms_data):
+    old_hotspot = hotspot
+    hotspot.pk = None
+    hotspot.tms_data = new_tms_data
+    hotspot.save()
+    if old_hotspot.hot_spot_map:
+        f = open(os.path.join(MEDIA_ROOT, old_hotspot.hot_spot_map.name), 'rb')
+        hotspot.hot_spot_map.save(os.path.basename(f.name), File(f))
+
+
 def clone_tms_data(tms_data, orig_and_clone):
     old_tms_data_id = tms_data.id
     tms_data.pk = None
@@ -9406,7 +9416,10 @@ def clone_tms_data(tms_data, orig_and_clone):
     tms_data.subject_of_group = new_subject_of_group
     tms_data.data_configuration_tree = new_data_configuration_tree
     tms_data.save()
-    orig_and_clone['tms_data'][old_tms_data_id] = tms_data.id
+
+    old_tms_data = TMSData.objects.get(pk=old_tms_data_id)
+    if hasattr(old_tms_data, 'hotspot'):
+        clone_hotspot(old_tms_data.hotspot, tms_data)
 
     return tms_data
 
@@ -9422,7 +9435,6 @@ def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone['tms_setting'] = {}
     orig_and_clone['eeg_data'] = {}
     orig_and_clone['emg_data'] = {}
-    orig_and_clone['tms_data'] = {}
     orig_and_clone['additional_data'] = {}
     orig_and_clone['digital_game_phase_data'] = {}
     orig_and_clone['generic_data_collection_data'] = {}
