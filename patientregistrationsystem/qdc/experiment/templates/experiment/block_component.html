@@ -154,7 +154,11 @@
                                                                                     </td>
                                                                                 {% endif %}
                                                                                 <td class="text-center col-md-1">
-                                                                                    <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});" {% endif %} title="{% trans "Delete uses from list" %}"></a>
+                                                                                    {% if accordion.0.id in protected_uses_of_step %}
+                                                                                        <a class="btn glyphicon glyphicon-ban-circle" style="color: indianred;" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
+                                                                                    {% else %}
+                                                                                        <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_many('fixed', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
+                                                                                    {% endif %}
                                                                                 </td>
                                                                             {% else %}
                                                                                 <td class="col-md-5">
@@ -211,7 +215,7 @@
 
                     {% if not component_configuration and can_change %}
                         <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% endif %}>
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                                 {% trans "Insert step" %}
                                 <span class="caret"></span>
                             </button>
@@ -271,7 +275,11 @@
                                                                             </td>
                                                                             {% if not component_configuration and can_change %}
                                                                                 <td class="text-center col-md-1">
-                                                                                    <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});" {% endif %} title="{% trans "Delete uses from list" %}"></a>
+                                                                                    {% if accordion.0.id in protected_uses_of_step %}
+                                                                                        <a class="btn glyphicon glyphicon-ban-circle" style="color: indianred;" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this experimental protocol. Alternatively, make a copy of the experiment." %}"></a>
+                                                                                    {% else %}
+                                                                                        <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_many('random', {{ forloop.counter0 }}, {{ accordion|length }});" title="{% trans "Delete uses from list" %}"></a>
+                                                                                    {% endif %}
                                                                                 </td>
                                                                             {% endif %}
                                                                         </tr>
@@ -315,7 +323,7 @@
 
                         {% if not component_configuration and can_change %}
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% endif %}>
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                                     {% trans "Insert step" %}
                                     <span class="caret"></span>
                                 </button>

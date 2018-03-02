@@ -198,7 +198,7 @@
                 {% if not component_configuration and not creating and not updating and can_change %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-xs-12 col-sm-12">
-                            <a class="btn btn-primary" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} href="/experiment/component/edit/{{ path_of_the_components }}" {% endif %}>{% trans "Edit" %}</a>
+                            <a class="btn btn-primary" href="/experiment/component/edit/{{ path_of_the_components }}">{% trans "Edit" %}</a>
                         </div>
                     </div>
                 {% endif %}
@@ -209,7 +209,7 @@
                 {% if component_configuration %}
                     <div class="row" style="padding-bottom: 1em">
                         <div class="col-xs-12 col-sm-12">
-                            <a class="btn btn-primary" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} href="/experiment/component/{% if component_configuration.component.component_type != "block" %}edit/{% endif %}{{ path_of_the_components }}-{{ component_configuration.component.id }}" {% endif %}>{% trans "Edit" %}</a>
+                            <a class="btn btn-primary" href="/experiment/component/{% if component_configuration.component.component_type != "block" %}edit/{% endif %}{{ path_of_the_components }}-{{ component_configuration.component.id }}">{% trans "Edit" %}</a>
                         </div>
                     </div>
                 {% endif %}
@@ -322,11 +322,22 @@
 
             <div class="btn-toolbar">
                 {# This div has to be out of the if so that the save and cancel buttons appear separated from each other. #}
-                <div class="btn-group pull-left">
-                    {% if not component_configuration and can_change %}
-                        <button type="button" class="btn btn-danger" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} onclick="$('#modalRemove').modal('show')" {% endif %}>{% trans "Delete" %}</button>
+                {% if not component_configuration and can_change %}
+                    {% if component.id in protected_steps %}
+                        <div class="btn-group pull-left" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}">
+                            <button type="button" class="btn btn-danger" disabled="disabled">{% trans "Delete" %}</button>
+                        </div>
+                    {% else %}
+                        <div class="btn-group pull-left">
+                            <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
+                        </div>
                     {% endif %}
-                </div>
+                    </div>
+                {% else %}
+                    <div class="btn-group pull-left">
+                    </div>
+                {% endif %}
+
                 {% if updating or creating or component_configuration %}
                     <div class="btn-group pull-right">
                         <button {% if not can_change %}disabled{% endif %} type="submit" name="action" value="save" class="btn btn-primary" id="submit_button">
