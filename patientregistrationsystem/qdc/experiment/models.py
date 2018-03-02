@@ -1110,19 +1110,6 @@ def get_data_file_dir(instance, filename):
                 if instance.digital_game_phase_data.data_configuration_tree else 0),
             'digital_game_phase')
 
-    # if isinstance(instance, DataCollection):
-    #     directory = path.join('data_collection_files',
-    #                           str(instance.subject_of_group.group.experiment.id),
-    #                           str(instance.subject_of_group.group.id),
-    #                           str(instance.subject_of_group.subject.id),
-    #                           str(instance.data_configuration_tree.id if instance.data_configuration_tree else 0))
-    #     if isinstance(instance, EEGData):
-    #         directory = path.join(directory, 'eeg')
-    #     elif isinstance(instance, EMGData):
-    #         directory = path.join(directory, 'emg')
-    #     elif isinstance(instance, AdditionalData):
-    #         directory = path.join(directory, 'additional')
-
     elif isinstance(instance, HotSpot):
         directory = path.join('data_collection_files',
                               str(instance.tms_data.subject_of_group.group.experiment.id),
@@ -1272,9 +1259,7 @@ class TMSData(DataCollection):
     second_test_pulse_intensity = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     interval_between_pulses = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     interval_between_pulses_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    # time_between_mep_trials_low = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     time_between_mep_trials = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    # time_between_mep_trials_high = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coil_orientation = models.ForeignKey(CoilOrientation, null=True, blank=True)

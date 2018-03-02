@@ -9390,6 +9390,27 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
 
 
+def clone_tms_data(tms_data, orig_and_clone):
+    old_tms_data_id = tms_data.id
+    tms_data.pk = None
+    new_tms_setting = TMSSetting.objects.get(
+        pk=orig_and_clone['tms_setting'][tms_data.tms_setting.id]
+    )
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][tms_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][tms_data.data_configuration_tree.id]
+    )
+    tms_data.tms_setting = new_tms_setting
+    tms_data.subject_of_group = new_subject_of_group
+    tms_data.data_configuration_tree = new_data_configuration_tree
+    tms_data.save()
+    orig_and_clone['tms_data'][old_tms_data_id] = tms_data.id
+
+    return tms_data
+
+
 def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone = dict()
     orig_and_clone['component'] = {}
@@ -9398,8 +9419,10 @@ def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone['subject_of_group'] = {}
     orig_and_clone['eeg_setting'] = {}
     orig_and_clone['emg_setting'] = {}
+    orig_and_clone['tms_setting'] = {}
     orig_and_clone['eeg_data'] = {}
     orig_and_clone['emg_data'] = {}
+    orig_and_clone['tms_data'] = {}
     orig_and_clone['additional_data'] = {}
     orig_and_clone['digital_game_phase_data'] = {}
     orig_and_clone['generic_data_collection_data'] = {}
@@ -9471,37 +9494,42 @@ def copy_experiment(experiment, copy_data_collection=False):
                 subject_of_group.group_id = group.id
                 subject_of_group.save()
                 old_subject_of_group = SubjectOfGroup.objects.get(
-                    pk=old_subject_of_group_id)
-                f = open(
-                    os.path.join(
-                        MEDIA_ROOT, old_subject_of_group.consent_form.name
-                    ), 'rb'
+                    pk=old_subject_of_group_id
                 )
-                subject_of_group.consent_form.save(
-                    os.path.basename(f.name), File(f)
-                )
+                # TODO: see other file saves that can have FileField null
+                if old_subject_of_group.consent_form:
+                    f = open(
+                        os.path.join(
+                            MEDIA_ROOT, old_subject_of_group.consent_form.name
+                        ), 'rb'
+                    )
+                    subject_of_group.consent_form.save(
+                        os.path.basename(f.name), File(f)
+                    )
                 orig_and_clone['subject_of_group'][old_subject_of_group_id] \
                     = subject_of_group.id
 
     # eeg setting
     for eeg_setting in EEGSetting.objects.filter(
             experiment_id=experiment_id):
-            old_eeg_setting_id = eeg_setting.id
-            new_eeg_setting = copy_eeg_setting(eeg_setting, new_experiment)
-            orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
+        old_eeg_setting_id = eeg_setting.id
+        new_eeg_setting = copy_eeg_setting(eeg_setting, new_experiment)
+        orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
 
     # emg setting
     for emg_setting in EMGSetting.objects.filter(
             experiment_id=experiment_id):
-            old_emg_setting_id = emg_setting.id
-            new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
-            orig_and_clone['emg_setting'][old_emg_setting_id] = \
-                new_emg_setting.id
+        old_emg_setting_id = emg_setting.id
+        new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
+        orig_and_clone['emg_setting'][old_emg_setting_id] = \
+            new_emg_setting.id
 
     # tms setting
     for tms_setting in TMSSetting.objects.filter(
             experiment_id=experiment_id):
-        copy_tms_setting(tms_setting, new_experiment)
+        old_tms_setting_id = tms_setting.id
+        new_tms_setting = copy_tms_setting(tms_setting, new_experiment)
+        orig_and_clone['tms_setting'][old_tms_setting_id] = new_tms_setting.id
 
     if copy_data_collection:
         # TODO: check if groups has data collection before trying to copy or
@@ -9593,6 +9621,11 @@ def copy_experiment(experiment, copy_data_collection=False):
             clone_component_additional_file(
                 component_additional_file, orig_and_clone
             )
+        # tms_data
+        for tms_data in TMSData.objects.filter(
+                tms_setting_id__experiment_id=experiment_id
+        ):
+            clone_tms_data(tms_data, orig_and_clone)
 
 
 def copy_eeg_setting(eeg_setting, new_experiment):
@@ -9728,11 +9761,25 @@ def copy_emg_setting(emg_setting, new_experiment):
     return new_emg_setting
 
 
+def clone_tms_device_setting(tms_device_setting, new_tms_setting):
+    tms_device_setting.pk = None
+    tms_device_setting.tms_setting = new_tms_setting
+    tms_device_setting.save()
+
+
 def copy_tms_setting(tms_setting, new_experiment):
+    old_tms_setting_id = tms_setting.id
     new_tms_setting = tms_setting
     new_tms_setting.pk = None
     new_tms_setting.experiment = new_experiment
     new_tms_setting.save()
+
+    old_tms_setting = TMSSetting.objects.get(pk=old_tms_setting_id)
+    clone_tms_device_setting(
+        old_tms_setting.tms_device_setting, new_tms_setting
+    )
+
+    return new_tms_setting
 
 
 def create_component(component, new_experiment, orig_and_clone):
