@@ -15,6 +15,7 @@ from nwb.nwbco import *
 # v1.5
 import mne
 import base64
+import os
 
 from datetime import date, timedelta, datetime
 from dateutil.relativedelta import relativedelta
@@ -39,6 +40,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
+from qdc.settings import MEDIA_ROOT
 from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
@@ -93,7 +95,9 @@ from configuration.models import LocalInstitution
 from export.directory_utils import create_directory
 from export.forms import ParticipantsSelectionForm, AgeIntervalForm
 
-from patient.models import Patient, QuestionnaireResponse as PatientQuestionnaireResponse, SocialDemographicData
+from patient.models import Patient, \
+    QuestionnaireResponse as PatientQuestionnaireResponse, \
+    SocialDemographicData
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey, SensitiveQuestion
@@ -9226,18 +9230,303 @@ def get_uses_of_step_with_data(experiment):
            steps_goalkeeper_game + steps_additional_data + steps_generic_data_collection
 
 
-def copy_experiment(experiment):
-    experiment_id = experiment.id
+def clone_data_configuration_tree(dct, orig_and_clone):
+    old_component_configuration_id = dct.component_configuration.id
+    old_dct_id = dct.id
+    dct.pk = None
+    new_component_configuration = ComponentConfiguration.objects.get(
+        pk=orig_and_clone[old_component_configuration_id]
+    )
+    dct.component_configuration = new_component_configuration
+    dct.save()
+    orig_and_clone['dct'][old_dct_id] = dct.id
 
+    return dct
+
+
+def clone_eeg_data(eeg_data, orig_and_clone):
+    old_eeg_data_id = eeg_data.id
+    eeg_data.pk = None
+    new_eeg_setting = EEGSetting.objects.get(
+        pk=orig_and_clone['eeg_setting'][eeg_data.eeg_setting.id]
+    )
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][eeg_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][eeg_data.data_configuration_tree.id]
+    )
+    eeg_data.eeg_setting = new_eeg_setting
+    eeg_data.subject_of_group = new_subject_of_group
+    eeg_data.data_configuration_tree = new_data_configuration_tree
+    eeg_data.save()
+    orig_and_clone['eeg_data'][old_eeg_data_id] = eeg_data.id
+
+    return eeg_data
+
+
+def clone_eeg_file(eeg_file, orig_and_clone):
+    eeg_file.pk = None
+    new_eeg_data = EEGData.objects.get(
+        pk=orig_and_clone['eeg_data'][eeg_file.eeg_data.id]
+    )
+    eeg_file.eeg_data = new_eeg_data
+    f = open(os.path.join(MEDIA_ROOT, eeg_file.file.name), 'rb')
+    eeg_file.file.save(os.path.basename(f.name), File(f))
+    eeg_file.save()
+
+    return eeg_file
+
+
+def clone_emg_data(emg_data, orig_and_clone):
+    old_emg_data_id = emg_data.id
+    emg_data.pk = None
+    new_emg_setting = EMGSetting.objects.get(
+        pk=orig_and_clone['emg_setting'][emg_data.emg_setting.id]
+    )
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][emg_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][emg_data.data_configuration_tree.id]
+    )
+    emg_data.emg_setting = new_emg_setting
+    emg_data.subject_of_group = new_subject_of_group
+    emg_data.data_configuration_tree = new_data_configuration_tree
+    emg_data.save()
+    orig_and_clone['emg_data'][old_emg_data_id] = emg_data.id
+
+
+def clone_emg_file(emg_file, orig_and_clone):
+    emg_file.pk = None
+    new_emg_data = EMGData.objects.get(
+        pk=orig_and_clone['emg_data'][emg_file.emg_data.id]
+    )
+    emg_file.emg_data = new_emg_data
+    f = open(os.path.join(MEDIA_ROOT, emg_file.file.name), 'rb')
+    emg_file.file.save(os.path.basename(f.name), File(f))
+
+    emg_file.save()
+
+    return emg_file
+
+
+def clone_additional_data(additional_data, orig_and_clone):
+    old_additional_data_id = additional_data.id
+    additional_data.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][
+            additional_data.subject_of_group.id
+        ]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][additional_data.data_configuration_tree.id]
+    )
+    additional_data.subject_of_group = new_subject_of_group
+    additional_data.data_configuration_tree = new_data_configuration_tree
+    additional_data.save()
+    orig_and_clone['additional_data'][old_additional_data_id] = \
+        additional_data.id
+
+
+def clone_additional_data_file(additional_data_file, orig_and_clone):
+    additional_data_file.pk = None
+    new_additional_data = AdditionalData.objects.get(
+        pk=orig_and_clone['additional_data'][
+            additional_data_file.additional_data.id
+        ]
+    )
+    additional_data_file.additional_data = new_additional_data
+    f = open(os.path.join(MEDIA_ROOT, additional_data_file.file.name), 'rb')
+    additional_data_file.file.save(os.path.basename(f.name), File(f))
+    additional_data_file.save()
+
+    return additional_data_file
+
+
+def clone_digital_game_phase_data(dgp_data, orig_and_clone):
+    old_dgp_data_id = dgp_data.id
+    dgp_data.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][dgp_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][dgp_data.data_configuration_tree.id]
+    )
+    dgp_data.subject_of_group = new_subject_of_group
+    dgp_data.data_configuration_tree = new_data_configuration_tree
+    dgp_data.save()
+    orig_and_clone['digital_game_phase_data'][old_dgp_data_id] = dgp_data.id
+
+
+def clone_digital_game_phase_file(dgp_file, orig_and_clone):
+    dgp_file.pk = None
+    new_dgp_data = DigitalGamePhaseData.objects.get(
+        pk=orig_and_clone['digital_game_phase_data'][
+            dgp_file.digital_game_phase_data.id
+        ]
+    )
+    dgp_file.digital_game_phase_data = new_dgp_data
+    f = open(os.path.join(MEDIA_ROOT, dgp_file.file.name), 'rb')
+    dgp_file.file.save(os.path.basename(f.name), File(f))
+    dgp_file.save()
+
+    return dgp_file
+
+
+def clone_generic_data_collection_data(gdc_data, orig_and_clone):
+    old_gdc_data_id = gdc_data.id
+    gdc_data.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][gdc_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][gdc_data.data_configuration_tree.id]
+    )
+    gdc_data.subject_of_group = new_subject_of_group
+    gdc_data.data_configuration_tree = new_data_configuration_tree
+    gdc_data.save()
+    orig_and_clone['generic_data_collection_data'][old_gdc_data_id] = \
+        gdc_data.id
+
+
+def clone_generic_data_collection_file(gdc_file, orig_and_clone):
+    gdc_file.pk = None
+    new_gdc_data = GenericDataCollectionData.objects.get(
+        pk=orig_and_clone['generic_data_collection_data'][
+            gdc_file.generic_data_collection_data.id
+        ]
+    )
+    gdc_file.generic_data_collection_data = new_gdc_data
+    f = open(os.path.join(MEDIA_ROOT, gdc_file.file.name), 'rb')
+    gdc_file.file.save(os.path.basename(f.name), File(f))
+    gdc_file.save()
+
+    return gdc_file
+
+
+def clone_component_additional_file(component_additional_file, orig_and_clone):
+    component_additional_file.pk = None
+    new_component = Component.objects.get(
+        pk=orig_and_clone['component'][component_additional_file.component.id]
+    )
+    component_additional_file.component = new_component
+    f = open(
+        os.path.join(MEDIA_ROOT, component_additional_file.file.name), 'rb'
+    )
+    component_additional_file.file.save(os.path.basename(f.name), File(f))
+    component_additional_file.save()
+
+    return component_additional_file
+
+
+def clone_context_tree(context_tree, new_experiment, orig_and_clone):
+    old_context_tree_id = context_tree.id
+    context_tree.pk = None
+    context_tree.experiment = new_experiment
+    context_tree.save()
+    old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
+    f = open(os.path.join(
+        MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
+    )
+    context_tree.setting_file.save(os.path.basename(f.name), File(f))
+    orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
+
+
+def clone_hotspot(hotspot, new_tms_data):
+    old_hotspot = hotspot
+    hotspot.pk = None
+    hotspot.tms_data = new_tms_data
+    hotspot.save()
+    if old_hotspot.hot_spot_map:
+        f = open(os.path.join(MEDIA_ROOT, old_hotspot.hot_spot_map.name), 'rb')
+        hotspot.hot_spot_map.save(os.path.basename(f.name), File(f))
+
+
+def clone_tms_data(tms_data, orig_and_clone):
+    old_tms_data_id = tms_data.id
+    tms_data.pk = None
+    new_tms_setting = TMSSetting.objects.get(
+        pk=orig_and_clone['tms_setting'][tms_data.tms_setting.id]
+    )
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][tms_data.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][tms_data.data_configuration_tree.id]
+    )
+    tms_data.tms_setting = new_tms_setting
+    tms_data.subject_of_group = new_subject_of_group
+    tms_data.data_configuration_tree = new_data_configuration_tree
+    tms_data.save()
+
+    old_tms_data = TMSData.objects.get(pk=old_tms_data_id)
+    if hasattr(old_tms_data, 'hotspot'):
+        clone_hotspot(old_tms_data.hotspot, tms_data)
+
+    return tms_data
+
+
+def copy_experiment(experiment, copy_data_collection=False):
+    orig_and_clone = dict()
+    orig_and_clone['component'] = {}
+    orig_and_clone['context_tree'] = {}
+    orig_and_clone['dct'] = {}
+    orig_and_clone['subject_of_group'] = {}
+    orig_and_clone['eeg_setting'] = {}
+    orig_and_clone['emg_setting'] = {}
+    orig_and_clone['tms_setting'] = {}
+    orig_and_clone['eeg_data'] = {}
+    orig_and_clone['emg_data'] = {}
+    orig_and_clone['additional_data'] = {}
+    orig_and_clone['digital_game_phase_data'] = {}
+    orig_and_clone['generic_data_collection_data'] = {}
+
+    experiment_id = experiment.id
     new_experiment = experiment
     new_experiment.pk = None
     new_experiment.title = _('Copy of') + ' ' + new_experiment.title
     new_experiment.save()
+    f = open(os.path.join(
+        MEDIA_ROOT, experiment.ethics_committee_project_file.name), 'rb'
+    )
+    new_experiment.ethics_committee_project_file.save(
+        os.path.basename(f.name), File(f)
+    )
 
-    orig_and_clone = {}
+    # context tree
+    for context_tree in ContextTree.objects.filter(
+            experiment_id=experiment_id
+    ):
+        clone_context_tree(context_tree, new_experiment, orig_and_clone)
+
+    # component
     for component in Component.objects.filter(experiment_id=experiment_id):
-        clone_component = create_component(component, new_experiment)
-        orig_and_clone[component.id] = clone_component.id
+        clone_component = create_component(
+            component, new_experiment, orig_and_clone
+        )
+        orig_and_clone['component'][component.id] = clone_component.id
+
+    # component configuration
+    for component_configuration in ComponentConfiguration.objects.filter(
+            component_id__experiment_id=experiment_id
+    ).order_by('parent_id', 'order'):
+
+        old_component_id = component_configuration.component_id
+        parent_id = component_configuration.parent_id
+
+        old_component_configuration_id = component_configuration.id
+        component_configuration.pk = None
+        if component_configuration.name:
+            component_configuration.name = component_configuration.name
+
+        component_configuration.component_id = \
+            orig_and_clone['component'][old_component_id]
+        component_configuration.parent_id = \
+            orig_and_clone['component'][parent_id]
+        component_configuration.save()
+        orig_and_clone[old_component_configuration_id] = \
+            component_configuration.id
 
     groups = Group.objects.filter(experiment_id=experiment_id)
     for group in groups:
@@ -9245,46 +9534,153 @@ def copy_experiment(experiment):
         subject_list = [item.pk for item in SubjectOfGroup.objects.filter(group=group)]
         new_group = group
         new_group.pk = None
-        # new_group.title = _('Copy of') + ' ' + new_group.title
         new_group.title = new_group.title
         new_group.experiment_id = new_experiment.id
-        if experimental_protocol_id in orig_and_clone:
-            new_group.experimental_protocol_id = orig_and_clone[experimental_protocol_id]
+        if experimental_protocol_id in orig_and_clone['component']:
+            new_group.experimental_protocol_id = \
+                orig_and_clone['component'][experimental_protocol_id]
         new_group.save()
 
         if subject_list:
             new_subject_of_group = SubjectOfGroup.objects.filter(id__in=subject_list)
             for subject_of_group in new_subject_of_group:
+                old_subject_of_group_id = subject_of_group.id
                 subject_of_group.pk = None
                 subject_of_group.group_id = group.id
                 subject_of_group.save()
+                old_subject_of_group = SubjectOfGroup.objects.get(
+                    pk=old_subject_of_group_id
+                )
+                # TODO: see other file saves that can have FileField null
+                if old_subject_of_group.consent_form:
+                    f = open(
+                        os.path.join(
+                            MEDIA_ROOT, old_subject_of_group.consent_form.name
+                        ), 'rb'
+                    )
+                    subject_of_group.consent_form.save(
+                        os.path.basename(f.name), File(f)
+                    )
+                orig_and_clone['subject_of_group'][old_subject_of_group_id] \
+                    = subject_of_group.id
 
-    for component_configuration in ComponentConfiguration.objects.filter(
-            component_id__experiment_id=experiment_id).order_by('parent_id', 'order'):
-
-        component_id = component_configuration.component_id
-        parent_id = component_configuration.parent_id
-
-        component_configuration.pk = None
-        if component_configuration.name:
-            # component_configuration.name = _('Copy of') + ' ' + component_configuration.name
-            component_configuration.name = component_configuration.name
-
-        component_configuration.component_id = orig_and_clone[component_id]
-        component_configuration.parent_id = orig_and_clone[parent_id]
-        component_configuration.save()
-
-    # eeg_setting
-    for eeg_setting in EEGSetting.objects.filter(experiment_id=experiment_id):
-        copy_eeg_setting(eeg_setting, new_experiment)
+    # eeg setting
+    for eeg_setting in EEGSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_eeg_setting_id = eeg_setting.id
+        new_eeg_setting = copy_eeg_setting(eeg_setting, new_experiment)
+        orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
 
     # emg setting
-    for emg_setting in EMGSetting.objects.filter(experiment_id=experiment_id):
-        copy_emg_setting(emg_setting, new_experiment)
+    for emg_setting in EMGSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_emg_setting_id = emg_setting.id
+        new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
+        orig_and_clone['emg_setting'][old_emg_setting_id] = \
+            new_emg_setting.id
 
     # tms setting
-    for tms_setting in TMSSetting.objects.filter(experiment_id=experiment_id):
-        copy_tms_setting(tms_setting, new_experiment)
+    for tms_setting in TMSSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_tms_setting_id = tms_setting.id
+        new_tms_setting = copy_tms_setting(tms_setting, new_experiment)
+        orig_and_clone['tms_setting'][old_tms_setting_id] = new_tms_setting.id
+
+    if copy_data_collection:
+        # TODO: check if groups has data collection before trying to copy or
+        # TODO: check this in template so the option to copy with data
+        # TODO: doesn't appear;
+        # TODO: explain that orig_and_clone is modified in method
+        dct_new_list = []
+        for data_configuration_tree in DataConfigurationTree.objects.filter(
+                component_configuration_id__component_id__experiment_id
+                =experiment_id
+        ):
+            dct_new_list.append(
+                clone_data_configuration_tree(
+                    data_configuration_tree, orig_and_clone
+                )
+            )
+        for dct in dct_new_list:
+            if dct.parent:
+                new_dct_parent = DataConfigurationTree.objects.get(
+                    pk=orig_and_clone['dct'][dct.parent.id]
+                )
+                dct.parent = new_dct_parent
+                dct.save()
+        # eeg_data
+        for eeg_data in EEGData.objects.filter(
+            eeg_setting_id__experiment_id=experiment_id
+        ):
+            clone_eeg_data(eeg_data, orig_and_clone)
+        # eeg_file
+        for eeg_file in EEGFile.objects.filter(
+            eeg_data_id__eeg_setting_id__experiment_id=experiment_id
+        ):
+            clone_eeg_file(eeg_file, orig_and_clone)
+        # emg_data
+        for emg_data in EMGData.objects.filter(
+            emg_setting_id__experiment_id=experiment_id
+        ):
+            clone_emg_data(emg_data, orig_and_clone)
+        # emg_file
+        for emg_file in EMGFile.objects.filter(
+            emg_data_id__emg_setting_id__experiment_id=experiment_id
+        ):
+            clone_emg_file(emg_file, orig_and_clone)
+        # additional_data
+        for additional_data in AdditionalData.objects.filter(
+            data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_additional_data(additional_data, orig_and_clone)
+        # additional_data_file
+        for additional_data_file in AdditionalDataFile.objects.filter(
+            additional_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_additional_data_file(additional_data_file, orig_and_clone)
+        # digital_game_phase_data
+        for digital_game_phase_data in DigitalGamePhaseData.objects.filter(
+                data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_digital_game_phase_data(
+                digital_game_phase_data, orig_and_clone
+            )
+        # digital_game_phase_file
+        for digital_game_phase_file in DigitalGamePhaseFile.objects.filter(
+            digital_game_phase_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+        ):
+            clone_digital_game_phase_file(
+                digital_game_phase_file, orig_and_clone
+            )
+        # generic_data_collection_data
+        for generic_data_collection_data in \
+                GenericDataCollectionData.objects.filter(
+                    data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+                ):
+            clone_generic_data_collection_data(
+                generic_data_collection_data, orig_and_clone
+            )
+        # generic_data_collection_file
+        for generic_data_collection_file in \
+                GenericDataCollectionFile.objects.filter(
+                    generic_data_collection_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+                ):
+            clone_generic_data_collection_file(
+                generic_data_collection_file, orig_and_clone
+            )
+        # component_additional_file
+        for component_additional_file in \
+                ComponentAdditionalFile.objects.filter(
+                    component_id__experiment_id=experiment_id
+                ):
+            clone_component_additional_file(
+                component_additional_file, orig_and_clone
+            )
+        # tms_data
+        for tms_data in TMSData.objects.filter(
+                tms_setting_id__experiment_id=experiment_id
+        ):
+            clone_tms_data(tms_data, orig_and_clone)
 
 
 def copy_eeg_setting(eeg_setting, new_experiment):
@@ -9328,6 +9724,23 @@ def copy_eeg_setting(eeg_setting, new_experiment):
         new_eeg_filter_setting.pk = None
         new_eeg_filter_setting.eeg_setting = new_eeg_setting
         new_eeg_filter_setting.save()
+
+    return new_eeg_setting
+
+
+def copy_eeg_data(new_eeg_setting, old_eeg_setting, new_experiment,
+                  old_experiment):
+    for eegdata in EEGData.objects.filter(eeg_setting__in=old_eeg_setting):
+
+
+        new_eegdata = EEGData.objects.create(
+            eeg_setting=new_eeg_setting,
+            eeg_setting_reason_for_change=eegdata.eeg_setting_reason_for_change,
+            eeg_cap_size=eegdata.eeg_cap_size,
+            description=eegdata.description,
+            file_format=eegdata.file_format,
+            file_format_description=eegdata.file_format_description
+        )
 
 
 def copy_emg_setting(emg_setting, new_experiment):
@@ -9400,19 +9813,35 @@ def copy_emg_setting(emg_setting, new_experiment):
             new_emg_electrode_placement_setting.emg_electrode_setting_id = new_emg_electrode_setting.id
             new_emg_electrode_placement_setting.save()
 
+    return new_emg_setting
+
+
+def clone_tms_device_setting(tms_device_setting, new_tms_setting):
+    tms_device_setting.pk = None
+    tms_device_setting.tms_setting = new_tms_setting
+    tms_device_setting.save()
+
 
 def copy_tms_setting(tms_setting, new_experiment):
-    # tms_setting_id = tms_setting.id
+    old_tms_setting_id = tms_setting.id
     new_tms_setting = tms_setting
     new_tms_setting.pk = None
     new_tms_setting.experiment = new_experiment
     new_tms_setting.save()
 
+    old_tms_setting = TMSSetting.objects.get(pk=old_tms_setting_id)
+    clone_tms_device_setting(
+        old_tms_setting.tms_device_setting, new_tms_setting
+    )
 
-def create_component(component, new_experiment):
+    return new_tms_setting
 
-    clone = None
+
+def create_component(component, new_experiment, orig_and_clone):
+
+    clone = None  # TODO: it's not necessary
     component_type = component.component_type
+    file = None  # define variable that can be used in conditionals below
 
     if component_type == 'block':
         block = get_object_or_404(Block, pk=component.id)
@@ -9428,7 +9857,7 @@ def create_component(component, new_experiment):
 
     elif component_type == 'tms':
         tms = get_object_or_404(TMS, pk=component.id)
-        clone = TMS(emg_setting_id=tms.tms_setting_id)
+        clone = TMS(tms_setting_id=tms.tms_setting_id)
 
     elif component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
@@ -9444,6 +9873,7 @@ def create_component(component, new_experiment):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         clone = Stimulus(stimulus_type_id=stimulus.stimulus_type_id)
+        file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), 'rb')
 
     elif component_type == 'task':
         clone = Task()
@@ -9453,8 +9883,12 @@ def create_component(component, new_experiment):
 
     elif component_type == 'digital_game_phase':
         digital_game_phase = get_object_or_404(DigitalGamePhase, pk=component.id)
-        clone = DigitalGamePhase(context_tree_id=digital_game_phase.context_tree_id,
-                                 software_version_id=digital_game_phase.software_version_id)
+        clone = DigitalGamePhase(
+            context_tree_id=orig_and_clone['context_tree'][
+                digital_game_phase.context_tree_id
+            ],
+            software_version_id=digital_game_phase.software_version_id
+        )
 
     elif component_type == 'generic_data_collection':
         generic_data_collection = get_object_or_404(GenericDataCollection, pk=component.id)
@@ -9463,7 +9897,6 @@ def create_component(component, new_experiment):
     else:
         clone = Component()
 
-    # clone.identification = _('Copy of') + ' ' + component.identification
     clone.identification = component.identification
 
     clone.experiment = new_experiment
@@ -9473,6 +9906,10 @@ def create_component(component, new_experiment):
     clone.component_type = component.component_type
 
     clone.save()
+
+    # Stimulus component has FileField
+    if isinstance(clone, Stimulus) and file:
+        clone.media_file.save(os.path.basename(file.name), File(file))
 
     return clone
 
@@ -9487,8 +9924,7 @@ def component_view(request, path_of_the_components):
     list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url = \
         access_objects_for_view_and_update(request, path_of_the_components)
 
-    # when there are data collected, it is necessary to protect related "steps" and "uses of steps"
-    protected_steps, protected_uses_of_step = get_protected_steps_and_uses_of_steps(experiment, group)
+    experiment_in_use = check_experiment(experiment)
 
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
@@ -9546,6 +9982,12 @@ def component_view(request, path_of_the_components):
         elif request.POST['action'] == "copy_experiment":
             copy_experiment(experiment)
             messages.success(request, _('The experiment was copied.'))
+            redirect_url = reverse("experiment_view", args=(experiment.id,))
+            return HttpResponseRedirect(redirect_url)
+        elif request.POST['action'] == "copy_experiment_with_data":
+            copy_experiment(experiment, True)
+            messages.success(request, _('The experiment was copied with '
+                                        'all data collections'))
             redirect_url = reverse("experiment_view", args=(experiment.id,))
             return HttpResponseRedirect(redirect_url)
 
@@ -9815,7 +10257,6 @@ def component_update(request, path_of_the_components):
                         if component_type == 'stimulus':
                             stimulus = get_object_or_404(Stimulus, pk=component.id)
                             specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
-                            # specific_form.save()
 
 
                         # Only save if there was a change.
@@ -11944,115 +12385,6 @@ def tms_localization_system_update(
                "editing": True}
 
     return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.register_equipment')
-# def tms_localization_system_position_create(request,tms_localization_system_id,
-#                                             template_name="experiment/tms_localization_system_position.html"):
-#
-#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
-#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
-#     tms_position_form = TMSPositionForm(request.POST or None)
-#
-#     if request.method == "POST":
-#
-#         if request.POST['action'] == "save":
-#
-#             if tms_position_form.is_valid():
-#
-#                 tms_position_added = tms_position_form.save(commit=False)
-#                 tms_position_added.tms_localization_system = localization_system
-#                 tms_position_added.save()
-#
-#                 messages.success(request, _('TMS position created successfully.'))
-#                 redirect_url = reverse("tms_localization_system_view", args=(localization_system.id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#             else:
-#                 messages.warning(request, _('Information not saved.'))
-#
-#         else:
-#             messages.warning(request, _('Action not available.'))
-#
-#     context = {"localization_system": localization_system,
-#                "localization_system_form": localization_system_form,
-#                "tms_position_form": tms_position_form,
-#                "creating": True,
-#                "editing": True}
-#
-#     return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.register_equipment')
-# def tms_localization_system_position_update(request,tms_localization_system_id,tms_position_id,
-#                                             template_name="experiment/tms_localization_system_position.html"):
-#
-#     tms_position = get_object_or_404(TMSPosition, pk=tms_position_id)
-#     tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
-#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
-#
-#     if request.method == "POST":
-#
-#         if request.POST['action'] == "save":
-#
-#             if tms_position_form.is_valid():
-#                 if tms_position_form.has_changed():
-#                     tms_position_form.save()
-#                     messages.success(request, _('TMS position updated successfully.'))
-#                 else:
-#                     messages.success(request, _('There is no changes to save.'))
-#
-#                 redirect_url = reverse("tms_localization_system_view",
-#                                        args=(tms_localization_system_id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#     context = {"localization_system": localization_system,
-#                "localization_system_form": localization_system_form,
-#                "tms_position_form": tms_position_form,
-#                "creating": False,
-#                "editing": True}
-#
-#     return render(request, template_name, context)
-
-
-# @login_required
-# @permission_required('experiment.register_equipment')
-# def tms_localization_system_position_view(request, tms_localization_system_id, tms_position_id,
-#                                           template_name="experiment/tms_localization_system_position.html"):
-#
-#     localization_system = get_object_or_404(TMSLocalizationSystem, pk=tms_localization_system_id)
-#     localization_system_form = TMSLocalizationSystemForm(request.POST or None, instance=localization_system)
-#     tms_position = get_object_or_404(TMSPosition, pk=tms_position_id)
-#     tms_position_form = TMSPositionForm(request.POST or None, instance=tms_position)
-#
-#     for field in tms_position_form.fields:
-#         tms_position_form.fields[field].widget.attrs['disabled'] = True
-#
-#     if request.method == "POST":
-#         if request.POST['action'] == "remove":
-#
-#             try:
-#                 tms_position.delete()
-#                 messages.success(request, _('TMS Position removed successfully.'))
-#                 redirect_url = reverse("tms_localization_system_view", args=(localization_system.id,))
-#                 return HttpResponseRedirect(redirect_url)
-#             except ProtectedError:
-#                 messages.error(request, _("Error trying to delete TMS Position."))
-#                 redirect_url = reverse("tms_localization_system_view",
-#                                            args=(tms_localization_system_id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#     context = {"can_change": True,
-#                "localization_system": localization_system,
-#                "localization_system_form": localization_system_form,
-#                "tms_position": tms_position,
-#                "tms_position_form": tms_position_form,
-#                "editing": False}
-#
-#     return render(request, template_name, context)
 
 
 @login_required
