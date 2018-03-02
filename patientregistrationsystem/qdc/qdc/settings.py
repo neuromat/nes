@@ -203,7 +203,6 @@ MEDIA_URL = '/media/'
 
 try:
     from .settings_local import *
-    INSTALLED_APPS += DEV_APPS
 except ImportError:
     pass
 

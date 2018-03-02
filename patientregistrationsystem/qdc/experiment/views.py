@@ -9924,7 +9924,8 @@ def component_view(request, path_of_the_components):
     list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url = \
         access_objects_for_view_and_update(request, path_of_the_components)
 
-    experiment_in_use = check_experiment(experiment)
+    # when there are data collected, it is necessary to protect related "steps" and "uses of steps"
+    protected_steps, protected_uses_of_step = get_protected_steps_and_uses_of_steps(experiment, group)
 
     block = get_object_or_404(Block, pk=component.id)
     block_form = BlockForm(request.POST or None, instance=block)
