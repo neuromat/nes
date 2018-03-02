@@ -188,6 +188,9 @@ class ObjectsFactory(object):
         emg_electrode_placement.save()
         return emg_electrode_placement
 
+    # def create_component(self, experiment):
+    #     return Component.objects.create(experiment=experiment, title=)
+
     @staticmethod
     def create_group(experiment, experimental_protocol=None):
         """

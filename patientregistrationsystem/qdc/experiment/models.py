@@ -863,8 +863,7 @@ class Component(models.Model):
 
 
 def get_step_file_dir(instance, filename):
-    return "step/%s/%s" % \
-           (instance.component.id, filename)
+    return "step/%s/%s" % (instance.component.id, filename)
 
 
 class ComponentAdditionalFile(models.Model):
@@ -1111,19 +1110,6 @@ def get_data_file_dir(instance, filename):
                 if instance.digital_game_phase_data.data_configuration_tree else 0),
             'digital_game_phase')
 
-    # if isinstance(instance, DataCollection):
-    #     directory = path.join('data_collection_files',
-    #                           str(instance.subject_of_group.group.experiment.id),
-    #                           str(instance.subject_of_group.group.id),
-    #                           str(instance.subject_of_group.subject.id),
-    #                           str(instance.data_configuration_tree.id if instance.data_configuration_tree else 0))
-    #     if isinstance(instance, EEGData):
-    #         directory = path.join(directory, 'eeg')
-    #     elif isinstance(instance, EMGData):
-    #         directory = path.join(directory, 'emg')
-    #     elif isinstance(instance, AdditionalData):
-    #         directory = path.join(directory, 'additional')
-
     elif isinstance(instance, HotSpot):
         directory = path.join('data_collection_files',
                               str(instance.tms_data.subject_of_group.group.experiment.id),
@@ -1179,7 +1165,8 @@ class SubjectStepData(models.Model):
 
 
 class DataCollection(models.Model):
-    # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
+    # data_configuration_tree null means that the DataCollection is associated
+    # to the whole experimental protocol
     data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)
 
     subject_of_group = models.ForeignKey(SubjectOfGroup)
@@ -1237,7 +1224,6 @@ class FileFormat(models.Model):
 
 class DataFile(models.Model):
     description = models.TextField(null=False, blank=False)
-    # file = models.FileField(upload_to=get_data_file_dir, null=False)
     file_format = models.ForeignKey(FileFormat, null=False, blank=False)
     file_format_description = models.TextField(null=True, blank=True, default='')
 
@@ -1273,9 +1259,7 @@ class TMSData(DataCollection):
     second_test_pulse_intensity = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0)])
     interval_between_pulses = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     interval_between_pulses_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    # time_between_mep_trials_low = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     time_between_mep_trials = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    # time_between_mep_trials_high = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     time_between_mep_trials_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     repetitive_pulse_frequency = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coil_orientation = models.ForeignKey(CoilOrientation, null=True, blank=True)
@@ -1304,7 +1288,8 @@ class HotSpot(models.Model):
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     hot_spot_map = models.FileField(upload_to=get_data_file_dir, null=True, blank=True)
-    tms_data = models.OneToOneField(TMSData, primary_key=True)
+    tms_data = models.OneToOneField(TMSData, primary_key=True,
+                                    related_name='hotspot')
     tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='hotspots')
 
     def __str__(self):
