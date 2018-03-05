@@ -9,5 +9,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print('Start of sending...')
-        send_all_experiments_to_portal(settings.LANGUAGE_CODE)
+        send_all_experiments_to_portal()
         print('End of sending.')

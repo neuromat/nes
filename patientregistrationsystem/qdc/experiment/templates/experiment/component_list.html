@@ -99,7 +99,7 @@
                 </div>
                 {% if can_change %}
                     <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" {% if experiment_in_use %} onclick="$('#modalCopyExperiment').modal('show')" {% else %} id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true" {% endif %}>
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                             {% trans "Insert new step" %}
                             <span class="caret"></span>
                         </button>

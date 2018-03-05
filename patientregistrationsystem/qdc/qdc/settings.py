@@ -203,8 +203,7 @@ MEDIA_URL = '/media/'
 
 try:
     from .settings_local import *
-    INSTALLED_APPS += DEV_APPS
 except ImportError:
     pass
 
-VERSION = '1.30.2'
+VERSION = '1.32.0'

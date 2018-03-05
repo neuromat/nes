@@ -92,8 +92,8 @@ EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 patient_fields = [
     # {"field": 'id', "header": 'id', "description": _("Identification")},
     # {"field": 'name', "header": 'name', "description": _("Full name")},
-    {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
     {"field": 'age', "header": 'age', "description": _("Age")},
+    {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
     {"field": 'marital_status__name', "header": 'marital_status',
      "description": _("Marital status")},
@@ -320,7 +320,7 @@ def update_participants_list(participants_list, heading_type):
 
         for field, header in patient_fields_inclusion:
             header_translated = ug_(header[heading_type])
-            participants_list.append([field, abbreviated_data(header_translated, heading_type)])
+            participants_list.insert(0,[field, abbreviated_data(header_translated, heading_type)])
 
 
 def update_diagnosis_list(diagnosis_list, heading_type):
@@ -335,7 +335,7 @@ def update_diagnosis_list(diagnosis_list, heading_type):
         # include participant_code
         for field, header in diagnosis_fields_inclusion:
             header_translated = ug_(header[heading_type])
-            diagnosis_list.append([field, abbreviated_data(header_translated, heading_type)])
+            diagnosis_list.insert(0,[field, abbreviated_data(header_translated, heading_type)])
 
 
 # @login_required
@@ -391,7 +391,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                                                                        language_code)
             export.get_input_data('participants')['data_list'] = export_rows_participants
             # create file participants.csv and diagnosis.csv
-            error_msg = export.process_participant_filtered_data('group_selected_list' in request.session)
+            error_msg = export.build_participant_export_data('group_selected_list' in request.session)
             if error_msg != "":
                 messages.error(request, error_msg)
                 return render(request, template_name)
@@ -408,7 +408,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # create files of experimental protocol and diagnosis/participant csv file for each group
+            # create files of experimental protocol description file
             error_msg = export.process_experiment_data(language_code)
 
             if error_msg != "":
@@ -436,13 +436,14 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     if error_msg != "":
                         messages.error(request, error_msg)
                         return render(request, template_name)
+            # build export data by each component
             error_msg = export.process_per_participant_per_experiment()
             if error_msg != "":
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
         else:
-            # Export filter by entrance questionnaire
+            # Export method: filter by entrance questionnaire
             if export.get_input_data('questionnaires'):
 
                 # process per questionnaire data - entrance evaluation questionnaires
@@ -487,12 +488,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         print("finalizado corretamente 2")
 
         return export_complete_filename
-        # return file to the user
-        # zip_file = open(complete_filename, 'rb')
-        # response = HttpResponse(zip_file, content_type='application/zip')
-        # response['Content-Disposition'] = 'attachment; filename="export.zip"'
-        # response['Content-Length'] = path.getsize(complete_filename)
-        # return response
+
 
     except OSError as e:
         print(e)
