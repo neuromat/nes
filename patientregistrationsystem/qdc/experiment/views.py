@@ -258,6 +258,24 @@ def research_project_view(request, research_project_id, template_name="experimen
                 redirect_url = reverse("research_project_view", args=(research_project_id,))
                 return HttpResponseRedirect(redirect_url)
 
+        if request.POST['action'] == "copy_experiment":
+            experiment_id = request.POST['experiment_id']
+            experiment = get_object_or_404(Experiment, pk=experiment_id)
+            copy_experiment(experiment)
+            messages.success(request, _('The experiment was copied.'))
+            redirect_url = reverse("experiment_view", args=(experiment.id,))
+            return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'] == "copy_experiment_with_data":
+            experiment_id = request.POST['experiment_id']
+            experiment = get_object_or_404(Experiment, pk=experiment_id)
+            copy_experiment(experiment, True)
+            messages.success(request, _('The experiment was copied with '
+                                        'all data collections'))
+            redirect_url = reverse("experiment_view", args=(experiment.id,))
+            return HttpResponseRedirect(redirect_url)
+
+
     context = {"can_change": get_can_change(request.user, research_project),
                "experiments": research_project.experiment_set.order_by('title'),
                "collaborators": research_project.collaborators.order_by('team_person__person__first_name'),
@@ -9244,6 +9262,26 @@ def clone_data_configuration_tree(dct, orig_and_clone):
     return dct
 
 
+def clone_electrode_positions(old_eeg_data, orig_and_clone):
+    for eepcs in EEGElectrodePositionCollectionStatus.objects.filter(
+            eeg_data=old_eeg_data
+    ):
+        eepcs.pk = None
+        new_eeg_data = EEGData.objects.get(
+            pk=orig_and_clone['eeg_data'][old_eeg_data.id]
+        )
+        new_eeg_electrode_position_setting = \
+            EEGElectrodePositionSetting.objects.get(
+                pk=orig_and_clone['eeg_electrode_position_setting'][
+                eepcs.eeg_electrode_position_setting.id]
+            )
+        eepcs.eeg_data = new_eeg_data
+        eepcs.eeg_electrode_position_setting = \
+            new_eeg_electrode_position_setting
+
+        eepcs.save()
+
+
 def clone_eeg_data(eeg_data, orig_and_clone):
     old_eeg_data_id = eeg_data.id
     eeg_data.pk = None
@@ -9261,6 +9299,9 @@ def clone_eeg_data(eeg_data, orig_and_clone):
     eeg_data.data_configuration_tree = new_data_configuration_tree
     eeg_data.save()
     orig_and_clone['eeg_data'][old_eeg_data_id] = eeg_data.id
+
+    old_eeg_data = EEGData.objects.get(pk=old_eeg_data_id)
+    clone_electrode_positions(old_eeg_data, orig_and_clone)
 
     return eeg_data
 
@@ -9319,9 +9360,12 @@ def clone_additional_data(additional_data, orig_and_clone):
             additional_data.subject_of_group.id
         ]
     )
-    new_data_configuration_tree = DataConfigurationTree.objects.get(
-        pk=orig_and_clone['dct'][additional_data.data_configuration_tree.id]
-    )
+    if additional_data.data_configuration_tree:
+        new_data_configuration_tree = DataConfigurationTree.objects.get(
+            pk=orig_and_clone['dct'][additional_data.data_configuration_tree.id]
+        )
+    else:
+        new_data_configuration_tree = None
     additional_data.subject_of_group = new_subject_of_group
     additional_data.data_configuration_tree = new_data_configuration_tree
     additional_data.save()
@@ -9481,18 +9525,20 @@ def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone['additional_data'] = {}
     orig_and_clone['digital_game_phase_data'] = {}
     orig_and_clone['generic_data_collection_data'] = {}
+    orig_and_clone['eeg_electrode_position_setting'] = {}
 
     experiment_id = experiment.id
     new_experiment = experiment
     new_experiment.pk = None
     new_experiment.title = _('Copy of') + ' ' + new_experiment.title
     new_experiment.save()
-    f = open(os.path.join(
-        MEDIA_ROOT, experiment.ethics_committee_project_file.name), 'rb'
-    )
-    new_experiment.ethics_committee_project_file.save(
-        os.path.basename(f.name), File(f)
-    )
+    if experiment.ethics_committee_project_file:
+        f = open(os.path.join(
+            MEDIA_ROOT, experiment.ethics_committee_project_file.name), 'rb'
+        )
+        new_experiment.ethics_committee_project_file.save(
+            os.path.basename(f.name), File(f)
+        )
 
     # context tree
     for context_tree in ContextTree.objects.filter(
@@ -9568,8 +9614,11 @@ def copy_experiment(experiment, copy_data_collection=False):
     for eeg_setting in EEGSetting.objects.filter(
             experiment_id=experiment_id):
         old_eeg_setting_id = eeg_setting.id
-        new_eeg_setting = copy_eeg_setting(eeg_setting, new_experiment)
+        new_eeg_setting = copy_eeg_setting(
+            eeg_setting, new_experiment, orig_and_clone
+        )
         orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
+        #
 
     # emg setting
     for emg_setting in EMGSetting.objects.filter(
@@ -9630,12 +9679,13 @@ def copy_experiment(experiment, copy_data_collection=False):
             clone_emg_file(emg_file, orig_and_clone)
         # additional_data
         for additional_data in AdditionalData.objects.filter(
-            data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+            subject_of_group_id__group_id__experiment_id=experiment_id
         ):
             clone_additional_data(additional_data, orig_and_clone)
         # additional_data_file
         for additional_data_file in AdditionalDataFile.objects.filter(
-            additional_data_id__data_configuration_tree_id__component_configuration_id__component_id__experiment_id=experiment_id
+            additional_data_id__subject_of_group_id__group_id__experiment_id
+            =experiment_id
         ):
             clone_additional_data_file(additional_data_file, orig_and_clone)
         # digital_game_phase_data
@@ -9683,7 +9733,7 @@ def copy_experiment(experiment, copy_data_collection=False):
             clone_tms_data(tms_data, orig_and_clone)
 
 
-def copy_eeg_setting(eeg_setting, new_experiment):
+def copy_eeg_setting(eeg_setting, new_experiment, orig_and_clone):
     eeg_setting_id = eeg_setting.id
     new_eeg_setting = eeg_setting
     new_eeg_setting.pk = None
@@ -9699,10 +9749,15 @@ def copy_eeg_setting(eeg_setting, new_experiment):
 
         for position_setting in EEGElectrodePositionSetting.objects.filter(
                 eeg_electrode_layout_setting_id=eeg_setting_id):
+            old_position_setting_id = position_setting.id
             new_position_setting = position_setting
             new_position_setting.pk = None
             new_position_setting.eeg_electrode_layout_setting = new_eeg_electrode_layout_setting
             new_position_setting.save()
+
+            orig_and_clone['eeg_electrode_position_setting'][
+                old_position_setting_id
+            ] = new_position_setting.id
 
     # eeg_amplifier_setting
     if EEGAmplifierSetting.objects.filter(eeg_setting_id=eeg_setting_id).exists():
