@@ -226,6 +226,7 @@
                                     <th>{% trans "Description" %}</th>
                                     <th style="text-align: center"><span class="fa fa-share-alt"></span> {% trans "Is public" %}</th>
                                     <th style="text-align: center"><span class="fa fa-upload"></span> {% trans "Data acquisition is concluded" %}</th>
+                                    <th>{% trans 'Copy experiment' %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -239,6 +240,8 @@
                                     <td>{{ experiment.description }}</td>
                                     <td style="text-align: center">{% if experiment.is_public %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                                     <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
+                                    <td style="text-align: center"><a data-toggle="modal" data-experiment_id="{{ experiment.id }}"
+                                            href="#modalCopyExperiment"><i class="fa fa-copy"></i></a></td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -329,6 +332,31 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalCopyExperiment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "Do you want to copy this experiment?" %}
+                    <input id="id_experiment_hidden" type="hidden" name="experiment_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary" value="copy_experiment" name="action">{% trans "Copy experiment" %}</button>
+                    <button type="submit" class="btn btn-primary" value="copy_experiment_with_data" name="action">{% trans "Copy experiment with data" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $("#modalCopyExperiment").on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var experiment_id = button.data('experiment_id');
+            var modal = $(this);
+            modal.find('#id_experiment_hidden').attr('value', experiment_id);
+        })
+    </script>
 
 {% endblock %}
 
