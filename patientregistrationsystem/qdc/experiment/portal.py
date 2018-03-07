@@ -1403,7 +1403,8 @@ def get_survey_information(language, survey, surveys):
     for row in questionnaire_fields:
         first = True
         for column in row:
-            survey_metadata += (',' if not first else '') + '"' + column + '"'
+            survey_metadata += (',' if not first else '') + '"' + str(column) \
+                               + '"'
             if first:
                 first = False
 
