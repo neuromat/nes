@@ -72,14 +72,14 @@
                         {% if institution_code %}
 
                             {% if perms.user.is_superuser %}
-                                <a href="/admin/configuration/institution/" data-toggle="tooltip" data-placement="left" title="{% trans "Change institution code" %}" target="_blank">{{ institution_code }}</a>
+                                <a href="/admin/configuration/localinstitution/" data-toggle="tooltip" data-placement="left" title="{% trans "Change institution code" %}" target="_blank">{{ institution_code }}</a>
                             {% else %}
                                 {{ institution_code }}
                             {% endif %}
                             <span>-</span>
                         {% else %}
                             {% if perms.user.is_superuser %}
-                                <a class="btn btn-warning" href="/admin/configuration/institution/" target="_blank">{% trans "Create institution code" %}</a>
+                                <a class="btn btn-warning" href="/admin/configuration/localinstitution/" target="_blank">{% trans "Create institution code" %}</a>
                             {% else %}
                                 <span class="label label-warning">{% trans "missing institution code" %}</span>
                             {% endif %}
