@@ -7,17 +7,47 @@ from django.utils.encoding import smart_str
 
 from survey.models import Survey
 
-header_explanation_fields = ['questionnaire_id',
-                             'questionnaire_title',
-                             'question_code',
-                             'question_limesurvey_type',
-                             'question_description',
-                             'subquestion_code',
-                             'subquestion_description',
-                             'option_code',
-                             'option_description',
-                             'option_value',
-                             'column_title']
+header_explanation_fields = [
+    'questionnaire_code', 'questionnaire_title',
+    'question_type', 'question_type_description',
+    'question_index',
+    'question_code', 'question_description',
+    'subquestion_code', 'subquestion_description',
+    'question_scale', 'question_scale_label',
+    'option_code', 'option_description'
+    ]
+
+question_types = {
+    '1': 'Array Dual Scale',
+    '5': '5 Point Choice',
+    'A': 'Array (5 Point Choice)',
+    'B': 'Array (10 Point Choice)',
+    'C': 'Array (Yes/No/Uncertain)',
+    'D': 'Date',
+    'E': 'Array (Increase, Same, Decrease)',
+    'F': 'Array (Flexible Labels)',
+    'G': 'Gender',
+    'H': 'Array (Flexible Labels) by Column',
+    'I': 'Language Switch',
+    'K': 'Multiple Numerical Input',
+    'L': 'List (Radio)',
+    'M': 'Multiple choice',
+    'N': 'Numerical Input',
+    'O': 'List With Comment',
+    'P': 'Multiple choice with comments',
+    'Q': 'Multiple Short Text',
+    'R': 'Ranking',
+    'S': 'Short Free Text',
+    'T': 'Long Free Text',
+    'U': 'Huge Free Text',
+    'X': 'Boilerplate Question',
+    'Y': 'Yes/No',
+    '!': 'List (Dropdown)',
+    ':': 'Array (Flexible Labels) multiple drop down',
+    ';': 'Array (Flexible Labels) multiple texts',
+    '|': 'File Upload',
+    '*': 'Equation'
+}
 
 
 class QuestionnaireUtils:
@@ -247,8 +277,6 @@ class QuestionnaireUtils:
         # get title
 
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
-        # questionnaire_title = self.get_title(questionnaire_id)
-
         questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
 
         # get fields description
@@ -258,65 +286,74 @@ class QuestionnaireUtils:
 
             properties = questionnaire_lime_survey.get_question_properties(question, language)
 
-            if ('title' in properties) and (properties['title'] in fields_cleared):
+            question_code = properties['title'] if 'title' in properties else None
 
-                fields_from_questions.append(properties['title'])
+            if question_code and question_code in fields_cleared:
 
-                # cleaning the question field
-                properties['question'] = re.sub('{.*?}', '', re.sub('<.*?>', '', properties['question']))
-                properties['question'] = properties['question'].replace('&nbsp;', '').strip()
+                fields_from_questions.append(question_code)
 
-                question_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title),
-                                    smart_str(properties['title']), smart_str(properties['type']),
-                                    smart_str(properties['question'])]
+                # cleaning the question description that came from limesurvey
+                question_description = \
+                    re.sub('{.*?}', '', re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
 
+                question_type = smart_str(properties['type'])
+                question_type_description = question_types[question_type] if question_type in question_types else ''
+
+                questionnaire_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title)]
+                question_type_to_list = [question_type, question_type_description]
+                question_to_list = [smart_str(question_code), smart_str(question_description)]
+
+                # Scales (type == "1" means "Array Dual Scale"
+                scales = \
+                    [attribute for attribute in sorted(properties['attributes_lang'].values())] \
+                        if question_type == "1" else [""]
+
+                # answers
                 options_list = []
 
                 if isinstance(properties['answeroptions'], dict):
-
                     options = collections.OrderedDict(sorted(properties['answeroptions'].items()))
-
-                    column_scale = ['']
-                    if isinstance(properties['attributes_lang'], dict):
-                        column_scale = [attribute for attribute in sorted(properties['attributes_lang'].values())]
-
                     for option_key, option_values in options.items():
-                        if len(column_scale) > option_values['scale_id']:
-                            column_title = column_scale[option_values['scale_id']]
-                        else:
-                            column_title = ''
-                        options_list.append([smart_str(option_key), smart_str(option_values['answer']),
-                                             smart_str(option_values['assessment_value']), smart_str(column_title)])
+                        options_list.append([smart_str(option_key), smart_str(option_values['answer'])])
                 else:
                     # includes blank line
-                    # options_list = [[smart_str(" ") for blank in range(4)]]  # includes blank line
-                    options_list = [[smart_str(" ")] * 4]
+                    options_list = [[""] * 2]
 
+                # sub-questions
+                sub_questions_list = []
                 if isinstance(properties['subquestions'], dict):
-
                     sub_questions_list = [[smart_str(value['title']), smart_str(value['question'])]
                                           for value in properties['subquestions'].values()]
-
                     sub_questions_list = sorted(sub_questions_list, key=itemgetter(0))
                 else:
                     # includes blank line
-                    # sub_questions_list = [[smart_str(" ") for blank in range(2)]]  # includes blank line
-                    sub_questions_list = [[smart_str(" ")] * 2]
+                    sub_questions_list = [[""] * 2]
 
-                for sub_question in sub_questions_list:
+                for scale_index, scale_label in enumerate(scales):
+                    scale = [scale_index + 1, scale_label] if scale_label else [""] * 2
+                    for sub_question in sub_questions_list:
+                        for option in options_list:
 
-                    for option in options_list:
-                        questionnaire_explanation_fields_list.append(question_to_list + sub_question + option)
+                            question_index = question_code
+                            if sub_question[0]:
+                                question_index += '[' + sub_question[0] + ']'
+                            if scale_label:
+                                question_index += '[' + str(scale_index + 1) + ']'
+
+                            questionnaire_explanation_fields_list.append(
+                                questionnaire_to_list + question_type_to_list +
+                                [question_index] +
+                                question_to_list + sub_question + scale + option)
 
         if len(fields_cleared) != len(fields_from_questions):
 
             for field in fields_cleared:
 
                 if field not in fields_from_questions:
-                    description = self.get_header_description(
-                        questionnaire_id, field, entrance_questionnaire)
+                    description = self.get_header_description(questionnaire_id, field, entrance_questionnaire)
                     question_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title),
-                                        smart_str(field), smart_str(''), smart_str(description)]
+                                        '', '',
+                                        smart_str(field), smart_str(field), smart_str(description)]
 
                     questionnaire_explanation_fields_list.append(question_to_list)
 
