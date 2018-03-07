@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-05 12:06-0300\n"
+"POT-Creation-Date: 2018-03-07 10:45-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,20 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/export.py:63 export/export.py:64 export/views.py:141
-#: export/views.py:142 export/views.py:146 export/views.py:147
+#: export/export.py:66 export/export.py:67 export/views.py:143
+#: export/views.py:144 export/views.py:148 export/views.py:149
 msgid "Participant code"
 msgstr ""
 
-#: export/export.py:124 export/tests.py:187
+#: export/export.py:128 export/tests.py:187
 msgid "Base path does not exist"
 msgstr ""
 
-#: export/export.py:1735 export/views.py:1217
+#: export/export.py:2006 export/export.py:2756 export/views.py:1314
 msgid "Yes"
 msgstr ""
 
-#: export/export.py:1735 export/views.py:1217
+#: export/export.py:2006 export/export.py:2756 export/views.py:1314
 msgid "No"
 msgstr ""
 
@@ -111,8 +111,8 @@ msgstr ""
 #: export/templates/export/experiment_selection.html:80
 #: export/templates/export/export_data.html:242
 #: export/templates/export/export_data.html:264
-#: export/templates/export/export_experiment_data.html:445
-#: export/templates/export/export_experiment_data.html:467
+#: export/templates/export/export_experiment_data.html:450
+#: export/templates/export/export_experiment_data.html:472
 msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
 msgstr ""
 
@@ -124,7 +124,7 @@ msgstr ""
 
 #: export/templates/export/experiment_selection.html:101
 #: export/templates/export/export_data.html:278
-#: export/templates/export/export_experiment_data.html:485
+#: export/templates/export/export_experiment_data.html:490
 #: export/templates/export/participant_selection.html:198
 #: export/templates/export/show_selected_participants.html:100
 msgid "Cancel"
@@ -149,7 +149,7 @@ msgid "Information's organization for exportation of questionnaires data"
 msgstr ""
 
 #: export/templates/export/export_data.html:88
-#: export/templates/export/export_experiment_data.html:116 export/views.py:1112
+#: export/templates/export/export_experiment_data.html:116 export/views.py:1209
 msgid "Per participant"
 msgstr ""
 
@@ -169,8 +169,8 @@ msgid "Responses"
 msgstr ""
 
 #: export/templates/export/export_data.html:136
-#: export/templates/export/export_experiment_data.html:234
-#: export/templates/export/export_experiment_data.html:333
+#: export/templates/export/export_experiment_data.html:236
+#: export/templates/export/export_experiment_data.html:335
 msgid "Questionnaire information"
 msgstr ""
 
@@ -179,56 +179,56 @@ msgid "Questionnaire - Answered by participants"
 msgstr ""
 
 #: export/templates/export/export_data.html:158
-#: export/templates/export/export_experiment_data.html:253
-#: export/templates/export/export_experiment_data.html:353
+#: export/templates/export/export_experiment_data.html:255
+#: export/templates/export/export_experiment_data.html:358
 msgid "Fields available:"
 msgstr ""
 
 #: export/templates/export/export_data.html:163
-#: export/templates/export/export_experiment_data.html:258
-#: export/templates/export/export_experiment_data.html:358
+#: export/templates/export/export_experiment_data.html:260
+#: export/templates/export/export_experiment_data.html:363
 msgid "Please, select a questionnaire from the list."
 msgstr ""
 
 #: export/templates/export/export_data.html:195
-#: export/templates/export/export_experiment_data.html:290
-#: export/templates/export/export_experiment_data.html:390
+#: export/templates/export/export_experiment_data.html:292
+#: export/templates/export/export_experiment_data.html:395
 msgid "Fields chosen:"
 msgstr ""
 
 #: export/templates/export/export_data.html:227
-#: export/templates/export/export_experiment_data.html:430
+#: export/templates/export/export_experiment_data.html:435
 msgid "Participants"
 msgstr ""
 
 #: export/templates/export/export_data.html:233
-#: export/templates/export/export_experiment_data.html:436
+#: export/templates/export/export_experiment_data.html:441
 msgid "Participant fields"
 msgstr ""
 
 #: export/templates/export/export_data.html:236
-#: export/templates/export/export_experiment_data.html:439
+#: export/templates/export/export_experiment_data.html:444
 msgid "Please, select a patient field from the list."
 msgstr ""
 
 #: export/templates/export/export_data.html:250
-#: export/templates/export/export_experiment_data.html:453
+#: export/templates/export/export_experiment_data.html:458
 #: export/templates/export/participant_selection.html:124
 msgid "Diagnosis"
 msgstr ""
 
 #: export/templates/export/export_data.html:255
-#: export/templates/export/export_experiment_data.html:458
+#: export/templates/export/export_experiment_data.html:463
 msgid "Diagnosis fields"
 msgstr ""
 
 #: export/templates/export/export_data.html:258
-#: export/templates/export/export_experiment_data.html:461
+#: export/templates/export/export_experiment_data.html:466
 msgid "Please, select a diagnosis field from the list."
 msgstr ""
 
 #: export/templates/export/export_data.html:274
-#: export/templates/export/export_experiment_data.html:481
+#: export/templates/export/export_experiment_data.html:486
 msgid "Run"
 msgstr ""
 
@@ -268,35 +268,35 @@ msgstr ""
 msgid "EEG Raw Data"
 msgstr ""
 
-#: export/templates/export/export_experiment_data.html:174
+#: export/templates/export/export_experiment_data.html:176
 msgid "EEG NWB Data"
 msgstr ""
 
-#: export/templates/export/export_experiment_data.html:181
+#: export/templates/export/export_experiment_data.html:183
 msgid "EMG Data"
 msgstr ""
 
-#: export/templates/export/export_experiment_data.html:188
+#: export/templates/export/export_experiment_data.html:190
 msgid "TMS Data"
 msgstr ""
 
-#: export/templates/export/export_experiment_data.html:195
+#: export/templates/export/export_experiment_data.html:197
 msgid "Additional Data"
 msgstr ""
 
-#: export/templates/export/export_experiment_data.html:202
+#: export/templates/export/export_experiment_data.html:204
 msgid "Goalkeeper game Data"
 msgstr ""
 
-#: export/templates/export/export_experiment_data.html:209
+#: export/templates/export/export_experiment_data.html:211
 msgid "Stimulus Data"
 msgstr ""
 
-#: export/templates/export/export_experiment_data.html:216
+#: export/templates/export/export_experiment_data.html:218
 msgid "Generic Data"
 msgstr ""
 
-#: export/templates/export/export_experiment_data.html:321
+#: export/templates/export/export_experiment_data.html:323
 msgid "There is no questionnaires for the filtered participants"
 msgstr ""
 
@@ -328,13 +328,13 @@ msgstr ""
 
 #: export/templates/export/participant_selection.html:69
 #: export/templates/export/show_selected_participants.html:50
-#: export/views.py:95
+#: export/views.py:96
 msgid "Gender"
 msgstr ""
 
 #: export/templates/export/participant_selection.html:80
 #: export/templates/export/show_selected_participants.html:54
-#: export/views.py:97
+#: export/views.py:99
 msgid "Marital status"
 msgstr ""
 
@@ -352,6 +352,7 @@ msgstr ""
 
 #: export/templates/export/participant_selection.html:157
 #: export/templates/export/show_selected_participants.html:49
+#: export/views.py:95
 msgid "Age"
 msgstr ""
 
@@ -376,17 +377,17 @@ msgid "Code"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:51
-#: export/views.py:101
+#: export/views.py:103
 msgid "Country"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:52
-#: export/views.py:100
+#: export/views.py:102
 msgid "State"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:53
-#: export/views.py:99
+#: export/views.py:101
 msgid "City"
 msgstr ""
 
@@ -394,204 +395,204 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: export/views.py:96
+#: export/views.py:97
 msgid "Date of birth"
 msgstr ""
 
-#: export/views.py:98
+#: export/views.py:100
 msgid "Origin"
 msgstr ""
 
-#: export/views.py:102
+#: export/views.py:104
 msgid "Natural of"
 msgstr ""
 
-#: export/views.py:103
+#: export/views.py:105
 msgid "Schooling"
 msgstr ""
 
-#: export/views.py:105
+#: export/views.py:107
 msgid "Schooling of the patient"
 msgstr ""
 
-#: export/views.py:106
+#: export/views.py:108
 msgid "Profession"
 msgstr ""
 
-#: export/views.py:108
+#: export/views.py:110
 msgid "Calculated social class"
 msgstr ""
 
-#: export/views.py:109
+#: export/views.py:111
 msgid "Occupation"
 msgstr ""
 
-#: export/views.py:111
+#: export/views.py:113
 msgid ""
 "Do you receive some benefit from the municipal level, state or federal "
 "government?"
 msgstr ""
 
-#: export/views.py:112
+#: export/views.py:114
 msgid "Religion"
 msgstr ""
 
-#: export/views.py:113
+#: export/views.py:115
 msgid "Flesh tone"
 msgstr ""
 
-#: export/views.py:114
+#: export/views.py:116
 msgid "Citizenship"
 msgstr ""
 
-#: export/views.py:116
+#: export/views.py:117
 msgid "What form of payment of the treatment performed"
 msgstr ""
 
-#: export/views.py:117
+#: export/views.py:119
 msgid "Smoker"
 msgstr ""
 
-#: export/views.py:119
+#: export/views.py:121
 msgid "Cigarretes/Day"
 msgstr ""
 
-#: export/views.py:120
+#: export/views.py:122
 msgid "Former smoker"
 msgstr ""
 
-#: export/views.py:121
+#: export/views.py:123
 msgid "Alcoholic"
 msgstr ""
 
-#: export/views.py:123
+#: export/views.py:125
 msgid "Frequency"
 msgstr ""
 
-#: export/views.py:124
+#: export/views.py:126
 msgid "Period"
 msgstr ""
 
-#: export/views.py:125
+#: export/views.py:127
 msgid "Drugs"
 msgstr ""
 
-#: export/views.py:129
+#: export/views.py:131
 msgid "Date"
 msgstr ""
 
-#: export/views.py:131
+#: export/views.py:133
 msgid "Observation"
 msgstr ""
 
-#: export/views.py:133
+#: export/views.py:135
 msgid "Disease code (ICD)"
 msgstr ""
 
-#: export/views.py:135
+#: export/views.py:137
 msgid "Disease Description"
 msgstr ""
 
-#: export/views.py:137
+#: export/views.py:139
 msgid "Disease Abbreviated Description"
 msgstr ""
 
-#: export/views.py:374
+#: export/views.py:377
 msgid "Inconsistent data read from json file"
 msgstr ""
 
-#: export/views.py:635
+#: export/views.py:637
 msgid "Export was finished correctly"
 msgstr ""
 
-#: export/views.py:645
+#: export/views.py:646
 msgid "Export data was not generated."
 msgstr ""
 
-#: export/views.py:662
+#: export/views.py:663
 msgid "No data was select. Export data was not generated."
 msgstr ""
 
-#: export/views.py:1117
+#: export/views.py:1214
 msgid "Per experiments"
 msgstr ""
 
-#: export/views.py:1206
+#: export/views.py:1303
 msgid "Name of use"
 msgstr ""
 
-#: export/views.py:1208
+#: export/views.py:1305
 msgid "Number of repetitions"
 msgstr ""
 
-#: export/views.py:1210
+#: export/views.py:1307
 msgid "Interval between repetitions value"
 msgstr ""
 
-#: export/views.py:1212
+#: export/views.py:1309
 msgid "Interval between repetitions unit"
 msgstr ""
 
-#: export/views.py:1213
+#: export/views.py:1310
 msgid "Order"
 msgstr ""
 
-#: export/views.py:1215
+#: export/views.py:1312
 msgid "Position in the set of steps "
 msgstr ""
 
-#: export/views.py:1215
+#: export/views.py:1312
 msgid "Random"
 msgstr ""
 
-#: export/views.py:1215
+#: export/views.py:1312
 msgid "Fixed"
 msgstr ""
 
-#: export/views.py:1217
+#: export/views.py:1314
 msgid "Requires start and end datetime"
 msgstr ""
 
-#: export/views.py:1256
+#: export/views.py:1353
 msgid "Identification"
 msgstr ""
 
-#: export/views.py:1258
+#: export/views.py:1355
 msgid "Description"
 msgstr ""
 
-#: export/views.py:1260
+#: export/views.py:1357
 msgid "Duration value"
 msgstr ""
 
-#: export/views.py:1262
+#: export/views.py:1359
 msgid "Duration unit"
 msgstr ""
 
-#: export/views.py:1268
+#: export/views.py:1365
 msgid "Type"
 msgstr ""
 
-#: export/views.py:1270
+#: export/views.py:1367
 msgid "Number of mandatory components"
 msgstr ""
 
-#: export/views.py:1276
+#: export/views.py:1373
 msgid "Text"
 msgstr ""
 
-#: export/views.py:1282
+#: export/views.py:1379
 msgid "LimeSurvey ID"
 msgstr ""
 
-#: export/views.py:1290
+#: export/views.py:1387
 msgid "Questionnaire title"
 msgstr ""
 
-#: export/views.py:1297
+#: export/views.py:1394
 msgid "Stimulus type"
 msgstr ""
 
-#: export/views.py:1299
+#: export/views.py:1396
 msgid "Media file"
 msgstr ""

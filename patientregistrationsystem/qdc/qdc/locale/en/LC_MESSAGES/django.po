@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-05 12:06-0300\n"
+"POT-Creation-Date: 2018-03-07 10:45-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,8 +29,28 @@ msgstr ""
 msgid "Confirm new password"
 msgstr ""
 
-#: qdc/views.py:38
+#: qdc/views.py:42
+msgid ""
+"There is a new version, please contact your NES administrator to update !"
+msgstr ""
+
+#: qdc/views.py:64
 msgid "Password changed successfully."
+msgstr ""
+
+#: qdc/views.py:85
+msgid ""
+"You dont have NES Git installation. Automatic upgrade can be done with git "
+"installation. Please contact your system administrator to upgrade NES to a "
+"new version."
+msgstr ""
+
+#: qdc/views.py:185
+msgid "Updated!!! Enjoy the new version of NES  :-)"
+msgstr ""
+
+#: qdc/views.py:188
+msgid "An unknown error ocurred ! Please contact your administrator system."
 msgstr ""
 
 #~ msgid "Entrar com senha antiga"
