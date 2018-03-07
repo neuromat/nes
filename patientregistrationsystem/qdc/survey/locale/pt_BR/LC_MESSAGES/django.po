@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-05 12:06-0300\n"
+"POT-Creation-Date: 2018-03-07 10:45-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,10 +41,12 @@ msgid "Insert new questionnaire"
 msgstr "Inserir novo questionário"
 
 #: survey/templates/survey/survey_register.html:53
+#: survey/templates/survey/survey_sensitive_fields.html:46
 msgid "Home"
 msgstr "Home"
 
 #: survey/templates/survey/survey_register.html:54
+#: survey/templates/survey/survey_sensitive_fields.html:47
 msgid "Questionnaires"
 msgstr "Questionários"
 
@@ -65,105 +67,141 @@ msgid "Please, select a questionnaire from the list."
 msgstr "Por favor, selecione um questionário da lista."
 
 #: survey/templates/survey/survey_register.html:102
+#: survey/templates/survey/survey_register.html:139
 msgid "Edit"
 msgstr "Editar"
 
-#: survey/templates/survey/survey_register.html:112
+#: survey/templates/survey/survey_register.html:114
+msgid "Sensitive questions"
+msgstr "Questões sensíveis"
+
+#: survey/templates/survey/survey_register.html:121
+msgid "Question code"
+msgstr "Código da questão"
+
+#: survey/templates/survey/survey_register.html:122
+msgid "Question"
+msgstr "Questão"
+
+#: survey/templates/survey/survey_register.html:148
 msgid "Answered by participants"
 msgstr "Respondido pelos participantes"
 
-#: survey/templates/survey/survey_register.html:119
-#: survey/templates/survey/survey_register.html:201
+#: survey/templates/survey/survey_register.html:155
+#: survey/templates/survey/survey_register.html:236
 msgid "Participant"
 msgstr "Participante"
 
-#: survey/templates/survey/survey_register.html:120
-#: survey/templates/survey/survey_register.html:202
+#: survey/templates/survey/survey_register.html:156
+#: survey/templates/survey/survey_register.html:237
 msgid "Fills"
 msgstr "Preenchimentos"
 
-#: survey/templates/survey/survey_register.html:131
+#: survey/templates/survey/survey_register.html:166
 msgid "It has to be filled"
 msgstr "Falta preencher"
 
-#: survey/templates/survey/survey_register.html:144
-#: survey/templates/survey/survey_register.html:222
+#: survey/templates/survey/survey_register.html:179
+#: survey/templates/survey/survey_register.html:256
 msgid "Complete"
 msgstr "Completo"
 
-#: survey/templates/survey/survey_register.html:146
-#: survey/templates/survey/survey_register.html:224
+#: survey/templates/survey/survey_register.html:181
+#: survey/templates/survey/survey_register.html:258
 msgid "Incomplete"
 msgstr "Incompleto"
 
-#: survey/templates/survey/survey_register.html:149
-#: survey/templates/survey/survey_register.html:227
+#: survey/templates/survey/survey_register.html:184
+#: survey/templates/survey/survey_register.html:261
 msgid "No status"
 msgstr "Sem status"
 
-#: survey/templates/survey/survey_register.html:167
+#: survey/templates/survey/survey_register.html:202
 msgid "Used in experiments"
 msgstr "Usado em experimentos"
 
-#: survey/templates/survey/survey_register.html:174
+#: survey/templates/survey/survey_register.html:209
 msgid "Experiment:"
 msgstr "Experimento:"
 
-#: survey/templates/survey/survey_register.html:178
+#: survey/templates/survey/survey_register.html:213
 msgid "Group:"
 msgstr "Grupo:"
 
-#: survey/templates/survey/survey_register.html:184
+#: survey/templates/survey/survey_register.html:219
 msgid "Set of parent steps:"
 msgstr "Conjunto de passos pai:"
 
-#: survey/templates/survey/survey_register.html:188
+#: survey/templates/survey/survey_register.html:223
 msgid "Step:"
 msgstr "Passo:"
 
-#: survey/templates/survey/survey_register.html:192
+#: survey/templates/survey/survey_register.html:227
 msgid "Name of the use:"
 msgstr "Nome do uso:"
 
-#: survey/templates/survey/survey_register.html:249
-#: survey/templates/survey/survey_register.html:280
+#: survey/templates/survey/survey_register.html:283
+#: survey/templates/survey/survey_register.html:314
 msgid "Delete"
 msgstr "Excluir"
 
-#: survey/templates/survey/survey_register.html:255
+#: survey/templates/survey/survey_register.html:289
+#: survey/templates/survey/survey_sensitive_fields.html:93
 msgid "Save"
 msgstr "Salvar"
 
-#: survey/templates/survey/survey_register.html:259
-#: survey/templates/survey/survey_register.html:279
+#: survey/templates/survey/survey_register.html:293
+#: survey/templates/survey/survey_register.html:313
+#: survey/templates/survey/survey_sensitive_fields.html:96
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: survey/templates/survey/survey_register.html:263
+#: survey/templates/survey/survey_register.html:297
 msgid "Back"
 msgstr "Voltar"
 
-#: survey/templates/survey/survey_register.html:276
+#: survey/templates/survey/survey_register.html:310
 msgid "Are you sure you want to delete questionnaire?"
 msgstr "Tem certeza que deseja excluir o questionário?"
 
-#: survey/views.py:104
+#: survey/templates/survey/survey_sensitive_fields.html:50
+#: survey/templates/survey/survey_sensitive_fields.html:58
+msgid "Sensitive fields"
+msgstr "Campos sensíveis"
+
+#: survey/templates/survey/survey_sensitive_fields.html:63
+msgid "Code"
+msgstr "Código"
+
+#: survey/templates/survey/survey_sensitive_fields.html:64
+msgid "Description"
+msgstr "Descrição"
+
+#: survey/views.py:110
+msgid "No questionnaire found."
+msgstr "Questionário não encontrado"
+
+#: survey/views.py:123
 msgid "Questionnaire created successfully."
 msgstr "Questionário criado com sucesso."
 
-#: survey/views.py:139
+#: survey/views.py:158
 msgid "Questionnaire updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:141
+#: survey/views.py:160 survey/views.py:239
 msgid "There are no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: survey/views.py:413
+#: survey/views.py:237
+msgid "Questionnaire was updated successfully."
+msgstr "Questionário atualizado com sucesso."
+
+#: survey/views.py:525
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:416
+#: survey/views.py:528
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
@@ -171,24 +209,24 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:519
+#: survey/views.py:631
 msgid "Other"
 msgstr "Outros"
 
-#: survey/views.py:548
+#: survey/views.py:660
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:625 survey/views.py:640 survey/views.py:673
+#: survey/views.py:737 survey/views.py:752 survey/views.py:785
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:716
+#: survey/views.py:828
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:756
+#: survey/views.py:868
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
 

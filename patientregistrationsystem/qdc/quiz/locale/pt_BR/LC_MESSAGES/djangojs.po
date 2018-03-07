@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-10 10:54-0300\n"
+"POT-Creation-Date: 2018-03-07 10:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,7 +69,7 @@ msgstr "Atualizando ponto "
 #: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:292
 #: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:334
 #: quiz/static/quiz/js/eeg_electrode_cap_coordinates.js:355
-#: quiz/static/quiz/js/tms_position_setting.js:145
+#: quiz/static/quiz/js/tms_position_setting.js:137
 msgid "Confirms the coordinates? x - y: "
 msgstr "Confirma as coordenadas? x - y: "
 
@@ -110,222 +110,176 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: quiz/static/quiz/js/patient_personal_data.js:113
+#: quiz/static/quiz/js/patient_personal_data.js:183
+#: quiz/static/quiz/js/patient_personal_data.js:188
 #: quiz/static/quiz/js/register.js:75
 msgid "Obligatory fields must be filled."
 msgstr "Campos obrigatórios devem ser preenchidos."
 
-#: quiz/static/quiz/js/patient_personal_data.js:122
+#: quiz/static/quiz/js/patient_personal_data.js:197
 msgid "Please fill the fields correctly. E-mail is invalid"
 msgstr "Preencha os campos corretamente. Campo de e-mail inválido"
 
-#: quiz/static/quiz/js/questionnaire_export.js:81
+#: quiz/static/quiz/js/questionnaire_export.js:95
 msgid "Either one or both Per participant/Per questionnaire must be set."
 msgstr "Opção Por participante e/ou Por questionário deve ser preenchida."
 
-#: quiz/static/quiz/js/questionnaire_export.js:85
+#: quiz/static/quiz/js/questionnaire_export.js:99
 msgid "At least one questionnaire field have to be set."
 msgstr "Pelo menos um campo de questionário deve ser preenchido."
 
-#: quiz/static/quiz/js/questionnaire_export.js:121
+#: quiz/static/quiz/js/questionnaire_export.js:135
 msgid "At least one field from participant/questionnaire have to be set."
 msgstr "Pelo menos um campo de participante/questionário deve ser preenchido."
 
-#: quiz/static/quiz/js/questionnaire_export.js:126
+#: quiz/static/quiz/js/questionnaire_export.js:140
 msgid "At least one field from participant have to be set."
 msgstr "Pelo menos um campo de participante deve ser preenchido."
 
-#: quiz/static/quiz/js/tms_position_setting.js:146
+#: quiz/static/quiz/js/tms_position_setting.js:138
 msgid "Please enter the name of the position"
 msgstr "Por favor insira o nome da posição"
 
-#: quiz/templates/quiz/template.html:27
-msgid "mm/dd/yy"
-msgstr "dd/mm/yy"
+#~ msgid "mm/dd/yy"
+#~ msgstr "dd/mm/yy"
 
-#: quiz/templates/quiz/template.html:28
-msgid "Sunday"
-msgstr "Domingo"
+#~ msgid "Sunday"
+#~ msgstr "Domingo"
 
-#: quiz/templates/quiz/template.html:28
-msgid "Monday"
-msgstr "Segunda"
+#~ msgid "Monday"
+#~ msgstr "Segunda"
 
-#: quiz/templates/quiz/template.html:28
-msgid "Tuesday"
-msgstr "Terça"
+#~ msgid "Tuesday"
+#~ msgstr "Terça"
 
-#: quiz/templates/quiz/template.html:29
-msgid "Wednesday"
-msgstr "Quarta"
+#~ msgid "Wednesday"
+#~ msgstr "Quarta"
 
-#: quiz/templates/quiz/template.html:29
-msgid "Thursday"
-msgstr "Quinta"
+#~ msgid "Thursday"
+#~ msgstr "Quinta"
 
-#: quiz/templates/quiz/template.html:29
-msgid "Friday"
-msgstr "Sexta"
+#~ msgid "Friday"
+#~ msgstr "Sexta"
 
-#: quiz/templates/quiz/template.html:29
-msgid "Saturday"
-msgstr "Sábado"
+#~ msgid "Saturday"
+#~ msgstr "Sábado"
 
-#: quiz/templates/quiz/template.html:30 quiz/templates/quiz/template.html:31
-msgid "Su"
-msgstr "Do"
+#~ msgid "Su"
+#~ msgstr "Do"
 
-#: quiz/templates/quiz/template.html:30
-msgid "Mo"
-msgstr "Se"
+#~ msgid "Mo"
+#~ msgstr "Se"
 
-#: quiz/templates/quiz/template.html:30
-msgid "Tu"
-msgstr "Te"
+#~ msgid "Tu"
+#~ msgstr "Te"
 
-#: quiz/templates/quiz/template.html:30
-msgid "We"
-msgstr "Qa"
+#~ msgid "We"
+#~ msgstr "Qa"
 
-#: quiz/templates/quiz/template.html:30
-msgid "Th"
-msgstr "Qi"
+#~ msgid "Th"
+#~ msgstr "Qi"
 
-#: quiz/templates/quiz/template.html:31
-msgid "Fr"
-msgstr "Sx"
+#~ msgid "Fr"
+#~ msgstr "Sx"
 
-#: quiz/templates/quiz/template.html:31
-msgid "Sa"
-msgstr "Sa"
+#~ msgid "Sa"
+#~ msgstr "Sa"
 
-#: quiz/templates/quiz/template.html:32 quiz/templates/quiz/template.html:33
-msgid "Sun"
-msgstr "Dom"
+#~ msgid "Sun"
+#~ msgstr "Dom"
 
-#: quiz/templates/quiz/template.html:32
-msgid "Mon"
-msgstr "Seg"
+#~ msgid "Mon"
+#~ msgstr "Seg"
 
-#: quiz/templates/quiz/template.html:32
-msgid "Tue"
-msgstr "Ter"
+#~ msgid "Tue"
+#~ msgstr "Ter"
 
-#: quiz/templates/quiz/template.html:32
-msgid "Wed"
-msgstr "Qua"
+#~ msgid "Wed"
+#~ msgstr "Qua"
 
-#: quiz/templates/quiz/template.html:33
-msgid "Thu"
-msgstr "Qui"
+#~ msgid "Thu"
+#~ msgstr "Qui"
 
-#: quiz/templates/quiz/template.html:33
-msgid "Fri"
-msgstr "Sex"
+#~ msgid "Fri"
+#~ msgstr "Sex"
 
-#: quiz/templates/quiz/template.html:33
-msgid "Sat"
-msgstr "Sáb"
+#~ msgid "Sat"
+#~ msgstr "Sáb"
 
-#: quiz/templates/quiz/template.html:34
-msgid "January"
-msgstr "Janeiro"
+#~ msgid "January"
+#~ msgstr "Janeiro"
 
-#: quiz/templates/quiz/template.html:34
-msgid "February"
-msgstr "Fevereiro"
+#~ msgid "February"
+#~ msgstr "Fevereiro"
 
-#: quiz/templates/quiz/template.html:34
-msgid "March"
-msgstr "Março"
+#~ msgid "March"
+#~ msgstr "Março"
 
-#: quiz/templates/quiz/template.html:35
-msgid "April"
-msgstr "Abril"
+#~ msgid "April"
+#~ msgstr "Abril"
 
-#: quiz/templates/quiz/template.html:35 quiz/templates/quiz/template.html:39
-msgid "May"
-msgstr "Maio"
+#~ msgid "May"
+#~ msgstr "Maio"
 
-#: quiz/templates/quiz/template.html:35
-msgid "June"
-msgstr "Juhno"
+#~ msgid "June"
+#~ msgstr "Juhno"
 
-#: quiz/templates/quiz/template.html:36
-msgid "July"
-msgstr "Julho"
+#~ msgid "July"
+#~ msgstr "Julho"
 
-#: quiz/templates/quiz/template.html:36
-msgid "August"
-msgstr "Agosto"
+#~ msgid "August"
+#~ msgstr "Agosto"
 
-#: quiz/templates/quiz/template.html:36
-msgid "September"
-msgstr "Setembro"
+#~ msgid "September"
+#~ msgstr "Setembro"
 
-#: quiz/templates/quiz/template.html:37
-msgid "October"
-msgstr "Outubro"
+#~ msgid "October"
+#~ msgstr "Outubro"
 
-#: quiz/templates/quiz/template.html:37
-msgid "November"
-msgstr "Novembro"
+#~ msgid "November"
+#~ msgstr "Novembro"
 
-#: quiz/templates/quiz/template.html:37
-msgid "December"
-msgstr "Dezembro"
+#~ msgid "December"
+#~ msgstr "Dezembro"
 
-#: quiz/templates/quiz/template.html:38
-msgid "Jan"
-msgstr "Jan"
+#~ msgid "Jan"
+#~ msgstr "Jan"
 
-#: quiz/templates/quiz/template.html:38
-msgid "Feb"
-msgstr "Fev"
+#~ msgid "Feb"
+#~ msgstr "Fev"
 
-#: quiz/templates/quiz/template.html:38
-msgid "Mar"
-msgstr "Mar"
+#~ msgid "Mar"
+#~ msgstr "Mar"
 
-#: quiz/templates/quiz/template.html:38
-msgid "Apr"
-msgstr "Abr"
+#~ msgid "Apr"
+#~ msgstr "Abr"
 
-#: quiz/templates/quiz/template.html:39
-msgid "Jun"
-msgstr "Jun"
+#~ msgid "Jun"
+#~ msgstr "Jun"
 
-#: quiz/templates/quiz/template.html:39
-msgid "Jul"
-msgstr "Jul"
+#~ msgid "Jul"
+#~ msgstr "Jul"
 
-#: quiz/templates/quiz/template.html:39
-msgid "Aug"
-msgstr "Ago"
+#~ msgid "Aug"
+#~ msgstr "Ago"
 
-#: quiz/templates/quiz/template.html:40
-msgid "Sep"
-msgstr "Set"
+#~ msgid "Sep"
+#~ msgstr "Set"
 
-#: quiz/templates/quiz/template.html:40
-msgid "Oct"
-msgstr "Out"
+#~ msgid "Oct"
+#~ msgstr "Out"
 
-#: quiz/templates/quiz/template.html:40
-msgid "Nov"
-msgstr "Nov"
+#~ msgid "Nov"
+#~ msgstr "Nov"
 
-#: quiz/templates/quiz/template.html:40
-msgid "Dec"
-msgstr "Dez"
+#~ msgid "Dec"
+#~ msgstr "Dez"
 
-#: quiz/templates/quiz/template.html:41
-msgid "Next"
-msgstr "Próximo"
+#~ msgid "Next"
+#~ msgstr "Próximo"
 
-#: quiz/templates/quiz/template.html:42
-msgid "Previous"
-msgstr "Anterior"
+#~ msgid "Previous"
+#~ msgstr "Anterior"
 
 #~ msgid "Do"
 #~ msgstr "Do"
