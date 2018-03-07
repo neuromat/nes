@@ -1455,7 +1455,7 @@ class ScheduleOfSending(models.Model):
     status = models.CharField(max_length=50, choices=SCHEDULE_STATUS_OPTIONS)
     sending_datetime = models.DateTimeField(null=True)
     reason_for_resending = models.CharField(null=True, max_length=500)
-    send_participant_age = models.BooleanField(default=True)
+    send_participant_age = models.BooleanField()
 
 
 class PortalSelectedQuestion(models.Model):

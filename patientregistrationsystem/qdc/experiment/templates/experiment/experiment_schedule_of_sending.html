@@ -92,7 +92,10 @@
                     {% endif %}
 
                 </div>
-
+                <div>
+                    <label for="id_send_age">{% trans 'Send patient age:' %}</label>
+                    <input id="id_send_age" type="checkbox" name="send_age" checked>
+                </div>
                 <h5>{% trans "Questionnaires and questions to send" %}</h5>
                 <div class="panel-group" id="accordion">
                     {% for survey_key, survey_value in experiment_questionnaires.items %}

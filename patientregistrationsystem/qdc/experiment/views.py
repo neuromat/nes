@@ -840,6 +840,8 @@ def experiment_schedule_of_sending(request, experiment_id,
             new_schedule.experiment = experiment
             new_schedule.responsible = request.user
             new_schedule.status = "scheduled"
+            send_age = request.POST.get('send_age')
+            new_schedule.send_participant_age = send_age if send_age else False
             new_schedule.save()
             messages.success(request, _('Experiment scheduled to be sent successfully.'))
 
@@ -992,9 +994,8 @@ def send_all_experiments_to_portal():
                 portal_participant_list = {}
                 for subject_of_group in group.subjectofgroup_set.all():
                     first_data_collection = date_of_first_data_collection(subject_of_group)
-                    portal_participant = send_participant_to_portal(portal_group['id'],
-                                                                    subject_of_group.subject,
-                                                                    first_data_collection)
+                    portal_participant = send_participant_to_portal(schedule_of_sending, portal_group['id'],
+                                                                    subject_of_group.subject, first_data_collection)
                     portal_participant_list[subject_of_group.id] = portal_participant['id']
 
                 # experimental protocol
