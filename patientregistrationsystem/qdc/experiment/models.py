@@ -1288,8 +1288,7 @@ class HotSpot(models.Model):
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     hot_spot_map = models.FileField(upload_to=get_data_file_dir, null=True, blank=True)
-    tms_data = models.OneToOneField(TMSData, primary_key=True,
-                                    related_name='hotspot')
+    tms_data = models.OneToOneField(TMSData, primary_key=True)
     tms_localization_system = models.ForeignKey(TMSLocalizationSystem, related_name='hotspots')
 
     def __str__(self):
@@ -1456,6 +1455,7 @@ class ScheduleOfSending(models.Model):
     status = models.CharField(max_length=50, choices=SCHEDULE_STATUS_OPTIONS)
     sending_datetime = models.DateTimeField(null=True)
     reason_for_resending = models.CharField(null=True, max_length=500)
+    send_participant_age = models.BooleanField(default=True)
 
 
 class PortalSelectedQuestion(models.Model):
