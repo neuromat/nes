@@ -6805,7 +6805,6 @@ def tms_data_edit(request, tms_data_id, tab):
                         if request.POST.get('spot_image'):
                             data = request.POST.get('spot_image').split(',')[-1]
                             binary_data = base64.encodebytes(base64.b64decode(data))
-                            # path_hot_spot_filename = get_data_file_dir(tms_data, "hotspot_image.png")
                             with open("hotspot_tmp.png", "wb") as f:
                                 f.write(base64.decodebytes(binary_data))
 
@@ -9471,10 +9470,11 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     context_tree.experiment = new_experiment
     context_tree.save()
     old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
-    f = open(os.path.join(
-        MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
-    )
-    context_tree.setting_file.save(os.path.basename(f.name), File(f))
+    if old_context_tree.setting_file:
+        f = open(os.path.join(
+            MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
+        )
+        context_tree.setting_file.save(os.path.basename(f.name), File(f))
     orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
 
 
@@ -9784,21 +9784,6 @@ def copy_eeg_setting(eeg_setting, new_experiment, orig_and_clone):
     return new_eeg_setting
 
 
-def copy_eeg_data(new_eeg_setting, old_eeg_setting, new_experiment,
-                  old_experiment):
-    for eegdata in EEGData.objects.filter(eeg_setting__in=old_eeg_setting):
-
-
-        new_eegdata = EEGData.objects.create(
-            eeg_setting=new_eeg_setting,
-            eeg_setting_reason_for_change=eegdata.eeg_setting_reason_for_change,
-            eeg_cap_size=eegdata.eeg_cap_size,
-            description=eegdata.description,
-            file_format=eegdata.file_format,
-            file_format_description=eegdata.file_format_description
-        )
-
-
 def copy_emg_setting(emg_setting, new_experiment):
     emg_setting_id = emg_setting.id
     new_emg_setting = emg_setting
@@ -9929,7 +9914,8 @@ def create_component(component, new_experiment, orig_and_clone):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         clone = Stimulus(stimulus_type_id=stimulus.stimulus_type_id)
-        file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), 'rb')
+        if stimulus.media_file:
+            file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), 'rb')
 
     elif component_type == 'task':
         clone = Task()
