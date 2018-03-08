@@ -6666,7 +6666,8 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
 
     tms_setting = get_object_or_404(TMSSetting, id=tms_step.tms_setting_id)
 
-    pulse_stimulus = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+    pulse_stimulus = get_pulse_stimulus_name(
+        tms_setting.tms_device_setting.pulse_stimulus_type) if hasattr(tms_setting, 'tms_device_setting') else None
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6726,7 +6727,8 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
     tms_data_form = TMSDataForm(request.POST or None, instance=tms_data)
 
-    pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type)
+    pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type) if hasattr(
+        tms_data.tms_setting, 'tms_device_setting') else None
 
     for field in tms_data_form.fields:
         tms_data_form.fields[field].widget.attrs['disabled'] = True
@@ -9471,10 +9473,11 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     context_tree.experiment = new_experiment
     context_tree.save()
     old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
-    f = open(os.path.join(
-        MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
-    )
-    context_tree.setting_file.save(os.path.basename(f.name), File(f))
+    if old_context_tree.setting_file:
+        f = open(os.path.join(
+            MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
+        )
+        context_tree.setting_file.save(os.path.basename(f.name), File(f))
     orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
 
 
@@ -9547,6 +9550,30 @@ def copy_experiment(experiment, copy_data_collection=False):
     ):
         clone_context_tree(context_tree, new_experiment, orig_and_clone)
 
+    # eeg setting
+    for eeg_setting in EEGSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_eeg_setting_id = eeg_setting.id
+        new_eeg_setting = copy_eeg_setting(
+            eeg_setting, new_experiment, orig_and_clone
+        )
+        orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
+
+    # emg setting
+    for emg_setting in EMGSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_emg_setting_id = emg_setting.id
+        new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
+        orig_and_clone['emg_setting'][old_emg_setting_id] = \
+            new_emg_setting.id
+
+    # tms setting
+    for tms_setting in TMSSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_tms_setting_id = tms_setting.id
+        new_tms_setting = copy_tms_setting(tms_setting, new_experiment)
+        orig_and_clone['tms_setting'][old_tms_setting_id] = new_tms_setting.id
+
     # component
     for component in Component.objects.filter(experiment_id=experiment_id):
         clone_component = create_component(
@@ -9610,31 +9637,6 @@ def copy_experiment(experiment, copy_data_collection=False):
                     )
                 orig_and_clone['subject_of_group'][old_subject_of_group_id] \
                     = subject_of_group.id
-
-    # eeg setting
-    for eeg_setting in EEGSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_eeg_setting_id = eeg_setting.id
-        new_eeg_setting = copy_eeg_setting(
-            eeg_setting, new_experiment, orig_and_clone
-        )
-        orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
-        #
-
-    # emg setting
-    for emg_setting in EMGSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_emg_setting_id = emg_setting.id
-        new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
-        orig_and_clone['emg_setting'][old_emg_setting_id] = \
-            new_emg_setting.id
-
-    # tms setting
-    for tms_setting in TMSSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_tms_setting_id = tms_setting.id
-        new_tms_setting = copy_tms_setting(tms_setting, new_experiment)
-        orig_and_clone['tms_setting'][old_tms_setting_id] = new_tms_setting.id
 
     if copy_data_collection:
         # TODO: check if groups has data collection before trying to copy or
@@ -9886,9 +9888,11 @@ def copy_tms_setting(tms_setting, new_experiment):
     new_tms_setting.save()
 
     old_tms_setting = TMSSetting.objects.get(pk=old_tms_setting_id)
-    clone_tms_device_setting(
-        old_tms_setting.tms_device_setting, new_tms_setting
-    )
+
+    if hasattr(old_tms_setting, "tms_device_setting"):
+        clone_tms_device_setting(
+            old_tms_setting.tms_device_setting, new_tms_setting
+        )
 
     return new_tms_setting
 
@@ -9905,15 +9909,15 @@ def create_component(component, new_experiment, orig_and_clone):
 
     elif component_type == 'eeg':
         eeg = get_object_or_404(EEG, pk=component.id)
-        clone = EEG(eeg_setting_id=eeg.eeg_setting_id)
+        clone = EEG(eeg_setting_id=orig_and_clone['eeg_setting'][eeg.eeg_setting_id])
 
     elif component_type == 'emg':
         emg = get_object_or_404(EMG, pk=component.id)
-        clone = EMG(emg_setting_id=emg.emg_setting_id)
+        clone = EMG(emg_setting_id=orig_and_clone['emg_setting'][emg.emg_setting_id])
 
     elif component_type == 'tms':
         tms = get_object_or_404(TMS, pk=component.id)
-        clone = TMS(tms_setting_id=tms.tms_setting_id)
+        clone = TMS(tms_setting_id=orig_and_clone['tms_setting'][tms.tms_setting_id])
 
     elif component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
