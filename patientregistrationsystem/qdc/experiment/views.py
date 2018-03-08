@@ -9471,10 +9471,11 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     context_tree.experiment = new_experiment
     context_tree.save()
     old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
-    f = open(os.path.join(
-        MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
-    )
-    context_tree.setting_file.save(os.path.basename(f.name), File(f))
+    if old_context_tree.setting_file:
+        f = open(os.path.join(
+            MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
+        )
+        context_tree.setting_file.save(os.path.basename(f.name), File(f))
     orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
 
 
