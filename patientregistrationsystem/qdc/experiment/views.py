@@ -9515,6 +9515,19 @@ def clone_tms_data(tms_data, orig_and_clone):
     return tms_data
 
 
+def clone_questionnaire_response_data(q_response, orig_and_clone):
+    q_response.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][q_response.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][q_response.data_configuration_tree.id]
+    )
+    q_response.subject_of_group = new_subject_of_group
+    q_response.data_configuration_tree = new_data_configuration_tree
+    q_response.save()
+
+
 def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone = dict()
     orig_and_clone['component'] = {}
@@ -9738,6 +9751,12 @@ def copy_experiment(experiment, copy_data_collection=False):
                 tms_setting_id__experiment_id=experiment_id
         ):
             clone_tms_data(tms_data, orig_and_clone)
+
+        # questionnaire_response_data
+        for questionnaire_response_data in QuestionnaireResponse.objects.filter(
+            subject_of_group_id__group_id__experiment_id=experiment_id
+        ):
+            clone_questionnaire_response_data(questionnaire_response_data, orig_and_clone)
 
 
 def copy_eeg_setting(eeg_setting, new_experiment, orig_and_clone):
