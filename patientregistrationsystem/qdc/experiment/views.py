@@ -39,6 +39,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
+from django.core.exceptions import ObjectDoesNotExist
 
 from qdc.settings import MEDIA_ROOT
 from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
@@ -9601,6 +9602,7 @@ def copy_experiment(experiment, copy_data_collection=False):
         orig_and_clone[old_component_configuration_id] = \
             component_configuration.id
 
+    # groups
     groups = Group.objects.filter(experiment_id=experiment_id)
     for group in groups:
         experimental_protocol_id = group.experimental_protocol_id
@@ -9608,12 +9610,16 @@ def copy_experiment(experiment, copy_data_collection=False):
         new_group = group
         new_group.pk = None
         new_group.title = new_group.title
+        # group code is unique and not needed to be set at start (goal
+        # keeper game integration)
+        new_group.code = None
         new_group.experiment_id = new_experiment.id
         if experimental_protocol_id in orig_and_clone['component']:
             new_group.experimental_protocol_id = \
                 orig_and_clone['component'][experimental_protocol_id]
         new_group.save()
 
+        # subject of group
         if subject_list:
             new_subject_of_group = SubjectOfGroup.objects.filter(id__in=subject_list)
             for subject_of_group in new_subject_of_group:
@@ -9624,7 +9630,6 @@ def copy_experiment(experiment, copy_data_collection=False):
                 old_subject_of_group = SubjectOfGroup.objects.get(
                     pk=old_subject_of_group_id
                 )
-                # TODO: see other file saves that can have FileField null
                 if old_subject_of_group.consent_form:
                     f = open(
                         os.path.join(
@@ -9638,10 +9643,10 @@ def copy_experiment(experiment, copy_data_collection=False):
                     = subject_of_group.id
 
     if copy_data_collection:
-        # TODO: check if groups has data collection before trying to copy or
+        # TODO: 1) check if groups has data collection before trying to copy or
         # TODO: check this in template so the option to copy with data
         # TODO: doesn't appear;
-        # TODO: explain that orig_and_clone is modified in method
+        # TODO: 2) explain that orig_and_clone is modified in method
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
                 component_configuration_id__component_id__experiment_id
