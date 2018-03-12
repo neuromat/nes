@@ -9548,6 +9548,7 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment = experiment
     new_experiment.pk = None
     new_experiment.title = _('Copy of') + ' ' + new_experiment.title
+    new_experiment.last_sending = None
     new_experiment.save()
     if experiment.ethics_committee_project_file:
         f = open(os.path.join(
