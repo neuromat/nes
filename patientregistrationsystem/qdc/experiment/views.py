@@ -39,6 +39,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
+from django.core.exceptions import ObjectDoesNotExist
 
 from qdc.settings import MEDIA_ROOT
 from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
@@ -9519,6 +9520,19 @@ def clone_tms_data(tms_data, orig_and_clone):
     return tms_data
 
 
+def clone_questionnaire_response_data(q_response, orig_and_clone):
+    q_response.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][q_response.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][q_response.data_configuration_tree.id]
+    )
+    q_response.subject_of_group = new_subject_of_group
+    q_response.data_configuration_tree = new_data_configuration_tree
+    q_response.save()
+
+
 def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone = dict()
     orig_and_clone['component'] = {}
@@ -9539,6 +9553,7 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment = experiment
     new_experiment.pk = None
     new_experiment.title = _('Copy of') + ' ' + new_experiment.title
+    new_experiment.last_sending = None
     new_experiment.save()
     if experiment.ethics_committee_project_file:
         f = open(os.path.join(
@@ -9606,6 +9621,7 @@ def copy_experiment(experiment, copy_data_collection=False):
         orig_and_clone[old_component_configuration_id] = \
             component_configuration.id
 
+    # groups
     groups = Group.objects.filter(experiment_id=experiment_id)
     for group in groups:
         experimental_protocol_id = group.experimental_protocol_id
@@ -9613,12 +9629,16 @@ def copy_experiment(experiment, copy_data_collection=False):
         new_group = group
         new_group.pk = None
         new_group.title = new_group.title
+        # group code is unique and not needed to be set at start (goal
+        # keeper game integration)
+        new_group.code = None
         new_group.experiment_id = new_experiment.id
         if experimental_protocol_id in orig_and_clone['component']:
             new_group.experimental_protocol_id = \
                 orig_and_clone['component'][experimental_protocol_id]
         new_group.save()
 
+        # subject of group
         if subject_list:
             new_subject_of_group = SubjectOfGroup.objects.filter(id__in=subject_list)
             for subject_of_group in new_subject_of_group:
@@ -9629,7 +9649,6 @@ def copy_experiment(experiment, copy_data_collection=False):
                 old_subject_of_group = SubjectOfGroup.objects.get(
                     pk=old_subject_of_group_id
                 )
-                # TODO: see other file saves that can have FileField null
                 if old_subject_of_group.consent_form:
                     f = open(
                         os.path.join(
@@ -9643,10 +9662,10 @@ def copy_experiment(experiment, copy_data_collection=False):
                     = subject_of_group.id
 
     if copy_data_collection:
-        # TODO: check if groups has data collection before trying to copy or
+        # TODO: 1) check if groups has data collection before trying to copy or
         # TODO: check this in template so the option to copy with data
         # TODO: doesn't appear;
-        # TODO: explain that orig_and_clone is modified in method
+        # TODO: 2) explain that orig_and_clone is modified in method
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
                 component_configuration_id__component_id__experiment_id
@@ -9738,6 +9757,12 @@ def copy_experiment(experiment, copy_data_collection=False):
                 tms_setting_id__experiment_id=experiment_id
         ):
             clone_tms_data(tms_data, orig_and_clone)
+
+        # questionnaire_response_data
+        for questionnaire_response_data in QuestionnaireResponse.objects.filter(
+            subject_of_group_id__group_id__experiment_id=experiment_id
+        ):
+            clone_questionnaire_response_data(questionnaire_response_data, orig_and_clone)
 
 
 def copy_eeg_setting(eeg_setting, new_experiment, orig_and_clone):
