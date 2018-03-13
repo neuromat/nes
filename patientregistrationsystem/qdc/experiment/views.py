@@ -653,12 +653,16 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
-            research_project = experiment.research_project
+            check_can_change(request.user, experiment.research_project)
 
-            check_can_change(request.user, research_project)
+            # Check if there is data collection for its groups
+            experiment_has_data_collection = False
+            for group in group_list:
+                if group_has_data_collection(group):
+                    experiment_has_data_collection = True
+                    break
 
-            if QuestionnaireResponse.objects.filter(
-                    subject_of_group__group__experiment_id=experiment_id).count() == 0:
+            if not experiment_has_data_collection:
 
                 # Check if there is component_configuration
                 for component_configuration in ComponentConfiguration.objects.filter(component__experiment=experiment):
@@ -671,16 +675,17 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                 try:
                     experiment.delete()
                     messages.success(request, _('Experiment removed successfully.'))
-                    return redirect('research_project_view', research_project_id=research_project.id)
+                    return redirect('research_project_view', research_project_id=experiment.research_project.id)
                 except ProtectedError:
                     messages.error(request,
-                                   _("It was not possible to delete experiment, "
+                                   _("It was not possible to delete experiment "
                                      "because there are groups connected."))
                     redirect_url = reverse("experiment_view", args=(experiment_id,))
                     return HttpResponseRedirect(redirect_url)
             else:
                 messages.error(request,
-                               _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                               _("Impossible to delete experiment because there is data collection associated."))
+
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
 
