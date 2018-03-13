@@ -39,6 +39,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
+from django.core.exceptions import ObjectDoesNotExist
 
 from qdc.settings import MEDIA_ROOT
 from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
@@ -6666,7 +6667,8 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
 
     tms_setting = get_object_or_404(TMSSetting, id=tms_step.tms_setting_id)
 
-    pulse_stimulus = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+    pulse_stimulus = get_pulse_stimulus_name(
+        tms_setting.tms_device_setting.pulse_stimulus_type) if hasattr(tms_setting, 'tms_device_setting') else None
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6726,7 +6728,8 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
     tms_data_form = TMSDataForm(request.POST or None, instance=tms_data)
 
-    pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type)
+    pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type) if hasattr(
+        tms_data.tms_setting, 'tms_device_setting') else None
 
     for field in tms_data_form.fields:
         tms_data_form.fields[field].widget.attrs['disabled'] = True
@@ -6805,7 +6808,6 @@ def tms_data_edit(request, tms_data_id, tab):
                         if request.POST.get('spot_image'):
                             data = request.POST.get('spot_image').split(',')[-1]
                             binary_data = base64.encodebytes(base64.b64decode(data))
-                            # path_hot_spot_filename = get_data_file_dir(tms_data, "hotspot_image.png")
                             with open("hotspot_tmp.png", "wb") as f:
                                 f.write(base64.decodebytes(binary_data))
 
@@ -9471,10 +9473,11 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     context_tree.experiment = new_experiment
     context_tree.save()
     old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
-    f = open(os.path.join(
-        MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
-    )
-    context_tree.setting_file.save(os.path.basename(f.name), File(f))
+    if old_context_tree.setting_file:
+        f = open(os.path.join(
+            MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
+        )
+        context_tree.setting_file.save(os.path.basename(f.name), File(f))
     orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
 
 
@@ -9512,6 +9515,19 @@ def clone_tms_data(tms_data, orig_and_clone):
     return tms_data
 
 
+def clone_questionnaire_response_data(q_response, orig_and_clone):
+    q_response.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][q_response.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][q_response.data_configuration_tree.id]
+    )
+    q_response.subject_of_group = new_subject_of_group
+    q_response.data_configuration_tree = new_data_configuration_tree
+    q_response.save()
+
+
 def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone = dict()
     orig_and_clone['component'] = {}
@@ -9532,6 +9548,7 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment = experiment
     new_experiment.pk = None
     new_experiment.title = _('Copy of') + ' ' + new_experiment.title
+    new_experiment.last_sending = None
     new_experiment.save()
     if experiment.ethics_committee_project_file:
         f = open(os.path.join(
@@ -9546,6 +9563,30 @@ def copy_experiment(experiment, copy_data_collection=False):
             experiment_id=experiment_id
     ):
         clone_context_tree(context_tree, new_experiment, orig_and_clone)
+
+    # eeg setting
+    for eeg_setting in EEGSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_eeg_setting_id = eeg_setting.id
+        new_eeg_setting = copy_eeg_setting(
+            eeg_setting, new_experiment, orig_and_clone
+        )
+        orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
+
+    # emg setting
+    for emg_setting in EMGSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_emg_setting_id = emg_setting.id
+        new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
+        orig_and_clone['emg_setting'][old_emg_setting_id] = \
+            new_emg_setting.id
+
+    # tms setting
+    for tms_setting in TMSSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_tms_setting_id = tms_setting.id
+        new_tms_setting = copy_tms_setting(tms_setting, new_experiment)
+        orig_and_clone['tms_setting'][old_tms_setting_id] = new_tms_setting.id
 
     # component
     for component in Component.objects.filter(experiment_id=experiment_id):
@@ -9575,6 +9616,7 @@ def copy_experiment(experiment, copy_data_collection=False):
         orig_and_clone[old_component_configuration_id] = \
             component_configuration.id
 
+    # groups
     groups = Group.objects.filter(experiment_id=experiment_id)
     for group in groups:
         experimental_protocol_id = group.experimental_protocol_id
@@ -9582,12 +9624,16 @@ def copy_experiment(experiment, copy_data_collection=False):
         new_group = group
         new_group.pk = None
         new_group.title = new_group.title
+        # group code is unique and not needed to be set at start (goal
+        # keeper game integration)
+        new_group.code = None
         new_group.experiment_id = new_experiment.id
         if experimental_protocol_id in orig_and_clone['component']:
             new_group.experimental_protocol_id = \
                 orig_and_clone['component'][experimental_protocol_id]
         new_group.save()
 
+        # subject of group
         if subject_list:
             new_subject_of_group = SubjectOfGroup.objects.filter(id__in=subject_list)
             for subject_of_group in new_subject_of_group:
@@ -9598,7 +9644,6 @@ def copy_experiment(experiment, copy_data_collection=False):
                 old_subject_of_group = SubjectOfGroup.objects.get(
                     pk=old_subject_of_group_id
                 )
-                # TODO: see other file saves that can have FileField null
                 if old_subject_of_group.consent_form:
                     f = open(
                         os.path.join(
@@ -9611,36 +9656,11 @@ def copy_experiment(experiment, copy_data_collection=False):
                 orig_and_clone['subject_of_group'][old_subject_of_group_id] \
                     = subject_of_group.id
 
-    # eeg setting
-    for eeg_setting in EEGSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_eeg_setting_id = eeg_setting.id
-        new_eeg_setting = copy_eeg_setting(
-            eeg_setting, new_experiment, orig_and_clone
-        )
-        orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
-        #
-
-    # emg setting
-    for emg_setting in EMGSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_emg_setting_id = emg_setting.id
-        new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
-        orig_and_clone['emg_setting'][old_emg_setting_id] = \
-            new_emg_setting.id
-
-    # tms setting
-    for tms_setting in TMSSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_tms_setting_id = tms_setting.id
-        new_tms_setting = copy_tms_setting(tms_setting, new_experiment)
-        orig_and_clone['tms_setting'][old_tms_setting_id] = new_tms_setting.id
-
     if copy_data_collection:
-        # TODO: check if groups has data collection before trying to copy or
+        # TODO: 1) check if groups has data collection before trying to copy or
         # TODO: check this in template so the option to copy with data
         # TODO: doesn't appear;
-        # TODO: explain that orig_and_clone is modified in method
+        # TODO: 2) explain that orig_and_clone is modified in method
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
                 component_configuration_id__component_id__experiment_id
@@ -9733,6 +9753,12 @@ def copy_experiment(experiment, copy_data_collection=False):
         ):
             clone_tms_data(tms_data, orig_and_clone)
 
+        # questionnaire_response_data
+        for questionnaire_response_data in QuestionnaireResponse.objects.filter(
+            subject_of_group_id__group_id__experiment_id=experiment_id
+        ):
+            clone_questionnaire_response_data(questionnaire_response_data, orig_and_clone)
+
 
 def copy_eeg_setting(eeg_setting, new_experiment, orig_and_clone):
     eeg_setting_id = eeg_setting.id
@@ -9782,21 +9808,6 @@ def copy_eeg_setting(eeg_setting, new_experiment, orig_and_clone):
         new_eeg_filter_setting.save()
 
     return new_eeg_setting
-
-
-def copy_eeg_data(new_eeg_setting, old_eeg_setting, new_experiment,
-                  old_experiment):
-    for eegdata in EEGData.objects.filter(eeg_setting__in=old_eeg_setting):
-
-
-        new_eegdata = EEGData.objects.create(
-            eeg_setting=new_eeg_setting,
-            eeg_setting_reason_for_change=eegdata.eeg_setting_reason_for_change,
-            eeg_cap_size=eegdata.eeg_cap_size,
-            description=eegdata.description,
-            file_format=eegdata.file_format,
-            file_format_description=eegdata.file_format_description
-        )
 
 
 def copy_emg_setting(emg_setting, new_experiment):
@@ -9886,9 +9897,11 @@ def copy_tms_setting(tms_setting, new_experiment):
     new_tms_setting.save()
 
     old_tms_setting = TMSSetting.objects.get(pk=old_tms_setting_id)
-    clone_tms_device_setting(
-        old_tms_setting.tms_device_setting, new_tms_setting
-    )
+
+    if hasattr(old_tms_setting, "tms_device_setting"):
+        clone_tms_device_setting(
+            old_tms_setting.tms_device_setting, new_tms_setting
+        )
 
     return new_tms_setting
 
@@ -9905,15 +9918,15 @@ def create_component(component, new_experiment, orig_and_clone):
 
     elif component_type == 'eeg':
         eeg = get_object_or_404(EEG, pk=component.id)
-        clone = EEG(eeg_setting_id=eeg.eeg_setting_id)
+        clone = EEG(eeg_setting_id=orig_and_clone['eeg_setting'][eeg.eeg_setting_id])
 
     elif component_type == 'emg':
         emg = get_object_or_404(EMG, pk=component.id)
-        clone = EMG(emg_setting_id=emg.emg_setting_id)
+        clone = EMG(emg_setting_id=orig_and_clone['emg_setting'][emg.emg_setting_id])
 
     elif component_type == 'tms':
         tms = get_object_or_404(TMS, pk=component.id)
-        clone = TMS(tms_setting_id=tms.tms_setting_id)
+        clone = TMS(tms_setting_id=orig_and_clone['tms_setting'][tms.tms_setting_id])
 
     elif component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
@@ -9929,7 +9942,8 @@ def create_component(component, new_experiment, orig_and_clone):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         clone = Stimulus(stimulus_type_id=stimulus.stimulus_type_id)
-        file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), 'rb')
+        if stimulus.media_file:
+            file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), 'rb')
 
     elif component_type == 'task':
         clone = Task()
