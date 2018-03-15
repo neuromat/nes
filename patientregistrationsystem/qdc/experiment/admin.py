@@ -8,7 +8,7 @@ from experiment.models import Experiment, QuestionnaireResponse, StimulusType, F
     Muscle, MuscleSubdivision, MuscleSide, \
     ElectrodeShape, MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, \
     CoilShape, TMSDevice, CoilModel, CoilOrientation, DirectionOfTheInducedCurrent, BrainArea, BrainAreaSystem, \
-    InformationType
+    InformationType, GoalkeeperGame, GoalkeeperPhase
 
 admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
@@ -52,3 +52,6 @@ admin.site.register(BrainArea)
 admin.site.register(BrainAreaSystem)
 
 admin.site.register(InformationType)
+
+admin.site.register(GoalkeeperGame)
+admin.site.register(GoalkeeperPhase)
