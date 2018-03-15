@@ -304,9 +304,16 @@ class QuestionnaireUtils:
                 question_to_list = [smart_str(question_code), smart_str(question_description)]
 
                 # Scales (type == "1" means "Array Dual Scale"
-                scales = \
-                    [attribute for attribute in sorted(properties['attributes_lang'].values())] \
-                        if question_type == "1" else [""]
+                scales = [""]
+                if question_type == "1":
+                    if isinstance(properties['attributes_lang'], dict):
+                        scales = [
+                            properties['attributes_lang']['dualscale_headerA'] if 'dualscale_headerA' in properties[
+                                'attributes_lang'] else "",
+                            properties['attributes_lang']['dualscale_headerB'] if 'dualscale_headerB' in properties[
+                                'attributes_lang'] else ""]
+                    else:
+                        scales = ["", ""]
 
                 # answers
                 options_list = []
