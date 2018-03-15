@@ -1409,6 +1409,35 @@ class EEGElectrodePositionCollectionStatus(models.Model):
         return self.eeg_electrode_position_setting.eeg_electrode_position.name
 
 
+class GoalkeeperGame(models.Model):
+    code = models.CharField(_('Code'), max_length=2, unique=True)
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class GoalkeeperPhase(models.Model):
+    game = models.ForeignKey(GoalkeeperGame)
+    phase = models.IntegerField(name="phase", null=True, blank=True)
+
+    class Meta:
+        unique_together = ('game', 'phase',)
+
+    def clean(self):
+        if self.phase==None and GoalkeeperPhase.objects.filter(phase=self.phase, game=self.game):
+            raise ValidationError(_('Phase already registered'))
+
+    def __str__(self):
+        if self.phase:
+            return _('{game} - phase {phase}').format(
+                game=self.game.name,
+                phase=self.phase
+            )
+        else:
+            return self.game.name
+
+
 class GoalkeeperGameLog(models.Model):
     file_content = models.TextField(primary_key=True, name='filecontent')
 
@@ -1420,6 +1449,7 @@ class GoalkeeperGameLog(models.Model):
 class GoalkeeperGameConfig(models.Model):
     id_config = models.IntegerField(name="idconfig", primary_key=True)
     experiment_group = models.CharField(name="experimentgroup", max_length=50)
+    game = models.CharField(name="game", max_length=2)
     phase = models.IntegerField(name="phase")
     player_alias = models.CharField(name="playeralias", max_length=20)
     sequence_executed = models.TextField(name="sequexecuted")
