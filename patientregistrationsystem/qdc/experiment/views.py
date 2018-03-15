@@ -59,7 +59,7 @@ from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, 
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
     GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending, \
     GoalkeeperGameConfig, GoalkeeperGameResults, EEGFile, EMGFile, AdditionalDataFile, GenericDataCollectionFile, \
-    DigitalGamePhaseFile, PortalSelectedQuestion, ComponentAdditionalFile
+    DigitalGamePhaseFile, PortalSelectedQuestion, ComponentAdditionalFile, GoalkeeperPhase
 
 from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -7124,21 +7124,30 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
         data_configuration_tree = \
             DataConfigurationTree.objects.filter(id=data_configuration_tree_id).first()
 
+        try:
+            game_and_phase = GoalkeeperPhase.objects.get(pk=data_configuration_tree.code)
+        except:
+            game_and_phase = None
+
         digital_game_phase_collections.append(
             {'digital_game_phase_configuration': digital_game_phase_configuration,
              'path': path,
-             'data_configuration_tree': data_configuration_tree
+             'data_configuration_tree': data_configuration_tree,
+             'game_and_phase': game_and_phase
              }
         )
 
-        if not enable_upload and group.code and data_configuration_tree and data_configuration_tree.code is not None:
+        if not enable_upload and group.code and data_configuration_tree:
             enable_upload = True
+
+    digital_games_and_phases = GoalkeeperPhase.objects.all().order_by('game__name', 'phase')
 
     context = {"can_change": get_can_change(request.user, group.experiment.research_project),
                'group': group,
                'institution_code': LocalInstitution.get_solo().code,
                'digital_game_phase_collections': digital_game_phase_collections,
-               "enable_upload": enable_upload
+               "enable_upload": enable_upload,
+               'digital_games_and_phases': digital_games_and_phases
                }
 
     return render(request, template_name, context)
@@ -7173,60 +7182,74 @@ def load_group_goalkeeper_game_data(request, group_id):
                                                             pk=data_configuration_tree_id)
                 if data_configuration_tree.code is not None:
 
+                    try:
+                        game_and_phase = GoalkeeperPhase.objects.get(pk=data_configuration_tree.code)
+                    except:
+                        game_and_phase = None
+
                     # for each subject
                     for subject_of_group in group.subjectofgroup_set.all():
 
-                        goalkeeper_game_configuration = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
-                            experimentgroup=experimental_group_code,
-                            phase=data_configuration_tree.code,
-                            playeralias=subject_of_group.subject.patient.code).order_by('idconfig').last()
+                        if game_and_phase:
+                            game = game_and_phase.game.code
+                            phase = game_and_phase.phase
 
-                        if goalkeeper_game_configuration:
+                            if phase == None:
+                                phase = 0
 
-                            result = GoalkeeperGameResults.objects.using('goalkeeper').filter(
-                                id=goalkeeper_game_configuration.idresult).first()
+                            goalkeeper_game_configuration = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
+                                experimentgroup=experimental_group_code,
+                                game=game,
+                                phase=phase,
+                                playeralias=subject_of_group.subject.patient.code).order_by('idconfig').last()
 
-                            if result:
+                            if goalkeeper_game_configuration:
 
-                                game_date = datetime.strptime(goalkeeper_game_configuration.gamedata, '%y%m%d')
-                                game_time = datetime.strptime(goalkeeper_game_configuration.gametime, '%H%M%S')
+                                result = GoalkeeperGameResults.objects.using('goalkeeper').filter(
+                                    id=goalkeeper_game_configuration.idresult).first()
 
-                                if not DigitalGamePhaseData.objects.filter(
-                                        subject_of_group=subject_of_group,
-                                        data_configuration_tree=data_configuration_tree,
-                                        date=game_date, time=game_time):
+                                if result:
 
-                                    # saving data
-                                    digital_game_phase_data = DigitalGamePhaseData()
-                                    digital_game_phase_data.subject_of_group = subject_of_group
-                                    digital_game_phase_data.data_configuration_tree = data_configuration_tree
+                                    game_date = datetime.strptime(goalkeeper_game_configuration.gamedata, '%y%m%d')
+                                    game_time = datetime.strptime(goalkeeper_game_configuration.gametime, '%H%M%S')
 
-                                    digital_game_phase_data.date = game_date
-                                    digital_game_phase_data.time = game_time
+                                    if not DigitalGamePhaseData.objects.filter(
+                                            subject_of_group=subject_of_group,
+                                            data_configuration_tree=data_configuration_tree,
+                                            date=game_date, time=game_time):
 
-                                    digital_game_phase_data.description = \
-                                        "%s - %s" % (experimental_group_code, subject_of_group.subject.patient.code)
+                                        # saving data
+                                        digital_game_phase_data = DigitalGamePhaseData()
+                                        digital_game_phase_data.subject_of_group = subject_of_group
+                                        digital_game_phase_data.data_configuration_tree = data_configuration_tree
 
-                                    digital_game_phase_data.file_format = get_object_or_404(FileFormat, nes_code='txt')
+                                        digital_game_phase_data.date = game_date
+                                        digital_game_phase_data.time = game_time
 
-                                    digital_game_phase_data.sequence_used_in_context_tree = \
-                                        goalkeeper_game_configuration.sequexecuted
+                                        digital_game_phase_data.description = \
+                                            "%s - %s" % (experimental_group_code, subject_of_group.subject.patient.code)
 
-                                    digital_game_phase_data.save()
+                                        digital_game_phase_data.file_format = \
+                                            get_object_or_404(FileFormat, nes_code='txt')
 
-                                    # Digital Game Phase File
-                                    file_name = "%s_%s.txt" % (experimental_group_code,
-                                                               subject_of_group.subject.patient.code)
-                                    file_content = result.filecontent
+                                        digital_game_phase_data.sequence_used_in_context_tree = \
+                                            goalkeeper_game_configuration.sequexecuted
 
-                                    digital_game_phase_file = DigitalGamePhaseFile(
-                                        digital_game_phase_data=digital_game_phase_data)
-                                    digital_game_phase_file.file.save(
-                                        file_name,
-                                        ContentFile(file_content))
-                                    digital_game_phase_file.save()
+                                        digital_game_phase_data.save()
 
-                                    number_of_imported_data += 1
+                                        # Digital Game Phase File
+                                        file_name = "%s_%s.txt" % (experimental_group_code,
+                                                                   subject_of_group.subject.patient.code)
+                                        file_content = result.filecontent
+
+                                        digital_game_phase_file = DigitalGamePhaseFile(
+                                            digital_game_phase_data=digital_game_phase_data)
+                                        digital_game_phase_file.file.save(
+                                            file_name,
+                                            ContentFile(file_content))
+                                        digital_game_phase_file.save()
+
+                                        number_of_imported_data += 1
 
         if number_of_imported_data:
             if number_of_imported_data == 1:
