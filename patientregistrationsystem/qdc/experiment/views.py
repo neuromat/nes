@@ -4615,6 +4615,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
     can_remove = True
 
+    data_collections = []
+
     # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
     # in this group.
     if group.experimental_protocol is not None:
@@ -4824,6 +4826,55 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'number_of_additional_data_uploaded':
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
             )
+
+            # info for tab 'per step of the experimental protocol'
+            # First element of the list is associated to the whole experimental protocol
+            # subject_step_data_query = \
+            #     SubjectStepData.objects.filter(subject_of_group=subject_of_group, data_configuration_tree=None)
+            additional_data_list = AdditionalData.objects.filter(subject_of_group__group=group,
+                                                                 data_configuration_tree=None)
+
+            data_list = [
+                {'type': 'additional_data', 'count': additional_data_list.count()}] if additional_data_list else []
+
+            data_collections = [
+                {'component_configuration': None,
+                 'path': None,
+                 'data_list': data_list,
+                 # 'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
+                 # 'additional_data_list': AdditionalData.objects.filter(
+                 #     subject_of_group__group=group, data_configuration_tree=None),
+                 'icon_class': icon_class['experimental_protocol']}
+            ]
+            list_of_paths = create_list_of_trees(group.experimental_protocol, None)
+            for path in list_of_paths:
+                component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+                data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
+                                                                          [item[0] for item in path])
+                # subject_step_data_query = \
+                #     SubjectStepData.objects.filter(subject_of_group=subject_of_group,
+                #                                    data_configuration_tree=data_configuration_tree_id)
+                # additional_data_list = None
+                # if data_configuration_tree_id:
+                #     additional_data_list = \
+                #         AdditionalData.objects.filter(subject_of_group=subject_of_group,
+                #                                       data_configuration_tree__id=data_configuration_tree_id)
+                additional_data_count = \
+                    AdditionalData.objects.filter(subject_of_group__group=group,
+                                                  data_configuration_tree_id=data_configuration_tree_id).values(
+                        'subject_of_group__subject').distinct().count()
+
+                data_list = [{'type': 'additional_data', 'description': _('Additional data'),
+                              'count': additional_data_count}] if additional_data_count else []
+
+                data_collections.append(
+                    {'component_configuration': component_configuration,
+                     'path': path,
+                     # 'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
+                     'data_list': data_list,
+                     'icon_class': icon_class[component_configuration.component.component_type]}
+                )
+
     else:
         for subject_of_group in subject_list:
             subject_list_with_status.append(
@@ -4857,7 +4908,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                'subject_list': subject_list_with_status,
                "limesurvey_available": limesurvey_available,
                "experimental_protocol_info": experimental_protocol_info,
-               "goalkeeper": goalkeeper}
+               "goalkeeper": goalkeeper,
+               "data_collections": data_collections}
 
     return render(request, template_name, context)
 
