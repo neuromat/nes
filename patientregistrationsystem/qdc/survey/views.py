@@ -861,7 +861,10 @@ def add_questionnaire_response_to_group(groups_of_question, question, answer, li
 
 
 def check_limesurvey_access(request, surveys):
-
+    """
+    # Shows a message to the user if limesurvey is not available
+    :return: Boolean
+    """
     limesurvey_available = is_limesurvey_available(surveys)
 
     if not limesurvey_available:
