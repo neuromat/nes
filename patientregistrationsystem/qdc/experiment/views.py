@@ -10427,12 +10427,10 @@ def component_update(request, path_of_the_components):
     if configuration_count > 1:
         if request.session.get('display_warning_reused', True):
             messages.warning(
-                request, _(
-                    'This component is reused in ' + str(configuration_count - 1)
-                    + ' other step(s). Pay attention to any change made to it '
-                      'will reflect in the other(s).'
+                request,
+                _('This component is reused in') + ' ' + str(configuration_count - 1) + ' ' +
+                _(' other step(s). Pay attention to any change made to it will reflect in the other(s).')
                 )
-            )
         else:  # session key was setted after a post request (see above)
             del request.session['display_warning_reused']
 
