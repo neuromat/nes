@@ -351,10 +351,12 @@
                                                                 <td>{{ item_data.description }}</td>
                                                                 <td>{{ item_data.count }} {% if item_data.count == 1 %}{% trans "participant" %}{% else %}{% trans "participants" %}{% endif %}</td>
                                                                 <td>
-                                                                    <a href="something/remove/{{ item_data.type }}" class="btn btn-primary"><span class="glyphicon glyphicon-remove"></span> {% trans "Show for remove" %}</a>
+                                                                    <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}/remove"
+                                                                       class="btn btn-primary"><span class="glyphicon glyphicon-remove"></span> {% trans "Show for remove" %}</a>
                                                                 </td>
                                                                 <td>
-                                                                    <a href="something/transf/{{ item_data.type }}" class="btn btn-primary"><span class="glyphicon glyphicon-transfer"></span> {% trans "Show for transfer" %}</a>
+                                                                    <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}/transfer"
+                                                                       class="btn btn-primary"><span class="glyphicon glyphicon-transfer"></span> {% trans "Show for transfer" %}</a>
                                                                 </td>
                                                             </tr>
                                                         {% endfor %}

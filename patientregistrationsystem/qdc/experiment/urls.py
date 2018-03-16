@@ -368,6 +368,11 @@ urlpatterns = patterns(
     url(r'^tms_data/(?P<tms_data_id>\d+)/position_setting_view/$', 'tms_data_position_setting_view',
         name='tms_data_position_setting_view'),
 
+    # data collection
+    url(r'^group/(?P<group_id>\d+)/data_collection_manage/'
+        r'(?P<path_of_configuration>[0-9-]+)/(?P<data_type>\w+)/(?P<operation>\w+)/$',
+        'data_collection_manage', name='data_collection_manage'),
+
     # tms_data(ajax)
     url(r'^get_pulse_by_tms_setting/(?P<tms_setting_id>\d+)/$', 'get_pulse_by_tms_setting'),
 
@@ -425,7 +430,7 @@ urlpatterns = patterns(
     url(r'^component/change_the_order/(?P<path_of_the_components>[0-9-UG]+)/(?P<component_configuration_index>[0-9-]+)/'
         r'(?P<command>\w+)/$', 'component_change_the_order', name='component_change_the_order'),
 
-    # Data collection
+    # Questionnaire
     url(r'^group/(?P<group_id>\d+)/questionnaire/(?P<component_configuration_id>\d+)/$', 'questionnaire_view',
         name='questionnaire_view'),
 )
