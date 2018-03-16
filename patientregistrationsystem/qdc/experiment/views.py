@@ -10482,7 +10482,8 @@ def component_update(request, path_of_the_components):
     list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url = \
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
-    # when there are data collected, it is necessary to protect related "steps" and "uses of steps"
+    # When there are data collected, it is necessary to protect related
+    # "steps" and "uses of steps".
     protected_steps, protected_uses_of_step = get_protected_steps_and_uses_of_steps(experiment, group)
 
     questionnaire_id = None
@@ -10527,6 +10528,10 @@ def component_update(request, path_of_the_components):
     can_change = get_can_change(request.user, experiment.research_project)
 
     if request.method == "POST":
+        # Workaround to avoid warning user from changing reused component after
+        # redirect.
+        request.session['display_warning_reused'] = False
+
         if can_change:
             if request.POST['action'] == "save":
                 if configuration_form is None:
@@ -10621,7 +10626,6 @@ def component_update(request, path_of_the_components):
 
         surveys = Questionnaires()
 
-        # This method shows a message to the user if limesurvey is not available.
         limesurvey_available = check_limesurvey_access(request, surveys)
 
         if limesurvey_available:
@@ -10650,6 +10654,17 @@ def component_update(request, path_of_the_components):
             if not can_change:
                 for field in configuration_form.fields:
                     configuration_form.fields[field].widget.attrs['disabled'] = True
+
+    configuration_count = component.configuration.count()
+    if configuration_count > 1:
+        if request.session.get('display_warning_reused', True):
+            messages.warning(
+                request,
+                _('This component is reused in') + ' ' + str(configuration_count - 1) + ' ' +
+                _(' other step(s). Pay attention to any change made to it will reflect in the other(s).')
+                )
+        else:  # session key was setted after a post request (see above)
+            del request.session['display_warning_reused']
 
     context = {"back_cancel_url": back_cancel_url,
                "block_duration": duration_string,
@@ -10759,7 +10774,8 @@ def component_add_new(request, path_of_the_components, component_type):
     number_of_uses = get_number_of_uses(request)
 
     component_form = ComponentForm(request.POST or None)
-    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    # This is needed for the form to be able to validate the presence of a
+    # duration in a pause component only.
     component_form.component_type = component_type
 
     # Check if we are configuring a new experimental protocol
@@ -10828,8 +10844,9 @@ def component_add_new(request, path_of_the_components, component_type):
             new_specific_component.duration_unit = component.duration_unit
             # new_specific_component is not saved until later.
 
-            # If this is a new component for creating the root of a group's experimental protocol, no
-            # component_configuration has to be created.
+            # If this is a new component for creating the root of a group's
+            # experimental protocol, no component_configuration has to be
+            # created.
             if is_configuring_new_experimental_protocol:
                 new_specific_component.save()
                 group.experimental_protocol = new_specific_component
@@ -10915,7 +10932,8 @@ def component_reuse(request, path_of_the_components, component_id):
     number_of_uses = get_number_of_uses(request)
 
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
-    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    # This is needed for the form to be able to validate the presence of a
+    # duration in a pause component only.
     component_form.component_type = component_type
 
     # Check if we are configuring a new experimental protocol
@@ -10986,8 +11004,8 @@ def component_reuse(request, path_of_the_components, component_id):
                 specific_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
-        # If this is a reuse for creating the root of a group's experimental protocol, no component_configuration
-        # has to be created.
+        # If this is a reuse for creating the root of a group's experimental
+        # protocol, no component_configuration has to be created.
         if is_configuring_new_experimental_protocol:
             group = Group.objects.get(id=path_of_the_components[1:])
             group.experimental_protocol = component_to_add

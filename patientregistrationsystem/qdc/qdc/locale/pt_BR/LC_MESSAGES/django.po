@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-07 10:45-0300\n"
+"POT-Creation-Date: 2018-03-16 14:49-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,9 @@ msgstr "Confirmar nova senha"
 #: qdc/views.py:42
 msgid ""
 "There is a new version, please contact your NES administrator to update !"
-msgstr "Há uma nova versão, por favor contacte o Administrador do NES para atualizar o sistema."
+msgstr ""
+"Há uma nova versão, por favor contacte o Administrador do NES para atualizar "
+"o sistema."
 
 #: qdc/views.py:64
 msgid "Password changed successfully."
@@ -44,8 +46,9 @@ msgid ""
 "You dont have NES Git installation. Automatic upgrade can be done with git "
 "installation. Please contact your system administrator to upgrade NES to a "
 "new version."
-msgstr "Você não possui Git instalado no servidor. A atualização automática "
-"somente pode ser realizada com a instalação do Git. Por favor contacte o "
+msgstr ""
+"Você não possui Git instalado no servidor. A atualização automática somente "
+"pode ser realizada com a instalação do Git. Por favor contacte o "
 "administrador do NES para atualiza-lo com a nova versão."
 
 #: qdc/views.py:185
@@ -54,7 +57,8 @@ msgstr "Atualizado!!! Aproveite a nova versão do NES :-)"
 
 #: qdc/views.py:188
 msgid "An unknown error ocurred ! Please contact your administrator system."
-msgstr "Ocorreu um erro desconhecido! Por favor contacte o administrador do sistema."
+msgstr ""
+"Ocorreu um erro desconhecido! Por favor contacte o administrador do sistema."
 
 #~ msgid "Type old password"
 #~ msgstr "Entrar com senha antiga"
