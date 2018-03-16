@@ -39,7 +39,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
-from django.core.exceptions import ObjectDoesNotExist
 
 from qdc.settings import MEDIA_ROOT
 from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
@@ -121,6 +120,14 @@ icon_class = {
     'experimental_protocol': 'glyphicon glyphicon-tasks',
     'digital_game_phase': 'glyphicon glyphicon-play-circle',
     'generic_data_collection': 'glyphicon glyphicon-file',
+}
+
+data_type_name = {
+    'additional_data': _('additional data'),
+    'eeg': 'EEG',
+    'emg': 'EMG',
+    'tms': 'TMS',
+    'goalkeeper_game': _('goalkeeper game')
 }
 
 delimiter = "-"
@@ -7670,6 +7677,155 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
                "tms_localization_system_list": tms_localization_system_list,
                "localization_system_selected": localization_system_selected,
                "tab": "2"
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def data_collection_manage(request, group_id, path_of_configuration, data_type, operation,
+                           template_name="experiment/data_collection_manage.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    if path:
+        list_of_path = [int(item) for item in path_of_configuration.split('-')]
+        component_configuration = ComponentConfiguration.objects.get(id=int(list_of_path[-1]))
+        component_icon = icon_class[component_configuration.component.component_type]
+    else:
+        component_configuration = None
+        component_icon = icon_class['experimental_protocol']
+
+    data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+
+    data_collections = []
+
+    # get participants
+    if data_type == "additional_data":
+        data_collections = AdditionalData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "eeg":
+        data_collections = EEGData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "emg":
+        data_collections = EMGData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "tms":
+        data_collections = TMSData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "goalkeeper_game":
+        data_collections = DigitalGamePhaseData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "questionnaire_response":
+        data_collections = QuestionnaireResponse.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "generic_data_collection":
+        data_collections = GenericDataCollectionData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+
+    # when "transfer", get target candidates
+    list_of_target_paths = []
+    if operation == "transfer":
+        # TODO: parei aqui
+        list_of_target_paths = create_list_of_trees(
+            group.experimental_protocol,
+            component_configuration.component.component_type
+            if data_type != "additional_data" and component_configuration else None)
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            has_changed = False
+
+            for data_collection in data_collections:
+                checkbox_name = "data_collection_" + str(data_collection.id)
+                if checkbox_name in request.POST and request.POST[checkbox_name] == "on":
+                    data_collection.delete()
+                    has_changed = True
+
+            if has_changed:
+                messages.success(request, _('Selected data collections were removed successfully.'))
+            else:
+                messages.info(request, _('There was no items selected to remove.'))
+
+            redirect_url = reverse("subjects", args=(group.id,))
+            return HttpResponseRedirect(redirect_url)
+
+    # additional_data_form = AdditionalDataForm(None)
+    #
+    # file_format_list = file_format_code()
+    #
+    # if request.method == "POST":
+    #     if request.POST['action'] == "save":
+    #
+    #         additional_data_form = AdditionalDataForm(request.POST, request.FILES)
+    #
+    #         if additional_data_form.is_valid():
+    #
+    #             data_configuration_tree = None
+    #             if path_of_configuration != '0':
+    #                 list_of_path = [int(item) for item in path_of_configuration.split('-')]
+    #                 data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+    #                 if not data_configuration_tree_id:
+    #                     data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+    #                 data_configuration_tree = get_object_or_404(DataConfigurationTree,
+    #                                                             pk=data_configuration_tree_id)
+    #
+    #             subject = get_object_or_404(Subject, pk=subject_id)
+    #             subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
+    #
+    #             additional_data_added = additional_data_form.save(commit=False)
+    #             additional_data_added.subject_of_group = subject_of_group
+    #             if data_configuration_tree:
+    #                 additional_data_added.data_configuration_tree = data_configuration_tree
+    #
+    #             # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
+    #             # the following error 'AdditionalData' object has no attribute 'group'
+    #             additional_data_added.group = group
+    #             additional_data_added.subject = subject
+    #
+    #             additional_data_added.save()
+    #
+    #             # saving uploaded files
+    #             files_to_upload_list = request.FILES.getlist('additional_data_files')
+    #             for file_to_upload in files_to_upload_list:
+    #                 additional_data_file = AdditionalDataFile(additional_data=additional_data_added,
+    #                                                           file=file_to_upload)
+    #                 additional_data_file.save()
+    #
+    #             messages.success(request, _('Additional data collection created successfully.'))
+    #
+    #             redirect_url = reverse("additional_data_view", args=(additional_data_added.id,))
+    #             return HttpResponseRedirect(redirect_url)
+    #
+    # context = {"can_change": True,
+    #            "creating": True,
+    #            "editing": True,
+    #            "group": group,
+    #            "additional_data_form": additional_data_form,
+    #            "file_format_list": file_format_list,
+    #            "subject": get_object_or_404(Subject, pk=subject_id)
+    #            }
+
+    context = {"group": group,
+               "operation": operation,
+               "data_type": data_type,
+               "data_type_name": data_type_name[data_type],
+               "path_of_configuration": path_of_configuration,
+               "component_configuration": component_configuration,
+               "component_icon": component_icon,
+               "data_collections": data_collections,
+               "list_of_target_paths": list_of_target_paths
                }
 
     return render(request, template_name, context)
