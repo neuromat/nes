@@ -7736,8 +7736,7 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
     # when "transfer", get target candidates
     list_of_target_paths = []
     if operation == "transfer":
-        # TODO: parei aqui
-        list_of_target_paths = create_list_of_trees(
+        list_of_target_paths += create_list_of_trees(
             group.experimental_protocol,
             component_configuration.component.component_type
             if data_type != "additional_data" and component_configuration else None)
@@ -7765,7 +7764,6 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
             data_configuration_tree = None
             if request.POST['transfer_to']:
                 list_of_path = [item[0] for item in list_of_target_paths[int(request.POST['transfer_to'])]]
-                # list_of_path = [int(item) for item in path_of_configuration.split('-')]
                 data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
                 if not data_configuration_tree_id:
                     data_configuration_tree_id = create_data_configuration_tree(list_of_path)
@@ -7787,63 +7785,6 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
 
             redirect_url = reverse("subjects", args=(group.id,))
             return HttpResponseRedirect(redirect_url)
-
-
-    # additional_data_form = AdditionalDataForm(None)
-    #
-    # file_format_list = file_format_code()
-    #
-    # if request.method == "POST":
-    #     if request.POST['action'] == "save":
-    #
-    #         additional_data_form = AdditionalDataForm(request.POST, request.FILES)
-    #
-    #         if additional_data_form.is_valid():
-    #
-    #             data_configuration_tree = None
-    #             if path_of_configuration != '0':
-    #                 list_of_path = [int(item) for item in path_of_configuration.split('-')]
-    #                 data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
-    #                 if not data_configuration_tree_id:
-    #                     data_configuration_tree_id = create_data_configuration_tree(list_of_path)
-    #                 data_configuration_tree = get_object_or_404(DataConfigurationTree,
-    #                                                             pk=data_configuration_tree_id)
-    #
-    #             subject = get_object_or_404(Subject, pk=subject_id)
-    #             subject_of_group = get_object_or_404(SubjectOfGroup, subject=subject, group_id=group_id)
-    #
-    #             additional_data_added = additional_data_form.save(commit=False)
-    #             additional_data_added.subject_of_group = subject_of_group
-    #             if data_configuration_tree:
-    #                 additional_data_added.data_configuration_tree = data_configuration_tree
-    #
-    #             # PS: it was necessary adding these 2 lines because Django raised, I do not why (Evandro),
-    #             # the following error 'AdditionalData' object has no attribute 'group'
-    #             additional_data_added.group = group
-    #             additional_data_added.subject = subject
-    #
-    #             additional_data_added.save()
-    #
-    #             # saving uploaded files
-    #             files_to_upload_list = request.FILES.getlist('additional_data_files')
-    #             for file_to_upload in files_to_upload_list:
-    #                 additional_data_file = AdditionalDataFile(additional_data=additional_data_added,
-    #                                                           file=file_to_upload)
-    #                 additional_data_file.save()
-    #
-    #             messages.success(request, _('Additional data collection created successfully.'))
-    #
-    #             redirect_url = reverse("additional_data_view", args=(additional_data_added.id,))
-    #             return HttpResponseRedirect(redirect_url)
-    #
-    # context = {"can_change": True,
-    #            "creating": True,
-    #            "editing": True,
-    #            "group": group,
-    #            "additional_data_form": additional_data_form,
-    #            "file_format_list": file_format_list,
-    #            "subject": get_object_or_404(Subject, pk=subject_id)
-    #            }
 
     context = {"group": group,
                "operation": operation,
