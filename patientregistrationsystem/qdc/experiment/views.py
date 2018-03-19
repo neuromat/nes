@@ -7756,10 +7756,38 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
             if has_changed:
                 messages.success(request, _('Selected data collections were removed successfully.'))
             else:
-                messages.info(request, _('There was no items selected to remove.'))
+                messages.info(request, _('There were no items selected to remove.'))
 
             redirect_url = reverse("subjects", args=(group.id,))
             return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'] == "transfer":
+            data_configuration_tree = None
+            if request.POST['transfer_to']:
+                list_of_path = [item[0] for item in list_of_target_paths[int(request.POST['transfer_to'])]]
+                # list_of_path = [int(item) for item in path_of_configuration.split('-')]
+                data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+                if not data_configuration_tree_id:
+                    data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                            pk=data_configuration_tree_id)
+            has_changed = False
+
+            for data_collection in data_collections:
+                checkbox_name = "data_collection_" + str(data_collection.id)
+                if checkbox_name in request.POST and request.POST[checkbox_name] == "on":
+                    data_collection.data_configuration_tree = data_configuration_tree
+                    data_collection.save()
+                    has_changed = True
+
+            if has_changed:
+                messages.success(request, _('Selected data collections were transfered successfully.'))
+            else:
+                messages.info(request, _('There were no items selected to transfer.'))
+
+            redirect_url = reverse("subjects", args=(group.id,))
+            return HttpResponseRedirect(redirect_url)
+
 
     # additional_data_form = AdditionalDataForm(None)
     #
