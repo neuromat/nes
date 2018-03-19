@@ -113,11 +113,14 @@
                     {% trans "Choose path to transfer selected data collections:" %}
                     <br/>
                     {% for target_path in list_of_target_paths %}
-{#                        {{ target_path }}#}
+                        <input name="transfer_to" type="radio" value="{{ forloop.counter0 }}">
+                        <table>
+                        <tr>
                         {% for item in target_path %}
-                                <br/>
-                                {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
+                            {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
                         {% endfor %}
+                        </tr>
+                        </table>
                     {% endfor %}
                 {% endif %}
             </div>
