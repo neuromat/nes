@@ -127,7 +127,9 @@ data_type_name = {
     'eeg': 'EEG',
     'emg': 'EMG',
     'tms': 'TMS',
-    'goalkeeper_game': _('goalkeeper game')
+    'goalkeeper_game': _('goalkeeper game'),
+    'generic_data_collection': _('generic data collection'),
+    'questionnaire_response': _('questionnaire response')
 }
 
 delimiter = "-"
@@ -4858,26 +4860,73 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
                 data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
                                                                           [item[0] for item in path])
-                # subject_step_data_query = \
-                #     SubjectStepData.objects.filter(subject_of_group=subject_of_group,
-                #                                    data_configuration_tree=data_configuration_tree_id)
-                # additional_data_list = None
-                # if data_configuration_tree_id:
-                #     additional_data_list = \
-                #         AdditionalData.objects.filter(subject_of_group=subject_of_group,
-                #                                       data_configuration_tree__id=data_configuration_tree_id)
-                additional_data_count = \
+                participant_quantity = \
                     AdditionalData.objects.filter(subject_of_group__group=group,
                                                   data_configuration_tree_id=data_configuration_tree_id).values(
                         'subject_of_group__subject').distinct().count()
 
-                data_list = [{'type': 'additional_data', 'description': _('Additional data'),
-                              'count': additional_data_count}] if additional_data_count else []
+                data_list = [{'type': 'additional_data',
+                              'description': _('Additional data'),
+                              'count': participant_quantity}] if participant_quantity else []
+
+                if component_configuration.component.component_type == "eeg":
+                    participant_quantity = EEGData.objects.filter(
+                        subject_of_group__group=group,
+                        data_configuration_tree_id=data_configuration_tree_id).values(
+                        'subject_of_group__subject').distinct().count()
+                    if participant_quantity:
+                        data_list.append({'type': 'eeg',
+                                          'description': _('EEG data'),
+                                          'count': participant_quantity})
+                elif component_configuration.component.component_type == "emg":
+                    participant_quantity = EMGData.objects.filter(
+                        subject_of_group__group=group,
+                        data_configuration_tree_id=data_configuration_tree_id).values(
+                        'subject_of_group__subject').distinct().count()
+                    if participant_quantity:
+                        data_list.append({'type': 'emg',
+                                          'description': _('EMG data'),
+                                          'count': participant_quantity})
+                elif component_configuration.component.component_type == "tms":
+                    participant_quantity = TMSData.objects.filter(
+                        subject_of_group__group=group,
+                        data_configuration_tree_id=data_configuration_tree_id).values(
+                        'subject_of_group__subject').distinct().count()
+                    if participant_quantity:
+                        data_list.append({'type': 'tms',
+                                          'description': _('TMS data'),
+                                          'count': participant_quantity})
+                elif component_configuration.component.component_type == "digital_game_phase":
+                    participant_quantity = DigitalGamePhaseData.objects.filter(
+                        subject_of_group__group=group,
+                        data_configuration_tree_id=data_configuration_tree_id).values(
+                        'subject_of_group__subject').distinct().count()
+                    if participant_quantity:
+                        data_list.append({'type': 'goalkeeper_game',
+                                          'description': _('Goalkeeper game data'),
+                                          'count': participant_quantity})
+                elif component_configuration.component.component_type == "generic_data_collection":
+                    participant_quantity = GenericDataCollectionData.objects.filter(
+                        subject_of_group__group=group,
+                        data_configuration_tree_id=data_configuration_tree_id).values(
+                        'subject_of_group__subject').distinct().count()
+                    if participant_quantity:
+                        data_list.append({'type': 'generic_data_collection',
+                                          'description': _('Generic data collection'),
+                                          'count': participant_quantity})
+                elif component_configuration.component.component_type == "questionnaire":
+                    participant_quantity = QuestionnaireResponse.objects.filter(
+                        subject_of_group__group=group,
+                        data_configuration_tree_id=data_configuration_tree_id).values(
+                        'subject_of_group__subject').distinct().count()
+                    if participant_quantity:
+                        data_list.append({'type': 'questionnaire_response',
+                                          'description': _('Questionnaire response'),
+                                          'count': participant_quantity})
 
                 data_collections.append(
                     {'component_configuration': component_configuration,
                      'path': path,
-                     # 'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
                      'data_list': data_list,
                      'icon_class': icon_class[component_configuration.component.component_type]}
                 )
@@ -5448,35 +5497,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
         if request.POST['action'] == "remove":
             if request.user.has_perm('experiment.delete_questionnaireresponse'):
 
-                # checking if it is used by patient_questionnaire_response
+                deleted = delete_questionnaire_response(questionnaire, questionnaire_response)
 
-                token_is_used_patient_questionnaire_response = \
-                    PatientQuestionnaireResponse.objects.filter(patient=subject.patient,
-                                                                survey=questionnaire.survey,
-                                                                token_id=questionnaire_response.token_id).exists()
-
-                can_delete = False
-
-                if token_is_used_patient_questionnaire_response:
-                    can_delete = True
-                else:
-                    # remove token from LimeSurvey
-                    surveys = Questionnaires()
-                    result = surveys.delete_participant(
-                        questionnaire.survey.lime_survey_id,
-                        questionnaire_response.token_id)
-                    surveys.release_session_key()
-
-                    if str(questionnaire_response.token_id) in result:
-                        result = result[str(questionnaire_response.token_id)]
-                        if result == 'Deleted' or result == 'Invalid token ID':
-                            can_delete = True
-                    else:
-                        if 'status' in result and result['status'] == 'Error: Invalid survey ID':
-                            can_delete = True
-
-                if can_delete:
-                    questionnaire_response.delete()
+                if deleted:
                     messages.success(request, _('Fill deleted successfully.'))
                 else:
                     messages.error(request, _("Error trying to delete fill"))
@@ -5512,6 +5535,38 @@ def questionnaire_response_view(request, questionnaire_response_id,
                "survey_title": survey_title}
 
     return render(request, template_name, context)
+
+
+def delete_questionnaire_response(questionnaire: Questionnaire,
+                                  questionnaire_response: QuestionnaireResponse):
+
+    # checking if it is used by patient_questionnaire_response
+    token_is_used_patient_questionnaire_response = \
+        PatientQuestionnaireResponse.objects.filter(patient=questionnaire_response.subject_of_group.subject.patient,
+                                                    survey=questionnaire.survey,
+                                                    token_id=questionnaire_response.token_id).exists()
+    can_delete = False
+    if token_is_used_patient_questionnaire_response:
+        can_delete = True
+    else:
+        # remove token from LimeSurvey
+        surveys = Questionnaires()
+        result = surveys.delete_participant(
+            questionnaire.survey.lime_survey_id,
+            questionnaire_response.token_id)
+        surveys.release_session_key()
+
+        if str(questionnaire_response.token_id) in result:
+            result = result[str(questionnaire_response.token_id)]
+            if result == 'Deleted' or result == 'Invalid token ID':
+                can_delete = True
+        else:
+            if 'status' in result and result['status'] == 'Error: Invalid survey ID':
+                can_delete = True
+    if can_delete:
+        questionnaire_response.delete()
+        deleted = True
+    return deleted
 
 
 @login_required
@@ -7736,10 +7791,24 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
     # when "transfer", get target candidates
     list_of_target_paths = []
     if operation == "transfer":
-        list_of_target_paths += create_list_of_trees(
-            group.experimental_protocol,
-            component_configuration.component.component_type
-            if data_type != "additional_data" and component_configuration else None)
+
+        if component_configuration.component.component_type == "questionnaire":
+            temp_list_of_target_paths = create_list_of_trees(
+                group.experimental_protocol,
+                component_configuration.component.component_type
+                if data_type != "additional_data" and component_configuration else None)
+
+            origin_survey = Questionnaire.objects.get(id=component_configuration.component_id).survey
+
+            for target_path in temp_list_of_target_paths:
+                if Questionnaire.objects.get(id=ComponentConfiguration.objects.get(
+                        id=target_path[-1][0]).component_id).survey == origin_survey:
+                    list_of_target_paths.append(target_path)
+        else:
+            list_of_target_paths = create_list_of_trees(
+                group.experimental_protocol,
+                component_configuration.component.component_type
+                if data_type != "additional_data" and component_configuration else None)
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -7749,8 +7818,32 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
             for data_collection in data_collections:
                 checkbox_name = "data_collection_" + str(data_collection.id)
                 if checkbox_name in request.POST and request.POST[checkbox_name] == "on":
-                    data_collection.delete()
-                    has_changed = True
+
+                    if data_type == "questionnaire_response":
+
+                        questionnaire = Questionnaire.objects.get(
+                            id=data_collection.data_configuration_tree.component_configuration.component_id)
+                        has_changed = delete_questionnaire_response(questionnaire, data_collection)
+
+                    else:
+                        if data_type == "additional_data":
+                            for uploaded_file in data_collection.additional_data_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "eeg":
+                            for uploaded_file in data_collection.eeg_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "emg":
+                            for uploaded_file in data_collection.emg_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "goalkeeper_game":
+                            for uploaded_file in data_collection.digital_game_phase_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "generic_data_collection":
+                            for uploaded_file in data_collection.generic_data_collection_files.all():
+                                uploaded_file.file.delete()
+
+                        data_collection.delete()
+                        has_changed = True
 
             if has_changed:
                 messages.success(request, _('Selected data collections were removed successfully.'))
