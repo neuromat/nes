@@ -4848,9 +4848,6 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 {'component_configuration': None,
                  'path': None,
                  'data_list': data_list,
-                 # 'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
-                 # 'additional_data_list': AdditionalData.objects.filter(
-                 #     subject_of_group__group=group, data_configuration_tree=None),
                  'icon_class': icon_class['experimental_protocol']}
             ]
             list_of_paths = create_list_of_trees(group.experimental_protocol, None)
@@ -4858,14 +4855,6 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
                 data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
                                                                           [item[0] for item in path])
-                # subject_step_data_query = \
-                #     SubjectStepData.objects.filter(subject_of_group=subject_of_group,
-                #                                    data_configuration_tree=data_configuration_tree_id)
-                # additional_data_list = None
-                # if data_configuration_tree_id:
-                #     additional_data_list = \
-                #         AdditionalData.objects.filter(subject_of_group=subject_of_group,
-                #                                       data_configuration_tree__id=data_configuration_tree_id)
                 additional_data_count = \
                     AdditionalData.objects.filter(subject_of_group__group=group,
                                                   data_configuration_tree_id=data_configuration_tree_id).values(
@@ -4877,7 +4866,6 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                 data_collections.append(
                     {'component_configuration': component_configuration,
                      'path': path,
-                     # 'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
                      'data_list': data_list,
                      'icon_class': icon_class[component_configuration.component.component_type]}
                 )
@@ -4917,6 +4905,11 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                "experimental_protocol_info": experimental_protocol_info,
                "goalkeeper": goalkeeper,
                "data_collections": data_collections}
+
+    # to make per_steps_of_experimental_protocol tab active when redirected
+    # from data_collection_management view in its post requests
+    if request.method == 'GET'and request.GET.get('per_steps_tab'):
+        context['per_steps_tab_active'] = 'active'
 
     return render(request, template_name, context)
 
@@ -7758,7 +7751,7 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
                 messages.info(request, _('There were no items selected to remove.'))
 
             redirect_url = reverse("subjects", args=(group.id,))
-            return HttpResponseRedirect(redirect_url)
+            return HttpResponseRedirect(redirect_url + '?per_steps_tab=active')
 
         if request.POST['action'] == "transfer":
             data_configuration_tree = None
