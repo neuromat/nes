@@ -7,7 +7,6 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
 from django.db.models import Q
 
@@ -15,8 +14,6 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from os import path
-from csv import writer
-from sys import modules
 from zipfile import ZipFile
 from shutil import rmtree
 
@@ -27,7 +24,7 @@ from .export import ExportExecution, perform_csv_response, create_directory
 from export.input_export import build_complete_export_structure
 from export.export_utils import create_list_of_trees, can_export_nwb
 
-from patient.models import QuestionnaireResponse, Patient, Diagnosis
+from patient.models import QuestionnaireResponse, Patient
 from patient.views import check_limesurvey_access
 
 from survey.models import Survey
@@ -36,10 +33,8 @@ from survey.views import get_questionnaire_language
 
 from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases, EEGData, EEGSetting, \
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases, EEGData, \
     AdditionalData, EMGData, TMSData, DigitalGamePhaseData, GenericDataCollectionData
-
-from experiment.views import get_block_tree as get_block_attributes_tree
 
 JSON_FILENAME = "json_export.json"
 JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
@@ -47,51 +42,7 @@ EXPORT_DIRECTORY = "export"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 
-# patient_fields = [
-#     {"field": 'id', "header": 'id'},
-#     {"field": 'name', "header": 'name'},
-#     {"field": 'gender__name', "header": 'gender'},
-#     {"field": 'date_birth', "header": 'date_birth'},
-#     {"field": 'marital_status', "header": 'marital_status'},
-#     {"field": 'origin', "header": 'origin'},
-#     {"field": 'city', "header": 'city'},
-#     {"field": 'state', "header": 'state'},
-#     {"field": 'country', "header": 'country'},
-#     {"field": 'socialdemographicdata__natural_of', "header": 'natural_of'},
-#     {"field": 'socialdemographicdata__schooling', "header": 'schooling'},
-#     {"field": 'socialdemographicdata__profession', "header": 'profession'},
-#     {"field": 'socialdemographicdata__social_class', "header": 'social_class'},
-#     {"field": 'socialdemographicdata__occupation', "header": 'occupation'},
-#     {"field": 'socialdemographicdata__benefit_government', "header": 'benefit_government'},
-#     {"field": 'socialdemographicdata__religion', "header": 'religion'},
-#     {"field": 'socialdemographicdata__flesh_tone', "header": 'flesh_tone'},
-#     {"field": 'socialdemographicdata__citizenship', "header": 'citizenship'},
-#     {"field": 'socialdemographicdata__payment', "header": 'payment'},
-#     {"field": 'socialhistorydata__alcohol_period', "header": 'alcohol_period'},
-#     {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency'},
-#     {"field": 'socialhistorydata__smoker', "header": 'smoker'},
-#     {"field": 'socialhistorydata__alcoholic', "header": 'alcoholic'},
-#     {"field": 'socialhistorydata__drugs', "header": 'drugs'},
-#     {"field": 'socialhistorydata__ex_smoker', "header": 'former_smoker'},
-#     {"field": 'socialhistorydata__alcohol_frequency', "header": 'alcohol_frequency'},
-#     {"field": 'socialhistorydata__amount_cigarettes', "header": 'amount_cigarettes'},
-# ]
-#
-# diagnosis_fields = [
-#
-#     {"field": "medicalrecorddata__record_responsible_id", "header": 'responsible_id'},
-#     {"field": "medicalrecorddata__record_responsible__username", "header": 'responsible_username'},
-#     {"field": "medicalrecorddata__diagnosis__date", "header": 'diagnosis_date'},
-#     {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description'},
-#     {"field": "medicalrecorddata__diagnosis__classification_of_diseases__description",
-#      "header": 'classification_of_diseases_description'},
-#  {"field": "medicalrecorddata__diagnosis__classification_of_diseases_id", "header": 'classification_of_diseases_id'},
-# ]
-
-
 patient_fields = [
-    # {"field": 'id', "header": 'id', "description": _("Identification")},
-    # {"field": 'name', "header": 'name', "description": _("Full name")},
     {"field": 'age', "header": 'age', "description": _("Age")},
     {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
@@ -212,63 +163,6 @@ header_explanation_fields = ['questionnaire_id',
                              'column_title']
 
 
-# def get_headers_and_fields(output_list):
-#     """
-#     :param output_list: list with fields and headers
-#     :return: list of headers
-#              list of fields
-#     """
-#
-#     headers = []
-#     fields = []
-#
-#     for element in output_list:
-#         if element["field"]:
-#             headers.append(element["header"])
-#             fields.append(element["field"])
-#
-#     return headers, fields
-
-
-# def read_configuration_data(json_file):
-#     json_data = open(json_file)
-#
-#     read_data = json.load(json_data)
-#
-#     json_data.close()
-#
-#     return read_data
-
-
-# def process_participant_data(participants, participants_list):
-#     export_rows_participants = []
-#
-#     for participant in participants:
-#         headers, fields = get_headers_and_fields(participant["output_list"])
-#
-#         model_to_export = getattr(modules['patient.models'], 'Patient')
-#
-#         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(order_by=['id'])
-#
-#         export_rows_participants = [headers]
-#
-#         # transform data
-#         for record in db_data:
-#             export_rows_participants.append([handle_exported_field(field) for field in record])
-#
-#     return export_rows_participants
-
-
-# def handle_exported_field(field):
-#     if field is None:
-#         result = ''
-#     elif isinstance(field, bool):
-#         result = _('Yes') if field else _('No')
-#     else:
-#         result = smart_str(field)
-#     return result
-
-
 def create_export_instance(user):
     export_instance = Export(user=user)
 
@@ -320,7 +214,7 @@ def update_participants_list(participants_list, heading_type):
 
         for field, header in patient_fields_inclusion:
             header_translated = ug_(header[heading_type])
-            participants_list.insert(0,[field, abbreviated_data(header_translated, heading_type)])
+            participants_list.insert(0, [field, abbreviated_data(header_translated, heading_type)])
 
 
 def update_diagnosis_list(diagnosis_list, heading_type):
@@ -335,12 +229,9 @@ def update_diagnosis_list(diagnosis_list, heading_type):
         # include participant_code
         for field, header in diagnosis_fields_inclusion:
             header_translated = ug_(header[heading_type])
-            diagnosis_list.insert(0,[field, abbreviated_data(header_translated, heading_type)])
+            diagnosis_list.insert(0, [field, abbreviated_data(header_translated, heading_type)])
 
 
-# @login_required
-# @permission_required('questionnaire.create_export')
-# def export_create(request, template_name="export/export_data.html"):
 def export_create(request, export_id, input_filename, template_name="export/export_data.html"):
     try:
 
@@ -415,7 +306,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            #If questionnaire from entrance evaluation was selected
+            # If questionnaire from entrance evaluation was selected
             if export.get_input_data('questionnaires'):
                 # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
                 if export.get_input_data("export_per_questionnaire"):
@@ -488,7 +379,6 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         print("finalizado corretamente 2")
 
         return export_complete_filename
-
 
     except OSError as e:
         print(e)
@@ -1404,40 +1294,6 @@ def get_block_type_name(block_type):
             block_type_name = str(type_name)
             break
     return block_type_name if block_type_name else block_type
-
-
-# def create_list_of_trees(block_id, component_type):
-#
-#     list_of_path = []
-#
-#     configurations = ComponentConfiguration.objects.filter(parent_id=block_id)
-#
-#     if component_type:
-#         configurations = configurations.filter(component__component_type=component_type)
-#
-#     for configuration in configurations:
-#         list_of_path.append(
-#             [[configuration.id,
-#               configuration.parent.identification,
-#               configuration.name,
-#               configuration.component.identification]]
-#         )
-#
-#     # Look for steps in descendant blocks.
-#     block_configurations = ComponentConfiguration.objects.filter(parent_id=block_id,
-#                                                                  component__component_type="block")
-#
-#     for block_configuration in block_configurations:
-#         list_of_configurations = create_list_of_trees(block_configuration.component.id, component_type)
-#         for item in list_of_configurations:
-#             item.insert(0,
-#                         [block_configuration.id,
-#                          block_configuration.parent.identification,
-#                          block_configuration.name,
-#                          block_configuration.component.identification])
-#             list_of_path.append(item)
-#
-#     return list_of_path
 
 
 def list_data_configuration_tree(eeg_configuration_id, list_of_path):
