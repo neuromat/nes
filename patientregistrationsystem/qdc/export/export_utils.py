@@ -1,7 +1,6 @@
 import mne
-from django.shortcuts import get_object_or_404
-from experiment.models import ComponentConfiguration, EEGData, Group, Subject, SubjectOfGroup
-from experiment.views import eeg_data_reading, list_data_configuration_tree
+from experiment.models import ComponentConfiguration
+from experiment.views import eeg_data_reading
 
 
 def create_list_of_trees(block_id, component_type, numeration=''):
