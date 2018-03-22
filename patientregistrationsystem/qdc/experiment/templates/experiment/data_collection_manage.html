@@ -109,20 +109,22 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-xs-12 col-sm-12">
                 {% if operation == "transfer" %}
+                    <h4>
                     {% trans "Choose path to transfer selected data collections:" %}
-                    <br/>
+                    </h4>
                     {% for target_path in list_of_target_paths %}
-                        <input name="transfer_to" type="radio" value="{{ forloop.counter0 }}">
-                        <table>
-                        <tr>
-                        {% for item in target_path %}
-                            {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
-                        {% endfor %}
-                        </tr>
-                        </table>
+                        <div>
+                            <input {% if forloop.counter0 == index_of_current_path %}disabled="disabled"{% endif %} name="transfer_to" type="radio" value="{{ forloop.counter0 }}">
+                            {% for item in target_path %}
+                                {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
+                            {% endfor %}
+                            {% if forloop.counter0 == index_of_current_path %}<span class="label label-info">{% trans "current path" %}</span>{% endif %}
+                        </div>
                     {% endfor %}
                 {% endif %}
+                </div>
             </div>
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">

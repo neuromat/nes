@@ -7746,7 +7746,7 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
 
     check_can_change(request.user, group.experiment.research_project)
 
-    if path:
+    if path_of_configuration:
         list_of_path = [int(item) for item in path_of_configuration.split('-')]
         component_configuration = ComponentConfiguration.objects.get(id=int(list_of_path[-1]))
         component_icon = icon_class[component_configuration.component.component_type]
@@ -7754,6 +7754,7 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
         component_configuration = None
         component_icon = icon_class['experimental_protocol']
 
+    # TODO: se depende de list_of_path, faz sentido o "else" acima?
     data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
 
     data_collections = []
@@ -7790,6 +7791,7 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
 
     # when "transfer", get target candidates
     list_of_target_paths = []
+    index_of_current_path = None
     if operation == "transfer":
 
         if component_configuration.component.component_type == "questionnaire":
@@ -7809,6 +7811,12 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
                 group.experimental_protocol,
                 component_configuration.component.component_type
                 if data_type != "additional_data" and component_configuration else None)
+
+        #TODO: resolver isso
+        if path_of_configuration:
+            for index, target_path in enumerate(list_of_target_paths):
+                if path_of_configuration.split('-') == [str(item[0]) for item in target_path]:
+                    index_of_current_path = index
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -7887,7 +7895,8 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
                "component_configuration": component_configuration,
                "component_icon": component_icon,
                "data_collections": data_collections,
-               "list_of_target_paths": list_of_target_paths
+               "list_of_target_paths": list_of_target_paths,
+               "index_of_current_path": index_of_current_path
                }
 
     return render(request, template_name, context)
