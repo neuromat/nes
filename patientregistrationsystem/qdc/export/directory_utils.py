@@ -15,7 +15,7 @@ def create_directory(basedir, path_to_create):
     complete_path = ""
 
     if not path.exists(basedir.encode('utf-8')):
-        return ("Base path does not exist"), complete_path
+        return "Base path does not exist", complete_path
 
     complete_path = path.join(basedir, path_to_create)
 
