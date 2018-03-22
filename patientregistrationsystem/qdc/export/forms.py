@@ -45,28 +45,6 @@ class ExportForm(Form):
     headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False)
     responses = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Response must be selected')}),
                                     choices=RESPONSES_CHOICES, required=False)
-    #
-    # questionnaire_entrance_fields_selected = []
-    #
-    # patient_fields_selected = []
-    #
-    # diagnosis_fields_selected = []
-    #
-    # per_questionnaire_field = True
-
-    # def clean(self):
-    #     cleaned_data = super(ExportForm, self).clean()
-    #     participant_field = cleaned_data.get("per_participant")
-    #     questionnaire_field = cleaned_data.get("per_questionnaire")
-    #
-    #     if not (participant_field or questionnaire_field):
-    #         self.add_error('per_participant',
-    #                        _("Either one or both Per participant/Per questionnaire must be set."))
-
-    # def __init__(self, *args, **kwargs):
-    #     super(ExportForm, self).__init__(*args, **kwargs)
-    #     self.base_fields['headings'].initial = 'abbreviated'
-    #     self.base_fields['responses'].initial = 'short'
 
 
 class ParticipantsSelectionForm(ModelForm):
