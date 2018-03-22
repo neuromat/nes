@@ -401,26 +401,6 @@ class JsonTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    # def test_json_preparation(self):
-    #     # questionnaire_code_list_example = [
-    #     #     113491,
-    #     #     256242,
-    #     #     # 271192,
-    #     #     # 345282,
-    #     #     # 367311,
-    #     #     # 456776,
-    #     #     # 471898,
-    #     #     # 578559,
-    #     #     # 599846,
-    #     #     # 885183,
-    #     #     # 944684,
-    #     #     # 969322,
-    #     # ]
-    #
-    #     # prepare_json(questionnaire_code_list_example)
-    #
-    #     prepare_json()
-
     def test_explanation_fields(self):
         questionnaire_lime_survey = Questionnaires()
         questionnaire_id = 113491
@@ -468,8 +448,6 @@ class InputExportTest(TestCase):
 
         self.assertEqual(len(input_data.data), 6)
 
-        # field_header_list[0] -> field
-        # field_header_list[1] -> header
         participant_field_header_list = [
             ("id", "id"),
             ("name", "name")
