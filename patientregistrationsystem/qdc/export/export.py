@@ -2,7 +2,6 @@
 import csv
 import json
 import random
-import re
 
 from csv import writer, reader
 from datetime import date, datetime, timedelta
@@ -26,15 +25,15 @@ from os import path, makedirs
 from patient.models import Patient, QuestionnaireResponse
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, \
     ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData, EEGSetting, EMGData, EMGSetting, TMSData, \
-    TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, TMSLocalizationSystem, GenericDataCollectionData, \
+    TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, GenericDataCollectionData, \
     ContextTree, SubjectStepData, EEGElectrodePositionSetting, SurfaceElectrode, IntramuscularElectrode, \
     NeedleElectrode, EMGElectrodeSetting, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement
-from experiment.views import get_block_tree, get_experimental_protocol_image, EEG, EMG, TMS, DigitalGamePhase, \
-    get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, eeg_data_reading, \
-    list_data_configuration_tree, get_questionnaire_language
+from experiment.views import get_block_tree, get_experimental_protocol_image, \
+    get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, \
+    list_data_configuration_tree
 
 from survey.abc_search_engine import Questionnaires
-from survey.views import is_limesurvey_available, get_questionnaire_language
+from survey.views import is_limesurvey_available
 from django.template.defaultfilters import slugify
 
 
@@ -93,7 +92,6 @@ def save_to_csv(complete_filename, rows_to_be_saved):
     :return:
     """
     with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-        # export_writer = writer(csv_file)
         export_writer = csv.writer(csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
         for row in rows_to_be_saved:
             export_writer.writerow(row)
@@ -288,7 +286,7 @@ class ExportExecution:
         if questionnaire_id not in self.per_participant_data_from_experiment[participant_id]:
             self.per_participant_data_from_experiment[participant_id][questionnaire_id] = {}
 
-        if token_id not  in self.per_participant_data_from_experiment[participant_id][questionnaire_id]:
+        if token_id not in self.per_participant_data_from_experiment[participant_id][questionnaire_id]:
             self.per_participant_data_from_experiment[participant_id][questionnaire_id][token_id] = {}
             self.per_participant_data_from_experiment[participant_id][questionnaire_id][token_id]['step'] = step
             self.per_participant_data_from_experiment[participant_id][questionnaire_id][token_id][
@@ -386,7 +384,7 @@ class ExportExecution:
                                     token_id = questionnaire_response.token_id
                                     completed = surveys.get_participant_properties(
                                         questionnaire_id, token_id, "completed")
-                                    # carrega dados de questionarios completos
+                                    # load complete questionnaires data
                                     if completed is not None and completed != "N" and completed != "":
                                         subject_code = questionnaire_response.subject_of_group.subject.patient.code
                                         step_number = path_experiment[0][4]
@@ -810,43 +808,9 @@ class ExportExecution:
 
         self.participants_filtered_data = participants.filter(id__in=participants_filtered_list)
 
-        # return participants
-
     def get_participants_filtered_data(self):
 
-        # participants = Patient.objects.filter(removed=False).values_list("id")
-
         return self.participants_filtered_data
-
-    # def set_participants_from_entrance_questionnaire(self, participants_entrance_questionnaire_list):
-    #
-    #     participants = Patient.objects.filter(removed=False).values_list("id")
-    #
-    #     self.participants_from_entrance_questionnaire = \
-    #         participants.filter(id__in=participants_entrance_questionnaire_list)
-    #
-    #     # return participants
-    #
-    # def get_participants_from_entrance_questionnaire(self):
-    #
-    #     # participants = Patient.objects.filter(removed=False).values_list("id")
-    #
-    #     return self.participants_from_entrance_questionnaire
-    #
-    # def set_participants_from_experiment_questionnaire(self, participants_experiment_questionnaire_list):
-    #
-    #     participants = Patient.objects.filter(removed=False).values_list("id")
-    #
-    #     self.participants_from_experiment_questionnaire = \
-    #         participants.filter(id__in=participants_experiment_questionnaire_list)
-    #
-    #     # return participants
-    #
-    # def get_participants_from_experiment_questionnaire(self):
-    #
-    #     # participants = Patient.objects.filter(removed=False).values_list("id")
-    #
-    #     return self.participants_from_experiment_questionnaire
 
     def update_questionnaire_rules(self, questionnaire_id):
 
@@ -928,15 +892,7 @@ class ExportExecution:
             title = self.get_title(questionnaire_id)
 
         if title:
-            title = re.sub(r'[^\w]', ' ', title)
-            title = title.split(" ")
-
-            for part in title:
-                if len(part):
-                    reduced_title += part + "-"
-
-            reduced_title = reduced_title[:-1]
-            reduced_title = reduced_title[:30]
+            reduced_title = slugify(title)
 
         return reduced_title
 
@@ -944,20 +900,11 @@ class ExportExecution:
     def redefine_questionnaire_title(title):
         reduced_title = ''
         if title:
-            title = re.sub(r'[^\w]', ' ', title)
-            title = title.split(" ")
-
-            for part in title:
-                if len(part):
-                    reduced_title += part + "-"
-
-            reduced_title = reduced_title[:-1]
-            reduced_title = reduced_title[:30]
+            reduced_title = slugify(title)
 
         return reduced_title
 
     def build_header_questionnaire_per_participant(self, header_participant_data, header_answer_list):
-        # build header
         header = []
         for field in header_participant_data[0:2]:
             header.append(field)
@@ -1049,7 +996,7 @@ class ExportExecution:
         # and save per_participant data
         if self.get_input_data("export_per_questionnaire"):
             # check if exist fields selected from questionnaires
-            # path ex. /Users/.../qdc/media/.../NES_EXPORT/Per_questionnaire/
+            # path ex. /.../qdc/media/.../NES_EXPORT/Per_questionnaire/
             error_msg, path_per_questionnaire = create_directory(self.get_export_directory(),
                                                                  self.get_input_data("per_questionnaire_directory"))
             if error_msg != "":
@@ -1060,7 +1007,7 @@ class ExportExecution:
             # path: /NES_EXPORT/Questionnaire_metadata
             export_metadata_directory = path.join(self.get_input_data("base_directory"),
                                                   self.get_input_data("questionnaire_metadata_directory"))
-            # path ex. /Users/.../media/NES_EXPORT/Questionnaire_metadata/
+            # path ex. /.../media/NES_EXPORT/Questionnaire_metadata/
             error_msg, path_per_questionnaire_metadata = create_directory(
                 self.get_export_directory(), self.get_input_data("questionnaire_metadata_directory"))
             if error_msg != "":
@@ -1083,7 +1030,7 @@ class ExportExecution:
             # ex. Per_questionnaire.Q123_aaa
             path_questionnaire = "%s_%s" % (str(questionnaire_code), questionnaire_title)
 
-            # path ex. /Users/.../media/NES_EXPORT/Per_questionnaire/Q123_aaa
+            # path ex. /.../media/NES_EXPORT/Per_questionnaire/Q123_aaa
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
             if error_msg != "":
                 return error_msg
@@ -1091,7 +1038,7 @@ class ExportExecution:
             # path ex. /NES_EXPORT/Per_questionnaire/Q123_aaa/
             export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
 
-            # path ex. /Users/.../media/NES_EXPORT/Questionnaire_metadata/Q123_aaa
+            # path ex. /.../media/NES_EXPORT/Questionnaire_metadata/Q123_aaa
             error_msg, export_metadata_path = create_directory(path_per_questionnaire_metadata, path_questionnaire)
             if error_msg != "":
                 return error_msg
@@ -1108,7 +1055,7 @@ class ExportExecution:
                 if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
                     export_filename = \
                         "%s_%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code), language)
-                    # path ex. /Users/.../media/NES_EXPORT/Per_questionnaire.Q123_aaa/Responses_Q123.csv
+                    # path ex. /.../media/NES_EXPORT/Per_questionnaire.Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename)
 
                     save_to_csv(complete_filename, fields_description)
@@ -1127,7 +1074,7 @@ class ExportExecution:
                     export_filename = "%s_%s_%s.csv" % (questionnaire["prefix_filename_fields"],
                                                         str(questionnaire_code), language)
 
-                    # path ex. /Users/.../media/NES_EXPORT/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv
+                    # path ex. /.../media/NES_EXPORT/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv
                     complete_filename = path.join(export_metadata_path, export_filename)
 
                     save_to_csv(complete_filename, questionnaire_fields)
@@ -1143,7 +1090,7 @@ class ExportExecution:
         path_participant_data = path.join(self.get_export_directory(), self.get_input_data(
             "participant_data_directory"))
         if not path.exists(path_participant_data):
-            # path ex. /Users/.../NES_EXPORT/Participant_data
+            # path ex. /NES_EXPORT/Participant_data
             error_msg, path_participant_data = create_directory(self.get_export_directory(),
                                                                 self.get_input_data("participant_data_directory"))
             if error_msg != "":
@@ -1179,7 +1126,6 @@ class ExportExecution:
             questionnaire_id = questionnaire["id"]
             questionnaire_code = self.questionnaire_utils.get_questionnaire_code_from_id(questionnaire_id)
             questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
-            print(questionnaire_id)
             path_questionnaire = "%s_%s" % (str(questionnaire_code), questionnaire_title)
 
             # path ex. /qdc/media/export/#user/#export_instance/Participant_data/Per_questionnaire/Q123_aaa/
@@ -1245,7 +1191,7 @@ class ExportExecution:
 
     def create_group_data_directory(self):
         error_msg = ""
-        # path ex. /Users/.../NES_EXPORT/Experiment_data
+        # path ex. /NES_EXPORT/Experiment_data
         error_msg, path_experiment_data = create_directory(self.get_export_directory(),
                                                            self.get_input_data("experiment_data_directory"))
         if error_msg != "":
@@ -1356,7 +1302,7 @@ class ExportExecution:
                     # Ex. 'NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/'
                     export_metadata_directory = path.join(self.per_group_data[group_id]['group'][
                         'questionnaire_metadata_export_directory'], directory_questionnaire_name)
-                    # path ex. /Users/.../NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
+                    # path ex. /NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
                     error_msg, complete_export_metadata_path = create_directory(metadata_directory,
                                                                                 directory_questionnaire_name)
                     if error_msg != "":
@@ -1430,7 +1376,7 @@ class ExportExecution:
         error_msg = ''
 
         if self.get_input_data("export_per_participant"):
-            # path ex. /Users/.../NES_EXPORT/Per_participant/
+            # path ex. /NES_EXPORT/Per_participant/
             error_msg, path_per_participant = create_directory(self.get_export_directory(),
                                                                self.get_input_data("per_participant_directory"))
             if error_msg != "":
@@ -1444,7 +1390,7 @@ class ExportExecution:
             for participant_code in self.get_per_participant_data():
                 # ex. Participant_P123
                 path_participant = prefix_filename_participant + str(participant_code)
-                # path ex. /Users/.../NES_EXPORT/Per_participant/Participant_P123/
+                # path ex. /NES_EXPORT/Per_participant/Participant_P123/
                 error_msg, participant_path = create_directory(path_per_participant, path_participant)
                 if error_msg != "":
                     return error_msg
@@ -1454,7 +1400,7 @@ class ExportExecution:
                     title = self.get_title_reduced(questionnaire_id=int(questionnaire_id))
                     questionnaire_directory_name = "%s_%s" % (str(questionnaire_code), title)
                     # create questionnaire directory
-                    # path ex. /Users/.../NES_EXPORT/Per_participant/Participant_PCode/QCode_Title/
+                    # path ex. /NES_EXPORT/Per_participant/Participant_PCode/QCode_Title/
                     error_msg, path_per_questionnaire = create_directory(participant_path, questionnaire_directory_name)
                     # path ex. /NES_EXPORT/Per_participant/QCode_Title/
                     export_questionnaire_directory = path.join(path.join(export_directory_base, path_participant),
@@ -1480,7 +1426,7 @@ class ExportExecution:
                             language][0]
                         per_participant_rows = [header, participant_rows]
 
-                        # path ex. /Users/.../NES_EXPORT/Per_participant/Participant_P123/QCode_Title
+                        # path ex. /NES_EXPORT/Per_participant/Participant_P123/QCode_Title
                         # /Responses_Q123_aaa.csv
                         complete_filename = path.join(path_per_questionnaire, export_filename)
 
@@ -1494,10 +1440,10 @@ class ExportExecution:
 
         error_msg = ''
 
-        # path ex. /Users/.../NES_EXPORT/Participant_data/
+        # path ex. /NES_EXPORT/Participant_data/
         path_participant_data = path.join(self.get_export_directory(), self.get_input_data(
             "participant_data_directory"))
-        # path ex. /Users/.../NES_EXPORT/Participant_data/Per_participant/
+        # path ex. /NES_EXPORT/Participant_data/Per_participant/
         error_msg, path_per_participant = create_directory(path_participant_data,
                                                            self.get_input_data("per_participant_directory"))
         if error_msg != "":
@@ -1515,7 +1461,7 @@ class ExportExecution:
             patient_id = Patient.objects.filter(code=participant_code).values('id')[0]['id']
 
             path_participant = prefix_filename_participant + str(participant_code)
-            # /Users/.../NES_EXPORT/Participant_data/Per_participant/Participant_P123/
+            # /NES_EXPORT/Participant_data/Per_participant/Participant_P123/
             error_msg, participant_path = create_directory(path_per_participant, path_participant)
             if error_msg != "":
                 return error_msg
@@ -1525,7 +1471,7 @@ class ExportExecution:
                     if patient_id in self.participants_per_entrance_questionnaire[questionnaire_code]:
                         questionnaire_id = \
                             int(self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code))
-                        # seleciona os participantes dos questionnarios de entrada
+                        # select entry questionnaires' participants
                         for questionnaire in self.get_input_data("questionnaires"):
                             if questionnaire_id == questionnaire['id']:
                                 title = self.get_title_reduced(questionnaire_id=questionnaire_id)
@@ -1537,7 +1483,7 @@ class ExportExecution:
                                     language_list = [questionnaire_language['output_language']]
                                 # create questionnaire directory
                                 path_questionnaire = "%s_%s" % (str(questionnaire_code), title)
-                                # /Users/.../NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
+                                # /NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
                                 error_msg, questionnaire_path_directory = create_directory(participant_path,
                                                                                            path_questionnaire)
                                 if error_msg != '':
@@ -1561,7 +1507,7 @@ class ExportExecution:
                                     per_participant_rows = self.per_participant_data[participant_code][
                                         questionnaire_code][language]
                                     per_participant_rows.insert(0, header)
-                                    # path ex. /Users/.../NES_EXPORT/Participant_data/Per_participant/Q123_title
+                                    # path ex. /NES_EXPORT/Participant_data/Per_participant/Q123_title
                                     complete_filename = path.join(questionnaire_path_directory, export_filename)
 
                                     save_to_csv(complete_filename, per_participant_rows)
@@ -1576,14 +1522,13 @@ class ExportExecution:
 
         for group_id in self.per_group_data:
             participant_list = self.per_group_data[group_id]['data_per_participant']
-            # participan data
-            # participants_input_data = self.get_input_data("participants")
+            # participant data
             for participant_code in participant_list:
                 prefix_filename_participant = "Participant_"
                 # ex. Participant_P123
                 participant_name = prefix_filename_participant + str(participant_code)
                 participant_data_directory = self.per_group_data[group_id]['group']['participant_data_directory']
-                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                 path_per_participant = path.join(participant_data_directory, participant_name)
 
                 # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
@@ -1591,7 +1536,7 @@ class ExportExecution:
                     'participant_data_export_directory']
                 participant_export_directory = path.join(participant_data_export_directory, participant_name)
                 if 'token_list' in participant_list[participant_code] and self.get_input_data('export_per_participant'):
-                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
@@ -1602,8 +1547,7 @@ class ExportExecution:
                         questionnaire_id = token_data['questionnaire_id']
                         questionnaire_title = self.get_input_data('questionnaires_from_experiments')[group_id][
                             str(questionnaire_id)]['questionnaire_name']
-                        # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
-                        # /Step_X_Questionnaire
+                        # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         error_msg, directory_step_participant = create_directory(path_per_participant,
                                                                                  token_data['directory_step_name'])
                         if error_msg != "":
@@ -1620,10 +1564,9 @@ class ExportExecution:
                             language_list = [questionnaire_language['output_language']]
                         for language in language_list:
                             # Responses_Q123.csv
-                            export_filename = "%s_%s_%s.csv" % (str(questionnaire_code), questionnaire_title, language)
+                            export_filename = "%s_%s_%s.csv" % (str(questionnaire_code), slugify(questionnaire_title), language)
 
-                            # path ex. Users/.../Group_xxx/Per_participant/Per_participant/Participant_P123/Step_X_aaa/
-                            # P123_Q123_aaa.csv
+                            # ex. /NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
                             complete_filename = path.join(directory_step_participant, export_filename)
 
                             export_rows_participants = self.get_participant_row_data(token_data['subject_code'])
@@ -1645,7 +1588,7 @@ class ExportExecution:
 
                 # for component_list
                 if 'eeg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
@@ -1657,21 +1600,20 @@ class ExportExecution:
                             directory_step_name = eeg_data['directory_step_name']
                             path_per_eeg_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_eeg_participant):
-                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
-                                # /Step_X_aaa
+                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                                 error_msg, path_per_eeg_participant = create_directory(path_per_participant,
                                                                                        directory_step_name)
                                 if error_msg != "":
                                     return error_msg
 
-                            # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                            # /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_eeg_step_directory = path.join(participant_export_directory, directory_step_name)
 
                             # to create EEGData directory
                             directory_data_name = eeg_data['eeg_data_directory_name']
                             path_per_eeg_data = path.join(path_per_eeg_participant, directory_data_name)
                             if not path.exists(path_per_eeg_data):
-                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/EEGDATA_#
                                 error_msg, path_per_eeg_data = create_directory(path_per_eeg_participant,
                                                                                 directory_data_name)
@@ -1687,8 +1629,7 @@ class ExportExecution:
                             if eeg_setting_description:
                                 eeg_setting_filename = "%s.json" % "eeg_setting_description"
 
-                                # ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
-                                # eeg_setting_description.json#
+                                # ex. /.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/eeg_setting_description.json
                                 complete_setting_filename = path.join(path_per_eeg_data, eeg_setting_filename)
 
                                 self.files_to_zip_list.append([complete_setting_filename, export_eeg_data_directory])
@@ -1736,11 +1677,8 @@ class ExportExecution:
                                     nwb_file_name = "%s.nwb" % eeg_file_name
                                     complete_nwb_file_name = path.join(path_per_eeg_data, nwb_file_name)
                                     req = None
-                                    # Open and read signal
-                                    # eeg_reading = eeg_file['eeg_reading']
-                                    # eeg_reading = eeg_data_reading(eeg_file, preload=False)
 
-                                    # Was it open properly?
+                                    # was it open properly?
                                     ok_opening = False
 
                                     if eeg_file.eeg_reading.file_format:
@@ -1759,7 +1697,7 @@ class ExportExecution:
                                             return error_msg
 
                 if 'emg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
@@ -1772,7 +1710,7 @@ class ExportExecution:
                             directory_step_name = emg_data['directory_step_name']
                             path_per_emg_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_emg_participant):
-                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa
                                 error_msg, path_per_emg_participant = create_directory(path_per_participant,
                                                                                        directory_step_name)
@@ -1786,7 +1724,7 @@ class ExportExecution:
                             directory_data_name = emg_data['emg_data_directory_name']
                             path_per_emg_data = path.join(path_per_emg_participant, directory_data_name)
                             if not path.exists(path_per_emg_data):
-                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/EMGDATA_#
                                 error_msg, path_per_emg_data = create_directory(path_per_emg_participant,
                                                                                 directory_data_name)
@@ -1829,7 +1767,7 @@ class ExportExecution:
                                     json.dump(emg_setting_description, outfile, indent=4)
 
                 if 'tms_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
@@ -1843,7 +1781,7 @@ class ExportExecution:
                             directory_step_name = tms_data['directory_step_name']
                             path_per_tms_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_tms_participant):
-                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa
                                 error_msg, path_per_tms_participant = create_directory(path_per_participant,
                                                                                        directory_step_name)
@@ -1883,7 +1821,7 @@ class ExportExecution:
                                                                    export_tms_step_directory])
 
                 if 'additional_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
@@ -1896,7 +1834,7 @@ class ExportExecution:
                         directory_step_name = additional_data['directory_step_name']
                         path_additional_data = path.join(path_per_participant, directory_step_name)
                         if not path.exists(path_additional_data):
-                            # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                            # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                             # /Step_X_COMPONENT_TYPE
                             error_msg, path_additional_data = create_directory(path_per_participant, directory_step_name)
 
@@ -1924,7 +1862,7 @@ class ExportExecution:
 
                             file_name = path_additional_data_file.split('/')[-1]
 
-                            # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
+                            # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
                             # Step_X_COMPONENT_TYPE/file_name.format_type
                             complete_additional_data_filename = path.join(path_per_additional_data, file_name)
                             with open(path_additional_data_file, 'rb') as f:
@@ -1937,7 +1875,7 @@ class ExportExecution:
                                                            export_additional_data_directory])
 
                 if 'digital_game_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
@@ -1951,7 +1889,7 @@ class ExportExecution:
                             directory_step_name = goalkeeper_game_data['directory_step_name']
                             path_goalkeeper_game_data = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_goalkeeper_game_data):
-                                # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_COMPONENT_TYPE
                                 error_msg, path_goalkeeper_game_data = create_directory(path_per_participant,
                                                                                         directory_step_name)
@@ -1968,7 +1906,7 @@ class ExportExecution:
 
                                 path_per_emg_data = path.join(path_goalkeeper_game_data, directory_data_name)
                                 if not path.exists(path_per_emg_data):
-                                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
+                                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
                                     #  /Step_X_aaa/GoalkeeperDATA_# 
                                     error_msg, path_per_goalkeeper_game_data = create_directory(
                                         path_goalkeeper_game_data, directory_data_name)
@@ -1984,7 +1922,7 @@ class ExportExecution:
                                 for context_tree_file in goalkeeper_game_data['digital_game_file_list']:
                                     path_context_tree_file = context_tree_file['digital_game_filename']
                                     file_name = path_context_tree_file.split('/')[-1]
-                                    # ex. /Users/.../NES_EXPORT/Experiment_data/Group_XXX/Per_participant
+                                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant
                                     # /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
                                     complete_goalkeeper_game_filename = path.join(path_per_goalkeeper_game_data,
                                                                                   file_name)
@@ -2350,7 +2288,7 @@ class ExportExecution:
                     stimulus_data_list = self.per_group_data[group_id]['stimulus_data']
                     for stimulus_data in stimulus_data_list:
                         if stimulus_data['stimulus_file']:
-                            # ex. /Users/../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
+                            # ex. /.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
                             path_stimulus_data = path.join(group_file_directory, stimulus_data['directory_step_name'])
                             if not path.exists(path_stimulus_data):
                                 error_msg, directory_stimulus_data = create_directory(group_file_directory,
@@ -2377,7 +2315,8 @@ class ExportExecution:
 
         return error_msg
 
-    def find_duplicates(self, fill_list1, fill_list2):
+    @staticmethod
+    def find_duplicates(fill_list1, fill_list2):
 
         line1 = fill_list1[1]
         line2 = fill_list2[1]
@@ -2425,7 +2364,6 @@ class ExportExecution:
                 headers, fields = \
                     self.questionnaire_utils.set_questionnaire_experiment_header_and_fields(
                         questionnaire_id, questionnaire)
-                # headers, fields = self.questionnaire_utils.set_questionnaire_header_and_fields(questionnaire, True)
 
                 # verify if Lime Survey is running
                 limesurvey_available = is_limesurvey_available(questionnaire_lime_survey)
