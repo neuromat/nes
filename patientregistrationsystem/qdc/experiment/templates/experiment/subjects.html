@@ -349,7 +349,7 @@
                                                 </td>
                                                 {% if data_collection.data_list %}
                                                     {% for item_data in data_collection.data_list %}
-                                                        {% if forloop.counter0 != 0 %}<tr><{% endif %}
+                                                        {% if forloop.counter0 != 0 %}<tr>{% endif %}
                                                         <td>{{ item_data.description }}</td>
                                                         <td>{{ item_data.count }} {% if item_data.count == 1 %}{% trans "participant" %}{% else %}{% trans "participants" %}{% endif %}</td>
                                                         <td>

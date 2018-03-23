@@ -7867,13 +7867,16 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
 
         if request.POST['action'] == "transfer":
             data_configuration_tree = None
+
             if request.POST['transfer_to']:
-                list_of_path = [item[0] for item in list_of_target_paths[int(request.POST['transfer_to'])]]
-                data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
-                if not data_configuration_tree_id:
-                    data_configuration_tree_id = create_data_configuration_tree(list_of_path)
-                data_configuration_tree = get_object_or_404(DataConfigurationTree,
-                                                            pk=data_configuration_tree_id)
+                if request.POST['transfer_to'] != "experimental_protocol":
+                    list_of_path = [item[0] for item in list_of_target_paths[int(request.POST['transfer_to'])]]
+                    data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+                    if not data_configuration_tree_id:
+                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                    data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                                pk=data_configuration_tree_id)
+
             has_changed = False
 
             for data_collection in data_collections:

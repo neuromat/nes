@@ -114,6 +114,11 @@
                     <h4>
                     {% trans "Choose path to transfer selected data collections:" %}
                     </h4>
+                    {% if data_type == "additional_data" %}
+                        <input {% if path_of_configuration == "0" %}disabled="disabled"{% endif %} name="transfer_to" type="radio" value="experimental_protocol">
+                        {% trans "Experimental protocol" %}
+                        {% if path_of_configuration == "0" %}<span class="label label-info">{% trans "current path" %}</span>{% endif %}
+                    {% endif %}
                     {% for target_path in list_of_target_paths %}
                         <div>
                             <input {% if forloop.counter0 == index_of_current_path %}disabled="disabled"{% endif %} name="transfer_to" type="radio" value="{{ forloop.counter0 }}">
