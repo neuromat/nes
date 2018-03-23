@@ -4840,95 +4840,7 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
             # First element of the list is associated to the whole experimental protocol
             # subject_step_data_query = \
             #     SubjectStepData.objects.filter(subject_of_group=subject_of_group, data_configuration_tree=None)
-            additional_data_list = AdditionalData.objects.filter(subject_of_group__group=group,
-                                                                 data_configuration_tree=None)
-
-            data_list = [
-                {'type': 'additional_data',
-                 'description': _('Additional data'),
-                 'count': additional_data_list.count()}] if additional_data_list else []
-
-            data_collections = [
-                {'component_configuration': None,
-                 'path': None,
-                 'data_list': data_list,
-                 'icon_class': icon_class['experimental_protocol']}
-            ]
-            list_of_paths = create_list_of_trees(group.experimental_protocol, None)
-            for path in list_of_paths:
-                component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
-                data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
-                                                                          [item[0] for item in path])
-                participant_quantity = \
-                    AdditionalData.objects.filter(subject_of_group__group=group,
-                                                  data_configuration_tree_id=data_configuration_tree_id).values(
-                        'subject_of_group__subject').distinct().count()
-
-                data_list = [{'type': 'additional_data',
-                              'description': _('Additional data'),
-                              'count': participant_quantity}] if participant_quantity else []
-
-                if component_configuration.component.component_type == "eeg":
-                    participant_quantity = EEGData.objects.filter(
-                        subject_of_group__group=group,
-                        data_configuration_tree_id=data_configuration_tree_id).values(
-                        'subject_of_group__subject').distinct().count()
-                    if participant_quantity:
-                        data_list.append({'type': 'eeg',
-                                          'description': _('EEG data'),
-                                          'count': participant_quantity})
-                elif component_configuration.component.component_type == "emg":
-                    participant_quantity = EMGData.objects.filter(
-                        subject_of_group__group=group,
-                        data_configuration_tree_id=data_configuration_tree_id).values(
-                        'subject_of_group__subject').distinct().count()
-                    if participant_quantity:
-                        data_list.append({'type': 'emg',
-                                          'description': _('EMG data'),
-                                          'count': participant_quantity})
-                elif component_configuration.component.component_type == "tms":
-                    participant_quantity = TMSData.objects.filter(
-                        subject_of_group__group=group,
-                        data_configuration_tree_id=data_configuration_tree_id).values(
-                        'subject_of_group__subject').distinct().count()
-                    if participant_quantity:
-                        data_list.append({'type': 'tms',
-                                          'description': _('TMS data'),
-                                          'count': participant_quantity})
-                elif component_configuration.component.component_type == "digital_game_phase":
-                    participant_quantity = DigitalGamePhaseData.objects.filter(
-                        subject_of_group__group=group,
-                        data_configuration_tree_id=data_configuration_tree_id).values(
-                        'subject_of_group__subject').distinct().count()
-                    if participant_quantity:
-                        data_list.append({'type': 'goalkeeper_game',
-                                          'description': _('Goalkeeper game data'),
-                                          'count': participant_quantity})
-                elif component_configuration.component.component_type == "generic_data_collection":
-                    participant_quantity = GenericDataCollectionData.objects.filter(
-                        subject_of_group__group=group,
-                        data_configuration_tree_id=data_configuration_tree_id).values(
-                        'subject_of_group__subject').distinct().count()
-                    if participant_quantity:
-                        data_list.append({'type': 'generic_data_collection',
-                                          'description': _('Generic data collection'),
-                                          'count': participant_quantity})
-                elif component_configuration.component.component_type == "questionnaire":
-                    participant_quantity = QuestionnaireResponse.objects.filter(
-                        subject_of_group__group=group,
-                        data_configuration_tree_id=data_configuration_tree_id).values(
-                        'subject_of_group__subject').distinct().count()
-                    if participant_quantity:
-                        data_list.append({'type': 'questionnaire_response',
-                                          'description': _('Questionnaire response'),
-                                          'count': participant_quantity})
-
-                data_collections.append(
-                    {'component_configuration': component_configuration,
-                     'path': path,
-                     'data_list': data_list,
-                     'icon_class': icon_class[component_configuration.component.component_type]}
-                )
+            data_collections = get_data_collections_from_group(group)
 
     else:
         for subject_of_group in subject_list:
@@ -4972,6 +4884,120 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
         context['per_steps_tab_active'] = 'active'
 
     return render(request, template_name, context)
+
+
+def get_data_collections_from_group(group, data_type=None):
+
+    data_collections = []
+
+    if data_type is None or data_type == "additional_data":
+
+        additional_data_list = AdditionalData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree=None)
+
+        data_list = [
+            {'type': 'additional_data',
+             'description': _('Additional data'),
+             'count': additional_data_list.count()}] if additional_data_list else []
+        data_collections.append(
+            {'component_configuration': None,
+             'path': None,
+             'data_list': data_list,
+             'icon_class': icon_class['experimental_protocol']}
+        )
+
+    #TODO: melhorar esse parametro
+    component_type = None
+    if data_type and data_type != "additional_data":
+        if data_type == "goalkeeper_game":
+            component_type = "digital_game_phase"
+        elif data_type == "questionnaire_response":
+            component_type = "questionnaire"
+        else:
+            component_type = data_type
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol, component_type)
+    for path in list_of_paths:
+        component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
+                                                                  [item[0] for item in path])
+        participant_quantity = \
+            AdditionalData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or \
+                                                                   data_type == "additional_data" else None
+
+        data_list = [{'type': 'additional_data',
+                      'description': _('Additional data'),
+                      'count': participant_quantity}] if participant_quantity else []
+
+        if component_configuration.component.component_type == "eeg":
+            participant_quantity = EEGData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or data_type == "eeg" else None
+            if participant_quantity:
+                data_list.append({'type': 'eeg',
+                                  'description': _('EEG data'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "emg":
+            participant_quantity = EMGData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or data_type == "emg" else None
+            if participant_quantity:
+                data_list.append({'type': 'emg',
+                                  'description': _('EMG data'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "tms":
+            participant_quantity = TMSData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or data_type == "tms" else None
+            if participant_quantity:
+                data_list.append({'type': 'tms',
+                                  'description': _('TMS data'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "digital_game_phase":
+            participant_quantity = DigitalGamePhaseData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or \
+                                                                   data_type == "goalkeeper_game" else None
+            if participant_quantity:
+                data_list.append({'type': 'goalkeeper_game',
+                                  'description': _('Goalkeeper game data'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "generic_data_collection":
+            participant_quantity = GenericDataCollectionData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or \
+                                                                   data_type == "generic_data_collection" else None
+            if participant_quantity:
+                data_list.append({'type': 'generic_data_collection',
+                                  'description': _('Generic data collection'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "questionnaire":
+            participant_quantity = QuestionnaireResponse.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or \
+                                                                   data_type == "questionnaire_response" else None
+            if participant_quantity:
+                data_list.append({'type': 'questionnaire_response',
+                                  'description': _('Questionnaire response'),
+                                  'count': participant_quantity})
+
+        data_collections.append(
+            {'component_configuration': component_configuration,
+             'path': path,
+             'data_list': data_list,
+             'icon_class': icon_class[component_configuration.component.component_type]}
+        )
+    return data_collections
 
 
 @login_required
@@ -7794,33 +7820,35 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
             data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
 
     # when "transfer", get target candidates
-    list_of_target_paths = []
-    index_of_current_path = None
+    steps_to_transfer = []
 
     if operation == "transfer":
 
-        if data_type == "questionnaire_response":
-            temp_list_of_target_paths = create_list_of_trees(
-                group.experimental_protocol,
-                component_configuration.component.component_type
-                if data_type != "additional_data" and component_configuration else None)
+        steps_to_transfer = get_data_collections_from_group(group, data_type)
 
+        if data_type == "questionnaire_response":
             origin_survey = Questionnaire.objects.get(id=component_configuration.component_id).survey
 
-            for target_path in temp_list_of_target_paths:
-                if Questionnaire.objects.get(id=ComponentConfiguration.objects.get(
-                        id=target_path[-1][0]).component_id).survey == origin_survey:
-                    list_of_target_paths.append(target_path)
-        else:
-            list_of_target_paths = create_list_of_trees(
-                group.experimental_protocol,
-                component_configuration.component.component_type
-                if data_type != "additional_data" and component_configuration else None)
+        for step_to_transfer in steps_to_transfer:
 
-        if path_of_configuration:
-            for index, target_path in enumerate(list_of_target_paths):
-                if path_of_configuration.split('-') == [str(item[0]) for item in target_path]:
-                    index_of_current_path = index
+            step_to_transfer['show_step'] = True
+
+            # do not show current path
+            if path_of_configuration == "0":
+                if not step_to_transfer['path']:
+                    step_to_transfer['show_step'] = False
+            else:
+                if step_to_transfer['path'] and \
+                                path_of_configuration.split('-') == [str(item[0]) for item in
+                                                                     step_to_transfer['path']]:
+                    step_to_transfer['show_step'] = False
+
+            if step_to_transfer['show_step']:
+                # if questionnaire, only show the same questionnaire
+                if data_type == "questionnaire_response":
+                    if Questionnaire.objects.get(id=ComponentConfiguration.objects.get(
+                            id=step_to_transfer['path'][-1][0]).component_id).survey != origin_survey:
+                        step_to_transfer['show_step'] = False
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
@@ -7870,7 +7898,9 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
 
             if request.POST['transfer_to']:
                 if request.POST['transfer_to'] != "experimental_protocol":
-                    list_of_path = [item[0] for item in list_of_target_paths[int(request.POST['transfer_to'])]]
+
+                    list_of_path = [item[0] for item in steps_to_transfer[int(request.POST['transfer_to'])]['path']]
+
                     data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
                     if not data_configuration_tree_id:
                         data_configuration_tree_id = create_data_configuration_tree(list_of_path)
@@ -7902,8 +7932,7 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
                "component_configuration": component_configuration,
                "component_icon": component_icon,
                "data_collections": data_collections,
-               "list_of_target_paths": list_of_target_paths,
-               "index_of_current_path": index_of_current_path
+               "steps_to_transfer": steps_to_transfer
                }
 
     return render(request, template_name, context)
