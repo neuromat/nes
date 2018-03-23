@@ -7777,7 +7777,7 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
                 messages.info(request, _('There were no items selected to transfer.'))
 
             redirect_url = reverse("subjects", args=(group.id,))
-            return HttpResponseRedirect(redirect_url)
+            return HttpResponseRedirect(redirect_url + '?per_steps_tab=active')
 
     context = {"group": group,
                "operation": operation,

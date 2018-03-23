@@ -444,7 +444,7 @@
             // clear url query substring used to redirect to this page with per_steps_tab active
             // see redirects in data_collection_manage view, post method sections
             var currURL = window.location.href;
-            window.history.pushState({}, document.title, currURL.substring(0, currURL.lastIndexOf('/')));
+            window.history.replaceState({}, document.title, currURL.substring(0, currURL.lastIndexOf('/')));
         }
     </script>
 {% endblock %}
