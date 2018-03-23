@@ -318,13 +318,16 @@
                                     <thead>
                                     <tr>
                                         <th>{% trans "Data colletion path" %}</th>
-                                        <th>{% trans "Data collections" %}</th>
+                                        <th>{% trans "Data type" %}</th>
+                                        <th>{% trans "Number of participants" %}</th>
+                                        <th>{% trans "Remove" %}</th>
+                                        <th>{% trans "Transfer" %}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                         {% for data_collection in data_collections %}
                                             <tr>
-                                                <td>
+                                                <td {% if data_collection.data_list|length > 1 %}rowspan="{{ data_collection.data_list|length }}" {% endif %}>
                                                     {# Identification #}
                                                     <span class="{{ data_collection.icon_class }}"></span>
 
@@ -344,24 +347,27 @@
                                                     </blockquote>
 
                                                 </td>
-                                                <td>
-                                                    <table>
-                                                        {% for item_data in data_collection.data_list %}
-                                                            <tr>
-                                                                <td>{{ item_data.description }}</td>
-                                                                <td>{{ item_data.count }} {% if item_data.count == 1 %}{% trans "participant" %}{% else %}{% trans "participants" %}{% endif %}</td>
-                                                                <td>
-                                                                    <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}/remove"
-                                                                       class="btn btn-primary"><span class="glyphicon glyphicon-remove"></span> {% trans "Show for remove" %}</a>
-                                                                </td>
-                                                                <td>
-                                                                    <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}/transfer"
-                                                                       class="btn btn-primary"><span class="glyphicon glyphicon-transfer"></span> {% trans "Show for transfer" %}</a>
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </table>
-                                                </td>
+                                                {% if data_collection.data_list %}
+                                                    {% for item_data in data_collection.data_list %}
+                                                        {% if forloop.counter0 != 0 %}<tr>{% endif %}
+                                                        <td>{{ item_data.description }}</td>
+                                                        <td>{{ item_data.count }} {% if item_data.count == 1 %}{% trans "participant" %}{% else %}{% trans "participants" %}{% endif %}</td>
+                                                        <td>
+                                                            <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}/remove"
+                                                               class="btn btn-primary"><span class="glyphicon glyphicon-remove"></span> {% trans "Show for remove" %}</a>
+                                                        </td>
+                                                        <td>
+                                                            <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}/transfer"
+                                                               class="btn btn-primary"><span class="glyphicon glyphicon-transfer"></span> {% trans "Show for transfer" %}</a>
+                                                        </td>
+                                                        {% if forloop.counter0 != 0 %}</tr>{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                {% endif %}
 
                                             </tr>
                                         {% endfor %}
