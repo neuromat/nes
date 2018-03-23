@@ -58,10 +58,10 @@
         <div class="col-md-10">
 
             <ul class="nav nav-tabs">
-                <li class="active">
+                <li id="per_participants_tab" class="active">
                     <a data-toggle="tab" href="#per_participants"><span class="fa fa-user"></span> {% trans "Per participant" %}</a>
                 </li>
-                <li>
+                <li id="per_steps_tab">
                     <a data-toggle="tab" href="#per_steps_of_experimental_protocol"><span class="fa fa-sitemap"></span> {% trans "Per steps of the experimental protocol" %}</a>
                 </li>
             </ul>
@@ -428,4 +428,23 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        if ("{{ per_steps_tab_active }}") {
+            // make per_steps_of_experimental_protocol tab active if redirected from
+            // remove or transfer data collections
+            $("#per_participants_tab").removeAttr('class');
+            $("#per_steps_tab").attr('class', 'active');
+            $("#per_participants").attr('class', 'tab-pane fade');
+            $("#per_steps_of_experimental_protocol").attr("class", "tab-pane" +
+                " fade in active");
+
+            // clear url query substring used to redirect to this page with per_steps_tab active
+            // see redirects in data_collection_manage view, post method sections
+            var currURL = window.location.href;
+            window.history.replaceState({}, document.title, currURL.substring(0, currURL.lastIndexOf('/')));
+        }
+    </script>
 {% endblock %}

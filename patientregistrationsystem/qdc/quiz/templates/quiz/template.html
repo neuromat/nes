@@ -20,9 +20,6 @@
     {# Apply a date picker and a mask to every field that has the class "datepicker".   #}
     <script>
         $(document).ready(function() {
-{#            $('.datepicker').datepicker({dateFormat: "dd/mm/yy"}).#}
-{#                mask("99/99/9999");#}
-
             $('.datepicker').datepicker({
                         dateFormat: gettext('mm/dd/yy'),
                         dayNames: [gettext('Sunday'),gettext('Monday'),gettext('Tuesday'),
@@ -296,5 +293,7 @@
     <span class="version_number">v{% settings_value "VERSION" %}</span>
 </div>
 
+{% block script %}
+{% endblock %}
 </body>
 </html>
