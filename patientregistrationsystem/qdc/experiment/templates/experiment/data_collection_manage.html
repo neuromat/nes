@@ -110,25 +110,35 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-12">
+
                 {% if operation == "transfer" %}
+
                     <h4>
                     {% trans "Choose path to transfer selected data collections:" %}
                     </h4>
-                    {% if data_type == "additional_data" %}
-                        <input {% if path_of_configuration == "0" %}disabled="disabled"{% endif %} name="transfer_to" type="radio" value="experimental_protocol">
-                        {% trans "Experimental protocol" %}
-                        {% if path_of_configuration == "0" %}<span class="label label-info">{% trans "current path" %}</span>{% endif %}
-                    {% endif %}
-                    {% for target_path in list_of_target_paths %}
-                        <div>
-                            <input {% if forloop.counter0 == index_of_current_path %}disabled="disabled"{% endif %} name="transfer_to" type="radio" value="{{ forloop.counter0 }}">
-                            {% for item in target_path %}
-                                {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
-                            {% endfor %}
-                            {% if forloop.counter0 == index_of_current_path %}<span class="label label-info">{% trans "current path" %}</span>{% endif %}
-                        </div>
+
+                    {% for step_to_transfer in steps_to_transfer %}
+                        {% if step_to_transfer.show_step %}
+                            <div>
+                                {% if not step_to_transfer.path %}
+                                    <input name="transfer_to" type="radio" value="experimental_protocol">
+                                    {% trans "Experimental protocol" %}
+                                {% else %}
+                                    <input name="transfer_to" type="radio" value="{{ forloop.counter0 }}">
+                                    {% for item in step_to_transfer.path %}
+                                        {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
+                                    {% endfor %}
+
+                                {% endif %}
+                                {% if step_to_transfer.data_list %}
+                                    <span class="label label-info">{% trans "this step contains data" %}</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     {% endfor %}
+
                 {% endif %}
+
                 </div>
             </div>
             <div class="btn-toolbar">
