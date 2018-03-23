@@ -4844,7 +4844,9 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                                                                  data_configuration_tree=None)
 
             data_list = [
-                {'type': 'additional_data', 'count': additional_data_list.count()}] if additional_data_list else []
+                {'type': 'additional_data',
+                 'description': _('Additional data'),
+                 'count': additional_data_list.count()}] if additional_data_list else []
 
             data_collections = [
                 {'component_configuration': None,
@@ -7746,16 +7748,16 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
 
     check_can_change(request.user, group.experiment.research_project)
 
-    if path_of_configuration:
+    if path_of_configuration == '0':
+        # related to the whole experiment
+        component_configuration = None
+        component_icon = icon_class['experimental_protocol']
+        data_configuration_tree_id = None
+    else:
         list_of_path = [int(item) for item in path_of_configuration.split('-')]
         component_configuration = ComponentConfiguration.objects.get(id=int(list_of_path[-1]))
         component_icon = icon_class[component_configuration.component.component_type]
-    else:
-        component_configuration = None
-        component_icon = icon_class['experimental_protocol']
-
-    # TODO: se depende de list_of_path, faz sentido o "else" acima?
-    data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+        data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
 
     data_collections = []
 
@@ -7792,9 +7794,10 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
     # when "transfer", get target candidates
     list_of_target_paths = []
     index_of_current_path = None
+
     if operation == "transfer":
 
-        if component_configuration.component.component_type == "questionnaire":
+        if data_type == "questionnaire_response":
             temp_list_of_target_paths = create_list_of_trees(
                 group.experimental_protocol,
                 component_configuration.component.component_type
@@ -7812,7 +7815,6 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type, 
                 component_configuration.component.component_type
                 if data_type != "additional_data" and component_configuration else None)
 
-        #TODO: resolver isso
         if path_of_configuration:
             for index, target_path in enumerate(list_of_target_paths):
                 if path_of_configuration.split('-') == [str(item[0]) for item in target_path]:
