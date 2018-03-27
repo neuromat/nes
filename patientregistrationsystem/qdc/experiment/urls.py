@@ -370,7 +370,7 @@ urlpatterns = patterns(
 
     # data collection
     url(r'^group/(?P<group_id>\d+)/data_collection_manage/'
-        r'(?P<path_of_configuration>[0-9-]+)/(?P<data_type>\w+)/(?P<operation>\w+)/$',
+        r'(?P<path_of_configuration>[0-9-]+)/(?P<data_type>\w+)/$',
         'data_collection_manage', name='data_collection_manage'),
 
     # tms_data(ajax)
