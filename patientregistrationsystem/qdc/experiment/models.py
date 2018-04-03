@@ -1448,6 +1448,7 @@ class GoalkeeperGameLog(models.Model):
 
 class GoalkeeperGameConfig(models.Model):
     id_config = models.IntegerField(name="idconfig", primary_key=True)
+    researchgroup = models.CharField(name="researchgroup", max_length=50)
     experiment_group = models.CharField(name="experimentgroup", max_length=50)
     game = models.CharField(name="game", max_length=2)
     phase = models.IntegerField(name="phase")

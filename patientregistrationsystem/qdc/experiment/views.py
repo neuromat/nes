@@ -7237,9 +7237,13 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
 
         if request.POST['action'] == "group-code":
 
-            group.code = request.POST['group-code'] if request.POST['group-code'] else None
-            group.save()
-            messages.success(request, _('Group code changed successfully.'))
+            group_code = request.POST['group-code'] if request.POST['group-code'] else None
+            if Group.objects.filter(code__isnull=False, code=group_code).exists():
+                messages.warning(request, _('Club already used. Please choose another name.'))
+            else:
+                group.code = group_code
+                group.save()
+                messages.success(request, _('Club changed successfully.'))
 
         elif request.POST['action'][0:7] == "detail-":
             path_of_configuration = request.POST['action'][7:]
@@ -7308,12 +7312,12 @@ def load_group_goalkeeper_game_data(request, group_id):
 
     group = get_object_or_404(Group, id=group_id)
 
+    # The group.code is the Goalkeeper's club
     if not group.code:
-        messages.info(request, _('No experimental group code configured.'))
+        messages.info(request, _("No Goalkeeper's club configured."))
     else:
 
-        experimental_group_code = \
-            (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + group.code
+        institution = (LocalInstitution.get_solo().code if LocalInstitution.get_solo().code else '')
 
         number_of_imported_data = 0
         list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
@@ -7347,7 +7351,8 @@ def load_group_goalkeeper_game_data(request, group_id):
                                 phase = 0
 
                             goalkeeper_game_configuration = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
-                                experimentgroup=experimental_group_code,
+                                experimentgroup=group.code,
+                                researchgroup=institution,
                                 game=game,
                                 phase=phase,
                                 playeralias=subject_of_group.subject.patient.code).order_by('idconfig').last()
@@ -7376,7 +7381,7 @@ def load_group_goalkeeper_game_data(request, group_id):
                                         digital_game_phase_data.time = game_time
 
                                         digital_game_phase_data.description = \
-                                            "%s - %s" % (experimental_group_code, subject_of_group.subject.patient.code)
+                                            "%s - %s" % (group.code, subject_of_group.subject.patient.code)
 
                                         digital_game_phase_data.file_format = \
                                             get_object_or_404(FileFormat, nes_code='txt')
@@ -7387,7 +7392,7 @@ def load_group_goalkeeper_game_data(request, group_id):
                                         digital_game_phase_data.save()
 
                                         # Digital Game Phase File
-                                        file_name = "%s_%s.txt" % (experimental_group_code,
+                                        file_name = "%s_%s.txt" % (group.code,
                                                                    subject_of_group.subject.patient.code)
                                         file_content = result.filecontent
 
