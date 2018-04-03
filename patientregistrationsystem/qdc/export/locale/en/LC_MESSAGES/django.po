@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-21 17:32-0300\n"
+"POT-Creation-Date: 2018-04-03 13:23-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,20 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: export/export.py:66 export/export.py:67 export/views.py:143
-#: export/views.py:144 export/views.py:148 export/views.py:149
+#: export/export.py:65 export/export.py:66 export/views.py:94
+#: export/views.py:95 export/views.py:99 export/views.py:100
 msgid "Participant code"
 msgstr ""
 
-#: export/export.py:128 export/tests.py:187
+#: export/export.py:126 export/tests.py:187
 msgid "Base path does not exist"
 msgstr ""
 
-#: export/export.py:2006 export/export.py:2756 export/views.py:1314
+#: export/export.py:1944 export/export.py:2694 export/views.py:1204
 msgid "Yes"
 msgstr ""
 
-#: export/export.py:2006 export/export.py:2756 export/views.py:1314
+#: export/export.py:1944 export/export.py:2694 export/views.py:1204
 msgid "No"
 msgstr ""
 
@@ -58,11 +58,11 @@ msgstr ""
 msgid "Response must be selected"
 msgstr ""
 
-#: export/forms.py:101
+#: export/forms.py:79
 msgid "Min age must be filled."
 msgstr ""
 
-#: export/forms.py:104
+#: export/forms.py:82
 msgid "Max age must be filled."
 msgstr ""
 
@@ -149,7 +149,7 @@ msgid "Information's organization for exportation of questionnaires data"
 msgstr ""
 
 #: export/templates/export/export_data.html:88
-#: export/templates/export/export_experiment_data.html:116 export/views.py:1209
+#: export/templates/export/export_experiment_data.html:116 export/views.py:1099
 msgid "Per participant"
 msgstr ""
 
@@ -328,13 +328,13 @@ msgstr ""
 
 #: export/templates/export/participant_selection.html:69
 #: export/templates/export/show_selected_participants.html:50
-#: export/views.py:96
+#: export/views.py:47
 msgid "Gender"
 msgstr ""
 
 #: export/templates/export/participant_selection.html:80
 #: export/templates/export/show_selected_participants.html:54
-#: export/views.py:99
+#: export/views.py:50
 msgid "Marital status"
 msgstr ""
 
@@ -352,7 +352,7 @@ msgstr ""
 
 #: export/templates/export/participant_selection.html:157
 #: export/templates/export/show_selected_participants.html:49
-#: export/views.py:95
+#: export/views.py:46
 msgid "Age"
 msgstr ""
 
@@ -377,17 +377,17 @@ msgid "Code"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:51
-#: export/views.py:103
+#: export/views.py:54
 msgid "Country"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:52
-#: export/views.py:102
+#: export/views.py:53
 msgid "State"
 msgstr ""
 
 #: export/templates/export/show_selected_participants.html:53
-#: export/views.py:101
+#: export/views.py:52
 msgid "City"
 msgstr ""
 
@@ -395,204 +395,204 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-#: export/views.py:97
+#: export/views.py:48
 msgid "Date of birth"
 msgstr ""
 
-#: export/views.py:100
+#: export/views.py:51
 msgid "Origin"
 msgstr ""
 
-#: export/views.py:104
+#: export/views.py:55
 msgid "Natural of"
 msgstr ""
 
-#: export/views.py:105
+#: export/views.py:56
 msgid "Schooling"
 msgstr ""
 
-#: export/views.py:107
+#: export/views.py:58
 msgid "Schooling of the patient"
 msgstr ""
 
-#: export/views.py:108
+#: export/views.py:59
 msgid "Profession"
 msgstr ""
 
-#: export/views.py:110
+#: export/views.py:61
 msgid "Calculated social class"
 msgstr ""
 
-#: export/views.py:111
+#: export/views.py:62
 msgid "Occupation"
 msgstr ""
 
-#: export/views.py:113
+#: export/views.py:64
 msgid ""
 "Do you receive some benefit from the municipal level, state or federal "
 "government?"
 msgstr ""
 
-#: export/views.py:114
+#: export/views.py:65
 msgid "Religion"
 msgstr ""
 
-#: export/views.py:115
+#: export/views.py:66
 msgid "Flesh tone"
 msgstr ""
 
-#: export/views.py:116
+#: export/views.py:67
 msgid "Citizenship"
 msgstr ""
 
-#: export/views.py:117
+#: export/views.py:68
 msgid "What form of payment of the treatment performed"
 msgstr ""
 
-#: export/views.py:119
+#: export/views.py:70
 msgid "Smoker"
 msgstr ""
 
-#: export/views.py:121
+#: export/views.py:72
 msgid "Cigarretes/Day"
 msgstr ""
 
-#: export/views.py:122
+#: export/views.py:73
 msgid "Former smoker"
 msgstr ""
 
-#: export/views.py:123
+#: export/views.py:74
 msgid "Alcoholic"
 msgstr ""
 
-#: export/views.py:125
+#: export/views.py:76
 msgid "Frequency"
 msgstr ""
 
-#: export/views.py:126
+#: export/views.py:77
 msgid "Period"
 msgstr ""
 
-#: export/views.py:127
+#: export/views.py:78
 msgid "Drugs"
 msgstr ""
 
-#: export/views.py:131
+#: export/views.py:82
 msgid "Date"
 msgstr ""
 
-#: export/views.py:133
+#: export/views.py:84
 msgid "Observation"
 msgstr ""
 
-#: export/views.py:135
+#: export/views.py:86
 msgid "Disease code (ICD)"
 msgstr ""
 
-#: export/views.py:137
+#: export/views.py:88
 msgid "Disease Description"
 msgstr ""
 
-#: export/views.py:139
+#: export/views.py:90
 msgid "Disease Abbreviated Description"
 msgstr ""
 
-#: export/views.py:377
+#: export/views.py:268
 msgid "Inconsistent data read from json file"
 msgstr ""
 
-#: export/views.py:637
+#: export/views.py:527
 msgid "Export was finished correctly"
 msgstr ""
 
-#: export/views.py:646
+#: export/views.py:536
 msgid "Export data was not generated."
 msgstr ""
 
-#: export/views.py:663
+#: export/views.py:553
 msgid "No data was select. Export data was not generated."
 msgstr ""
 
-#: export/views.py:1214
+#: export/views.py:1104
 msgid "Per experiments"
 msgstr ""
 
-#: export/views.py:1303
+#: export/views.py:1193
 msgid "Name of use"
 msgstr ""
 
-#: export/views.py:1305
+#: export/views.py:1195
 msgid "Number of repetitions"
 msgstr ""
 
-#: export/views.py:1307
+#: export/views.py:1197
 msgid "Interval between repetitions value"
 msgstr ""
 
-#: export/views.py:1309
+#: export/views.py:1199
 msgid "Interval between repetitions unit"
 msgstr ""
 
-#: export/views.py:1310
+#: export/views.py:1200
 msgid "Order"
 msgstr ""
 
-#: export/views.py:1312
+#: export/views.py:1202
 msgid "Position in the set of steps "
 msgstr ""
 
-#: export/views.py:1312
+#: export/views.py:1202
 msgid "Random"
 msgstr ""
 
-#: export/views.py:1312
+#: export/views.py:1202
 msgid "Fixed"
 msgstr ""
 
-#: export/views.py:1314
+#: export/views.py:1204
 msgid "Requires start and end datetime"
 msgstr ""
 
-#: export/views.py:1353
+#: export/views.py:1243
 msgid "Identification"
 msgstr ""
 
-#: export/views.py:1355
+#: export/views.py:1245
 msgid "Description"
 msgstr ""
 
-#: export/views.py:1357
+#: export/views.py:1247
 msgid "Duration value"
 msgstr ""
 
-#: export/views.py:1359
+#: export/views.py:1249
 msgid "Duration unit"
 msgstr ""
 
-#: export/views.py:1365
+#: export/views.py:1255
 msgid "Type"
 msgstr ""
 
-#: export/views.py:1367
+#: export/views.py:1257
 msgid "Number of mandatory components"
 msgstr ""
 
-#: export/views.py:1373
+#: export/views.py:1263
 msgid "Text"
 msgstr ""
 
-#: export/views.py:1379
+#: export/views.py:1269
 msgid "LimeSurvey ID"
 msgstr ""
 
-#: export/views.py:1387
+#: export/views.py:1277
 msgid "Questionnaire title"
 msgstr ""
 
-#: export/views.py:1394
+#: export/views.py:1284
 msgid "Stimulus type"
 msgstr ""
 
-#: export/views.py:1396
+#: export/views.py:1286
 msgid "Media file"
 msgstr ""
