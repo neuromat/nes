@@ -7238,12 +7238,12 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
         if request.POST['action'] == "group-code":
 
             group_code = request.POST['group-code'] if request.POST['group-code'] else None
-            if Group.objects.filter(code__isnull=False, code=group_code).exists():
-                messages.warning(request, _('Club already used. Please choose another name.'))
+            if Group.objects.filter(code__isnull=False, code=group_code):
+                messages.warning(request, _('Group code already used. Please choose another name.'))
             else:
                 group.code = group_code
                 group.save()
-                messages.success(request, _('Club changed successfully.'))
+                messages.success(request, _('Group code changed successfully.'))
 
         elif request.POST['action'][0:7] == "detail-":
             path_of_configuration = request.POST['action'][7:]
@@ -7290,16 +7290,16 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
              }
         )
 
-        if not enable_upload and group.code and data_configuration_tree:
+        if not enable_upload and group.code and game_and_phase and LocalInstitution.get_solo().code:
             enable_upload = True
 
     digital_games_and_phases = GoalkeeperPhase.objects.all().order_by('game__name', 'phase')
 
-    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+    context = {'can_change': get_can_change(request.user, group.experiment.research_project),
                'group': group,
                'institution_code': LocalInstitution.get_solo().code,
                'digital_game_phase_collections': digital_game_phase_collections,
-               "enable_upload": enable_upload,
+               'enable_upload': enable_upload,
                'digital_games_and_phases': digital_games_and_phases
                }
 
@@ -7312,11 +7312,9 @@ def load_group_goalkeeper_game_data(request, group_id):
 
     group = get_object_or_404(Group, id=group_id)
 
-    # The group.code is the Goalkeeper's club
     if not group.code:
-        messages.info(request, _("No Goalkeeper's club configured."))
+        messages.info(request, _("No group code configured."))
     else:
-
         institution = (LocalInstitution.get_solo().code if LocalInstitution.get_solo().code else '')
 
         number_of_imported_data = 0
@@ -7351,8 +7349,8 @@ def load_group_goalkeeper_game_data(request, group_id):
                                 phase = 0
 
                             goalkeeper_game_configuration = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
-                                experimentgroup=group.code,
-                                researchgroup=institution,
+                                groupcode=group.code,
+                                institution=institution,
                                 game=game,
                                 phase=phase,
                                 playeralias=subject_of_group.subject.patient.code).order_by('idconfig').last()
