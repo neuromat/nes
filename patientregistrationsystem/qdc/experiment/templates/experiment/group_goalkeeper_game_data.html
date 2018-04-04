@@ -83,14 +83,14 @@
                         {{ group.title }}
                     </div>
                     <div class="col-md-4">
-                        <label>{% trans "Goalkeeper's club" %}</label>
+                        <label>{% trans "Group code" %}</label>
                         <br/>
                         {% if group.code %}
-                            <a data-toggle="tooltip" data-placement="right" title="{% trans "Change goalkeeper's club" %}" onclick="$('#modalGroupCode').modal('show');">
+                            <a data-toggle="tooltip" data-placement="right" title="{% trans "Change group code" %}" onclick="$('#modalGroupCode').modal('show');">
                                 {{ group.code }}
                             </a>
                         {% else %}
-                            <a class="btn btn-warning" onclick="$('#modalGroupCode').modal('show');$('#group-code').focus();">{% trans "Create goalkeeper's club" %}</a>
+                            <a class="btn btn-warning" onclick="$('#modalGroupCode').modal('show');$('#group-code').focus();">{% trans "Create group code" %}</a>
                         {% endif %}
                     </div>
                     <div class="modal fade" id="modalGroupCode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -98,7 +98,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h4>
-                                    {% trans "Goalkeeper's club" %}
+                                    {% trans "Group code" %}
                                     </h4>
                                 </div>
                                 <div class="modal-body">

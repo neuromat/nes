@@ -1419,13 +1419,13 @@ class GoalkeeperGame(models.Model):
 
 class GoalkeeperPhase(models.Model):
     game = models.ForeignKey(GoalkeeperGame)
-    phase = models.IntegerField(name="phase", null=True, blank=True)
+    phase = models.IntegerField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('game', 'phase',)
+        unique_together = ('game', 'phase')
 
     def clean(self):
-        if self.phase==None and GoalkeeperPhase.objects.filter(phase=self.phase, game=self.game):
+        if self.phase is None and GoalkeeperPhase.objects.filter(phase=self.phase, game=self.game):
             raise ValidationError(_('Phase already registered'))
 
     def __str__(self):
@@ -1448,8 +1448,9 @@ class GoalkeeperGameLog(models.Model):
 
 class GoalkeeperGameConfig(models.Model):
     id_config = models.IntegerField(name="idconfig", primary_key=True)
-    researchgroup = models.CharField(name="researchgroup", max_length=50)
-    experiment_group = models.CharField(name="experimentgroup", max_length=50)
+    institution = models.CharField(name="institution", max_length=150)
+    group_code = models.CharField(name="groupcode", max_length=150)
+    soccer_team = models.CharField(name="soccerteam", max_length=150)
     game = models.CharField(name="game", max_length=2)
     phase = models.IntegerField(name="phase")
     player_alias = models.CharField(name="playeralias", max_length=20)
