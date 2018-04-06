@@ -7338,24 +7338,29 @@ def load_group_goalkeeper_game_data(request, group_id):
                     except:
                         game_and_phase = None
 
+                    game = None
+                    phase = None
+
+                    if game_and_phase:
+                        game = game_and_phase.game.code
+                        phase = game_and_phase.phase
+
+                        if phase == None:
+                            phase = 0
+
                     # for each subject
                     for subject_of_group in group.subjectofgroup_set.all():
 
-                        if game_and_phase:
-                            game = game_and_phase.game.code
-                            phase = game_and_phase.phase
+                        goalkeeper_games = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
+                            groupcode=group.code,
+                            institution=institution,
+                            game=game,
+                            phase=phase,
+                            playeralias=subject_of_group.subject.patient.code).order_by('idconfig')
 
-                            if phase == None:
-                                phase = 0
+                        if goalkeeper_games:
 
-                            goalkeeper_game_configuration = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
-                                groupcode=group.code,
-                                institution=institution,
-                                game=game,
-                                phase=phase,
-                                playeralias=subject_of_group.subject.patient.code).order_by('idconfig').last()
-
-                            if goalkeeper_game_configuration:
+                            for goalkeeper_game_configuration in goalkeeper_games:
 
                                 result = GoalkeeperGameResults.objects.using('goalkeeper').filter(
                                     id=goalkeeper_game_configuration.idresult).first()
@@ -7378,8 +7383,19 @@ def load_group_goalkeeper_game_data(request, group_id):
                                         digital_game_phase_data.date = game_date
                                         digital_game_phase_data.time = game_time
 
-                                        digital_game_phase_data.description = \
-                                            "%s - %s" % (group.code, subject_of_group.subject.patient.code)
+                                        if game == 'AQ':
+                                            digital_game_phase_data.description = \
+                                                _("Team or structure: %s \nGame code: %s \nParticipant: %s") % \
+                                                (goalkeeper_game_configuration.soccerteam,
+                                                 game,
+                                                 subject_of_group.subject.patient.code)
+                                        else:
+                                            digital_game_phase_data.description = \
+                                                _("Team or structure: %s\nGame code: %s\nPhase: %s\nParticipant: %s") \
+                                                % (goalkeeper_game_configuration.soccerteam,
+                                                   game,
+                                                   phase,
+                                                   subject_of_group.subject.patient.code)
 
                                         digital_game_phase_data.file_format = \
                                             get_object_or_404(FileFormat, nes_code='txt')
