@@ -10,6 +10,7 @@ class LoginTest(FunctionalTest):
 
     def test_can_get_username_link_to_log_in(self):
         user = create_user('Senior researcher', TEST_USERNAME)
+
         # Suzana goes to the NES and see a form to enter her credentials to
         # log in. She enters her credentials
         self.browser.get(self.live_server_url)
