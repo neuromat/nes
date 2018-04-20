@@ -27,7 +27,7 @@
                 <li><a href="/experiment/research_project/{{ group.experiment.research_project.id }}">{{ group.experiment.research_project.title }}</a></li>
                 <li><a href="/experiment/{{ group.experiment.id }}">{{ group.experiment.title }}</a></li>
                 <li><a href="/experiment/group/{{ group.id }}">{{ group.title }}</a></li>
-                <li class="active">{% trans "Participants selected" %}</li>
+                <li class="active">{% trans "Participants and data collections" %}</li>
             </ol>
         </div>
     </div>
@@ -56,239 +56,325 @@
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
-            {% if perms.experiment.add_subject and can_change %}
-                <div class="container span6 offset3 well ">
+
+            <ul class="nav nav-tabs">
+                <li id="per_participants_tab" class="active">
+                    <a data-toggle="tab" href="#per_participants"><span class="fa fa-user"></span> {% trans "Per participant" %}</a>
+                </li>
+                <li id="per_steps_tab">
+                    <a data-toggle="tab" href="#per_steps_of_experimental_protocol"><span class="fa fa-sitemap"></span> {% trans "Per steps of the experimental protocol" %}</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+
+                {# tab 'Per participant' #}
+                <div id="per_participants" class="tab-pane fade in active">
+
+                    <br/>
+                    {% if perms.experiment.add_subject and can_change %}
+                        <div class="container span6 offset3 well ">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="form-group">
+                                        <input id="group_id" value="{{ group.id }}" style="display: none;">
+                                        <label>{% trans "Add participant" %}</label>
+
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                                            <input class="form-control" {% if perms.patient.sensitive_data_patient %}
+                                            placeholder="{% trans "Type participant name, CPF or code" %}" {% else %} placeholder="{% trans "Type participant code" %}"
+                                        {% endif %} id="subject_name" type="text" autofocus="true">
+                                        </div>
+                                        {% csrf_token %}
+                                        <ul id="search-results-subjects" style="list-style: none;">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" align="right">
+                                <div class="col-md-12">
+                                    <a href="/experiment/group/{{ group.id }}/search_subjects">
+                                        {% trans "Advanced search" %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="col-xs-12 col-sm-12">
+                    <div class="row">
+                        {% if experimental_protocol_info.number_of_questionnaires %}
+                        <div class="pull-right">
+                            <a onclick="$('#modalImportQuestionnaireResponses').modal('show');" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="{% trans "Import questionnaire responses" %}">
+                                <span class="glyphicon glyphicon-list-alt"></span>
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% if goalkeeper %}
+                        <div class="pull-right">
+                            <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="{% trans "Import goalkeeper game data" %}">
+                                <span class="fa fa-lg fa-soccer-ball-o"></span>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <input id="group_id" value="{{ group.id }}" style="display: none;">
-                                <label>{% trans "Add participant" %}</label>
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>{% trans "Participant" %}</th>
+                                        <th>{% trans "Term of consent" %}</th>
+                                        {% if experimental_protocol_info.number_of_questionnaires %}
+                                            <th>{% trans "Completed questionnaires" %}</th>
+                                        {% endif %}
+                                        <th class="col-md-6">{% trans "Data files uploaded" %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if subject_list|length == 0 %}
+                                        <tr>
+                                            <td>{% trans "(No participant inserted)" %}</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    {% else %}
+                                        {% for item in subject_list %}
+                                            <tr>
+                                                <td>
+                                                    {% if perms.experiment.delete_subject and can_change %}
+                                                        <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="left" title="{% trans "Delete participant" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
+                                                           onclick="show_modal_remove({{ item.subject.id }});"></a>
+                                                    {% endif %}
+                                                    {% get_name_or_code item.subject.patient.id %}
 
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                                    <input class="form-control" {% if perms.patient.sensitive_data_patient %}
-                                    placeholder="{% trans "Type participant name, CPF or code" %}" {% else %} placeholder="{% trans "Type participant code" %}"
-                                {% endif %} id="subject_name" type="text" autofocus="true">
-                                </div>
-                                {% csrf_token %}
-                                <ul id="search-results-subjects" style="list-style: none;">
-                                </ul>
+                                                </td>
+                                                <td>
+                                                    <div class="col-xs-2 col-sm-2" >
+                                                        {% if can_change and perms.patient.sensitive_data_patient %}
+                                                            <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file'
+                                                               data-toggle="tooltip" data-placement="top" title="{% trans "Upload consent form" %}">
+                                                                <span class="glyphicon glyphicon-paperclip"></span>
+                                                            </a>
+                                                        {% else %}
+                                                            <span class="glyphicon glyphicon-paperclip"></span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-xs-10 col-sm-10" >
+                                                        {% if item.consent %}
+                                                            <span class="label label-success">{% trans "Attached" %}</span>
+                                                        {% else %}
+                                                            <span class="label label-warning">{% trans "No attachments" %}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                {% if experimental_protocol_info.number_of_questionnaires %}
+                                                <td>
+                                                    <div class="row">
+                                                        {% if limesurvey_available %}
+                                                            <div class="col-xs-2 col-sm-2">
+                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/'
+                                                                   data-toggle="tooltip" data-placement="top" title="{% trans "Fill questionnaires" %}">
+                                                                    <span class="glyphicon glyphicon-list-alt"></span>
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-xs-10 col-sm-10" >
+                                                                <div class="progress">
+                                                                    <div class="progress-bar {% if item.percentage_of_questionnaires == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage_of_questionnaires }}%;">
+                                                                        <span>{{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% else %}
+                                                            <span class="label label-default">{% trans "No status" %}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                {% endif %}
+                                                <td>
+                                                    {% if experimental_protocol_info.number_of_eeg_data %}
+                                                        <div class="row">
+                                                            <div class="col-xs-4 col-sm-4">
+                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg'
+                                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EEG data files" %}">
+                                                                    <span class="glyphicon glyphicon-flash"></span> {% trans "EEG" %}
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-xs-8 col-sm-8">
+                                                                <div class="progress">
+                                                                    <div class="progress-bar {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_eeg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_eeg_data_files }}" style="color: #000000; width: {{ item.percentage_of_eeg_data_files_uploaded }}%;">
+                                                                        <span>{{ item.number_of_eeg_data_files_uploaded }}/{{ item.total_of_eeg_data_files }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if experimental_protocol_info.number_of_emg_data %}
+                                                        <div class="row">
+                                                            <div class="col-xs-4 col-sm-4">
+                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg'
+                                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EMG data files" %}">
+                                                                    <span class="glyphicon glyphicon-stats"></span> {% trans "EMG" %}
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-xs-8 col-sm-8">
+                                                                <div class="progress">
+                                                                    <div class="progress-bar {% if item.percentage_of_emg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_emg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_emg_data_files }}" style="color: #000000; width: {{ item.percentage_of_emg_data_files_uploaded }}%;">
+                                                                        <span>{{ item.number_of_emg_data_files_uploaded }}/{{ item.total_of_emg_data_files }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if experimental_protocol_info.number_of_tms_data %}
+                                                        <div class="row">
+                                                            <div class="col-xs-4 col-sm-4">
+                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms'
+                                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded TMS data files" %}">
+                                                                    <span class="glyphicon glyphicon-magnet"></span> {% trans "TMS" %}
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-xs-8 col-sm-8">
+                                                                <div class="progress">
+                                                                    <div class="progress-bar {% if item.percentage_of_tms_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_tms_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_tms_data_files }}" style="color: #000000; width: {{ item.percentage_of_tms_data_files_uploaded }}%;">
+                                                                        <span>{{ item.number_of_tms_data_files_uploaded }}/{{ item.total_of_tms_data_files }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if experimental_protocol_info.number_of_digital_game_phase_data %}
+                                                        <div class="row">
+                                                            <div class="col-xs-4 col-sm-4">
+                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase'
+                                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded goalkeeper game phase data files" %}">
+                                                                    <span class="glyphicon glyphicon-play-circle"></span> {% trans "Game" %}
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-xs-8 col-sm-8">
+                                                                <div class="progress">
+                                                                    <div class="progress-bar {% if item.percentage_of_digital_game_phase_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_digital_game_phase_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_digital_game_phase_data_files }}" style="color: #000000; width: {{ item.percentage_of_digital_game_phase_data_files_uploaded }}%;">
+                                                                        <span>{{ item.number_of_digital_game_phase_data_files_uploaded }}/{{ item.total_of_digital_game_phase_data_files }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if experimental_protocol_info.number_of_generic_data_collection_data %}
+                                                        <div class="row">
+                                                            <div class="col-xs-4 col-sm-4">
+                                                                <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection'
+                                                                        data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded generic collection data files" %}">
+                                                                    <span class="glyphicon glyphicon-file"></span> {% trans "Data collection" %}
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-xs-8 col-sm-8">
+                                                                <div class="progress">
+                                                                    <div class="progress-bar {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_generic_data_collection_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_generic_data_collection_data_files }}" style="color: #000000; width: {{ item.percentage_of_generic_data_collection_data_files_uploaded }}%;">
+                                                                        <span>{{ item.number_of_generic_data_collection_data_files_uploaded }}/{{ item.total_of_generic_data_collection_data_files }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <div class="row">
+                                                        <div class="col-xs-12 col-sm-12">
+                                                            <span style="background-color: steelblue" class="badge">{{ item.number_of_additional_data_uploaded }}</span>
+                                                            <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data' data-toggle="tooltip" title="{% trans "Uploaded additional data files" %}">
+                                                                {% trans "Additional" %}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                    <div class="row" align="right">
-                        <div class="col-md-12">
-                            <a href="/experiment/group/{{ group.id }}/search_subjects">
-                                {% trans "Advanced search" %}
-                            </a>
+
+                </div>
+
+                {# tab 'per steps of the experimental protocol' #}
+                <div id="per_steps_of_experimental_protocol" class="tab-pane fade">
+
+                    <div class="row">
+                        <br/>
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>{% trans "Data colletion path" %}</th>
+                                        <th>{% trans "Data type" %}</th>
+                                        <th>{% trans "Number of participants" %}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for data_collection in data_collections %}
+                                            <tr>
+                                                <td {% if data_collection.data_list|length > 1 %}rowspan="{{ data_collection.data_list|length }}" {% endif %}>
+                                                    {# Identification #}
+                                                    <span class="{{ data_collection.icon_class }}"></span>
+
+                                                    {% if data_collection.component_configuration %}
+                                                        <b>{{ data_collection.component_configuration.component.identification }}</b>
+                                                    {% else %}
+                                                        <b>{% trans "Experimental protocol" %}</b>
+                                                    {% endif %}
+
+                                                    <blockquote>
+                                                        {# Path #}
+                                                        <i><h6>
+                                                            {% for item in data_collection.path %}
+                                                                {{ item.1 }} > {% if item.2 %}{{ item.2 }} > {% endif %} {% if forloop.last %}{{ item.3 }}{% endif %}
+                                                            {% endfor %}
+                                                        </h6></i>
+                                                    </blockquote>
+
+                                                </td>
+                                                {% if data_collection.data_list %}
+                                                    {% for item_data in data_collection.data_list %}
+                                                        {% if forloop.counter0 != 0 %}<tr>{% endif %}
+                                                        <td>
+                                                            <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}">
+                                                               <span class="{{ item_data.icon_class }}"></span> {{ item_data.description }}</a>
+                                                        </td>
+                                                        <td>{{ item_data.count }} {% if item_data.count == 1 %}{% trans "participant" %}{% else %}{% trans "participants" %}{% endif %}</td>
+                                                        {% if forloop.counter0 != 0 %}</tr>{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <td></td>
+                                                    <td></td>
+                                                {% endif %}
+
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endif %}
 
-            <div class="col-xs-12 col-sm-12">
-            <div class="row">
-                {% if experimental_protocol_info.number_of_questionnaires %}
-                <div class="pull-right">
-                    <a onclick="$('#modalImportQuestionnaireResponses').modal('show');" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="{% trans "Import questionnaire responses" %}">
-                        <span class="glyphicon glyphicon-list-alt"></span>
-                    </a>
+
                 </div>
-                {% endif %}
-                {% if goalkeeper %}
-                <div class="pull-right">
-                    <a href="/experiment/group/{{ group.id }}/goalkeeper_game_data" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="{% trans "Import goalkeeper game data" %}">
-                        <span class="fa fa-lg fa-soccer-ball-o"></span>
-                    </a>
-                </div>
-                {% endif %}
-            </div>
+
             </div>
 
-            <div class="row">
-                <div class="col-xs-12 col-sm-12">
-                    <div class="form-group">
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>{% trans "Participant" %}</th>
-                                <th>{% trans "Term of consent" %}</th>
-                                {% if experimental_protocol_info.number_of_questionnaires %}
-                                    <th>{% trans "Completed questionnaires" %}</th>
-                                {% endif %}
-                                <th class="col-md-6">{% trans "Data files uploaded" %}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% if subject_list|length == 0 %}
-                                <tr>
-                                    <td>{% trans "(No participant inserted)" %}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            {% else %}
-                                {% for item in subject_list %}
-                                    <tr>
-                                        <td>
-                                            {% if perms.experiment.delete_subject and can_change %}
-                                                <a class="btn glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="left" title="{% trans "Delete participant" %}" style="color: indianred; vertical-align: -5%; padding-left: 0;"
-                                                   onclick="show_modal_remove({{ item.subject.id }});"></a>
-                                            {% endif %}
-                                            {% get_name_or_code item.subject.patient.id %}
-
-                                        </td>
-                                        <td>
-                                            <div class="col-xs-2 col-sm-2" >
-                                                {% if can_change and perms.patient.sensitive_data_patient %}
-                                                    <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/upload_file'
-                                                       data-toggle="tooltip" data-placement="top" title="{% trans "Upload consent form" %}">
-                                                        <span class="glyphicon glyphicon-paperclip"></span>
-                                                    </a>
-                                                {% else %}
-                                                    <span class="glyphicon glyphicon-paperclip"></span>
-                                                {% endif %}
-                                            </div>
-                                            <div class="col-xs-10 col-sm-10" >
-                                                {% if item.consent %}
-                                                    <span class="label label-success">{% trans "Attached" %}</span>
-                                                {% else %}
-                                                    <span class="label label-warning">{% trans "No attachments" %}</span>
-                                                {% endif %}
-                                            </div>
-                                        </td>
-                                        {% if experimental_protocol_info.number_of_questionnaires %}
-                                        <td>
-                                            <div class="row">
-                                                {% if limesurvey_available %}
-                                                    <div class="col-xs-2 col-sm-2">
-                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/'
-                                                           data-toggle="tooltip" data-placement="top" title="{% trans "Fill questionnaires" %}">
-                                                            <span class="glyphicon glyphicon-list-alt"></span>
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-xs-10 col-sm-10" >
-                                                        <div class="progress">
-                                                            <div class="progress-bar {% if item.percentage_of_questionnaires == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_questionnaires_filled }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_questionnaires }}" style="color: #000000; width: {{ item.percentage_of_questionnaires }}%;">
-                                                                <span>{{ item.number_of_questionnaires_filled }}/{{ item.total_of_questionnaires }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                {% else %}
-                                                    <span class="label label-default">{% trans "No status" %}</span>
-                                                {% endif %}
-                                            </div>
-                                        </td>
-                                        {% endif %}
-                                        <td>
-                                            {% if experimental_protocol_info.number_of_eeg_data %}
-                                                <div class="row">
-                                                    <div class="col-xs-4 col-sm-4">
-                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/eeg'
-                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EEG data files" %}">
-                                                            <span class="glyphicon glyphicon-flash"></span> {% trans "EEG" %}
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-xs-8 col-sm-8">
-                                                        <div class="progress">
-                                                            <div class="progress-bar {% if item.percentage_of_eeg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_eeg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_eeg_data_files }}" style="color: #000000; width: {{ item.percentage_of_eeg_data_files_uploaded }}%;">
-                                                                <span>{{ item.number_of_eeg_data_files_uploaded }}/{{ item.total_of_eeg_data_files }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-
-                                            {% if experimental_protocol_info.number_of_emg_data %}
-                                                <div class="row">
-                                                    <div class="col-xs-4 col-sm-4">
-                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/emg'
-                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded EMG data files" %}">
-                                                            <span class="glyphicon glyphicon-stats"></span> {% trans "EMG" %}
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-xs-8 col-sm-8">
-                                                        <div class="progress">
-                                                            <div class="progress-bar {% if item.percentage_of_emg_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_emg_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_emg_data_files }}" style="color: #000000; width: {{ item.percentage_of_emg_data_files_uploaded }}%;">
-                                                                <span>{{ item.number_of_emg_data_files_uploaded }}/{{ item.total_of_emg_data_files }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-
-                                            {% if experimental_protocol_info.number_of_tms_data %}
-                                                <div class="row">
-                                                    <div class="col-xs-4 col-sm-4">
-                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/tms'
-                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded TMS data files" %}">
-                                                            <span class="glyphicon glyphicon-magnet"></span> {% trans "TMS" %}
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-xs-8 col-sm-8">
-                                                        <div class="progress">
-                                                            <div class="progress-bar {% if item.percentage_of_tms_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_tms_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_tms_data_files }}" style="color: #000000; width: {{ item.percentage_of_tms_data_files_uploaded }}%;">
-                                                                <span>{{ item.number_of_tms_data_files_uploaded }}/{{ item.total_of_tms_data_files }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-
-                                            {% if experimental_protocol_info.number_of_digital_game_phase_data %}
-                                                <div class="row">
-                                                    <div class="col-xs-4 col-sm-4">
-                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/digital_game_phase'
-                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded goalkeeper game phase data files" %}">
-                                                            <span class="glyphicon glyphicon-play-circle"></span> {% trans "Game" %}
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-xs-8 col-sm-8">
-                                                        <div class="progress">
-                                                            <div class="progress-bar {% if item.percentage_of_digital_game_phase_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_digital_game_phase_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_digital_game_phase_data_files }}" style="color: #000000; width: {{ item.percentage_of_digital_game_phase_data_files_uploaded }}%;">
-                                                                <span>{{ item.number_of_digital_game_phase_data_files_uploaded }}/{{ item.total_of_digital_game_phase_data_files }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-
-                                            {% if experimental_protocol_info.number_of_generic_data_collection_data %}
-                                                <div class="row">
-                                                    <div class="col-xs-4 col-sm-4">
-                                                        <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/generic_data_collection'
-                                                                data-toggle="tooltip" data-placement="top" title="{% trans "Uploaded generic collection data files" %}">
-                                                            <span class="glyphicon glyphicon-file"></span> {% trans "Data collection" %}
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-xs-8 col-sm-8">
-                                                        <div class="progress">
-                                                            <div class="progress-bar {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_generic_data_collection_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_generic_data_collection_data_files }}" style="color: #000000; width: {{ item.percentage_of_digital_game_phase_data_files_uploaded }}%;">
-                                                                <span>{{ item.number_of_generic_data_collection_data_files_uploaded }}/{{ item.total_of_generic_data_collection_data_files }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-
-                                            <div class="row">
-                                                <div class="col-xs-12 col-sm-12">
-                                                    <span style="background-color: steelblue" class="badge">{{ item.number_of_additional_data_uploaded }}</span>
-                                                    <a href='/experiment/group/{{ group.id }}/subject/{{ item.subject.id }}/additional_data' data-toggle="tooltip" title="{% trans "Uploaded additional data files" %}">
-                                                        {% trans "Additional" %}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
             <div class="btn-toolbar">
+                <br/>
                 <div class="btn-group pull-right">
                     <a href="/experiment/group/{{ group.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                 </div>
@@ -339,4 +425,23 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        if ("{{ per_steps_tab_active }}") {
+            // make per_steps_of_experimental_protocol tab active if redirected from
+            // remove or transfer data collections
+            $("#per_participants_tab").removeAttr('class');
+            $("#per_steps_tab").attr('class', 'active');
+            $("#per_participants").attr('class', 'tab-pane fade');
+            $("#per_steps_of_experimental_protocol").attr("class", "tab-pane" +
+                " fade in active");
+
+            // clear url query substring used to redirect to this page with per_steps_tab active
+            // see redirects in data_collection_manage view, post method sections
+            var currURL = window.location.href;
+            window.history.replaceState({}, document.title, currURL.substring(0, currURL.lastIndexOf('/')));
+        }
+    </script>
 {% endblock %}

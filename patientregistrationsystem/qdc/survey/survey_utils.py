@@ -40,10 +40,12 @@ question_types = {
     'S': 'Short Free Text',
     'T': 'Long Free Text',
     'U': 'Huge Free Text',
-    'X': 'Boilerplate Question',
+    'X': 'Boilerplate Question',  # não encontrado na versão do Neuromat
     'Y': 'Yes/No',
     '!': 'List (Dropdown)',
+    # não encontrado na versão atual do Neuromat
     ':': 'Array (Flexible Labels) multiple drop down',
+    # não encontrado na versão atual do Neuromat
     ';': 'Array (Flexible Labels) multiple texts',
     '|': 'File Upload',
     '*': 'Equation'
@@ -255,7 +257,6 @@ class QuestionnaireUtils:
 
     def create_questionnaire_explanation_fields(self, questionnaire_id, language, questionnaire_lime_survey,
                                                 fields, entrance_questionnaire):
-
         """
         :param questionnaire_id:
         :param language:
@@ -303,10 +304,17 @@ class QuestionnaireUtils:
                 question_type_to_list = [question_type, question_type_description]
                 question_to_list = [smart_str(question_code), smart_str(question_description)]
 
-                # Scales (type == "1" means "Array Dual Scale"
-                scales = \
-                    [attribute for attribute in sorted(properties['attributes_lang'].values())] \
-                        if question_type == "1" else [""]
+                # Scales (type == "1" means "Array Dual Scale")
+                scales = [""]
+                if question_type == "1":
+                    if isinstance(properties['attributes_lang'], dict):
+                        scales = [
+                            properties['attributes_lang']['dualscale_headerA'] if 'dualscale_headerA' in properties[
+                                'attributes_lang'] else "",
+                            properties['attributes_lang']['dualscale_headerB'] if 'dualscale_headerB' in properties[
+                                'attributes_lang'] else ""]
+                    else:
+                        scales = ["", ""]
 
                 # answers
                 options_list = []

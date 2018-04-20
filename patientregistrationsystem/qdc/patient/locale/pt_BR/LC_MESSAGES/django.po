@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-07 10:45-0300\n"
+"POT-Creation-Date: 2018-04-03 13:23-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,8 +20,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: patient/forms.py:20 patient/templates/patient/register_personal_data.html:52
-msgid "Anonymous user?"
-msgstr "Usuário anônimo?"
+msgid "Anonymous participant?"
+msgstr "Participante anônimo?"
 
 #: patient/forms.py:32 patient/forms.py:67 patient/tests.py:542
 msgid "Name must be included"
@@ -723,7 +723,7 @@ msgstr "Rádios"
 
 #: patient/templates/patient/register_socialdemographic_data.html:179
 msgid "Bath"
-msgstr "Bath"
+msgstr "Banheiros"
 
 #: patient/templates/patient/register_socialdemographic_data.html:190
 msgid "Automobile"

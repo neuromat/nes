@@ -17,7 +17,7 @@ from patient.quiz_widget import SelectBoxCountries, SelectBoxState
 class PatientForm(ModelForm):
     anonymous = forms.BooleanField(required=False,
                                    initial=False,
-                                   label=_('Anonymous user?'))
+                                   label=_('Anonymous participant?'))
 
     class Meta:
         model = Patient
