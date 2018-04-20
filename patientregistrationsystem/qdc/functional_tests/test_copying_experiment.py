@@ -34,9 +34,7 @@ class CopyExperimentTest(FunctionalTest):
         # experimental_protocol = ObjectsFactory.
         group = ObjectsFactory.create_group(experiment)
 
-
     def test_can_see_copy_experiment_button(self):
-
         username = TEST_USERNAME
         self.browser.get(self.live_server_url)
         self.wait_to_logged_out()
