@@ -246,7 +246,7 @@
 
                         <div id="id_stimulation_setting" class="panel panel-default" style="border:1px solid lightgray;">
                             <div class="panel-heading"><b>{% trans "Stimulation Settings" %} -
-                                <label id="id_pulse_stimulus">{{ pulse_stimulus }}</label>
+                                <label id="id_pulse_stimulus">{% if pulse_stimulus %}{{ pulse_stimulus }}{% else %}{% trans "Not configured" %}{% endif %}</label>
 
                                 </b></div>
                             <div class="panel-body" style="background-color: whitesmoke">

@@ -58,7 +58,7 @@ from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, 
     DigitalGamePhase, ContextTree, DigitalGamePhaseData, Publication, \
     GenericDataCollection, GenericDataCollectionData, GoalkeeperGameLog, ScheduleOfSending, \
     GoalkeeperGameConfig, GoalkeeperGameResults, EEGFile, EMGFile, AdditionalDataFile, GenericDataCollectionFile, \
-    DigitalGamePhaseFile, PortalSelectedQuestion, ComponentAdditionalFile
+    DigitalGamePhaseFile, PortalSelectedQuestion, ComponentAdditionalFile, GoalkeeperPhase
 
 from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupForm, InstructionForm, \
     ComponentForm, StimulusForm, BlockForm, ComponentConfigurationForm, ResearchProjectForm, NumberOfUsesToInsertForm, \
@@ -120,6 +120,17 @@ icon_class = {
     'experimental_protocol': 'glyphicon glyphicon-tasks',
     'digital_game_phase': 'glyphicon glyphicon-play-circle',
     'generic_data_collection': 'glyphicon glyphicon-file',
+    'additional_data': 'fa fa-puzzle-piece'
+}
+
+data_type_name = {
+    'additional_data': _('additional data'),
+    'eeg': 'EEG',
+    'emg': 'EMG',
+    'tms': 'TMS',
+    'digital_game_phase': _('goalkeeper game'),
+    'generic_data_collection': _('generic data collection'),
+    'questionnaire': _('questionnaire')
 }
 
 delimiter = "-"
@@ -652,12 +663,16 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     if request.method == "POST":
         if request.POST['action'] == "remove":
 
-            research_project = experiment.research_project
+            check_can_change(request.user, experiment.research_project)
 
-            check_can_change(request.user, research_project)
+            # Check if there is data collection for its groups
+            experiment_has_data_collection = False
+            for group in group_list:
+                if group_has_data_collection(group):
+                    experiment_has_data_collection = True
+                    break
 
-            if QuestionnaireResponse.objects.filter(
-                    subject_of_group__group__experiment_id=experiment_id).count() == 0:
+            if not experiment_has_data_collection:
 
                 # Check if there is component_configuration
                 for component_configuration in ComponentConfiguration.objects.filter(component__experiment=experiment):
@@ -670,16 +685,17 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                 try:
                     experiment.delete()
                     messages.success(request, _('Experiment removed successfully.'))
-                    return redirect('research_project_view', research_project_id=research_project.id)
+                    return redirect('research_project_view', research_project_id=experiment.research_project.id)
                 except ProtectedError:
                     messages.error(request,
-                                   _("It was not possible to delete experiment, "
+                                   _("It was not possible to delete experiment "
                                      "because there are groups connected."))
                     redirect_url = reverse("experiment_view", args=(experiment_id,))
                     return HttpResponseRedirect(redirect_url)
             else:
                 messages.error(request,
-                               _("Impossible to delete group because there is (are) questionnaire(s) answered."))
+                               _("Impossible to delete experiment because there is data collection associated."))
+
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
 
@@ -4818,6 +4834,8 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                  'number_of_additional_data_uploaded':
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()},
             )
+
+
     else:
         for subject_of_group in subject_list:
             subject_list_with_status.append(
@@ -4830,6 +4848,12 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                      AdditionalData.objects.filter(subject_of_group=subject_of_group).count()})
 
     surveys.release_session_key()
+
+    # info for tab 'per step of the experimental protocol'
+    # First element of the list is associated to the whole experimental protocol
+    # subject_step_data_query = \
+    #     SubjectStepData.objects.filter(subject_of_group=subject_of_group, data_configuration_tree=None)
+    data_collections = get_data_collections_from_group(group)
 
     if request.method == "POST":
 
@@ -4851,9 +4875,129 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                'subject_list': subject_list_with_status,
                "limesurvey_available": limesurvey_available,
                "experimental_protocol_info": experimental_protocol_info,
-               "goalkeeper": goalkeeper}
+               "goalkeeper": goalkeeper,
+               "data_collections": data_collections}
+
+    # to make per_steps_of_experimental_protocol tab active when redirected
+    # from data_collection_management view in its post requests
+    if request.method == 'GET'and request.GET.get('per_steps_tab'):
+        context['per_steps_tab_active'] = 'active'
 
     return render(request, template_name, context)
+
+
+def get_data_collections_from_group(group, data_type=None):
+
+    data_collections = []
+
+    if data_type is None or data_type == "additional_data":
+
+        additional_data_list = AdditionalData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree=None)
+
+        data_list = [
+            {'type': 'additional_data',
+             'icon_class': icon_class['additional_data'],
+             'description': _('Additional'),
+             'count': additional_data_list.values(
+                'subject_of_group__subject').distinct().count()}] if additional_data_list else []
+        data_collections.append(
+            {'component_configuration': None,
+             'path': None,
+             'data_list': data_list,
+             'icon_class': icon_class['experimental_protocol']}
+        )
+
+    list_of_paths = create_list_of_trees(group.experimental_protocol,
+                                         data_type if data_type and data_type != "additional_data" else None)
+    for path in list_of_paths:
+        component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
+                                                                  [item[0] for item in path])
+        participant_quantity = \
+            AdditionalData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or \
+                                                                   data_type == "additional_data" else None
+
+        data_list = [{'type': 'additional_data',
+                      'icon_class': icon_class['additional_data'],
+                      'description': _('Additional'),
+                      'count': participant_quantity}] if participant_quantity else []
+
+        if component_configuration.component.component_type == "eeg":
+            participant_quantity = EEGData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or data_type == "eeg" else None
+            if participant_quantity:
+                data_list.append({'type': 'eeg',
+                                  'icon_class': icon_class['eeg'],
+                                  'description': _('EEG'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "emg":
+            participant_quantity = EMGData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or data_type == "emg" else None
+            if participant_quantity:
+                data_list.append({'type': 'emg',
+                                  'icon_class': icon_class['emg'],
+                                  'description': _('EMG'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "tms":
+            participant_quantity = TMSData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or data_type == "tms" else None
+            if participant_quantity:
+                data_list.append({'type': 'tms',
+                                  'icon_class': icon_class['tms'],
+                                  'description': _('TMS'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "digital_game_phase":
+            participant_quantity = DigitalGamePhaseData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or \
+                                                                   data_type == "digital_game_phase" else None
+            if participant_quantity:
+                data_list.append({'type': 'digital_game_phase',
+                                  'icon_class': icon_class['digital_game_phase'],
+                                  'description': _('Game'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "generic_data_collection":
+            participant_quantity = GenericDataCollectionData.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or \
+                                                                   data_type == "generic_data_collection" else None
+            if participant_quantity:
+                data_list.append({'type': 'generic_data_collection',
+                                  'icon_class': icon_class['generic_data_collection'],
+                                  'description': _('Data collection'),
+                                  'count': participant_quantity})
+        elif component_configuration.component.component_type == "questionnaire":
+            participant_quantity = QuestionnaireResponse.objects.filter(
+                subject_of_group__group=group,
+                data_configuration_tree_id=data_configuration_tree_id).values(
+                'subject_of_group__subject').distinct().count() if data_type is None or \
+                                                                   data_type == "questionnaire" else None
+            if participant_quantity:
+                data_list.append({'type': 'questionnaire',
+                                  'icon_class': icon_class['questionnaire'],
+                                  'description': _('Response'),
+                                  'count': participant_quantity})
+
+        data_collections.append(
+            {'component_configuration': component_configuration,
+             'path': path,
+             'data_list': data_list,
+             'icon_class': icon_class[component_configuration.component.component_type]}
+        )
+    return data_collections
 
 
 @login_required
@@ -5372,7 +5516,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
     language_code = request.LANGUAGE_CODE
 
     # Get the responses for each question of the questionnaire.
-    survey_title, groups_of_questions = get_questionnaire_responses(language_code, lime_survey_id, token_id, request)
+    survey_title, groups_of_questions = get_questionnaire_responses(
+        language_code, lime_survey_id, token_id, request
+    )
 
     origin = get_origin(request)
 
@@ -5383,35 +5529,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
         if request.POST['action'] == "remove":
             if request.user.has_perm('experiment.delete_questionnaireresponse'):
 
-                # checking if it is used by patient_questionnaire_response
+                deleted = delete_questionnaire_response(questionnaire, questionnaire_response)
 
-                token_is_used_patient_questionnaire_response = \
-                    PatientQuestionnaireResponse.objects.filter(patient=subject.patient,
-                                                                survey=questionnaire.survey,
-                                                                token_id=questionnaire_response.token_id).exists()
-
-                can_delete = False
-
-                if token_is_used_patient_questionnaire_response:
-                    can_delete = True
-                else:
-                    # remove token from LimeSurvey
-                    surveys = Questionnaires()
-                    result = surveys.delete_participant(
-                        questionnaire.survey.lime_survey_id,
-                        questionnaire_response.token_id)
-                    surveys.release_session_key()
-
-                    if str(questionnaire_response.token_id) in result:
-                        result = result[str(questionnaire_response.token_id)]
-                        if result == 'Deleted' or result == 'Invalid token ID':
-                            can_delete = True
-                    else:
-                        if 'status' in result and result['status'] == 'Error: Invalid survey ID':
-                            can_delete = True
-
-                if can_delete:
-                    questionnaire_response.delete()
+                if deleted:
                     messages.success(request, _('Fill deleted successfully.'))
                 else:
                     messages.error(request, _("Error trying to delete fill"))
@@ -5447,6 +5567,38 @@ def questionnaire_response_view(request, questionnaire_response_id,
                "survey_title": survey_title}
 
     return render(request, template_name, context)
+
+
+def delete_questionnaire_response(questionnaire: Questionnaire,
+                                  questionnaire_response: QuestionnaireResponse):
+
+    # checking if it is used by patient_questionnaire_response
+    token_is_used_patient_questionnaire_response = \
+        PatientQuestionnaireResponse.objects.filter(patient=questionnaire_response.subject_of_group.subject.patient,
+                                                    survey=questionnaire.survey,
+                                                    token_id=questionnaire_response.token_id).exists()
+    can_delete = False
+    if token_is_used_patient_questionnaire_response:
+        can_delete = True
+    else:
+        # remove token from LimeSurvey
+        surveys = Questionnaires()
+        result = surveys.delete_participant(
+            questionnaire.survey.lime_survey_id,
+            questionnaire_response.token_id)
+        surveys.release_session_key()
+
+        if str(questionnaire_response.token_id) in result:
+            result = result[str(questionnaire_response.token_id)]
+            if result == 'Deleted' or result == 'Invalid token ID':
+                can_delete = True
+        else:
+            if 'status' in result and result['status'] == 'Error: Invalid survey ID':
+                can_delete = True
+    if can_delete:
+        questionnaire_response.delete()
+        deleted = True
+    return deleted
 
 
 @login_required
@@ -6666,7 +6818,8 @@ def subject_tms_data_create(request, group_id, subject_id, tms_configuration_id,
 
     tms_setting = get_object_or_404(TMSSetting, id=tms_step.tms_setting_id)
 
-    pulse_stimulus = get_pulse_stimulus_name(tms_setting.tms_device_setting.pulse_stimulus_type)
+    pulse_stimulus = get_pulse_stimulus_name(
+        tms_setting.tms_device_setting.pulse_stimulus_type) if hasattr(tms_setting, 'tms_device_setting') else None
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -6726,7 +6879,8 @@ def tms_data_view(request, tms_data_id, template_name="experiment/subject_tms_da
 
     tms_data_form = TMSDataForm(request.POST or None, instance=tms_data)
 
-    pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type)
+    pulse_stimulus = get_pulse_stimulus_name(tms_data.tms_setting.tms_device_setting.pulse_stimulus_type) if hasattr(
+        tms_data.tms_setting, 'tms_device_setting') else None
 
     for field in tms_data_form.fields:
         tms_data_form.fields[field].widget.attrs['disabled'] = True
@@ -6805,7 +6959,6 @@ def tms_data_edit(request, tms_data_id, tab):
                         if request.POST.get('spot_image'):
                             data = request.POST.get('spot_image').split(',')[-1]
                             binary_data = base64.encodebytes(base64.b64decode(data))
-                            # path_hot_spot_filename = get_data_file_dir(tms_data, "hotspot_image.png")
                             with open("hotspot_tmp.png", "wb") as f:
                                 f.write(base64.decodebytes(binary_data))
 
@@ -7086,9 +7239,13 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
 
         if request.POST['action'] == "group-code":
 
-            group.code = request.POST['group-code'] if request.POST['group-code'] else None
-            group.save()
-            messages.success(request, _('Group code changed successfully.'))
+            group_code = request.POST['group-code'] if request.POST['group-code'] else None
+            if Group.objects.filter(code__isnull=False, code=group_code):
+                messages.warning(request, _('Group code already used. Please choose another name.'))
+            else:
+                group.code = group_code
+                group.save()
+                messages.success(request, _('Group code changed successfully.'))
 
         elif request.POST['action'][0:7] == "detail-":
             path_of_configuration = request.POST['action'][7:]
@@ -7122,21 +7279,30 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
         data_configuration_tree = \
             DataConfigurationTree.objects.filter(id=data_configuration_tree_id).first()
 
+        try:
+            game_and_phase = GoalkeeperPhase.objects.get(pk=data_configuration_tree.code)
+        except:
+            game_and_phase = None
+
         digital_game_phase_collections.append(
             {'digital_game_phase_configuration': digital_game_phase_configuration,
              'path': path,
-             'data_configuration_tree': data_configuration_tree
+             'data_configuration_tree': data_configuration_tree,
+             'game_and_phase': game_and_phase
              }
         )
 
-        if not enable_upload and group.code and data_configuration_tree and data_configuration_tree.code is not None:
+        if not enable_upload and group.code and game_and_phase and LocalInstitution.get_solo().code:
             enable_upload = True
 
-    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
+    digital_games_and_phases = GoalkeeperPhase.objects.all().order_by('game__name', 'phase')
+
+    context = {'can_change': get_can_change(request.user, group.experiment.research_project),
                'group': group,
                'institution_code': LocalInstitution.get_solo().code,
                'digital_game_phase_collections': digital_game_phase_collections,
-               "enable_upload": enable_upload
+               'enable_upload': enable_upload,
+               'digital_games_and_phases': digital_games_and_phases
                }
 
     return render(request, template_name, context)
@@ -7149,11 +7315,9 @@ def load_group_goalkeeper_game_data(request, group_id):
     group = get_object_or_404(Group, id=group_id)
 
     if not group.code:
-        messages.info(request, _('No experimental group code configured.'))
+        messages.info(request, _("No group code configured."))
     else:
-
-        experimental_group_code = \
-            (LocalInstitution.get_solo().code + '-' if LocalInstitution.get_solo().code else '') + group.code
+        institution = (LocalInstitution.get_solo().code if LocalInstitution.get_solo().code else '')
 
         number_of_imported_data = 0
         list_of_paths = create_list_of_trees(group.experimental_protocol, "digital_game_phase")
@@ -7171,60 +7335,91 @@ def load_group_goalkeeper_game_data(request, group_id):
                                                             pk=data_configuration_tree_id)
                 if data_configuration_tree.code is not None:
 
+                    try:
+                        game_and_phase = GoalkeeperPhase.objects.get(pk=data_configuration_tree.code)
+                    except:
+                        game_and_phase = None
+
+                    game = None
+                    phase = None
+
+                    if game_and_phase:
+                        game = game_and_phase.game.code
+                        phase = game_and_phase.phase
+
+                        if phase == None:
+                            phase = 0
+
                     # for each subject
                     for subject_of_group in group.subjectofgroup_set.all():
 
-                        goalkeeper_game_configuration = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
-                            experimentgroup=experimental_group_code,
-                            phase=data_configuration_tree.code,
-                            playeralias=subject_of_group.subject.patient.code).order_by('idconfig').last()
+                        goalkeeper_games = GoalkeeperGameConfig.objects.using('goalkeeper').filter(
+                            groupcode=group.code,
+                            institution=institution,
+                            game=game,
+                            phase=phase,
+                            playeralias=subject_of_group.subject.patient.code).order_by('idconfig')
 
-                        if goalkeeper_game_configuration:
+                        if goalkeeper_games:
 
-                            result = GoalkeeperGameResults.objects.using('goalkeeper').filter(
-                                id=goalkeeper_game_configuration.idresult).first()
+                            for goalkeeper_game_configuration in goalkeeper_games:
 
-                            if result:
+                                result = GoalkeeperGameResults.objects.using('goalkeeper').filter(
+                                    id=goalkeeper_game_configuration.idresult).first()
 
-                                game_date = datetime.strptime(goalkeeper_game_configuration.gamedata, '%y%m%d')
-                                game_time = datetime.strptime(goalkeeper_game_configuration.gametime, '%H%M%S')
+                                if result:
 
-                                if not DigitalGamePhaseData.objects.filter(
-                                        subject_of_group=subject_of_group,
-                                        data_configuration_tree=data_configuration_tree,
-                                        date=game_date, time=game_time):
+                                    game_date = datetime.strptime(goalkeeper_game_configuration.gamedata, '%y%m%d')
+                                    game_time = datetime.strptime(goalkeeper_game_configuration.gametime, '%H%M%S')
 
-                                    # saving data
-                                    digital_game_phase_data = DigitalGamePhaseData()
-                                    digital_game_phase_data.subject_of_group = subject_of_group
-                                    digital_game_phase_data.data_configuration_tree = data_configuration_tree
+                                    if not DigitalGamePhaseData.objects.filter(
+                                            subject_of_group=subject_of_group,
+                                            data_configuration_tree=data_configuration_tree,
+                                            date=game_date, time=game_time):
 
-                                    digital_game_phase_data.date = game_date
-                                    digital_game_phase_data.time = game_time
+                                        # saving data
+                                        digital_game_phase_data = DigitalGamePhaseData()
+                                        digital_game_phase_data.subject_of_group = subject_of_group
+                                        digital_game_phase_data.data_configuration_tree = data_configuration_tree
 
-                                    digital_game_phase_data.description = \
-                                        "%s - %s" % (experimental_group_code, subject_of_group.subject.patient.code)
+                                        digital_game_phase_data.date = game_date
+                                        digital_game_phase_data.time = game_time
 
-                                    digital_game_phase_data.file_format = get_object_or_404(FileFormat, nes_code='txt')
+                                        if game == 'AQ':
+                                            digital_game_phase_data.description = \
+                                                _("Team or structure: %s \nGame code: %s \nParticipant: %s") % \
+                                                (goalkeeper_game_configuration.soccerteam,
+                                                 game,
+                                                 subject_of_group.subject.patient.code)
+                                        else:
+                                            digital_game_phase_data.description = \
+                                                _("Team or structure: %s\nGame code: %s\nPhase: %s\nParticipant: %s") \
+                                                % (goalkeeper_game_configuration.soccerteam,
+                                                   game,
+                                                   phase,
+                                                   subject_of_group.subject.patient.code)
 
-                                    digital_game_phase_data.sequence_used_in_context_tree = \
-                                        goalkeeper_game_configuration.sequexecuted
+                                        digital_game_phase_data.file_format = \
+                                            get_object_or_404(FileFormat, nes_code='txt')
 
-                                    digital_game_phase_data.save()
+                                        digital_game_phase_data.sequence_used_in_context_tree = \
+                                            goalkeeper_game_configuration.sequexecuted
 
-                                    # Digital Game Phase File
-                                    file_name = "%s_%s.txt" % (experimental_group_code,
-                                                               subject_of_group.subject.patient.code)
-                                    file_content = result.filecontent
+                                        digital_game_phase_data.save()
 
-                                    digital_game_phase_file = DigitalGamePhaseFile(
-                                        digital_game_phase_data=digital_game_phase_data)
-                                    digital_game_phase_file.file.save(
-                                        file_name,
-                                        ContentFile(file_content))
-                                    digital_game_phase_file.save()
+                                        # Digital Game Phase File
+                                        file_name = "%s_%s.txt" % (group.code,
+                                                                   subject_of_group.subject.patient.code)
+                                        file_content = result.filecontent
 
-                                    number_of_imported_data += 1
+                                        digital_game_phase_file = DigitalGamePhaseFile(
+                                            digital_game_phase_data=digital_game_phase_data)
+                                        digital_game_phase_file.file.save(
+                                            file_name,
+                                            ContentFile(file_content))
+                                        digital_game_phase_file.save()
+
+                                        number_of_imported_data += 1
 
         if number_of_imported_data:
             if number_of_imported_data == 1:
@@ -7588,6 +7783,180 @@ def tms_data_position_setting_view(request, tms_data_id, template_name="experime
                "tms_localization_system_list": tms_localization_system_list,
                "localization_system_selected": localization_system_selected,
                "tab": "2"
+               }
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_questionnaireresponse')
+def data_collection_manage(request, group_id, path_of_configuration, data_type,
+                           template_name="experiment/data_collection_manage.html"):
+
+    group = get_object_or_404(Group, id=group_id)
+
+    check_can_change(request.user, group.experiment.research_project)
+
+    if path_of_configuration == '0':
+        # related to the whole experiment
+        component_configuration = None
+        component_icon = icon_class['experimental_protocol']
+        data_configuration_tree_id = None
+    else:
+        list_of_path = [int(item) for item in path_of_configuration.split('-')]
+        component_configuration = ComponentConfiguration.objects.get(id=int(list_of_path[-1]))
+        component_icon = icon_class[component_configuration.component.component_type]
+        data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+
+    data_collections = []
+
+    # get participants
+    if data_type == "additional_data":
+        data_collections = AdditionalData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "eeg":
+        data_collections = EEGData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "emg":
+        data_collections = EMGData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "tms":
+        data_collections = TMSData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "digital_game_phase":
+        data_collections = DigitalGamePhaseData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "questionnaire":
+        data_collections = QuestionnaireResponse.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+    elif data_type == "generic_data_collection":
+        data_collections = GenericDataCollectionData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id).order_by("subject_of_group__subject__patient")
+
+    # in case of "transfer", get target candidates
+    steps_to_transfer = get_data_collections_from_group(group, data_type)
+
+    # read origin_survey once
+    origin_survey = \
+        Questionnaire.objects.get(id=component_configuration.component_id).survey if data_type == "questionnaire" \
+            else None
+
+    number_of_steps_to_transfer = 0
+    for step_to_transfer in steps_to_transfer:
+
+        step_to_transfer['show_step'] = True
+
+        # do not show current path
+        if path_of_configuration == "0":
+            if not step_to_transfer['path']:
+                step_to_transfer['show_step'] = False
+        else:
+            if step_to_transfer['path'] and \
+                            path_of_configuration.split('-') == [str(item[0]) for item in
+                                                                 step_to_transfer['path']]:
+                step_to_transfer['show_step'] = False
+
+        if step_to_transfer['show_step']:
+            # if questionnaire, only show the same questionnaire
+            if data_type == "questionnaire":
+                if Questionnaire.objects.get(id=ComponentConfiguration.objects.get(
+                        id=step_to_transfer['path'][-1][0]).component_id).survey != origin_survey:
+                    step_to_transfer['show_step'] = False
+
+        if step_to_transfer['show_step']:
+            number_of_steps_to_transfer += 1
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+
+            has_changed = False
+
+            for data_collection in data_collections:
+                checkbox_name = "data_collection_" + str(data_collection.id)
+                if checkbox_name in request.POST and request.POST[checkbox_name] == "on":
+
+                    if data_type == "questionnaire":
+
+                        questionnaire = Questionnaire.objects.get(
+                            id=data_collection.data_configuration_tree.component_configuration.component_id)
+                        has_changed = delete_questionnaire_response(questionnaire, data_collection)
+
+                    else:
+                        if data_type == "additional_data":
+                            for uploaded_file in data_collection.additional_data_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "eeg":
+                            for uploaded_file in data_collection.eeg_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "emg":
+                            for uploaded_file in data_collection.emg_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "digital_game_phase":
+                            for uploaded_file in data_collection.digital_game_phase_files.all():
+                                uploaded_file.file.delete()
+                        elif data_type == "generic_data_collection":
+                            for uploaded_file in data_collection.generic_data_collection_files.all():
+                                uploaded_file.file.delete()
+
+                        data_collection.delete()
+                        has_changed = True
+
+            if has_changed:
+                messages.success(request, _('Selected data collections were removed successfully.'))
+            else:
+                messages.info(request, _('There were no items selected to remove.'))
+
+            redirect_url = reverse("subjects", args=(group.id,))
+            return HttpResponseRedirect(redirect_url + '?per_steps_tab=active')
+
+        if request.POST['action'] == "transfer":
+            data_configuration_tree = None
+
+            if request.POST['transfer_to']:
+                if request.POST['transfer_to'] != "experimental_protocol":
+
+                    list_of_path = [item[0] for item in steps_to_transfer[int(request.POST['transfer_to'])]['path']]
+
+                    data_configuration_tree_id = list_data_configuration_tree(list_of_path[-1], list_of_path)
+                    if not data_configuration_tree_id:
+                        data_configuration_tree_id = create_data_configuration_tree(list_of_path)
+                    data_configuration_tree = get_object_or_404(DataConfigurationTree,
+                                                                pk=data_configuration_tree_id)
+
+            has_changed = False
+
+            for data_collection in data_collections:
+                checkbox_name = "data_collection_" + str(data_collection.id)
+                if checkbox_name in request.POST and request.POST[checkbox_name] == "on":
+                    data_collection.data_configuration_tree = data_configuration_tree
+                    data_collection.save()
+                    has_changed = True
+
+            if has_changed:
+                messages.success(request, _('Selected data collections were transfered successfully.'))
+            else:
+                messages.info(request, _('There were no items selected to transfer.'))
+
+            redirect_url = reverse("subjects", args=(group.id,))
+            return HttpResponseRedirect(redirect_url + '?per_steps_tab=active')
+
+    context = {"group": group,
+               # "operation": operation,
+               "data_type": data_type,
+               "data_type_name": data_type_name[data_type],
+               "path_of_configuration": path_of_configuration,
+               "component_configuration": component_configuration,
+               "component_icon": component_icon,
+               "data_collections": data_collections,
+               "steps_to_transfer": steps_to_transfer,
+               "number_of_steps_to_transfer": number_of_steps_to_transfer
                }
 
     return render(request, template_name, context)
@@ -9471,10 +9840,11 @@ def clone_context_tree(context_tree, new_experiment, orig_and_clone):
     context_tree.experiment = new_experiment
     context_tree.save()
     old_context_tree = ContextTree.objects.get(pk=old_context_tree_id)
-    f = open(os.path.join(
-        MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
-    )
-    context_tree.setting_file.save(os.path.basename(f.name), File(f))
+    if old_context_tree.setting_file:
+        f = open(os.path.join(
+            MEDIA_ROOT, old_context_tree.setting_file.name), 'rb'
+        )
+        context_tree.setting_file.save(os.path.basename(f.name), File(f))
     orig_and_clone['context_tree'][old_context_tree_id] = context_tree.id
 
 
@@ -9512,6 +9882,19 @@ def clone_tms_data(tms_data, orig_and_clone):
     return tms_data
 
 
+def clone_questionnaire_response_data(q_response, orig_and_clone):
+    q_response.pk = None
+    new_subject_of_group = SubjectOfGroup.objects.get(
+        pk=orig_and_clone['subject_of_group'][q_response.subject_of_group.id]
+    )
+    new_data_configuration_tree = DataConfigurationTree.objects.get(
+        pk=orig_and_clone['dct'][q_response.data_configuration_tree.id]
+    )
+    q_response.subject_of_group = new_subject_of_group
+    q_response.data_configuration_tree = new_data_configuration_tree
+    q_response.save()
+
+
 def copy_experiment(experiment, copy_data_collection=False):
     orig_and_clone = dict()
     orig_and_clone['component'] = {}
@@ -9532,6 +9915,7 @@ def copy_experiment(experiment, copy_data_collection=False):
     new_experiment = experiment
     new_experiment.pk = None
     new_experiment.title = _('Copy of') + ' ' + new_experiment.title
+    new_experiment.last_sending = None
     new_experiment.save()
     if experiment.ethics_committee_project_file:
         f = open(os.path.join(
@@ -9546,6 +9930,30 @@ def copy_experiment(experiment, copy_data_collection=False):
             experiment_id=experiment_id
     ):
         clone_context_tree(context_tree, new_experiment, orig_and_clone)
+
+    # eeg setting
+    for eeg_setting in EEGSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_eeg_setting_id = eeg_setting.id
+        new_eeg_setting = copy_eeg_setting(
+            eeg_setting, new_experiment, orig_and_clone
+        )
+        orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
+
+    # emg setting
+    for emg_setting in EMGSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_emg_setting_id = emg_setting.id
+        new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
+        orig_and_clone['emg_setting'][old_emg_setting_id] = \
+            new_emg_setting.id
+
+    # tms setting
+    for tms_setting in TMSSetting.objects.filter(
+            experiment_id=experiment_id):
+        old_tms_setting_id = tms_setting.id
+        new_tms_setting = copy_tms_setting(tms_setting, new_experiment)
+        orig_and_clone['tms_setting'][old_tms_setting_id] = new_tms_setting.id
 
     # component
     for component in Component.objects.filter(experiment_id=experiment_id):
@@ -9575,6 +9983,7 @@ def copy_experiment(experiment, copy_data_collection=False):
         orig_and_clone[old_component_configuration_id] = \
             component_configuration.id
 
+    # groups
     groups = Group.objects.filter(experiment_id=experiment_id)
     for group in groups:
         experimental_protocol_id = group.experimental_protocol_id
@@ -9582,12 +9991,16 @@ def copy_experiment(experiment, copy_data_collection=False):
         new_group = group
         new_group.pk = None
         new_group.title = new_group.title
+        # group code is unique and not needed to be set at start (goal
+        # keeper game integration)
+        new_group.code = None
         new_group.experiment_id = new_experiment.id
         if experimental_protocol_id in orig_and_clone['component']:
             new_group.experimental_protocol_id = \
                 orig_and_clone['component'][experimental_protocol_id]
         new_group.save()
 
+        # subject of group
         if subject_list:
             new_subject_of_group = SubjectOfGroup.objects.filter(id__in=subject_list)
             for subject_of_group in new_subject_of_group:
@@ -9598,7 +10011,6 @@ def copy_experiment(experiment, copy_data_collection=False):
                 old_subject_of_group = SubjectOfGroup.objects.get(
                     pk=old_subject_of_group_id
                 )
-                # TODO: see other file saves that can have FileField null
                 if old_subject_of_group.consent_form:
                     f = open(
                         os.path.join(
@@ -9611,36 +10023,11 @@ def copy_experiment(experiment, copy_data_collection=False):
                 orig_and_clone['subject_of_group'][old_subject_of_group_id] \
                     = subject_of_group.id
 
-    # eeg setting
-    for eeg_setting in EEGSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_eeg_setting_id = eeg_setting.id
-        new_eeg_setting = copy_eeg_setting(
-            eeg_setting, new_experiment, orig_and_clone
-        )
-        orig_and_clone['eeg_setting'][old_eeg_setting_id] = new_eeg_setting.id
-        #
-
-    # emg setting
-    for emg_setting in EMGSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_emg_setting_id = emg_setting.id
-        new_emg_setting = copy_emg_setting(emg_setting, new_experiment)
-        orig_and_clone['emg_setting'][old_emg_setting_id] = \
-            new_emg_setting.id
-
-    # tms setting
-    for tms_setting in TMSSetting.objects.filter(
-            experiment_id=experiment_id):
-        old_tms_setting_id = tms_setting.id
-        new_tms_setting = copy_tms_setting(tms_setting, new_experiment)
-        orig_and_clone['tms_setting'][old_tms_setting_id] = new_tms_setting.id
-
     if copy_data_collection:
-        # TODO: check if groups has data collection before trying to copy or
+        # TODO: 1) check if groups has data collection before trying to copy or
         # TODO: check this in template so the option to copy with data
         # TODO: doesn't appear;
-        # TODO: explain that orig_and_clone is modified in method
+        # TODO: 2) explain that orig_and_clone is modified in method
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
                 component_configuration_id__component_id__experiment_id
@@ -9733,6 +10120,12 @@ def copy_experiment(experiment, copy_data_collection=False):
         ):
             clone_tms_data(tms_data, orig_and_clone)
 
+        # questionnaire_response_data
+        for questionnaire_response_data in QuestionnaireResponse.objects.filter(
+            subject_of_group_id__group_id__experiment_id=experiment_id
+        ):
+            clone_questionnaire_response_data(questionnaire_response_data, orig_and_clone)
+
 
 def copy_eeg_setting(eeg_setting, new_experiment, orig_and_clone):
     eeg_setting_id = eeg_setting.id
@@ -9782,21 +10175,6 @@ def copy_eeg_setting(eeg_setting, new_experiment, orig_and_clone):
         new_eeg_filter_setting.save()
 
     return new_eeg_setting
-
-
-def copy_eeg_data(new_eeg_setting, old_eeg_setting, new_experiment,
-                  old_experiment):
-    for eegdata in EEGData.objects.filter(eeg_setting__in=old_eeg_setting):
-
-
-        new_eegdata = EEGData.objects.create(
-            eeg_setting=new_eeg_setting,
-            eeg_setting_reason_for_change=eegdata.eeg_setting_reason_for_change,
-            eeg_cap_size=eegdata.eeg_cap_size,
-            description=eegdata.description,
-            file_format=eegdata.file_format,
-            file_format_description=eegdata.file_format_description
-        )
 
 
 def copy_emg_setting(emg_setting, new_experiment):
@@ -9886,9 +10264,11 @@ def copy_tms_setting(tms_setting, new_experiment):
     new_tms_setting.save()
 
     old_tms_setting = TMSSetting.objects.get(pk=old_tms_setting_id)
-    clone_tms_device_setting(
-        old_tms_setting.tms_device_setting, new_tms_setting
-    )
+
+    if hasattr(old_tms_setting, "tms_device_setting"):
+        clone_tms_device_setting(
+            old_tms_setting.tms_device_setting, new_tms_setting
+        )
 
     return new_tms_setting
 
@@ -9905,15 +10285,15 @@ def create_component(component, new_experiment, orig_and_clone):
 
     elif component_type == 'eeg':
         eeg = get_object_or_404(EEG, pk=component.id)
-        clone = EEG(eeg_setting_id=eeg.eeg_setting_id)
+        clone = EEG(eeg_setting_id=orig_and_clone['eeg_setting'][eeg.eeg_setting_id])
 
     elif component_type == 'emg':
         emg = get_object_or_404(EMG, pk=component.id)
-        clone = EMG(emg_setting_id=emg.emg_setting_id)
+        clone = EMG(emg_setting_id=orig_and_clone['emg_setting'][emg.emg_setting_id])
 
     elif component_type == 'tms':
         tms = get_object_or_404(TMS, pk=component.id)
-        clone = TMS(tms_setting_id=tms.tms_setting_id)
+        clone = TMS(tms_setting_id=orig_and_clone['tms_setting'][tms.tms_setting_id])
 
     elif component_type == 'instruction':
         instruction = get_object_or_404(Instruction, pk=component.id)
@@ -9929,7 +10309,8 @@ def create_component(component, new_experiment, orig_and_clone):
     elif component_type == 'stimulus':
         stimulus = get_object_or_404(Stimulus, pk=component.id)
         clone = Stimulus(stimulus_type_id=stimulus.stimulus_type_id)
-        file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), 'rb')
+        if stimulus.media_file:
+            file = open(os.path.join(MEDIA_ROOT, stimulus.media_file.name), 'rb')
 
     elif component_type == 'task':
         clone = Task()
@@ -10232,7 +10613,8 @@ def component_update(request, path_of_the_components):
     list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, back_cancel_url = \
         access_objects_for_view_and_update(request, path_of_the_components, updating=True)
 
-    # when there are data collected, it is necessary to protect related "steps" and "uses of steps"
+    # When there are data collected, it is necessary to protect related
+    # "steps" and "uses of steps".
     protected_steps, protected_uses_of_step = get_protected_steps_and_uses_of_steps(experiment, group)
 
     questionnaire_id = None
@@ -10277,6 +10659,10 @@ def component_update(request, path_of_the_components):
     can_change = get_can_change(request.user, experiment.research_project)
 
     if request.method == "POST":
+        # Workaround to avoid warning user from changing reused component after
+        # redirect.
+        request.session['display_warning_reused'] = False
+
         if can_change:
             if request.POST['action'] == "save":
                 if configuration_form is None:
@@ -10371,7 +10757,6 @@ def component_update(request, path_of_the_components):
 
         surveys = Questionnaires()
 
-        # This method shows a message to the user if limesurvey is not available.
         limesurvey_available = check_limesurvey_access(request, surveys)
 
         if limesurvey_available:
@@ -10400,6 +10785,17 @@ def component_update(request, path_of_the_components):
             if not can_change:
                 for field in configuration_form.fields:
                     configuration_form.fields[field].widget.attrs['disabled'] = True
+
+    configuration_count = component.configuration.count()
+    if configuration_count > 1:
+        if request.session.get('display_warning_reused', True):
+            messages.warning(
+                request,
+                _('This component is reused in') + ' ' + str(configuration_count - 1) + ' ' +
+                _(' other step(s). Pay attention to any change made to it will reflect in the other(s).')
+                )
+        else:  # session key was setted after a post request (see above)
+            del request.session['display_warning_reused']
 
     context = {"back_cancel_url": back_cancel_url,
                "block_duration": duration_string,
@@ -10509,7 +10905,8 @@ def component_add_new(request, path_of_the_components, component_type):
     number_of_uses = get_number_of_uses(request)
 
     component_form = ComponentForm(request.POST or None)
-    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    # This is needed for the form to be able to validate the presence of a
+    # duration in a pause component only.
     component_form.component_type = component_type
 
     # Check if we are configuring a new experimental protocol
@@ -10578,8 +10975,9 @@ def component_add_new(request, path_of_the_components, component_type):
             new_specific_component.duration_unit = component.duration_unit
             # new_specific_component is not saved until later.
 
-            # If this is a new component for creating the root of a group's experimental protocol, no
-            # component_configuration has to be created.
+            # If this is a new component for creating the root of a group's
+            # experimental protocol, no component_configuration has to be
+            # created.
             if is_configuring_new_experimental_protocol:
                 new_specific_component.save()
                 group.experimental_protocol = new_specific_component
@@ -10665,7 +11063,8 @@ def component_reuse(request, path_of_the_components, component_id):
     number_of_uses = get_number_of_uses(request)
 
     component_form = ComponentForm(request.POST or None, instance=component_to_add)
-    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    # This is needed for the form to be able to validate the presence of a
+    # duration in a pause component only.
     component_form.component_type = component_type
 
     # Check if we are configuring a new experimental protocol
@@ -10736,8 +11135,8 @@ def component_reuse(request, path_of_the_components, component_id):
                 specific_form.fields[field].widget.attrs['disabled'] = True
 
     if request.method == "POST":
-        # If this is a reuse for creating the root of a group's experimental protocol, no component_configuration
-        # has to be created.
+        # If this is a reuse for creating the root of a group's experimental
+        # protocol, no component_configuration has to be created.
         if is_configuring_new_experimental_protocol:
             group = Group.objects.get(id=path_of_the_components[1:])
             group.experimental_protocol = component_to_add

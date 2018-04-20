@@ -58,25 +58,17 @@
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
-
             <div class="container span6 offset3 well ">
                 <div class="row">
-                    <div class="col-md-6">
-                        <label>{% trans "Group" %}</label>
-                        <br/>
-                        {{ group.title }}
-                    </div>
-                    <div>
-                        <label>{% trans "Experimental group code" %}</label>
+                    <div class="col-md-4">
+                        <label>{% trans "Institution" %}</label>
                         <br/>
                         {% if institution_code %}
-
                             {% if perms.user.is_superuser %}
                                 <a href="/admin/configuration/localinstitution/" data-toggle="tooltip" data-placement="left" title="{% trans "Change institution code" %}" target="_blank">{{ institution_code }}</a>
                             {% else %}
                                 {{ institution_code }}
                             {% endif %}
-                            <span>-</span>
                         {% else %}
                             {% if perms.user.is_superuser %}
                                 <a class="btn btn-warning" href="/admin/configuration/localinstitution/" target="_blank">{% trans "Create institution code" %}</a>
@@ -84,6 +76,15 @@
                                 <span class="label label-warning">{% trans "missing institution code" %}</span>
                             {% endif %}
                         {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <label>{% trans "Group" %}</label>
+                        <br/>
+                        {{ group.title }}
+                    </div>
+                    <div class="col-md-4">
+                        <label>{% trans "Group code" %}</label>
+                        <br/>
                         {% if group.code %}
                             <a data-toggle="tooltip" data-placement="right" title="{% trans "Change group code" %}" onclick="$('#modalGroupCode').modal('show');">
                                 {{ group.code }}
@@ -92,7 +93,6 @@
                             <a class="btn btn-warning" onclick="$('#modalGroupCode').modal('show');$('#group-code').focus();">{% trans "Create group code" %}</a>
                         {% endif %}
                     </div>
-
                     <div class="modal fade" id="modalGroupCode" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -118,6 +118,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-10">
             <div class="row">
                 <div class="col-xs-12 col-sm-12">
@@ -126,7 +127,7 @@
                             <thead>
                             <tr>
                                 <th class="col-md-6">{% trans "Goalkeeper game phase path" %}</th>
-                                <th class="col-md-6">{% trans "Phase code" %}</th>
+                                <th class="col-md-6">{% trans "Game and phase" %}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -153,11 +154,11 @@
                                         </td>
                                         <td>
                                             {% if digital_game_phase_collection.data_configuration_tree.code != None %}
-                                                <a data-toggle="tooltip" data-placement="right" title="{% trans "Change phase code" %}" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">
-                                                    {{ digital_game_phase_collection.data_configuration_tree.code }}
+                                                <a data-toggle="tooltip" data-placement="right" title="{% trans "Change game and phase" %}" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">
+                                                    {{ digital_game_phase_collection.game_and_phase }}
                                                 </a>
                                             {% else %}
-                                                <a class="btn btn-warning" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">{% trans "Create phase code" %}</a>
+                                                <a class="btn btn-warning" onclick="$('#modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}').modal('show');">{% trans "Select the game and phase" %}</a>
                                             {% endif %}
 
                                             <div class="modal fade" id="modalPhaseCode-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -171,8 +172,17 @@
                                                         <div class="modal-body">
                                                             <div class="row">
                                                                 <div class="form-group">
-                                                                    <label>{% trans "Phase code" %}</label>
-                                                                    <input type="number" class="form-control" id="phase_code" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" value="{% if digital_game_phase_collection.data_configuration_tree.code != None %}{{ digital_game_phase_collection.data_configuration_tree.code }}{% endif %}">
+                                                                    <label>{% trans "Select the game and phase" %}</label>
+                                                                    {% if digital_games_and_phases %}
+                                                                        <select class="form-control" name="code-{% for item in digital_game_phase_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}" id="phase_code">
+                                                                            <option value=""></option>
+                                                                            {% for item in digital_games_and_phases %}
+                                                                                <option value="{{ item.id }}"{% if item.id == digital_game_phase_collection.data_configuration_tree.code %}selected{% endif %}>{{ item }}</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    {% else %}
+                                                                        {% trans "No goalkeeper game and phase registered." %}
+                                                                    {% endif %}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -183,12 +193,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </td>
-{#                                        <td>#}
-{##}
-{#                                        </td>#}
-
                                     </tr>
                                 {% endfor %}
                             {% endif %}
