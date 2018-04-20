@@ -251,16 +251,20 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def get_responses(self, sid, language, response_type='short', fields=None, heading_type='code'):
-        """ obtains responses from a determined survey
+        """ Obtains responses from a determined survey
         :param sid: survey ID
         :param language: language
-        :param response_type: (optional)'short' or 'long' Optional defaults to 'short'
+        :param response_type: (optional)'short' or 'long'
+        Optional defaults to 'short'
         :param fields: filter fields that must be returned
-        :param heading_type: (optional) 'code','full' or 'abbreviated' Optional defaults to 'code'
-        :return: responses in the txt format
+        :param heading_type: (optional) 'code','full' or 'abbreviated'
+        Optional defaults to 'code'
+        :return: responses in txt format
         """
-        responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', heading_type,
-                                                 response_type)   # , 1,9999999, fields)
+        responses = self.server.export_responses(
+            self.session_key, sid, 'csv', language, 'complete', heading_type,
+            response_type
+        )
 
         if isinstance(responses, str):
             responses_txt = b64decode(responses)
@@ -270,22 +274,16 @@ class ABCSearchEngine(ABC):
         return responses_txt
 
     def get_header_response(self, sid, language, token, heading_type='full'):
-        """ obtains header responses
+        """ Obtains header responses
         :param sid: survey ID
         :param language: language
         :param heading_type: heading type (can be 'code' or 'full')
         :return: responses in the txt format
         """
-        # responses = self.server.export_responses(self.session_key, sid, 'csv', language, 'complete', heading_type,
-        #                                          'short', token, token)   # , 1,9999999, fields)
 
         responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language,
                                                           'complete', heading_type, 'short')
 
-        # export_responses_by_token(string $sSessionKey, int $iSurveyID, string $sDocumentType,
-        # string $sToken, string $sLanguageCode, string $sCompletionStatus, string $sHeadingType,
-        #                                                                 string $sResponseType, array $aFields)
-        #
         if not isinstance(responses, str):
             responses = self.server.export_responses(self.session_key, sid, 'csv', language,
                                                      'complete', heading_type, 'short')
@@ -334,10 +332,12 @@ class ABCSearchEngine(ABC):
         :return: properties of a question of a survey
         """
 
-        properties = self.server.get_question_properties(self.session_key, question_id,
-                                                         ['question', 'subquestions', 'answeroptions', 'title', 'type',
-                                                          'attributes_lang', 'attributes', 'other'],
-                                                         language)
+        properties = self.server.get_question_properties(
+            self.session_key, question_id,
+            ['question', 'subquestions', 'answeroptions', 'title', 'type',
+             'attributes_lang', 'attributes', 'other'],
+            language
+        )
 
         return properties
 
@@ -373,9 +373,6 @@ class ABCSearchEngine(ABC):
         :param sid:
         :return: tokens for specific id
         """
-        #       list_participants(string $sSessionKey, int $iSurveyID, int $iStart,
-        #   int $iLimit, bool $bUnused, bool|array $aAttributes, array|\struct $aConditions) : array
-
         tokens = self.server.list_participants(self.session_key, sid, 0, 99999999)
 
         return tokens
