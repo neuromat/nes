@@ -99,18 +99,6 @@ ROOT_URLCONF = 'qdc.urls'
 
 WSGI_APPLICATION = 'qdc.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-    }
-}
-
 # LimeSurvey configuration
 LIMESURVEY = {
     'URL_API': '',
@@ -206,4 +194,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.33.1'
+VERSION = '1.34.0'

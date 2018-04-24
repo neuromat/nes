@@ -58,10 +58,10 @@
         <div class="col-md-10">
 
             <ul class="nav nav-tabs">
-                <li class="active">
+                <li id="per_participants_tab" class="active">
                     <a data-toggle="tab" href="#per_participants"><span class="fa fa-user"></span> {% trans "Per participant" %}</a>
                 </li>
-                <li>
+                <li id="per_steps_tab">
                     <a data-toggle="tab" href="#per_steps_of_experimental_protocol"><span class="fa fa-sitemap"></span> {% trans "Per steps of the experimental protocol" %}</a>
                 </li>
             </ul>
@@ -279,7 +279,7 @@
                                                             </div>
                                                             <div class="col-xs-8 col-sm-8">
                                                                 <div class="progress">
-                                                                    <div class="progress-bar {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_generic_data_collection_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_generic_data_collection_data_files }}" style="color: #000000; width: {{ item.percentage_of_digital_game_phase_data_files_uploaded }}%;">
+                                                                    <div class="progress-bar {% if item.percentage_of_generic_data_collection_data_files_uploaded == 100.0 %}progress-bar-success{% else %}progress-bar-warning{% endif %}" role="progressbar" aria-valuenow="{{ item.number_of_generic_data_collection_data_files_uploaded }}" aria-valuemin="0" aria-valuemax="{{ item.total_of_generic_data_collection_data_files }}" style="color: #000000; width: {{ item.percentage_of_generic_data_collection_data_files_uploaded }}%;">
                                                                         <span>{{ item.number_of_generic_data_collection_data_files_uploaded }}/{{ item.total_of_generic_data_collection_data_files }}</span>
                                                                     </div>
                                                                 </div>
@@ -318,13 +318,14 @@
                                     <thead>
                                     <tr>
                                         <th>{% trans "Data colletion path" %}</th>
-                                        <th>{% trans "Data collections" %}</th>
+                                        <th>{% trans "Data type" %}</th>
+                                        <th>{% trans "Number of participants" %}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                         {% for data_collection in data_collections %}
                                             <tr>
-                                                <td>
+                                                <td {% if data_collection.data_list|length > 1 %}rowspan="{{ data_collection.data_list|length }}" {% endif %}>
                                                     {# Identification #}
                                                     <span class="{{ data_collection.icon_class }}"></span>
 
@@ -344,24 +345,20 @@
                                                     </blockquote>
 
                                                 </td>
-                                                <td>
-                                                    <table>
-                                                        {% for item_data in data_collection.data_list %}
-                                                            <tr>
-                                                                <td>{{ item_data.description }}</td>
-                                                                <td>{{ item_data.count }} {% if item_data.count == 1 %}{% trans "participant" %}{% else %}{% trans "participants" %}{% endif %}</td>
-                                                                <td>
-                                                                    <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}/remove"
-                                                                       class="btn btn-primary"><span class="glyphicon glyphicon-remove"></span> {% trans "Show for remove" %}</a>
-                                                                </td>
-                                                                <td>
-                                                                    <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}/transfer"
-                                                                       class="btn btn-primary"><span class="glyphicon glyphicon-transfer"></span> {% trans "Show for transfer" %}</a>
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </table>
-                                                </td>
+                                                {% if data_collection.data_list %}
+                                                    {% for item_data in data_collection.data_list %}
+                                                        {% if forloop.counter0 != 0 %}<tr>{% endif %}
+                                                        <td>
+                                                            <a href="/experiment/group/{{ group.id }}/data_collection_manage/{% if data_collection.path %}{% for item in data_collection.path %}{{ item.0 }}{% if not forloop.last %}-{% endif %}{% endfor %}{% else %}0{% endif %}/{{ item_data.type }}">
+                                                               <span class="{{ item_data.icon_class }}"></span> {{ item_data.description }}</a>
+                                                        </td>
+                                                        <td>{{ item_data.count }} {% if item_data.count == 1 %}{% trans "participant" %}{% else %}{% trans "participants" %}{% endif %}</td>
+                                                        {% if forloop.counter0 != 0 %}</tr>{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <td></td>
+                                                    <td></td>
+                                                {% endif %}
 
                                             </tr>
                                         {% endfor %}
@@ -428,4 +425,23 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        if ("{{ per_steps_tab_active }}") {
+            // make per_steps_of_experimental_protocol tab active if redirected from
+            // remove or transfer data collections
+            $("#per_participants_tab").removeAttr('class');
+            $("#per_steps_tab").attr('class', 'active');
+            $("#per_participants").attr('class', 'tab-pane fade');
+            $("#per_steps_of_experimental_protocol").attr("class", "tab-pane" +
+                " fade in active");
+
+            // clear url query substring used to redirect to this page with per_steps_tab active
+            // see redirects in data_collection_manage view, post method sections
+            var currURL = window.location.href;
+            window.history.replaceState({}, document.title, currURL.substring(0, currURL.lastIndexOf('/')));
+        }
+    </script>
 {% endblock %}
