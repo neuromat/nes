@@ -6,14 +6,12 @@ from django.contrib import messages
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
-from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import ugettext as _
 
-from .forms import PersonRegisterForm, TeamRegisterForm, TeamPersonRegisterForm, UserPersonForm, \
-    InstitutionRegisterForm, UserPersonPasswordForm
-from .models import Person, Team, TeamPerson, Institution
+from .forms import PersonRegisterForm, UserPersonForm, InstitutionRegisterForm, UserPersonPasswordForm
+from .models import Person, Institution
 
 from patient.quiz_widget import SelectBoxCountriesDisabled
 
@@ -26,11 +24,6 @@ def registers(request, template_name="team/registers.html"):
             'item': _('Persons'),
             'href': reverse("person_list", args=()),
             'quantity': Person.objects.all().count()
-        },
-        {
-            'item': _('Teams'),
-            'href': reverse("team_list", args=()),
-            'quantity': Team.objects.all().count()
         },
         {
             'item': _('Institutions'),
@@ -297,156 +290,6 @@ def get_json_user_attributes(request, user_id):
 
 @login_required
 @permission_required('team.change_team')
-def team_list(request, template_name='team/team_list.html'):
-    return render(request, template_name, context={"teams": Team.objects.all().order_by('name')})
-
-
-@login_required
-@permission_required('team.change_team')
-def team_create(request, template_name="team/team_register.html"):
-
-    team_form = TeamRegisterForm(request.POST or None)
-
-    if request.method == "POST":
-
-        if request.POST['action'] == "save":
-
-            if team_form.is_valid():
-                team_added = team_form.save()
-                messages.success(request, _('Team created successfully.'))
-                redirect_url = reverse("team_list", args=())
-                return HttpResponseRedirect(redirect_url)
-            else:
-                messages.warning(request, _('Information not saved.'))
-        else:
-            messages.warning(request, _('Action not available.'))
-
-    context = {"team_form": team_form,
-               "creating": True,
-               "editing": True}
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('team.change_team')
-def team_view(request, team_id, template_name="team/team_register.html"):
-    team = get_object_or_404(Team, pk=team_id)
-    # team_person = get_object_or_404(Team, pk=team_person_id)
-
-    team_form = TeamRegisterForm(request.POST or None, instance=team)
-    team_person_form = TeamPersonRegisterForm(request.POST or None, initial={'team': team})
-
-    for field in team_form.fields:
-        team_form.fields[field].widget.attrs['disabled'] = True
-
-    if request.method == "POST":
-
-        if request.POST['action'][:7] == "change-":
-            team_person = get_object_or_404(TeamPerson, pk=request.POST['action'][7:])
-            try:
-                team_person.is_coordinator = not team_person.is_coordinator
-                team_person.save()
-                messages.success(request, _('Is coordinator status successfully changed.'))
-            except ProtectedError:
-                messages.error(request, _("Error trying to the status of the coordinator."))
-            redirect_url = reverse("team_view", args=(team_id,))
-            return HttpResponseRedirect(redirect_url)
-
-        if request.POST['action'][:7] == "remove-":
-            team_person = get_object_or_404(TeamPerson, pk=request.POST['action'][7:])
-            try:
-                team_person.delete()
-                messages.success(request, _('Person removed successfully from the Team.'))
-            except ProtectedError:
-                messages.error(request, _("Error trying to delete a persom from the team."))
-            redirect_url = reverse("team_view", args=(team_id,))
-            return HttpResponseRedirect(redirect_url)
-
-        if request.POST['action'] == "remove":
-
-            try:
-                team.delete()
-                messages.success(request, _('Team removed successfully.'))
-                return redirect('team_list')
-            except ProtectedError:
-                messages.error(request, _("Error trying to delete a team."))
-                redirect_url = reverse("team_view", args=(team_id,))
-                return HttpResponseRedirect(redirect_url)
-
-        if request.POST['action'] == "insert_new":
-            if team_person_form.is_valid():
-                team_person_added = team_person_form.save(commit=False)
-                team_person_added.team = team
-                team_person_added.save()
-                messages.success(request, _('Person added to the team successfully.'))
-                redirect_url = reverse("team_view", args=(team_id,))
-                return HttpResponseRedirect(redirect_url)
-
-    context = {"can_change": True,
-               "team": team,
-               "team_form": team_form,
-               "team_person_form": team_person_form}
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('team.change_team')
-def team_update(request, team_id, template_name="team/team_register.html"):
-    team = get_object_or_404(Team, pk=team_id)
-
-    team_form = TeamRegisterForm(request.POST or None, instance=team)
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if team_form.is_valid():
-                if team_form.has_changed():
-                    team_form.save()
-                    messages.success(request, _('Team updated successfully.'))
-                else:
-                    messages.success(request, _('There is no changes to save.'))
-
-                redirect_url = reverse("team_view", args=(team.id,))
-                return HttpResponseRedirect(redirect_url)
-
-    context = {"team": team,
-               "team_form": team_form,
-               "editing": True}
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('team.add_team')
-def team_person_create(request, team_id, template_name="team/team_person_register.html"):
-    team = get_object_or_404(Team, pk=team_id)
-    team_person_form = TeamPersonRegisterForm(request.POST or None)
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if team_person_form.is_valid():
-                person_added = team_person_form.save(commit=False)
-                person_added.team = team
-                person_added.save()
-                messages.success(request, _('Team person created successfully.'))
-                redirect_url = reverse("team_view", args=(person_added.team.id,))
-                return HttpResponseRedirect(redirect_url)
-            else:
-                messages.warning(request, _('Information not saved.'))
-        else:
-            messages.warning(request, _('Action not available.'))
-
-    context = {"team_person_form": team_person_form,
-               "team": team,
-               "creating": True,
-               "editing": True
-               }
-
-    return render(request, template_name, context)
-
-
-@login_required
-@permission_required('team.change_team')
 def institution_list(request, template_name='team/institution_list.html'):
     return render(request, template_name, context={"institutions": Institution.objects.all().order_by('name')})
 
@@ -462,7 +305,7 @@ def institution_create(request, template_name="team/institution_register.html"):
         if request.POST['action'] == "save":
 
             if institution_form.is_valid():
-                institution_added = institution_form.save()
+                institution_form.save()
                 messages.success(request, _('Institution created successfully.'))
                 redirect_url = reverse("institution_list", args=())
                 return HttpResponseRedirect(redirect_url)

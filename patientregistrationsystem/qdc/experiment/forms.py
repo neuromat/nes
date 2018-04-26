@@ -8,19 +8,17 @@ from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
 
-from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, \
-    Component, Stimulus, Block, Instruction, ComponentConfiguration, ResearchProject, EEGData, \
-    EEGSetting, Equipment, EEG, EMG, Amplifier, EEGAmplifierSetting, \
-    EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
+from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup, Group, Component, Stimulus, Block, \
+    Instruction, ComponentConfiguration, ResearchProject, EEGData, EEGSetting, Equipment, EEG, EMG, Amplifier, \
+    EEGAmplifierSetting, EEGSolution, EEGFilterSetting, FilterType, EEGElectrodeLocalizationSystem, \
     EEGCapSize, EEGElectrodeCap, EEGElectrodePosition, Manufacturer, ElectrodeModel, EEGElectrodeNet, Material, \
     AdditionalData, EMGData, FileFormat, EMGSetting, EMGDigitalFilterSetting, EMGADConverterSetting, \
-    EMGElectrodeSetting, EMGElectrodePlacementSetting, \
-    EMGPreamplifierSetting, EMGAmplifierSetting, EMGAnalogFilterSetting, EMGSurfacePlacement, \
-    ADConverter, StandardizationSystem, Muscle, MuscleSide, MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, \
-    Software, SoftwareVersion, CoilModel, TMSDevice, EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, \
-    EMGPreamplifierFilterSetting, TMSData, HotSpot, CoilOrientation, DirectionOfTheInducedCurrent, \
-    ResearchProjectCollaboration, TMSLocalizationSystem, DigitalGamePhase, ContextTree, DigitalGamePhaseData, \
-    Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending
+    EMGElectrodeSetting, EMGElectrodePlacementSetting, EMGPreamplifierSetting, EMGAmplifierSetting, \
+    EMGAnalogFilterSetting, EMGSurfacePlacement, ADConverter, StandardizationSystem, Muscle, MuscleSide, \
+    MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, Software, SoftwareVersion, CoilModel, TMSDevice, \
+    EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, TMSData, HotSpot, \
+    CoilOrientation, DirectionOfTheInducedCurrent, TMSLocalizationSystem, DigitalGamePhase, ContextTree, \
+    DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending
 
 
 class ExperimentForm(ModelForm):
@@ -41,17 +39,6 @@ class ExperimentForm(ModelForm):
                                            'data-error': _('Description must be filled.')}),
             'source_code_url': URLInput(attrs={'class': 'form-control'}),
             'ethics_committee_project_url': URLInput(attrs={'class': 'form-control'}),
-        }
-
-
-class CollaborationForm(ModelForm):
-    class Meta:
-        model = ResearchProjectCollaboration
-
-        fields = ['team_person', 'is_coordinator']
-
-        widgets = {
-            'team_person': Select(attrs={'class': 'form-control', 'required': ''}),
         }
 
 

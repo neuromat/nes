@@ -167,56 +167,6 @@
                 </div>
 
                 <div class="container span6 offset3 well ">
-                    <h4>{% trans "Collaborators" %}</h4>
-                    <div class="form-group">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th style="text-align: left">{% trans "Person" %}</th>
-                                    <th style="text-align: left">{% trans "Team" %}</th>
-                                    <th style="text-align: center">{% trans "Is_coordinator" %}</th>
-                                    <th style="text-align: center">{% trans "Remove" %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            {% for collaborator in collaborators %}
-                                <tr>
-                                    <td style="text-align: left">
-                                        {{ collaborator.team_person.person.first_name }}
-                                    </td>
-                                    <td style="text-align: left">
-                                        {{ collaborator.team_person.team.name }}
-                                    </td>
-
-                                    <td style="text-align: center">
-                                        {% if collaborator.is_coordinator %}
-                                            <a href="#"><span class="glyphicon glyphicon-check" onclick="show_modal_alter_coll_is_coordinator({{ collaborator.id }});"></span></a>
-                                        {% else %}
-                                            <a href="#"><span class="glyphicon glyphicon-unchecked"  onclick="show_modal_alter_coll_is_coordinator({{ collaborator.id }});"></span></a>
-                                        {% endif %}
-                                    </td>
-
-                                    <td style="text-align: center">
-                                        {% if can_change %}
-                                            <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove person from the collaboration team" %}"></a>
-                                        {% endif %}
-                                    </td>
-
-                                </tr>
-                            {% endfor %}
-
-                            </tbody>
-                        </table>
-                    </div>
-                    {% if perms.experiment.add_experiment and can_change %}
-                        <div class="btn-group pull-left">
-                            <a href="/experiment/research_project/{{ research_project.id }}/new_collaborator/" class="btn btn-primary">{% trans "Insert new" %}</a>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <div class="container span6 offset3 well ">
                     <h4>{% trans "Experiments" %}</h4>
                     <div class="form-group">
                         <table class="table table-striped">
