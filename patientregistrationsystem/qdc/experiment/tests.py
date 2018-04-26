@@ -15,8 +15,7 @@ from .models import Experiment, Group, Subject, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree, \
-    ResearchProjectCollaboration
+    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree
 from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
 
@@ -28,7 +27,7 @@ from patient.tests import UtilTests
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 
-from team.models import Team, Person, TeamPerson
+from team.models import Person
 from team.tests import ObjectsFactory as TeamObjectsFactory
 
 LIME_SURVEY_ID = 828636
@@ -1896,41 +1895,6 @@ class ResearchProjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Keyword.objects.all().count(), 2)
         self.assertEqual(research_project2.keywords.count(), 1)
-
-    def test_research_project_collaborator(self):
-        # Create a research project to be used in the test
-        research_project = ObjectsFactory.create_research_project()
-
-        team = TeamObjectsFactory.create_team()
-        person = TeamObjectsFactory.create_basic_person()
-        team_person = TeamObjectsFactory.create_team_person(team, person)
-
-        # screen to update an eeg_setting
-        response = self.client.get(reverse("collaborator_new", args=(research_project.id,)))
-        self.assertEqual(response.status_code, 200)
-
-        # Add a collaborator to a research project
-        self.data = {'action': 'save', 'team_person': str(team_person.id), 'is_coordinator': 'on'}
-        response = self.client.post(reverse('collaborator_new', args=(research_project.id,)), self.data)
-        self.assertEqual(response.status_code, 302)
-        research_project_collaboration = ResearchProjectCollaboration.objects.get(team_person=team_person,
-                                                                                  research_project=research_project)
-        self.assertTrue(research_project_collaboration.is_coordinator)
-
-        # Change is_coordinator flag
-        self.data = {'action': 'change_collaborator-' + str(research_project_collaboration.id)}
-        response = self.client.post(reverse('research_project_view', args=(research_project.id,)), self.data)
-        self.assertEqual(response.status_code, 302)
-
-        research_project_collaboration = ResearchProjectCollaboration.objects.get(team_person=team_person,
-                                                                                  research_project=research_project)
-        self.assertFalse(research_project_collaboration.is_coordinator)
-
-        # Remove a collaborator to a research project
-        self.data = {'action': 'remove_collaborator-' + str(research_project_collaboration.id)}
-        response = self.client.post(reverse('research_project_view', args=(research_project.id,)), self.data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(research_project.collaborators.count(), 0)
 
 
 class EEGSettingTest(TestCase):

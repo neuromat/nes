@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, EmailInput, Select, PasswordInput, CheckboxSelectMultiple, CharField
 from django.utils.translation import ugettext as _
 
-from .models import Person, Team, TeamPerson, Institution
+from .models import Person, Institution
 
 from patient.quiz_widget import SelectBoxCountries
 
@@ -49,35 +49,6 @@ class UserPersonPasswordForm(UserPersonForm):
             return make_password(self.cleaned_data['password'])
         else:
             return self.instance.password
-
-
-class TeamRegisterForm(ModelForm):
-    class Meta:
-        model = Team
-        fields = ['name', 'acronym']
-
-        widgets = {
-            'name': TextInput(attrs={'class': 'form-control', 'required': ""}),
-            'acronym': TextInput(attrs={'class': 'form-control'}),
-        }
-
-
-class TeamPersonRegisterForm(ModelForm):
-    class Meta:
-        model = TeamPerson
-        fields = ['person', 'is_coordinator']
-
-        widgets = {
-            'person': Select(attrs={'class': 'form-control'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(TeamPersonRegisterForm, self).__init__(*args, **kwargs)
-
-        initial = kwargs.get('initial')
-        if initial:
-            team = initial['team']
-            self.fields['person'].queryset = Person.objects.exclude(team_persons__team=team)
 
 
 class InstitutionRegisterForm(ModelForm):

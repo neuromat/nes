@@ -10,7 +10,7 @@ from os import path
 from django.conf import settings
 from django.utils import translation
 
-from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, \
+from .models import Experiment, Group, Subject, User, EEGSetting, \
     EMGSetting, TMSSetting, ContextTree, \
     ComponentConfiguration, EEGData, EMGData, TMSData, DigitalGamePhaseData, \
     QuestionnaireResponse, \
@@ -26,7 +26,7 @@ from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, \
     EMGAnalogFilterSetting, \
     EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, \
-    EMGElectrodePlacementSetting, Publication
+    EMGElectrodePlacementSetting
 
 from survey.abc_search_engine import Questionnaires
 from survey.survey_utils import QuestionnaireUtils
@@ -1154,25 +1154,6 @@ def send_research_project_to_portal(experiment: Experiment):
     portal_research_project = rest.client.action(rest.schema, action_keys , params=params)
 
     return portal_research_project
-
-
-def send_collaborator_to_portal(research_project_id, team_person: TeamPerson):
-
-    rest = RestApiClient()
-
-    if not rest.active:
-        return None
-
-    params = {"id": research_project_id,
-              "name": team_person.person.first_name + ' ' + team_person.person.last_name,
-              "team": team_person.team.name,
-              "coordinator": team_person.is_coordinator}
-
-    action_keys = ['studies', 'collaborators', 'create']
-
-    portal_participant = rest.client.action(rest.schema, action_keys, params=params)
-
-    return portal_participant
 
 
 def send_researcher_to_portal(research_project_id, researcher: User):
