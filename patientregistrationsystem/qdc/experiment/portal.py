@@ -26,7 +26,7 @@ from .models import Experiment, Group, Subject, TeamPerson, User, EEGSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, \
     EMGAnalogFilterSetting, \
     EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, \
-    EMGElectrodePlacementSetting, Publication
+    EMGElectrodePlacementSetting
 
 from survey.abc_search_engine import Questionnaires
 from survey.survey_utils import QuestionnaireUtils
@@ -56,39 +56,6 @@ class RestApiClient(object):
 
 def get_portal_status():
     return RestApiClient().active
-
-
-# def send_user_to_portal(user):
-#
-#     rest = RestApiClient()
-#
-#     if not rest.active:
-#         return None
-#
-#     try:
-#         portal_user = rest.client.action(
-#             rest.schema, ['researchers', 'read'], params={"nes_id": str(user.id)})
-#
-#     except:
-#         portal_user = None
-#
-#     # general params
-#     params = {"nes_id": str(user.id),
-#               "first_name": user.first_name,
-#               "surname": user.last_name,
-#               "email": user.email}
-#
-#     # create or update
-#     if portal_user:
-#         # params["id"] = portal_user['id']
-#
-#         portal_user = rest.client.action(
-#             rest.schema, ['researchers', 'update'], params=params)
-#     else:
-#         portal_user = rest.client.action(
-#             rest.schema, ['researchers', 'create'], params=params)
-#
-#     return portal_user
 
 
 def send_experiment_to_portal(experiment: Experiment):
@@ -1342,7 +1309,9 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
         language = survey_languages['language']
 
-        survey_metadata, survey_name = get_survey_information(language, survey, surveys)
+        survey_metadata, survey_name = get_survey_information(
+            language, survey, surveys
+        )
 
         params = {"id": portal_step['id'],
                   "survey_name": survey_name,
@@ -1403,8 +1372,8 @@ def get_survey_information(language, survey, surveys):
     for row in questionnaire_fields:
         first = True
         for column in row:
-            survey_metadata += (',' if not first else '') + '"' + str(column) \
-                               + '"'
+            survey_metadata += \
+                (',' if not first else '') + '"' + str(column) + '"'
             if first:
                 first = False
 

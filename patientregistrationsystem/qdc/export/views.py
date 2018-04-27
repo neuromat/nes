@@ -17,10 +17,11 @@ from os import path
 from zipfile import ZipFile
 from shutil import rmtree
 
+from survey.survey_utils import QuestionnaireUtils
 from .forms import ExportForm, ParticipantsSelectionForm, AgeIntervalForm
 from .models import Export
-from .export import ExportExecution, perform_csv_response, create_directory
 
+from export.export import ExportExecution, create_directory
 from export.input_export import build_complete_export_structure
 from export.export_utils import create_list_of_trees, can_export_nwb
 
@@ -783,13 +784,13 @@ def get_questionnaire_experiment_header(questionnaire_lime_survey, questionnaire
 
     if not isinstance(responses_string, dict):
 
-        questionnaire_questions = perform_csv_response(responses_string)
+        questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
 
         responses_heading_type = questionnaire_lime_survey.get_header_response(questionnaire_id,
                                                                                language_new, token,
                                                                                heading_type=heading_type)
 
-        questionnaire_questions_heading_type = perform_csv_response(responses_heading_type)
+        questionnaire_questions_heading_type = QuestionnaireUtils.responses_to_csv(responses_heading_type)
 
         questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
 
@@ -867,13 +868,13 @@ def get_questionnaire_header(questionnaire_lime_survey, questionnaire_id, fields
 
         if not isinstance(responses_string, dict):
 
-            questionnaire_questions = perform_csv_response(responses_string)
+            questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
 
             responses_heading_type = questionnaire_lime_survey.get_header_response(questionnaire_id,
                                                                                    language_new, token,
                                                                                    heading_type=heading_type)
 
-            questionnaire_questions_heading_type = perform_csv_response(responses_heading_type)
+            questionnaire_questions_heading_type = QuestionnaireUtils.responses_to_csv(responses_heading_type)
 
             questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
 
@@ -906,11 +907,11 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
             record_question = {'group_id': group_id, 'group_title': group_title, 'sid': questionnaire_id,
                                "title": questionnaire_title, "output_list": []}
 
-            questionnaire_questions = perform_csv_response(responses_string)
+            questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
 
             responses_full = questionnaire_lime_survey.get_header_response(questionnaire_id,
                                                                            language_new, token, heading_type='full')
-            questionnaire_questions_full = perform_csv_response(responses_full)
+            questionnaire_questions_full = QuestionnaireUtils.responses_to_csv(responses_full)
 
             index = 0
             for question in questionnaire_questions[0]:
@@ -966,11 +967,11 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
 
             record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
 
-            questionnaire_questions = perform_csv_response(responses_string)
+            questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
 
             responses_full = questionnaire_lime_survey.get_header_response(questionnaire_id,
                                                                            language_new, token, heading_type='full')
-            questionnaire_questions_full = perform_csv_response(responses_full)
+            questionnaire_questions_full = QuestionnaireUtils.responses_to_csv(responses_full)
 
             index = 0
             # line 0 - header information

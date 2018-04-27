@@ -78,7 +78,9 @@ class ResearchProject(models.Model):
 
 class ResearchProjectCollaboration(models.Model):
     team_person = models.ForeignKey(TeamPerson, related_name='collaborators')
-    research_project = models.ForeignKey(ResearchProject, related_name='collaborators')
+    research_project = models.ForeignKey(
+        ResearchProject, related_name='collaborators'
+    )
     is_coordinator = models.BooleanField()
 
 
