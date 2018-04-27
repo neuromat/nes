@@ -4,9 +4,10 @@ import json
 import random
 import re
 
-from csv import writer, reader
+from csv import writer
 from datetime import date, datetime, timedelta
 from sys import modules
+from os import path, makedirs
 
 from django.conf import settings
 from django.core.files import File
@@ -14,14 +15,11 @@ from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 from django.apps import apps
 from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import slugify
 
 from export.export_utils import create_list_of_trees, can_export_nwb
 
 from survey.survey_utils import QuestionnaireUtils
-
-from io import StringIO
-
-from os import path, makedirs
 
 from patient.models import Patient, QuestionnaireResponse
 from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, \
@@ -35,7 +33,6 @@ from experiment.views import get_block_tree, get_experimental_protocol_image, \
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import limesurvey_available
-from django.template.defaultfilters import slugify
 
 
 DEFAULT_LANGUAGE = "pt-BR"
@@ -93,18 +90,42 @@ def save_to_csv(complete_filename, rows_to_be_saved):
             export_writer.writerow(row)
 
 
-def perform_csv_response(responses_string):
+def replace_multiple_question_answers(responses, question_list):
     """
-    :param responses_string:
-    :return:
+    Get responses list - after limesurvey participants answers obtained from
+    get_responses_by_token or get_responses limesurvey api methods - that
+    are multiple choices/multiple choices with comments question types (from
+    question_list), and replaces the options that was not selected by
+    participants with a 'N' (options that was selected have 'Y' - or 'S'
+    in Portuguese - filled.
+    :param responses: double array with questions in first line and answers
+    in the other lines
+    :param question_list: list of multiple choice/multiple choice with
+    comments questions types
+    Obs.: modifies responses list
     """
-    response_reader = reader(
-        StringIO(responses_string.decode()), delimiter=','
-    )
-    responses_list = []
-    for row in response_reader:
-        responses_list.append(row)
-    return responses_list
+    i = 0
+    m = len(responses[0])
+    while i < m:
+        question_match = re.match('(^.+)\[', responses[0][i])
+        question = question_match.group(1) if question_match else None
+        if question and question in question_list:
+            index_subquestions = []
+            while i < m and question in responses[0][i]:
+                index_subquestions.append(i)
+                i += 1
+            for j in range(1, len(responses) - 1):
+                filled = False
+                for k in index_subquestions:
+                    if responses[j][k] != '':
+                        filled = True
+                        break
+                if filled:
+                    for k in index_subquestions:
+                        if responses[j][k] == '':
+                            responses[j][k] = 'N'
+        else:
+            i += 1
 
 
 def create_directory(basedir, path_to_create):
@@ -125,11 +146,7 @@ def create_directory(basedir, path_to_create):
 
     complete_path = path.join(basedir, path_to_create)
 
-    # print("encode: ", sys.getfilesystemencoding(), sys.getdefaultencoding())
-    # print("create_directory-encode:", complete_path.encode('utf-8'))
     if not path.exists(complete_path.encode('utf-8')):
-        # print("create_directory:", basedir, path_to_create)
-        # print("create_directory:", complete_path)
         makedirs(complete_path.encode('utf-8'))
 
     return "", complete_path
@@ -166,31 +183,6 @@ class LogMessages:
 
 
 class ExportExecution:
-
-    @staticmethod
-    def _replace_multiple_question_answers(responses, question_list):
-        i = 0
-        m = len(responses[0])
-        while i < m:
-            question_match = re.match('(^.+)\[', responses[0][i])
-            question = question_match.group(1) if question_match else None
-            if question and question in question_list:
-                index_subquestions = []
-                while i < m and question in responses[0][i]:
-                    index_subquestions.append(i)
-                    i += 1
-                for j in range(1, len(responses) - 1):
-                    filled = False
-                    for k in index_subquestions:
-                        if responses[j][k] != '':
-                            filled = True
-                            break
-                    if filled:
-                        for k in index_subquestions:
-                            if responses[j][k] == '':
-                                responses[j][k] = 'N'
-            else:
-                i += 1
 
     def get_username(self, request):
         self.user_name = None
@@ -975,10 +967,7 @@ class ExportExecution:
         # Including the responses
         for fields in fields_description[1:fields_description.__len__()]:
             participation_code = fields[len(fields) - 1]
-            export_row_list = []
             export_row_list = fields[0:len(fields) - 1]
-            # for field in fields[0:len(fields) - 1]:
-            #     export_row_list.append(field)
             for participant_fields in export_participant_row[1:export_participant_row.__len__()]:
                 if participation_code == participant_fields[len(participant_fields) - 1]:
                     for field in participant_fields:
@@ -986,28 +975,6 @@ class ExportExecution:
             export_fields_list.append(export_row_list)
 
         return export_fields_list
-
-    # def merge_participant_data_per_participant_process(self, questionnaire_code, participant_code, language):
-    #     export_participant_row = []
-    #
-    #     fields_rows = self.get_per_participant_data(participant_code, questionnaire_code)[language][0]
-    #
-    #     for record in self.get_input_data('participants')[0]['data_list']:
-    #         if record[-1] == participant_code:
-    #             export_participant_row = record
-    #
-    #     for field in export_participant_row:
-    #         fields_rows.append(field)
-
-        # for rows in fields_rows:
-        #     export_rows = rows[0:len(rows) - 1]
-        #     for fields in export_participant_row[1:export_participant_row.__len__()]:
-        #         if rows[len(rows)-1] == fields[len(fields) - 1]:
-        #             for field in fields:
-        #                 export_rows.append(field)
-        #     export_fields_list.append(export_rows)
-
-        # return fields_rows
 
     def process_per_questionnaire(self):
 
@@ -1020,18 +987,14 @@ class ExportExecution:
         # and save per_participant data
         if self.get_input_data("export_per_questionnaire"):
             # check if exist fields selected from questionnaires
-            # path ex. /.../qdc/media/.../NES_EXPORT/Per_questionnaire/
             error_msg, path_per_questionnaire = create_directory(self.get_export_directory(),
                                                                  self.get_input_data("per_questionnaire_directory"))
             if error_msg != "":
                 return error_msg
-            # path: /NES_EXPORT/Per_questionnaire
             export_per_questionnaire_directory = path.join(self.get_input_data("base_directory"),
                                                            self.get_input_data("per_questionnaire_directory"))
-            # path: /NES_EXPORT/Questionnaire_metadata
             export_metadata_directory = path.join(self.get_input_data("base_directory"),
                                                   self.get_input_data("questionnaire_metadata_directory"))
-            # path ex. /.../media/NES_EXPORT/Questionnaire_metadata/
             error_msg, path_per_questionnaire_metadata = create_directory(
                 self.get_export_directory(), self.get_input_data("questionnaire_metadata_directory"))
             if error_msg != "":
@@ -1062,7 +1025,7 @@ class ExportExecution:
             # path ex. /NES_EXPORT/Per_questionnaire/Q123_aaa/
             export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
 
-            # path ex. /.../media/NES_EXPORT/Questionnaire_metadata/Q123_aaa
+            # path ex. /NES_EXPORT/Questionnaire_metadata/Q123_aaa
             error_msg, export_metadata_path = create_directory(path_per_questionnaire_metadata, path_questionnaire)
             if error_msg != "":
                 return error_msg
@@ -1072,10 +1035,12 @@ class ExportExecution:
 
             print(questionnaire_id)
             for language in language_list:
-                # per_participant_data is updated by define_questionnaire method
+                # Per_participant_data is updated by define_questionnaire
+                # method
                 fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
 
-                # create directory for questionnaire: <per_questionnaire>/<q_code_title>
+                # create directory for questionnaire:
+                # <per_questionnaire>/<q_code_title>
                 if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
                     export_filename = \
                         "%s_%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code), language)
@@ -1087,7 +1052,8 @@ class ExportExecution:
 
             # questionnaire metadata
             entrance_questionnaire = True
-            # create questionnaire fields file ("fields.csv") - metadata directory
+            # create questionnaire fields file ("fields.csv") - metadata
+            # directory
             fields = self.questionnaire_utils.get_questionnaire_fields(
                 questionnaire_id, entrance_questionnaire, self.get_input_data('questionnaires_from_experiments'))
 
@@ -2404,15 +2370,17 @@ class ExportExecution:
                                 questionnaire_id, language, response_type[0]
                             )
                         # all the answer from the questionnaire_id in csv format
-                        fill_list1 = perform_csv_response(responses_string1)
+                        fill_list1 = QuestionnaireUtils.responses_to_csv(
+                            responses_string1
+                        )
 
                         # need types of questions to make replacement just
                         # below
-                        question_list = self._get_question_list(
+                        question_list = QuestionnaireUtils.get_question_list(
                             questionnaire_lime_survey, questionnaire_id,
                             language
                         )
-                        self._replace_multiple_question_answers(
+                        replace_multiple_question_answers(
                             fill_list1, question_list
                         )
 
@@ -2423,16 +2391,17 @@ class ExportExecution:
                                     questionnaire_id, language,
                                     response_type[1]
                                 )
-                            fill_list2 = perform_csv_response(
+                            fill_list2 = QuestionnaireUtils.responses_to_csv(
                                 responses_string2
                             )
                             # need types of questions to make replacement just
                             # below
-                            question_list = self._get_question_list(
+                            question_list = \
+                                QuestionnaireUtils.get_question_list(
                                 questionnaire_lime_survey, questionnaire_id,
                                 language
                             )
-                            self._replace_multiple_question_answers(
+                            replace_multiple_question_answers(
                                 fill_list2, question_list
                             )
                         else:
@@ -2524,13 +2493,13 @@ class ExportExecution:
                 questionnaire_id, language, response_type[0]
             )
             # all the answer from the questionnaire_id in csv format
-            fill_list1 = perform_csv_response(responses_string1)
+            fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
             # read "long" information, if necessary
             if len(response_type) > 1:
                 responses_string2 = questionnaire_lime_survey.get_responses(questionnaire_id, language,
                                                                             response_type[1])
-                fill_list2 = perform_csv_response(responses_string2)
+                fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
             else:
                 fill_list2 = fill_list1
 
@@ -2644,15 +2613,15 @@ class ExportExecution:
             responses_string1 = questionnaire_lime_survey.get_responses(
                 questionnaire_id, language, response_type[0]
             )
-            fill_list1 = perform_csv_response(responses_string1)
+            fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
             # need types of questions to make replacement just
             # below
-            question_list = self._get_question_list(
+            question_list = QuestionnaireUtils.get_question_list(
                 questionnaire_lime_survey, questionnaire_id,
                 language
             )
-            self._replace_multiple_question_answers(
+            replace_multiple_question_answers(
                 fill_list1, question_list
             )
 
@@ -2661,14 +2630,14 @@ class ExportExecution:
                 responses_string2 = questionnaire_lime_survey.get_responses(
                     questionnaire_id, language, response_type[1]
                 )
-                fill_list2 = perform_csv_response(responses_string2)
+                fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
                 # need types of questions to make replacement just
                 # below
-                question_list = self._get_question_list(
+                question_list = QuestionnaireUtils.get_question_list(
                     questionnaire_lime_survey, questionnaire_id,
                     language
                 )
-                self._replace_multiple_question_answers(
+                replace_multiple_question_answers(
                     fill_list2, question_list
                 )
             else:
@@ -2755,29 +2724,6 @@ class ExportExecution:
 
             export_rows.insert(0, header)
         return export_rows
-
-    @staticmethod
-    def _get_question_list(survey, survey_id, language):
-        groups = survey.list_groups(survey_id)
-        question_list = []
-        for group in groups:
-            if 'id' in group and group['id']['language'] == language:
-                question_ids = survey.list_questions(
-                    survey_id, group['id']['gid']
-                )
-                for id in question_ids:
-                    properties = survey.get_question_properties(
-                        id, group['id']['language']
-                    )
-                    # Multiple question ('M' or 'P') will be question if
-                    # properties['subquestions'] is a dict, otherwise will
-                    # be subquestion. We only wish questions
-                    if isinstance(properties['subquestions'], dict) and \
-                            (properties['type'] == 'M' or
-                             properties['type'] == 'P'):
-                        question_list.append(properties['title'])
-
-        return question_list
 
 
 def handling_values(dictionary_object):

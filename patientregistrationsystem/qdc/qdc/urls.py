@@ -10,10 +10,6 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     '',
-    # Examples:
-    # url(r'^$', 'qdc.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-
     url(r'^admin/', include(admin.site.urls)),
     url(r'^patient/', include('patient.urls')),
     url(r'^user/', include('custom_user.urls')),
@@ -55,16 +51,11 @@ urlpatterns = patterns(
 
 # internationalization
 js_info_dict = {
-    'packages': ('patient',
-    'experiment',
-    'survey',
-    'custom_user',
-    'quiz',
-                 ),
+    'packages': ('patient', 'experiment', 'survey', 'custom_user', 'quiz', ),
 }
 
-urlpatterns += patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+urlpatterns += patterns(
+    '', (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
 )
 
 handler403 = 'qdc.views.qdc_permission_denied_view'
