@@ -41,8 +41,8 @@ from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
 from qdc.settings import MEDIA_ROOT
-from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
-    ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
+from .models import Experiment, ExperimentCollaborator, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
+    Component, ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, Amplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
@@ -74,7 +74,7 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
-    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
+    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, ExperimentCollaboratorForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
     HotSpotForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
@@ -564,35 +564,6 @@ def get_experiments_by_research_project(request, research_project_id):
     return HttpResponse(json_experiment_list, content_type='application/json')
 
 
-# @login_required
-# @permission_required('experiment.add_experiment')
-# def collaborator_create(request, research_project_id, template_name="experiment/collaborator_register.html"):
-#     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
-#
-#     check_can_change(request.user, research_project)
-#
-#     collaborator_form = CollaborationForm(request.POST or None, initial={'research_project': research_project_id})
-#
-#     if request.method == "POST":
-#         if request.POST['action'] == "save":
-#             if collaborator_form.is_valid():
-#                 collaborator_added = collaborator_form.save(commit=False)
-#                 collaborator_added.research_project = research_project
-#                 collaborator_added.save()
-#
-#                 messages.success(request, _('Collaborator created successfully.'))
-#
-#                 redirect_url = reverse("research_project_view", args=(research_project_id,))
-#                 return HttpResponseRedirect(redirect_url)
-#
-#     context = {"research_project": ResearchProject.objects.get(id=research_project_id),
-#                "collaborator_form": collaborator_form,
-#                "creating": True,
-#                "editing": True}
-#
-#     return render(request, template_name, context)
-
-
 @login_required
 @permission_required('experiment.add_experiment')
 def experiment_create(request, research_project_id, template_name="experiment/experiment_register.html"):
@@ -632,6 +603,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     tms_setting_list = TMSSetting.objects.filter(experiment=experiment).order_by('name')
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
+    collaborators = ExperimentCollaborator.objects.filter(experiment=experiment).order_by('collaborator__first_name')
 
     for field in experiment_form.fields:
         experiment_form.fields[field].widget.attrs['disabled'] = True
@@ -639,6 +611,17 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     experiment_status_portal = get_experiment_status_portal(experiment_id)
 
     if request.method == "POST":
+
+        if request.POST['action'][:20] == "remove_collaborator-":
+            collaborator = get_object_or_404(ExperimentCollaborator, pk=request.POST['action'][20:])
+            try:
+                collaborator.delete()
+                messages.success(request, _('Collaborator removed successfully.'))
+            except ProtectedError:
+                messages.error(request, _("Error trying to delete a collaborator."))
+            redirect_url = reverse("experiment_view", args=(experiment_id,))
+            return HttpResponseRedirect(redirect_url)
+
         if request.POST['action'] == "remove":
 
             check_can_change(request.user, experiment.research_project)
@@ -688,7 +671,9 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                "tms_setting_list": tms_setting_list,
                "context_tree_list": context_tree_list,
                "research_project": experiment.research_project,
-               "experiment_status_portal": experiment_status_portal}
+               "experiment_status_portal": experiment_status_portal,
+               "collaborators": collaborators,
+               }
 
     return render(request, template_name, context)
 
@@ -722,6 +707,39 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
                "editing": True,
                "group_list": group_list,
                "experiment": experiment}
+
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('experiment.add_experiment')
+def collaborator_create(request, experiment_id, template_name="experiment/collaborator_register.html"):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    check_can_change(request.user, experiment.research_project)
+
+    collaborator_form = ExperimentCollaboratorForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if collaborator_form.is_valid():
+                collaborator_added = collaborator_form.save(commit=False)
+                collaborator_added.experiment_id = experiment_id
+                collaborator_added.save()
+
+                messages.success(request, _('Collaborator created successfully.'))
+
+                redirect_url = reverse("experiment_view", args=(experiment_id,))
+                return HttpResponseRedirect(redirect_url)
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"experiment": experiment,
+               "collaborator_form": collaborator_form,
+               "creating": True,
+               "editing": True}
 
     return render(request, template_name, context)
 
