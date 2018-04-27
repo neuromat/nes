@@ -12,7 +12,6 @@ import pydot
 
 from nwb.nwbco import *
 
-# v1.5
 import mne
 import base64
 import os
@@ -41,6 +40,7 @@ from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
 from qdc.settings import MEDIA_ROOT
+from survey.survey_utils import QuestionnaireUtils
 from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
     ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
@@ -80,12 +80,14 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     HotSpotForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
     GenericDataCollectionForm, GenericDataCollectionDataForm, ResendExperimentForm, ResearchProjectOwnerForm
 
-from .portal import get_experiment_status_portal, send_experiment_to_portal, get_portal_status, \
+from .portal import get_experiment_status_portal, \
+    send_experiment_to_portal, get_portal_status, \
     send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
     send_experimental_protocol_to_portal, send_participant_to_portal, \
     send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
     send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
-    send_file_to_portal, send_eeg_data_to_portal, send_digital_game_phase_data_to_portal, \
+    send_file_to_portal, send_eeg_data_to_portal, \
+    send_digital_game_phase_data_to_portal, \
     send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal, \
     send_generic_data_collection_data_to_portal, \
     send_additional_data_to_portal, send_publication_to_portal
@@ -264,7 +266,6 @@ def research_project_view(request, research_project_id, template_name="experimen
                                         'all data collections'))
             redirect_url = reverse("experiment_view", args=(experiment.id,))
             return HttpResponseRedirect(redirect_url)
-
 
     context = {"can_change": get_can_change(request.user, research_project),
                "experiments": research_project.experiment_set.order_by('title'),
@@ -1081,41 +1082,77 @@ def send_all_experiments_to_portal():
                     if surveys.session_key:
 
                         # questionnaire response
-                        questionnaire_responses = QuestionnaireResponse.objects.filter(subject_of_group__group=group)
+                        questionnaire_responses = \
+                            QuestionnaireResponse.objects.filter(
+                                subject_of_group__group=group
+                            )
 
                         for questionnaire_response in questionnaire_responses:
                             component_id = \
-                                questionnaire_response.data_configuration_tree.component_configuration.component_id
-                            questionnaire = Questionnaire.objects.get(pk=component_id)
+                                questionnaire_response.data_configuration_tree.\
+                                    component_configuration.component_id
+                            questionnaire = \
+                                Questionnaire.objects.get(pk=component_id)
                             limesurvey_id = questionnaire.survey.lime_survey_id
-                            token = surveys.get_participant_properties(limesurvey_id,
-                                                                       questionnaire_response.token_id,
-                                                                       "token")
-                            questionnaire_language = get_questionnaire_language(surveys, limesurvey_id, language_code)
-
-
-                            responses_string = surveys.get_responses_by_token(limesurvey_id,
-                                                                              token,
-                                                                              questionnaire_language)
-
-                            limesurvey_response = {'questions': '', 'answers': ''}
+                            token = \
+                                surveys.get_participant_properties(
+                                    limesurvey_id,
+                                    questionnaire_response.token_id,
+                                    "token"
+                                )
+                            questionnaire_language = \
+                                get_questionnaire_language(
+                                    surveys, limesurvey_id, language_code
+                                )
+                            responses_string = \
+                                surveys.get_responses_by_token(
+                                    limesurvey_id,
+                                    token,
+                                    questionnaire_language
+                                )
+                            limesurvey_response = \
+                                {'questions': '', 'answers': ''}
 
                             if isinstance(responses_string, bytes):
-                                reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
+                                reader = \
+                                    csv.reader(
+                                        StringIO(responses_string.decode()),
+                                        delimiter=','
+                                    )
                                 responses_list = []
                                 for row in reader:
                                     responses_list.append(row)
 
-                                if len(responses_list) > 1:
+                                # Need multiple choice questions types to
+                                # make replacement just below.
+                                question_list = \
+                                    QuestionnaireUtils.get_question_list(
+                                        surveys,
+                                        limesurvey_id,
+                                        questionnaire_language
+                                    )
+                                if question_list:
+                                    # Import here because of ImportError (cannot
+                                    # import name) exception possibly due to
+                                    # circular import error.
+                                    # TODO: see answer in https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
+                                    # TODO: for other solutions
+                                    from export.export import \
+                                        replace_multiple_question_answers
+                                    replace_multiple_question_answers(
+                                        responses_list, question_list
+                                    )
 
-                                    # limesurvey_response['questions'] = responses_list[0]
-                                    # limesurvey_response['answers'] = responses_list[1]
+                                if len(responses_list) > 1:
 
                                     # get fields to send
                                     fields_to_send = \
                                         [item.question_code
-                                         for item in PortalSelectedQuestion.objects.filter(experiment=group.experiment,
-                                                                                           survey=questionnaire.survey)]
+                                         for item in
+                                         PortalSelectedQuestion.objects.filter(
+                                             experiment=group.experiment,
+                                             survey=questionnaire.survey)
+                                         ]
 
                                     limesurvey_response['questions'] = []
                                     limesurvey_response['answers'] = []
