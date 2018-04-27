@@ -2,8 +2,7 @@
 
 from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput, URLInput, CheckboxSelectMultiple, \
-    ModelChoiceField
+    ValidationError, Form, IntegerField, NumberInput, TimeInput, URLInput, ModelChoiceField
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
@@ -18,7 +17,8 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, Software, SoftwareVersion, CoilModel, TMSDevice, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, TMSData, HotSpot, \
     CoilOrientation, DirectionOfTheInducedCurrent, TMSLocalizationSystem, DigitalGamePhase, ContextTree, \
-    DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending
+    DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending, \
+    ExperimentCollaborator
 
 
 class ExperimentForm(ModelForm):
@@ -39,6 +39,17 @@ class ExperimentForm(ModelForm):
                                            'data-error': _('Description must be filled.')}),
             'source_code_url': URLInput(attrs={'class': 'form-control'}),
             'ethics_committee_project_url': URLInput(attrs={'class': 'form-control'}),
+        }
+
+
+class ExperimentCollaboratorForm(ModelForm):
+    class Meta:
+        model = ExperimentCollaborator
+
+        fields = ['experiment', 'collaborator']
+
+        widgets = {
+            'collaborator': Select(attrs={'class': 'form-control', 'required': ''}),
         }
 
 
