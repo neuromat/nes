@@ -1,7 +1,9 @@
 import collections
 import re
+from _csv import reader
 
 from operator import itemgetter
+from io import StringIO
 
 from django.utils.encoding import smart_str
 
@@ -366,3 +368,48 @@ class QuestionnaireUtils:
                     questionnaire_explanation_fields_list.append(question_to_list)
 
         return questionnaire_explanation_fields_list
+
+    @staticmethod
+    def get_question_list(survey, survey_id, language):
+        """
+        Return limesurvey multiple question types list
+        TODO: make returns all question types
+        :param survey:
+        :param survey_id:
+        :param language:
+        :return:
+        """
+        groups = survey.list_groups(survey_id)
+        question_list = []
+        for group in groups:
+            if 'id' in group and group['id']['language'] == language:
+                question_ids = survey.list_questions(
+                    survey_id, group['id']['gid']
+                )
+                for id in question_ids:
+                    properties = survey.get_question_properties(
+                        id, group['id']['language']
+                    )
+                    # Multiple question ('M' or 'P') will be question if
+                    # properties['subquestions'] is a dict, otherwise will
+                    # be subquestion. We only wish questions
+                    if isinstance(properties['subquestions'], dict) and \
+                            (properties['type'] == 'M' or
+                             properties['type'] == 'P'):
+                        question_list.append(properties['title'])
+
+        return question_list
+
+    @staticmethod
+    def responses_to_csv(responses_string):
+        """
+        :param responses_string:
+        :return:
+        """
+        response_reader = reader(
+            StringIO(responses_string.decode()), delimiter=','
+        )
+        responses_list = []
+        for row in response_reader:
+            responses_list.append(row)
+        return responses_list
