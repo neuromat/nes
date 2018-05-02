@@ -108,26 +108,21 @@ class QuestionnaireUtils:
 
         return headers, fields
 
-    # def append_questionnaire_header_and_field(self, questionnaire_id, header, fields):
     def append_questionnaire_header_and_field(self, questionnaire_id, header, fields,
                                               considers_questionnaires,
                                               considers_questionnaires_from_experiment):
         # only one header, field instance
         for field in fields:
-            # if self.get_input_data('questionnaires'):
             if considers_questionnaires:
                 if field not in self.questionnaires_data[questionnaire_id]["fields"]:
                     self.questionnaires_data[questionnaire_id]["header"].append(header[fields.index(field)])
                     self.questionnaires_data[questionnaire_id]["fields"].append(field)
-            # if self.get_input_data('questionnaires_from_experiment'):
             if considers_questionnaires_from_experiment:
                 if field not in self.questionnaires_experiment_data[questionnaire_id]["fields"]:
                     self.questionnaires_experiment_data[questionnaire_id]["header"].append(header[fields.index(field)])
                     self.questionnaires_experiment_data[questionnaire_id]["fields"].append(field)
 
     def get_header_questionnaire(self, questionnaire_id):
-        # headers_questionnaire format: dict {questionnaire_id: {header:[header]}}
-
         header = []
         if questionnaire_id in self.questionnaires_data:
             header = self.questionnaires_data[questionnaire_id]["header"]
@@ -143,14 +138,12 @@ class QuestionnaireUtils:
                 self.questionnaires_experiment_data[questionnaire_id]["fields"].append(field)
 
     def get_header_experiment_questionnaire(self, questionnaire_id):
-        # headers_questionnaire format: dict {questionnaire_id: {header:[header]}}
-
         header = []
         if questionnaire_id in self.questionnaires_experiment_data:
-            header = self.questionnaires_experiment_data[questionnaire_id]["header"]
+            header = \
+                self.questionnaires_experiment_data[questionnaire_id]["header"]
         return header
 
-    # def get_questionnaire_fields(self, questionnaire_id, entrance_questionnaire):
     def get_questionnaire_fields(self, questionnaire_id, entrance_questionnaire,
                                  considers_questionnaires_from_experiments):
         # headers_questionnaire format: dict {questionnaire_id: {fields:[fields]}}
@@ -205,8 +198,10 @@ class QuestionnaireUtils:
         self.questionnaires_data[questionnaire_id]["header"] = new_header
         self.questionnaires_data[questionnaire_id]["fields"] = new_fields
 
+        return new_header, new_fields
+
+
     def redefine_header_and_fields_experiment(self, questionnaire_id, header_filtered, fields, header_list):
-        # header = self.questionnaires_experiment_data[questionnaire_id]["header"]
         header_questionnaire = self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"]
         fields_saved = self.questionnaires_experiment_data[questionnaire_id]["fields"]
 
