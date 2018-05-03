@@ -114,8 +114,8 @@ class Experiment(models.Model):
 
 
 class ExperimentCollaborator(models.Model):
-    experiment = models.ForeignKey(Experiment, null=True, blank=True)
-    collaborator = models.ForeignKey(Person, null=True, blank=True)
+    experiment = models.ForeignKey(Experiment)
+    collaborator = models.ForeignKey(Person)
 
 
 class Publication(models.Model):

@@ -74,7 +74,7 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
     ADConverterRegisterForm, StandardizationSystemRegisterForm, \
     MuscleRegisterForm, MuscleSubdivisionRegisterForm, MuscleSideRegisterForm, EMGSurfacePlacementForm, \
     TMSForm, TMSSettingForm, TMSDeviceSettingForm, CoilModelRegisterForm, TMSDeviceRegisterForm, \
-    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, ExperimentCollaboratorForm, \
+    SoftwareRegisterForm, SoftwareVersionRegisterForm, EMGIntramuscularPlacementForm, \
     EMGSurfacePlacementRegisterForm, EMGIntramuscularPlacementRegisterForm, EMGNeedlePlacementRegisterForm, \
     SubjectStepDataForm, EMGPreamplifierFilterSettingForm, CoilModelForm, TMSDataForm, TMSLocalizationSystemForm, \
     HotSpotForm, DigitalGamePhaseForm, ContextTreeForm, DigitalGamePhaseDataForm, PublicationForm, \
@@ -103,6 +103,8 @@ from survey.abc_search_engine import Questionnaires
 from survey.models import Survey, SensitiveQuestion
 from survey.views import get_questionnaire_responses, check_limesurvey_access, create_list_of_trees, \
     get_questionnaire_language, get_survey_header, questionnaire_evaluation_fields_excluded
+
+from team.models import Person
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -716,28 +718,37 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 def collaborator_create(request, experiment_id, template_name="experiment/collaborator_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
-    check_can_change(request.user, experiment.research_project)
+    collaborators_added = ExperimentCollaborator.objects.filter(experiment_id=experiment_id)
+    collaborators_added_ids = collaborators_added.values_list('collaborator_id', flat=True)
 
-    collaborator_form = ExperimentCollaboratorForm(request.POST or None)
+    collaborators = Person.objects.all().exclude(pk__in=collaborators_added_ids).order_by('first_name', 'last_name')
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            if collaborator_form.is_valid():
-                collaborator_added = collaborator_form.save(commit=False)
-                collaborator_added.experiment_id = experiment_id
-                collaborator_added.save()
+            collaborators_selected = request.POST.getlist('collaborators')
 
-                messages.success(request, _('Collaborator created successfully.'))
+            if collaborators_selected:
+                num_of_collaborator = len(collaborators_selected)
+                for collaborator in collaborators_selected:
+                    collaborator = ExperimentCollaborator(experiment_id=experiment_id, collaborator_id=collaborator)
+                    collaborator.save()
+
+                if num_of_collaborator == 1:
+                    messages.success(request, _('1 collaborator was added successfully.'))
+                else:
+                    messages.success(request, _('%d collaborators were added successfully.') % num_of_collaborator)
 
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
+
             else:
-                messages.warning(request, _('Information not saved.'))
+                messages.warning(request, _('Please, select at least one collaborator.'))
+
         else:
             messages.warning(request, _('Action not available.'))
 
     context = {"experiment": experiment,
-               "collaborator_form": collaborator_form,
+               "collaborators": collaborators,
                "creating": True,
                "editing": True}
 
