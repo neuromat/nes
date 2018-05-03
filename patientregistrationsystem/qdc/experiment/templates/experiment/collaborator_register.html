@@ -4,6 +4,7 @@
 {% load i18n admin_static %}
 
 {% block header %}
+     <script src="{% static 'quiz/js/experiment_collaborator.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -64,11 +65,18 @@
                 <h4>{% trans "Add collaborators" %}</h4>
                 <div class="row">
                     <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            <label class="control-label">{% trans "Name" %} </label>
-                            {{ collaborator_form.collaborator }}
-                            <div class="help-block with-errors"></div>
-                        </div>
+                        {% if collaborators %}
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="select_all" id="select_all_collaborators">{% trans 'Select all' %}</label>
+                            </div>
+                            {% for collaborator in collaborators %}
+                                <div class="checkbox">
+                                    <label><input type="checkbox" class="checkbox_collaborators" name="collaborators" value="{{ collaborator.id }}">{{ collaborator }}</label>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            {% trans "There is no collaborator to add!" %}
+                        {% endif %}
                     </div>
                 </div>
             </div>

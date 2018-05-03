@@ -17,8 +17,7 @@ from experiment.models import Experiment, QuestionnaireResponse, SubjectOfGroup,
     MuscleSubdivision, TMS, TMSSetting, TMSDeviceSetting, Software, SoftwareVersion, CoilModel, TMSDevice, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, SubjectStepData, EMGPreamplifierFilterSetting, TMSData, HotSpot, \
     CoilOrientation, DirectionOfTheInducedCurrent, TMSLocalizationSystem, DigitalGamePhase, ContextTree, \
-    DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending, \
-    ExperimentCollaborator
+    DigitalGamePhaseData, Publication, GenericDataCollection, GenericDataCollectionData, ScheduleOfSending
 
 
 class ExperimentForm(ModelForm):
@@ -39,17 +38,6 @@ class ExperimentForm(ModelForm):
                                            'data-error': _('Description must be filled.')}),
             'source_code_url': URLInput(attrs={'class': 'form-control'}),
             'ethics_committee_project_url': URLInput(attrs={'class': 'form-control'}),
-        }
-
-
-class ExperimentCollaboratorForm(ModelForm):
-    class Meta:
-        model = ExperimentCollaborator
-
-        fields = ['experiment', 'collaborator']
-
-        widgets = {
-            'collaborator': Select(attrs={'class': 'form-control', 'required': ''}),
         }
 
 
