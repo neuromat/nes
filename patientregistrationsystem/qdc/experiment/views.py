@@ -41,7 +41,7 @@ from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
 from qdc.settings import MEDIA_ROOT
-from .models import Experiment, ExperimentCollaborator, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
+from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
     Component, ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, Amplifier, EEGElectrodeNet, DataConfigurationTree, \
@@ -605,7 +605,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     tms_setting_list = TMSSetting.objects.filter(experiment=experiment).order_by('name')
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
-    collaborators = ExperimentCollaborator.objects.filter(experiment=experiment).order_by('collaborator__first_name')
+    collaborators = ExperimentResearcher.objects.filter(experiment=experiment).order_by('researcher__first_name')
 
     for field in experiment_form.fields:
         experiment_form.fields[field].widget.attrs['disabled'] = True
@@ -615,7 +615,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     if request.method == "POST":
 
         if request.POST['action'][:20] == "remove_collaborator-":
-            collaborator = get_object_or_404(ExperimentCollaborator, pk=request.POST['action'][20:])
+            collaborator = get_object_or_404(ExperimentResearcher, pk=request.POST['action'][20:])
             try:
                 collaborator.delete()
                 messages.success(request, _('Researcher removed successfully.'))
@@ -718,8 +718,8 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
 def collaborator_create(request, experiment_id, template_name="experiment/collaborator_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
-    collaborators_added = ExperimentCollaborator.objects.filter(experiment_id=experiment_id)
-    collaborators_added_ids = collaborators_added.values_list('collaborator_id', flat=True)
+    collaborators_added = ExperimentResearcher.objects.filter(experiment_id=experiment_id)
+    collaborators_added_ids = collaborators_added.values_list('researcher_id', flat=True)
 
     collaborators = Person.objects.all().exclude(pk__in=collaborators_added_ids).order_by('first_name', 'last_name')
 
@@ -730,7 +730,7 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
             if collaborators_selected:
                 num_of_collaborator = len(collaborators_selected)
                 for collaborator in collaborators_selected:
-                    collaborator = ExperimentCollaborator(experiment_id=experiment_id, collaborator_id=collaborator)
+                    collaborator = ExperimentResearcher(experiment_id=experiment_id, researcher_id=collaborator)
                     collaborator.save()
 
                 if num_of_collaborator == 1:
