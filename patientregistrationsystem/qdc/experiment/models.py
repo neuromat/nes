@@ -113,9 +113,9 @@ class Experiment(models.Model):
         self.changed_by = value
 
 
-class ExperimentCollaborator(models.Model):
+class ExperimentResearcher(models.Model):
     experiment = models.ForeignKey(Experiment)
-    collaborator = models.ForeignKey(Person)
+    researcher = models.ForeignKey(Person)
 
 
 class Publication(models.Model):
