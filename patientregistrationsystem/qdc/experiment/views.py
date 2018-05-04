@@ -41,8 +41,8 @@ from django.utils.translation import ugettext as _
 
 from qdc.settings import MEDIA_ROOT
 from survey.survey_utils import QuestionnaireUtils
-from .models import Experiment, Subject, QuestionnaireResponse, SubjectOfGroup, Group, Component, \
-    ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
+from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
+    Component, ComponentConfiguration, Questionnaire, Task, Stimulus, Pause, Instruction, Block, \
     TaskForTheExperimenter, ClassificationOfDiseases, ResearchProject, Keyword, EEG, EMG, EEGData, FileFormat, \
     EEGSetting, Equipment, Manufacturer, Amplifier, EEGElectrodeNet, DataConfigurationTree, \
     EEGAmplifierSetting, EEGSolutionSetting, EEGFilterSetting, EEGElectrodeLayoutSetting, \
