@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-03 13:23-0300\n"
+"POT-Creation-Date: 2018-05-04 11:48-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -699,8 +699,6 @@ msgstr "E-mail"
 #: team/templates/team/person_list.html:42
 #: team/templates/team/person_register.html:87
 #: team/templates/team/registers.html:42 team/templates/team/team_list.html:42
-#: team/templates/team/team_person_register.html:51
-#: team/templates/team/team_register.html:51
 #: templates/registration/change_password_custom.html:143
 #: templates/registration/logged_out.html:4
 msgid "Home"
@@ -712,13 +710,11 @@ msgstr "Home"
 #: team/templates/team/person_register.html:88
 #: team/templates/team/registers.html:43 team/templates/team/team_list.html:43
 #: team/templates/team/team_list.html:44
-#: team/templates/team/team_register.html:52
-#: team/templates/team/team_register.html:53 team/views.py:31
 msgid "Teams"
 msgstr "Equipes"
 
 #: team/templates/team/institution_list.html:44
-#: team/templates/team/institution_register.html:53 team/views.py:36
+#: team/templates/team/institution_register.html:53 team/views.py:29
 msgid "Institutions"
 msgstr "Instituições"
 
@@ -730,15 +726,12 @@ msgstr "Lista de instituições"
 #: team/templates/team/institution_register.html:78
 #: team/templates/team/person_list.html:57
 #: team/templates/team/team_list.html:57
-#: team/templates/team/team_register.html:78
-#: team/templates/team/team_register.html:108
 msgid "Name"
 msgstr "Nome"
 
 #: team/templates/team/institution_list.html:58
 #: team/templates/team/institution_register.html:89
 #: team/templates/team/team_list.html:58
-#: team/templates/team/team_register.html:85
 msgid "Acronym"
 msgstr "Acrônimo"
 
@@ -767,23 +760,18 @@ msgstr "Inserir novo"
 #: team/templates/team/institution_list.html:92
 #: team/templates/team/institution_register.html:150
 #: team/templates/team/person_list.html:92
-#: team/templates/team/person_register.html:313
+#: team/templates/team/person_register.html:311
 #: team/templates/team/team_list.html:88
-#: team/templates/team/team_person_register.html:125
-#: team/templates/team/team_register.html:187
 msgid "Back"
 msgstr "Voltar"
 
 #: team/templates/team/institution_register.html:56
 #: team/templates/team/person_register.html:91
-#: team/templates/team/team_person_register.html:55
-#: team/templates/team/team_register.html:56
 msgid "New"
 msgstr "Novo"
 
 #: team/templates/team/institution_register.html:60
 #: team/templates/team/person_register.html:95
-#: team/templates/team/team_register.html:60
 msgid "Editing"
 msgstr "Edição"
 
@@ -795,8 +783,6 @@ msgstr "Instituição"
 
 #: team/templates/team/institution_register.html:128
 #: team/templates/team/person_register.html:290
-#: team/templates/team/team_person_register.html:103
-#: team/templates/team/team_register.html:95
 msgid "Edit"
 msgstr "Editar"
 
@@ -805,24 +791,16 @@ msgid "Delete institution"
 msgstr "Remover instituição"
 
 #: team/templates/team/institution_register.html:142
-#: team/templates/team/person_register.html:305
-#: team/templates/team/team_person_register.html:117
-#: team/templates/team/team_register.html:179
+#: team/templates/team/person_register.html:303
 #: templates/registration/change_password_custom.html:137
 msgid "Save"
 msgstr "Salvar"
 
 #: team/templates/team/institution_register.html:146
 #: team/templates/team/institution_register.html:165
-#: team/templates/team/person_register.html:309
+#: team/templates/team/person_register.html:307
 #: team/templates/team/person_register.html:325
 #: team/templates/team/person_register.html:339
-#: team/templates/team/team_person_register.html:121
-#: team/templates/team/team_person_register.html:140
-#: team/templates/team/team_register.html:183
-#: team/templates/team/team_register.html:202
-#: team/templates/team/team_register.html:221
-#: team/templates/team/team_register.html:237
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -831,18 +809,13 @@ msgid "Are you sure you want to delete this institution?"
 msgstr "Tem certeza que deseja remover esta instituição?"
 
 #: team/templates/team/institution_register.html:166
-#: team/templates/team/person_register.html:299
+#: team/templates/team/person_register.html:297
 #: team/templates/team/person_register.html:326
-#: team/templates/team/team_person_register.html:112
-#: team/templates/team/team_person_register.html:141
-#: team/templates/team/team_register.html:205
-#: team/templates/team/team_register.html:222
 msgid "Delete"
 msgstr "Remover"
 
 #: team/templates/team/person_list.html:44
-#: team/templates/team/person_register.html:89
-#: team/templates/team/team_register.html:103 team/views.py:26
+#: team/templates/team/person_register.html:89 team/views.py:24
 msgid "Persons"
 msgstr "Pessoas"
 
@@ -852,7 +825,6 @@ msgstr "Lista de pessoas"
 
 #: team/templates/team/person_list.html:58
 #: team/templates/team/person_register.html:163
-#: team/templates/team/team_register.html:109
 #: templates/registration/password_reset_form.html:83
 msgid "E-mail"
 msgstr "E-mail"
@@ -929,7 +901,6 @@ msgid "In which these profiles does user identify?"
 msgstr "Em quais desses perfis o usuário se identifica?"
 
 #: team/templates/team/person_register.html:322
-#: team/templates/team/team_person_register.html:137
 msgid "Are you sure you want to delete person?"
 msgstr "Tem certeza que deseja remover esta pessoa"
 
@@ -953,161 +924,60 @@ msgstr "Exibição da lista"
 msgid "Team list"
 msgstr "Lista de equipes"
 
-#: team/templates/team/team_person_register.html:52
-msgid "TeamPersons"
-msgstr ""
-
-#: team/templates/team/team_person_register.html:67
-msgid "TeamPerson"
-msgstr ""
-
-#: team/templates/team/team_person_register.html:72
-msgid "Existent team_person"
-msgstr ""
-
-#: team/templates/team/team_person_register.html:86
-#: team/templates/team/team_person_register.html:93
-msgid "Is_coordinator"
-msgstr "É coordenador"
-
-#: team/templates/team/team_register.html:73
-msgid "Team"
-msgstr "Equipe"
-
-#: team/templates/team/team_register.html:110
-msgid "Is coordinator"
-msgstr "É coordenador"
-
-#: team/templates/team/team_register.html:111
-msgid "Remove"
-msgstr "Remover"
-
-#: team/templates/team/team_register.html:132
-msgid "Delete person from the team"
-msgstr ""
-
-#: team/templates/team/team_register.html:153
-msgid "is coordinator"
-msgstr "é coordenador"
-
-#: team/templates/team/team_register.html:160
-msgid "Insert"
-msgstr "Inserir"
-
-#: team/templates/team/team_register.html:174
-msgid "Delete team"
-msgstr "Remover equipe"
-
-#: team/templates/team/team_register.html:199
-msgid "Are you sure you want to remove this person from this team?"
-msgstr "Tem certeza que deseja remover esta pessoa da equipe?"
-
-#: team/templates/team/team_register.html:218
-msgid "Are you sure you want to delete this team?"
-msgstr "Tem certeza que deseja remover esta equipe?"
-
-#: team/templates/team/team_register.html:234
-msgid "Are you sure you want to change the coordinator status for this person?"
-msgstr "Tem certeza que deseja alterar o status de coordenador desta pessoa?"
-
-#: team/templates/team/team_register.html:240
-msgid "Change Is_coordinator"
-msgstr "Alterar status de coordenador"
-
-#: team/tests.py:107 team/tests.py:205 team/views.py:114 team/views.py:181
-#: team/views.py:322 team/views.py:437 team/views.py:472
+#: team/tests.py:85 team/tests.py:183 team/views.py:107 team/views.py:174
+#: team/views.py:315
 msgid "Action not available."
 msgstr "Ação não disponível."
 
-#: team/tests.py:123 team/tests.py:138 team/tests.py:232 team/views.py:90
-#: team/views.py:111 team/views.py:320 team/views.py:435 team/views.py:470
+#: team/tests.py:101 team/tests.py:116 team/tests.py:210 team/views.py:83
+#: team/views.py:104 team/views.py:313
 msgid "Information not saved."
 msgstr "Informação não salva."
 
-#: team/tests.py:252 team/views.py:87
+#: team/tests.py:230 team/views.py:80
 msgid "E-mail already exists."
 msgstr "E-mail já existe."
 
-#: team/views.py:106
+#: team/views.py:99
 msgid "Person created successfully."
 msgstr "Pessoa criada com sucesso."
 
-#: team/views.py:178
+#: team/views.py:171
 msgid "Person removed successfully."
 msgstr "Pessoa removida com sucesso."
 
-#: team/views.py:242
+#: team/views.py:235
 msgid "Error while updating person. Please correct the highlighted fields."
 msgstr "Erro ao atualizar pessoa. Por favor, corrija os campos em destaque."
 
-#: team/views.py:254
+#: team/views.py:247
 msgid "Person updated successfully."
 msgstr "Pessoa atualizada com sucesso."
 
-#: team/views.py:256 team/views.py:408 team/views.py:531
+#: team/views.py:249 team/views.py:374
 msgid "There is no changes to save."
 msgstr "Não há alteração para salvar."
 
-#: team/views.py:268
+#: team/views.py:261
 msgid "User deactivated successfully."
 msgstr "Pessoa desativada com sucesso."
 
-#: team/views.py:316
-msgid "Team created successfully."
-msgstr "Equipe criada com sucesso."
-
-#: team/views.py:350
-msgid "Is coordinator status successfully changed."
-msgstr "Status de coordenador alterado com sucesso."
-
-#: team/views.py:352
-msgid "Error trying to the status of the coordinator."
-msgstr "Erro ao tentar alterar status de coordenador"
-
-#: team/views.py:360
-msgid "Person removed successfully from the Team."
-msgstr "Pessoa removida da equipe com sucesso."
-
-#: team/views.py:362
-msgid "Error trying to delete a persom from the team."
-msgstr "Erro ao tentar remover uma pessoa da equipe"
-
-#: team/views.py:370
-msgid "Team removed successfully."
-msgstr "Equipe removida com sucesso."
-
-#: team/views.py:373
-msgid "Error trying to delete a team."
-msgstr "Erro ao tentar remover uma equipe"
-
-#: team/views.py:382
-msgid "Person added to the team successfully."
-msgstr "Pessoa adicionada à equipe com suscesso."
-
-#: team/views.py:406
-msgid "Team updated successfully."
-msgstr "Equipe atualizada com sucesso."
-
-#: team/views.py:431
-msgid "Team person created successfully."
-msgstr "Pessoa inserida na equipe com sucesso."
-
-#: team/views.py:466
+#: team/views.py:309
 msgid "Institution created successfully."
 msgstr "Instituição criada com sucesso."
 
-#: team/views.py:501
+#: team/views.py:344
 msgid ""
 "This institution cannot be removed because there is (are) person(s) "
 "associated with it."
 msgstr ""
 "Esta instituição não pode ser removida porque há pessoa(s) associada(s)."
 
-#: team/views.py:507
+#: team/views.py:350
 msgid "Institution removed successfully."
 msgstr "Instituição removida com sucesso."
 
-#: team/views.py:529
+#: team/views.py:372
 msgid "Institution updated successfully."
 msgstr "Instituição atualizada com sucesso."
 
@@ -1282,6 +1152,71 @@ msgstr ""
 #, python-format
 msgid "Password reset on %(site_name)s"
 msgstr "Alterar senha em %(site_name)s"
+
+#~ msgid "Is_coordinator"
+#~ msgstr "É coordenador"
+
+#~ msgid "Team"
+#~ msgstr "Equipe"
+
+#~ msgid "Is coordinator"
+#~ msgstr "É coordenador"
+
+#~ msgid "Remove"
+#~ msgstr "Remover"
+
+#~ msgid "is coordinator"
+#~ msgstr "é coordenador"
+
+#~ msgid "Insert"
+#~ msgstr "Inserir"
+
+#~ msgid "Delete team"
+#~ msgstr "Remover equipe"
+
+#~ msgid "Are you sure you want to remove this person from this team?"
+#~ msgstr "Tem certeza que deseja remover esta pessoa da equipe?"
+
+#~ msgid "Are you sure you want to delete this team?"
+#~ msgstr "Tem certeza que deseja remover esta equipe?"
+
+#~ msgid ""
+#~ "Are you sure you want to change the coordinator status for this person?"
+#~ msgstr ""
+#~ "Tem certeza que deseja alterar o status de coordenador desta pessoa?"
+
+#~ msgid "Change Is_coordinator"
+#~ msgstr "Alterar status de coordenador"
+
+#~ msgid "Team created successfully."
+#~ msgstr "Equipe criada com sucesso."
+
+#~ msgid "Is coordinator status successfully changed."
+#~ msgstr "Status de coordenador alterado com sucesso."
+
+#~ msgid "Error trying to the status of the coordinator."
+#~ msgstr "Erro ao tentar alterar status de coordenador"
+
+#~ msgid "Person removed successfully from the Team."
+#~ msgstr "Pessoa removida da equipe com sucesso."
+
+#~ msgid "Error trying to delete a persom from the team."
+#~ msgstr "Erro ao tentar remover uma pessoa da equipe"
+
+#~ msgid "Team removed successfully."
+#~ msgstr "Equipe removida com sucesso."
+
+#~ msgid "Error trying to delete a team."
+#~ msgstr "Erro ao tentar remover uma equipe"
+
+#~ msgid "Person added to the team successfully."
+#~ msgstr "Pessoa adicionada à equipe com suscesso."
+
+#~ msgid "Team updated successfully."
+#~ msgstr "Equipe atualizada com sucesso."
+
+#~ msgid "Team person created successfully."
+#~ msgstr "Pessoa inserida na equipe com sucesso."
 
 #~ msgid "Error trying to delete person."
 #~ msgstr "Erro ao tentar remover pessoa."

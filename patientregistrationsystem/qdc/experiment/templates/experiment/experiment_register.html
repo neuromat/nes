@@ -4,6 +4,7 @@
 {% load i18n admin_static %}
 
 {% block header %}
+    <script src="{% static 'quiz/js/collaborators.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -234,9 +235,51 @@
                     </div>
                 {% endif %}
 
+                <div class="container span6 offset3 well ">
+                    <h4><span class="glyphicon glyphicon-user"></span> {% trans "Researchers" %}</h4>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left">{% trans "Person" %}</th>
+                                    <th style="text-align: left">{% trans "Institution" %}</th>
+                                    <th style="text-align: center">{% trans "Remove" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for collaborator in collaborators %}
+                                <tr>
+                                    <td style="text-align: left">
+                                        {{ collaborator.researcher }}
+                                    </td>
+                                    <td style="text-align: left">
+                                        {% if collaborator.researcher.institution.acronym %}
+                                            {{ collaborator.researcher.institution.acronym }}
+                                        {% else %}
+                                            <em>{% trans "Not registered" %}</em>
+                                        {% endif %}
+                                    </td>
+                                    <td style="text-align: center">
+                                        {% if can_change %}
+                                            <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if perms.experiment.add_experiment and can_change %}
+                        <div class="btn-group pull-left">
+                            <a href="/experiment/researchers/{{ experiment.id }}/new_researcher/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                        </div>
+                    {% endif %}
+                </div>
 
                 <div class="container span6 offset3 well ">
-                <h4><span class="glyphicon glyphicon-user"></span> {% trans "Groups" %}</h4>
+                <h4><span class="fa fa-users"></span> {% trans "Groups" %}</h4>
                     {% if group_list %}
                         <div class="form-group">
                             <table class="table table-striped">
@@ -454,6 +497,24 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary" value="remove" name="action"
                             style="background-color: indianred; color: #ffffff">{% trans "Delete" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCollaboratorRemove" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" id="modalRemoveMessage">
+                    {% trans "Are you sure you want to remove this researcher?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
+
+                    <button class="btn btn-primary" type="submit" name="action" value="remove-" id="removeCollaborator" style="background-color: indianred; color: #ffffff">
+                        {% trans "Delete" %}
+                    </button>
+
                 </div>
             </div>
         </div>

@@ -28,6 +28,9 @@ urlpatterns = patterns(
     # publication (ajax)
     url(r'^get_experiments_by_research_project/(?P<research_project_id>\d+)/$', 'get_experiments_by_research_project'),
 
+    # collaborator
+    url(r'^researchers/(?P<experiment_id>\d+)/new_researcher/$', 'collaborator_create', name='collaborator_new'),
+
     # experiment
     url(r'^research_project/(?P<research_project_id>\d+)/new_experiment/$', 'experiment_create', name='experiment_new'),
     url(r'^(?P<experiment_id>\d+)/$', 'experiment_view', name='experiment_view'),

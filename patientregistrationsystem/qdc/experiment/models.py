@@ -12,6 +12,7 @@ from simple_history.models import HistoricalRecords
 
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
+from team.models import Person
 
 
 TIME_UNITS = (
@@ -110,6 +111,11 @@ class Experiment(models.Model):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
+
+
+class ExperimentResearcher(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    researcher = models.ForeignKey(Person)
 
 
 class Publication(models.Model):
