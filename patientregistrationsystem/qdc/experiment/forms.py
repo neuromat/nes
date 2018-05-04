@@ -2,8 +2,7 @@
 
 from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
-    ValidationError, Form, IntegerField, NumberInput, CharField, TimeInput, URLInput, CheckboxSelectMultiple, \
-    ModelChoiceField
+    ValidationError, Form, IntegerField, NumberInput, TimeInput, URLInput, ModelChoiceField
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
