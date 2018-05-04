@@ -618,9 +618,9 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
             collaborator = get_object_or_404(ExperimentCollaborator, pk=request.POST['action'][20:])
             try:
                 collaborator.delete()
-                messages.success(request, _('Collaborator removed successfully.'))
+                messages.success(request, _('Researcher removed successfully.'))
             except ProtectedError:
-                messages.error(request, _("Error trying to delete a collaborator."))
+                messages.error(request, _("Error trying to delete a researcher."))
             redirect_url = reverse("experiment_view", args=(experiment_id,))
             return HttpResponseRedirect(redirect_url)
 
@@ -734,15 +734,15 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
                     collaborator.save()
 
                 if num_of_collaborator == 1:
-                    messages.success(request, _('1 collaborator was added successfully.'))
+                    messages.success(request, _('1 researcher was added successfully.'))
                 else:
-                    messages.success(request, _('%d collaborators were added successfully.') % num_of_collaborator)
+                    messages.success(request, _('%d researchers were added successfully.') % num_of_collaborator)
 
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
 
             else:
-                messages.warning(request, _('Please, select at least one collaborator.'))
+                messages.warning(request, _('Please, select at least one researcher.'))
 
         else:
             messages.warning(request, _('Action not available.'))
