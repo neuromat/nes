@@ -67,7 +67,7 @@
                     <div class="col-xs-12 col-sm-12">
                         {% if collaborators %}
                             <div class="checkbox">
-                                <label><input type="checkbox" value="select_all" id="select_all_collaborators">{% trans 'Select all' %}</label>
+                                <label><input type="checkbox" value="select_all" id="select_all_collaborators"><em>{% trans 'Select all' %}</em></label>
                             </div>
                             {% for collaborator in collaborators %}
                                 <div class="checkbox">
