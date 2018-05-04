@@ -254,11 +254,15 @@
                                         {{ collaborator.collaborator }}
                                     </td>
                                     <td style="text-align: left">
-                                        {{ collaborator.collaborator.institution.acronym }}
+                                        {% if collaborator.collaborator.institution.acronym %}
+                                            {{ collaborator.collaborator.institution.acronym }}
+                                        {% else %}
+                                            <em>{% trans "Not registered" %}</em>
+                                        {% endif %}
                                     </td>
                                     <td style="text-align: center">
                                         {% if can_change %}
-                                            <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove collaborator" %}"></a>
+                                            <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -269,7 +273,7 @@
                     </div>
                     {% if perms.experiment.add_experiment and can_change %}
                         <div class="btn-group pull-left">
-                            <a href="/experiment/collaborators/{{ experiment.id }}/new_collaborator/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                            <a href="/experiment/researchers/{{ experiment.id }}/new_researcher/" class="btn btn-primary">{% trans "Insert new" %}</a>
                         </div>
                     {% endif %}
                 </div>
@@ -502,7 +506,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body" id="modalRemoveMessage">
-                    {% trans "Are you sure you want to remove this collaborator?" %}
+                    {% trans "Are you sure you want to remove this researcher?" %}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
