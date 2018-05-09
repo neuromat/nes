@@ -252,8 +252,11 @@ class QuestionnaireUtils:
 
         return questionnaire_code
 
-    def create_questionnaire_explanation_fields(self, questionnaire_id, language, questionnaire_lime_survey,
-                                                fields, entrance_questionnaire):
+    def create_questionnaire_explanation_fields(self, questionnaire_id,
+                                                language,
+                                                questionnaire_lime_survey,
+                                                fields,
+                                                entrance_questionnaire):
         """
         :param questionnaire_id:
         :param language:
@@ -325,7 +328,6 @@ class QuestionnaireUtils:
                     options_list = [[""] * 2]
 
                 # sub-questions
-                sub_questions_list = []
                 if isinstance(properties['subquestions'], dict):
                     sub_questions_list = [[smart_str(value['title']), smart_str(value['question'])]
                                           for value in properties['subquestions'].values()]
