@@ -197,8 +197,10 @@
                     </div>
                 </div>
                 <div class="row collapse" id="update_password">
-                    <div class="form-group">
-                        <input type="checkbox" id="password_flag" name="password_flag_name" {% if creating %}  checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="form-group">
+                            <input type="checkbox" id="password_flag" name="password_flag_name" {% if creating %}  checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
+                        </div>
                     </div>
                 </div>
                 <div class="container span6 offset3 well collapse" id="div_password">
@@ -228,7 +230,7 @@
                                            type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
                                 </div>
                                 <div class="help-block with-errors">
-                                    {% for error in form.errors.password %}
+                                    {% for error in user_form.errors.password %}
                                         <div>{{ error }}</div>
                                     {% endfor %}
                                     <div id="message"></div>
