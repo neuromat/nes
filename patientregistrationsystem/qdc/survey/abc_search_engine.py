@@ -315,8 +315,10 @@ class ABCSearchEngine(ABC):
         :return:
         """
         questions_data_b64 = b64encode(questions_data.encode('utf-8'))
-        result = self.server.import_group(self.session_key, sid, questions_data_b64.decode('utf-8'),
-                                          format_import_file)  # format_import_file (lsg | csv)
+        result = self.server.import_group(
+            self.session_key, sid, questions_data_b64.decode('utf-8'),
+            format_import_file
+        )
 
         if isinstance(result, dict):
             if 'status' in result:
@@ -333,9 +335,7 @@ class ABCSearchEngine(ABC):
         """
 
         properties = self.server.get_question_properties(
-            self.session_key, question_id,
-            ['question', 'subquestions', 'answeroptions', 'title', 'type',
-             'attributes_lang', 'attributes', 'other'],
+            self.session_key, question_id, None,
             language
         )
 
@@ -351,6 +351,16 @@ class ABCSearchEngine(ABC):
         groups = self.server.list_groups(self.session_key, sid)
 
         return groups
+
+    @abstractmethod
+    def get_group_properties(self, gid):
+        """
+        :param gid: group ID
+        :param lang: group language to return correct group, as Remote
+        Control API does not do that
+        :return: list of group properties
+        """
+        return self.server.get_group_properties(self.session_key, gid)
 
     @abstractmethod
     def list_questions(self, sid, gid):
@@ -379,7 +389,7 @@ class ABCSearchEngine(ABC):
 
 
 class Questionnaires(ABCSearchEngine):
-    """ Classe envelope para o API do limesurvey """
+    """ Wrapper class for LimeSurvey API"""
 
     def find_all_questionnaires(self):
         return super(Questionnaires, self).find_all_questionnaires()
@@ -443,6 +453,9 @@ class Questionnaires(ABCSearchEngine):
 
     def list_groups(self, sid):
         return super(Questionnaires, self).list_groups(sid)
+
+    def get_group_properties(self, gid):
+        return super(Questionnaires, self).get_group_properties(gid)
 
     def insert_questions(self, sid, questions_data, format_import_file):
         return super(Questionnaires, self).insert_questions(sid, questions_data, format_import_file)
