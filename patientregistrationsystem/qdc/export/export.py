@@ -1064,8 +1064,12 @@ class ExportExecution:
                 questionnaire_id, entrance_questionnaire, self.get_input_data('questionnaires_from_experiments'))
 
             for language in questionnaire_language['language_list']:
-                    questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
-                        questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
+                    questionnaire_fields = \
+                        self.questionnaire_utils.create_questionnaire_explanation_fields(
+                            questionnaire_id, language,
+                            questionnaire_lime_survey, fields,
+                            entrance_questionnaire
+                        )
 
                     export_filename = "%s_%s_%s.csv" % (questionnaire["prefix_filename_fields"],
                                                         str(questionnaire_code), language)

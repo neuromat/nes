@@ -170,12 +170,16 @@ class QuestionnaireUtils:
     def get_header_description(self, questionnaire_id, field, entrance_questionnaire):
 
         if entrance_questionnaire:
-            index = self.questionnaires_data[questionnaire_id]["fields"].index(field)
-            header_description = self.questionnaires_data[questionnaire_id]["header"][index]
+            index = \
+                self.questionnaires_data[questionnaire_id]["fields"].index(field)
+            header_description = \
+                self.questionnaires_data[questionnaire_id]["header"][index]
         else:
             questionnaire_id = str(questionnaire_id)
-            index = self.questionnaires_experiment_data[questionnaire_id]["fields"].index(field)
-            header_description = self.questionnaires_experiment_data[questionnaire_id]["header"][index]
+            index = \
+                self.questionnaires_experiment_data[questionnaire_id]["fields"].index(field)
+            header_description = \
+                self.questionnaires_experiment_data[questionnaire_id]["header"][index]
 
         return header_description
 
