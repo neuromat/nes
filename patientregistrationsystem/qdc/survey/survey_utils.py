@@ -9,8 +9,9 @@ from django.utils.encoding import smart_str
 
 from survey.models import Survey
 
-header_explanation_fields = [
+HEADER_EXPLANATION_FIELDS = [
     'questionnaire_code', 'questionnaire_title',
+    'question_group',
     'question_type', 'question_type_description',
     'question_index',
     'question_code', 'question_description',
@@ -56,7 +57,6 @@ question_types = {
 
 class QuestionnaireUtils:
 
-    # def __init__(self, user_id, export_id):
     def __init__(self):
         self.questionnaires_data = {}
         self.questionnaires_experiment_data = {}
@@ -170,12 +170,16 @@ class QuestionnaireUtils:
     def get_header_description(self, questionnaire_id, field, entrance_questionnaire):
 
         if entrance_questionnaire:
-            index = self.questionnaires_data[questionnaire_id]["fields"].index(field)
-            header_description = self.questionnaires_data[questionnaire_id]["header"][index]
+            index = \
+                self.questionnaires_data[questionnaire_id]["fields"].index(field)
+            header_description = \
+                self.questionnaires_data[questionnaire_id]["header"][index]
         else:
             questionnaire_id = str(questionnaire_id)
-            index = self.questionnaires_experiment_data[questionnaire_id]["fields"].index(field)
-            header_description = self.questionnaires_experiment_data[questionnaire_id]["header"][index]
+            index = \
+                self.questionnaires_experiment_data[questionnaire_id]["fields"].index(field)
+            header_description = \
+                self.questionnaires_experiment_data[questionnaire_id]["header"][index]
 
         return header_description
 
@@ -217,9 +221,6 @@ class QuestionnaireUtils:
                 new_header_questionnaire.append(header_questionnaire[fields.index(item)])
                 new_fields.append(fields_saved[fields.index(item)])
 
-        # for element in header_list:
-        #     new_header.append(header[element])
-
         self.questionnaires_experiment_data[questionnaire_id]["header"] = header_list
         self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"] = new_header_questionnaire
         self.questionnaires_experiment_data[questionnaire_id]["fields"] = new_fields
@@ -252,8 +253,11 @@ class QuestionnaireUtils:
 
         return questionnaire_code
 
-    def create_questionnaire_explanation_fields(self, questionnaire_id, language, questionnaire_lime_survey,
-                                                fields, entrance_questionnaire):
+    def create_questionnaire_explanation_fields(self, questionnaire_id,
+                                                language,
+                                                questionnaire_lime_survey,
+                                                fields,
+                                                entrance_questionnaire):
         """
         :param questionnaire_id:
         :param language:
@@ -267,49 +271,68 @@ class QuestionnaireUtils:
         # clear fields
         fields_cleared = [field.split("[")[0] for field in fields]
 
-        questionnaire_explanation_fields_list = [header_explanation_fields]
+        questionnaire_explanation_fields_list = [HEADER_EXPLANATION_FIELDS]
 
         fields_from_questions = []
 
         # for each field, verify the question description
-        # get title
-
-        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
-        questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(
+            questionnaire_id, language
+        )
+        questionnaire_code = \
+            self.get_questionnaire_code_from_id(questionnaire_id)
 
         # get fields description
-        questionnaire_questions = questionnaire_lime_survey.list_questions(questionnaire_id, 0)
+        questionnaire_questions = questionnaire_lime_survey.list_questions(
+            questionnaire_id, 0
+        )
 
         for question in questionnaire_questions:
-
-            properties = questionnaire_lime_survey.get_question_properties(question, language)
-
-            question_code = properties['title'] if 'title' in properties else None
-
+            properties = questionnaire_lime_survey.get_question_properties(
+                    question, language
+                )
+            question_code = \
+                properties['title'] if 'title' in properties else None
             if question_code and question_code in fields_cleared:
-
                 fields_from_questions.append(question_code)
-
-                # cleaning the question description that came from limesurvey
+                # clean the question description that came from limesurvey
                 question_description = \
-                    re.sub('{.*?}', '', re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
-
+                    re.sub(
+                        '{.*?}', '',
+                        re.sub('<.*?>', '', properties['question'])
+                    ).replace('&nbsp;', '').strip()
                 question_type = smart_str(properties['type'])
-                question_type_description = question_types[question_type] if question_type in question_types else ''
+                question_type_description = question_types[question_type] \
+                    if question_type in question_types else ''
+                question_group = \
+                    self.get_group_properties(
+                        questionnaire_lime_survey,
+                        questionnaire_id,
+                        properties['gid'],
+                        language
+                    )
 
-                questionnaire_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title)]
-                question_type_to_list = [question_type, question_type_description]
-                question_to_list = [smart_str(question_code), smart_str(question_description)]
+                questionnaire_list = \
+                    [smart_str(questionnaire_code),
+                     smart_str(questionnaire_title)]
+                question_type_list = \
+                    [question_type, question_type_description]
+                question_list = \
+                    [smart_str(question_code),
+                     smart_str(question_description)]
 
-                # Scales (type == "1" means "Array Dual Scale")
                 scales = [""]
+                # "1": "Array Dual Scale"
                 if question_type == "1":
                     if isinstance(properties['attributes_lang'], dict):
                         scales = [
-                            properties['attributes_lang']['dualscale_headerA'] if 'dualscale_headerA' in properties[
+                            properties['attributes_lang']['dualscale_headerA']
+                            if 'dualscale_headerA' in properties[
                                 'attributes_lang'] else "",
-                            properties['attributes_lang']['dualscale_headerB'] if 'dualscale_headerB' in properties[
-                                'attributes_lang'] else ""]
+                            properties['attributes_lang']['dualscale_headerB']
+                            if 'dualscale_headerB' in properties[
+                                'attributes_lang'] else ""
+                        ]
                     else:
                         scales = ["", ""]
 
@@ -317,25 +340,35 @@ class QuestionnaireUtils:
                 options_list = []
 
                 if isinstance(properties['answeroptions'], dict):
-                    options = collections.OrderedDict(sorted(properties['answeroptions'].items()))
+                    options = collections.OrderedDict(
+                        sorted(properties['answeroptions'].items())
+                    )
                     for option_key, option_values in options.items():
-                        options_list.append([smart_str(option_key), smart_str(option_values['answer'])])
+                        options_list.append(
+                            [smart_str(option_key),
+                             smart_str(option_values['answer'])]
+                        )
                 else:
-                    # includes blank line
+                    # include blank line
                     options_list = [[""] * 2]
 
                 # sub-questions
-                sub_questions_list = []
                 if isinstance(properties['subquestions'], dict):
-                    sub_questions_list = [[smart_str(value['title']), smart_str(value['question'])]
-                                          for value in properties['subquestions'].values()]
-                    sub_questions_list = sorted(sub_questions_list, key=itemgetter(0))
+                    sub_questions_list = [
+                        [smart_str(value['title']),
+                         smart_str(value['question'])]
+                        for value in properties['subquestions'].values()
+                    ]
+                    sub_questions_list = sorted(
+                        sub_questions_list, key=itemgetter(0)
+                    )
                 else:
-                    # includes blank line
+                    # include blank line
                     sub_questions_list = [[""] * 2]
 
                 for scale_index, scale_label in enumerate(scales):
-                    scale = [scale_index + 1, scale_label] if scale_label else [""] * 2
+                    scale = [scale_index + 1, scale_label] \
+                        if scale_label else [""] * 2
                     for sub_question in sub_questions_list:
                         for option in options_list:
 
@@ -343,24 +376,32 @@ class QuestionnaireUtils:
                             if sub_question[0]:
                                 question_index += '[' + sub_question[0] + ']'
                             if scale_label:
-                                question_index += '[' + str(scale_index + 1) + ']'
+                                question_index += \
+                                    '[' + str(scale_index + 1) + ']'
 
                             questionnaire_explanation_fields_list.append(
-                                questionnaire_to_list + question_type_to_list +
-                                [question_index] +
-                                question_to_list + sub_question + scale + option)
+                                questionnaire_list +
+                                [question_group['group_name']]
+                                + question_type_list +
+                                [question_index] + question_list +
+                                sub_question + scale + option
+                            )
 
         if len(fields_cleared) != len(fields_from_questions):
-
             for field in fields_cleared:
-
                 if field not in fields_from_questions:
-                    description = self.get_header_description(questionnaire_id, field, entrance_questionnaire)
-                    question_to_list = [smart_str(questionnaire_code), smart_str(questionnaire_title),
-                                        '', '',
-                                        smart_str(field), smart_str(field), smart_str(description)]
+                    description = self.get_header_description(
+                        questionnaire_id, field, entrance_questionnaire
+                    )
+                    question_list = [smart_str(questionnaire_code),
+                                     smart_str(questionnaire_title),
+                                     '', '',
+                                     smart_str(field), smart_str(field),
+                                     smart_str(description)]
 
-                    questionnaire_explanation_fields_list.append(question_to_list)
+                    questionnaire_explanation_fields_list.append(
+                        question_list
+                    )
 
         return questionnaire_explanation_fields_list
 
@@ -372,7 +413,7 @@ class QuestionnaireUtils:
         :param survey:
         :param survey_id:
         :param language:
-        :return:
+        :return: list
         """
         groups = survey.list_groups(survey_id)
         question_list = []
@@ -408,3 +449,21 @@ class QuestionnaireUtils:
         for row in response_reader:
             responses_list.append(row)
         return responses_list
+
+    @staticmethod
+    def get_group_properties(survey, survey_id, gid, lang):
+        """
+        Return group in correct language, as of this date LimeSurvey Remote
+        Control API does not return correct group by language
+        :param survey: Questionnaires instance
+        :param survey_id: Questionnaire (Survey) id
+        :param gid: Group id
+        :param lang: Group language
+        :return: group dict or None
+        """
+        groups = survey.list_groups(survey_id)
+        return next(
+            (item for item in groups
+             if item['gid'] == gid and item['language'] == lang),
+            None
+        )

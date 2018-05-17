@@ -1307,9 +1307,13 @@ def send_steps_to_portal(portal_group_id, component_tree,
         if survey_languages['additional_languages']:
             # additional are not default language
             params['is_default'] = False
-            for additional_language in survey_languages['additional_languages'].split(' '):
+            for additional_language in \
+                    survey_languages['additional_languages'].split(' '):
                 if additional_language != '':
-                    survey_metadata, survey_name = get_survey_information(additional_language, survey, surveys)
+                    survey_metadata, survey_name = \
+                        get_survey_information(
+                            additional_language, survey, surveys
+                        )
                     params['survey_name'] = survey_name
                     params['survey_metadata'] = survey_metadata
                     params['language_code'] = additional_language
@@ -1346,9 +1350,13 @@ def send_steps_to_portal(portal_group_id, component_tree,
 def get_survey_information(language, survey, surveys):
     survey_name = surveys.get_survey_title(survey.lime_survey_id, language)
     questionnaire_utils = QuestionnaireUtils()
-    fields = get_questionnaire_fields_for_portal(surveys, survey.lime_survey_id, language)
-    questionnaire_fields = questionnaire_utils.create_questionnaire_explanation_fields(
-        survey.lime_survey_id, language, surveys, fields, False)
+    fields = get_questionnaire_fields_for_portal(
+        surveys, survey.lime_survey_id, language
+    )
+    questionnaire_fields = \
+        questionnaire_utils.create_questionnaire_explanation_fields(
+            survey.lime_survey_id, language, surveys, fields, False
+        )
     survey_metadata = ''
     for row in questionnaire_fields:
         first = True
@@ -1371,10 +1379,13 @@ def get_questionnaire_fields_for_portal(questionnaire_lime_survey, lime_survey_i
     """
 
     fields = []
-    responses_text = questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
+    responses_text = \
+        questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
     if responses_text:
         # header
-        header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
+        header_fields = next(
+            reader(StringIO(responses_text.decode()), delimiter=',')
+        )
         for field in header_fields:
             if field not in questionnaire_evaluation_fields_excluded:
                 fields.append(field)
