@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-04 11:48-0300\n"
+"POT-Creation-Date: 2018-05-18 18:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,138 +17,176 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: custom_user/forms.py:19
+#: custom_user/forms.py:20 custom_user/forms.py:100
 msgid "Type first name"
 msgstr ""
 
-#: custom_user/forms.py:20
+#: custom_user/forms.py:22 custom_user/forms.py:102
 msgid "Type last name"
 msgstr ""
 
-#: custom_user/forms.py:22
+#: custom_user/forms.py:24
 msgid "Type user name"
 msgstr ""
 
-#: custom_user/forms.py:24 custom_user/forms.py:47
-#: custom_user/templates/custom_user/register_users.html:203
+#: custom_user/forms.py:26 custom_user/forms.py:49
+#: custom_user/templates/custom_user/register_users.html:189
 msgid "Type password"
 msgstr ""
 
-#: custom_user/forms.py:27
+#: custom_user/forms.py:29 custom_user/forms.py:104
 msgid "Type e-mail"
 msgstr ""
 
-#: custom_user/forms.py:73 custom_user/forms.py:74
+#: custom_user/forms.py:42 custom_user/views.py:154
+msgid "E-mail already registered"
+msgstr ""
+
+#: custom_user/forms.py:75 custom_user/forms.py:76
 msgid "E-mail is not registered"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:116
+#: custom_user/models.py:8
+#, fuzzy
+#| msgid "Nome"
+msgid "No"
+msgstr "First name"
+
+#: custom_user/models.py:9
+msgid "Yes, a new login should be created."
+msgstr ""
+
+#: custom_user/templates/custom_user/register_users.html:73
 msgid "Basic Information"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:120
+#: custom_user/templates/custom_user/register_users.html:77
 msgid "First name"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:129
+#: custom_user/templates/custom_user/register_users.html:91
 msgid "Last name"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:141
-#: custom_user/templates/custom_user/user_list.html:36
-msgid "User name"
+#: custom_user/templates/custom_user/register_users.html:123
+msgid "Institution"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:175
-msgid "Update password"
+#: custom_user/templates/custom_user/register_users.html:136
+msgid "Is this person allowed to login on the system?"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:182
+#: custom_user/templates/custom_user/register_users.html:151
+#: custom_user/templates/custom_user/user_list.html:38
+msgid "Username"
+msgstr ""
+
+#: custom_user/templates/custom_user/register_users.html:168
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:184
+#: custom_user/templates/custom_user/register_users.html:170
 msgid "Password"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:199
+#: custom_user/templates/custom_user/register_users.html:185
 msgid "Please confirm password"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:219
+#: custom_user/templates/custom_user/register_users.html:203
+msgid "Update password"
+msgstr ""
+
+#: custom_user/templates/custom_user/register_users.html:211
 msgid "Profiles"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:221
+#: custom_user/templates/custom_user/register_users.html:213
 msgid "In which these profiles does user identify?"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:248
-#: custom_user/templates/custom_user/register_users.html:274
+#: custom_user/templates/custom_user/register_users.html:242
+#: custom_user/templates/custom_user/register_users.html:277
 msgid "Delete"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:252
+#: custom_user/templates/custom_user/register_users.html:247
 msgid "Save"
 msgstr ""
 
-#: custom_user/templates/custom_user/register_users.html:256
-#: custom_user/templates/custom_user/register_users.html:273
-msgid "Cancel"
-msgstr ""
-
-#: custom_user/templates/custom_user/register_users.html:258
-msgid "Back"
-msgstr ""
-
-#: custom_user/templates/custom_user/register_users.html:270
-msgid "Are you sure you want to delete user?"
-msgstr ""
-
-#: custom_user/templates/custom_user/user_list.html:31
-msgid "List of users"
-msgstr ""
-
-#: custom_user/templates/custom_user/user_list.html:37
-msgid "Complete name"
-msgstr ""
-
-#: custom_user/templates/custom_user/user_list.html:38
-msgid "E-mail"
-msgstr ""
-
-#: custom_user/templates/custom_user/user_list.html:44
+#: custom_user/templates/custom_user/register_users.html:250
+#: custom_user/templates/custom_user/user_list.html:45
+#: custom_user/templates/custom_user/user_list.html:47
 msgid "Edit"
 msgstr ""
 
-#: custom_user/templates/custom_user/user_list.html:54
+#: custom_user/templates/custom_user/register_users.html:256
+#: custom_user/templates/custom_user/register_users.html:276
+#: custom_user/templates/custom_user/register_users.html:290
+msgid "Cancel"
+msgstr ""
+
+#: custom_user/templates/custom_user/register_users.html:259
+#: custom_user/templates/custom_user/register_users.html:262
+msgid "Back"
+msgstr ""
+
+#: custom_user/templates/custom_user/register_users.html:273
+msgid "Are you sure you want to delete user?"
+msgstr ""
+
+#: custom_user/templates/custom_user/register_users.html:287
+msgid "Are you sure you want to deactivate the user?"
+msgstr ""
+
+#: custom_user/templates/custom_user/register_users.html:291
+msgid "Deactivate"
+msgstr ""
+
+#: custom_user/templates/custom_user/user_list.html:31
+msgid "List of researchers"
+msgstr ""
+
+#: custom_user/templates/custom_user/user_list.html:36
+msgid "Researcher"
+msgstr ""
+
+#: custom_user/templates/custom_user/user_list.html:37
+msgid "E-mail"
+msgstr ""
+
+#: custom_user/templates/custom_user/user_list.html:47
+msgid "Name not registered"
+msgstr ""
+
+#: custom_user/templates/custom_user/user_list.html:58
 msgid "Insert new user"
 msgstr ""
 
-#: custom_user/views.py:37
-msgid "User created successfully."
+#: custom_user/views.py:57 custom_user/views.py:70
+msgid "Researcher created successfully."
 msgstr ""
 
-#: custom_user/views.py:40
-msgid "It was not possible to create user."
+#: custom_user/views.py:102
+msgid "Researcher removed successfully."
 msgstr ""
 
-#: custom_user/views.py:45
-msgid "This user name already exists."
+#: custom_user/views.py:143 custom_user/views.py:160
+msgid "Researcher updated successfully."
 msgstr ""
 
-#: custom_user/views.py:47
-msgid "This username already exists in an disabled user."
+#: custom_user/views.py:164
+msgid "There is no changes to save."
 msgstr ""
 
-#: custom_user/views.py:91
-msgid "User updated successfully."
+#: custom_user/views.py:172
+msgid "Researcher deleted successfully."
 msgstr ""
 
-#: custom_user/views.py:99
-msgid "User deleted successfully."
+#: custom_user/views.py:181
+msgid "Researcher disabled successfully."
 msgstr ""
 
 #~ msgid "Entrar primeiro nome"
@@ -168,9 +206,6 @@ msgstr ""
 
 #~ msgid "Informações básicas"
 #~ msgstr "Basic Information"
-
-#~ msgid "Nome"
-#~ msgstr "First name"
 
 #~ msgid "Sobrenome"
 #~ msgstr "Last name"

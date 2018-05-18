@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-04 11:48-0300\n"
+"POT-Creation-Date: 2018-05-18 18:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -760,7 +760,7 @@ msgstr "Inserir novo"
 #: team/templates/team/institution_list.html:92
 #: team/templates/team/institution_register.html:150
 #: team/templates/team/person_list.html:92
-#: team/templates/team/person_register.html:311
+#: team/templates/team/person_register.html:313
 #: team/templates/team/team_list.html:88
 msgid "Back"
 msgstr "Voltar"
@@ -782,7 +782,7 @@ msgid "Institution"
 msgstr "Instituição"
 
 #: team/templates/team/institution_register.html:128
-#: team/templates/team/person_register.html:290
+#: team/templates/team/person_register.html:292
 msgid "Edit"
 msgstr "Editar"
 
@@ -791,16 +791,16 @@ msgid "Delete institution"
 msgstr "Remover instituição"
 
 #: team/templates/team/institution_register.html:142
-#: team/templates/team/person_register.html:303
+#: team/templates/team/person_register.html:305
 #: templates/registration/change_password_custom.html:137
 msgid "Save"
 msgstr "Salvar"
 
 #: team/templates/team/institution_register.html:146
 #: team/templates/team/institution_register.html:165
-#: team/templates/team/person_register.html:307
-#: team/templates/team/person_register.html:325
-#: team/templates/team/person_register.html:339
+#: team/templates/team/person_register.html:309
+#: team/templates/team/person_register.html:327
+#: team/templates/team/person_register.html:341
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -809,8 +809,8 @@ msgid "Are you sure you want to delete this institution?"
 msgstr "Tem certeza que deseja remover esta instituição?"
 
 #: team/templates/team/institution_register.html:166
-#: team/templates/team/person_register.html:297
-#: team/templates/team/person_register.html:326
+#: team/templates/team/person_register.html:299
+#: team/templates/team/person_register.html:328
 msgid "Delete"
 msgstr "Remover"
 
@@ -857,11 +857,11 @@ msgstr "Nome"
 msgid "Last name"
 msgstr "Sobrenome"
 
-#: team/templates/team/person_register.html:201
+#: team/templates/team/person_register.html:202
 msgid "Update password"
 msgstr "Alterar senha"
 
-#: team/templates/team/person_register.html:207
+#: team/templates/team/person_register.html:209
 #: templates/registration/change_password_custom.html:114
 #: templates/registration/password_reset_confirm.html:146
 msgid ""
@@ -871,44 +871,44 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: team/templates/team/person_register.html:209
+#: team/templates/team/person_register.html:211
 #: templates/registration/login.html:94
 msgid "Password"
 msgstr "Senha"
 
-#: team/templates/team/person_register.html:224
+#: team/templates/team/person_register.html:226
 msgid "Please confirm password"
 msgstr "Confirmar senha"
 
-#: team/templates/team/person_register.html:245
+#: team/templates/team/person_register.html:247
 msgid "Deactivate login"
 msgstr "Desativar login"
 
-#: team/templates/team/person_register.html:249
+#: team/templates/team/person_register.html:251
 msgid "Add login"
 msgstr "Adicionar login"
 
-#: team/templates/team/person_register.html:252
+#: team/templates/team/person_register.html:254
 msgid "Cancel add login"
 msgstr "Cancelar adicionar login"
 
-#: team/templates/team/person_register.html:260
+#: team/templates/team/person_register.html:262
 msgid "Profiles"
 msgstr "Perfis"
 
-#: team/templates/team/person_register.html:263
+#: team/templates/team/person_register.html:265
 msgid "In which these profiles does user identify?"
 msgstr "Em quais desses perfis o usuário se identifica?"
 
-#: team/templates/team/person_register.html:322
+#: team/templates/team/person_register.html:324
 msgid "Are you sure you want to delete person?"
 msgstr "Tem certeza que deseja remover esta pessoa"
 
-#: team/templates/team/person_register.html:336
+#: team/templates/team/person_register.html:338
 msgid "Are you sure you want to deactivate the user?"
 msgstr "Tem certeza que deseja desativar esta pessoa"
 
-#: team/templates/team/person_register.html:340
+#: team/templates/team/person_register.html:342
 msgid "Deactivate"
 msgstr "Desativar"
 

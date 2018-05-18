@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-04 11:49-0300\n"
+"POT-Creation-Date: 2018-05-18 18:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,11 +27,11 @@ msgstr "Código de Participante"
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/export.py:1933 export/export.py:2735 export/views.py:1205
+#: export/export.py:2003 export/export.py:2809 export/views.py:1212
 msgid "Yes"
 msgstr "Sim"
 
-#: export/export.py:1933 export/export.py:2735 export/views.py:1205
+#: export/export.py:2003 export/export.py:2809 export/views.py:1212
 msgid "No"
 msgstr "Não"
 
@@ -152,7 +152,7 @@ msgid "Information's organization for exportation of questionnaires data"
 msgstr "Organização da informação para exportação dos dados de questionários"
 
 #: export/templates/export/export_data.html:88
-#: export/templates/export/export_experiment_data.html:107 export/views.py:1100
+#: export/templates/export/export_experiment_data.html:107 export/views.py:1107
 msgid "Per participant"
 msgstr "Por participante"
 
@@ -501,103 +501,103 @@ msgstr "Descrição da doença"
 msgid "Disease Abbreviated Description"
 msgstr "Descrição da doença abreviada"
 
-#: export/views.py:269
+#: export/views.py:272
 msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
 
-#: export/views.py:528
+#: export/views.py:535
 msgid "Export was finished correctly"
 msgstr "Exportação foi finalizada com sucesso"
 
-#: export/views.py:537
+#: export/views.py:544
 msgid "Export data was not generated."
 msgstr "Exportação não foi gerada."
 
-#: export/views.py:554
+#: export/views.py:561
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 
-#: export/views.py:1105
+#: export/views.py:1112
 msgid "Per experiments"
 msgstr "Por experimentos"
 
-#: export/views.py:1194
+#: export/views.py:1201
 msgid "Name of use"
 msgstr "Nome do uso"
 
-#: export/views.py:1196
+#: export/views.py:1203
 msgid "Number of repetitions"
 msgstr "Número de repetições"
 
-#: export/views.py:1198
+#: export/views.py:1205
 msgid "Interval between repetitions value"
 msgstr "Valor do entervalo entre repetições"
 
-#: export/views.py:1200
+#: export/views.py:1207
 msgid "Interval between repetitions unit"
 msgstr "Unidade do intervalo entre repetições"
 
-#: export/views.py:1201
+#: export/views.py:1208
 msgid "Order"
 msgstr "Ordem"
 
-#: export/views.py:1203
+#: export/views.py:1210
 msgid "Position in the set of steps "
 msgstr "Posição no conjunto de passos"
 
-#: export/views.py:1203
+#: export/views.py:1210
 msgid "Random"
 msgstr "Aleatório"
 
-#: export/views.py:1203
+#: export/views.py:1210
 msgid "Fixed"
 msgstr "Fixo"
 
-#: export/views.py:1205
+#: export/views.py:1212
 msgid "Requires start and end datetime"
 msgstr "Requer datas de início e fim"
 
-#: export/views.py:1244
+#: export/views.py:1251
 msgid "Identification"
 msgstr "Identificação"
 
-#: export/views.py:1246
+#: export/views.py:1253
 msgid "Description"
 msgstr "Descrição"
 
-#: export/views.py:1248
+#: export/views.py:1255
 msgid "Duration value"
 msgstr "Valor da duração"
 
-#: export/views.py:1250
+#: export/views.py:1257
 msgid "Duration unit"
 msgstr "Unidade da duração"
 
-#: export/views.py:1256
+#: export/views.py:1263
 msgid "Type"
 msgstr "Tipo"
 
-#: export/views.py:1258
+#: export/views.py:1265
 msgid "Number of mandatory components"
 msgstr "Número de passos obrigatórios"
 
-#: export/views.py:1264
+#: export/views.py:1271
 msgid "Text"
 msgstr "Texto"
 
-#: export/views.py:1270
+#: export/views.py:1277
 msgid "LimeSurvey ID"
 msgstr ""
 
-#: export/views.py:1278
+#: export/views.py:1285
 msgid "Questionnaire title"
 msgstr "Título do questionário"
 
-#: export/views.py:1285
+#: export/views.py:1292
 msgid "Stimulus type"
 msgstr "Tipo de estímulo"
 
-#: export/views.py:1287
+#: export/views.py:1294
 msgid "Media file"
 msgstr "Arquivo de mídia"
 
