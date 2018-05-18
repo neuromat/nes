@@ -18,60 +18,19 @@
             padding: 5px 10px;
             pointer-events: none;
         }
+        ul#optradio {
+            padding: 0;
+            list-style-type: none;
+        }
+        ul li label {
+            font-weight: normal !important;
+        }
     </style>
 
+    <script src="{% static 'quiz/js/custom_user.js' %}"></script>
     <script src="{% static 'quiz/js/password.js' %}"></script>
     <script src="{% static 'quiz/js/password_register.js' %}"></script>
-
-    <script type="text/javascript">
-
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-            $( "form" ).submit(function( event ) {
-                if(checkPassExt())
-                    event.preventDefault();
-                if(passwordForce() < 20 && $('#id_new_password1').val()){
-                    showErrorMessageTemporary(gettext("Password must contain at least 8 characters, including at least one uppercase letter, digit or special character."));
-                    event.preventDefault();
-                }
-            })
-        });
-
-        function Validate(){
-           if(!validateForm()){
-                showErrorMessage(gettext('You have to choose at least one user profile!'));
-                return false;
-           }
-           return true;
-        }
-
-        function validateForm()
-        {
-           var c=document.getElementsByName('groups');
-           for (var i = 0; i<c.length; i++){
-               if (c[i].type=='checkbox') {
-                    if (c[i].checked){return true}
-               }
-           }
-           return false;
-        }
-
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-            $( "form" ).submit(function( event ) {
-
-                if (checkPassExt()){
-                    event.preventDefault();
-                }
-                if(!$('#email').val()){
-                    showErrorMessage(gettext("E-mail have to be filled!"));
-                    $('#mailDivId').addClass('has-error');
-                    event.preventDefault();
-                }
-            })
-        });
-
-    </script>
+    <script src="{% static 'quiz/js/custom_user_validation.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -81,7 +40,6 @@
 {% endblock %}
 
 {% block content %}
-
     {% if messages %}
         {% for message in messages %}
 
@@ -110,138 +68,174 @@
         </script>
     {% endif %}
 
-    <div class="tab-pane fade in active" id="menuUserTab">
-        <div class="col-md-10">
-            <div class="container span6 offset3 well ">
-                <h4>{% trans "Basic Information" %}</h4>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>{% trans "First name" %}</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                {{ form.first_name }}
-                            </div>
+    <div class="container">
+        <div class="col-md-10 span6 offset3 well pull-right">
+            <h4>{% trans "Basic Information" %}</h4>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group {% if form.errors.first_name %}has-error{% endif %}">
+                        <label for="name" class="control-label">{% trans "First name" %}<b style="color: red;">*</b></label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            {{ form.first_name }}
                         </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <label>{% trans "Last name" %}</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                {{ form.last_name }}
-                            </div>
+                        <div class="help-block with-errors">
+                            {% for error in form.errors.first_name %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group">
-                            <div class="form-group {% if form.errors.username %}has-error{% endif %}">
-                                <label for="name" class="control-label">{% trans "User name" %}<b style="color: red;">*</b></label>
-
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                    {{ form.username }}
-                                </div>
-                                <div class="help-block with-errors">
-                                    {% for error in form.errors.username %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            </div>
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group {% if form.errors.last_name %}has-error{% endif %}">
+                        <label for="name" class="control-label">{% trans "Last name" %}<b style="color: red;">*</b></label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            {{ form.last_name }}
                         </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group {% if form.errors.email %}has-error{% endif %}" id="mailDivId">
-                            <label for="name" class="control-label">E-mail<b style="color: red;">*</b></label>
-
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
-                                {{ form.email }}
-                            </div>
-                            <div class="help-block with-errors">
-                                    {% for error in form.errors.email %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                            </div>
+                        <div class="help-block with-errors">
+                            {% for error in form.errors.last_name %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            <input type="checkbox" id="password_flag" name="password_flag" {% if creating %}checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row" id="div_password">
-                    <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left"
-                            title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >
-                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
-                            <label for="id_new_password1" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
-                            <div class="input-group input-group-sm right-inner-addon">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <div id="show"></div>
-                                {{ form.password }}
-                            </div>
-                            <div class="help-block with-errors">
-                                {% for error in form.errors.password %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-sm-6">
-                        <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password2_form_group">
-                            <label for="name" class="control-label">{% trans "Please confirm password" %}<b style="color: red;">*</b></label>
-                            <div class="input-group input-group-sm has-feedback">
-                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
-                                <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
-                                       placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
-                            </div>
-                            <div class="help-block with-errors">
-                                {% for error in form.errors.password %}
-                                    <div>{{ error }}</div>
-                                {% endfor %}
-                                <div id="message"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-1"></div>
             </div>
-            <div class="container span6 offset3 well ">
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <h4>{% trans "Profiles" %}</h4>
-                        <div class="form-group">
-                            <label class="control-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
-                            <div class="input-group  input-group-sm">
-                                {% for group_permission in group_permissions %}
-                                    <div class="myradio">
-                                        <label>
-                                            {% if group_permission.checked == True %}
-                                                <input name="groups" type="checkbox" checked="checked" value={{ group_permission.group.pk }}> {%  trans group_permission.group.name %}
-                                            {% else %}
-                                                <input name="groups" type="checkbox" value={{ group_permission.group.pk }}> {%  trans group_permission.group.name %}
-                                            {% endif %}
 
-                                        </label>
-                                        <h5><small>(
-                                        {% for permission in group_permission.group.permissions.all %}
-                                            {%  trans permission.name %}.
-                                        {% endfor %}
-                                        )</small></h5>
-                                    </div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group {% if form.errors.email %}has-error{% endif %}" id="mailDivId">
+                        <label for="name" class="control-label">E-mail<b style="color: red;">*</b></label>
+
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-envelope"></span></span>
+                            {{ form.email }}
+                        </div>
+                        <div class="help-block with-errors">
+                                {% for error in form.errors.email %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group">
+                        <label>{% trans "Institution" %}</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="fa fa-building"></span></span>
+                            {{ profile_form.institution }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-10 col-sm-10">
+                    <div class="form-group">
+                        <input type="text" id="operation" value="{% if creating %}creating{% elif editing %}editing{% else %}viewing{% endif %}" hidden="hidden">
+                        <label>{%  trans "Is this person allowed to login on the system?" %}</label><br>
+                        <ul id="optradio">
+                            {% for radio in profile_form.login_enabled %}
+                                <li><label for="{{radio.id_for_label}}"><input id="{{radio.id_for_label}}" {% if profile_form.login_enabled.value|stringformat:"s" == radio.choice_value %}checked="checked"{% endif %} name="login_enabled" type="radio" value="{{radio.choice_value}}" {% if viewing %}disabled{% endif %} {% if profile_form.login_enabled.value == True and radio.choice_value == 'False' %}onchange="$('#modalDeactivate').modal('show')"{% endif %}> {{radio.choice_label}}</label></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10 span6 offset3 well pull-right" id="user_account">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    <div class="form-group" id="username">
+                        <div class="form-group {% if form.errors.username %}has-error{% endif %}">
+                            <label for="name" class="control-label">{% trans "Username" %}<b style="color: red;">*</b></label>
+
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                                {{ form.username }}
+                            </div>
+                            <div class="help-block with-errors">
+                                {% for error in form.errors.username %}
+                                    <div>{{ error }}</div>
                                 {% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="row" id="div_password">
+                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left" title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >
+                    <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
+                        <label for="id_new_password1" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
+                        <div class="input-group input-group-sm right-inner-addon">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            <div id="show"></div>
+                            {{ form.password }}
+                        </div>
+                        <div class="help-block with-errors">
+                            {% for error in form.errors.password %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password2_form_group">
+                        <label for="name" class="control-label">{% trans "Please confirm password" %}<b style="color: red;">*</b></label>
+                        <div class="input-group input-group-sm has-feedback">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            <input class="form-control" id="id_new_password2" maxlength="128" name="password2" required = ""
+                                   placeholder="{% trans "Type password" %}" type="password" onkeyup="checkPassExt(); beginCheckPassword1=true;">
+                        </div>
+                        <div class="help-block with-errors">
+                            {% for error in form.errors.password %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                            <div id="message"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+                    <div class="form-group">
+                        <input type="checkbox" id="password_flag" name="password_flag" {% if creating %}checked="checked" disabled {% endif %}> <b>{% trans "Update password" %}</b> </input>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-10 span6 offset3 well pull-right" id="profiles">
+            <div class="row">
+                <h4>{% trans "Profiles" %}</h4>
+                <div class="form-group">
+                    <label class="control-label">{% trans "In which these profiles does user identify?" %} <b style="color: red;">*</b></label>
+                    <div class="input-group  input-group-sm">
+                        {% for group_permission in group_permissions %}
+                            <div class="myradio">
+                                <label>
+                                    {% if group_permission.checked == True %}
+                                        <input name="groups" type="checkbox" checked="checked" value={{ group_permission.group.pk }} {% if viewing %}disabled{% endif %}> {%  trans group_permission.group.name %}
+                                    {% else %}
+                                        <input name="groups" type="checkbox" value={{ group_permission.group.pk }} {% if viewing %}disabled{% endif %}> {%  trans group_permission.group.name %}
+                                    {% endif %}
+                                </label>
+                                <h5>
+                                    <small>
+                                        ({% for permission in group_permission.group.permissions.all %}{%  trans permission.name %}, {% endfor %})
+                                    </small>
+                                </h5>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="col-md-10 pull-right">
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
                     {% if not creating and perms.auth.delete_user and current_user_id != user.id %}
@@ -249,16 +243,25 @@
                     {% endif %}
                 </div>
                 <div class="btn-group pull-right">
-                    <button type="submit" name="action" value="save" class="btn btn-primary" id="submit">{% trans "Save" %}</button>
+                    {% if creating or editing %}
+                        <button type="submit" name="action" value="save" class="btn btn-primary" id="submit">{% trans "Save" %}</button>
+                    {% else  %}
+                        <div class="btn-group">
+                            <a href="/user/edit/{{ user }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="btn-group pull-right">
                     {% if creating %}
                         <a href="/user/search" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                    {% elif editing %}
+                        <div class="btn-group">
+                            <a href="/user/view/{{ user }}" class="btn">{% trans "Back" %}</a>
+                        </div>
                     {% else %}
                         <a href="/user/search" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     {% endif %}
                 </div>
-
             </div>
         </div>
     </div>
@@ -272,6 +275,20 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Cancel" %}</button>
                     <button type="submit" value="remove" name="action" class="btn btn-primary" style="background-color: indianred; color: #ffffff">{% trans "Delete" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalDeactivate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    {% trans "Are you sure you want to deactivate the user?" %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="cancelDisableUser()">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger" id="deactivate_button" value="deactivate" name="action">{% trans "Deactivate" %}</button>
                 </div>
             </div>
         </div>
