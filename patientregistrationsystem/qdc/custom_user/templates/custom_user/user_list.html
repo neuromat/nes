@@ -28,22 +28,26 @@
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
-                <h4>{% trans "List of users" %}</h4>
+                <h4>{% trans "List of researchers" %}</h4>
                 <div class="form-group">
                     <table class="table table-striped" class="col-xs-12 col-md-12">
                         <thead>
                         <tr>
-                            <th>{% trans "User name" %}</th>
-                            <th>{% trans "Complete name" %}</th>
-                            <th class="hidden-xs hidden-sm">{% trans "E-mail" %}</th>
+                            <th>{% trans "Researcher" %}</th>
+                            <th>{% trans "E-mail" %}</th>
+                            <th class="text-center">{% trans "Username" %}</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for user in object_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/user/edit/{{ user.id }}">{{ user.username }}</a></td>
-                                <td>{{ user.first_name }} {{ user.last_name }}</td>
-                                <td class="hidden-xs hidden-sm">{{ user.email }}</td>
+                                {% if user.first_name and user.last_name %}
+                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/user/view/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></td>
+                                {% else %}
+                                    <td><a data-toggle="tooltip" data-placement="left" title="{% trans "Edit" %}" href="/user/view/{{ user.id }}"><em>{% trans "Name not registered" %}</em></a></td>
+                                {% endif %}
+                                <td>{{ user.email }}</td>
+                                <td class="text-center">{% if user.user_profile.login_enabled %}{{ user.username }}{% else %}---{% endif %}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

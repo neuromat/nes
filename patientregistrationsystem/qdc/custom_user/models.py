@@ -1,13 +1,29 @@
 from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
+
+
+LOGIN = (
+    (False, _('No')),
+    (True, _('Yes, a new login should be created.')),
+)
+
+
+class Institution (models.Model):
+    name = models.CharField(max_length=150)
+    acronym = models.CharField(max_length=30, unique=True)
+    country = models.CharField(max_length=30)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
+
+    def __str__(self):
+        return '%s' % self.name
 
 
 class UserProfile(models.Model):
-    # This is almost the same as
-    # user = models.ForeignKey(User, unique=True)
-    # See: http://stackoverflow.com/questions/5870537/whats-the-difference-between-django-onetoonefield-and-foreignkey
     user = models.OneToOneField(User, related_name='user_profile')
+    institution = models.ForeignKey(Institution, null=True, blank=True)
+    login_enabled = models.BooleanField(default=False, choices=LOGIN)
     force_password_change = models.BooleanField(default=True)
 
 
