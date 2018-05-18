@@ -235,7 +235,6 @@ def update_diagnosis_list(diagnosis_list, heading_type):
 
 def export_create(request, export_id, input_filename, template_name="export/export_data.html"):
     try:
-
         export_instance = get_export_instance(request.user, export_id)
 
         export = ExportExecution(export_instance.user.id, export_instance.id)
@@ -249,18 +248,22 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             participants_filtered_list = Patient.objects.filter(removed=False)
         export.set_participants_filtered_data(participants_filtered_list)
 
-        # set path of the directory base: ex.
+        # set path of the directory base
         base_directory, path_to_create = path.split(export.get_directory_base())
         # create directory base
         error_msg, base_directory_name = create_directory(base_directory, path_to_create)
         if error_msg != "":
             messages.error(request, error_msg)
             return render(request, template_name)
-        #
-        # # Read initial json file
-        #
-        input_export_file = path.join("export", path.join(str(request.user.id),
-                                                          path.join(str(export_instance.id), str(input_filename))))
+
+        # read initial json file
+        input_export_file = path.join(
+            "export",
+            path.join(
+                str(request.user.id),
+                path.join(str(export_instance.id), str(input_filename))
+            )
+        )
 
         # prepare data to be processed
         input_data = export.read_configuration_data(input_filename)
@@ -307,9 +310,10 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # If questionnaire from entrance evaluation was selected
+            # if questionnaire from entrance evaluation was selected
             if export.get_input_data('questionnaires'):
-                # process per questionnaire data - entrance evaluation questionnaires (Particpant data directory)
+                # Process per questionnaire data - entrance evaluation
+                # questionnaires (Particpant data directory)
                 if export.get_input_data("export_per_questionnaire"):
                     error_msg = export.process_per_entrance_questionnaire()
                     if error_msg != "":
@@ -390,8 +394,10 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 
 @login_required
 def export_view(request, template_name="export/export_data.html"):
-    export_form = ExportForm(request.POST or None, initial={'title': 'title',
-                                                            'responses': ['short'], 'headings': 'code'})
+    export_form = ExportForm(
+        request.POST or None,
+        initial={'title': 'title', 'responses': ['short'], 'headings': 'code'}
+    )
 
     selected_ev_quest = []
     selected_participant = []
@@ -471,7 +477,6 @@ def export_view(request, template_name="export/export_data.html"):
         if selected_data_available:
             component_list = {}
             if export_form.is_valid():
-                print("valid data")
                 per_experiment = 'group_selected_list' in request.session
                 per_participant = True
                 per_questionnaire = False
@@ -496,8 +501,10 @@ def export_view(request, template_name="export/export_data.html"):
                     responses_type = export_form.cleaned_data['responses']
 
                     if questionnaires_selected_list:
-                        questionnaires_list = update_questionnaire_list(questionnaires_list, heading_type, 0,
-                                                                        request.LANGUAGE_CODE)
+                        questionnaires_list = update_questionnaire_list(
+                            questionnaires_list, heading_type, 0,
+                            request.LANGUAGE_CODE
+                        )
 
                     if experiment_questionnaires_list:
                         per_experiment = True
