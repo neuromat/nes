@@ -32,10 +32,12 @@ from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 from survey.views import get_questionnaire_language
 
-from experiment.models import ResearchProject, Experiment, Group, SubjectOfGroup, Component, ComponentConfiguration, \
+from experiment.models import ResearchProject, Experiment, Group, \
+    SubjectOfGroup, Component, ComponentConfiguration, \
     Block, Instruction, Questionnaire, Stimulus, DataConfigurationTree, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse, ClassificationOfDiseases, EEGData, \
-    AdditionalData, EMGData, TMSData, DigitalGamePhaseData, GenericDataCollectionData
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, \
+    ClassificationOfDiseases, EEGData, AdditionalData, EMGData, TMSData, \
+    DigitalGamePhaseData, GenericDataCollectionData
 
 JSON_FILENAME = "json_export.json"
 JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
@@ -566,27 +568,37 @@ def export_view(request, template_name="export/export_data.html"):
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
 
-        # participants_list_from_experiment_questionnaire = []
         component_list = []
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
-                component_list = get_component_with_data_and_metadata(group, component_list)
-
-                questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                    subject_of_group__group=group)
-
+                component_list = get_component_with_data_and_metadata(
+                    group, component_list
+                )
+                questionnaire_response_list = \
+                    ExperimentQuestionnaireResponse.objects.filter(
+                        subject_of_group__group=group
+                    )
                 questionnaire_in_list = []
-                for path_experiment in create_list_of_trees(group.experimental_protocol, "questionnaire"):
-                    questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
-                    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+                for path_experiment in \
+                        create_list_of_trees(group.experimental_protocol,
+                                             "questionnaire"):
+                    questionnaire_configuration = get_object_or_404(
+                        ComponentConfiguration, pk=path_experiment[-1][0]
+                    )
+                    questionnaire = Questionnaire.objects.get(
+                        id=questionnaire_configuration.component.id
+                    )
                     questionnaire_id = questionnaire.survey.lime_survey_id
 
                     for questionnaire_response in questionnaire_response_list:
-                        # if questionnaire_id not in questionnaire_in_list:
-                        completed = surveys.get_participant_properties(questionnaire_id,
-                                                                       questionnaire_response.token_id, "completed")
-                        if completed is not None and completed != "N" and completed != "":
+                        completed = surveys.get_participant_properties(
+                            questionnaire_id,
+                            questionnaire_response.token_id,
+                            "completed"
+                        )
+                        if completed is not None and completed != "N" \
+                                and completed != "":
                             questionnaire_dic = {
                                 'questionnaire': questionnaire,
                                 'token': str(questionnaire_response.token_id),
@@ -595,12 +607,15 @@ def export_view(request, template_name="export/export_data.html"):
                             }
                             if questionnaire_id not in questionnaire_in_list:
                                 questionnaire_in_list.append(questionnaire_id)
-                                questionnaires_experiment_list_final.append(questionnaire_dic)
+                                questionnaires_experiment_list_final.append(
+                                    questionnaire_dic
+                                )
 
-        # request.session['participants_in_experiment_questionnaire'] = participants_list_from_experiment_questionnaire
         if questionnaires_experiment_list_final:
-            questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
-                questionnaires_experiment_list_final, language_code)
+            questionnaires_experiment_fields_list = \
+                get_questionnaire_experiment_fields(
+                    questionnaires_experiment_list_final, language_code
+                )
 
     if surveys:
         # obter a lista dos participantes filtrados que tem questionarios de entrada preenchidos
@@ -641,7 +656,8 @@ def export_view(request, template_name="export/export_data.html"):
                         questionnaires_list_final.append(questionnaire)
                         break
 
-            # get the questionnaire fields from the questionnaires_list_final and show them for selection
+            # get the questionnaire fields from the
+            # questionnaires_list_final and show them for selection
             questionnaires_fields_list = get_questionnaire_fields(questionnaires_list_final, request.LANGUAGE_CODE)
 
             if len(selected_ev_quest):
@@ -665,7 +681,6 @@ def export_view(request, template_name="export/export_data.html"):
         else:
             questionnaire_ids = ()
 
-        # index = 0
         for questionnaire in questionnaires_experiment_fields_list:
             questionnaire["selected_field_counter"] = questionnaire_ids.count(questionnaire["sid"])
             questionnaire["index"] = index
@@ -674,13 +689,13 @@ def export_view(request, template_name="export/export_data.html"):
                 if (questionnaire["sid"], output_list["field"]) in selected_ev_quest_experiments:
                     output_list["selected"] = True
 
-
     context = {
         "export_form": export_form,
         "patient_fields": patient_fields,
         "diagnosis_fields": diagnosis_fields,
         "questionnaires_fields_list": questionnaires_fields_list,
-        "questionnaires_experiment_fields_list": questionnaires_experiment_fields_list,
+        "questionnaires_experiment_fields_list":
+            questionnaires_experiment_fields_list,
         "component_list": component_list,
         "selected_participant": selected_participant,
         "selected_diagnosis": selected_diagnosis,

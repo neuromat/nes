@@ -81,10 +81,8 @@ class ABCSearchEngine(ABC):
         participant_data = {'email': '', 'firstname': '', 'lastname': ''}
 
         participant_data_result = self.server.add_participants(
-            self.session_key,
-            sid,
-            [participant_data],
-            True)
+            self.session_key, sid, [participant_data], True
+        )
 
         if participant_data_result \
                 and isinstance(participant_data_result, list) \
@@ -185,10 +183,12 @@ class ABCSearchEngine(ABC):
         """
 
         if self.session_key:
-            result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
+            result = self.server.get_participant_properties(
+                self.session_key, survey_id, token_id, {'method': prop}
+            )
             result = result.get(prop)
         else:
-            result = ""
+            result = ''
 
         return result
 
