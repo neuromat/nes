@@ -1183,11 +1183,9 @@ class DataCollection(models.Model):
 
 class QuestionnaireResponse(DataCollection):
     token_id = models.IntegerField(null=False)
-    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
-
-    # Audit trail - Simple History
+    questionnaire_responsible = \
+        models.ForeignKey(User, null=False, related_name="+")
     history = HistoricalRecords()
-    # changed_by = models.ForeignKey('auth.User')
 
     class Meta:
         permissions = (
