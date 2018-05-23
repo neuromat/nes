@@ -251,11 +251,11 @@
                             {% for collaborator in collaborators %}
                                 <tr>
                                     <td style="text-align: left">
-                                        {{ collaborator.researcher }}
+                                        {{ collaborator.researcher.first_name }} {{ collaborator.researcher.last_name }}
                                     </td>
                                     <td style="text-align: left">
-                                        {% if collaborator.researcher.institution.acronym %}
-                                            {{ collaborator.researcher.institution.acronym }}
+                                        {% if collaborator.researcher.user_profile.institution.acronym %}
+                                            {{ collaborator.researcher.user_profile.institution.acronym }}
                                         {% else %}
                                             <em>{% trans "Not registered" %}</em>
                                         {% endif %}

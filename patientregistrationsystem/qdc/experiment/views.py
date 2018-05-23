@@ -25,8 +25,9 @@ from os import path
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import PermissionDenied
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.files import File
 from django.core.files.base import ContentFile
@@ -106,7 +107,6 @@ from survey.models import Survey, SensitiveQuestion
 from survey.views import get_questionnaire_responses, check_limesurvey_access, create_list_of_trees, \
     get_questionnaire_language, get_survey_header, questionnaire_evaluation_fields_excluded
 
-from team.models import Person
 
 permission_required = partial(permission_required, raise_exception=True)
 
@@ -722,7 +722,7 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
     collaborators_added = ExperimentResearcher.objects.filter(experiment_id=experiment_id)
     collaborators_added_ids = collaborators_added.values_list('researcher_id', flat=True)
 
-    collaborators = Person.objects.all().exclude(pk__in=collaborators_added_ids).order_by('first_name', 'last_name')
+    collaborators = User.objects.filter(is_active=True).exclude(pk__in=collaborators_added_ids).order_by('first_name', 'last_name')
 
     if request.method == "POST":
         if request.POST['action'] == "save":

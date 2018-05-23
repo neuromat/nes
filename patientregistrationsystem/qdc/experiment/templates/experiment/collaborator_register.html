@@ -71,7 +71,7 @@
                             </div>
                             {% for collaborator in collaborators %}
                                 <div class="checkbox">
-                                    <label><input type="checkbox" class="checkbox_collaborators" name="collaborators" value="{{ collaborator.id }}">{{ collaborator }}</label>
+                                    <label><input type="checkbox" class="checkbox_collaborators" name="collaborators" value="{{ collaborator.id }}">{{ collaborator.first_name }} {{ collaborator.last_name }}</label>
                                 </div>
                             {% endfor %}
                         {% else %}

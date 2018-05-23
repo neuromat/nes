@@ -12,7 +12,6 @@ from simple_history.models import HistoricalRecords
 
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
-from team.models import Person
 
 
 TIME_UNITS = (
@@ -115,7 +114,7 @@ class Experiment(models.Model):
 
 class ExperimentResearcher(models.Model):
     experiment = models.ForeignKey(Experiment)
-    researcher = models.ForeignKey(Person)
+    researcher = models.ForeignKey(User)
 
 
 class Publication(models.Model):
