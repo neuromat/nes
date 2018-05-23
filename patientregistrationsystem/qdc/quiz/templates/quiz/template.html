@@ -236,17 +236,8 @@
 
                 {% if perms.auth.add_user and perms.auth.change_user %}
                     <li {% block activeUser %}{% endblock %}>
-                        <a href="/user/search/">
+                        <a href="/user/list">
                             <span class="glyphicon glyphicon-user"></span>
-                            {% trans "Users" %}
-                        </a>
-                    </li>
-                {% endif %}
-
-                {% if perms.team.change_team %}
-                    <li {% block activeTeam %}{% endblock %}>
-                        <a href="/team/registers/">
-                            <span class="fa fa-users"></span>
                             {% trans "Researchers" %}
                         </a>
                     </li>

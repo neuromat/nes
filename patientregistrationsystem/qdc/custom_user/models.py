@@ -6,11 +6,11 @@ from django.utils.translation import ugettext_lazy as _
 
 LOGIN = (
     (False, _('No')),
-    (True, _('Yes, a new login should be created.')),
+    (True, _('Yes, a username and password must be configured')),
 )
 
 
-class Institution (models.Model):
+class Institution(models.Model):
     name = models.CharField(max_length=150)
     acronym = models.CharField(max_length=30, unique=True)
     country = models.CharField(max_length=30)
@@ -18,6 +18,9 @@ class Institution (models.Model):
 
     def __str__(self):
         return '%s' % self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class UserProfile(models.Model):
