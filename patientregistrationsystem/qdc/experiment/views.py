@@ -942,10 +942,6 @@ def send_all_experiments_to_portal():
             send_researcher_to_portal(created_research_project['id'],
                                       schedule_of_sending.experiment.research_project.owner)
 
-            # sending collaborators
-            # for collaborator in schedule_of_sending.experiment.research_project.collaborators.all():
-            #     send_collaborator_to_portal(created_research_project['id'], collaborator.team_person)
-
             list_of_eeg_setting = {}
             list_of_emg_setting = {}
             list_of_tms_setting = {}
@@ -5236,16 +5232,21 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
         questionnaire_lime_survey.release_session_key()
 
         if not result:
-            messages.warning(request,
-                             _('Fail trying to generate token to answer questionnaire. '
-                               'Check if questionnaire is active.'))
+            messages.warning(
+                request,
+                _('Fail trying to generate token to answer questionnaire. '
+                  'Check if questionnaire is active.')
+            )
             return None, None
 
-        questionnaire_response.data_configuration_tree_id = data_configuration_tree_id
+        questionnaire_response.data_configuration_tree_id = \
+            data_configuration_tree_id
         questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.component_configuration = questionnaire_config
         questionnaire_response.token_id = result['token_id']
-        questionnaire_response.date = datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
+        questionnaire_response.date = datetime.strptime(
+            request.POST['date'], _('%m/%d/%Y')
+        )
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
@@ -5266,7 +5267,8 @@ def get_limesurvey_response_url(questionnaire_response):
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
-        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
+        '%s/index.php/%s/token/%s/responsibleid/%s/' \
+        'acquisitiondate/%s/subjectid/%s/newtest/Y' % (
             settings.LIMESURVEY['URL_WEB'],
             questionnaire.survey.lime_survey_id,
             token,
@@ -5279,8 +5281,9 @@ def get_limesurvey_response_url(questionnaire_response):
 
 @login_required
 @permission_required('experiment.add_questionnaireresponse')
-def subject_questionnaire_response_create(request, group_id, subject_id, questionnaire_id,
-                                          template_name="experiment/subject_questionnaire_response_form.html"):
+def subject_questionnaire_response_create(
+        request, group_id, subject_id, questionnaire_id,
+        template_name="experiment/subject_questionnaire_response_form.html"):
     group = get_object_or_404(Group, id=group_id)
 
     list_of_path = [int(item) for item in questionnaire_id.split('-')]
@@ -5288,12 +5291,20 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
 
     check_can_change(request.user, group.experiment.research_project)
 
-    questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
+    questionnaire_config = get_object_or_404(
+        ComponentConfiguration, id=questionnaire_id
+    )
     surveys = Questionnaires()
-    lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
+    lime_survey_id = Questionnaire.objects.get(
+        id=questionnaire_config.component_id
+    ).survey.lime_survey_id
 
-    survey_title = surveys.get_survey_title(lime_survey_id,
-                                            get_questionnaire_language(surveys, lime_survey_id, request.LANGUAGE_CODE))
+    survey_title = surveys.get_survey_title(
+        lime_survey_id,
+        get_questionnaire_language(
+            surveys, lime_survey_id, request.LANGUAGE_CODE
+        )
+    )
     surveys.release_session_key()
 
     fail = None
@@ -5304,8 +5315,11 @@ def subject_questionnaire_response_create(request, group_id, subject_id, questio
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
-                request, subject_id, group_id, questionnaire_id, list_of_path)
+            redirect_url, questionnaire_response_id = \
+                subject_questionnaire_response_start_fill_questionnaire(
+                    request, subject_id, group_id, questionnaire_id,
+                    list_of_path
+                )
 
             fail = True if not redirect_url else False
 
@@ -5338,8 +5352,10 @@ def subject_questionnaire_response_reuse(request, group_id, subject_id, question
 
     check_can_change(request.user, group.experiment.research_project)
 
-    patient_questionnaire_response = get_object_or_404(PatientQuestionnaireResponse,
-                                                       id=patient_questionnaire_response_id)
+    patient_questionnaire_response = get_object_or_404(
+        PatientQuestionnaireResponse,
+        id=patient_questionnaire_response_id
+    )
 
     data_configuration_tree_id = list_data_configuration_tree(questionnaire_id, list_of_path)
     if not data_configuration_tree_id:
