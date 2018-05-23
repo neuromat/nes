@@ -27,8 +27,6 @@ from patient.tests import UtilTests
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 
-from team.models import Person
-from team.tests import ObjectsFactory as TeamObjectsFactory
 
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
