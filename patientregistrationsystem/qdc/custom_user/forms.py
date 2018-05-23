@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.forms import PasswordResetForm
-from custom_user.models import UserProfile
+from custom_user.models import Institution, UserProfile
+from patient.quiz_widget import SelectBoxCountries
 
 
 class UserForm(ModelForm):
@@ -106,3 +107,38 @@ class ResearcherForm(ModelForm):
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
         }
+
+
+class InstitutionForm(ModelForm):
+    class Meta:
+        model = Institution
+        fields = ['name', 'acronym', 'country', 'parent']
+
+        widgets = {
+            'name': TextInput(attrs={'class': 'form-control', 'required': "", 'autofocus': ''}),
+            'acronym': TextInput(attrs={'class': 'form-control'}),
+            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'parent': Select(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(InstitutionForm, self).__init__(*args, **kwargs)
+        self.fields['country'].initial = 'BR'
+        instance = kwargs.get('instance')
+
+        if instance:
+            parent_list = Institution.objects.all()
+            parents_to_exclude = get_institutions_recursively(instance)
+            for parent in parents_to_exclude:
+                parent_list = parent_list.exclude(id=parent.id)
+            self.fields['parent'].queryset = parent_list
+
+
+def get_institutions_recursively(institution):
+    institution_list = [institution]
+    output_list = set(institution_list)
+    children = Institution.objects.filter(parent=institution)
+    for child in children:
+        if child not in output_list:
+            output_list |= get_institutions_recursively(child)
+    return output_list

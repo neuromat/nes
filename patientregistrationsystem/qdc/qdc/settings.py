@@ -57,7 +57,6 @@ PROJECT_APPS = (
     'survey',
     'cep',
     'export',
-    'team',
     'configuration'
 )
 

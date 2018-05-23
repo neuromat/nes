@@ -2,10 +2,10 @@
 
 {% load i18n admin_static %}
 
-{% block activeTeam %}class="active"{% endblock %}
+{% block activeUser %}class="active"{% endblock %}
 
 {% block header %}
-    <script src="{% static 'quiz/js/team_register.js' %}"></script>
+    <script src="{% static 'quiz/js/custom_user_validation.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -49,14 +49,12 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li><a href="/team/registers">{% trans "Teams" %}</a></li>
-                <li><a href="/team/institution/list">{% trans "Institutions" %}</a></li>
-
+                <li><a href="/user/list">{% trans "Researchers and Institutions" %}</a></li>
                 {% if creating %}
-                    <li class="active">{% trans "New" %}</li>
+                    <li class="active">{% trans "New institution" %}</li>
                 {% else %}
                     {% if editing %}
-                        <li><a href="/team/institution/{{ institution.id }}">{{ institution_form.name.value }}</a></li>
+                        <li><a href="/user/institution/{{ institution.id }}">{{ institution_form.name.value }}</a></li>
                         <li class="active">{% trans "Editing" %}</li>
                     {% else %}
                         <li class="active"> {{ institution_form.name.value }}</li>
@@ -125,7 +123,7 @@
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
-                        <a href="/team/institution/edit/{{ institution.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
+                        <a href="/user/institution/edit/{{ institution.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
                 {% endif %}
 
@@ -133,7 +131,7 @@
 
             <div class="btn-toolbar">
                 <div class="btn-group pull-left">
-                    {% if not editing and perms.team.change_team and can_change %}
+                    {% if not editing and perms.auth.add_user and can_change %}
                         <button type="button" class="btn btn-danger" onclick="showDialogAndEnableRemoveButton()">{% trans "Delete institution" %}</button>
                     {% endif %}
                 </div>
@@ -142,12 +140,12 @@
                         <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
                     <div class="btn-group pull-right">
-                        <a href="/team/institution/{% if creating %}list{% else %}{{ institution.id }}{% endif %}"
+                        <a href="/user/institution/{% if creating %}list{% else %}{{ institution.id }}{% endif %}"
                            class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
                     <div class="btn-group pull-right">
-                        <a href="/team/institution/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                        <a href="/user/list" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
             </div>

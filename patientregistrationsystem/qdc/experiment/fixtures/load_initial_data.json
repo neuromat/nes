@@ -121,6 +121,24 @@
     "model": "experiment.fileformat"
   },
   {
+    "fields": {
+      "tags": [
+        1,
+        2
+      ],
+      "name_en": "EEG raw data - Brain Vision binary (MNE)",
+      "name": "EEG raw data - Brain Vision binary (MNE)",
+      "description_en": "File format to stores the three different filetypes (.vhdr, .eeg, .vmrk) from Brain Vision Recorder Software",
+      "description": null,
+      "name_pt_br": "Dados brutos de EEG - Brain Vision (MNE)",
+      "extension": ".eeg .vhdr .vmrk",
+      "nes_code": "MNE-RawFromBrainVision",
+      "description_pt_br": "Formato de arquivo para armazenar três tipos de arquivos diferentes (.vhdr, .eeg, .vmrk) do software Brain Vision Recorder"
+    },
+    "pk": 4,
+    "model": "experiment.fileformat"
+  },
+  {
     "model": "experiment.tetheringsystem",
     "pk": 1,
     "fields": {
@@ -1518,25 +1536,5 @@
       "name_en": "Multiunit recording"
     },
     "pk": 8
-  },
-  {
-    "model": "team.institution",
-    "pk": 1,
-    "fields": {
-      "acronym": "local",
-      "name": "Local institution",
-      "parent": null,
-      "country": "BR"
-    }
-  },
-  {
-    "model": "configuration.localinstitution",
-    "pk": 1,
-    "fields": {
-      "logo": "",
-      "code": null,
-      "url": null,
-      "institution": 1
-    }
   }
 ]

@@ -7,8 +7,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext as _
 
-from custom_user.forms import UserForm, UserFormUpdate, UserProfileForm, ResearcherForm
-from custom_user.models import UserProfile
+from custom_user.forms import InstitutionForm, UserForm, UserFormUpdate, UserProfileForm, ResearcherForm
+from custom_user.models import Institution, UserProfile
+from patient.quiz_widget import SelectBoxCountriesDisabled
 
 
 def get_group_permissions(user):
@@ -26,9 +27,14 @@ def get_group_permissions(user):
 
 @login_required
 @permission_required('auth.add_user')
-def user_list(request, template_name='custom_user/user_list.html'):
+def user_list(request, template_name='custom_user/initial_page.html'):
     users = User.objects.filter(is_active=True).order_by('first_name', 'last_name')
-    data = {'object_list': users, 'current_user_id': request.user.id}
+    institutions = Institution.objects.all().order_by('name')
+    data = {
+        "object_list": users,
+        "current_user_id": request.user.id,
+        "institutions": institutions,
+    }
     return render(request, template_name, data)
 
 
@@ -179,7 +185,8 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
                 if profile_form.is_valid():
                     profile_form.save()
                 messages.success(request, _('Researcher disabled successfully.'))
-                return redirect('user_list')
+                redirect_url = reverse("user_view", args=(user_id,))
+                return HttpResponseRedirect(redirect_url)
 
         context = {
             "user": user_id,
@@ -192,3 +199,89 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
         }
 
         return render(request, template_name, context)
+
+
+@login_required
+# @permission_required('team.change_team')
+def institution_create(request, template_name="custom_user/institution_register.html"):
+    institution_form = InstitutionForm(request.POST or None)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if institution_form.is_valid():
+                institution = institution_form.save()
+                messages.success(request, _('Institution created successfully.'))
+                redirect_url = reverse("institution_view", args=(institution.id,))
+                return HttpResponseRedirect(redirect_url)
+            else:
+                messages.warning(request, _('Information not saved.'))
+        else:
+            messages.warning(request, _('Action not available.'))
+
+    context = {"institution_form": institution_form,
+               "creating": True,
+               "editing": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+# @permission_required('team.change_team')
+def institution_view(request, institution_id, template_name="custom_user/institution_register.html"):
+    institution = get_object_or_404(Institution, pk=institution_id)
+
+    institution_form = InstitutionForm(request.POST or None, instance=institution)
+
+    for field in institution_form.fields:
+        institution_form.fields[field].widget.attrs['disabled'] = True
+
+    institution_form.fields['country'].widget = SelectBoxCountriesDisabled(
+        attrs={'id': 'id_country', 'data-flags': 'true', 'disabled': 'true'})
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            if UserProfile.objects.filter(institution=institution).exists():
+                messages.warning(
+                    request,
+                    _('This institution cannot be removed because there is (are) person(s) associated with it.'))
+
+                redirect_url = reverse("institution_view", args=(institution_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            institution.delete()
+            messages.success(request, _('Institution removed successfully.'))
+            redirect_url = reverse("user_list")
+            return HttpResponseRedirect(redirect_url)
+
+    context = {"can_change": True,
+               "institution": institution,
+               "institution_form": institution_form,
+               "show_institution": True}
+
+    return render(request, template_name, context)
+
+
+@login_required
+# @permission_required('team.change_team')
+def institution_update(request, institution_id, template_name="custom_user/institution_register.html"):
+    institution = get_object_or_404(Institution, pk=institution_id)
+
+    institution_form = InstitutionForm(request.POST or None, instance=institution)
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if institution_form.is_valid():
+                if institution_form.has_changed():
+                    institution_form.save()
+                    messages.success(request, _('Institution updated successfully.'))
+                else:
+                    messages.info(request, _('There is no changes to save.'))
+
+                redirect_url = reverse("institution_view", args=(institution_id,))
+                return HttpResponseRedirect(redirect_url)
+
+    context = {"institution": institution,
+               "institution_form": institution_form,
+               "editing": True}
+
+    return render(request, template_name, context)
