@@ -19,7 +19,7 @@ urlpatterns = patterns(
     url(r'^home/$', 'qdc.views.contact', name='contact'),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
     url(r'^account/', include('django.contrib.auth.urls')),
-    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/home'}),
+    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', {'login_url': '/home'}, name='logout'),
     url(r'^password_change/$', 'django.contrib.auth.views.password_change',
         {'template_name': 'registration/change_password_custom.html',
          'post_change_redirect': 'password_changed',
