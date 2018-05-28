@@ -63,6 +63,11 @@ def user_create(request, template_name='custom_user/register_users.html'):
                     messages.success(request, _('Researcher created successfully.'))
                     redirect_url = reverse("user_view", args=(user.pk,))
                     return HttpResponseRedirect(redirect_url)
+            else:
+                messages.error(request,
+                               _('A researcher with this email address has already been registered before. '
+                                 'Please contact your system administrator if you want to reactivate this account.'))
+                return redirect('user_new')
 
         if request.POST['action'] == "save" and request.POST['login_enabled'] == 'False':
             if not User.objects.filter(email=request.POST['email']).exists():
@@ -76,6 +81,11 @@ def user_create(request, template_name='custom_user/register_users.html'):
                     messages.success(request, _('Researcher created successfully.'))
                     redirect_url = reverse("user_view", args=(new_reserch.pk,))
                     return HttpResponseRedirect(redirect_url)
+            else:
+                messages.error(request,
+                               _('A researcher with this email address has already been registered before. '
+                                 'Please contact your system administrator if you want to reactivate this account.'))
+                return redirect('user_new')
 
     context = {
         "form": form,
