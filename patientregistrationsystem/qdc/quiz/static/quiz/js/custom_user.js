@@ -67,6 +67,7 @@ $(document).ready(function () {
         $('input[name = "login_enabled"]').on('change', function(e) {
             if (e.currentTarget.value == "True") {
                 username_field.prop('disabled', false);
+                username_field.val("");
                 password1_field.prop('disabled', false);
                 password2_field.prop('disabled', false);
                 div_user_account.show();
