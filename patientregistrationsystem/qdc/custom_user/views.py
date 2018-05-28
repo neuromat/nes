@@ -248,6 +248,13 @@ def institution_view(request, institution_id, template_name="custom_user/institu
                 redirect_url = reverse("institution_view", args=(institution_id,))
                 return HttpResponseRedirect(redirect_url)
 
+            if Institution.objects.filter(parent_id=institution_id).exists():
+                messages.warning(request, _('This institution cannot be removed because there is (are) other '
+                                            'institution(s) associated with it.'))
+
+                redirect_url = reverse("institution_view", args=(institution_id,))
+                return HttpResponseRedirect(redirect_url)
+
             institution.delete()
             messages.success(request, _('Institution removed successfully.'))
             redirect_url = reverse("user_list")
