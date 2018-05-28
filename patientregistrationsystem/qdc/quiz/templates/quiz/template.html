@@ -169,12 +169,12 @@
                 <li>
                     <a class="btn-default dropdown-toggle navbar-inverse"
                        data-toggle="dropdown" href="#">
-                        <span style="font-size: 0.85em;" class="glyphicon glyphicon-user"></span> {{ user.username }}
+                        <span style="font-size: 0.85em;" class="glyphicon glyphicon-user"></span> {{ request.user.username }}
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown dropdown-user dropdown-menu" role="menu">
                         <li><a href="/password_change"><span class="fa fa-key"></span> {% trans "Change password" %}</a></li>
-                        <li><a href="/logout"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
+                        <li><a href="{% url 'logout' %}"><span class="fa fa-power-off"></span> {% trans "Logout" %}</a></li>
                     </ul>
 
                 </li>
