@@ -250,10 +250,16 @@ def institution_view(request, institution_id, template_name="custom_user/institu
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
-            if UserProfile.objects.filter(institution=institution).exists():
-                messages.warning(
-                    request,
-                    _('This institution cannot be removed because there is (are) person(s) associated with it.'))
+            institution_used = UserProfile.objects.filter(institution=institution)
+            if institution_used.exists():
+                if institution_used.count() > 1:
+                    messages.warning(
+                        request,
+                        _('This institution cannot be removed because there are people associated with it.'))
+                else:
+                    messages.warning(
+                        request,
+                        _('This institution cannot be removed because there is a person associated with it.'))
 
                 redirect_url = reverse("institution_view", args=(institution_id,))
                 return HttpResponseRedirect(redirect_url)
