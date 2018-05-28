@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-23 18:36-0300\n"
+"POT-Creation-Date: 2018-05-28 13:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Type e-mail"
 msgstr ""
 
-#: custom_user/forms.py:43 custom_user/views.py:160
+#: custom_user/forms.py:43 custom_user/views.py:170
 msgid "E-mail already registered"
 msgstr ""
 
@@ -242,55 +242,74 @@ msgstr ""
 msgid "Deactivate"
 msgstr ""
 
-#: custom_user/views.py:63 custom_user/views.py:76
+#: custom_user/views.py:63 custom_user/views.py:81
 msgid "Researcher created successfully."
 msgstr ""
 
-#: custom_user/views.py:108
+#: custom_user/views.py:68 custom_user/views.py:86
+msgid ""
+"A researcher with this email address has already been registered before. "
+"Please contact your system administrator if you want to reactivate this "
+"account."
+msgstr ""
+
+#: custom_user/views.py:118
 msgid "Researcher removed successfully."
 msgstr ""
 
-#: custom_user/views.py:149 custom_user/views.py:166
+#: custom_user/views.py:159 custom_user/views.py:176
 msgid "Researcher updated successfully."
 msgstr ""
 
-#: custom_user/views.py:170 custom_user/views.py:278
+#: custom_user/views.py:180 custom_user/views.py:301
 msgid "There is no changes to save."
 msgstr ""
 
-#: custom_user/views.py:178
+#: custom_user/views.py:188
 msgid "Researcher deleted successfully."
 msgstr ""
 
-#: custom_user/views.py:187
+#: custom_user/views.py:197
 msgid "Researcher disabled successfully."
 msgstr ""
 
-#: custom_user/views.py:213
+#: custom_user/views.py:223
 msgid "Institution created successfully."
 msgstr ""
 
-#: custom_user/views.py:217
+#: custom_user/views.py:227
 msgid "Information not saved."
 msgstr ""
 
-#: custom_user/views.py:219
+#: custom_user/views.py:229
 msgid "Action not available."
 msgstr ""
 
-#: custom_user/views.py:246
+#: custom_user/views.py:258
 msgid ""
-"This institution cannot be removed because there is (are) person(s) "
-"associated with it."
+"This institution cannot be removed because there are people associated with "
+"it."
 msgstr ""
 
-#: custom_user/views.py:252
+#: custom_user/views.py:262
+msgid ""
+"This institution cannot be removed because there is a person associated with "
+"it."
+msgstr ""
+
+#: custom_user/views.py:268
+msgid ""
+"This institution cannot be removed because there is (are) other "
+"institution(s) associated with it."
+msgstr ""
+
+#: custom_user/views.py:275
 #, fuzzy
 #| msgid "Usuário removido com sucesso."
 msgid "Institution removed successfully."
 msgstr "User deleted successfully."
 
-#: custom_user/views.py:276
+#: custom_user/views.py:299
 msgid "Institution updated successfully."
 msgstr ""
 
