@@ -1,26 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="1404.47">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Helvetica; color: #000000; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 6.0px 0.0px; line-height: 14.0px; font: 12.0px Helvetica; color: #000000; -webkit-text-stroke: #000000; min-height: 14.0px}
-    p.p3 {margin: 0.0px 0.0px 12.0px 0.0px; line-height: 14.0px; font: 12.0px Helvetica; color: #000000; -webkit-text-stroke: #000000}
-    span.s1 {font-kerning: none}
-    span.s2 {text-decoration: underline ; font-kerning: none; color: #0000ee; -webkit-text-stroke: 0px #0000ee}
-    span.s3 {font-kerning: none; color: #000000}
-  </style>
-</head>
-<body>
-<p class="p1"><span class="s1">{% if (theme_prev_next_buttons_location == 'bottom' or theme_prev_next_buttons_location == 'both') and (next or prev) %}</span></p>
-<p class="p1"><span class="s1">{% if next %} <a href="file:///Users/Ederporto/nes-system/nes/patientregistrationsystem/qdc/docs/_template/%7B%7B%20next.link%7Ce%20%7D%7D"><span class="s2">{{ _('Next') }} </span></a>{% endif %} {% if prev %} <a href="file:///Users/Ederporto/nes-system/nes/patientregistrationsystem/qdc/docs/_template/%7B%7B%20prev.link%7Ce%20%7D%7D"><span class="s2">{{ _('Previous') }}</span></a> {% endif %}<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1">{% endif %}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p3"><span class="s1">{%- if show_copyright %} {%- if hasdoc('copyright') %} {% trans path=pathto('copyright'), copyright=copyright|e %}© <a href="file:///Users/Ederporto/nes-system/nes/patientregistrationsystem/qdc/docs/_template/%7B%7B%20path%20%7D%7D"><span class="s2">Copyright</span></a> {{ copyright }}.{% endtrans %} {%- else %} {% trans copyright=copyright|e %}{{ copyright }} </span><span class="s3">&lt;a rel="license" href="http://creativecommons.org/licenses/by/4.0/"&gt;&lt;img alt="Licença Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /&gt;&lt;/a&gt;</span><span class="s1">.{% endtrans %} {%- endif %} {%- endif %} {%- if build_id and build_url %} {% trans build_url=build_url, build_id=build_id %} Build <a href="file:///Users/Ederporto/nes-system/nes/patientregistrationsystem/qdc/docs/_template/%7B%7B%20build_url%20%7D%7D"><span class="s2">{{ build_id }}</span></a>. {% endtrans %} {%- elif commit %} {% trans commit=commit %} Revision {{ commit }}. {% endtrans %} {%- elif last_updated %} {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %} {%- endif %}<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1">{%- if show_sphinx %} {% trans %}Built with <a href="http://sphinx-doc.org/"><span class="s2">Sphinx</span></a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme"><span class="s2">theme</span></a> provided by <a href="https://readthedocs.org/"><span class="s2">Read the Docs</span></a>{% endtrans %}. {%- endif %} {%- block extrafooter %} {% endblock %}</span></p>
-</body>
-</html>
+{% if (theme_prev_next_buttons_location == 'bottom' or theme_prev_next_buttons_location == 'both') and (next or prev) %}
+{% if next %} {{ _('Next') }} {% endif %} {% if prev %} {{ _('Previous') }} {% endif %}
+{% endif %}
+{%- if show_copyright %} {%- if hasdoc('copyright') %} {% trans path=pathto('copyright'), copyright=copyright|e %}© Copyright {{ copyright }}.{% endtrans %} {%- else %} {% trans copyright=copyright|e %}{{ copyright }} <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Licença Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>.{% endtrans %} {%- endif %} {%- endif %} {%- if build_id and build_url %} {% trans build_url=build_url, build_id=build_id %} Build {{ build_id }}. {% endtrans %} {%- elif commit %} {% trans commit=commit %} Revision {{ commit }}. {% endtrans %} {%- elif last_updated %} {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %} {%- endif %}
+
+{%- if show_sphinx %} {% trans %}Built with Sphinx using a theme provided by Read the Docs{% endtrans %}. {%- endif %} {%- block extrafooter %} {% endblock %}
