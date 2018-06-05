@@ -51,3 +51,15 @@ Also, you can delete the experiment by clicking the *Delete* button. However, th
 If the experiment was sent to the NeuroMat Open Database, then it will be showing the experiment sending status. The information about the "Last update of the experiment" and "Last sending status" will be shown as well. To know how to make an experiment publicly available go to :ref:`how-to-send-experiment-data-from-nes`.
 
 .. image: ../../_img/experiment_data_sending_status.png
+
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
+   :hidden:
+
+   researchersofanexperiment
+   groupofparticipants
+   rawdataandadditionalfiles
+   recordsettings
+   managingstepsforep
+   configuringep
