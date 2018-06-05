@@ -15,7 +15,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 project = u'NES'
-copyright = u'2018, NeuroMat'
+copyright = u'NeuroMat, 2018'
 author = u'NeuroMat'
 
 version = u'1.35'
