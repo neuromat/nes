@@ -280,11 +280,11 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_electrode_localization_system():
-        eeg_electrode_net_system = EEGElectrodeLocalizationSystem.objects.create(
+        eeg_electrode_localization_system = EEGElectrodeLocalizationSystem.objects.create(
             name="Localization System name"
         )
-        eeg_electrode_net_system.save()
-        return eeg_electrode_net_system
+        eeg_electrode_localization_system.save()
+        return eeg_electrode_localization_system
 
     @staticmethod
     def create_eeg_electrode_position(eeg_electrode_localization_system):
@@ -362,6 +362,24 @@ class ObjectsFactory(object):
         )
         coil_model.save()
         return coil_model
+
+
+    @staticmethod
+    def create_coil_shape():
+        coil_shape = CoilShape.objects.create(
+            name="Electrode Shape name"
+        )
+        coil_shape.save()
+        return coil_shape
+
+
+    @staticmethod
+    def create_tag():
+        tag = Tag.objects.create(
+            name="EMG"
+        )
+        tag.save()
+        return tag
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -1175,6 +1193,8 @@ class SubjectTest(TestCase):
 
         # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
         self.assertIsNotNone(self.lime_survey.session_key, 'Failed to connect LimeSurvey')
+
+        self.tag_eeg = ObjectsFactory.create_tag()
 
     def test_subject_view_and_search(self):
         """
@@ -3534,7 +3554,7 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(ADConverter.objects.all().count(), 0)
 
     def test_coil_model_register(self):
-        coil_shape = CoilShape.objects.all().first()
+        coil_shape = ObjectsFactory.create_coil_shape()
 
         # list
         response = self.client.get(reverse("coil_list", args=()))
@@ -3607,8 +3627,8 @@ class EEGEquipmentRegisterTest(TestCase):
 
     def test_tms_device_register(self):
         manufacturer = ObjectsFactory.create_manufacturer()
-        coil_shape = CoilShape.objects.all().first()
-        coil_model = ObjectsFactory.create_coil_model(coil_shape)
+        coil_shape = ObjectsFactory.create_coil_shape()
+        coil_model = ObjectsFactory.create_coil_model(CoilShape.objects.all().first())
 
         # list
         response = self.client.get(reverse("tmsdevice_list", args=()))
@@ -3850,6 +3870,7 @@ class EMGSettingTest(TestCase):
         self.manufacturer = ObjectsFactory.create_manufacturer()
         self.software = ObjectsFactory.create_software(self.manufacturer)
         self.software_version = ObjectsFactory.create_software_version(self.software)
+        self.tag_emg = ObjectsFactory.create_tag()
 
     def test_crud_emg_setting(self):
 
