@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from django.contrib.auth.models import User
-from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect,\
+from django.forms import ModelForm, TextInput, Textarea, Select, DateInput, TypedChoiceField, RadioSelect, \
     ValidationError, Form, IntegerField, NumberInput, TimeInput, URLInput, ModelChoiceField
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_text
@@ -32,7 +32,7 @@ class ExperimentForm(ModelForm):
             'title': TextInput(attrs={'class': 'form-control',
                                       'required': "",
                                       'data-error': _('Title must be filled.'),
-                                      'autofocus': ''},),
+                                      'autofocus': ''}, ),
             'description': Textarea(attrs={'class': 'form-control',
                                            'rows': '4', 'required': "",
                                            'data-error': _('Description must be filled.')}),
@@ -43,7 +43,6 @@ class ExperimentForm(ModelForm):
 
 class GroupForm(ModelForm):
     class Meta:
-
         model = Group
 
         fields = ['title', 'description']
@@ -179,7 +178,6 @@ class StimulusForm(ModelForm):
 
 
 class EEGForm(ModelForm):
-
     class Meta:
         model = EEG
         fields = ['eeg_setting']
@@ -197,7 +195,6 @@ class EEGForm(ModelForm):
 
 
 class EMGForm(ModelForm):
-
     class Meta:
         model = EMG
         fields = ['emg_setting']
@@ -215,7 +212,6 @@ class EMGForm(ModelForm):
 
 
 class TMSForm(ModelForm):
-
     class Meta:
         model = TMS
         fields = ['tms_setting']
@@ -296,7 +292,6 @@ class ResearchProjectOwnerForm(ModelForm):
 
 
 class ResearchProjectForm(ModelForm):
-
     class Meta:
         model = ResearchProject
         fields = ['start_date', 'end_date', 'title', 'description']
@@ -311,7 +306,7 @@ class ResearchProjectForm(ModelForm):
                                            'data-error': _('Description must be filled.')}),
             'start_date': DateInput(format=_("%m/%d/%Y"),
                                     attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
-                                           'required': "", 'data-error': _("Initial date must be filled.")},),
+                                           'required': "", 'data-error': _("Initial date must be filled.")}, ),
             'end_date': DateInput(format=_("%m/%d/%Y"),
                                   attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')}),
 
@@ -466,7 +461,6 @@ class EEGAmplifierSettingForm(ModelForm):
                     "min": "0",
                     'data-error':
                         _('Number of channels should be between 0 and the number of channels of the EEG machine.')}),
-
 
         }
 

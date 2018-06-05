@@ -12918,7 +12918,6 @@ def context_tree_create(request, experiment_id, template_name="experiment/contex
                 context_tree_added = context_tree_form.save(commit=False)
                 context_tree_added.experiment_id = experiment_id
                 context_tree_added.save()
-
                 messages.success(request, _('Context tree included successfully.'))
 
                 redirect_url = reverse("context_tree_view", args=(context_tree_added.id,))
