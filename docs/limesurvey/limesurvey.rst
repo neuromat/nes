@@ -1,7 +1,7 @@
 .. _limesurvey:
 
-LimeSurvey
-==========
+About LimeSurvey
+================
 
 LimeSurvey is an open-source survey application used by NES to manage questionnaires applied to experiment participants.
 
