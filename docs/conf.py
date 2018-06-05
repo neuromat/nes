@@ -5,7 +5,7 @@
 # -- General configuration ------------------------------------------------
 
 extensions = [
-    'sphinx.ext.autodoc',
+    'sphinx.ext.autodoc'
 ]
 
 templates_path = ['_templates']
@@ -36,6 +36,12 @@ import sphinx_rtd_theme
 html_theme = 'sphinx_rtd_theme'
 
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+html_theme_options = {
+    "collapse_navigation" : False
+}
+
+html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
 
 latex_elements = {
 }

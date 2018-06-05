@@ -57,3 +57,13 @@ You can see that the bottom right buttons changed their descriptions to allow yo
 You can then include new information or change the existing information. Errors found are presented for correction (in red).
 
 After entering new informations, you may click the *Save* button to save them and leave the edition mode.
+
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
+   :hidden:
+
+   personaldata
+   socialdemographicdata
+   socialhistory
+   medicalevaluation

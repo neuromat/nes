@@ -21,3 +21,11 @@ For each type of export, you can filter the group of participants whose data you
 The participants can be filtered by gender, marital status, locations, diagnosis and age. As shows the picture below.
 
 .. image:: ../../_img/participant_selection_options.png
+
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
+   :hidden:
+
+   exportparticipantdata
+   exportingexperimentdata

@@ -30,61 +30,65 @@ The Research, Innovation and Dissemination Center for Neuromathematics (CEPID Ne
 
 This documentation is divided in 6 parts:
 
-- :ref:`Installation <tutorial-to-install-the-latest-version-of-nes>`
+.. toctree::
+   :maxdepth: 1
+   :caption: Installation
+   :titlesonly:
 
- - :ref:`script-for-creating-initial-data`
- - :ref:`administration-interface`
- - :ref:`loading-icd-data-3.0`
- - :ref:`installation-using-a-docker-container`
+   installation/installationtutorial
+   installation/scriptinitialdata
+   installation/admininterface
+   installation/icddata3.0
+   installation/dockercontainer
 
-- :ref:`limesurvey`
+.. toctree::
+   :maxdepth: 1
+   :caption: LimeSurvey
+   :titlesonly:
 
- - :ref:`how-to-install-limesurvey`
- - :ref:`guidelines-to-integrate-nes-and-limesurvey`
- - :ref:`how-to-integrate-nes-and-limesurvey-questionnaire`
- - :ref:`naming-conventions-for-question-codes`
+   limesurvey/limesurvey
+   limesurvey/installlimesurvey
+   limesurvey/guidelines
+   limesurvey/integratenesandlimesurvey
+   limesurvey/namingconventions
 
-- :ref:`neuromat-open-database`
+.. toctree::
+   :maxdepth: 1
+   :caption: NeuroMat Open Database
+   :titlesonly:
 
- - :ref:`how-to-send-experiment-data-from-nes`
+   neuromatODb/neuromatodb
+   neuromatODb/sendexperimentdata
 
-- :ref:`userguide`
+.. toctree::
+   :maxdepth: 1
+   :caption: User Guide
+   :titlesonly:
 
- - :ref:`participants`
+   userguide/userguide
+   userguide/participants/participants
+   userguide/studies
+   userguide/publications
+   userguide/questionnaires/questionnaires
+   userguide/researchers
+   userguide/setup/equipmentsetup
+   userguide/export/export
+   userguide/translation
+   userguide/search
+   userguide/permissions
 
-  - :ref:`personal-data`
-  - :ref:`social-demographic-data`
-  - :ref:`social-history`
-  - :ref:`medical-evaluation`
-  - :ref:`Questionnaires <participant-questionnaires>`
 
- - :ref:`studies`
+.. toctree::
+   :maxdepth: 1
+   :caption: Videos
+   :titlesonly:
 
-  - :ref:`experiments`
+   videos/videos
 
-   - :ref:`researchers-of-an-experiment`
-   - :ref:`group-of-participants`
-   - :ref:`raw-data-and-additional-files`
-   - :ref:`recording-settings`
-   - :ref:`managing-steps-for-experimental-protocol`
-   - :ref:`configuring-an-experimental-protocol`
+.. toctree::
+   :maxdepth: 1
+   :caption: Training
+   :titlesonly:
 
- - :ref:`publications`
- - :ref:`questionnaires`
+   training/training
 
-  - :ref:`managing-a-questionnaire-fill`
-  - :ref:`answering-a-limesurvey-questionnaire`
-
- - :ref:`researchers`
- - :ref:`set-up`
- - :ref:`export`
-
-  - :ref:`export-participant-data`
-  - :ref:`export-experiment-data`
-
- - :ref:`translation`
- - :ref:`search`
- - :ref:`permissions`
-
-- :ref:`videos`
-- :ref:`training`
