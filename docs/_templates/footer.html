@@ -1,0 +1,6 @@
+{% if (theme_prev_next_buttons_location == 'bottom' or theme_prev_next_buttons_location == 'both') and (next or prev) %}
+{% if next %} {{ _('Next') }} {% endif %} {% if prev %} {{ _('Previous') }} {% endif %}
+{% endif %}
+{%- if show_copyright %} {%- if hasdoc('copyright') %} {% trans path=pathto('copyright'), copyright=copyright|e %}© Copyright {{ copyright }}.{% endtrans %} {%- else %} {% trans copyright=copyright|e %}{{ copyright }} <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Licença Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a>.{% endtrans %} {%- endif %} {%- endif %} {%- if build_id and build_url %} {% trans build_url=build_url, build_id=build_id %} Build {{ build_id }}. {% endtrans %} {%- elif commit %} {% trans commit=commit %} Revision {{ commit }}. {% endtrans %} {%- elif last_updated %} {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %} {%- endif %}
+
+{%- if show_sphinx %} {% trans %}Built with Sphinx using a theme provided by Read the Docs{% endtrans %}. {%- endif %} {%- block extrafooter %} {% endblock %}
