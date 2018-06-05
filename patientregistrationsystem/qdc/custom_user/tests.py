@@ -121,6 +121,7 @@ class FormUserValidation(TestCase):
         """ Teste de inclusao de usuario com nome de usuario invalido"""
 
         self.data['username'] = ''
+        self.data['login_enabled'] = True
 
         response = self.client.post(reverse(USER_NEW), self.data, follow=True)
 
@@ -133,6 +134,7 @@ class FormUserValidation(TestCase):
         """
 
         self.data['email'] = 'email@invalid.'
+        self.data['login_enabled'] = True
 
         response = self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertFormError(response, "form", "email", 'Informe um endereço de email válido.')
@@ -146,6 +148,7 @@ class FormUserValidation(TestCase):
         self.data['username'] = user_pwd
         self.data['password'] = 'abc123'
         self.data['password2'] = 'acc123'
+        self.data['login_enabled'] = True
 
         self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
@@ -161,6 +164,7 @@ class FormUserValidation(TestCase):
 
         self.data['username'] = user_pwd
         self.data['password'] = password
+        self.data['login_enabled'] = True
 
         self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
@@ -172,6 +176,7 @@ class FormUserValidation(TestCase):
         user_pwd = 'test_pwd_1'
         self.data['username'] = user_pwd
         self.data['password'] = 'abc'
+        self.data['login_enabled'] = True
 
         self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
@@ -183,6 +188,7 @@ class FormUserValidation(TestCase):
         user_pwd = 'test_pwd_1'
         self.data['username'] = user_pwd
         self.data['password'] = '123'
+        self.data['login_enabled'] = True
 
         self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
@@ -194,6 +200,7 @@ class FormUserValidation(TestCase):
         user_pwd = 'test_pwd_2'
         self.data['username'] = user_pwd
         self.data['password'] = ''
+        self.data['login_enabled'] = True
 
         response = self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
@@ -206,6 +213,7 @@ class FormUserValidation(TestCase):
         """
         username = 'test_username'
         self.data['username'] = username
+        self.data['login_enabled'] = True
 
         response = self.client.post(reverse(USER_NEW), self.data)
         self.assertEqual(response.status_code, 302)
@@ -218,6 +226,7 @@ class FormUserValidation(TestCase):
         username = 'test_username'
         self.data['email'] = 'romulojosefranco@gmail.com'
         self.data['username'] = username
+        self.data['login_enabled'] = True
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse(USER_EDIT, args=[self.user.pk]))
@@ -235,6 +244,8 @@ class FormUserValidation(TestCase):
         Testa visualizar usuario
         """
 
+
+        self.data['login_enabled'] = True
         # Create an instance of a GET request.
         request = self.factory.get(reverse(USER_EDIT, args=[self.user.pk]))
         request.user = self.user
@@ -265,6 +276,7 @@ class FormUserValidation(TestCase):
 
         first_name = 'test_username'
         self.data['first_name'] = first_name
+        self.data['login_enabled'] = True
 
         response = self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)

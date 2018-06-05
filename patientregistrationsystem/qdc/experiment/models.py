@@ -13,7 +13,6 @@ from simple_history.models import HistoricalRecords
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
-
 TIME_UNITS = (
     ("ms", _("milisecond(s)")),
     ("s", _("second(s)")),
@@ -98,6 +97,7 @@ class Experiment(models.Model):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
+
     # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
@@ -370,8 +370,8 @@ class EEGElectrodeLocalizationSystem(models.Model):
             self.map_image_file = None
             super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
             self.map_image_file = saved_file
-
-        super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
+        else:
+            super(EEGElectrodeLocalizationSystem, self).save(*args, **kwargs)
 
 
 class EEGElectrodePosition(models.Model):
@@ -444,6 +444,7 @@ class EEGSetting(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField()
     copied_from = models.ForeignKey('self', null=True, related_name='children')
+
     # set_of_equipment = models.ManyToManyField(Equipment)
 
     def __str__(self):
@@ -983,8 +984,9 @@ class ContextTree(models.Model):
             self.setting_file = None
             super(ContextTree, self).save(*args, **kwargs)
             self.setting_file = saved_file
+        else:
+            super(ContextTree, self).save(*args, **kwargs)
 
-        super(ContextTree, self).save(*args, **kwargs)
         self.experiment.save()
 
 
@@ -1204,7 +1206,6 @@ class QuestionnaireResponse(DataCollection):
 
 
 class FileFormat(models.Model):
-
     # Code that NES knows the format and can handle the content.
     # E.g.: "NEO-RawBinarySignalIO", "other"
     nes_code = models.CharField(null=True, blank=True, max_length=50, unique=True)
@@ -1234,6 +1235,7 @@ class EEGData(DataFile, DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
+
     # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
@@ -1265,6 +1267,7 @@ class TMSData(DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
+
     # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
@@ -1292,9 +1295,9 @@ class HotSpot(models.Model):
 
 
 class AdditionalData(DataFile, DataCollection):
-
     # Audit trail - Simple History
     history = HistoricalRecords()
+
     # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
@@ -1315,6 +1318,7 @@ class EMGData(DataFile, DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
+
     # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
@@ -1334,6 +1338,7 @@ class DigitalGamePhaseData(DataFile, DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
+
     # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
@@ -1349,9 +1354,9 @@ class DigitalGamePhaseData(DataFile, DataCollection):
 
 
 class GenericDataCollectionData(DataFile, DataCollection):
-
     # Audit trail - Simple History
     history = HistoricalRecords()
+
     # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
