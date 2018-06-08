@@ -16,6 +16,7 @@ from .models import Experiment, Group, Subject, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree
+
 from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
 
@@ -249,12 +250,22 @@ class ObjectsFactory(object):
         return filter_type
 
     @staticmethod
+    def create_tag():
+        tag = Tag.objects.create(
+            name="TAG name"
+        )
+        tag.save()
+        return tag
+
+    @staticmethod
     def create_electrode_model():
         electrode_model = ElectrodeModel.objects.create(
             name="Electrode Model name"
         )
-        for tag in Tag.objects.all():
-            electrode_model.tags.add(tag)
+        tagaux = ObjectsFactory.create_tag()
+        tagaux.name = "EEG"
+        tagaux.save()
+        electrode_model.tags.add(tagaux)
         electrode_model.save()
         return electrode_model
 
@@ -363,7 +374,6 @@ class ObjectsFactory(object):
         coil_model.save()
         return coil_model
 
-
     @staticmethod
     def create_coil_shape():
         coil_shape = CoilShape.objects.create(
@@ -371,15 +381,6 @@ class ObjectsFactory(object):
         )
         coil_shape.save()
         return coil_shape
-
-
-    @staticmethod
-    def create_tag():
-        tag = Tag.objects.create(
-            name="EMG"
-        )
-        tag.save()
-        return tag
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -3294,7 +3295,12 @@ class EEGEquipmentRegisterTest(TestCase):
         self.data = {'action': 'save',
                      'manufacturer': str(manufacturer.id),
                      'identification': identification,
-                     'electrode_model_default': str(electrode_model.id)}
+                     'electrode_model_default': str(electrode_model.id)
+                     # 'description': 'teste',
+                     # 'serial_number': '333333',
+                     # 'csrfmiddlewaretoken': 'csrfmiddlewaretoken',
+                     # 'material': 'material'
+                    }
 
         response = self.client.post(reverse("eegelectrodenet_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)

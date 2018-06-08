@@ -2,7 +2,7 @@ from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 from modeltranslation.admin import TranslationAdmin
 
-from experiment.models import Experiment, QuestionnaireResponse, StimulusType, FileFormat, Tag, \
+from .models import Experiment, QuestionnaireResponse, StimulusType, FileFormat, Tag, \
     Software, SoftwareVersion, ADConverter, \
     StandardizationSystem, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement, \
     Muscle, MuscleSubdivision, MuscleSide, \
