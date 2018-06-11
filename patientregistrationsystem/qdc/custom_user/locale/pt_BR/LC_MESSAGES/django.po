@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-23 18:36-0300\n"
+"POT-Creation-Date: 2018-05-28 13:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr "Entrar senha"
 msgid "Type e-mail"
 msgstr "Entra e-mail"
 
-#: custom_user/forms.py:43 custom_user/views.py:160
+#: custom_user/forms.py:43 custom_user/views.py:170
 msgid "E-mail already registered"
 msgstr "E-mail já cadastrado"
 
@@ -237,58 +237,85 @@ msgstr "Tem certeza que deseja excluir este pesquisador?"
 
 #: custom_user/templates/custom_user/register_users.html:301
 msgid "Are you sure you want to deactivate this researcher's system access?"
-msgstr "Tem certeza que deseja desativar o acesso ao sistema deste pesquisador?"
+msgstr ""
+"Tem certeza que deseja desativar o acesso ao sistema deste pesquisador?"
 
 #: custom_user/templates/custom_user/register_users.html:305
 msgid "Deactivate"
 msgstr "Desativar"
 
-#: custom_user/views.py:63 custom_user/views.py:76
+#: custom_user/views.py:63 custom_user/views.py:81
 msgid "Researcher created successfully."
 msgstr "Pesquisador criado com sucesso."
 
-#: custom_user/views.py:108
+#: custom_user/views.py:68 custom_user/views.py:86
+msgid ""
+"A researcher with this email address has already been registered before. "
+"Please contact your system administrator if you want to reactivate this "
+"account."
+msgstr "Um pesquisador com este endereço de e-mail já foi registrado anteriormente. "
+"Entre em contato com o administrador do sistema caso queira reativar esta conta."
+
+#: custom_user/views.py:118
 msgid "Researcher removed successfully."
 msgstr "Pesquisador removido com sucesso."
 
-#: custom_user/views.py:149 custom_user/views.py:166
+#: custom_user/views.py:159 custom_user/views.py:176
 msgid "Researcher updated successfully."
 msgstr "Pesquisador atualizado com sucesso."
 
-#: custom_user/views.py:170 custom_user/views.py:278
+#: custom_user/views.py:180 custom_user/views.py:301
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: custom_user/views.py:178
+#: custom_user/views.py:188
 msgid "Researcher deleted successfully."
 msgstr "Pesquisador removido com sucesso."
 
-#: custom_user/views.py:187
+#: custom_user/views.py:197
 msgid "Researcher disabled successfully."
 msgstr "Pesquisador desabilitado do sistema com sucesso."
 
-#: custom_user/views.py:213
+#: custom_user/views.py:223
 msgid "Institution created successfully."
 msgstr "Instituição criada com sucesso."
 
-#: custom_user/views.py:217
+#: custom_user/views.py:227
 msgid "Information not saved."
 msgstr "Informação não salva."
 
-#: custom_user/views.py:219
+#: custom_user/views.py:229
 msgid "Action not available."
 msgstr "Ação não disponível."
 
-#: custom_user/views.py:246
+#: custom_user/views.py:258
 msgid ""
-"This institution cannot be removed because there is (are) person(s) "
-"associated with it."
-msgstr "Esta instituição não pode ser removida porque não há pessoa(s) associada(s) a ela."
+"This institution cannot be removed because there are people associated with "
+"it."
+msgstr ""
+"Esta instituição não pode ser removida porque há pessoas associadas "
+"a ela."
 
-#: custom_user/views.py:252
+#: custom_user/views.py:262
+msgid ""
+"This institution cannot be removed because there is a person associated with "
+"it."
+msgstr ""
+"Esta instituição não pode ser removida porque há uma pessoa associada "
+"a ela."
+
+#: custom_user/views.py:268
+msgid ""
+"This institution cannot be removed because there is (are) other "
+"institution(s) associated with it."
+msgstr ""
+"Esta instituição não pode ser removida porque há outra instituição associada "
+"a ela."
+
+#: custom_user/views.py:275
 msgid "Institution removed successfully."
 msgstr "Instituição removida com sucesso."
 
-#: custom_user/views.py:276
+#: custom_user/views.py:299
 msgid "Institution updated successfully."
 msgstr "Instituição atualizada com sucesso."
