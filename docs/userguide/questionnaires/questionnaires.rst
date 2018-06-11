@@ -105,7 +105,10 @@ If you have the right :ref:`permissions`, you can stop using this questionnaire 
 
 A confirmation pop-up will be shown. Click either the `Delete` button to confirm deletion or Cancel` button if you don't want to delete the questionnaire.
 
-There are two more sections to be covered about questionnaires:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
+   :hidden:
 
-* :ref:`managing-a-questionnaire-fill`
-* :ref:`answering-a-limesurvey-questionnaire`
+   managingaquestionnairefill
+   answeringalimesurveyquestionnaire

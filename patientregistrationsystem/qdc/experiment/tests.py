@@ -374,9 +374,9 @@ class ObjectsFactory(object):
 
 
     @staticmethod
-    def create_tag():
+    def create_tag(name):
         tag = Tag.objects.create(
-            name="EMG"
+            name=name
         )
         tag.save()
         return tag
@@ -1194,7 +1194,7 @@ class SubjectTest(TestCase):
         # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
         self.assertIsNotNone(self.lime_survey.session_key, 'Failed to connect LimeSurvey')
 
-        self.tag_eeg = ObjectsFactory.create_tag()
+        self.tag_eeg = ObjectsFactory.create_tag(name="EEG")
 
     def test_subject_view_and_search(self):
         """
@@ -1646,7 +1646,7 @@ class SubjectTest(TestCase):
         # editing a eeg data file
         self.data = {'date': '30/08/2014', 'action': 'save',
                      'description': 'description of the file',
-                     'file_format': file_format.id, 'file': eeg_data.file,
+                     'file_format': file_format.id, 'file': file,
                      'file_format_description': 'teste',
                      'eeg_setting': eeg_setting.id}
         response = self.client.post(reverse('eeg_data_edit', args=(eeg_data.id, 1)), self.data)
@@ -3870,7 +3870,7 @@ class EMGSettingTest(TestCase):
         self.manufacturer = ObjectsFactory.create_manufacturer()
         self.software = ObjectsFactory.create_software(self.manufacturer)
         self.software_version = ObjectsFactory.create_software_version(self.software)
-        self.tag_emg = ObjectsFactory.create_tag()
+        self.tag_emg = ObjectsFactory.create_tag(name="EMG")
 
     def test_crud_emg_setting(self):
 

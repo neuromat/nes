@@ -44,3 +44,10 @@ Experiments of a study
 A study may have multiple :ref:`experiments`. Again, only users that have :ref:`permissions` to update a study can add experiments. Non-authorized users can't see the `Insert new` button.
 
 .. image:: ../_img/experiment_view.png
+
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
+   :hidden:
+
+   experiments/experiments
