@@ -250,9 +250,9 @@ class ObjectsFactory(object):
         return filter_type
 
     @staticmethod
-    def create_tag():
+    def create_tag(name = 'TAG name'):
         tag = Tag.objects.create(
-            name="TAG name"
+            name=name
         )
         tag.save()
         return tag
@@ -262,9 +262,7 @@ class ObjectsFactory(object):
         electrode_model = ElectrodeModel.objects.create(
             name="Electrode Model name"
         )
-        tagaux = ObjectsFactory.create_tag()
-        tagaux.name = "EEG"
-        tagaux.save()
+        tagaux = ObjectsFactory.create_tag('EEG')
         electrode_model.tags.add(tagaux)
         electrode_model.save()
         return electrode_model
@@ -1195,7 +1193,8 @@ class SubjectTest(TestCase):
         # Checa se conseguiu conectar no lime Survey com as credenciais fornecidas no settings.py
         self.assertIsNotNone(self.lime_survey.session_key, 'Failed to connect LimeSurvey')
 
-        self.tag_eeg = ObjectsFactory.create_tag()
+        self.tag_eeg = ObjectsFactory.create_tag('EEG')
+        # self.tag_eeg.name =
 
     def test_subject_view_and_search(self):
         """
@@ -3872,7 +3871,7 @@ class EMGSettingTest(TestCase):
         self.manufacturer = ObjectsFactory.create_manufacturer()
         self.software = ObjectsFactory.create_software(self.manufacturer)
         self.software_version = ObjectsFactory.create_software_version(self.software)
-        self.tag_emg = ObjectsFactory.create_tag()
+        self.tag_emg = ObjectsFactory.create_tag('EMG')
 
     def test_crud_emg_setting(self):
 
