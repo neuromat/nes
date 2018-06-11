@@ -1647,7 +1647,7 @@ class SubjectTest(TestCase):
         # editing a eeg data file
         self.data = {'date': '30/08/2014', 'action': 'save',
                      'description': 'description of the file',
-                     'file_format': file_format.id, 'file': eeg_data.file,
+                     'file_format': file_format.id, 'file': file,
                      'file_format_description': 'teste',
                      'eeg_setting': eeg_setting.id}
         response = self.client.post(reverse('eeg_data_edit', args=(eeg_data.id, 1)), self.data)
@@ -3296,10 +3296,6 @@ class EEGEquipmentRegisterTest(TestCase):
                      'manufacturer': str(manufacturer.id),
                      'identification': identification,
                      'electrode_model_default': str(electrode_model.id)
-                     # 'description': 'teste',
-                     # 'serial_number': '333333',
-                     # 'csrfmiddlewaretoken': 'csrfmiddlewaretoken',
-                     # 'material': 'material'
                     }
 
         response = self.client.post(reverse("eegelectrodenet_new", args=()), self.data)

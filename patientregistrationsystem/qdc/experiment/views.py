@@ -179,7 +179,7 @@ def research_project_create(request, template_name="experiment/research_project_
             if research_project_form.is_valid():
 
                 research_project_added = research_project_form.save(commit=False)
-                research_project_added.owner_id = request.POST['owner']
+                research_project_added.owner_id = request.POST.get('owner')
                 research_project_added.save()
 
                 messages.success(request, _('Study created successfully.'))

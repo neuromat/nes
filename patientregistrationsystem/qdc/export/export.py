@@ -1352,7 +1352,6 @@ class ExportExecution:
                         # Responses_Q123.csv
                         export_filename = "%s_%s_%s.csv" % (questionnaire_prefix_filename,
                                                             str(questionnaire_code), language)
-                        # Ex.
                         # Users/.../NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                         complete_filename = path.join(complete_export_path, export_filename)
                         # save file with data

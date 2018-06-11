@@ -8,6 +8,8 @@ $(document).ready(function () {
     var password1_field = $("#id_new_password1");
     var password2_field = $("#id_new_password2");
     var div_user_account = $("#user_account");
+    var div_password = $("#div_password");
+    var div_password_flag = $("#div_password_flag");
     var div_profiles = $("#profiles");
     var operation = $("#operation");
 
@@ -52,9 +54,29 @@ $(document).ready(function () {
     if(operation.val()=="viewing") {
         username_field.prop('disabled', true);
         password_flag.prop('disabled', true);
+        div_password_flag.hide();
         password1_field.prop('disabled', true);
         password2_field.prop('disabled', true);
     }
 
+    if(operation.val()=="editing") {
+        if (optradio_1.checked){
+            div_password_flag.hide();
+        }
+
+        $('input[name = "login_enabled"]').on('change', function(e) {
+            if (e.currentTarget.value == "True") {
+                username_field.prop('disabled', false);
+                username_field.val("");
+                password1_field.prop('disabled', false);
+                password2_field.prop('disabled', false);
+                div_user_account.show();
+                div_password.show();
+                password_flag.prop('checked', true);
+                password_flag.prop('disabled', true);
+                div_profiles.show();
+            }
+        });
+    }
 });
 

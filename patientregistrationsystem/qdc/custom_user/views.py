@@ -63,6 +63,11 @@ def user_create(request, template_name='custom_user/register_users.html'):
                     messages.success(request, _('Researcher created successfully.'))
                     redirect_url = reverse("user_view", args=(user.pk,))
                     return HttpResponseRedirect(redirect_url)
+            else:
+                messages.error(request,
+                               _('A researcher with this email address has already been registered before. '
+                                 'Please contact your system administrator if you want to reactivate this account.'))
+                return redirect('user_new')
 
         if request.POST['action'] == "save" and request.POST['login_enabled'] == 'False':
             if not User.objects.filter(email=request.POST['email']).exists():
@@ -76,6 +81,11 @@ def user_create(request, template_name='custom_user/register_users.html'):
                     messages.success(request, _('Researcher created successfully.'))
                     redirect_url = reverse("user_view", args=(new_reserch.pk,))
                     return HttpResponseRedirect(redirect_url)
+            else:
+                messages.error(request,
+                               _('A researcher with this email address has already been registered before. '
+                                 'Please contact your system administrator if you want to reactivate this account.'))
+                return redirect('user_new')
 
     context = {
         "form": form,
@@ -240,10 +250,23 @@ def institution_view(request, institution_id, template_name="custom_user/institu
 
     if request.method == "POST":
         if request.POST['action'] == "remove":
-            if UserProfile.objects.filter(institution=institution).exists():
-                messages.warning(
-                    request,
-                    _('This institution cannot be removed because there is (are) person(s) associated with it.'))
+            institution_used = UserProfile.objects.filter(institution=institution)
+            if institution_used.exists():
+                if institution_used.count() > 1:
+                    messages.warning(
+                        request,
+                        _('This institution cannot be removed because there are people associated with it.'))
+                else:
+                    messages.warning(
+                        request,
+                        _('This institution cannot be removed because there is a person associated with it.'))
+
+                redirect_url = reverse("institution_view", args=(institution_id,))
+                return HttpResponseRedirect(redirect_url)
+
+            if Institution.objects.filter(parent_id=institution_id).exists():
+                messages.warning(request, _('This institution cannot be removed because there is (are) other '
+                                            'institution(s) associated with it.'))
 
                 redirect_url = reverse("institution_view", args=(institution_id,))
                 return HttpResponseRedirect(redirect_url)
