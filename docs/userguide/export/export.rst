@@ -28,4 +28,4 @@ The participants can be filtered by gender, marital status, locations, diagnosis
    :hidden:
 
    exportparticipantdata
-   exportingexperimentdata
+   exportexperimentdata
