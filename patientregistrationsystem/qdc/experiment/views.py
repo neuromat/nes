@@ -1290,11 +1290,13 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
                                                              num_participants,
                                                              language_code):
 
-    for questionnaire_configuration in ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                             component__component_type="questionnaire"):
+    for questionnaire_configuration in ComponentConfiguration.objects.filter(
+            parent_id=block_id, component__component_type="questionnaire"
+    ):
 
         if questionnaire_configuration.number_of_repetitions is not None:
-            fills_per_participant = questionnaire_configuration.number_of_repetitions
+            fills_per_participant = \
+                questionnaire_configuration.number_of_repetitions
             total_fills_needed = num_participants * fills_per_participant
         else:
             fills_per_participant = "Ilimitado"
@@ -1302,35 +1304,49 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 
         amount_of_completed_questionnaires = 0
 
-        questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
+        questionnaire = Questionnaire.objects.get(
+            id=questionnaire_configuration.component.id
+        )
 
         for subject_response in QuestionnaireResponse.objects.filter(
-                data_configuration_tree__component_configuration=questionnaire_configuration):
-
-            response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                                 subject_response.token_id, "completed")
+                data_configuration_tree__component_configuration=
+                questionnaire_configuration
+        ):
+            response_result = surveys.get_participant_properties(
+                questionnaire.survey.lime_survey_id,
+                subject_response.token_id, "completed"
+            )
 
             if response_result != "N" and response_result != "":
                 amount_of_completed_questionnaires += 1
 
-        list_of_questionnaires_configuration.append({
+        list_of_questionnaires_configuration.append(
+            {
             "survey_title": surveys.get_survey_title(
                 questionnaire.survey.lime_survey_id,
-                get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, language_code)),
+                get_questionnaire_language(
+                    surveys, questionnaire.survey.lime_survey_id, language_code
+                )
+            ),
             "fills_per_participant": fills_per_participant,
             "total_fills_needed": total_fills_needed,
             "total_fills_done": amount_of_completed_questionnaires,
-            "id": questionnaire_configuration.id})
+            "id": questionnaire_configuration.id
+            }
+        )
 
-    for block_configuration in ComponentConfiguration.objects.filter(parent_id=block_id,
-                                                                     component__component_type="block"):
+    for block_configuration in ComponentConfiguration.objects.filter(
+            parent_id=block_id, component__component_type="block"
+    ):
 
-        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires_and_statistics(
-            Block.objects.get(id=block_configuration.component.id),
-            list_of_questionnaires_configuration,
-            surveys,
-            num_participants,
-            language_code)
+        list_of_questionnaires_configuration = \
+            recursively_create_list_of_questionnaires_and_statistics(
+                Block.objects.get(id=block_configuration.component.id),
+                list_of_questionnaires_configuration,
+                surveys,
+                num_participants,
+                language_code
+            )
 
     return list_of_questionnaires_configuration
 
