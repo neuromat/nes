@@ -10,6 +10,6 @@ NES (Neuroscience Experiments System) is an open-source tool that aims to assist
 
 Demonstration environment: https://nes.numec.prp.usp.br/ (please, contact us for access credential - neuromat@numec.prp.usp.br)
 
-Documentation: https://github.com/neuromat/nes/wiki
+Documentation: https://nes.readthedocs.io
 
 Issue tracking system: https://neuromat.atlassian.net
