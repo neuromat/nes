@@ -1039,7 +1039,7 @@ class ExportExecution:
             # path: /NES_EXPORT/Questionnaire_metadata/Q123_aaa
             export_questionnaire_metadata_directory = path.join(export_metadata_directory, path_questionnaire)
 
-            print(questionnaire_id)
+            # print(questionnaire_id)
             for language in language_list:
                 # Per_participant_data is updated by define_questionnaire
                 # method
