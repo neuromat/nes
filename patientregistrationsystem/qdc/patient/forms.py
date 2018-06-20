@@ -173,8 +173,8 @@ class QuestionnaireResponseForm(ModelForm):
         ]
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
-                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
-                                     'required': "",
-                                     'data-error': _("Fill date must be filled")}, )
+            'date': DateInput(format=_("%d/%m/%Y"),
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')},)
+                                     # 'required': "",
+                                     # 'data-error': _("Fill date must be filled")}, )
         }
