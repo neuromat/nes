@@ -15,8 +15,6 @@ from .validation import CPF
 
 
 def validate_date_questionnaire_response(value):
-    print("\nValue=", value)
-    print("\nDatetime=", datetime.date.today())
     if value > datetime.date.today():
         raise ValidationError(_("Fill date can not be bigger than today's date."))
 
@@ -99,7 +97,7 @@ class AlcoholPeriod(models.Model):
         return self.name
 
 
-class Patient(models.Model):
+class   Patient(models.Model):
     code = models.CharField(max_length=10, null=False, unique=True)
 
     name = models.CharField(null=True, blank=True, max_length=50)

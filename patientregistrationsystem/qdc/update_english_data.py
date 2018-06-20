@@ -53,8 +53,7 @@ def update_translated_data(data):
 
         model_db = apps.get_model(data_model)
         records_db = model_db.objects.all()
-        print()
-        print("--- " + data_model + "...")
+
         for record in records_db:
             # print(record, record.name)
             for attrib, values in data_values.items():
@@ -68,7 +67,7 @@ def update_translated_data(data):
                         value_english = values[attrib_value_record]
                     else:
                         value_english = "Please translate this"
-                        print(attrib_value_record, value_english)
+
                     setattr(record, attrib_english, value_english)
                     # print(attrib_english, value_english)
 
