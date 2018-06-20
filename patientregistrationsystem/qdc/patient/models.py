@@ -15,6 +15,8 @@ from .validation import CPF
 
 
 def validate_date_questionnaire_response(value):
+    print("\nValue=", value)
+    print("\nDatetime=", datetime.date.today())
     if value > datetime.date.today():
         raise ValidationError(_("Fill date can not be bigger than today's date."))
 

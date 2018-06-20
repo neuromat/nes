@@ -462,7 +462,7 @@ class InputExportTest(TestCase):
 
         questionnaire_list = [
             (0, 271192, "title", [("header1", "field1")]),
-            (1, 271193, "title", [("header2", "field2")])
+            # (1, 271193, "title", [("header2", "field2")])
         ]
 
         self.assertNotIn("questionnaires", input_data.data)
@@ -480,7 +480,7 @@ class InputExportTest(TestCase):
 
         questionnaires_list = [
             (0, 271192, "title", [("header1", "field1")]),
-            (1, 271193, "title", [("header2", "field2")])
+            # (1, 271193, "title", [("header2", "field2")])
         ]
 
         diagnosis_field_header_list = ""
