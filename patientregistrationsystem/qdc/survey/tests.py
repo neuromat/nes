@@ -80,7 +80,7 @@ class ABCSearchEngineTest(TestCase):
             # Adiciona participante e obtem o token
             result_token = lime_survey.add_participant(sid)
 
-            # Verifica se o token
+            # Verifica se o token está presente na tabela de participantes
             token = lime_survey.get_participant_properties(sid, result_token, "token")
             self.assertEqual(token, result_token['token'])
         finally:
@@ -151,7 +151,7 @@ class ABCSearchEngineTest(TestCase):
         # self.assertEqual(len(list_participants_new), len(list_participants) + 1)
 
         # token_id = participant_data_result[0]['tid']
-        token_id = participant_data_result['token_id']
+        token_id = participant_data_result['tid']
         # tokens_to_delete = [token_id]
 
         # remover participante do questionario
@@ -249,7 +249,7 @@ class ABCSearchEngineTest(TestCase):
         # self.assertEqual(len(list_participants_new), len(list_participants) + 1)
 
         # token_id = participant_data_result[0]['tid']
-        token_id = participant_data_result['token_id']
+        token_id = participant_data_result['tid']
         # tokens_to_delete = [token_id]
 
         # remover participante do questionario
