@@ -70,6 +70,7 @@ class ObjectsFactory(object):
         experiment = Experiment.objects.create(research_project_id=research_project.id,
                                                title="Experimento-Update",
                                                description="Descricao do Experimento-Update")
+        experiment.changed_by=None
         experiment.save()
         return experiment
 

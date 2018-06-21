@@ -5243,7 +5243,7 @@ def subject_questionnaire_response_start_fill_questionnaire(request, subject_id,
             data_configuration_tree_id
         questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.component_configuration = questionnaire_config
-        questionnaire_response.token_id = result['token_id']
+        questionnaire_response.token_id = result['tid']
         questionnaire_response.date = datetime.strptime(
             request.POST['date'], _('%m/%d/%Y')
         )

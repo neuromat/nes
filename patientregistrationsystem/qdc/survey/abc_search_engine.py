@@ -90,7 +90,7 @@ class ABCSearchEngine(ABC):
                 and 'error' not in participant_data_result[0]:
 
             return {'token': participant_data_result[0]['token'],
-                    'token_id': participant_data_result[0]['tid']}
+                    'tid': participant_data_result[0]['tid']}
         else:
             return None
 

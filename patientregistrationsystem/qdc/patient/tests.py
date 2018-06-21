@@ -126,7 +126,7 @@ class UtilTests():
         result = questionnaire_lime_survey.add_participant(survey.lime_survey_id)
         questionnaire_lime_survey.release_session_key()
 
-        return result['token_id']
+        return result['tid']
 
     def create_response_survey_mock(self, user, patient, survey, token_id=None):
         if token_id is None:
