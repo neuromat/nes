@@ -98,7 +98,7 @@ class Experiment(models.Model):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
+    changed_by = None
 
     def __str__(self):
         return self.title

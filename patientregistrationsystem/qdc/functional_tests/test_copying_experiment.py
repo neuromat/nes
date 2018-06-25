@@ -31,8 +31,7 @@ class CopyExperimentTest(FunctionalTest):
     def create_objects():
         research_project = ObjectsFactory.create_research_project()
         experiment = ObjectsFactory.create_experiment(research_project)
-        # experimental_protocol = ObjectsFactory.
-        group = ObjectsFactory.create_group(experiment)
+        return research_project.id
 
     def test_can_see_copy_experiment_button(self):
         username = TEST_USERNAME
@@ -48,4 +47,9 @@ class CopyExperimentTest(FunctionalTest):
         # collection. The system does not allow that, so a modal appears
         # telling her that she can copy the experiment with all experiment
         # data.
-        self.create_objects()
+        research_project_id = self.create_objects()
+        self.browser.get('%s%s%s' %(self.live_server_url,'/experiment/research_project/',research_project_id))
+        self.wait_for(
+            lambda: self.browser.find_element_by_tag_name('i').click()
+        )
+

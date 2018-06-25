@@ -109,7 +109,7 @@ class UtilTests:
         result = questionnaire_lime_survey.add_participant(survey.lime_survey_id)
         questionnaire_lime_survey.release_session_key()
 
-        return result['token_id']
+        return result['tid']
 
     def create_response_survey_mock(self, user, patient, survey, token_id=None):
         if token_id is None:
@@ -462,7 +462,7 @@ class InputExportTest(TestCase):
 
         questionnaire_list = [
             (0, 271192, "title", [("header1", "field1")]),
-            (1, 271193, "title", [("header2", "field2")])
+            # (1, 271193, "title", [("header2", "field2")])
         ]
 
         self.assertNotIn("questionnaires", input_data.data)
@@ -480,7 +480,7 @@ class InputExportTest(TestCase):
 
         questionnaires_list = [
             (0, 271192, "title", [("header1", "field1")]),
-            (1, 271193, "title", [("header2", "field2")])
+            # (1, 271193, "title", [("header2", "field2")])
         ]
 
         diagnosis_field_header_list = ""
