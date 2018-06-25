@@ -383,13 +383,19 @@ class QuestionnaireResponse(models.Model):
     survey = models.ForeignKey(Survey, null=False, on_delete=models.PROTECT)
 
     token_id = models.IntegerField(null=False)
-    date = models.DateField(default=datetime.date.today, null=False, validators=[validate_date_questionnaire_response])
-    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
+    date = models.DateField(
+        default=datetime.date.today, null=False,
+        validators=[validate_date_questionnaire_response]
+    )
+    questionnaire_responsible = models.ForeignKey(
+        User, null=False, related_name="+"
+    )
 
     class Meta:
         permissions = (
             ("view_questionnaireresponse", "Can view questionnaire response"),
-            ("export_questionnaireresponse", "Can export questionnaire response"),
+            ("export_questionnaireresponse",
+             "Can export questionnaire response"),
         )
 
     def __str__(self):
