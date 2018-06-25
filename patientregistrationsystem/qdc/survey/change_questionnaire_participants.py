@@ -4,7 +4,6 @@ import getopt
 import sys
 import os
 import django
-import json
 
 sys.path.append(
     '/home/caco/Workspace/nes-system/nes/patientregistrationsystem/qdc'
@@ -13,7 +12,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'qdc.settings')
 django.setup()
 
 from survey.abc_search_engine import Questionnaires
-from experiment.models import Questionnaire, QuestionnaireResponse
+from experiment.models import Questionnaire, \
+    QuestionnaireResponse as EQuestionnaireResponse
+from patient.models import QuestionnaireResponse as PQuestionnaireResponse
 
 
 def parse_options(argv):
@@ -52,6 +53,18 @@ def parse_options(argv):
     return [questionnaire_id, new_limesurvey_id]
 
 
+def update_questionnaire_response(old_tokens, new_tokens, q_response):
+    old_token = next(
+        item for item in old_tokens if item['tid'] == q_response.token_id
+    )
+    new_token = next(
+        item for item in new_tokens if item['token'] == old_token['token']
+    )
+    q_response.token_id = new_token['tid']
+    q_response.save()
+    return q_response
+
+
 def main(argv):
     # TODO: test for new_limesurvey_id existence
     questionnaire_id, new_limesurvey_id = parse_options(argv)
@@ -59,28 +72,34 @@ def main(argv):
     survey = questionnaire.survey
     old_limesurvey_id = survey.lime_survey_id
     survey.lime_survey_id = new_limesurvey_id
+    # TODO:
+    # if old_limesurvey_id == new_limesurvey_id do nothing, exit with message
     survey.save()
 
     limesurvey_surveys = Questionnaires()
+    print('Getting old tokens ...')
     old_tokens = \
         limesurvey_surveys.find_tokens_by_questionnaire(old_limesurvey_id)
-    print('Getting old tokens ...')
+    print('Getting new tokens ...')
     new_tokens = \
         limesurvey_surveys.find_tokens_by_questionnaire(survey.lime_survey_id)
-    print('Getting new tokens ...')
 
-    for q_response in QuestionnaireResponse.objects.filter(
+    print('Updating experiment questionnaire responses ...')
+    for q_experiment_response in EQuestionnaireResponse.objects.filter(
             data_configuration_tree__component_configuration__component
             =questionnaire.id
     ):
-        old_token = next(
-            item for item in old_tokens if item["tid"] == q_response.token_id
+        update_questionnaire_response(
+            old_tokens, new_tokens, q_experiment_response
         )
-        new_token = next(
-            item for item in new_tokens if item['token'] == old_token['token']
+
+    print('Updating patients questionnaire responses ...')
+    for q_patient_response in PQuestionnaireResponse.objects.filter(
+        survey=survey
+    ):
+        update_questionnaire_response(
+            old_tokens, new_tokens, q_patient_response
         )
-        q_response.token_id = new_token['tid']
-        q_response.save()
 
 
 if __name__ == "__main__":
