@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from jsonrpc_requests import Server
+from jsonrpc_requests import Server, TransportError
 
 from .models import Survey
 from .views import survey_update
@@ -32,11 +32,13 @@ class ABCSearchEngineTest(TestCase):
 
     def setUp(self):
 
-        self.server = Server('http://survey.numec.prp.usp.br/index.php/admin/remotecontrol')
-        self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
+        self.server = Server(settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
 
-        # Checks if connected in the LimeSurvey with the settings.py credentials
-        self.assertNotIsInstance(self.session_key, dict)
+        try:
+            self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
+            self.session_key = None if isinstance(self.session_key, dict) else self.session_key
+        except TransportError:
+            self.session_key = None
 
     def test_complete_survey(self):
         lime_survey = Questionnaires()
@@ -78,10 +80,9 @@ class ABCSearchEngineTest(TestCase):
             # Adiciona participante e obtem o token
             result_token = lime_survey.add_participant(sid)
 
-            # Verifica se o token
+            # Verifica se o token está presente na tabela de participantes
             token = lime_survey.get_participant_properties(sid, result_token, "token")
             self.assertEqual(token, result_token['token'])
-
         finally:
             # Deleta a survey gerada no Lime Survey
             self.assertEqual(lime_survey.delete_survey(sid), 'OK')
@@ -150,7 +151,7 @@ class ABCSearchEngineTest(TestCase):
         # self.assertEqual(len(list_participants_new), len(list_participants) + 1)
 
         # token_id = participant_data_result[0]['tid']
-        token_id = participant_data_result['token_id']
+        token_id = participant_data_result['tid']
         # tokens_to_delete = [token_id]
 
         # remover participante do questionario
@@ -248,7 +249,7 @@ class ABCSearchEngineTest(TestCase):
         # self.assertEqual(len(list_participants_new), len(list_participants) + 1)
 
         # token_id = participant_data_result[0]['tid']
-        token_id = participant_data_result['token_id']
+        token_id = participant_data_result['tid']
         # tokens_to_delete = [token_id]
 
         # remover participante do questionario

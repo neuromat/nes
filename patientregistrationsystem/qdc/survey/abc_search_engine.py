@@ -90,7 +90,7 @@ class ABCSearchEngine(ABC):
                 and 'error' not in participant_data_result[0]:
 
             return {'token': participant_data_result[0]['token'],
-                    'token_id': participant_data_result[0]['tid']}
+                    'tid': participant_data_result[0]['tid']}
         else:
             return None
 
@@ -383,7 +383,9 @@ class ABCSearchEngine(ABC):
         :param sid:
         :return: tokens for specific id
         """
-        tokens = self.server.list_participants(self.session_key, sid, 0, 99999999)
+        tokens = self.server.list_participants(
+            self.session_key, sid, 0, 99999999
+        )
 
         return tokens
 

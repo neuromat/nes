@@ -18,8 +18,9 @@ from django.shortcuts import get_object_or_404
 from django.test import TestCase, Client
 from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
+from django.contrib.auth.models import User
 
-from custom_user.models import User
+# from custom_user.models import User
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
@@ -58,7 +59,9 @@ QUESTIONNAIRE_EDIT = 'questionnaire_response_edit'
 QUESTIONNAIRE_VIEW = 'questionnaire_response_view'
 
 # constant to test questionnaires
-CLEAN_QUESTIONNAIRE = 959774  # - questionnaire incomplete (CLEAN_QUESTIONNAIRE)
+#CLEAN_QUESTIONNAIRE = 959774
+#  - questionnaire incomplete (CLEAN_QUESTIONNAIRE)
+CLEAN_QUESTIONNAIRE = 247189
 FILLED_QUESTIONNAIRE = 0  # - questionnaire completed filled (FILLED_QUESTIONNAIRE)
 NO_TOKEN_TABLE = 0  # - questionnaire with error: tokens table not started (NO_TOKEN_TABLE)
 QUESTIONNAIRE_NOT_ACTIVE = 0  # - questionnaire with error: questionnaire not activated (QUESTIONNAIRE_NOT_ACTIVE)
@@ -68,14 +71,14 @@ SURVEY_INVALID = 0  # - questionnaire with error: invalid survey (SURVEY_INVALID
 LIME_SURVEY_TOKEN_ID_1 = 1
 
 
-class UtilTests:
-    def create_patient_mock(self, name='Pacient Test', user=None):
+class UtilTests():
+    def create_patient_mock(self, nameMethod='Pacient Test', user=None):
         """ Cria um participante para ser utilizado durante os testes """
         gender = Gender.objects.create(name='Masculino')
         gender.save()
 
         p_mock = Patient()
-        p_mock.name = name
+        p_mock.name = nameMethod
         p_mock.date_birth = '2001-01-15'
         p_mock.cpf = '374.276.738-08'
         p_mock.gender = gender
@@ -123,7 +126,7 @@ class UtilTests:
         result = questionnaire_lime_survey.add_participant(survey.lime_survey_id)
         questionnaire_lime_survey.release_session_key()
 
-        return result['token_id']
+        return result['tid']
 
     def create_response_survey_mock(self, user, patient, survey, token_id=None):
         if token_id is None:
@@ -588,9 +591,13 @@ class PatientFormValidation(TestCase):
     def test_patient_update_and_remove(self):
         """Teste de participante existente na base de dados """
 
-        patient_mock = self.util.create_patient_mock(name='Pacient Test Update', user=self.user)
+        nameMethod = self._testMethodName
+        userMethod = self.user
+        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
 
-        # Create an instance of a GET request.
+        # patient_mock = self.util.create_patient_mock(name='Pacient Test Update', user=self.user)
+
+        # Create an instance of a GET request.v
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
         request.user = self.user
 
@@ -1210,16 +1217,20 @@ class QuestionnaireFormValidation(TestCase):
         # Test list of entrance evaluation
         # of the entrance evaluation questionnaire type
         # """
-        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        nameMethod = self._testMethodName
+        userMethod = self.user
+        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+        # patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
 
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_questionnaires_data_list'], [])
 
         # LimeSurvey system not available
-        settings.LIMESURVEY['URL_API'] = 'http://surveys.numec.prp.usp.br/'  # with error
+        settings.LIMESURVEY['URL_API'] = 'https://surveys.numec.prp.usp.br/'  # with error
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
-        request.user = self.user
+        # request.user = self.user
+        request.user = userMethod
         request.LANGUAGE_CODE = 'pt-BR'
 
         # this was done in order to error messages can be "presented"
@@ -1230,7 +1241,7 @@ class QuestionnaireFormValidation(TestCase):
         response = patient_view(request, patient_mock.pk)
         self.assertEqual(response.status_code, 200)
 
-        settings.LIMESURVEY['URL_API'] = 'http://survey.numec.prp.usp.br/'  # return to correct url
+        settings.LIMESURVEY['URL_API'] = 'https://survey.numec.prp.usp.br/'  # return to correct url
 
         # new filling - creating one survey - no responses
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
@@ -1244,7 +1255,8 @@ class QuestionnaireFormValidation(TestCase):
         self.assertEqual(len(response.context['patient_questionnaires_data_list'][0]['questionnaire_responses']), 0)
 
         # including a new survey response...
-        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+        # response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+        response_survey_mock = self.util.create_response_survey_mock(userMethod, patient_mock, survey_mock)
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
         self.assertEqual(response.status_code, 200)
 
@@ -1261,8 +1273,11 @@ class QuestionnaireFormValidation(TestCase):
         # """
         # Test to see if LimeSurvey is available under circumstances
         # """
+        nameMethod = self._testMethodName
+        userMethod = self.user
+        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
 
-        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        # patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
         request.user = self.user
@@ -1275,7 +1290,7 @@ class QuestionnaireFormValidation(TestCase):
         surveys.release_session_key()
 
         # test limesurvey not available
-        settings.LIMESURVEY['URL_API'] = 'http://surveys.numec.prp.usp.br/'  # with error
+        settings.LIMESURVEY['URL_API'] = 'https://surveys.numec.prp.usp.br/'  # with error
 
         surveys = Questionnaires()
 
@@ -1284,7 +1299,7 @@ class QuestionnaireFormValidation(TestCase):
 
         surveys.release_session_key()
 
-        settings.LIMESURVEY['URL_API'] = 'http://survey.numec.prp.usp.br/'  # without error
+        settings.LIMESURVEY['URL_API'] = 'https://survey.numec.prp.usp.br/'  # without error
 
     def test_entrance_evaluation_response_create(self):
         # """
@@ -1292,7 +1307,12 @@ class QuestionnaireFormValidation(TestCase):
         # of the type: entrance evaluation questionnaire
         # """
         # create mock patient, questionnaire
-        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+
+        nameMethod = self._testMethodName
+        userMethod = self.user
+        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+
+        # patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
 
         self.data['date'] = '01/09/2014'
@@ -1344,9 +1364,15 @@ class QuestionnaireFormValidation(TestCase):
         # of the type: entrance evaluation questionnaire
         # """
         # create mock patient, questionnaire
-        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        nameMethod = self._testMethodName
+        userMethod = self.user
+        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+        # patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
-        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 12)
+
+        # response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 12)
+        response_survey_mock = self.util.create_response_survey_mock(userMethod, patient_mock, survey_mock, 12)
 
         # workaround because reverse is getting experiment url instead of patient
         url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
@@ -1366,9 +1392,15 @@ class QuestionnaireFormValidation(TestCase):
         # of the type: entrance evaluation questionnaire
         # """
         # create mock patient, questionnaire
-        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        nameMethod = self._testMethodName
+        userMethod = self.user
+        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+        # patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
-        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+
+        # response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+        response_survey_mock = self.util.create_response_survey_mock(userMethod, patient_mock, survey_mock)
 
         # delete questionnaire response when it is in mode
         url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey_mock.pk], current_app='patient')
@@ -1385,7 +1417,9 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 404)  # error - response already deleted
 
-        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+        # response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+        response_survey_mock = self.util.create_response_survey_mock(userMethod, patient_mock, survey_mock)
+
         # workaround because reverse is getting experiment url instead of patient
         url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
         url2 = url1.replace('experiment', 'patient')
@@ -1400,7 +1434,9 @@ class QuestionnaireFormValidation(TestCase):
         # of the type: entrance evaluation questionnaire
         # """
         # create mock patient, questionnaire
-        patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        nameMethod = self._testMethodName
+        userMethod = self.user
+        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
         response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 2)
 

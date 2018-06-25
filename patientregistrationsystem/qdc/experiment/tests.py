@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
-from .models import Experiment, Group, Subject, \
+from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
     Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
     EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, Manufacturer, Tag, Amplifier, \
@@ -70,6 +70,7 @@ class ObjectsFactory(object):
         experiment = Experiment.objects.create(research_project_id=research_project.id,
                                                title="Experimento-Update",
                                                description="Descricao do Experimento-Update")
+        experiment.changed_by=None
         experiment.save()
         return experiment
 
