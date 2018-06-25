@@ -383,7 +383,9 @@ class ABCSearchEngine(ABC):
         :param sid:
         :return: tokens for specific id
         """
-        tokens = self.server.list_participants(self.session_key, sid, 0, 99999999)
+        tokens = self.server.list_participants(
+            self.session_key, sid, 0, 99999999
+        )
 
         return tokens
 

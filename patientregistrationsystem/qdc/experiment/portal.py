@@ -45,8 +45,11 @@ class RestApiClient(object):
 
         try:
             url = settings.PORTAL_API['URL'] + \
-                  (':' + settings.PORTAL_API['PORT'] if settings.PORTAL_API['PORT'] else '') + \
-                  '/api/schema/'
+                  (
+                      ':' + settings.PORTAL_API['PORT'] if
+                      settings.PORTAL_API['PORT'] else ''
+                  ) \
+                  + '/api/schema/'
 
             self.schema = self.client.get(url)
             self.active = True
