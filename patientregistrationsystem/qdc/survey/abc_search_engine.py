@@ -335,7 +335,9 @@ class ABCSearchEngine(ABC):
         """
 
         properties = self.server.get_question_properties(
-            self.session_key, question_id, None,
+            self.session_key, question_id,
+            ['question', 'subquestions', 'answeroptions', 'title', 'type',
+             'attributes_lang', 'attributes', 'other'],
             language
         )
 
