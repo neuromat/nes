@@ -381,8 +381,8 @@ class QuestionnaireUtils:
 
                             questionnaire_explanation_fields_list.append(
                                 questionnaire_list +
-                                [question_group['group_name']]
-                                + question_type_list +
+                                [question_group['group_name']] +
+                                question_type_list +
                                 [question_index] + question_list +
                                 sub_question + scale + option
                             )
