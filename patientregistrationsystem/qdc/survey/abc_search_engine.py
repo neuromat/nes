@@ -15,11 +15,15 @@ class ABCSearchEngine(ABC):
 
     def get_session_key(self):
 
-        self.server = Server(settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
+        self.server = Server(
+            settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
 
         try:
-            self.session_key = self.server.get_session_key(settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
-            self.session_key = None if isinstance(self.session_key, dict) else self.session_key
+            self.session_key = self.server.get_session_key(
+                settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD']
+            )
+            self.session_key = None if isinstance(self.session_key, dict) \
+                else self.session_key
         except TransportError:
             self.session_key = None
 
