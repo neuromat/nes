@@ -93,6 +93,8 @@ from .portal import get_experiment_status_portal, \
     send_generic_data_collection_data_to_portal, \
     send_additional_data_to_portal, send_publication_to_portal
 
+from .pdf import render as render_to_pdf
+
 from configuration.models import LocalInstitution
 
 from export.directory_utils import create_directory
@@ -268,6 +270,30 @@ def research_project_view(request, research_project_id, template_name="experimen
                                         'all data collections'))
             redirect_url = reverse("experiment_view", args=(experiment.id,))
             return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'][:10] == "create_pdf":
+            experiment_id = request.POST['action'][11:]
+            experiment = get_object_or_404(Experiment, pk=experiment_id)
+            researchers = ExperimentResearcher.objects.filter(experiment=experiment)
+            groups = Group.objects.filter(experiment=experiment)
+            experimental_protocol_image = []
+            language_code = request.LANGUAGE_CODE
+            for group in groups:
+                if group.experimental_protocol:
+                    tree = get_block_tree(group.experimental_protocol, language_code)
+                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+                    experimental_protocol_image.append(image)
+
+            return render_to_pdf(
+                'experiment/experiment_info_pdf.html',
+                {
+                    'pagesize': 'A4',
+                    'experiment': experiment,
+                    'researchers': researchers,
+                    'groups': groups,
+                    'experimental_protocol_image': experimental_protocol_image
+                }
+            )
 
     context = {"can_change": get_can_change(request.user, research_project),
                "experiments": research_project.experiment_set.order_by('title'),

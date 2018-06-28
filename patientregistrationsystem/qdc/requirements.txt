@@ -16,3 +16,5 @@ matplotlib==1.5.3
 django-solo==1.1.2
 coreapi==2.3.1
 GitPython==2.1.8
+reportlab==3.4.0
+xhtml2pdf==0.2.2
