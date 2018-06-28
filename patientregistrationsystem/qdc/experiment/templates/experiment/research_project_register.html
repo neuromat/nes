@@ -174,9 +174,8 @@
                                 <tr>
                                     <th>{% trans "Title" %}</th>
                                     <th>{% trans "Description" %}</th>
-                                    <th style="text-align: center"><span class="fa fa-share-alt"></span> {% trans "Is public" %}</th>
-                                    <th style="text-align: center"><span class="fa fa-upload"></span> {% trans "Data acquisition is concluded" %}</th>
-                                    <th>{% trans 'Copy experiment' %}</th>
+                                    <th style="text-align: center">{% trans "Create PDF" %}</th>
+                                    <th style="text-align: center">{% trans 'Copy experiment' %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -188,9 +187,8 @@
                                         {{ experiment.title }}
                                         {% endif %}
                                     <td>{{ experiment.description }}</td>
-                                    <td style="text-align: center">{% if experiment.is_public %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
-                                    <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
-                                    <td style="text-align: center"><a data-toggle="modal" data-experiment_id="{{ experiment.id }}"
+                                    <td style="text-align: center"><button type="submit" class="btn" name="action" value="create_pdf-{{ experiment.id }}"><i class="fa fa-download"></i></button></td>
+                                    <td style="text-align: center"><a class="btn" data-toggle="modal" data-experiment_id="{{ experiment.id }}"
                                             href="#modalCopyExperiment"><i class="fa fa-copy"></i></a></td>
                                 </tr>
                             {% endfor %}
