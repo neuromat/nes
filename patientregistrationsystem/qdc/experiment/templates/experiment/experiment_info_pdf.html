@@ -72,8 +72,9 @@
                     <h3>4- {% trans "Experimental protocol" %}</h3>
                     {% if experimental_protocol_image %}
                         {% for image in  experimental_protocol_image %}
+                            <div>{% trans "Group" %}: {{ image.0 }}</div>
                             <div class="imgbox">
-                                <a class="center-fit" href="{{ image }}"><img src="{{ image }}" /></a>
+                                <a class="center-fit" href="{{ image.1 }}"><img src="{{ image.1 }}" /></a>
                             </div>
                             <br>
                         {% endfor %}
