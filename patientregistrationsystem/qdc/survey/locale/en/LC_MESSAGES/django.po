@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-28 13:36-0300\n"
+"POT-Creation-Date: 2018-06-29 16:37-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -196,33 +196,33 @@ msgstr ""
 msgid "Questionnaire was updated successfully."
 msgstr ""
 
-#: survey/views.py:529
+#: survey/views.py:532
 msgid "Questionnaire deleted successfully."
 msgstr ""
 
-#: survey/views.py:532
+#: survey/views.py:535
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
 msgstr ""
 
-#: survey/views.py:654
+#: survey/views.py:657
 msgid "Other"
 msgstr ""
 
-#: survey/views.py:689
+#: survey/views.py:692
 msgid "Formula"
 msgstr ""
 
-#: survey/views.py:778 survey/views.py:801 survey/views.py:839
+#: survey/views.py:781 survey/views.py:804 survey/views.py:842
 msgid "No answer"
 msgstr ""
 
-#: survey/views.py:898
+#: survey/views.py:901
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 
-#: survey/views.py:943
+#: survey/views.py:945
 msgid "LimeSurvey unavailable. System running partially."
 msgstr ""
 
