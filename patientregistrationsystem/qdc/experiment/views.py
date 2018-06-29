@@ -282,7 +282,8 @@ def research_project_view(request, research_project_id, template_name="experimen
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
                     image = get_experimental_protocol_image(group.experimental_protocol, tree)
-                    experimental_protocol_image.append(image)
+                    group_and_image = [group.title, image]
+                    experimental_protocol_image.append(group_and_image)
 
             return render_to_pdf(
                 'experiment/experiment_info_pdf.html',
