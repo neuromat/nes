@@ -9,13 +9,20 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from experiment.models import Experiment, Group, Subject, \
-    QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, Keyword, StimulusType, \
-    Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, Questionnaire, Block, \
-    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, Manufacturer, Tag, Amplifier, \
-    EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
-    EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, ADConverter, EMGElectrodeSetting, \
-    StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, ContextTree
+    QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, \
+    ResearchProject, Keyword, StimulusType, \
+    Component, Task, TaskForTheExperimenter, Stimulus, Instruction, Pause, \
+    Questionnaire, Block, \
+    EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, \
+    Manufacturer, Tag, Amplifier, \
+    EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, \
+    EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
+    EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, \
+    ADConverter, EMGElectrodeSetting, \
+    StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, \
+    EMGElectrodePlacement, EMGElectrodePlacementSetting, \
+    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
+    ContextTree, ExperimentResearcher
 
 from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
@@ -54,9 +61,10 @@ class ObjectsFactory(object):
         Create a research project to be used in the test
         :return: research project
         """
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=datetime.date.today(),
-                                                          description="Research project description")
+        research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
         research_project.save()
         return research_project
 
@@ -67,12 +75,29 @@ class ObjectsFactory(object):
         :param research_project: research project
         :return: experiment
         """
-        experiment = Experiment.objects.create(research_project_id=research_project.id,
-                                               title="Experimento-Update",
-                                               description="Descricao do Experimento-Update")
-        experiment.changed_by=None
+        experiment = Experiment.objects.create(
+            research_project_id=research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update"
+        )
+        experiment.changed_by = None
         experiment.save()
         return experiment
+
+    @staticmethod
+    def create_experiment_researcher(experiment):
+        """
+        Create an experiment researcher to be used in tests
+        :param experiment: researcher's experiment
+        :return: ExperimentResearcher model instance
+        """
+        user = User.objects.create_user(
+            username='toninho', email='toninho@example.com', password='toninho'
+        )
+        return ExperimentResearcher.objects.create(
+            experiment=experiment, researcher=user
+        )
+
 
     @staticmethod
     def create_publication(list_of_experiments):

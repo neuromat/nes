@@ -80,15 +80,27 @@ def send_experiment_to_portal(experiment: Experiment):
     action_keys = ['experiments', 'create']
 
     if experiment.ethics_committee_project_file:
-        with open(path.join(settings.MEDIA_ROOT, experiment.ethics_committee_project_file.name), 'rb') as f:
+        with open(path.join(
+                settings.MEDIA_ROOT,
+                experiment.ethics_committee_project_file.name
+        ), 'rb') as f:
             params["ethics_committee_file"] = \
-                coreapi.utils.File(os.path.basename(experiment.ethics_committee_project_file.name), f)
+                coreapi.utils.File(
+                    os.path.basename(
+                        experiment.ethics_committee_project_file.name
+                    ), f
+                )
 
-            portal_experiment = rest.client.action(rest.schema, action_keys,
-                                                   params=params, encoding="multipart/form-data")
+            portal_experiment = \
+                rest.client.action(
+                    rest.schema, action_keys,
+                    params=params, encoding="multipart/form-data"
+                )
     else:
-        portal_experiment = rest.client.action(rest.schema, action_keys,
-                                               params=params, encoding="multipart/form-data")
+        portal_experiment = rest.client.action(
+            rest.schema, action_keys, params=params,
+            encoding="multipart/form-data"
+        )
 
     return portal_experiment
 
