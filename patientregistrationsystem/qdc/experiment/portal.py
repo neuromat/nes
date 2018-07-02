@@ -26,7 +26,7 @@ from .models import Experiment, Group, Subject, User, EEGSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, \
     EMGAnalogFilterSetting, \
     EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, \
-    EMGElectrodePlacementSetting
+    EMGElectrodePlacementSetting, ExperimentResearcher
 
 from survey.abc_search_engine import Questionnaires
 from survey.survey_utils import QuestionnaireUtils
@@ -1154,6 +1154,31 @@ def send_researcher_to_portal(research_project_id, researcher: User):
     portal_participant = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_participant
+
+
+def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
+
+    if not researcher.researcher.first_name and not \
+            researcher.researcher.last_name:
+        return None
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(researcher.experiment.id),
+              'first_name': researcher.researcher.first_name,
+              'last_name': researcher.researcher.last_name,
+              'email': researcher.researcher.email,
+              'institution':
+                  researcher.researcher.user_profile.institution.name
+                  if researcher.researcher.user_profile.institution else ''
+              }
+
+    action_keys = ['experiments', 'researchers', 'create']
+
+    return rest.client.action(rest.schema, action_keys, params=params)
 
 
 def get_experiment_status_portal(experiment_id):
