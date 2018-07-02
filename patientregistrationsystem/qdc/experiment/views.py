@@ -83,15 +83,20 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
 
 from .portal import get_experiment_status_portal, \
     send_experiment_to_portal, get_portal_status, \
-    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
+    send_group_to_portal, send_research_project_to_portal, \
+    send_experiment_end_message_to_portal, \
     send_experimental_protocol_to_portal, send_participant_to_portal, \
-    send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
-    send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
+    send_researcher_to_portal, send_eeg_setting_to_portal, \
+    send_emg_setting_to_portal, \
+    send_tms_setting_to_portal, send_context_tree_to_portal, \
+    send_steps_to_portal, \
     send_file_to_portal, send_eeg_data_to_portal, \
     send_digital_game_phase_data_to_portal, \
-    send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal, \
+    send_questionnaire_response_to_portal, send_emg_data_to_portal, \
+    send_tms_data_to_portal, \
     send_generic_data_collection_data_to_portal, \
-    send_additional_data_to_portal, send_publication_to_portal
+    send_additional_data_to_portal, send_publication_to_portal, \
+    send_experiment_researcher_to_portal
 
 from .pdf import render as render_to_pdf
 
@@ -955,7 +960,9 @@ def date_of_first_data_collection(subject_of_group):
 
 def send_all_experiments_to_portal():
     language_code = 'en'
-    for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
+    for schedule_of_sending in ScheduleOfSending.objects.filter(
+            status="scheduled"
+            ).order_by("schedule_datetime"):
 
         print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
                                           schedule_of_sending.experiment.title))
@@ -973,6 +980,20 @@ def send_all_experiments_to_portal():
             list_of_emg_setting = {}
             list_of_tms_setting = {}
             list_of_context_tree = {}
+
+            # sending experiment researchers
+            for experiment_researcher in \
+                    schedule_of_sending.experiment.researchers.all():
+                # only send experiment researcher with first_name and
+                # last_name
+                if not experiment_researcher.researcher.first_name and \
+                        not \
+                        experiment_researcher.researcher.last_name:
+                    continue
+                else:
+                    send_experiment_researcher_to_portal(
+                        experiment_researcher
+                    )
 
             # sending publications
             for publication in \
