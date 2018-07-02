@@ -120,7 +120,7 @@ class Experiment(models.Model):
 
 
 class ExperimentResearcher(models.Model):
-    experiment = models.ForeignKey(Experiment)
+    experiment = models.ForeignKey(Experiment, related_name='researchers')
     researcher = models.ForeignKey(User)
 
 
