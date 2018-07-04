@@ -1146,7 +1146,8 @@ def send_researcher_to_portal(research_project_id, researcher: User):
         return None
 
     params = {"id": research_project_id,
-              "name": researcher.first_name + ' ' + researcher.last_name,
+              "first_name": researcher.first_name,
+              "last_name": researcher.last_name,
               "email": researcher.email}
 
     action_keys = ['studies', 'researcher', 'create']
