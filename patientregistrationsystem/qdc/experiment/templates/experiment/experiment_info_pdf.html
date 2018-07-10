@@ -43,6 +43,7 @@
                     {% if experiment.ethics_committee_project_file %}
                         <p><strong>{% trans "Project file approved by the ethics committee" %}:</strong> {{ experiment.ethics_committee_project_file }}</p>
                     {% endif %}
+                    <p><strong>{% trans "Last update" %}:</strong> {{ experiment.last_update }}</p>
 
                     <br>
                     <h3>2- {% trans "Researchers" %}</h3>
