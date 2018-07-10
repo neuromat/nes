@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-28 13:36-0300\n"
+"POT-Creation-Date: 2018-07-10 10:24-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,12 +21,12 @@ msgstr ""
 msgid "Anonymous participant?"
 msgstr ""
 
-#: patient/forms.py:32 patient/forms.py:67 patient/tests.py:542
+#: patient/forms.py:32 patient/forms.py:67 patient/tests.py:545
 msgid "Name must be included"
 msgstr ""
 
-#: patient/forms.py:37 patient/forms.py:151 patient/forms.py:176
-#: patient/views.py:773 patient/views.py:1299
+#: patient/forms.py:37 patient/forms.py:151 patient/views.py:773
+#: patient/views.py:1299
 msgid "%m/%d/%Y"
 msgstr ""
 
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Gender must be filled"
 msgstr ""
 
-#: patient/forms.py:56 patient/tests.py:527
+#: patient/forms.py:56 patient/tests.py:530
 msgid "Incorrect e-mail"
 msgstr ""
 
@@ -106,8 +106,8 @@ msgstr ""
 msgid "Place of execution"
 msgstr ""
 
-#: patient/forms.py:179
-msgid "Fill date must be filled"
+#: patient/forms.py:176
+msgid "%d/%m/%Y"
 msgstr ""
 
 #: patient/models.py:19
@@ -163,7 +163,7 @@ msgstr ""
 msgid "Schooling of the householder"
 msgstr ""
 
-#: patient/models.py:396
+#: patient/models.py:402
 msgid "token id: "
 msgstr ""
 
@@ -742,31 +742,31 @@ msgstr ""
 msgid "Calculated social class"
 msgstr ""
 
-#: patient/tests.py:284
+#: patient/tests.py:287
 msgid " is not valid"
 msgstr ""
 
-#: patient/tests.py:446 patient/tests.py:458 patient/tests.py:469
+#: patient/tests.py:449 patient/tests.py:461 patient/tests.py:472
 msgid "Social class was not calculated"
 msgstr ""
 
-#: patient/tests.py:457 patient/views.py:249
+#: patient/tests.py:460 patient/views.py:249
 msgid "Social demographic data successfully written."
 msgstr ""
 
-#: patient/tests.py:472
+#: patient/tests.py:475
 msgid "Less than 1 pack"
 msgstr ""
 
-#: patient/tests.py:475
+#: patient/tests.py:478
 msgid "Sporadically"
 msgstr ""
 
-#: patient/tests.py:478
+#: patient/tests.py:481
 msgid "Less than 1 year"
 msgstr ""
 
-#: patient/tests.py:512 patient/views.py:276
+#: patient/tests.py:515 patient/views.py:276
 msgid "Social history successfully recorded."
 msgstr ""
 

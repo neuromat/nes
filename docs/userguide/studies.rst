@@ -43,6 +43,8 @@ Experiments of a study
 ----------------------
 A study may have multiple :ref:`experiments`. Again, only users that have :ref:`permissions` to update a study can add experiments. Non-authorized users can't see the `Insert new` button.
 
+A list with all experiments that belongs to the study will be shown. You may make a copy of an experiment by clicking on the `Copy experiment` icon. A modal will pop up and you have to choose if you want to copy the experiment with or without data. You may also get a PDF version of the experiment by clicking on the `Create PDF` icon.
+
 .. image:: ../_img/experiment_view.png
 
 .. toctree::
