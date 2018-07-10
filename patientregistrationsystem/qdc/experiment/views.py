@@ -83,15 +83,22 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
 
 from .portal import get_experiment_status_portal, \
     send_experiment_to_portal, get_portal_status, \
-    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
+    send_group_to_portal, send_research_project_to_portal, \
+    send_experiment_end_message_to_portal, \
     send_experimental_protocol_to_portal, send_participant_to_portal, \
-    send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
-    send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
+    send_researcher_to_portal, send_eeg_setting_to_portal, \
+    send_emg_setting_to_portal, \
+    send_tms_setting_to_portal, send_context_tree_to_portal, \
+    send_steps_to_portal, \
     send_file_to_portal, send_eeg_data_to_portal, \
     send_digital_game_phase_data_to_portal, \
-    send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal, \
+    send_questionnaire_response_to_portal, send_emg_data_to_portal, \
+    send_tms_data_to_portal, \
     send_generic_data_collection_data_to_portal, \
-    send_additional_data_to_portal, send_publication_to_portal
+    send_additional_data_to_portal, send_publication_to_portal, \
+    send_experiment_researcher_to_portal
+
+from .pdf import render as render_to_pdf
 
 from configuration.models import LocalInstitution
 
@@ -268,6 +275,31 @@ def research_project_view(request, research_project_id, template_name="experimen
                                         'all data collections'))
             redirect_url = reverse("experiment_view", args=(experiment.id,))
             return HttpResponseRedirect(redirect_url)
+
+        if request.POST['action'][:10] == "create_pdf":
+            experiment_id = request.POST['action'][11:]
+            experiment = get_object_or_404(Experiment, pk=experiment_id)
+            researchers = ExperimentResearcher.objects.filter(experiment=experiment)
+            groups = Group.objects.filter(experiment=experiment)
+            experimental_protocol_image = []
+            language_code = request.LANGUAGE_CODE
+            for group in groups:
+                if group.experimental_protocol:
+                    tree = get_block_tree(group.experimental_protocol, language_code)
+                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+                    group_and_image = [group.title, image]
+                    experimental_protocol_image.append(group_and_image)
+
+            return render_to_pdf(
+                'experiment/experiment_info_pdf.html',
+                {
+                    'pagesize': 'A4',
+                    'experiment': experiment,
+                    'researchers': researchers,
+                    'groups': groups,
+                    'experimental_protocol_image': experimental_protocol_image
+                }
+            )
 
     context = {"can_change": get_can_change(request.user, research_project),
                "experiments": research_project.experiment_set.order_by('title'),
@@ -928,7 +960,9 @@ def date_of_first_data_collection(subject_of_group):
 
 def send_all_experiments_to_portal():
     language_code = 'en'
-    for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
+    for schedule_of_sending in ScheduleOfSending.objects.filter(
+            status="scheduled"
+            ).order_by("schedule_datetime"):
 
         print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
                                           schedule_of_sending.experiment.title))
@@ -946,6 +980,20 @@ def send_all_experiments_to_portal():
             list_of_emg_setting = {}
             list_of_tms_setting = {}
             list_of_context_tree = {}
+
+            # sending experiment researchers
+            for experiment_researcher in \
+                    schedule_of_sending.experiment.researchers.all():
+                # only send experiment researcher with first_name and
+                # last_name
+                if not experiment_researcher.researcher.first_name and \
+                        not \
+                        experiment_researcher.researcher.last_name:
+                    continue
+                else:
+                    send_experiment_researcher_to_portal(
+                        experiment_researcher
+                    )
 
             # sending publications
             for publication in \

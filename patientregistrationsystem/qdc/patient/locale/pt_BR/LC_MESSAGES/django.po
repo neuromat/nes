@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-28 13:36-0300\n"
+"POT-Creation-Date: 2018-07-10 10:24-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,12 +23,12 @@ msgstr ""
 msgid "Anonymous participant?"
 msgstr "Participante anônimo?"
 
-#: patient/forms.py:32 patient/forms.py:67 patient/tests.py:542
+#: patient/forms.py:32 patient/forms.py:67 patient/tests.py:545
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
-#: patient/forms.py:37 patient/forms.py:151 patient/forms.py:176
-#: patient/views.py:773 patient/views.py:1299
+#: patient/forms.py:37 patient/forms.py:151 patient/views.py:773
+#: patient/views.py:1299
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
@@ -44,7 +44,7 @@ msgstr "Data de nascimento deve ser preenchida"
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:56 patient/tests.py:527
+#: patient/forms.py:56 patient/tests.py:530
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
@@ -108,9 +108,9 @@ msgstr ""
 msgid "Place of execution"
 msgstr "Local de realização"
 
-#: patient/forms.py:179
-msgid "Fill date must be filled"
-msgstr "Data de preenchimento deve ser preenchida"
+#: patient/forms.py:176
+msgid "%d/%m/%Y"
+msgstr "%d/%m/%Y"
 
 #: patient/models.py:19
 msgid "Fill date can not be bigger than today's date."
@@ -165,7 +165,7 @@ msgstr "Escolaridade do participante"
 msgid "Schooling of the householder"
 msgstr "Escolaridade do chefe de família"
 
-#: patient/models.py:396
+#: patient/models.py:402
 msgid "token id: "
 msgstr ""
 
@@ -753,31 +753,31 @@ msgstr "*Aparelho independente ou parte da geladeira duplex."
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: patient/tests.py:284
+#: patient/tests.py:287
 msgid " is not valid"
 msgstr " não é válido"
 
-#: patient/tests.py:446 patient/tests.py:458 patient/tests.py:469
+#: patient/tests.py:449 patient/tests.py:461 patient/tests.py:472
 msgid "Social class was not calculated"
 msgstr "Classe Social não calculada"
 
-#: patient/tests.py:457 patient/views.py:249
+#: patient/tests.py:460 patient/views.py:249
 msgid "Social demographic data successfully written."
 msgstr "Dados sociodemográficos gravados com sucesso."
 
-#: patient/tests.py:472
+#: patient/tests.py:475
 msgid "Less than 1 pack"
 msgstr "Menos de 1 maço"
 
-#: patient/tests.py:475
+#: patient/tests.py:478
 msgid "Sporadically"
 msgstr "Esporadicamente"
 
-#: patient/tests.py:478
+#: patient/tests.py:481
 msgid "Less than 1 year"
 msgstr "Menos de 1 ano"
 
-#: patient/tests.py:512 patient/views.py:276
+#: patient/tests.py:515 patient/views.py:276
 msgid "Social history successfully recorded."
 msgstr "História social gravada com sucesso."
 
@@ -869,6 +869,9 @@ msgid ""
 msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
+
+#~ msgid "Fill date must be filled"
+#~ msgstr "Data de preenchimento deve ser preenchida"
 
 #~ msgid "Entrance evaluation"
 #~ msgstr "Avaliação de entrada"
