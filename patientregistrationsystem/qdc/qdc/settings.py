@@ -55,7 +55,6 @@ PROJECT_APPS = (
     'custom_user',
     'experiment',
     'survey',
-    'cep',
     'export',
     'configuration'
 )
