@@ -39,7 +39,6 @@ urlpatterns = patterns(
      {'post_reset_redirect': '/user/password/done/'}),
     (r'^user/password/done/$',
      'django.contrib.auth.views.password_reset_complete'),
-    url(r'^cep/', include('cep.urls')),
     url(r'^$', 'qdc.views.contact', name='contact'),
     url(r'^language/change/(?P<language_code>(?:(?:\w{2})|(?:\w{2}\-\w{2})))$', 'qdc.views.language_change', name='language_change'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
