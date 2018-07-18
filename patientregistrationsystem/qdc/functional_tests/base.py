@@ -8,6 +8,7 @@ from django.core.management import call_command
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import FirefoxOptions
+from pyvirtualdisplay import Display
 
 MAX_WAIT = 10
 
@@ -22,6 +23,9 @@ class FunctionalTest(StaticLiveServerTestCase):
         call_command('loaddata', 'load_initial_data.json')
         sys.stdout.close()
         sys.stdout = stdout_backup
+
+        display = Display(visible=0, size=(800, 600))
+        display.start()
 
         opts = FirefoxOptions()
         opts.add_argument("--headless")
