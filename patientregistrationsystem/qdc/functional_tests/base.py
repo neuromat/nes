@@ -7,6 +7,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.management import call_command
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver import FirefoxOptions
 
 MAX_WAIT = 10
 
@@ -22,9 +23,12 @@ class FunctionalTest(StaticLiveServerTestCase):
         sys.stdout.close()
         sys.stdout = stdout_backup
 
+        opts = FirefoxOptions()
+        opts.add_argument("--headless")
+        
         profile = webdriver.FirefoxProfile()
         profile.set_preference('intl.accept_languages', 'en')
-        self.browser = webdriver.Firefox(profile)
+        self.browser = webdriver.Firefox(firefox_profile=profile,firefox_options=opts)
 
         staging_server = os.environ.get('STAGING_SERVER')
         if staging_server:
