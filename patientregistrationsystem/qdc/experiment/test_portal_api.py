@@ -1,9 +1,10 @@
-from unittest import TestCase
+from django.test import TestCase
 
+from experiment.tests_original import ObjectsFactory
 from experiment.models import Experiment
 from experiment.portal import send_research_project_to_portal, \
     send_experiment_to_portal
-from experiment.tests import ObjectsFactory
+
 
 # TODO: test with mocking, not really sending experiment objects to portal
 class SendExperimentToPortalTest(TestCase):
