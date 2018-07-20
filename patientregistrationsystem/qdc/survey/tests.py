@@ -1,12 +1,14 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
 
 from jsonrpc_requests import Server, TransportError
 
+from patient.tests import UtilTests
 from .models import Survey
 from .views import survey_update
 from .abc_search_engine import Questionnaires
@@ -15,7 +17,7 @@ from custom_user.views import User
 
 from experiment.models import QuestionnaireResponse, Questionnaire, Experiment, ComponentConfiguration, \
     Block, Group, Subject, SubjectOfGroup, ResearchProject, DataConfigurationTree
-from experiment.tests import UtilTests
+
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
