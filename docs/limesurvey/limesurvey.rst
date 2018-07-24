@@ -13,6 +13,6 @@ The LimeSurvey application can be downloaded `here <https://www.limesurvey.org/s
 
 3. `Creating surveys - Introduction <https://manual.limesurvey.org/Creating_surveys_-_Introduction>`_: gives the main concepts and some instructions about how to create surveys using LimeSurvey.
 
-4.  :ref:`best-pratices-and-recommendations`
+4. :ref:`best-pratices-and-recommendations`
 
 We have produced a video tutorial explaining `how to create a LimeSurvey questionnaire <https://vimeo.com/137290143>`_ (in Portuguese).
