@@ -4,8 +4,10 @@ import datetime
 from django.test import TestCase
 from django import forms
 
-from experiment.forms import ResearchProjectForm, ExperimentForm, GroupForm
-from experiment.models import ResearchProject, Experiment, ExperimentResearcher
+from experiment.forms import ResearchProjectForm, ExperimentForm, GroupForm, EEGSettingForm, EEGAmplifierSettingForm
+
+from experiment.models import ResearchProject, Experiment, ExperimentResearcher, EEGSetting, EEGAmplifierSetting, \
+    Manufacturer, Amplifier
 
 
 class ResearchProject_FormTest(TestCase):
@@ -303,3 +305,115 @@ class GroupAdd_FormTest(TestCase):
 #     def test_SubjectFormPorPart_is_valid(self):
 #         pass
 #
+class EEGsettings_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+
+        }
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+    def test_EEGsettings_is_valid(self):
+        name = self.data["name"]
+        description = self.data["description"]
+
+        settingsEEG_form = EEGSettingForm(data={'name': name, 'description': description})
+        self.assertTrue(settingsEEG_form.is_valid())
+
+    def test_EEGsettings_is_not_valid_name(self):
+        settingsEEG_form = EEGSettingForm(data={'name': "", 'description': self.data["description"]})
+        self.assertFalse(settingsEEG_form.is_valid())
+        self.assertEqual(settingsEEG_form.errors["name"], ["Este campo é obrigatório."])
+
+    def test_EEGsettings_is_not_valid_description(self):
+        settingsEEG_form = EEGSettingForm(data={'name': self.data["name"], 'description': ""})
+        self.assertFalse(settingsEEG_form.is_valid())
+        self.assertEqual(settingsEEG_form.errors["description"], ["Este campo é obrigatório."])
+
+
+class EEGAmplifierSettings_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+            'gain': '10',
+            'sampling_rate': '10',
+            'number_of_channels_used': '2',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.eeg_setting = EEGSetting.objects.create(experiment=cls.experiment,
+                                                name='EEG-Setting name',
+                                                description='EEG-Setting description')
+        cls.manufacturer = Manufacturer.objects.create(name='Manufacturer name')
+
+        cls.amplifier = Amplifier.objects.create(manufacturer=cls.manufacturer,
+                                                equipment_type="amplifier",
+                                                identification="Amplifier identification")
+
+
+    def test_EEGAmplifierSettings_is_valid(self):
+        name = self.data["name"]
+        description = self.data["description"]
+        gain = self.data["gain"]
+        sampling_rate = self.data["sampling_rate"]
+        number_of_channels_used = self.data["number_of_channels_used"]
+
+
+        settingsEEGAmplifier_form = EEGAmplifierSettingForm(data={'name': name, 'description': description,
+                                                            'gain': gain, 'sampling_rate': sampling_rate,
+                                                            'number_of_channels_used': number_of_channels_used})
+        self.assertTrue(settingsEEGAmplifier_form.is_valid())
+
+    def test_EEGAmplifierSettings_is_not_valid_gain(self):
+        settingsEEGAmplifier_form = EEGAmplifierSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
+                                                            'gain': "", 'sampling_rate': self.data["sampling_rate"],
+                                                            'number_of_channels_used': self.data["number_of_channels_used"]})
+        self.assertTrue(settingsEEGAmplifier_form.is_valid())
+
+    def test_EEGAmplifierSettings_is_not_valid_sampling_rate(self):
+        settingsEEGAmplifier_form = EEGAmplifierSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
+                                                            'gain': self.data["gain"], 'sampling_rate': "",
+                                                            'number_of_channels_used': self.data["number_of_channels_used"]})
+        self.assertTrue(settingsEEGAmplifier_form.is_valid())
+
+    def test_EEGAmplifierSettings_is_not_valid_number_of_channels_used(self):
+        settingsEEGAmplifier_form = EEGAmplifierSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
+                                                            'gain': self.data["gain"], 'sampling_rate': self.data["sampling_rate"],
+                                                            'number_of_channels_used': ""})
+        self.assertFalse(settingsEEGAmplifier_form.is_valid())
+        self.assertEqual(settingsEEGAmplifier_form.errors["number_of_channels_used"], ["Este campo é obrigatório."])
