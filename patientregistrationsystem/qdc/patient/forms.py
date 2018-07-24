@@ -4,17 +4,27 @@ from django.core.validators import EMPTY_VALUES
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField, ValidationError
 from django.forms.widgets import Textarea
-from cep.widgets import CEPInput
 
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile, \
     QuestionnaireResponse
 from patient.quiz_widget import SelectBoxCountries, SelectBoxState
+from configuration.models import LocalInstitution
 
 # pylint: disable=E1101
 # pylint: disable=E1103
 
 
 class PatientForm(ModelForm):
+    def __init__(self, data=None, *args, **kwargs):
+        super(PatientForm, self).__init__(data, *args, **kwargs)
+        self.fields['zipcode'].widget.attrs['onBlur'] = 'pesquisacep(this.value);'
+        # The default country will be the one defined in LocalInstitution
+        try:
+            local_institution = LocalInstitution.objects.get(pk=1)
+            self.fields['country'].initial = local_institution.institution.country
+        except LocalInstitution.DoesNotExist:
+            pass
+
     anonymous = forms.BooleanField(required=False,
                                    initial=False,
                                    label=_('Anonymous participant?'))
@@ -43,9 +53,7 @@ class PatientForm(ModelForm):
             'marital_status': Select(attrs={'class': 'form-control'}),
 
             'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
-            'zipcode': CEPInput(address={'street': 'id_street', 'district': 'id_district', 'city': 'id_city',
-                                         'state': 'id_state'},
-                                attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
+            'zipcode': TextInput(attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
             'street': TextInput(attrs={'class': 'form-control'}),
             'address_number': TextInput(attrs={'class': 'form-control'}),
             'address_complement': TextInput(attrs={'class': 'form-control'}),
