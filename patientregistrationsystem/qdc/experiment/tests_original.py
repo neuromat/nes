@@ -132,7 +132,7 @@ class ObjectsFactory(object):
         eeg_setting = EEGSetting.objects.create(experiment=experiment,
                                                 name='EEG-Setting name',
                                                 description='EEG-Setting description')
-        eeg_setting.save()
+        # eeg_setting.save()
         return eeg_setting
 
     @staticmethod
@@ -245,7 +245,7 @@ class ObjectsFactory(object):
         manufacturer = Manufacturer.objects.create(
             name='Manufacturer name'
         )
-        manufacturer.save()
+        # manufacturer.save()
         return manufacturer
 
     @staticmethod
