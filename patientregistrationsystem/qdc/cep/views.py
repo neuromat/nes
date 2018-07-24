@@ -3,6 +3,7 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import re
+import json
 
 from django.http import HttpResponse
 
@@ -14,9 +15,8 @@ def addressGet(request, zipcode):
     # Trata o zipcode removendo caracteres diferentes de numeros.
     # Assim não precisamos nos preocupar de como vai vir o cep.
     zipcode = re.sub('[^\d]+', '', zipcode)
-    url = "http://viavirtual.com.br/webservicecep.php?cep=" + zipcode
+    url = "https://viacep.com.br/ws/" + zipcode + "/json/"
     page = urllib.request.urlopen(url)
-    text = page.read().decode('iso-8859-1')
-    splitted = text.split('||')
+    data = json.load(page)
     return HttpResponse('{"street":"%s","district":"%s","city":"%s","state":"%s"}' %
-                        (splitted[0], splitted[1], splitted[2], splitted[4]))
+                        (data["logradouro"], data["bairro"], data["localidade"], data["uf"]))

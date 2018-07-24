@@ -2,7 +2,7 @@
 from django import forms
 from django.core.validators import EMPTY_VALUES
 from django.utils.translation import ugettext_lazy as _
-from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField
+from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField, ValidationError
 from django.forms.widgets import Textarea
 from cep.widgets import CEPInput
 
@@ -141,7 +141,6 @@ class SocialHistoryDataForm(ModelForm):
                        drugs=RadioSelect(choices=(('ja_fez', _("Have already used")), ('faz', _('It is using')),
                                                   ('nunca_fez', _('Have never used')))))
 
-
 class ComplementaryExamForm(ModelForm):
     class Meta:
         model = ComplementaryExam
@@ -174,7 +173,6 @@ class QuestionnaireResponseForm(ModelForm):
 
         widgets = {
             'date': DateInput(format=_("%d/%m/%Y"),
-                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')},)
-                                     # 'required': "",
-                                     # 'data-error': _("Fill date must be filled")}, )
+                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),'required': "",
+                                     'data-error': _("Fill date must be filled.")},)
         }

@@ -337,7 +337,7 @@ msgid "Edit details"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:148
-msgid "Detais"
+msgid "Details"
 msgstr ""
 
 #: patient/templates/patient/medical_record.html:162
@@ -770,6 +770,10 @@ msgstr ""
 msgid "Social history successfully recorded."
 msgstr ""
 
+#: patient/tests.py:515 patient/views.py:276
+msgid "This combination is not allowed."
+msgstr ""
+
 #: patient/views.py:72 patient/views.py:172
 msgid "Personal data successfully written."
 msgstr ""
@@ -852,4 +856,8 @@ msgstr ""
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
+msgstr ""
+
+#: patient/forms.py:176
+msgid "Fill date must be filled."
 msgstr ""

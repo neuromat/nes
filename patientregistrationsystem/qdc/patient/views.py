@@ -270,12 +270,15 @@ def patient_update_social_history(request, patient, context):
     if request.method == "POST":
         if social_history_form.is_valid():
             if social_history_form.has_changed():
-                new_social_history_data = social_history_form.save(commit=False)
-                new_social_history_data.changed_by = request.user
-                new_social_history_data.save()
-                messages.success(request, _('Social history successfully recorded.'))
-
+                try:
+                    new_social_history_data = social_history_form.save(commit=False)
+                    new_social_history_data.changed_by = request.user
+                    new_social_history_data.save()
+                    messages.success(request, _('Social history successfully recorded.'))
+                except:
+                    messages.error(request, _('The combination is not allowed.'))
             return finish_handling_post(request, patient.id, 2)
+
 
     context.update({
         'social_history_form': social_history_form,
