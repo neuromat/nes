@@ -64,9 +64,11 @@ class ABCSearchEngineTest(TestCase):
             self.assertEqual(survey_admin, None)
 
             # Importar grupo de questoes
-            handle_file_import = open('quiz/static/quiz/tests/limesurvey_groups.lsg', 'r')
+            handle_file_import = \
+                open('quiz/static/quiz/tests/limesurvey_groups.lsg', 'r')
             questions_data = handle_file_import.read()
-            questions_id = lime_survey.insert_questions(sid, questions_data, 'lsg')
+            questions_id = \
+                lime_survey.insert_questions(sid, questions_data, 'lsg')
             self.assertGreaterEqual(questions_id, 1)
 
             # Inicia tabela de tokens
@@ -395,7 +397,7 @@ class SurveyTest(TestCase):
 
         # Insert subject in the group
         util = UtilTests()
-        patient_mock = util.create_patient_mock(user=self.user)
+        patient_mock = util.create_patient_mock(changed_by=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()

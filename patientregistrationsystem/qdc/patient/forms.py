@@ -149,6 +149,7 @@ class SocialHistoryDataForm(ModelForm):
                        drugs=RadioSelect(choices=(('ja_fez', _("Have already used")), ('faz', _('It is using')),
                                                   ('nunca_fez', _('Have never used')))))
 
+
 class ComplementaryExamForm(ModelForm):
     class Meta:
         model = ComplementaryExam
@@ -180,7 +181,10 @@ class QuestionnaireResponseForm(ModelForm):
         ]
 
         widgets = {
-            'date': DateInput(format=_("%d/%m/%Y"),
-                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),'required': "",
-                                     'data-error': _("Fill date must be filled.")},)
+            'date': DateInput(
+                format=_("%d/%m/%Y"),
+                attrs={'class': 'form-control datepicker',
+                       'placeholder': _('mm/dd/yyyy'), 'required': "",
+                       'data-error': _("Fill date must be filled.")},
+            )
         }
