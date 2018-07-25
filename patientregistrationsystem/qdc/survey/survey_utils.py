@@ -422,9 +422,9 @@ class QuestionnaireUtils:
                 question_ids = survey.list_questions(
                     survey_id, group['id']['gid']
                 )
-                for id in question_ids:
+                for id_ in question_ids:
                     properties = survey.get_question_properties(
-                        id, group['id']['language']
+                        id_, group['id']['language']
                     )
                     # Multiple question ('M' or 'P') will be question if
                     # properties['subquestions'] is a dict, otherwise will
