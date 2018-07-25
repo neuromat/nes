@@ -1104,14 +1104,18 @@ def get_origin(request):
 @login_required
 # TODO: associate the right permission
 # @permission_required('patient.add_medicalrecorddata')
-def questionnaire_response_create(request, patient_id, survey_id,
-                                  template_name="experiment/subject_questionnaire_response_form.html"):
+def questionnaire_response_create(
+        request, patient_id, survey_id,
+        template_name="experiment/subject_questionnaire_response_form.html"
+):
 
     patient = get_object_or_404(Patient, pk=patient_id)
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    language = get_questionnaire_language(
+        surveys, survey.lime_survey_id, request.LANGUAGE_CODE
+    )
     survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
     surveys.release_session_key()
 
@@ -1121,12 +1125,15 @@ def questionnaire_response_create(request, patient_id, survey_id,
 
     showing = False
 
-    questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
+    questionnaire_response_form = \
+        QuestionnaireResponseForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
             redirect_url, questionnaire_response_id = \
-                questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
+                questionnaire_response_start_fill_questionnaire(
+                    request, patient_id, survey
+                )
 
             if not redirect_url:
                 fail = True
@@ -1309,8 +1316,8 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
 
 def check_required_fields(surveys, lime_survey_id):
     """
-    método para verificar se o questionário tem as questões de identificação corretas
-    e se seus tipos também são corretos
+    Verifica se o questionário tem as questões de identificação
+    corretas e se seus tipos também são corretos
     """
 
     fields_to_validate = {
@@ -1449,7 +1456,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "updating": True,
         "status": status,
         "response_is_reused_in_experiment": response_is_reused_in_experiment,
-        "can_change": True  # This is related to permission to change an experiment, which is not the case in here.
+        # This is related to permission to change an experiment, which is
+        # not the case here.
+        "can_change": True
     }
 
     return render(request, template_name, context)
