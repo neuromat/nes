@@ -5821,12 +5821,14 @@ def load_questionnaire_data(request, group_id):
     group = get_object_or_404(Group, id=group_id)
 
     number_of_imported_data = 0
-    list_of_paths = create_list_of_trees(group.experimental_protocol, "questionnaire")
+    list_of_paths = create_list_of_trees(
+        group.experimental_protocol, 'questionnaire'
+    )
 
     reused_tokens = {}
     # first loop: knowing tokens that was already reused
-    for path in list_of_paths:
-        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+    for path_ in list_of_paths:
+        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path_[-1][0])
         questionnaire_responses = \
             QuestionnaireResponse.objects.filter(
                 data_configuration_tree__component_configuration=questionnaire_configuration)
@@ -5838,15 +5840,15 @@ def load_questionnaire_data(request, group_id):
             update_list_of_reused_tokens(questionnaire_response, questionnaire, reused_tokens)
 
     # main loop: importing
-    for path in list_of_paths:
+    for path_ in list_of_paths:
 
-        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path_[-1][0])
 
         data_configuration_tree_id = \
-            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path])
+            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path_])
 
         if not data_configuration_tree_id:
-            data_configuration_tree_id = create_data_configuration_tree([item[0] for item in path])
+            data_configuration_tree_id = create_data_configuration_tree([item[0] for item in path_])
 
         data_configuration_tree = get_object_or_404(DataConfigurationTree, pk=data_configuration_tree_id)
 
@@ -10399,7 +10401,6 @@ def copy_tms_setting(tms_setting, new_experiment):
 
 def create_component(component, new_experiment, orig_and_clone):
 
-    clone = None  # TODO: it's not necessary
     component_type = component.component_type
     file = None  # define variable that can be used in conditionals below
 
