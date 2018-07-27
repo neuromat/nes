@@ -2415,14 +2415,12 @@ class ExportExecution:
         self.questionnaires_responses = {}
         for group_id in self.get_input_data('questionnaires_from_experiments'):
             for questionnaire_id in self.get_input_data(
-                    'questionnaires_from_experiments'
-            )[group_id]:
+                    'questionnaires_from_experiments')[group_id]:
                 language_list = self.get_input_data(
                     'questionnaire_language'
                 )[questionnaire_id]['language_list']
                 questionnaire = self.get_input_data(
-                    'questionnaires_from_experiments'
-                )[group_id][str(questionnaire_id)]
+                    'questionnaires_from_experiments')[group_id][str(questionnaire_id)]
                 headers, fields = \
                     self.questionnaire_utils.set_questionnaire_experiment_header_and_fields(
                         questionnaire_id, questionnaire

@@ -1,16 +1,11 @@
 # coding=utf-8
-from django.forms import ModelForm, Form, TextInput, Textarea, CharField, BooleanField, MultipleChoiceField, \
+from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
     CheckboxSelectMultiple, ChoiceField, SelectMultiple, IntegerField, NumberInput, RadioSelect
 
 from django.utils.translation import ugettext_lazy as _
 
 
 from patient.models import Patient, Diagnosis
-
-# SEARCH_PARTICIPANTS_CHOICES = (
-#     ('all', _('All participants')),
-#     ('selected', _('Selected participants'))
-# )
 
 HEADINGS_CHOICES = (
     ('code', _("Question code")),
@@ -38,9 +33,6 @@ class ExportForm(Form):
     per_generic_data = BooleanField(initial=True, required=False)
 
     questionnaire_entrance_selected = []
-
-    # patient_fields_selected = MultipleChoiceField(required=True,
-    #                                               widget=CheckboxSelectMultiple, choices=FAVORITE_COLORS_CHOICES)
 
     headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False)
     responses = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Response must be selected')}),

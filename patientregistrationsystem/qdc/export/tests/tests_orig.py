@@ -324,7 +324,7 @@ class InputExportTest(TestCase):
                                         questionnaires_list,
                                         experiment_questionnaires_list,
                                         ["short"], "full", output_filename,
-                                        component_list,"pt-BR")
+                                        component_list, "pt-BR")
 
         self.assertTrue(path.isfile(output_filename))
 
