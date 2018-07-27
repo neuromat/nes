@@ -103,10 +103,6 @@ msgstr ""
 msgid "Place of execution"
 msgstr ""
 
-#: patient/forms.py:163
-msgid "Fill date must be filled"
-msgstr ""
-
 #: patient/models.py:19
 msgid "Fill date can not be bigger than today's date."
 msgstr ""
@@ -281,4 +277,8 @@ msgstr ""
 
 #: patient/views.py:1219
 msgid "Failed to generate token to answer the questionnaire. "
+msgstr ""
+
+#: patient/forms.py:176
+msgid "Fill date must be filled."
 msgstr ""

@@ -51,6 +51,7 @@ This documentation is divided in 6 parts:
    limesurvey/guidelines
    limesurvey/integratenesandlimesurvey
    limesurvey/namingconventions
+   limesurvey/bestpractices
 
 .. toctree::
    :maxdepth: 1

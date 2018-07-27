@@ -1,12 +1,15 @@
 # coding=utf-8
 import datetime
 
+from django.db import IntegrityError
+from django.db.models.loading import get_model
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
+from faker import Factory
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, \
@@ -56,14 +59,16 @@ SUBJECT_SEARCH = 'subject_search'
 class ObjectsFactory(object):
 
     @staticmethod
-    def create_research_project():
+    def create_research_project(owner=None):
         """
         Create a research project to be used in the test
         :return: research project
         """
         research_project = ResearchProject.objects.create(
-            title="Research project title", start_date=datetime.date.today(),
-            description="Research project description"
+            title="Research project title",
+            description="Research project description",
+            start_date=datetime.date.today(),
+            owner=owner
         )
         research_project.save()
         return research_project
@@ -206,14 +211,49 @@ class ObjectsFactory(object):
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
-        emg_electrode_placement = EMGElectrodePlacement.objects.create(standardization_system=standardization_system,
-                                                                       muscle_subdivision=muscle_subdivision)
+        emg_electrode_placement = EMGElectrodePlacement.objects.create(
+            standardization_system=standardization_system,
+            muscle_subdivision=muscle_subdivision
+        )
 
         emg_electrode_placement.save()
         return emg_electrode_placement
 
-    # def create_component(self, experiment):
-    #     return Component.objects.create(experiment=experiment, title=)
+    @staticmethod
+    def create_component(experiment, component_type, identification=None,
+                         kwargs=None):
+        faker = Factory.create()
+
+        # Due to some model Component's constants for component_type being
+        # different from models that inheritade from Component model,
+        # change the component_type string
+        if component_type == Component.TASK_EXPERIMENT:
+            component_type = 'taskfortheexperimenter'  # TaskForTheExperimenter
+        elif component_type == Component.DIGITAL_GAME_PHASE:
+            component_type = 'digitalgamephase'  # DigitalGamePhase
+        elif component_type == Component.GENERIC_DATA_COLLECTION:
+            component_type = 'genericdatacollection'  # GenericDataCollection
+
+        component = get_model('experiment', component_type)(
+            experiment=experiment,
+            identification=identification or faker.ssn(),
+            component_type=component_type,
+            description=faker.text(),
+        )
+
+        if component_type == Component.QUESTIONNAIRE:
+            try:
+                component.survey_id = kwargs['sid']
+            except IntegrityError:
+                print('You need to specify "survey" argument with a Survey '
+                      'object id to create a Questionnaire component')
+            except KeyError:
+                print('You must specify \'sid\' key in kwargs dict')
+
+        component.save()
+
+        return component
+
 
     @staticmethod
     def create_group(experiment, experimental_protocol=None):
@@ -222,10 +262,12 @@ class ObjectsFactory(object):
         :param experimental_protocol: experimental protocol
         :return: group
         """
-        group = Group.objects.create(experiment=experiment,
-                                     title="Group-update",
-                                     description="Descricao do Group-update",
-                                     experimental_protocol=experimental_protocol)
+        group = Group.objects.create(
+            experiment=experiment,
+            title="Group-update",
+            description="Descricao do Group-update",
+            experimental_protocol=experimental_protocol
+        )
         return group
 
     @staticmethod
@@ -405,6 +447,16 @@ class ObjectsFactory(object):
         )
         coil_shape.save()
         return coil_shape
+
+    @staticmethod
+    def create_component_configuration(parent, component):
+        faker = Factory.create()
+
+        return ComponentConfiguration.objects.create(
+            name=faker.word(),
+            parent=parent,
+            component=component
+        )
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -1048,12 +1100,11 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
             questionnaire.save()
 
             # Include the questionnaire in the root.
-            component_configuration = ComponentConfiguration.objects.create(
+            ComponentConfiguration.objects.create(
                 name='ComponentConfiguration',
                 parent=block,
                 component=questionnaire
             )
-            component_configuration.save()
 
             # Criar um grupo mock para ser utilizado no teste
             group = ObjectsFactory.create_group(experiment, block)
@@ -1109,7 +1160,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
         # Insert subject in the group
         util = UtilTests()
-        patient_mock = util.create_patient_mock(user=self.user)
+        patient_mock = util.create_patient_mock(changed_by=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()
@@ -1175,13 +1226,11 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
         # Create a subject to the experiment
         util = UtilTests()
-        patient_mock = util.create_patient_mock(user=self.user)
-
-        subject_mock = Subject(patient=patient_mock)
-        subject_mock.save()
-
-        subject_group = SubjectOfGroup(subject=subject_mock, group=group)
-        subject_group.save()
+        patient_mock = util.create_patient_mock(changed_by=self.user)
+        subject_mock = Subject.objects.create(patient=patient_mock)
+        subject_group = SubjectOfGroup.objects.create(
+            subject=subject_mock, group=group
+        )
 
         group.subjectofgroup_set.add(subject_group)
         experiment.save()
@@ -1189,19 +1238,11 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         # Setting the response
         questionnaire_response = QuestionnaireResponse()
         questionnaire_response.data_configuration_tree = data_configuration_tree
-        # questionnaire_response.component_configuration = component_configuration
         questionnaire_response.subject_of_group = subject_group
         questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
         questionnaire_response.questionnaire_responsible = self.user
         questionnaire_response.date = datetime.datetime.now()
         questionnaire_response.save()
-
-        # # View the responses
-        # get_data = {'origin': "experiment_questionnaire"}
-        # response = self.client.get(reverse('questionnaire_response_view',
-        #                                    args=[questionnaire_response.pk, ]), data=get_data)
-        #
-        # self.assertEqual(response.status_code, 200)
 
 
 class SubjectTest(TestCase):
@@ -1236,7 +1277,7 @@ class SubjectTest(TestCase):
         # Criar um grupo mock para ser utilizado no teste
         group = ObjectsFactory.create_group(experiment)
 
-        patient_mock = self.util.create_patient_mock(user=self.user)
+        patient_mock = self.util.create_patient_mock(changed_by=self.user)
         self.data = {SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id, 'group_id': group.id}
 
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
@@ -1303,7 +1344,7 @@ class SubjectTest(TestCase):
 
         # Insert subject in the group
         util = UtilTests()
-        patient_mock = util.create_patient_mock(user=self.user)
+        patient_mock = util.create_patient_mock(changed_by=self.user)
 
         count_before_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         response = self.client.post(reverse('subject_insert', args=(group.pk, patient_mock.pk)))
@@ -1427,7 +1468,7 @@ class SubjectTest(TestCase):
         group = ObjectsFactory.create_group(experiment, block)
 
         util = UtilTests()
-        patient_mock = util.create_patient_mock(user=self.user)
+        patient_mock = util.create_patient_mock(changed_by=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()
@@ -1612,7 +1653,7 @@ class SubjectTest(TestCase):
         group = ObjectsFactory.create_group(experiment, block)
 
         util = UtilTests()
-        patient_mock = util.create_patient_mock(user=self.user)
+        patient_mock = util.create_patient_mock(changed_by=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()
@@ -1725,7 +1766,7 @@ class SubjectTest(TestCase):
 
         group = ObjectsFactory.create_group(experiment)
 
-        patient_mock = self.util.create_patient_mock(user=self.user)
+        patient_mock = self.util.create_patient_mock(changed_by=self.user)
 
         subject_mock = Subject.objects.all().first()
 

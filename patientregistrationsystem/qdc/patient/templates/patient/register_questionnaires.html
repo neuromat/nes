@@ -104,29 +104,6 @@
                                 </tr>
                             {% endfor %}
 
-{#                            {% if editing %}#}
-{#                                <tr>#}
-{#                                    <td>#}
-{#                                        <label class="control-label">{% trans "Select other questionnaire" %}</label>#}
-{#                                        <select class="form-control" id="additional_survey_selected" name="additional_survey_selected">#}
-{#                                        <option selected="selected" value="">---------</option>#}
-{#                                        {% for additional_survey in additional_survey_list%}#}
-{#                                            <option value="{{ additional_survey.sid }}">{{ additional_survey.title }} ({{ additional_survey.lime_survey_id }})</option>#}
-{#                                        {% endfor %}#}
-{#                                        </select>#}
-{#                                    </td>#}
-{#                                    <td>#}
-{#                                        <table class="col-md-12">#}
-{#                                        <tr>#}
-{#                                            <td colspan="2" class="col-md-12">#}
-{#                                                <a href="/patient/{{ patient_id }}/questionnaire/{{ patient_questionnaire.survey_id }}/add_response/?origin=subject"#}
-{#                                                    class="btn btn-primary {% if not limesurvey_available %} disabled {% endif %}">{% trans "New fill" %}</a>#}
-{#                                            </td>#}
-{#                                        </tr>#}
-{#                                        </table>#}
-{#                                    </td>#}
-{#                                </tr>#}
-{#                            {% endif %}#}
 
                             </tbody>
                         </table>
