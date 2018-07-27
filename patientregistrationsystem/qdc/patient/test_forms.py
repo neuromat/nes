@@ -8,8 +8,15 @@ from django.contrib.auth.models import User
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
 
+# Tests about the form of creation of a patient (sometimes called participant)
+# Briefly, this class tests the first form of the tab 0 of app Patient
 class PatientFormValidation(TestCase):
     def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
         self.gender = Gender.objects.create(name='Masculino')
         self.gender.save()
 
@@ -53,6 +60,8 @@ class PatientFormValidation(TestCase):
         self.assertFalse(patient.is_valid())
         self.assertEqual(patient.errors["gender"], ["Este campo é obrigatório."])
 
+# Tests about the form of telephones
+# Briefly, this class tests the second form of the tab 0 of app Patient
 class TelephoneFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -92,6 +101,8 @@ class TelephoneFormValidation(TestCase):
         telephone = TelephoneForm(data={'number': self.data["number"], 'type': self.data["type"], 'note': ""})
         self.assertTrue(telephone.is_valid())
 
+# Tests about the form of social demographic data
+# Briefly, this class tests the form of the tab 1 of app Patient
 class SocialDemographicDataFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -149,6 +160,8 @@ class SocialDemographicDataFormValidation(TestCase):
         socialdemodata = SocialDemographicDataForm(data=self.data)
         self.assertFalse(socialdemodata.is_valid())
 
+# Tests about the form of social history data
+# Briefly, this class tests the form of the tab 2 of app Patient
 class SocialHistoryFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -205,6 +218,8 @@ class SocialHistoryFormValidation(TestCase):
         socialhistory = SocialHistoryDataForm()
         self.assertFalse(socialhistory.is_valid())
 
+# Tests about the form of medical record
+# Briefly, this class tests the form of the tab 3 of app Patient
 class MedicalRecordFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -217,22 +232,28 @@ class MedicalRecordFormValidation(TestCase):
             'date': '01/02/1995'
         }
 
+    # Test if the form with the fields filled is valid
     def test_Medical_Record_is_valid(self):
         medicalrecord = ComplementaryExamForm(data=self.data)
         self.assertTrue(medicalrecord.is_valid())
 
+    # Test if the form is not valid with the fields empty
     def test_Medical_Record_is_not_valid(self):
         medicalrecord = ComplementaryExamForm(data={'description': "",'date': ""})
         self.assertFalse(medicalrecord.is_valid())
 
+    # Test if the form without the description is not valid
     def test_Medical_Record_is_not_valid_without_description(self):
         medicalrecord = ComplementaryExamForm(data={'description': "",'date': self.data['date']})
         self.assertFalse(medicalrecord.is_valid())
 
+    # Test if the form without the date is not valid
     def test_Medical_Record_is_not_valid_without_date(self):
         medicalrecord = ComplementaryExamForm(data={'description': self.data['description'],'date': ""})
         self.assertFalse(medicalrecord.is_valid())
 
+# Tests about the form of questionnaire response
+# Briefly, this class tests the form of the tab 4 of app Patient
 class QuestionnaireResponseFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -244,15 +265,18 @@ class QuestionnaireResponseFormValidation(TestCase):
             'date': '01/02/1995'
         }
 
+    # Test if the form with the fields filles is valid
     def test_Questionnaires_Response_is_valid(self):
         questionnaireresponse = QuestionnaireResponseForm(data=self.data)
         self.assertTrue(questionnaireresponse.is_valid())
 
+    # Test if the form without the date is not valid
     def test_Questionnaires_Response_is_not_valid_without_date(self):
         self.data['date']= ''
         questionnaireresponse = QuestionnaireResponseForm(data=self.data)
         self.assertFalse(questionnaireresponse.is_valid())
 
+    # Test if the form with a future date is not valid
     def test_Questionnaires_Response_is_not_valid_with_future_date(self):
         self.data['date']= '01/02/2019'
         questionnaireresponse = QuestionnaireResponseForm(data=self.data)
