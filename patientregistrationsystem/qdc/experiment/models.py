@@ -841,27 +841,39 @@ class DirectionOfTheInducedCurrent(models.Model):
 
 
 class Component(models.Model):
+    BLOCK = 'block'
+    INSTRUCTION = 'instruction'
+    PAUSE = 'pause'
+    QUESTIONNAIRE = 'questionnaire'
+    STIMULUS = 'stimulus'
+    TASK = 'task'
+    TASK_EXPERIMENT = 'task_experiment'
+    EEG = 'eeg'
+    EMG = 'emg'
+    TMS = 'tms'
+    DIGITAL_GAME_PHASE = 'digital_game_phase'
+    GENERIC_DATA_COLLECTION = 'generic_data_collection'
     COMPONENT_TYPES = (
-        ("block", _("Set of steps")),
-        ("instruction", _("Instruction")),
-        ("pause", _("Pause")),
-        ("questionnaire", _("Questionnaire")),
-        ("stimulus", _("Stimulus")),
-        ("task", _("Task for participant")),
-        ("task_experiment", _("Task for experimenter")),
-        ("eeg", _("EEG")),
-        ("emg", _("EMG")),
-        ("tms", _("TMS")),
-        ("digital_game_phase", _("Goalkeeper game phase")),
-        ("generic_data_collection", _("Generic data collection")),
+        (BLOCK, _('Set of steps')),
+        (INSTRUCTION, _('Instruction')),
+        (PAUSE, _('Pause')),
+        (QUESTIONNAIRE, _('Questionnaire')),
+        (STIMULUS, _('Stimulus')),
+        (TASK, _('Task for participant')),
+        (TASK_EXPERIMENT, _('Task for experimenter')),
+        (EEG, _('EEG')),
+        (EMG, _('EMG')),
+        (TMS, _('TMS')),
+        (DIGITAL_GAME_PHASE, _('Goalkeeper game phase')),
+        (GENERIC_DATA_COLLECTION, _('Generic data collection')),
     )
 
-    identification = models.CharField(null=False, max_length=50, blank=False)
-    description = models.TextField(null=True, blank=True)
+    identification = models.CharField(max_length=50)
+    description = models.TextField(blank=True)
     duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    experiment = models.ForeignKey(Experiment, null=False)
-    component_type = models.CharField(null=False, max_length=30, choices=COMPONENT_TYPES)
+    duration_unit = models.CharField(blank=True, max_length=15, choices=TIME_UNITS)
+    experiment = models.ForeignKey(Experiment)
+    component_type = models.CharField(max_length=30, choices=COMPONENT_TYPES)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -1009,7 +1021,8 @@ class ComponentConfiguration(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     number_of_repetitions = models.IntegerField(null=True, blank=True, default=1, validators=[MinValueValidator(1)])
 
-    # These 2 interval fields are useful only when number_of_repetition is different from 1.
+    # These 2 interval fields are useful only when number_of_repetition is
+    # different from 1.
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
 
@@ -1017,8 +1030,10 @@ class ComponentConfiguration(models.Model):
     # TODO Change to not null.
     parent = models.ForeignKey(Block, null=True, related_name='children')
 
-    # This field is only useful for component configurations marked as fixed and inside a sequence. However, we leave it
-    # as not null because we want the unique restriction of the pair (parent, order) to be applied in a database level.
+    # This field is only useful for component configurations marked as fixed
+    # and inside a sequence. However, we leave it as not null because we
+    # want the unique restriction of the pair (parent, order) to be applied
+    # in a database level.
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
 
     # This is null when the parent is a parallel block.

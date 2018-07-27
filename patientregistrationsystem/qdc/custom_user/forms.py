@@ -11,6 +11,9 @@ from patient.quiz_widget import SelectBoxCountries
 
 
 class UserForm(ModelForm):
+    first_name = CharField(required=True)
+    last_name = CharField(required=True)
+    email = CharField(required=True)
 
     class Meta:
         model = User
@@ -91,6 +94,9 @@ class UserProfileForm(ModelForm):
 
 
 class ResearcherForm(ModelForm):
+    first_name = CharField(required=True)
+    last_name = CharField(required=True)
+    email = CharField(required=True)
 
     class Meta:
         model = User
