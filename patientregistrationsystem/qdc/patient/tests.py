@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 from django.conf import settings
 from django.contrib.messages.api import MessageFailure
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -20,7 +21,7 @@ from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 
-# from custom_user.models import User
+from faker import Factory
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
@@ -78,19 +79,24 @@ class UtilTests:
     @staticmethod
     def create_patient_mock(name_method='Pacient Test', changed_by=None):
         """ Cria um participante para ser utilizado durante os testes """
-        gender = Gender.objects.create(name='Masculino')
-        gender.save()
+        faker = Factory.create()
+
+        try:  # TODO: create gender before create patient
+            gender = Gender.objects.get(name='Masculino')
+        except ObjectDoesNotExist:
+            gender = Gender.objects.create(name='Masculino')
 
         p_mock = Patient()
         p_mock.name = name_method
         p_mock.date_birth = '2001-01-15'
-        p_mock.cpf = '374.276.738-08'
+        p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient
         p_mock.gender = gender
         p_mock.changed_by = changed_by
         p_mock.save()
         return p_mock
 
-    def create_cid10_to_search(self):
+    @staticmethod
+    def create_cid10_to_search():
         cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
                                                         abbreviated_description='A01 Febres paratifoide')
         cid10.save()
