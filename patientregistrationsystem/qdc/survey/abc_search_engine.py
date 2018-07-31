@@ -411,6 +411,11 @@ class ABCSearchEngine(ABC):
     def add_response(self, sid, response_data):
         return self.server.add_response(self.session_key, sid, response_data)
 
+    def set_participant_properties(self, sid, tid, properties_dict):
+        return self.server.set_participant_properties(
+            self.session_key, sid, tid, properties_dict
+        )
+
 
 class Questionnaires(ABCSearchEngine):
     """ Wrapper class for LimeSurvey API"""
@@ -500,3 +505,8 @@ class Questionnaires(ABCSearchEngine):
 
     def add_response(self, sid, response_data):
         return super(Questionnaires, self).add_response(sid, response_data)
+
+    def set_participant_properties(self, sid, tid, properties_dict):
+        return super(Questionnaires, self).set_participant_properties(
+            sid, tid, properties_dict
+        )
