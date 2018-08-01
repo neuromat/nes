@@ -6,19 +6,459 @@ from django.test import TestCase
 
 from django.shortcuts import get_object_or_404
 
-from experiment.forms import ResearchProjectForm, ExperimentForm, GroupForm, EEGSettingForm, \
-    EEGAmplifierSettingForm, EEGFilterSettingForm, EMGSettingForm, EMGElectrodeSettingForm, \
-    ElectrodeModelForm, EMGElectrodePlacementSettingForm, EMGDigitalFilterSettingForm, \
-    EMGADConverterSettingForm, TMSSettingForm, TMSDeviceSettingForm, ContextTreeForm,  \
-    ComponentForm, BlockForm
+from experiment.forms import *
 
-from experiment.models import ResearchProject, Experiment, ExperimentResearcher, EEGSetting, EEGAmplifierSetting, \
-    Manufacturer, Amplifier, EEGFilterSetting, EEGElectrodeNet, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, \
-    ElectrodeModel, Tag, EMGSetting, EMGElectrodeSetting, Muscle, StandardizationSystem, MuscleSubdivision, MuscleSide, \
-    EMGElectrodePlacement, Software, SoftwareVersion, EMGDigitalFilterSetting, FilterType, ADConverter, \
-    EMGADConverterSetting, TMSDevice, TMSDeviceSetting, TMSSetting, CoilShape, CoilModel, Equipment, \
-    ContextTree, Block, Component
+from experiment.models import *
 
+from django.contrib.auth.models import User
+
+USER_USERNAME = 'myadmin'
+USER_PWD = 'mypassword'
+
+class MaterialRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_MaterialRegisterForm_is_valid(self):
+        material = MaterialRegisterForm(data={'name': "MaterialTest"})
+        self.assertTrue(material.is_valid())
+
+    def test_MaterialRegisterForm_is_not_valid(self):
+        material = MaterialRegisterForm(data={'name': ""})
+        self.assertFalse(material.is_valid())
+
+class MuscleRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_MuscleRegisterForm_is_valid(self):
+        muscle = MuscleRegisterForm(data={'name': "MuscleTest"})
+        self.assertTrue(muscle.is_valid())
+
+    def test_MuscleRegisterForm_is_not_valid(self):
+        muscle = MuscleRegisterForm(data={'name': ""})
+        self.assertFalse(muscle.is_valid())
+
+class MuscleSubdivisionRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_MuscleSubdivisionRegisterForm_is_valid(self):
+        subdivision = MuscleSubdivisionRegisterForm(data={'name': "MuscleSubdivisionTest"})
+        self.assertTrue(subdivision.is_valid())
+
+    def test_MuscleSubdivisionRegisterForm_is_not_valid(self):
+        subdivision = MuscleSubdivisionRegisterForm(data={'name': ""})
+        self.assertFalse(subdivision.is_valid())
+
+class MuscleSideRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_MuscleSideRegisterForm_is_valid(self):
+        side = MuscleSideRegisterForm(data={'name': "MuscleSideTest"})
+        self.assertTrue(side.is_valid())
+
+    def test_MuscleSideRegisterForm_is_not_valid(self):
+        side = MuscleSideRegisterForm(data={'name': ""})
+        self.assertFalse(side.is_valid())
+
+class EEGElectrodeLocalizationSystemRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_EEGElectrodeLocalizationSystemRegisterForm_is_valid(self):
+        eegelectrodelocsys = EEGElectrodeLocalizationSystemRegisterForm(data={'name': "EEGElectrodeLocSysRegTest"})
+        self.assertTrue(eegelectrodelocsys.is_valid())
+
+    def test_EEGElectrodeLocalizationSystemRegisterForm_is_not_valid(self):
+        eegelectrodelocsys = EEGElectrodeLocalizationSystemRegisterForm(data={'name': ""})
+        self.assertFalse(eegelectrodelocsys.is_valid())
+
+class EEGElectrodePositionFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_EEGElectrodePositionForm_is_valid(self):
+        eegelectrodepos = EEGElectrodePositionForm(data={'name': "EEGElectrodePosTest"})
+        self.assertTrue(eegelectrodepos.is_valid())
+
+    def test_EEGElectrodePosition_is_not_valid(self):
+        eegelectrodepos = EEGElectrodePositionForm(data={'name': ""})
+        self.assertFalse(eegelectrodepos.is_valid())
+
+class EMGSurfacePlacementRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_EMGSurfacePlacementRegisterForm_is_valid(self):
+        muscle = Muscle.objects.create(name='Muscle')
+
+        muscle_subdivision = MuscleSubdivision.objects.create(name='Muscle Subdivision', muscle=muscle)
+
+        emgsurface = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': muscle_subdivision.id})
+        self.assertTrue(emgsurface.is_valid())
+
+    def test_EMGSurfacePlacementRegisterForm_is_not_valid(self):
+        emgsurface = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': ""})
+        self.assertFalse(emgsurface.is_valid())
+
+class EEMGIntramuscularPlacementRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_EMGIntramuscularPlacementRegisterForm_is_valid(self):
+        muscle = Muscle.objects.create(name='Muscle')
+
+        muscle_subdivision = MuscleSubdivision.objects.create(name='Muscle Subdivision', muscle=muscle)
+
+        emgintramuscular = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': muscle_subdivision.id})
+        self.assertTrue(emgintramuscular.is_valid())
+
+    def test_EMGIntramuscularPlacementRegisterForm_is_not_valid(self):
+        emgintramuscular = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': ""})
+        self.assertFalse(emgintramuscular.is_valid())
+
+class EMGNeedlePlacementRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+    def test_EMGNeedlePlacementRegisterForm_is_valid(self):
+        muscle = Muscle.objects.create(name='Muscle')
+
+        muscle_subdivision = MuscleSubdivision.objects.create(name='Muscle Subdivision', muscle=muscle)
+
+        emgneedle = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': muscle_subdivision.id})
+        self.assertTrue(emgneedle.is_valid())
+
+    def test_EMGNeedlePlacementRegisterForm_is_not_valid(self):
+        emgneedle = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': ""})
+        self.assertFalse(emgneedle.is_valid())
+
+class TMSLocalizationSystemFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
+
+        brainarea = BrainArea.objects.create(name='Lobo frontal',brain_area_system=brainareasystem)
+
+        self.data = {
+            'name': 'TMSLocalizationSystem',
+            'brain_area':brainarea.id
+        }
+
+    def test_TMSLocalizationSystemForm_is_valid(self):
+        tmslocalizationsystem = TMSLocalizationSystemForm(data=self.data)
+        self.assertTrue(tmslocalizationsystem.is_valid())
+
+    def test_TMSLocalizationSystemForm_is_not_valid_without_name(self):
+        self.data['name'] = ""
+        tmslocalizationsystem = TMSLocalizationSystemForm(data=self.data)
+        self.assertFalse(tmslocalizationsystem.is_valid())
+
+    def test_TMSLocalizationSystemForm_is_not_valid_without_brain_area(self):
+        self.data['brain_area'] = ""
+        tmslocalizationsystem = TMSLocalizationSystemForm(data=self.data)
+        self.assertFalse(tmslocalizationsystem.is_valid())
+
+class ManufacturerRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        self.data = { 'name': 'Manufacturer' }
+
+    def test_ManufacturerRegisterForm_is_valid(self):
+        manufacturer = ManufacturerRegisterForm(data=self.data)
+        self.assertTrue(manufacturer.is_valid())
+
+    def test_ManufacturerRegisterForm_is_not_valid(self):
+        self.data['name'] = ""
+        manufacturer = ManufacturerRegisterForm(data=self.data)
+        self.assertFalse(manufacturer.is_valid())
+
+class ElectrodeModelRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        self.data = {
+            'name': 'ElectrodeModel',
+            'electrode_type': 'intramuscular'
+        }
+
+    def test_ElectrodeModelRegisterForm_is_valid(self):
+        manufacturer = ElectrodeModelRegisterForm(data=self.data)
+        self.assertTrue(manufacturer.is_valid())
+
+    def test_ElectrodeModelRegisterForm_is_not_valid_without_name(self):
+        self.data['name'] = ""
+        manufacturer = ElectrodeModelRegisterForm(data=self.data)
+        self.assertFalse(manufacturer.is_valid())
+
+    def test_ElectrodeModelRegisterForm_is_not_valid_without_electrode_type(self):
+        self.data['electrode_type'] = ""
+        manufacturer = ElectrodeModelRegisterForm(data=self.data)
+        self.assertFalse(manufacturer.is_valid())
+
+class EEGElectrodeNETRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        manufacturer = Manufacturer.objects.create(name='Manufacturer')
+
+        tag = Tag.objects.create(name='EEG')
+
+        electrodemodel = ElectrodeModel.objects.create(name='Electrodemodel',electrode_type='surface')
+        electrodemodel.tags=[tag.id]
+
+        self.data = {
+            'manufacturer':manufacturer.id,
+            'identification':'Identification',
+            'electrode_model_default': electrodemodel.id
+        }
+
+    def test_EEGElectrodeNETRegisterForm_is_valid(self):
+        eegelectrodenet = EEGElectrodeNETRegisterForm(self.data)
+        self.assertTrue(eegelectrodenet.is_valid())
+
+    def test_EEGElectrodeNETRegisterForm_is_not_valid_without_manufacturer(self):
+        self.data['manufacturer']=""
+        eegelectrodenet = EEGElectrodeNETRegisterForm(self.data)
+        self.assertFalse(eegelectrodenet.is_valid())
+
+    def test_EEGElectrodeNETRegisterForm_is_not_valid_without_identification(self):
+        self.data['identification'] = ""
+        eegelectrodenet = EEGElectrodeNETRegisterForm(self.data)
+        self.assertFalse(eegelectrodenet.is_valid())
+
+    def test_EEGElectrodeNETRegisterForm_is_not_valid_without_electrode_model_default(self):
+        self.data['electrode_model_default'] = ""
+        eegelectrodenet = EEGElectrodeNETRegisterForm(self.data)
+        self.assertFalse(eegelectrodenet.is_valid())
+
+class EEGSolutionRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save()
+
+        manufacturer = Manufacturer.objects.create(name='Manufacturer')
+
+        self.data = {
+            'name': 'EEGSolution',
+            'manufacturer': manufacturer.id
+        }
+
+    def test_EEGSolutionRegisterForm_is_valid(self):
+        solution = EEGSolutionRegisterForm(data=self.data)
+        self.assertTrue(solution.is_valid())
+
+    def test_EEGSolutionRegisterForm_is_not_valid_without_name(self):
+        self.data['name'] = ""
+        solution = EEGSolutionRegisterForm(data=self.data)
+        self.assertFalse(solution.is_valid())
+
+    def test_EEGSolutionRegisterForm_is_not_valid_without_manufacturer(self):
+        self.data['manufacturer'] = ""
+        solution = EEGSolutionRegisterForm(data=self.data)
+        self.assertFalse(solution.is_valid())
+
+class AmplifierRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        manufacturer = Manufacturer.objects.create(name='Manufacturer')
+
+        self.data = {
+            'identification': 'Amplifier',
+            'manufacturer': manufacturer.id
+        }
+
+    def test_AmplifierRegisterForm_is_valid(self):
+        amplifier = AmplifierRegisterForm(data=self.data)
+        self.assertTrue(amplifier.is_valid())
+
+    def test_AmplifierRegisterForm_is_not_valid_without_identification(self):
+        self.data['identification'] = ""
+        amplifier = AmplifierRegisterForm(data=self.data)
+        self.assertFalse(amplifier.is_valid())
+
+    def test_AmplifierRegisterForm_is_not_valid_without_manufacturer(self):
+        self.data['manufacturer'] = ""
+        amplifier = AmplifierRegisterForm(data=self.data)
+        self.assertFalse(amplifier.is_valid())
+
+class FilterTypeRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        self.data = { 'name': 'Filter' }
+
+    def test_FilterTypeRegisterForm_is_valid(self):
+        filtertype = FilterTypeRegisterForm(data=self.data)
+        self.assertTrue(filtertype.is_valid())
+
+    def test_FilterTypeRegisterForm_is_not_valid_without_name(self):
+        self.data['name'] = ""
+        filtertype = FilterTypeRegisterForm(data=self.data)
+        self.assertFalse(filtertype.is_valid())
+
+class SoftwareRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        manufacturer = Manufacturer.objects.create(name='Manufacturer')
+
+        self.data = {
+            'name': 'Software',
+            'manufacturer': manufacturer.id
+        }
+
+    def test_SoftwareRegisterForm_is_valid(self):
+        software = SoftwareRegisterForm(data=self.data)
+        self.assertTrue(software.is_valid())
+
+    def test_SoftwareRegisterForm_is_not_valid_without_name(self):
+        self.data['name'] = ""
+        software = SoftwareRegisterForm(data=self.data)
+        self.assertFalse(software.is_valid())
+
+    def test_SoftwareRegisterForm_is_not_valid_without_manufacturer(self):
+        self.data['manufacturer'] = ""
+        software = SoftwareRegisterForm(data=self.data)
+        self.assertFalse(software.is_valid())
+
+class SoftwareVersionRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        self.data = { 'name': 'Software' }
+
+    def test_SoftwareVersionRegisterForm_is_valid(self):
+        version = SoftwareVersionRegisterForm(data=self.data)
+        self.assertTrue(version.is_valid())
+
+    def test_SoftwareVersionRegisterForm_is_not_valid_without_name(self):
+        self.data['name'] = ""
+        version = SoftwareVersionRegisterForm(data=self.data)
+        self.assertFalse(version.is_valid())
+
+class ADConverterRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        manufacturer = Manufacturer.objects.create(name='Manufacturer')
+
+        self.data = {
+            'identification': 'ADConverter',
+            'manufacturer': manufacturer.id
+        }
+
+    def test_ADConverterRegisterForm_is_valid(self):
+        converter = ADConverterRegisterForm(data=self.data)
+        self.assertTrue(converter.is_valid())
+
+    def test_ADConverterRegisterForm_is_not_valid_without_identification(self):
+        self.data['identification'] = ""
+        converter = ADConverterRegisterForm(data=self.data)
+        self.assertFalse(converter.is_valid())
+
+    def test_ADConverterRegisterForm_is_not_valid_without_manufacturer(self):
+        self.data['manufacturer'] = ""
+        converter = ADConverterRegisterForm(data=self.data)
+        self.assertFalse(converter.is_valid())
+
+class CoilModelRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        coilshape = CoilShape.objects.create(name="Coil Shape")
+
+        self.data = {
+            'name': 'CoilModel',
+            'coil_shape': coilshape.id
+        }
+
+    def test_CoilModelRegisterForm_is_valid(self):
+        coilmodel = CoilModelRegisterForm(data=self.data)
+        self.assertTrue(coilmodel.is_valid())
+
+    def test_CoilModelRegisterForm_is_not_valid_without_name(self):
+        self.data['name'] = ""
+        coilmodel = CoilModelRegisterForm(data=self.data)
+        self.assertFalse(coilmodel.is_valid())
+
+    def test_CoilModelRegisterForm_is_not_valid_without_coil_shape(self):
+        self.data['coil_shape'] = ""
+        coilmodel = CoilModelRegisterForm(data=self.data)
+        self.assertFalse(coilmodel.is_valid())
+
+class TMSDeviceRegisterFormValidation(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user.is_staff = True
+        self.user.is_superuser = True
+
+        manufacturer = Manufacturer.objects.create(name='Manufacturer')
+
+        self.data = {
+            'identification': 'TMSDevice',
+            'manufacturer': manufacturer.id
+        }
+
+    def test_TMSDeviceRegisterForm_is_valid(self):
+        tmsdevice = TMSDeviceRegisterForm(data=self.data)
+        self.assertTrue(tmsdevice.is_valid())
+
+    def test_TMSDeviceRegisterForm_is_not_valid_without_identification(self):
+        self.data['identification'] = ""
+        tmsdevice = TMSDeviceRegisterForm(data=self.data)
+        self.assertFalse(tmsdevice.is_valid())
+
+    def test_TMSDeviceRegisterForm_is_not_valid_without_manufacturer(self):
+        self.data['manufacturer'] = ""
+        tmsdevice = TMSDeviceRegisterForm(data=self.data)
+        self.assertFalse(tmsdevice.is_valid())
 
 class ResearchProject_FormTest(TestCase):
 
