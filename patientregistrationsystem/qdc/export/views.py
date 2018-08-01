@@ -290,7 +290,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                         messages.error(request, error_msg)
                         return render(request, template_name)
 
-            # If questionnaire from experiments was selected (Experiment data directory)
+            # If questionnaire from experiments was selected (Experiment
+            # data directory)
             if export.get_input_data('questionnaires_from_experiments'):
                 if export.get_input_data("export_per_questionnaire"):
                     error_msg = export.process_per_experiment_questionnaire()

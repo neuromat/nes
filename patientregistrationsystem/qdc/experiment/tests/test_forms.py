@@ -4,15 +4,20 @@ import datetime
 from django.test import TestCase
 # from django import forms
 
+from django.shortcuts import get_object_or_404
+
 from experiment.forms import ResearchProjectForm, ExperimentForm, GroupForm, EEGSettingForm, \
     EEGAmplifierSettingForm, EEGFilterSettingForm, EMGSettingForm, EMGElectrodeSettingForm, \
     ElectrodeModelForm, EMGElectrodePlacementSettingForm, EMGDigitalFilterSettingForm, \
-    EMGADConverterSettingForm
+    EMGADConverterSettingForm, TMSSettingForm, TMSDeviceSettingForm, ContextTreeForm,  \
+    ComponentForm, BlockForm
 
 from experiment.models import ResearchProject, Experiment, ExperimentResearcher, EEGSetting, EEGAmplifierSetting, \
     Manufacturer, Amplifier, EEGFilterSetting, EEGElectrodeNet, EEGElectrodeLocalizationSystem, EEGElectrodeNetSystem, \
     ElectrodeModel, Tag, EMGSetting, EMGElectrodeSetting, Muscle, StandardizationSystem, MuscleSubdivision, MuscleSide, \
-    EMGElectrodePlacement, Software, SoftwareVersion, EMGDigitalFilterSetting, FilterType, ADConverter, EMGADConverterSetting
+    EMGElectrodePlacement, Software, SoftwareVersion, EMGDigitalFilterSetting, FilterType, ADConverter, \
+    EMGADConverterSetting, TMSDevice, TMSDeviceSetting, TMSSetting, CoilShape, CoilModel, Equipment, \
+    ContextTree, Block, Component
 
 
 class ResearchProject_FormTest(TestCase):
@@ -103,30 +108,6 @@ class Experiment_FormTest(TestCase):
            is_public=" ",
            data_acquisition_is_concluded=" ")
 
-   # def setUp(self):
-   #     self.data = {
-   #         'title': 'Experimento TOC',
-   #         'description': 'Experimento TOC',
-   #         'source_code_url': 'http://www.ime.usp.br',
-   #         'ethics_committee_project_url': 'http://www.fm.usp.br',
-   #         'ethics_committee_project_file':'/users/celsovi/documents/unit_tests/links.rtf',
-   #         'is_public': '',
-   #         'data_acquisition_is_concluded':''
-   #     }
-   #     self.research_project = ResearchProject.objects.create(
-   #         title="Research project title", start_date=datetime.date.today(),
-   #         description="Research project description"
-   #     )
-   #
-   #     self.experiment = Experiment.objects.create(
-   #         research_project_id=self.research_project.id,
-   #         title="Experimento-Update",
-   #         description="Descricao do Experimento-Update",
-   #         source_code_url="http://www.if.usp.br",
-   #         ethics_committee_project_url="http://www.fm.usp.br",
-   #         ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-   #         is_public=" ",
-   #         data_acquisition_is_concluded=" ")
 
    def test_ExperimentForm_is_valid(self):
        experimentForm = ExperimentForm(data={'research_project':self.research_project.id,'title': self.data["title"], 'description': self.data["description"], 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file':self.data["ethics_committee_project_file"], 'is_public':self.data["is_public"], 'data_acquisition_is_concluded':self.data["data_acquisition_is_concluded"]})
@@ -518,91 +499,6 @@ class EEGFilterSettings_FormTest(TestCase):
         )
         self.assertTrue(settingsEEGFilter_form.is_valid())
 
-    # def test_EEGFilterSettings_is_not_valid_high_pass(self):
-    #     settingsEEGFilter_form = EEGFilterSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-    #                                                         'high_pass': "",
-    #                                                         'low_pass': self.data["low_pass"],
-    #                                                         'low_band_pass': self.data["low_band_pass"],
-    #                                                         'high_band_pass': self.data["high_band_pass"],
-    #                                                         'low_notch': self.data["low_notch"],
-    #                                                         'high_notch': self.data["high_notch"],
-    #                                                         'order': self.data["order"]})
-    #     self.assertTrue(settingsEEGFilter_form.is_valid())
-    #
-    #
-    # def test_EEGFilterSettings_is_not_valid_low_pass(self):
-    #     settingsEEGFilter_form = EEGFilterSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-    #                                                         'high_pass': self.data["high_pass"],
-    #                                                         'low_pass': "",
-    #                                                         'low_band_pass': self.data["low_band_pass"],
-    #                                                         'high_band_pass': self.data["high_band_pass"],
-    #                                                         'low_notch': self.data["low_notch"],
-    #                                                         'high_notch': self.data["high_notch"],
-    #                                                         'order': self.data["order"]})
-    #     self.assertTrue(settingsEEGFilter_form.is_valid())
-    #
-    #
-    # def test_EEGFilterSettings_is_not_valid_low_band_pass(self):
-    #     settingsEEGFilter_form = EEGFilterSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-    #                                                         'high_pass': self.data["high_pass"],
-    #                                                         'low_pass': self.data["low_pass"],
-    #                                                         'low_band_pass': "",
-    #                                                         'high_band_pass': self.data["high_band_pass"],
-    #                                                         'low_notch': self.data["low_notch"],
-    #                                                         'high_notch': self.data["high_notch"],
-    #                                                         'order': self.data["order"]})
-    #     self.assertTrue(settingsEEGFilter_form.is_valid())
-    #
-    #
-    # def test_EEGFilterSettings_is_not_valid_high_band_pass(self):
-    #     settingsEEGFilter_form = EEGFilterSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-    #                                                         'high_pass': self.data["high_pass"],
-    #                                                         'low_pass': self.data["low_pass"],
-    #                                                         'low_band_pass': self.data["low_band_pass"],
-    #                                                         'high_band_pass': "",
-    #                                                         'low_notch': self.data["low_notch"],
-    #                                                         'high_notch': self.data["high_notch"],
-    #                                                         'order': self.data["order"]})
-    #     self.assertTrue(settingsEEGFilter_form.is_valid())
-    #
-    #
-    # def test_EEGFilterSettings_is_not_valid_low_notch(self):
-    #     settingsEEGFilter_form = EEGFilterSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-    #                                                         'high_pass': self.data["high_pass"],
-    #                                                         'low_pass': self.data["low_pass"],
-    #                                                         'low_band_pass': self.data["low_band_pass"],
-    #                                                         'high_band_pass': self.data["high_band_pass"],
-    #                                                         'low_notch': "",
-    #                                                         'high_notch': self.data["high_notch"],
-    #                                                         'order': self.data["order"]})
-    #     self.assertTrue(settingsEEGFilter_form.is_valid())
-    #
-    #
-    # def test_EEGFilterSettings_is_not_valid_high_notch(self):
-    #     settingsEEGFilter_form = EEGFilterSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-    #                                                         'high_pass': self.data["high_pass"],
-    #                                                         'low_pass': self.data["low_pass"],
-    #                                                         'low_band_pass': self.data["low_band_pass"],
-    #                                                         'high_band_pass': self.data["high_band_pass"],
-    #                                                         'low_notch': self.data["low_notch"],
-    #                                                         'high_notch': "",
-    #                                                         'order': self.data["order"]})
-    #     self.assertTrue(settingsEEGFilter_form.is_valid())
-    #
-    #
-    # def test_EEGFilterSettings_is_not_valid_order(self):
-    #     settingsEEGFilter_form = EEGFilterSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-    #                                                         'high_pass': self.data["high_pass"],
-    #                                                         'low_pass': self.data["low_pass"],
-    #                                                         'low_band_pass': self.data["low_band_pass"],
-    #                                                         'high_band_pass': self.data["high_band_pass"],
-    #                                                         'low_notch': self.data["low_notch"],
-    #                                                         'high_notch': self.data["high_notch"],
-    #                                                         'order': ""})
-    #     self.assertTrue(settingsEEGFilter_form.is_valid())
-
-
-
 
 class EMGsettings_FormTest(TestCase):
 
@@ -981,3 +877,286 @@ class EMG_ADConverterSettings_FormTest(TestCase):
 
         self.assertFalse(settingsEMG_ADConverter_form.is_valid())
         self.assertEqual(settingsEMG_ADConverter_form.errors["ad_converter"], ["Este campo é obrigatório."])
+
+
+class TMSSetting_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+
+        }
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+    def test_TMSSetting_is_valid(self):
+        name = self.data["name"]
+        description = self.data["description"]
+
+        settingTMS_form = TMSSettingForm(data={'name': name, 'description': description})
+        self.assertTrue(settingTMS_form.is_valid())
+
+    def test_TMSSetting_is_not_valid_name(self):
+        settingTMS_form = TMSSettingForm(data={'name': "", 'description': self.data["description"]})
+        self.assertFalse(settingTMS_form.is_valid())
+        self.assertEqual(settingTMS_form.errors["name"], ["Este campo é obrigatório."])
+
+    def test_TMSSetting_is_not_valid_description(self):
+        settingTMS_form = TMSSettingForm(data={'name': self.data["name"], 'description': ""})
+        self.assertFalse(settingTMS_form.is_valid())
+        self.assertEqual(settingTMS_form.errors["description"], ["Este campo é obrigatório."])
+
+
+class TMSDevice_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+            'pulse_stimulus_type': 'paired_pulse',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+
+        cls.manufacturer = Manufacturer.objects.create(name='Manufacturer name')
+
+        cls.electrode_model = ElectrodeModel.objects.create(
+            name="Electrode Model name"
+        )
+
+        cls.tag = Tag.objects.create(name="TMS")
+        cls.electrode_model.tags.add(cls.tag)
+        cls.electrode_model.save()
+
+        cls.coil_shape = CoilShape.objects.create(name="Electrode Shape name")
+        cls.coil_model = CoilModel.objects.create(name="Electrode Model name",
+                                            coil_shape=cls.coil_shape
+        )
+
+        cls.tms_setting = TMSSetting.objects.create(experiment=cls.experiment)
+
+        cls.tms_device = TMSDevice.objects.create(pulse_type="monophase", manufacturer=cls.manufacturer,
+                                                  equipment_type="tms_device", identification='identification')
+
+        cls.tms_device_setting = TMSDeviceSetting.objects.create(tms_setting=cls.tms_setting,
+                                                    tms_device=cls.tms_device,
+                                                    pulse_stimulus_type=cls.data["pulse_stimulus_type"],
+                                                    coil_model=cls.coil_model
+        )
+
+    def test_TMSDevice_is_valid(self):
+        tms_device = self.tms_device
+        pulse_stimulus_type = self.data["pulse_stimulus_type"]
+        coil_model = self.coil_model.id
+
+        deviceTMS_form = TMSDeviceSettingForm(data={'tms_device': tms_device,
+                                                    'coil_model': coil_model,
+                                                    'pulse_stimulus_type': pulse_stimulus_type
+                                                    })
+        self.assertTrue(deviceTMS_form.is_valid())
+
+
+    def test_TMSDevice_is_not_valid_tms_device(self):
+        tms_device = self.tms_device
+        pulse_stimulus_type = self.data["pulse_stimulus_type"]
+        coil_model = self.coil_model.id
+
+        deviceTMS_form = TMSDeviceSettingForm(data={'tms_device': "",
+                                                    'pulse_stimulus_type': pulse_stimulus_type,
+                                                    'coil_model': coil_model
+                                                    })
+        self.assertFalse(deviceTMS_form.is_valid())
+        self.assertEqual(deviceTMS_form.errors["tms_device"], ["Este campo é obrigatório."])
+
+
+    def test_TMSDevice_is_not_valid_coil_model(self):
+        tms_device = self.tms_device
+        pulse_stimulus_type = self.data["pulse_stimulus_type"]
+        coil_model = self.coil_model.id
+
+        deviceTMS_form = TMSDeviceSettingForm(data={'tms_device': tms_device,
+                                                    'pulse_stimulus_type': pulse_stimulus_type,
+                                                    'coil_model': ""
+                                                    })
+        self.assertFalse(deviceTMS_form.is_valid())
+        self.assertEqual(deviceTMS_form.errors["coil_model"], ["Este campo é obrigatório."])
+
+
+class ContextTrees_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.context_tree=ContextTree.objects.create(experiment=cls.experiment, name='Context name', description='Context description')
+
+    def test_ContextTrees_is_valid(self):
+        name = self.context_tree.name
+        description = self.context_tree.description
+
+        contextTrees_form = ContextTreeForm(data={'name': name, 'description': description})
+        self.assertTrue(contextTrees_form.is_valid())
+
+    def test_ContextTrees_is_not_valid_name(self):
+        name = self.context_tree.name
+        description = self.context_tree.description
+
+        contextTrees_form = ContextTreeForm(data={'name': "", 'description': description})
+        self.assertFalse(contextTrees_form.is_valid())
+        self.assertEqual(contextTrees_form.errors["name"], ["Este campo é obrigatório."])
+
+    def test_ContextTrees_is_not_valid_description(self):
+        name = self.context_tree.name
+        description = self.context_tree.description
+
+        contextTrees_form = ContextTreeForm(data={'name': name, 'description': ""})
+        self.assertFalse(contextTrees_form.is_valid())
+        self.assertEqual(contextTrees_form.errors["description"], ["Este campo é obrigatório."])
+
+
+class SEP_Block_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",  duration_unit=" ", description=" ", component_type="Set of steps")
+
+        cls.block = Block.objects.create(experiment=cls.experiment,
+                                         identification="Identification",
+                                         component_type="Set of steps",
+                                         type="sequence",
+                                         number_of_mandatory_components=0
+        )
+
+    def test_SEP_Block_is_valid(self):
+        experiment = self.experiment
+        number_of_mandatory_components = self.block.number_of_mandatory_components
+        type = self.block.type
+
+
+        sep_SEP_Block_form = BlockForm(data={'number_of_mandatory_components': number_of_mandatory_components,
+                                             'type': type,
+                                             'experiment': experiment
+        })
+        self.assertTrue(sep_SEP_Block_form.is_valid())
+
+    def test_SEP_Block_is_not_valid_number_of_mandatory_components(self):
+        experiment = self.experiment
+        number_of_mandatory_components = " "
+        type = self.block.type
+
+        sep_SEP_Block_form = BlockForm(data={'number_of_mandatory_components': number_of_mandatory_components,
+                                             'type': type,
+                                             'experiment': experiment
+        })
+        self.assertFalse(sep_SEP_Block_form.is_valid())
+        self.assertEqual(sep_SEP_Block_form.errors["number_of_mandatory_components"], ["Informe um número inteiro."])
+
+    def test_SEP_Block_is_not_valid_type(self):
+        experiment = self.experiment
+        number_of_mandatory_components = 0
+        type = " "
+
+        sep_SEP_Block_form = BlockForm(data={'number_of_mandatory_components': number_of_mandatory_components,
+                                             'type': type,
+                                             'experiment': experiment
+        })
+        self.assertFalse(sep_SEP_Block_form.is_valid())
+        self.assertEqual(sep_SEP_Block_form.errors["type"], ["Faça uma escolha válida.   não é uma das escolhas disponíveis."])
+
+
+# class SEP_Block_Block_Fix_FormTest(TestCase):
+#
+#     @classmethod
+#     def setUp(cls):
+#         cls.data = {
+#             'name': 'Experimento TOC',
+#             'description': 'Experimento TOC',
+#         }
+#
+#         cls.research_project = ResearchProject.objects.create(
+#             title="Research project title", start_date=datetime.date.today(),
+#             description="Research project description"
+#         )
+#
+#         cls.experiment = Experiment.objects.create(
+#             research_project_id=cls.research_project.id,
+#             title="Experimento-Update",
+#             description="Descricao do Experimento-Update",
+#             source_code_url="http://www.if.usp.br",
+#             ethics_committee_project_url="http://www.fm.usp.br",
+#             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+#             is_public=" ",
+#             data_acquisition_is_concluded=" ")
+
+
