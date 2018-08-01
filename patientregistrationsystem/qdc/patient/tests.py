@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 from django.conf import settings
 from django.contrib.messages.api import MessageFailure
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -20,7 +21,7 @@ from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 
-# from custom_user.models import User
+from faker import Factory
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
@@ -78,19 +79,26 @@ class UtilTests:
     @staticmethod
     def create_patient_mock(name_method='Pacient Test', changed_by=None):
         """ Cria um participante para ser utilizado durante os testes """
-        gender = Gender.objects.create(name='Masculino')
-        gender.save()
+        faker = Factory.create()
+
+        # TODO:
+        # create gender before create patient in other helper method
+        try:
+            gender = Gender.objects.get(name='Masculino')
+        except ObjectDoesNotExist:
+            gender = Gender.objects.create(name='Masculino')
 
         p_mock = Patient()
         p_mock.name = name_method
         p_mock.date_birth = '2001-01-15'
-        p_mock.cpf = '374.276.738-08'
+        p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient
         p_mock.gender = gender
         p_mock.changed_by = changed_by
         p_mock.save()
         return p_mock
 
-    def create_cid10_to_search(self):
+    @staticmethod
+    def create_cid10_to_search():
         cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
                                                         abbreviated_description='A01 Febres paratifoide')
         cid10.save()
@@ -306,16 +314,17 @@ class PatientFormValidation(TestCase):
 
     def test_patient_empty_cpf(self):
         """
-        Testa inclusao de participante com cpf invalido
+        Tests inclusion of participant with invalid (empty) cpf
         """
 
-        # CPF vazio
+        # Empty CPF
         name = self._testMethodName
         self.data['name'] = name
         self.data[CPF_ID] = ''
 
-        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
-        # forms contained in the formset."
+        # This data is required for the ManagementForm. This form is used by
+        # the formset to manage the collection of forms contained in the
+        # formset.
         self.fill_management_form()
 
         response = self.client.post(reverse(PATIENT_NEW), self.data)
@@ -365,56 +374,11 @@ class PatientFormValidation(TestCase):
 
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
-    # def test_patient_telephone_create(self):
-    #     """
-    #     Testa inclusao de participante com telefone
-    #     """
-    #
-    #     self.data['telephone_set-0-number'] = '(11)4004-2929'
-    #     self.data['telephone_set-0-note'] = 'test telephone 0'
-    #     self.data['telephone_set-0-type'] = 'MO'
-    #     #self.data['telephone_set-0-DELETE'] = 'off'
-    #     self.data['telephone_set-0-id'] = '1'
-    #     #self.data['telephone_set-0-patient'] = ''
-    #
-    #
-    #     name = self._testMethodName
-    #     self.data['name'] = name
-    #
-    #     # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
-    #     # forms contained in the formset."
-    #     #self.fill_management_form()
-    #
-    #     self.data['telephone_set-INITIAL_FORMS'] = '0'
-    #     self.data['telephone_set-MAX_NUM_FORMS'] = '1000'
-    #     self.data['telephone_set-TOTAL_FORMS'] = '1'
-    #
-    #     self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-    #
-    #     self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
     def fill_management_form(self):
         self.data['telephone_set-TOTAL_FORMS'] = '3'
         self.data['telephone_set-INITIAL_FORMS'] = '0'
         self.data['telephone_set-MAX_NUM_FORMS'] = ''
-
-    # def test_patient_update_create(self):
-    #     """
-    #     Testa inclusao de participante com campos obrigatorios
-    #     """
-    #     name = self._testMethodName
-    #     self.data['name'] = name
-    #
-    #     # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
-    #     # forms contained in the formset."
-    #     self.fill_management_form()
-    #
-    #     self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-    #     self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-    #
-    #     self.data['currentTab'] = 0
-    #     self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-    #     self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
     def test_patient_create(self):
         """
@@ -453,40 +417,48 @@ class PatientFormValidation(TestCase):
 
     def test_patient_social_demographic_data(self):
         """
-        Test the inclusion of a patient with required fields and update of social demographic data
+        Test the inclusion of a patient with required fields and update of
+        social demographic data.
         """
-        name = self._testMethodName
-        self.data['name'] = name
 
-        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
-        # forms contained in the formset."
+        # This data is required for the ManagementForm. This form is used
+        # by the formset to manage the collection of forms contained in the
+        # formset.
         self.fill_management_form()
 
-        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        response = self.client.post(
+            reverse(PATIENT_NEW), self.data, follow=True
+        )
+        self.assertEqual(
+            Patient.objects.filter(name=self.data['name']).count(), 1
+        )
         self.assertNotContains(response, _('Social class was not calculated'))
 
         # Prepare to test social demographic data tab
-        patient_to_update = Patient.objects.filter(name=name).first()
+        patient_to_update = \
+            Patient.objects.filter(name=self.data['name']).first()
         self.fill_social_demographic_data()
         self.data['currentTab'] = 1
 
         # Success case
-        response = self.client.post(
-            reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
-        self.assertContains(response, _('Social demographic data successfully written.'))
+        response = self.client.post(reverse(
+            PATIENT_EDIT, args=(patient_to_update.pk,)), self.data,
+            follow=True
+        )
+        self.assertEqual(
+            Patient.objects.filter(name=self.data['name']).count(), 1
+        )
+        self.assertContains(
+            response, _('Social demographic data successfully written.')
+        )
         self.assertNotContains(response, _('Social class was not calculated'))
 
         # Error case
         self.data.pop('wash_machine')
-        # name = 'test_patient_social_demographic_data_1'
-        # self.data['name'] = name
-        # self.data[CPF_ID] = ''
-        # response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
-        response = self.client.post(
-            reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
-        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        response = self.client.post(reverse(
+            PATIENT_EDIT, args=(patient_to_update.pk,)), self.data,
+            follow=True
+        )
         self.assertContains(response, _('Social class was not calculated'))
 
     def fill_social_history_data(self):
@@ -568,6 +540,8 @@ class PatientFormValidation(TestCase):
         """
 
         patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
+        patient_mock.save()
 
         # Create an instance of a GET request.
         request = self.factory.get(reverse('patient_view', args=[patient_mock.pk]))
@@ -612,15 +586,19 @@ class PatientFormValidation(TestCase):
         nameMethod = self._testMethodName
         userMethod = self.user
         patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+        # To test posting cpf patient attribute (patient_mock.cpf value
+        # is due to what it was before creating this attribute value with
+        # faker).
+        patient_mock.cpf = '374.276.738-08'
+        patient_mock.save()
 
-        # patient_mock = self.util.create_patient_mock(name='Pacient Test Update', user=self.user)
-
-        # Create an instance of a GET request.v
+        # Create an instance of a GET request.
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
         request.user = self.user
 
-        # "This data is required for the ManagementForm. This form is used by the formset to manage the collection of
-        # forms contained in the formset."
+        # This data is required for the ManagementForm. This form is used
+        # by the formset to manage the collection of forms contained in the
+        # formset.
         self.fill_management_form()
 
         response = patient_update(request, patient_id=patient_mock.pk)
@@ -696,15 +674,19 @@ class PatientFormValidation(TestCase):
             pass
 
     def test_patient_restore(self):
-        """Testa a recuperaracao de participante removido """
-
-        # Cria um participante ja removido no BD
+        """
+        Tests removed patient recovering
+        """
+        # Creates participant already removed
         patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
         patient_mock.removed = True
         patient_mock.save()
 
         # Create an instance of a GET request.
-        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk, ]))
+        request = self.factory.get(
+            reverse(PATIENT_VIEW, args=[patient_mock.pk, ])
+        )
         request.user = self.user
 
         self.data['search_text'] = 374

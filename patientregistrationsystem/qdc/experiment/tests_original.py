@@ -1,5 +1,6 @@
 # coding=utf-8
 import datetime
+import random
 
 from django.db import IntegrityError
 from django.db.models.loading import get_model
@@ -254,7 +255,6 @@ class ObjectsFactory(object):
 
         return component
 
-
     @staticmethod
     def create_group(experiment, experimental_protocol=None):
         """
@@ -456,6 +456,22 @@ class ObjectsFactory(object):
             name=faker.word(),
             parent=parent,
             component=component
+        )
+
+    @staticmethod
+    def create_data_configuration_tree(component_config):
+        return DataConfigurationTree.objects.create(
+            component_configuration=component_config,
+            code=random.randint(1, 999)
+        )
+
+    @staticmethod
+    def create_questionnaire_response(dct, responsible, token_id,
+                                      subject_of_group):
+        return QuestionnaireResponse.objects.create(
+            data_configuration_tree=dct,
+            questionnaire_responsible=responsible, token_id=token_id,
+            subject_of_group=subject_of_group
         )
 
 
@@ -1135,11 +1151,13 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
         new_survey, created = Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
 
         # Create a questionnaire
-        questionnaire = Questionnaire.objects.create(identification='Questionnaire',
-                                                     description='Questionnaire description',
-                                                     experiment=Experiment.objects.first(),
-                                                     component_type='questionnaire',
-                                                     survey=new_survey)
+        questionnaire = Questionnaire.objects.create(
+            identification='Questionnaire',
+            description='Questionnaire description',
+            experiment=Experiment.objects.first(),
+            component_type='questionnaire',
+            survey=new_survey
+        )
         questionnaire.save()
 
         # Include the questionnaire in the root.
@@ -1278,7 +1296,12 @@ class SubjectTest(TestCase):
         group = ObjectsFactory.create_group(experiment)
 
         patient_mock = self.util.create_patient_mock(changed_by=self.user)
-        self.data = {SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id, 'group_id': group.id}
+        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
+        patient_mock.save()
+        self.data = {
+            SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id,
+            'group_id': group.id
+        }
 
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)

@@ -925,7 +925,9 @@ class Stimulus(Component):
 
 
 class Questionnaire(Component):
-    survey = models.ForeignKey(Survey, null=False, blank=False, on_delete=models.PROTECT)
+    survey = models.ForeignKey(
+        Survey, null=False, blank=False, on_delete=models.PROTECT
+    )
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -1158,7 +1160,9 @@ class SubjectOfGroup(models.Model):
 
 
 class DataConfigurationTree(models.Model):
-    component_configuration = models.ForeignKey(ComponentConfiguration, on_delete=models.PROTECT)
+    component_configuration = models.ForeignKey(
+        ComponentConfiguration, on_delete=models.PROTECT
+    )
     parent = models.ForeignKey('self', null=True, related_name='children')
     code = models.IntegerField(null=True, blank=True)
 
