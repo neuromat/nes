@@ -54,14 +54,13 @@ class ExportQuestionnaireTest(TestCase):
         self.user = User.objects.create_user(
             username='jose', email='jose@test.com', password='passwd'
         )
+        user_profile = self.user.user_profile
+        user_profile.login_enabled = True
+        user_profile.force_password_change = False
+        user_profile.save()
+
         for group in Group.objects.all():
             group.user_set.add(self.user)
-
-        # TODO:
-        # Making self.user superuser as @login_required decorator in
-        # export_view is only accepting superuser (?!)
-        self.user.is_superuser = True
-        self.user.save()
 
         self.client.login(username=self.user.username, password='passwd')
 
@@ -109,21 +108,22 @@ class ExportQuestionnaireTest(TestCase):
         self.lime_survey.activate_tokens(self.sid)
 
         # create questionnaire in NES
-        survey = Survey.objects.create(lime_survey_id=self.sid)
+        self.survey = Survey.objects.create(lime_survey_id=self.sid)
         questionnaire = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE,
-            kwargs={'sid': survey.id}
+            kwargs={'sid': self.survey.id}
         )
 
         # include questionnaire in experimental protocol
-        ObjectsFactory.create_component_configuration(
+        component_config = ObjectsFactory.create_component_configuration(
             self.root_component, questionnaire
         )
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
-        # add response to limesurvey survey and the reference in our db
-        result = UtilTests().create_survey_participant(survey)
+        # add response to limesurvey survey and the references in our db
+        result = UtilTests().create_survey_participant(self.survey)
         UtilTests().create_response_survey_mock(
-            self.user, patient, survey, result['tid']
+            self.user, patient, self.survey, result['tid']
         )
         response_table_columns = self.get_limesurvey_table_question_codes()
         response_data = {
@@ -135,14 +135,82 @@ class ExportQuestionnaireTest(TestCase):
             response_table_columns['firstQuestion']: 'Olá Mundo!',
             response_table_columns['secondQuestion']: 'Hallo Welt!'
         }
-
         self.lime_survey.add_response(self.sid, response_data)
+
+        # Set participant as completed (in participants table).
+        # See:
+        # https://www.limesurvey.org/de/foren/can-i-do-this-with-limesurvey/113443-help-with-remote-control-add-response
+        self.lime_survey.set_participant_properties(
+            self.sid, result['tid'],
+            {'completed': datetime.utcnow().strftime('%Y-%m-%d')}
+        )
+        ObjectsFactory.create_questionnaire_response(
+            dct=dct,
+            responsible=self.user, token_id=result['tid'],
+            subject_of_group=subject_of_group
+        )
 
     def tearDown(self):
         self.lime_survey.delete_survey(self.sid)
         self.client.logout()
 
     def test_same_questionnaire_used_in_different_steps_return_correct_content(self):
+        # TODO: testar com sobreposição do subdiretório media
+
+        # create other subject of group
+        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = Subject.objects.create(patient=patient)
+        subject_of_group = SubjectOfGroup.objects.create(
+            subject=subject, group=self.group
+        )
+        self.group.subjectofgroup_set.add(subject_of_group)
+
+        # create other component QUESTIONNAIRE in same experimental protocol
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'sid': self.survey.id}
+        )
+
+        # include questionnaire in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, questionnaire
+        )
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # add response to limesurvey survey and the references in our db
+        result = UtilTests().create_survey_participant(self.survey)
+        # TODO:
+        # acho que não precisa criar resposta do participante enquanto
+        # estamos testando resposta para experimento.
+        UtilTests().create_response_survey_mock(
+            self.user, patient, self.survey, result['tid']
+        )
+        response_table_columns = self.get_limesurvey_table_question_codes()
+        response_data = {
+            'token': result['token'],
+            'lastpage': 2,
+            response_table_columns['acquisitiondate']: str(datetime.now()),
+            response_table_columns['responsibleid']: self.user.id,
+            response_table_columns['subjectid']: subject.id,
+            response_table_columns['firstQuestion']: 'Al mondo!',
+            response_table_columns['secondQuestion']: 'Til verden!'
+        }
+        self.lime_survey.add_response(self.sid, response_data)
+
+        # Set participant as completed (in participants table).
+        # See:
+        # https://www.limesurvey.org/de/foren/can-i-do-this-with-limesurvey/
+        # 113443-help-with-remote-control-add-response
+        self.lime_survey.set_participant_properties(
+            self.sid, result['tid'],
+            {'completed': datetime.utcnow().strftime('%Y-%m-%d')}
+        )
+        ObjectsFactory.create_questionnaire_response(
+            dct=dct,
+            responsible=self.user, token_id=result['tid'],
+            subject_of_group=subject_of_group
+        )
+        
         data = {
             'per_participant': ['on'],
             'action': ['run'],
@@ -173,11 +241,20 @@ class ExportQuestionnaireTest(TestCase):
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        # self.assertTrue(
-        #     any('Per_questionnaire/Q21536_test-questionnaire'
-        #         '/Responses_Q21536_en.csv'
-        #         in element for element in zipped_file.namelist()),
-        #     '"Per_questionnaire/Q21536_test-questionnaire'
-        #     '/Responses_Q21536_en.csv" not in: ' + str(zipped_file.namelist())
-        # )
+        self.assertTrue(
+            any('Per_questionnaire/Step_1_QUESTIONNAIRE/' + self.survey.code +
+                '_test-questionnaire_en.csv'
+                in element for element in zipped_file.namelist()),
+            'Per_questionnaire/Step_1_QUESTIONNAIRE/' + self.survey.code +
+            '_test-questionnaire_en.csv not in: ' + str(zipped_file.namelist())
+        )
+        self.assertTrue(
+            any('Per_questionnaire/Step_2_QUESTIONNAIRE/' + self.survey.code +
+                '_test-questionnaire_en.csv'
+                in element for element in zipped_file.namelist()),
+            'Per_questionnaire/Step_2_QUESTIONNAIRE/' + self.survey.code +
+            '_test-questionnaire_en.csv not in: ' + str(zipped_file.namelist())
+        )
 
+        for element in zipped_file.namelist():  # DEBUG
+            print(element)  # DEBUG
