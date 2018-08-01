@@ -1296,7 +1296,12 @@ class SubjectTest(TestCase):
         group = ObjectsFactory.create_group(experiment)
 
         patient_mock = self.util.create_patient_mock(changed_by=self.user)
-        self.data = {SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id, 'group_id': group.id}
+        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
+        patient_mock.save()
+        self.data = {
+            SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id,
+            'group_id': group.id
+        }
 
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
