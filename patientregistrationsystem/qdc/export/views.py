@@ -307,8 +307,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         else:
             # Export method: filter by entrance questionnaire
             if export.get_input_data('questionnaires'):
-
-                # process per questionnaire data - entrance evaluation questionnaires
+                # Process per questionnaire data - entrance evaluation
+                # questionnaires
                 error_msg = export.process_per_questionnaire()
                 if error_msg != "":
                     messages.error(request, error_msg)
@@ -322,31 +322,33 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # create zip file and include files
         export_complete_filename = ""
         if export.files_to_zip_list:
-            export_filename = export.get_input_data("export_filename")  # 'export.zip'
-
-            export_complete_filename = path.join(base_directory_name, export_filename)
+            # export.zip file
+            export_filename = export.get_input_data('export_filename')
+            export_complete_filename = path.join(
+                base_directory_name, export_filename
+            )
+            # print(export.files_to_zip_list)  # DEBUG
 
             with ZipFile(export_complete_filename, 'w') as zip_file:
                 for filename, directory in export.files_to_zip_list:
                     fdir, fname = path.split(filename)
+                    zip_file.write(
+                        filename.encode('utf-8'), path.join(directory, fname)
+                    )
 
-                    zip_file.write(filename.encode('utf-8'), path.join(directory, fname))
-
-            zip_file.close()
-
-            output_export_file = path.join("export", path.join(str(export_instance.user.id),
-                                                               path.join(str(export_instance.id),
-                                                                         str(export_filename))))
+            output_export_file = path.join(
+                "export", path.join(
+                    str(export_instance.user.id),
+                    str(export_instance.id),
+                    str(export_filename)
+                )
+            )
 
             update_export_instance(input_export_file, output_export_file, export_instance)
 
-            print("finalizado corretamente")
-
         # delete temporary directory: from base_directory and below
-        base_export_directory = export.get_export_directory()
-        rmtree(base_export_directory, ignore_errors=True)
-
-        print("finalizado corretamente 2")
+        # base_export_directory = export.get_export_directory()  # DEBUG (voltar)
+        # rmtree(base_export_directory, ignore_errors=True)  # DEBUG (voltar)
 
         return export_complete_filename
 
@@ -522,7 +524,6 @@ def export_view(request, template_name="export/export_data.html"):
 
                     messages.success(request, _("Export was finished correctly"))
 
-                    print("antes do fim: httpResponse")
                     zip_file = open(complete_filename, 'rb')
                     response = \
                         HttpResponse(zip_file, content_type='application/zip')
