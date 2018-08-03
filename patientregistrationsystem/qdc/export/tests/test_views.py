@@ -271,6 +271,9 @@ class ExportQuestionnaireTest(TestCase):
         )
 
     def test_same_questionnaire_used_in_different_steps_return_correct_responses_content(self):
+        """
+        Without reuse
+        """
         ##
         # Create component (step) QUESTIONNAIRE
         ##
@@ -434,3 +437,10 @@ class ExportQuestionnaireTest(TestCase):
                 self.survey.code + '_test-questionnaire_en.csv'
         ) as file:
             self.assertEqual(len(file.readlines()), 3)
+
+    def test_same_questionnaire_used_in_different_steps_return_correct_responses_content_2(
+            self):
+        """
+        With reuse
+        """
+        pass  # by now: testing in browser is working (but make this test!)

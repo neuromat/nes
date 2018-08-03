@@ -193,10 +193,12 @@ g.permissions.add(Permission.objects.get(codename='add_user'),
 
 g, created = Group.objects.get_or_create(name='Attendant')
 patient_content_type = ContentType.objects.get(app_label='patient', model='patient')
-attendant_permission_list = [Permission.objects.get(codename='add_patient', content_type=patient_content_type),
-                             Permission.objects.get(codename='change_patient', content_type=patient_content_type),
-                             Permission.objects.get(codename='view_patient', content_type=patient_content_type),
-                             Permission.objects.get(codename='delete_patient', content_type=patient_content_type)]
+attendant_permission_list = [
+    Permission.objects.get(codename='add_patient', content_type=patient_content_type),
+    Permission.objects.get(codename='change_patient', content_type=patient_content_type),
+    Permission.objects.get(codename='view_patient', content_type=patient_content_type),
+    Permission.objects.get(codename='delete_patient', content_type=patient_content_type)
+]
 for p in attendant_permission_list:
     g.permissions.add(p)
 
