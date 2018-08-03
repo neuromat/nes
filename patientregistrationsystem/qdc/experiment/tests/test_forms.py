@@ -1862,35 +1862,34 @@ class SEP_Stimulus_FormTest(TestCase):
         cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
                                                duration_unit="ms", duration_value="5", description=" ", component_type="stimulus")
 
+        cls.stimulus_type = StimulusType.objects.create(name="Visual")
+
         cls.stimulus = Stimulus.objects.create(experiment=cls.experiment,
                                          identification="Identification",
                                          component_type="stimulus",
-                                         stimulus_type="Visual",
-                                         media_file="/users/celsovi/documents/unit_tests/links.rtf"
-        )
+                                         stimulus_type=cls.stimulus_type
+         )
 
 
     def test_SEP_Stimulus_is_valid(self):
-        stimulus = self.stimulus.stimulus_type
-        media_file = self.stimulus.media_file
+        stimulus_type = self.stimulus.stimulus_type.id
         experiment = self.experiment
 
-        sep_stimulus_form = StimulusForm(data={'stimulus_type': stimulus,
+        sep_stimulus_form = StimulusForm(data={'stimulus_type': stimulus_type,
                                                'experiment': experiment
         })
         self.assertTrue(sep_stimulus_form.is_valid())
 
     def test_SEP_Stimulus_is_not_valid_stimulus_type(self):
-        stimulus = ''
-        media_file = self.stimulus.media_file
+        stimulus_type = ''
         experiment = self.experiment
 
-        sep_stimulus_form = StimulusForm(data={'stimulus_type': stimulus,
-                                                'experiment': experiment
+        sep_stimulus_form = StimulusForm(data={'stimulus_type': stimulus_type,
+                                               'experiment': experiment
         })
         self.assertFalse(sep_stimulus_form.is_valid())
-        self.assertEqual(sep_stimulus_form.errors["text"], ["Este campo é "
-                                                            "obrigatório."])
+        self.assertEqual(sep_stimulus_form.errors["stimulus_type"],
+                         ["Este campo é obrigatório."])
 
 class SEP_Task_FormTest(TestCase):
 
