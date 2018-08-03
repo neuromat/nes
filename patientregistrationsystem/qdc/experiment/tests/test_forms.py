@@ -1985,7 +1985,7 @@ class SEP_Task_Experiment_FormTest(TestCase):
                                                        'experiment': experiment
         })
         sep_task_experiment_form.component_type = self.component.component_type #jury-rig
-        self.assertTrue(sep_task_experiment.is_valid())
+        self.assertTrue(sep_task_experiment_form.is_valid())
 
     def test_SEP_Task_Experiment_is_not_valid_identification(self):
         identification = ""
