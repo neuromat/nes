@@ -9256,8 +9256,16 @@ def component_create(request, experiment_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
     component_form = ComponentForm(request.POST or None)
-    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    ###########################################################################
+    # This is needed for the form to be able to validate the presence of a
+    # duration in a pause component only. Since there is no creation of
+    # components (Component) without being an inherited model, eg: 'stimulus',
+    # 'instruction' etc., it does not make sense to create a ComponentForm
+    # just for model use Pause. It would make more sense to create a PauseForm
+    # as is the case for other types of components.
+
     component_form.component_type = component_type
+    ###########################################################################
     questionnaires_list = []
     specific_form = None
 
