@@ -2,13 +2,15 @@
 import datetime
 
 from django.test import TestCase
-# from django import forms
 
-from django.shortcuts import get_object_or_404
+from survey.abc_search_engine import Questionnaires
 
 from experiment.forms import *
+from experiment.forms import NumberOfUsesToInsertForm
+
 
 from experiment.models import *
+# from .models import Questionnaire, ABCSearchEngine, Survey, ABC
 
 from django.contrib.auth.models import User
 
@@ -99,7 +101,7 @@ class EEGElectrodePositionFormValidation(TestCase):
         eegelectrodepos = EEGElectrodePositionForm(data={'name': ""})
         self.assertFalse(eegelectrodepos.is_valid())
 
-class EMGSurfacePlacementRegisterFormValidation(TestCase):
+class emgSurfacePlacementRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
@@ -1529,13 +1531,14 @@ class SEP_Block_FormTest(TestCase):
             data_acquisition_is_concluded=" ")
 
 
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",  duration_unit=" ", description=" ", component_type="Set of steps")
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                               duration_unit=" ", description=" ", component_type="Set of steps")
 
         cls.block = Block.objects.create(experiment=cls.experiment,
                                          identification="Identification",
                                          component_type="Set of steps",
                                          type="sequence",
-                                         number_of_mandatory_components=0
+                                         number_of_mandatory_components=None
         )
 
     def test_SEP_Block_is_valid(self):
@@ -1575,28 +1578,798 @@ class SEP_Block_FormTest(TestCase):
         self.assertEqual(sep_SEP_Block_form.errors["type"], ["Faça uma escolha válida.   não é uma das escolhas disponíveis."])
 
 
-# class SEP_Block_Block_Fix_FormTest(TestCase):
-#
-#     @classmethod
-#     def setUp(cls):
-#         cls.data = {
-#             'name': 'Experimento TOC',
-#             'description': 'Experimento TOC',
-#         }
-#
-#         cls.research_project = ResearchProject.objects.create(
-#             title="Research project title", start_date=datetime.date.today(),
-#             description="Research project description"
-#         )
-#
-#         cls.experiment = Experiment.objects.create(
-#             research_project_id=cls.research_project.id,
-#             title="Experimento-Update",
-#             description="Descricao do Experimento-Update",
-#             source_code_url="http://www.if.usp.br",
-#             ethics_committee_project_url="http://www.fm.usp.br",
-#             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-#             is_public=" ",
-#             data_acquisition_is_concluded=" ")
+class SEP_Block_Block_Fix_Random_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                               duration_unit=" ", description=" ", component_type="Set of steps")
+
+        cls.block = Block.objects.create(experiment=cls.experiment,
+                                         identification="Identification",
+                                         component_type="Set of steps",
+                                         type="sequence",
+                                         number_of_mandatory_components=None
+        )
 
 
+
+    def test_SEP_Block_Block_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_Block_Block_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_Block_Block_Fix_Random_form.is_valid())
+
+    def test_SEP_Block_Block_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_Block_Block_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_Block_Block_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_Block_Block_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+
+class SEP_Instruction_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification", duration_unit="ms",
+                                               duration_value="5", description=" ", component_type="instruction")
+
+        cls.instruction = Instruction.objects.create(experiment=cls.experiment,
+                                         identification="Identification",
+                                         component_type="instruction",
+                                         text="texto"
+        )
+
+
+    def test_SEP_Instruction_is_valid(self):
+        text = self.instruction.text
+        experiment = self.experiment
+
+        sep_Instruction_form = InstructionForm(data={'text': text,
+                                                     'experiment': experiment
+        })
+        self.assertTrue(sep_Instruction_form.is_valid())
+
+    def test_SEP_Instruction_is_not_valid_text(self):
+        text = ''
+        experiment = self.experiment
+
+        sep_Instruction_form = InstructionForm(data={'text': text,
+                                                     'experiment': experiment
+        })
+        self.assertFalse(sep_Instruction_form.is_valid())
+        self.assertEqual(sep_Instruction_form.errors["text"], ["Este campo é obrigatório."])
+
+class SEP_Pause_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment,
+                                               identification="Identification",
+                                               component_type="pause"
+        )
+
+
+    def test_SEP_Pause_is_valid(self):
+        # duration_value = self.component.duration_value
+        # identification = self.component.identification
+        duration_value = "5"
+        identification = "Identification"
+        experiment = self.experiment
+
+        sep_pause_form = ComponentForm(data={'identification': identification,
+                                             'duration_value': duration_value,
+                                             'experiment': experiment
+        })
+        sep_pause_form.component_type = self.component.component_type #jury-rig
+        self.assertTrue(sep_pause_form.is_valid())
+
+    def test_SEP_Pause_is_not_valid_identification(self):
+        duration_value = "5"
+        identification = ""
+        experiment = self.experiment
+
+        sep_pause_form = ComponentForm(data={'identification': identification,
+                                             'duration_value': duration_value,
+                                             'experiment': experiment
+        })
+        sep_pause_form.component_type = self.component.component_type #jury-rig
+
+        self.assertFalse(sep_pause_form.is_valid())
+        self.assertEqual(sep_pause_form.errors["identification"],
+                         ["Este campo é obrigatório."])
+
+    def test_SEP_Pause_is_not_valid_duration_value(self):
+        duration_value = ""
+        identification = "identification"
+        experiment = self.experiment
+
+        sep_pause_form = ComponentForm(data={'identification': identification,
+                                             'duration_value': duration_value,
+                                             'experiment': experiment
+        })
+        sep_pause_form.component_type = self.component.component_type #jury-rig
+
+        self.assertFalse(sep_pause_form.is_valid())
+        self.assertEqual(sep_pause_form.errors["duration_value"],
+                         ["Tempo da duração deve ser preenchido"])
+
+
+class SEP_Questionnaire_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment,
+                                               identification="Identification",
+                                               component_type="questionnaire"
+        )
+
+        # Conecta no Lime Survey
+        cls.lime_survey = Questionnaires()
+
+        # Checa se conseguiu conectar no limeSurvey com as credenciais fornecidas no settings.py
+        cls.assertIsNotNone(cls.lime_survey.session_key,
+                             'Failed to connect LimeSurvey')
+
+        # Cria uma survey no Lime Survey
+        cls.survey_id = cls.lime_survey.add_survey(9999,
+                                           'Questionario de teste - DjangoTests',
+                                           'en', 'G')
+        # Deleta a survey gerada no Lime Survey
+        status = cls.lime_survey.delete_survey(cls.survey_id)
+        # cls.assertEqual(status, 'OK', ['Erro na deleção'])
+
+
+    def test_SEP_Questionnaire_is_valid(self):
+        duration_value = "5"
+        identification = "Identification"
+        experiment = self.experiment
+
+        # new_specific_component = Questionnaire()
+
+        sep_questionnaire_form = ComponentForm(data={'identification':
+                                                         identification,
+                                             'duration_value': duration_value,
+                                             'experiment': experiment
+        })
+        sep_questionnaire_form.component_type = self.component.component_type #jury-rig
+        self.assertTrue(sep_questionnaire_form.is_valid())
+
+
+    def test_SEP_Questionnaire_is_not_valid_identification(self):
+        duration_value = "5"
+        identification = ""
+        experiment = self.experiment
+
+        sep_questionnaire_form = ComponentForm(data={'identification': identification,
+                                             'duration_value': duration_value,
+                                             'experiment': experiment
+        })
+        sep_questionnaire_form.component_type = self.component.component_type #jury-rig
+
+        self.assertFalse(sep_questionnaire_form.is_valid())
+        self.assertEqual(sep_questionnaire_form.errors["identification"],
+                         ["Este campo é obrigatório."])
+
+class SEP_Stimulus_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                               duration_unit="ms", duration_value="5", description=" ", component_type="stimulus")
+
+        cls.stimulus = Stimulus.objects.create(experiment=cls.experiment,
+                                         identification="Identification",
+                                         component_type="stimulus",
+                                         stimulus_type="Visual",
+                                         media_file="/users/celsovi/documents/unit_tests/links.rtf"
+        )
+
+
+    def test_SEP_Stimulus_is_valid(self):
+        stimulus = self.stimulus.stimulus_type
+        media_file = self.stimulus.media_file
+        experiment = self.experiment
+
+        sep_stimulus_form = StimulusForm(data={'stimulus_type': stimulus,
+                                               'experiment': experiment
+        })
+        self.assertTrue(sep_stimulus_form.is_valid())
+
+    def test_SEP_Stimulus_is_not_valid_stimulus_type(self):
+        stimulus = ''
+        media_file = self.stimulus.media_file
+        experiment = self.experiment
+
+        sep_stimulus_form = StimulusForm(data={'stimulus_type': stimulus,
+                                                'experiment': experiment
+        })
+        self.assertFalse(sep_stimulus_form.is_valid())
+        self.assertEqual(sep_stimulus_form.errors["text"], ["Este campo é "
+                                                            "obrigatório."])
+
+class SEP_Task_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment,
+                                               identification="Identification",
+                                               component_type="task"
+        )
+
+
+    def test_SEP_Task_is_valid(self):
+        identification = "Identification"
+        experiment = self.experiment
+
+        sep_task_form = ComponentForm(data={'identification': identification,
+                                             'experiment': experiment
+        })
+        sep_task_form.component_type = self.component.component_type #jury-rig
+        self.assertTrue(sep_task_form.is_valid())
+
+    def test_SEP_Task_is_not_valid_identification(self):
+        identification = ""
+        experiment = self.experiment
+
+        sep_task_form = ComponentForm(data={'identification': identification,
+                                             'experiment': experiment
+        })
+        sep_task_form.component_type = self.component.component_type #jury-rig
+
+        self.assertFalse(sep_task_form.is_valid())
+        self.assertEqual(sep_task_form.errors["identification"],
+                         ["Este campo é obrigatório."])
+
+
+class SEP_Task_Experiment_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment,
+                                               identification="Identification",
+                                               component_type="task_experiment"
+        )
+
+
+    def test_SEP_Task_Experiment_is_valid(self):
+        identification = "Identification"
+        experiment = self.experiment
+
+        sep_task_experiment_form = ComponentForm(data={'identification': identification,
+                                                       'experiment': experiment
+        })
+        sep_task_experiment_form.component_type = self.component.component_type #jury-rig
+        self.assertTrue(sep_task_experiment.is_valid())
+
+    def test_SEP_Task_Experiment_is_not_valid_identification(self):
+        identification = ""
+        experiment = self.experiment
+
+        sep_task_experiment_form = ComponentForm(data={'identification': identification,
+                                                       'experiment': experiment
+        })
+        sep_task_experiment_form.component_type = self.component.component_type #jury-rig
+
+        self.assertFalse(sep_task_experiment_form.is_valid())
+        self.assertEqual(sep_task_experiment_form.errors["identification"],
+                         ["Este campo é obrigatório."])
+
+
+class SEP_EEG_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                               duration_unit="ms", duration_value="5", description=" ", component_type="eeg")
+
+        cls.eeg_setting = EEGSetting.objects.create(experiment=cls.experiment,
+                                         name="EEG Setting",
+                                         description="description"
+        )
+
+        cls.eeg = EEG.objects.create(experiment=cls.experiment,
+                                         component_type="eeg",
+                                         identification="Identification",
+                                         eeg_setting=cls.eeg_setting
+        )
+
+    def test_SEP_EEG_is_valid(self):
+        experiment = self.experiment
+        eeg_setting= self.eeg_setting.id
+
+        sep_eeg_form = EEGForm(data={'eeg_setting': eeg_setting,
+                                     'identification': 'identification',
+                                     'experiment': experiment
+        })
+        self.assertTrue(sep_eeg_form.is_valid())
+
+    def test_SEP_EEG_is_not_valid_eeg_setting(self):
+        eeg_setting = ''
+        experiment = self.experiment
+
+        sep_eeg_form = EEGForm(data={'eeg_setting': eeg_setting,
+                                     'identification': 'identification',
+                                     'experiment': experiment
+        })
+        self.assertFalse(sep_eeg_form.is_valid())
+        self.assertEqual(sep_eeg_form.errors["eeg_setting"],
+                         ["Este campo é obrigatório."])
+
+
+class SEP_EMG_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+        cls.manufacturer = Manufacturer.objects.create(name='Manufacturer name')
+
+        cls.software = Software.objects.create(
+            manufacturer=cls.manufacturer,
+            name="Software name"
+        )
+
+        cls.software_version = SoftwareVersion.objects.create(
+            software=cls.software,
+            name="Software Version name"
+        )
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                               duration_unit="ms",
+                                               duration_value="5",
+                                               description=" ",
+                                               component_type="emg")
+
+        cls.emg_setting = EMGSetting.objects.create(experiment=cls.experiment,
+                                         name="EMG Setting",
+                                         description="description",
+                                         acquisition_software_version=cls.software_version
+        )
+
+        cls.emg = EMG.objects.create(experiment=cls.experiment,
+                                         component_type="emg",
+                                         identification="Identification",
+                                         emg_setting=cls.emg_setting
+        )
+
+    def test_SEP_EMG_is_valid(self):
+        experiment = self.experiment
+        emg_setting= self.emg_setting.id
+
+        sep_emg_form = EMGForm(data={'emg_setting': emg_setting,
+                                     'identification': 'identification',
+                                     'experiment': experiment
+        })
+        self.assertTrue(sep_emg_form.is_valid())
+
+    def test_SEP_EMG_is_not_valid_emg_setting(self):
+        emg_setting = ''
+        experiment = self.experiment
+
+        sep_emg_form = EMGForm(data={'emg_setting': emg_setting,
+                                     'identification': 'identification',
+                                     'experiment': experiment
+        })
+        self.assertFalse(sep_emg_form.is_valid())
+        self.assertEqual(sep_emg_form.errors["emg_setting"],
+                         ["Este campo é obrigatório."])
+
+
+class SEP_TMS_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                               duration_unit="ms",
+                                               duration_value="5",
+                                               description=" ",
+                                               component_type="tms")
+
+        cls.tms_setting = TMSSetting.objects.create(experiment=cls.experiment,
+                                         name="TMS Setting",
+                                         description="description"
+        )
+
+        cls.tms = TMS.objects.create(experiment=cls.experiment,
+                                         component_type="tms",
+                                         identification="Identification",
+                                         tms_setting=cls.tms_setting
+        )
+
+    def test_SEP_TMS_is_valid(self):
+        experiment = self.experiment
+        tms_setting= self.tms_setting.id
+
+        sep_tms_form = TMSForm(data={'tms_setting': tms_setting,
+                                     'identification': 'identification',
+                                     'experiment': experiment
+        })
+        self.assertTrue(sep_tms_form.is_valid())
+
+    def test_SEP_TMS_is_not_valid_tms_setting(self):
+        tms_setting = ''
+        experiment = self.experiment
+
+        sep_tms_form = TMSForm(data={'tms_setting': tms_setting,
+                                     'identification': 'identification',
+                                     'experiment': experiment
+        })
+        self.assertFalse(sep_tms_form.is_valid())
+        self.assertEqual(sep_tms_form.errors["tms_setting"],
+                         ["Este campo é obrigatório."])
+
+
+class SEP_GenericDataCollection_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
+
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                               duration_unit="ms",
+                                               duration_value="5",
+                                               description=" ",
+                                               component_type="generic_data_collection")
+
+        cls.information_type = InformationType.objects.create(
+                                         name="Generic Data Collection",
+                                         description="description"
+        )
+
+        cls.gdc = GenericDataCollection.objects.create(experiment=cls.experiment,
+                                         component_type="generic_data_collection",
+                                         identification="Identification",
+                                         information_type=cls.information_type
+        )
+
+    def test_SEP_GenericDataCollection_is_valid(self):
+        experiment = self.experiment
+        information_type= self.information_type.id
+
+        sep_gdc_form = GenericDataCollectionForm(data={'information_type':
+                                                           information_type,
+                                     'identification': 'identification',
+                                     'experiment': experiment
+        })
+        self.assertTrue(sep_gdc_form.is_valid())
+
+    def test_SEP_GenericDataCollection_is_not_valid_gdc_setting(self):
+        information_type = ''
+        experiment = self.experiment
+
+        sep_gdc_form = GenericDataCollectionForm(data={
+                                     'information_type': information_type,
+                                     'identification': 'identification',
+                                     'experiment': experiment
+        })
+        self.assertFalse(sep_gdc_form.is_valid())
+        self.assertEqual(sep_gdc_form.errors["information_type"],
+                         ["Este campo é obrigatório."]
+        )
+
+
+class SEP_DigitalGamePhase_FormTest(TestCase):
+
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'name': 'Experimento TOC',
+            'description': 'Experimento TOC',
+        }
+
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" "
+        )
+
+        cls.manufacturer = Manufacturer.objects.create(name='Manufacturer name'
+        )
+
+        cls.software = Software.objects.create(
+            manufacturer=cls.manufacturer,
+            name="Software name"
+        )
+
+        cls.software_version = SoftwareVersion.objects.create(
+            software=cls.software,
+            name="Software Version name"
+        )
+
+        cls.context_tree = ContextTree.objects.create(
+            experiment=cls.experiment, name='Context name',
+            description='Context description'
+        )
+
+        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                               duration_unit="ms",
+                                               duration_value="5",
+                                               description=" ",
+                                               component_type="digital_game_phase"
+        )
+
+        cls.dgp = DigitalGamePhase.objects.create(experiment=cls.experiment,
+                                         software_version=cls.software_version,
+                                         context_tree=cls.context_tree
+        )
+
+
+
+    def test_SEP_DigitalGamePhase_is_valid(self):
+        experiment = self.experiment
+        context_tree = self.context_tree.id
+        software_version=self.software_version.id
+
+        sep_dgp_form = DigitalGamePhaseForm(data={
+                                     'software_version': software_version,
+                                     'context_tree':context_tree,
+                                     'experiment': experiment
+        })
+        self.assertTrue(sep_dgp_form.is_valid())
+
+
+    def test_SEP_DigitalGamePhase_is_not_valid_software_version(self):
+        experiment = self.experiment
+        context_tree = self.context_tree.id
+        software_version=""
+
+        sep_dgp_form = DigitalGamePhaseForm(data={
+                                     'software_version': software_version,
+                                     'context_tree':context_tree,
+                                     'experiment': experiment
+        })
+        self.assertFalse(sep_dgp_form.is_valid())
+        self.assertEqual(sep_dgp_form.errors["software_version"],
+                         ["Este campo é obrigatório."]
+        )
+
+    def test_SEP_DigitalGamePhase_is_not_valid_context_tree(self):
+        experiment = self.experiment
+        context_tree = ""
+        software_version=self.software_version
+
+        sep_dgp_form = DigitalGamePhaseForm(data={
+                                     'software_version': software_version,
+                                     'context_tree':context_tree,
+                                     'experiment': experiment
+        })
+        self.assertFalse(sep_dgp_form.is_valid())
+        self.assertEqual(sep_dgp_form.errors["context_tree"],
+                         ["Este campo é obrigatório."]
+        )
