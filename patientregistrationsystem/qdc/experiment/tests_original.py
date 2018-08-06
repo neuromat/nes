@@ -574,7 +574,7 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
-        self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification", stimulus_type=1).exists())
+        self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification", stimulus_type=stimulus_type).exists())
 
         self.data = {'action': 'save', 'identification': 'Pause identification',
                      'description': 'Pause description', 'duration_value': 2, 'duration_unit': 'h'}
