@@ -262,10 +262,12 @@ class ObjectsFactory(object):
         :param experimental_protocol: experimental protocol
         :return: group
         """
+        faker = Factory.create()
+
         group = Group.objects.create(
             experiment=experiment,
-            title="Group-update",
-            description="Descricao do Group-update",
+            title=faker.word(),
+            description=faker.text(),
             experimental_protocol=experimental_protocol
         )
         return group

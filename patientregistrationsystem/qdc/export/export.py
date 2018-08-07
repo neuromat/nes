@@ -360,7 +360,7 @@ class ExportExecution:
             subject_of_group = SubjectOfGroup.objects.filter(group=group)
             title = '_'.join(slugify(group.title).split('-'))
 
-            description = group.description
+            description = group.description  # TODO: code bloat
             if group_id not in self.per_group_data:
                 self.per_group_data[group_id] = {}
             self.per_group_data[group_id]['group'] = {
@@ -462,8 +462,6 @@ class ExportExecution:
                                             questionnaire_id]['token_list']:
                                             self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id][
                                                 'token_list'].append(questionnaire_response_dic)
-
-                    surveys.release_session_key()
 
                 if self.get_input_data('component_list')['per_additional_data']:
                     subject_step_data_query = \
@@ -791,6 +789,8 @@ class ExportExecution:
                                     'generic_data_collection_directory': "Generic_Collection_Data_" + index,
                                     'generic_data_collection_file_list': generic_data_collection_data_list,
                                 })
+
+        surveys.release_session_key()
 
     def get_experiment_questionnaire_response_per_questionnaire(self, questionnaire_id, group_id):
         experiment_questionnaire_response = []
@@ -1299,12 +1299,12 @@ class ExportExecution:
                     'questionnaire_metadata_export_directory'] = export_directory__questionnaire_metadata
 
             if self.per_group_data[group_id]['data_per_participant']:
-                # ex. Users/..../NES_EXPORT/Experiment_data/Group_xxx/Per_participant
+                # Ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant
                 error_msg, directory_participant_data = create_directory(
                     directory_group, self.get_input_data("per_participant_directory"))
                 if error_msg != "":
                     return error_msg
-                # path ex. /NES_EXPORT/Experiment_data/Group_xxx/Per_participant/
+                # Ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/
                 participant_data_export_directory = path.join(
                     export_directory_group, self.get_input_data("per_participant_directory"))
 
@@ -1347,16 +1347,16 @@ class ExportExecution:
                     )
 
                     # metadata directory para export
-                    # ex.: 'NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/'
+                    # Ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/
                     metadata_directory = \
                     self.per_group_data[group_id]['group'][
                         'questionnaire_metadata_directory']
-                    # Ex. 'NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/'
+                    # Ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
                     export_metadata_directory = path.join(
                         self.per_group_data[group_id]['group'][
                             'questionnaire_metadata_export_directory'],
                         directory_questionnaire_name)
-                    # path ex. /NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
+                    # Ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
                     error_msg, complete_export_metadata_path = create_directory(
                         metadata_directory,
                         directory_questionnaire_name
@@ -1450,7 +1450,6 @@ class ExportExecution:
                                                 mode='a')
                                     file_exists = True
                                     break
-                            #
                             ###
 
                             # save array list into a file to export
