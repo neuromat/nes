@@ -1405,4 +1405,3 @@ def select_groups_by_experiment(request, experiment_id):
     json_group_list = serializers.serialize("json", group_list)
 
     return HttpResponse(json_group_list, content_type='application/json')
-
