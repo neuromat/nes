@@ -3,4 +3,3 @@ from custom_user.models import Institution
 
 
 admin.site.register(Institution)
-
