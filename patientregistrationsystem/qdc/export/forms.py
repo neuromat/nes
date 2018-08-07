@@ -21,7 +21,10 @@ RESPONSES_CHOICES = (
 
 
 class ExportForm(Form):
-    title = CharField(required=False, widget=TextInput(attrs={'class': 'form-control', 'disabled': ''}))
+    title = CharField(
+        required=False,
+        widget=TextInput(attrs={'class': 'form-control', 'disabled': ''})
+    )
     per_participant = BooleanField(initial=True, required=False)
     per_questionnaire = BooleanField(initial=True, required=False)
     per_eeg_raw_data = BooleanField(initial=True, required=False)
@@ -35,9 +38,16 @@ class ExportForm(Form):
 
     questionnaire_entrance_selected = []
 
-    headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False)
-    responses = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Response must be selected')}),
-                                    choices=RESPONSES_CHOICES, required=False)
+    headings = ChoiceField(
+        widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False
+    )
+    responses = MultipleChoiceField(
+        widget=CheckboxSelectMultiple(attrs={
+            'data-error': _('Response must be selected')
+        }),
+        choices=RESPONSES_CHOICES, required=False
+    )
+
 
 class ParticipantsSelectionForm(ModelForm):
     class Meta:
@@ -79,6 +89,7 @@ class ParticipantsSelectionForm(ModelForm):
             self.fields['state'].required = False
         if not self.data.get("city"):
             self.fields['city'].required = False
+
 
 class AgeIntervalForm(Form):
 
