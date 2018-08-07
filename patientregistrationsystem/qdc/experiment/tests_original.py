@@ -104,7 +104,6 @@ class ObjectsFactory(object):
             experiment=experiment, researcher=user
         )
 
-
     @staticmethod
     def create_publication(list_of_experiments):
         """
@@ -318,7 +317,7 @@ class ObjectsFactory(object):
         return filter_type
 
     @staticmethod
-    def create_tag(name = 'TAG name'):
+    def create_tag(name='TAG name'):
         tag = Tag.objects.create(
             name=name
         )
@@ -574,7 +573,8 @@ class ExperimentalProtocolTest(TestCase):
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
-        self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification", stimulus_type=stimulus_type).exists())
+        self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification",
+                                                stimulus_type=stimulus_type).exists())
 
         self.data = {'action': 'save', 'identification': 'Pause identification',
                      'description': 'Pause description', 'duration_value': 2, 'duration_unit': 'h'}
@@ -2333,7 +2333,6 @@ class EEGEquipmentRegisterTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Manufacturer.objects.all().count(), 0)
 
-
     def test_amplifier_register(self):
         manufacturer = ObjectsFactory.create_manufacturer()
 
@@ -3337,7 +3336,7 @@ class EEGEquipmentRegisterTest(TestCase):
                      'manufacturer': str(manufacturer.id),
                      'identification': identification,
                      'electrode_model_default': str(electrode_model.id)
-                    }
+                     }
 
         response = self.client.post(reverse("eegelectrodenet_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)

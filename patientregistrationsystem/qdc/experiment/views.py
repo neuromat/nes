@@ -1162,8 +1162,7 @@ def send_all_experiments_to_portal():
 
                         for questionnaire_response in questionnaire_responses:
                             component_id = \
-                                questionnaire_response.data_configuration_tree.\
-                                    component_configuration.component_id
+                                questionnaire_response.data_configuration_tree.component_configuration.component_id
                             questionnaire = \
                                 Questionnaire.objects.get(pk=component_id)
                             limesurvey_id = questionnaire.survey.lime_survey_id
@@ -6257,7 +6256,8 @@ def get_sensors_position(eeg_data):
                 #
                 # file_power_espectral_name = 'power_spectral_' + str(eeg_data.id) + ".png"
                 # fig_psd.savefig(path.join(path_complete, file_power_espectral_name))
-                # file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_power_espectral_name)
+                # file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"),
+                #                                       file_power_espectral_name)
 
     return file_path
 
@@ -10833,7 +10833,6 @@ def component_update(request, path_of_the_components):
                         if component_type == 'stimulus':
                             stimulus = get_object_or_404(Stimulus, pk=component.id)
                             specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
-
 
                         # Only save if there was a change.
                         if component_form.has_changed() or specific_form.has_changed():
