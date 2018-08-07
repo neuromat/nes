@@ -1,12 +1,11 @@
 from django.test import TestCase
 from patient.models import *
-from patient.forms import *
-from django.core.files.uploadedfile import SimpleUploadedFile
 from patient.views import *
 from django.contrib.auth.models import User
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
+
 
 # Tests about the form of creation of a patient (sometimes called participant)
 # Briefly, this class tests the first form of the tab 0 of app Patient
@@ -28,13 +27,15 @@ class PatientFormValidation(TestCase):
 
     # Test if the form with only the required fields filled is valid
     def test_PatientForm_is_valid(self):
-        patient = PatientForm(data={'name': self.data["name"], 'date_birth': self.data["date_birth"], 'gender': self.data["gender"]})
+        patient = PatientForm(data={'name': self.data["name"], 'date_birth': self.data["date_birth"],
+                                    'gender': self.data["gender"]})
         self.assertTrue(patient.is_valid())
 
     # Test if the form with the option "anonymous patient?" marked is valid
     # When anonymous patient is marked, the field "name" is not required anymore
     def test_PatientForm_is_valid_with_anonymous_patient(self):
-        patient = PatientForm(data={'anonymous': True,'date_birth': self.data["date_birth"], 'gender': self.data["gender"]})
+        patient = PatientForm(data={'anonymous': True, 'date_birth': self.data["date_birth"],
+                                    'gender': self.data["gender"]})
         self.assertTrue(patient.is_valid())
 
     # Test if the form without the required fields filled is not valid
@@ -60,6 +61,7 @@ class PatientFormValidation(TestCase):
         self.assertFalse(patient.is_valid())
         self.assertEqual(patient.errors["gender"], ["Este campo é obrigatório."])
 
+
 # Tests about the form of telephones
 # Briefly, this class tests the second form of the tab 0 of app Patient
 class TelephoneFormValidation(TestCase):
@@ -69,37 +71,39 @@ class TelephoneFormValidation(TestCase):
         self.user.is_superuser = True
         self.user.save()
 
-        type = Telephone.objects.create(type='HO',changed_by_id=self.user.id,patient_id=1)
+        phone_type = Telephone.objects.create(type='HO', changed_by_id=self.user.id, patient_id=1)
         self.data = {
             'number': '123456789',
-            'type': type.type,
+            'type': phone_type.type,
             'note': '01/02/1995'
         }
 
     # Test if the form with the fields filled is valid
     def test_TelephoneForm_is_valid(self):
-        telephone = TelephoneForm(data={'number':self.data["number"],'type':self.data["type"],'note':self.data["note"]})
+        telephone = TelephoneForm(data={'number': self.data["number"], 'type': self.data["type"],
+                                        'note': self.data["note"]})
         self.assertTrue(telephone.is_valid())
 
     # Test if the form without any of the fields filled is not valid
     def test_TelephoneForm_is_not_valid(self):
-        telephone = TelephoneForm(data={'number':"",'type':"",'note':""})
+        telephone = TelephoneForm(data={'number': "", 'type': "", 'note': ""})
         self.assertFalse(telephone.is_valid())
 
     # Test if the form without the "number" of the patient filled is not valid
     def test_TelephoneForm_is_not_valid_without_number(self):
-        telephone = TelephoneForm(data={'number':"",'type':self.data["type"],'note':self.data["note"]})
+        telephone = TelephoneForm(data={'number': "", 'type': self.data["type"], 'note': self.data["note"]})
         self.assertFalse(telephone.is_valid())
 
     # Test if the form without the "type" of the patient filled is not valid
     def test_TelephoneForm_is_not_valid_without_type(self):
-        telephone = TelephoneForm(data={'number':self.data["number"],'type':"",'note':self.data["note"]})
+        telephone = TelephoneForm(data={'number': self.data["number"], 'type': "", 'note': self.data["note"]})
         self.assertTrue(telephone.is_valid())
 
     # Test if the form without the "note" of the patient filled is not valid
     def test_TelephoneForm_is_not_valid_without_note(self):
         telephone = TelephoneForm(data={'number': self.data["number"], 'type': self.data["type"], 'note': ""})
         self.assertTrue(telephone.is_valid())
+
 
 # Tests about the form of social demographic data
 # Briefly, this class tests the form of the tab 1 of app Patient
@@ -120,24 +124,24 @@ class SocialDemographicDataFormValidation(TestCase):
         schooling.save()
 
         self.data = {
-            'natural_of':'São Paulo',
-            'citizenship':'Brasil',
-            'profession':'Estudante',
-            'occupation':'Study',
+            'natural_of': 'São Paulo',
+            'citizenship': 'Brasil',
+            'profession': 'Estudante',
+            'occupation': 'Study',
             'religion': religion.id,
             'payment': payment.id,
             'flesh_tone': fleshtone.id,
             'schooling': schooling.id,
             'patient_schooling': schooling.id,
-            'tv':'1',
-            'dvd':'1',
-            'radio':'1',
-            'bath':'1',
-            'automobile':'1',
-            'wash_machine':'1',
-            'refrigerator':'1',
-            'freezer':'1',
-            'house_maid':'1',
+            'tv': '1',
+            'dvd': '1',
+            'radio': '1',
+            'bath': '1',
+            'automobile': '1',
+            'wash_machine': '1',
+            'refrigerator': '1',
+            'freezer': '1',
+            'house_maid': '1',
             'benefit_government': True
         }
 
@@ -152,13 +156,14 @@ class SocialDemographicDataFormValidation(TestCase):
         socialdemodata = SocialDemographicDataForm(data=self.data)
         self.assertTrue(socialdemodata.is_valid())
 
-        self.assertEqual(socialdemodata.cleaned_data['social_class'],'')
+        self.assertEqual(socialdemodata.cleaned_data['social_class'], '')
 
     # Test if the form is invalid if one field is passed with a different format defined by the form to it
     def test_SocialDemographicData_is_not_valid(self):
-        self.data['schooling']='NotSelect'
+        self.data['schooling'] = 'NotSelect'
         socialdemodata = SocialDemographicDataForm(data=self.data)
         self.assertFalse(socialdemodata.is_valid())
+
 
 # Tests about the form of social history data
 # Briefly, this class tests the form of the tab 2 of app Patient
@@ -198,13 +203,13 @@ class SocialHistoryFormValidation(TestCase):
 
     # Test if the form of a non-smoker patient is valid and the dependent field doesn't have any value
     def test_SocialHistory_is_valid_with_non_smoker_patient(self):
-        self.data["smoker"]=False
+        self.data["smoker"] = False
         socialhistory = SocialHistoryDataForm(data=self.data)
         self.assertTrue(socialhistory.is_valid())
 
     # Test if the form of a non-alcoholic patient is valid and the dependent fields don't have any value
     def test_SocialHistory_is_valid_with_non_alcoholic_patient(self):
-        self.data["alcoholic"]=False
+        self.data["alcoholic"] = False
         socialhistory = SocialHistoryDataForm(data=self.data)
         self.assertTrue(socialhistory.is_valid())
 
@@ -217,6 +222,7 @@ class SocialHistoryFormValidation(TestCase):
     def test_SocialHistory_is_not_valid(self):
         socialhistory = SocialHistoryDataForm()
         self.assertFalse(socialhistory.is_valid())
+
 
 # Tests about the form of medical record
 # Briefly, this class tests the form of the tab 3 of app Patient
@@ -239,18 +245,19 @@ class MedicalRecordFormValidation(TestCase):
 
     # Test if the form is not valid with the fields empty
     def test_Medical_Record_is_not_valid(self):
-        medicalrecord = ComplementaryExamForm(data={'description': "",'date': ""})
+        medicalrecord = ComplementaryExamForm(data={'description': "", 'date': ""})
         self.assertFalse(medicalrecord.is_valid())
 
     # Test if the form without the description is not valid
     def test_Medical_Record_is_not_valid_without_description(self):
-        medicalrecord = ComplementaryExamForm(data={'description': "",'date': self.data['date']})
+        medicalrecord = ComplementaryExamForm(data={'description': "", 'date': self.data['date']})
         self.assertFalse(medicalrecord.is_valid())
 
     # Test if the form without the date is not valid
     def test_Medical_Record_is_not_valid_without_date(self):
-        medicalrecord = ComplementaryExamForm(data={'description': self.data['description'],'date': ""})
+        medicalrecord = ComplementaryExamForm(data={'description': self.data['description'], 'date': ""})
         self.assertFalse(medicalrecord.is_valid())
+
 
 # Tests about the form of questionnaire response
 # Briefly, this class tests the form of the tab 4 of app Patient
@@ -272,12 +279,12 @@ class QuestionnaireResponseFormValidation(TestCase):
 
     # Test if the form without the date is not valid
     def test_Questionnaires_Response_is_not_valid_without_date(self):
-        self.data['date']= ''
+        self.data['date'] = ''
         questionnaireresponse = QuestionnaireResponseForm(data=self.data)
         self.assertFalse(questionnaireresponse.is_valid())
 
     # Test if the form with a future date is not valid
     def test_Questionnaires_Response_is_not_valid_with_future_date(self):
-        self.data['date']= '01/02/2019'
+        self.data['date'] = '01/02/2019'
         questionnaireresponse = QuestionnaireResponseForm(data=self.data)
         self.assertFalse(questionnaireresponse.is_valid())
