@@ -1,11 +1,13 @@
 import os
 import io
+import tempfile
 import zipfile
 from datetime import datetime
 
+import shutil
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from experiment.models import Component, Subject, SubjectOfGroup
 from experiment.tests_original import ObjectsFactory
@@ -16,6 +18,7 @@ from survey.models import Survey
 
 
 class ExportQuestionnaireTest(TestCase):
+    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def get_lime_survey_question_groups(self, sid):
         question_groups_all = \
@@ -56,7 +59,7 @@ class ExportQuestionnaireTest(TestCase):
         )
         user_profile = self.user.user_profile
         user_profile.login_enabled = True
-        # this is necessary for surpass middleware that forces password
+        # this is necessary for surpass the middleware that forces password
         # change when login in first time
         user_profile.force_password_change = False
         user_profile.save()
@@ -66,6 +69,7 @@ class ExportQuestionnaireTest(TestCase):
 
         self.client.login(username=self.user.username, password='passwd')
 
+        # create experiment/experimental protocol/group
         self.experiment = ObjectsFactory.create_experiment(
             ObjectsFactory.create_research_project(self.user)
         )
@@ -77,10 +81,10 @@ class ExportQuestionnaireTest(TestCase):
         # create subject of group
         patient = UtilTests().create_patient_mock(changed_by=self.user)
         subject = Subject.objects.create(patient=patient)
-        subject_of_group = SubjectOfGroup.objects.create(
+        self.subject_of_group = SubjectOfGroup.objects.create(
             subject=subject, group=self.group
         )
-        self.group.subjectofgroup_set.add(subject_of_group)
+        self.group.subjectofgroup_set.add(self.subject_of_group)
 
         # create questionnaire at LiveSurvey
         survey_title = 'Test questionnaire'
@@ -95,7 +99,7 @@ class ExportQuestionnaireTest(TestCase):
             content = file.read()
             self.lime_survey.insert_questions(self.sid, content, 'lsg')
 
-        # create other group and questions
+        # create other group of questions/questions
         with open(os.path.join(
                 settings.BASE_DIR, 'export', 'tests', 'limesurvey_group_2.lsg'
         )) as file:
@@ -147,7 +151,7 @@ class ExportQuestionnaireTest(TestCase):
         ObjectsFactory.create_questionnaire_response(
             dct=dct,
             responsible=self.user, token_id=result['tid'],
-            subject_of_group=subject_of_group
+            subject_of_group=self.subject_of_group
         )
 
     def tearDown(self):
@@ -597,3 +601,28 @@ class ExportQuestionnaireTest(TestCase):
             'Group_' + group_2.title + '/Questionnaire_metadata/ not in:' +
             str(zipped_file.namelist())
         )
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_generic_data_colletion(self):
+
+        # create generic data collection (gdc) component
+        it = ObjectsFactory.create_information_type()
+        gdc = ObjectsFactory.create_component(
+            self.experiment, Component.GENERIC_DATA_COLLECTION,
+            kwargs={'it': it}
+        )
+
+        # include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, gdc
+        )
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' generic data collection file
+        gdc_data = ObjectsFactory.create_generic_data_collection_data(
+            dct, self.subject_of_group
+        )
+        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
