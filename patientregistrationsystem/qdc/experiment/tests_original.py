@@ -1,10 +1,15 @@
 # coding=utf-8
 import datetime
 import random
+import tempfile
 
+import os
+
+import shutil
+from django.core.files import File
 from django.db import IntegrityError
 from django.db.models.loading import get_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -26,7 +31,8 @@ from experiment.models import Experiment, Group, Subject, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, \
     EMGElectrodePlacement, EMGElectrodePlacementSetting, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
-    ContextTree, ExperimentResearcher
+    ContextTree, ExperimentResearcher, InformationType, \
+    GenericDataCollectionData, GenericDataCollectionFile
 
 from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
@@ -227,7 +233,7 @@ class ObjectsFactory(object):
 
         # Due to some model Component's constants for component_type being
         # different from models that inheritade from Component model,
-        # change the component_type string
+        # change the component_type string for using with get_model below
         if component_type == Component.TASK_EXPERIMENT:
             component_type = 'taskfortheexperimenter'  # TaskForTheExperimenter
         elif component_type == Component.DIGITAL_GAME_PHASE:
@@ -245,13 +251,20 @@ class ObjectsFactory(object):
         if component_type == Component.QUESTIONNAIRE:
             try:
                 component.survey_id = kwargs['sid']
-            except IntegrityError:
-                print('You need to specify "survey" argument with a Survey '
-                      'object id to create a Questionnaire component')
             except KeyError:
                 print('You must specify \'sid\' key in kwargs dict')
+        # TODO: DRY -- better to define constants (it's repeting from above)
+        elif component_type == 'genericdatacollection':
+            try:
+                component.information_type = kwargs['it']
+            except KeyError:
+                print('You must specify \'it\' key in kwargs dict')
 
-        component.save()
+        try:
+            component.save()
+        except IntegrityError:
+            print('Have you remembered to give specific attribute for '
+                  'the specific component?')
 
         return component
 
@@ -475,6 +488,58 @@ class ObjectsFactory(object):
             questionnaire_responsible=responsible, token_id=token_id,
             subject_of_group=subject_of_group
         )
+
+    @staticmethod
+    def create_information_type():
+        faker = Factory.create()
+
+        return InformationType.objects.create(
+            name=faker.word(), description=faker.text()
+        )
+
+    @staticmethod
+    def create_file_format():
+
+        faker = Factory.create()
+
+        return FileFormat.objects.create(
+            name=faker.file_extension(), description=faker.text()
+        )
+
+    @staticmethod
+    def create_generic_data_collection_data(data_conf_tree,
+                                            subj_of_group):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return GenericDataCollectionData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group
+        )
+
+    def create_binary_file(path):
+        with open(os.path.join(path, 'file.bin'), 'wb') as f:
+            f.write(b'carambola')
+            return f
+
+    @staticmethod
+    def create_generic_data_colletion_file(gdc_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
+                bin_file.write(b'carambola')
+
+            gdcf = GenericDataCollectionFile.objects.create(
+                generic_data_collection_data=gdc_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                gdcf.file.save('file.bin', f)
+            gdcf.save()
+
+        return gdcf
 
 
 class ExperimentalProtocolTest(TestCase):

@@ -85,7 +85,8 @@
                                     <div class="checkbox">
                                         {{ export_form.per_participant }}
                                         <label for="per_participant"
-                                               class="control-label">{% trans "Per participant" %}</label>
+                                               class="control-label">
+                                            {% trans "Per participant" %}</label>
                                          <div class="help-block with-errors"> </div>
                                     </div>
 
@@ -162,7 +163,6 @@
                                                                 name="from[]" multiple="multiple"
                                                                 data-error={% trans "Please, select a questionnaire from the list." %}>
                                                             {% for field in survey.output_list %}
-                                                                {#                                            {% if selected_ev_quest %}#}
                                                                 {% if not field.selected %}
                                                                     <option title="{{ field.description }}"
                                                                             value="{{ survey.index }}*{{ survey.sid }}*{{ survey.title }}*{{ field.field }}*{{ field.header }}">
