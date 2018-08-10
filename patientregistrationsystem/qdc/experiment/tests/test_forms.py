@@ -1,5 +1,4 @@
 # coding=utf-8
-import datetime
 
 from django.test import TestCase
 
@@ -17,6 +16,7 @@ from django.contrib.auth.models import User
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
 
+
 class MaterialRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -30,6 +30,7 @@ class MaterialRegisterFormValidation(TestCase):
     def test_MaterialRegisterForm_is_not_valid(self):
         material = MaterialRegisterForm(data={'name': ""})
         self.assertFalse(material.is_valid())
+
 
 class MuscleRegisterFormValidation(TestCase):
     def setUp(self):
@@ -45,6 +46,7 @@ class MuscleRegisterFormValidation(TestCase):
         muscle = MuscleRegisterForm(data={'name': ""})
         self.assertFalse(muscle.is_valid())
 
+
 class MuscleSubdivisionRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -58,6 +60,7 @@ class MuscleSubdivisionRegisterFormValidation(TestCase):
     def test_MuscleSubdivisionRegisterForm_is_not_valid(self):
         subdivision = MuscleSubdivisionRegisterForm(data={'name': ""})
         self.assertFalse(subdivision.is_valid())
+
 
 class MuscleSideRegisterFormValidation(TestCase):
     def setUp(self):
@@ -73,6 +76,7 @@ class MuscleSideRegisterFormValidation(TestCase):
         side = MuscleSideRegisterForm(data={'name': ""})
         self.assertFalse(side.is_valid())
 
+
 class EEGElectrodeLocalizationSystemRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -86,6 +90,7 @@ class EEGElectrodeLocalizationSystemRegisterFormValidation(TestCase):
     def test_EEGElectrodeLocalizationSystemRegisterForm_is_not_valid(self):
         eegelectrodelocsys = EEGElectrodeLocalizationSystemRegisterForm(data={'name': ""})
         self.assertFalse(eegelectrodelocsys.is_valid())
+
 
 class EEGElectrodePositionFormValidation(TestCase):
     def setUp(self):
@@ -101,7 +106,8 @@ class EEGElectrodePositionFormValidation(TestCase):
         eegelectrodepos = EEGElectrodePositionForm(data={'name': ""})
         self.assertFalse(eegelectrodepos.is_valid())
 
-class emgSurfacePlacementRegisterFormValidation(TestCase):
+
+class EMGSurfacePlacementRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
@@ -119,7 +125,8 @@ class emgSurfacePlacementRegisterFormValidation(TestCase):
         emgsurface = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': ""})
         self.assertFalse(emgsurface.is_valid())
 
-class EEMGIntramuscularPlacementRegisterFormValidation(TestCase):
+
+class EMGIntramuscularPlacementRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
@@ -136,6 +143,7 @@ class EEMGIntramuscularPlacementRegisterFormValidation(TestCase):
     def test_EMGIntramuscularPlacementRegisterForm_is_not_valid(self):
         emgintramuscular = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': ""})
         self.assertFalse(emgintramuscular.is_valid())
+
 
 class EMGNeedlePlacementRegisterFormValidation(TestCase):
     def setUp(self):
@@ -155,6 +163,7 @@ class EMGNeedlePlacementRegisterFormValidation(TestCase):
         emgneedle = EMGSurfacePlacementRegisterForm(data={'muscle_subdivision': ""})
         self.assertFalse(emgneedle.is_valid())
 
+
 class TMSLocalizationSystemFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -163,11 +172,11 @@ class TMSLocalizationSystemFormValidation(TestCase):
 
         brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
 
-        brainarea = BrainArea.objects.create(name='Lobo frontal',brain_area_system=brainareasystem)
+        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
 
         self.data = {
             'name': 'TMSLocalizationSystem',
-            'brain_area':brainarea.id
+            'brain_area': brainarea.id
         }
 
     def test_TMSLocalizationSystemForm_is_valid(self):
@@ -184,13 +193,14 @@ class TMSLocalizationSystemFormValidation(TestCase):
         tmslocalizationsystem = TMSLocalizationSystemForm(data=self.data)
         self.assertFalse(tmslocalizationsystem.is_valid())
 
+
 class ManufacturerRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
 
-        self.data = { 'name': 'Manufacturer' }
+        self.data = {'name': 'Manufacturer'}
 
     def test_ManufacturerRegisterForm_is_valid(self):
         manufacturer = ManufacturerRegisterForm(data=self.data)
@@ -200,6 +210,7 @@ class ManufacturerRegisterFormValidation(TestCase):
         self.data['name'] = ""
         manufacturer = ManufacturerRegisterForm(data=self.data)
         self.assertFalse(manufacturer.is_valid())
+
 
 class ElectrodeModelRegisterFormValidation(TestCase):
     def setUp(self):
@@ -226,6 +237,7 @@ class ElectrodeModelRegisterFormValidation(TestCase):
         manufacturer = ElectrodeModelRegisterForm(data=self.data)
         self.assertFalse(manufacturer.is_valid())
 
+
 class EEGElectrodeNETRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -237,12 +249,12 @@ class EEGElectrodeNETRegisterFormValidation(TestCase):
 
         tag = Tag.objects.create(name='EEG')
 
-        electrodemodel = ElectrodeModel.objects.create(name='Electrodemodel',electrode_type='surface')
-        electrodemodel.tags=[tag.id]
+        electrodemodel = ElectrodeModel.objects.create(name='Electrodemodel', electrode_type='surface')
+        electrodemodel.tags = [tag.id]
 
         self.data = {
-            'manufacturer':manufacturer.id,
-            'identification':'Identification',
+            'manufacturer': manufacturer.id,
+            'identification': 'Identification',
             'electrode_model_default': electrodemodel.id
         }
 
@@ -251,7 +263,7 @@ class EEGElectrodeNETRegisterFormValidation(TestCase):
         self.assertTrue(eegelectrodenet.is_valid())
 
     def test_EEGElectrodeNETRegisterForm_is_not_valid_without_manufacturer(self):
-        self.data['manufacturer']=""
+        self.data['manufacturer'] = ""
         eegelectrodenet = EEGElectrodeNETRegisterForm(self.data)
         self.assertFalse(eegelectrodenet.is_valid())
 
@@ -264,6 +276,7 @@ class EEGElectrodeNETRegisterFormValidation(TestCase):
         self.data['electrode_model_default'] = ""
         eegelectrodenet = EEGElectrodeNETRegisterForm(self.data)
         self.assertFalse(eegelectrodenet.is_valid())
+
 
 class EEGSolutionRegisterFormValidation(TestCase):
     def setUp(self):
@@ -293,6 +306,7 @@ class EEGSolutionRegisterFormValidation(TestCase):
         solution = EEGSolutionRegisterForm(data=self.data)
         self.assertFalse(solution.is_valid())
 
+
 class AmplifierRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -320,13 +334,14 @@ class AmplifierRegisterFormValidation(TestCase):
         amplifier = AmplifierRegisterForm(data=self.data)
         self.assertFalse(amplifier.is_valid())
 
+
 class FilterTypeRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
 
-        self.data = { 'name': 'Filter' }
+        self.data = {'name': 'Filter'}
 
     def test_FilterTypeRegisterForm_is_valid(self):
         filtertype = FilterTypeRegisterForm(data=self.data)
@@ -336,6 +351,7 @@ class FilterTypeRegisterFormValidation(TestCase):
         self.data['name'] = ""
         filtertype = FilterTypeRegisterForm(data=self.data)
         self.assertFalse(filtertype.is_valid())
+
 
 class SoftwareRegisterFormValidation(TestCase):
     def setUp(self):
@@ -364,13 +380,14 @@ class SoftwareRegisterFormValidation(TestCase):
         software = SoftwareRegisterForm(data=self.data)
         self.assertFalse(software.is_valid())
 
+
 class SoftwareVersionRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
 
-        self.data = { 'name': 'Software' }
+        self.data = {'name': 'Software'}
 
     def test_SoftwareVersionRegisterForm_is_valid(self):
         version = SoftwareVersionRegisterForm(data=self.data)
@@ -380,6 +397,7 @@ class SoftwareVersionRegisterFormValidation(TestCase):
         self.data['name'] = ""
         version = SoftwareVersionRegisterForm(data=self.data)
         self.assertFalse(version.is_valid())
+
 
 class ADConverterRegisterFormValidation(TestCase):
     def setUp(self):
@@ -408,6 +426,7 @@ class ADConverterRegisterFormValidation(TestCase):
         converter = ADConverterRegisterForm(data=self.data)
         self.assertFalse(converter.is_valid())
 
+
 class CoilModelRegisterFormValidation(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
@@ -434,6 +453,7 @@ class CoilModelRegisterFormValidation(TestCase):
         self.data['coil_shape'] = ""
         coilmodel = CoilModelRegisterForm(data=self.data)
         self.assertFalse(coilmodel.is_valid())
+
 
 class TMSDeviceRegisterFormValidation(TestCase):
     def setUp(self):
@@ -462,139 +482,268 @@ class TMSDeviceRegisterFormValidation(TestCase):
         tmsdevice = TMSDeviceRegisterForm(data=self.data)
         self.assertFalse(tmsdevice.is_valid())
 
-class ResearchProject_FormTest(TestCase):
 
-   def setUp(self):
-       self.research_projects = ResearchProject.objects.all()
-       # self.research_projects.save()
-       self.data = {
+class ResearchProject_FormTest(TestCase):
+    def setUp(self):
+        self.research_projects = ResearchProject.objects.all()
+        # self.research_projects.save()
+        self.data = {
            'start_date': '13/07/2018',
            'end_date': '30/07/2018',
            'title': 'Experimento TOC',
            'description': 'Experimento TOC',
            'owner': 'gady'}
 
-   def test_ResearchProjectForm_is_valid(self):
-       start_date  = self.data["start_date"]
-       end_date = self.data["end_date"]
-       title = self.data["title"]
-       description = self.data["description"]
-       owner = self.data["owner"]
+    def test_ResearchProjectForm_is_valid(self):
+        start_date = self.data["start_date"]
+        end_date = self.data["end_date"]
+        title = self.data["title"]
+        description = self.data["description"]
+        owner = self.data["owner"]
 
-       research_projects = ResearchProjectForm(data={'start_date': start_date, 'end_date': end_date, 'title': title, 'description': description, 'owner': owner})
-       self.assertTrue(research_projects.is_valid())
+        research_projects = ResearchProjectForm(
+            data={
+                'start_date': start_date,
+                'end_date': end_date,
+                'title': title,
+                'description': description,
+                'owner': owner}
+        )
+        self.assertTrue(research_projects.is_valid())
 
-   def test_ResearchProjectForm_is_not_valid(self):
-       research_projects = ResearchProjectForm(data={'start_date': "", 'end_date': "", 'title': "", 'description': "", 'owner': ""})
-       self.assertFalse(research_projects.is_valid())
+    def test_ResearchProjectForm_is_not_valid(self):
+        research_projects = ResearchProjectForm(
+            data={
+                'start_date': "",
+                'end_date': "",
+                'title': "",
+                'description': "",
+                'owner': ""}
+        )
+        self.assertFalse(research_projects.is_valid())
 
-   def test_ResearchProjectForm_is_not_valid_start_date(self):
-       research_projects = ResearchProjectForm(data={'start_date': "07/12/2018", 'end_date': self.data["end_date"], 'title': self.data["title"], 'description': self.data["description"], 'owner': self.data["owner"]})
-       self.assertFalse(research_projects.is_valid())
-       self.assertTrue(research_projects.errors["start_date"]) #True, porque start_date é campo obrigatório
+    def test_ResearchProjectForm_is_not_valid_start_date(self):
+        research_projects = ResearchProjectForm(
+            data={
+                'start_date': "07/12/2018",
+                'end_date': self.data["end_date"],
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'owner': self.data["owner"]}
+        )
+        self.assertFalse(research_projects.is_valid())
+        self.assertTrue(research_projects.errors["start_date"])  # True, porque start_date é campo obrigatório
 
-   def test_ResearchProjectForm_is_not_valid_end_date(self):
-       research_projects = ResearchProjectForm(data={'start_date': self.data["start_date"], 'end_date': "07/30/2018", 'title': self.data["title"], 'description': self.data["description"], 'owner': self.data["owner"]})
-       self.assertFalse(research_projects.is_valid())
-       self.assertEqual(research_projects.errors["end_date"], ["Informe uma data válida."])
+    def test_ResearchProjectForm_is_not_valid_end_date(self):
+        research_projects = ResearchProjectForm(
+            data={
+                'start_date': self.data["start_date"],
+                'end_date': "07/30/2018",
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'owner': self.data["owner"]}
+        )
+        self.assertFalse(research_projects.is_valid())
+        self.assertEqual(research_projects.errors["end_date"], ["Informe uma data válida."])
 
-   def test_ResearchProjectForm_is_not_valid_title(self):
-       research_projects = ResearchProjectForm(
-           data={
-               'start_date': self.data["start_date"],
-               'end_date': self.data["end_date"],
-               'title': "",
-               'description': self.data["description"],
-               'owner': self.data["owner"]}
-       )
-       self.assertFalse(research_projects.is_valid())
-       self.assertEqual(research_projects.errors["title"], ["Este campo é obrigatório."])
+    def test_ResearchProjectForm_is_not_valid_title(self):
+        research_projects = ResearchProjectForm(
+            data={
+                'start_date': self.data["start_date"],
+                'end_date': self.data["end_date"],
+                'title': "",
+                'description': self.data["description"],
+                'owner': self.data["owner"]}
+        )
+        self.assertFalse(research_projects.is_valid())
+        self.assertEqual(research_projects.errors["title"], ["Este campo é obrigatório."])
 
-   def test_ResearchProjectForm_is_not_valid_description(self):
-       research_projects = ResearchProjectForm(data={'start_date': self.data["start_date"], 'end_date': self.data["end_date"], 'title': self.data["title"], 'description': "", 'owner': self.data["owner"]})
-       self.assertFalse(research_projects.is_valid())
-       self.assertEqual(research_projects.errors["description"], ["Este campo é obrigatório."])
+    def test_ResearchProjectForm_is_not_valid_description(self):
+        research_projects = ResearchProjectForm(
+            data={
+                'start_date': self.data["start_date"],
+                'end_date': self.data["end_date"],
+                'title': self.data["title"],
+                'description': "",
+                'owner': self.data["owner"]}
+        )
+        self.assertFalse(research_projects.is_valid())
+        self.assertEqual(research_projects.errors["description"], ["Este campo é obrigatório."])
 
-   def test_ResearchProjectForm_is_not_valid_owner(self):
-       research_projects = ResearchProjectForm(data={'start_date': self.data["start_date"], 'end_date': self.data["end_date"], 'title': self.data["title"], 'description': self.data["description"], 'owner': ""})
-       self.assertTrue(research_projects.is_valid()) # True, porque owner não é campo obrigatório
+    def test_ResearchProjectForm_is_not_valid_owner(self):
+        research_projects = ResearchProjectForm(
+            data={
+                'start_date': self.data["start_date"],
+                'end_date': self.data["end_date"],
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'owner': ""}
+        )
+        self.assertTrue(research_projects.is_valid())  # True, porque owner não é campo obrigatório
 
-       # self.assertEqual(research_projects.errors["owner_id"], ["Este campo é obrigatório."])
-       # self.assertFalse(research_projects.errors["owner_id"])
+        # self.assertEqual(research_projects.errors["owner_id"], ["Este campo é obrigatório."])
+        # self.assertFalse(research_projects.errors["owner_id"])
+
 
 class Experiment_FormTest(TestCase):
 
-   @classmethod
-   def setUp(cls):
-       cls.data = {
-           'title': 'Experimento TOC',
-           'description': 'Experimento TOC',
-           'source_code_url': 'http://www.ime.usp.br',
-           'ethics_committee_project_url': 'http://www.fm.usp.br',
-           'ethics_committee_project_file':'/users/celsovi/documents/unit_tests/links.rtf',
-           'is_public': '',
-           'data_acquisition_is_concluded':''
-       }
-       cls.research_project = ResearchProject.objects.create(
-           title="Research project title", start_date=datetime.date.today(),
-           description="Research project description"
-       )
+    @classmethod
+    def setUp(cls):
+        cls.data = {
+            'title': 'Experimento TOC',
+            'description': 'Experimento TOC',
+            'source_code_url': 'http://www.ime.usp.br',
+            'ethics_committee_project_url': 'http://www.fm.usp.br',
+            'ethics_committee_project_file': '/users/celsovi/documents/unit_tests/links.rtf',
+            'is_public': '',
+            'data_acquisition_is_concluded': ''
+        }
+        cls.research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=datetime.date.today(),
+            description="Research project description"
+        )
+        cls.experiment = Experiment.objects.create(
+            research_project_id=cls.research_project.id,
+            title="Experimento-Update",
+            description="Descricao do Experimento-Update",
+            source_code_url="http://www.if.usp.br",
+            ethics_committee_project_url="http://www.fm.usp.br",
+            ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
+            is_public=" ",
+            data_acquisition_is_concluded=" ")
 
-       cls.experiment = Experiment.objects.create(
-           research_project_id=cls.research_project.id,
-           title="Experimento-Update",
-           description="Descricao do Experimento-Update",
-           source_code_url="http://www.if.usp.br",
-           ethics_committee_project_url="http://www.fm.usp.br",
-           ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-           is_public=" ",
-           data_acquisition_is_concluded=" ")
+    def test_ExperimentForm_is_valid(self):
+        experimentForm = ExperimentForm(
+            data={
+                'research_project': self.research_project.id,
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'source_code_url': self.data["source_code_url"],
+                'ethics_committee_project_url': self.data["ethics_committee_project_url"],
+                'ethics_committee_project_file': self.data["ethics_committee_project_file"],
+                'is_public': self.data["is_public"],
+                'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]}
+        )
+        self.assertTrue(experimentForm.is_valid())
 
+    def test_ExperimentForm_is_not_valid_research_project(self):
+        experiment = ExperimentForm(
+            data={
+                'research_project': "",
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'source_code_url': self.data["source_code_url"],
+                'ethics_committee_project_url': self.data["ethics_committee_project_url"],
+                'ethics_committee_project_file': self.data["ethics_committee_project_file"],
+                'is_public': self.data["is_public"],
+                'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]}
+        )
+        self.assertFalse(experiment.is_valid())
+        self.assertEqual(experiment.errors["research_project"], ["Este campo é obrigatório."])
 
-   def test_ExperimentForm_is_valid(self):
-       experimentForm = ExperimentForm(data={'research_project':self.research_project.id,'title': self.data["title"], 'description': self.data["description"], 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file':self.data["ethics_committee_project_file"], 'is_public':self.data["is_public"], 'data_acquisition_is_concluded':self.data["data_acquisition_is_concluded"]})
-       self.assertTrue(experimentForm.is_valid())
+    def test_ExperimentForm_is_not_valid_title(self):
+        experiment = ExperimentForm(
+            data={
+                'research_project': self.research_project.id,
+                'title': "",
+                'description': self.data["description"],
+                'source_code_url': self.data["source_code_url"],
+                'ethics_committee_project_url': self.data["ethics_committee_project_url"],
+                'ethics_committee_project_file': self.data["ethics_committee_project_file"],
+                'is_public': self.data["is_public"],
+                'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]}
+        )
+        self.assertFalse(experiment.is_valid())
+        self.assertEqual(experiment.errors["title"], ["Este campo é obrigatório."])
 
-   def test_ExperimentForm_is_not_valid_research_project(self):
-       experiment = ExperimentForm(data={'research_project':"", 'title': self.data["title"], 'description': self.data["description"], 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file': self.data["ethics_committee_project_file"], 'is_public': self.data["is_public"], 'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]})
-       self.assertFalse(experiment.is_valid())
-       self.assertEqual(experiment.errors["research_project"], ["Este campo é obrigatório."])
+    def test_ExperimentForm_is_not_valid_description(self):
+        experiment = ExperimentForm(
+            data={
+                'research_project': self.research_project.id,
+                'title': self.data["title"], 'description': "",
+                'source_code_url': self.data["source_code_url"],
+                'ethics_committee_project_url': self.data["ethics_committee_project_url"],
+                'ethics_committee_project_file': self.data["ethics_committee_project_file"],
+                'is_public': self.data["is_public"],
+                'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]}
+        )
+        self.assertFalse(experiment.is_valid())
+        self.assertEqual(experiment.errors["description"], ["Este campo é obrigatório."])
 
-   def test_ExperimentForm_is_not_valid_title(self):
-       experiment = ExperimentForm(data={'research_project':self.research_project.id, 'title': "", 'description': self.data["description"], 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file': self.data["ethics_committee_project_file"], 'is_public': self.data["is_public"], 'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]})
-       self.assertFalse(experiment.is_valid())
-       self.assertEqual(experiment.errors["title"], ["Este campo é obrigatório."])
+    def test_ExperimentForm_is_not_valid_source_code_url(self):
+        experiment = ExperimentForm(
+            data={
+                'research_project': self.research_project.id,
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'source_code_url': "",
+                'ethics_committee_project_url': self.data["ethics_committee_project_url"],
+                'ethics_committee_project_file': self.data["ethics_committee_project_file"],
+                'is_public': self.data["is_public"],
+                'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]}
+        )
+        self.assertTrue(experiment.is_valid())
+        s = experiment.data["source_code_url"]
+        s.upper()
+        self.assertNotEquals(s[: 7], "HTTP://", "Informe uma url válida.")
 
-   def test_ExperimentForm_is_not_valid_description(self):
-       experiment = ExperimentForm(data={'research_project':self.research_project.id, 'title': self.data["title"], 'description': "", 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file': self.data["ethics_committee_project_file"], 'is_public': self.data["is_public"], 'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]})
-       self.assertFalse(experiment.is_valid())
-       self.assertEqual(experiment.errors["description"], ["Este campo é obrigatório."])
+    def test_ExperimentForm_is_not_valid_ethics_committee_project_url(self):
+        experiment = ExperimentForm(
+            data={
+                'research_project': self.research_project.id,
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'source_code_url': self.data["source_code_url"],
+                'ethics_committee_project_url': "",
+                'ethics_committee_project_file': self.data["ethics_committee_project_file"],
+                'is_public': self.data["is_public"],
+                'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]}
+        )
+        self.assertTrue(experiment.is_valid())
+        s = experiment.data["ethics_committee_project_url"]
+        s.upper()
+        self.assertNotEquals(s[: 7], "HTTP://", "Informe uma url válida.")
 
-   def test_ExperimentForm_is_not_valid_source_code_url(self):
-       experiment = ExperimentForm(data={'research_project':self.research_project.id, 'title': self.data["title"], 'description': self.data["description"], 'source_code_url': "", 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file': self.data["ethics_committee_project_file"], 'is_public': self.data["is_public"], 'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]})
-       self.assertTrue(experiment.is_valid())
-       s = experiment.data["source_code_url"]
-       s.upper()
-       self.assertNotEquals(s[ : 7],"HTTP://", "Informe uma url válida.")
+    def test_ExperimentForm_is_not_valid_ethics_committee_project_file(self):
+        experiment = ExperimentForm(
+            data={
+                'research_project': self.research_project.id,
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'source_code_url': self.data["source_code_url"],
+                'ethics_committee_project_url': self.data["ethics_committee_project_url"],
+                'ethics_committee_project_file': "",
+                'is_public': self.data["is_public"],
+                'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]}
+        )
+        self.assertTrue(experiment.is_valid())
 
-   def test_ExperimentForm_is_not_valid_ethics_committee_project_url(self):
-       experiment = ExperimentForm(data={'research_project':self.research_project.id, 'title': self.data["title"], 'description': self.data["description"], 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': "", 'ethics_committee_project_file': self.data["ethics_committee_project_file"], 'is_public': self.data["is_public"], 'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]})
-       self.assertTrue(experiment.is_valid())
-       s = experiment.data["ethics_committee_project_url"]
-       s.upper()
-       self.assertNotEquals(s[ : 7],"HTTP://", "Informe uma url válida.")
+    def test_ExperimentForm_is_not_valid_is_public(self):
+        experiment = ExperimentForm(
+            data={
+                'research_project': self.research_project.id,
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'source_code_url': self.data["source_code_url"],
+                'ethics_committee_project_url': self.data["ethics_committee_project_url"],
+                'ethics_committee_project_file': self.data["ethics_committee_project_file"],
+                'is_public': "",
+                'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]}
+        )
+        self.assertTrue(experiment.is_valid())
 
-   def test_ExperimentForm_is_not_valid_ethics_committee_project_file(self):
-       experiment = ExperimentForm(data={'research_project':self.research_project.id, 'title': self.data["title"], 'description': self.data["description"], 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file': "", 'is_public': self.data["is_public"], 'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]})
-       self.assertTrue(experiment.is_valid())
-
-   def test_ExperimentForm_is_not_valid_is_public(self):
-       experiment = ExperimentForm(data={'research_project':self.research_project.id, 'title': self.data["title"], 'description': self.data["description"], 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file': self.data["ethics_committee_project_file"], 'is_public': "", 'data_acquisition_is_concluded': self.data["data_acquisition_is_concluded"]})
-       self.assertTrue(experiment.is_valid())
-
-   def test_ExperimentForm_is_not_valid_data_acquisition_is_concluded(self):
-       experiment = ExperimentForm(data={'research_project':self.research_project.id, 'title': self.data["title"], 'description': self.data["description"], 'source_code_url': self.data["source_code_url"], 'ethics_committee_project_url': self.data["ethics_committee_project_url"], 'ethics_committee_project_file': self.data["ethics_committee_project_file"], 'is_public': self.data["is_public"], 'data_acquisition_is_concluded': ""})
-       self.assertTrue(experiment.is_valid())
+    def test_ExperimentForm_is_not_valid_data_acquisition_is_concluded(self):
+        experiment = ExperimentForm(
+            data={
+                'research_project': self.research_project.id,
+                'title': self.data["title"],
+                'description': self.data["description"],
+                'source_code_url': self.data["source_code_url"],
+                'ethics_committee_project_url': self.data["ethics_committee_project_url"],
+                'ethics_committee_project_file': self.data["ethics_committee_project_file"],
+                'is_public': self.data["is_public"], 'data_acquisition_is_concluded': ""}
+        )
+        self.assertTrue(experiment.is_valid())
 
 
 class GroupAdd_FormTest(TestCase):
@@ -638,6 +787,7 @@ class GroupAdd_FormTest(TestCase):
        groupAdd_form = GroupForm(data={'title': self.data["title"], 'description': ""})
        self.assertFalse(groupAdd_form.is_valid())
        self.assertEqual(groupAdd_form.errors["description"], ["Este campo é obrigatório."])
+
 
 # class InclusaoCriteria_FormTest(TestCase):
 #
@@ -1224,6 +1374,7 @@ class EMGDigitalFilterSettings_FormTest(TestCase):
         self.assertFalse(settingsEMGDigitalFilter_form.is_valid())
         self.assertEqual(settingsEMGDigitalFilter_form.errors["filter_type"], ["Este campo é obrigatório."])
 
+
 class EMG_ADConverterSettings_FormTest(TestCase):
 
     @classmethod
@@ -1627,6 +1778,7 @@ class SEP_Block_Block_Fix_Random_FormTest(TestCase):
         self.assertFalse(number_of_uses_SEP_Block_Block_Fix_Random_form.is_valid())
         self.assertEqual(number_of_uses_SEP_Block_Block_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
 
+
 class SEP_Instruction_FormTest(TestCase):
 
     @classmethod
@@ -1680,6 +1832,7 @@ class SEP_Instruction_FormTest(TestCase):
         })
         self.assertFalse(sep_Instruction_form.is_valid())
         self.assertEqual(sep_Instruction_form.errors["text"], ["Este campo é obrigatório."])
+
 
 class SEP_Pause_FormTest(TestCase):
 
@@ -1834,6 +1987,7 @@ class SEP_Questionnaire_FormTest(TestCase):
         self.assertEqual(sep_questionnaire_form.errors["identification"],
                          ["Este campo é obrigatório."])
 
+
 class SEP_Stimulus_FormTest(TestCase):
 
     @classmethod
@@ -1890,6 +2044,7 @@ class SEP_Stimulus_FormTest(TestCase):
         self.assertFalse(sep_stimulus_form.is_valid())
         self.assertEqual(sep_stimulus_form.errors["stimulus_type"],
                          ["Este campo é obrigatório."])
+
 
 class SEP_Task_FormTest(TestCase):
 

@@ -295,10 +295,8 @@ class ExportQuestionnaireTest(TestCase):
         dct = ObjectsFactory.create_data_configuration_tree(
             component_config)
 
-        ##### First participant #####
-        ##
+        # First participant
         # Create patient/subject/subject_of_group
-        ##
         # create other subject of group
         patient = UtilTests().create_patient_mock(changed_by=self.user)
         subject = Subject.objects.create(patient=patient)
@@ -307,9 +305,8 @@ class ExportQuestionnaireTest(TestCase):
         )
         self.group.subjectofgroup_set.add(subject_of_group)
 
-        ##
         # Add response to questionnaire in NES and LimeSurvey
-        ##
+
         # add response to limesurvey survey and the references in our db
         result = UtilTests().create_survey_participant(self.survey)
         # TODO:
@@ -342,12 +339,12 @@ class ExportQuestionnaireTest(TestCase):
             responsible=self.user, token_id=result['tid'],
             subject_of_group=subject_of_group
         )
-        ##### End first participant #####
+        # End first participant
 
-        ##### Second participant #####
-        ##
+        # Second participant
+
         # Create patient/subject/subject_of_group
-        ##
+
         # create other subject of group
         patient2 = UtilTests().create_patient_mock(changed_by=self.user)
         subject2 = Subject.objects.create(patient=patient2)
@@ -356,9 +353,7 @@ class ExportQuestionnaireTest(TestCase):
         )
         self.group.subjectofgroup_set.add(subject_of_group2)
 
-        ##
         # Add response to questionnaire in NES and LimeSurvey
-        ##
         # add response to limesurvey survey and the references in our db
         result = UtilTests().create_survey_participant(self.survey)
         # TODO:
@@ -391,11 +386,9 @@ class ExportQuestionnaireTest(TestCase):
             responsible=self.user, token_id=result['tid'],
             subject_of_group=subject_of_group2
         )
-        ##### End second participant #####
+        # End second participant
 
-        ##
         # Post data to view
-        ##
         # data style that is posted to export_view in template
         data = {
             'per_participant': ['on'],
@@ -421,9 +414,7 @@ class ExportQuestionnaireTest(TestCase):
         session.save()
         response = self.client.post(reverse('export_view'), data)
 
-        ##
         # Extract zip file and make assertions
-        ##
         # get the zipped file to test against its content
         file = io.BytesIO(response.content)
         zipped_file = zipfile.ZipFile(file, 'r')
@@ -676,6 +667,5 @@ class ExportQuestionnaireTest(TestCase):
             'Per_questionnaire/Step_5_Generic_data_collection/ not in: ' +
             str(zipped_file.namelist())
         )
-
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)

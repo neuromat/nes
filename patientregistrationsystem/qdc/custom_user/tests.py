@@ -173,26 +173,6 @@ class FormUserValidation(TestCase):
         response = self.client.post(reverse(USER_NEW), self.data)
         self.assertEqual(response.status_code, 302)
 
-    def test_researcher_delete(self):
-        """
-        Testa inclusao de usuario com sucesso
-        """
-        username = 'test_username'
-        self.data['username'] = username
-        self.data['login_enabled'] = True
-
-        response = self.client.post(reverse(USER_NEW), self.data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(User.objects.filter(username=username).count(), 1)
-
-        username = 'test_username'
-        self.data['username'] = username
-        self.data['login_enabled'] = True
-
-        response = self.client.post(reverse(USER_NEW), self.data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(User.objects.filter(username=username).count(), 1)
-
     def test_user_passwords_doesnt_match(self):
         """
         Testa senhas não conferem

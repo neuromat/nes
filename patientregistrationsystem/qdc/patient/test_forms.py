@@ -1,5 +1,5 @@
 from django.test import TestCase
-from patient.models import Gender, Payment, FleshTone, Religion,Schooling, AmountCigarettes, AlcoholFrequency,\
+from patient.models import Gender, Payment, FleshTone, Religion, Schooling, AmountCigarettes, AlcoholFrequency,\
     AlcoholPeriod
 from patient.views import *
 from django.contrib.auth.models import User

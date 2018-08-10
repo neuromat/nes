@@ -39,7 +39,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('code', models.CharField(max_length=150, null=True, blank=True)),
                 ('url', models.URLField(null=True, blank=True)),
-                ('logo', models.FileField(upload_to=configuration.models.get_institution_logo_dir, null=True, blank=True)),
+                ('logo', models.FileField(upload_to=configuration.models.get_institution_logo_dir, null=True,
+                                          blank=True)),
                 ('institution', models.ForeignKey(to='custom_user.Institution', null=True, blank=True)),
             ],
             options={

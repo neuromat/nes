@@ -756,7 +756,8 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
     collaborators_added = ExperimentResearcher.objects.filter(experiment_id=experiment_id)
     collaborators_added_ids = collaborators_added.values_list('researcher_id', flat=True)
 
-    collaborators = User.objects.filter(is_active=True).exclude(pk__in=collaborators_added_ids).order_by('first_name', 'last_name')
+    collaborators = User.objects.filter(is_active=True).exclude(pk__in=collaborators_added_ids).order_by('first_name',
+                                                                                                         'last_name')
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -1374,16 +1375,16 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 
         list_of_questionnaires_configuration.append(
             {
-            "survey_title": surveys.get_survey_title(
-                questionnaire.survey.lime_survey_id,
-                get_questionnaire_language(
-                    surveys, questionnaire.survey.lime_survey_id, language_code
-                )
-            ),
-            "fills_per_participant": fills_per_participant,
-            "total_fills_needed": total_fills_needed,
-            "total_fills_done": amount_of_completed_questionnaires,
-            "id": questionnaire_configuration.id
+                "survey_title": surveys.get_survey_title(
+                    questionnaire.survey.lime_survey_id,
+                    get_questionnaire_language(
+                        surveys, questionnaire.survey.lime_survey_id, language_code
+                    )
+                ),
+                "fills_per_participant": fills_per_participant,
+                "total_fills_needed": total_fills_needed,
+                "total_fills_done": amount_of_completed_questionnaires,
+                "id": questionnaire_configuration.id
             }
         )
 
@@ -1391,14 +1392,13 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
             parent_id=block_id, component__component_type="block"
     ):
 
-        list_of_questionnaires_configuration = \
-            recursively_create_list_of_questionnaires_and_statistics(
-                Block.objects.get(id=block_configuration.component.id),
-                list_of_questionnaires_configuration,
-                surveys,
-                num_participants,
-                language_code
-            )
+        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires_and_statistics(
+            Block.objects.get(id=block_configuration.component.id),
+            list_of_questionnaires_configuration,
+            surveys,
+            num_participants,
+            language_code
+        )
 
     return list_of_questionnaires_configuration
 
@@ -5029,8 +5029,8 @@ def get_data_collections_from_group(group, data_type=None):
             AdditionalData.objects.filter(
                 subject_of_group__group=group,
                 data_configuration_tree_id=data_configuration_tree_id).values(
-                'subject_of_group__subject').distinct().count() if data_type is None or \
-                                                                   data_type == "additional_data" else None
+                'subject_of_group__subject').distinct().count() if data_type is None or data_type ==\
+                                                                   "additional_data" else None
 
         data_list = [{'type': 'additional_data',
                       'icon_class': icon_class['additional_data'],
@@ -9603,8 +9603,8 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     back_cancel_url = create_back_cancel_url(component_type, component_configuration, path_of_the_components,
                                              list_of_ids_of_components_and_configurations, experiment, updating)
 
-    return component, component_configuration, component_form, configuration_form, experiment, component_type, \
-           template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, \
+    return component, component_configuration, component_form, configuration_form, experiment, component_type,\
+           template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group,\
            back_cancel_url
 
 
@@ -9764,9 +9764,13 @@ def get_uses_of_step_with_data(experiment):
             data_configuration_tree__component_configuration__component__experiment=experiment).values(
             'data_configuration_tree__component_configuration').distinct()]
 
-    return steps_questionnaire + \
-           steps_eeg + steps_emg + steps_tms + \
-           steps_goalkeeper_game + steps_additional_data + steps_generic_data_collection
+    return steps_questionnaire +\
+           steps_eeg +\
+           steps_emg +\
+           steps_tms +\
+           steps_goalkeeper_game +\
+           steps_additional_data +\
+           steps_generic_data_collection
 
 
 def clone_data_configuration_tree(dct, orig_and_clone):
