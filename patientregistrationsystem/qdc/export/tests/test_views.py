@@ -428,13 +428,15 @@ class ExportQuestionnaireTest(TestCase):
         file = io.BytesIO(response.content)
         zipped_file = zipfile.ZipFile(file, 'r')
         zipped_file.extract(
-            'NES_EXPORT/Experiment_data/Group_group_update'
+            'NES_EXPORT/Experiment_data/Group_' +
+            self.group.title.lower() +
             '/Per_questionnaire/Step_2_QUESTIONNAIRE/' +
             self.survey.code + '_test-questionnaire_en.csv', '/tmp'
         )
 
         with open(
-                '/tmp/NES_EXPORT/Experiment_data/Group_group_update'
+                '/tmp/NES_EXPORT/Experiment_data/Group_' +
+                self.group.title.lower() +
                 '/Per_questionnaire/Step_2_QUESTIONNAIRE/' +
                 self.survey.code + '_test-questionnaire_en.csv'
         ) as file:
@@ -623,6 +625,57 @@ class ExportQuestionnaireTest(TestCase):
             dct, self.subject_of_group
         )
         ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+
+        ##
+        # Post data to view
+        ##
+        # data style that is posted to export_view in template
+        data = {
+            'per_participant': ['on'],
+            'action': ['run'],
+            'per_questionnaire': ['on'],
+            'patient_selected': ['age*age'],
+            'per_generic_data': ['on'],
+            'headings': ['code'],
+            'from[]': [
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*First Survey*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*First Survey*firstQuestion*firstQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*First Survey*secondQuestion*secondQuestion',
+                '1*' + str(self.group.id) + '*' + str(self.sid) +
+                '*First Survey*acquisitiondate*acquisitiondate',
+                '1*' + str(self.group.id) + '*' + str(self.sid) +
+                '*First Survey*firstQuestion*firstQuestion',
+                '1*' + str(self.group.id) + '*' + str(self.sid) +
+                '*First Survey*secondQuestion*secondQuestion'
+            ],
+            'responses': ['short']
+        }
+
+        # Put 'group_selected_list' in request session. See:
+        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
+        session = self.client.session
+        session['group_selected_list'] = [str(self.group.id)]
+        session.save()
+        response = self.client.post(reverse('export_view'), data)
+
+        ##
+        # Get file and make assertions
+        ##
+        # get the zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+        # TODO: use subdirectory separator
+        self.assertTrue(
+            any('Per_participant/Step_5_Generic_data_collection/'
+                in element for element in zipped_file.namelist()),
+            'Per_questionnaire/Step_5_Generic_data_collection/ not in: ' +
+            str(zipped_file.namelist())
+        )
 
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
