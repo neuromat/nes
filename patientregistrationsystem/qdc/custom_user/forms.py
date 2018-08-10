@@ -130,7 +130,7 @@ class InstitutionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(InstitutionForm, self).__init__(*args, **kwargs)
         self.fields['country'].initial = 'BR'
-        instance = kwargs.get('instance')
+        instance = kwargs.get('instance') or self.instance
 
         if instance:
             parent_list = Institution.objects.all()
@@ -142,9 +142,8 @@ class InstitutionForm(ModelForm):
 
 def get_institutions_recursively(institution):
     institution_list = [institution]
-    output_list = set(institution_list)
     children = Institution.objects.filter(parent=institution)
     for child in children:
-        if child not in output_list:
-            output_list |= get_institutions_recursively(child)
-    return output_list
+        if child not in institution_list:
+            institution_list |= get_institutions_recursively(child)
+    return institution_list

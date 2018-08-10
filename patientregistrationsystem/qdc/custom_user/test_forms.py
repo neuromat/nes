@@ -74,6 +74,16 @@ class UserFormValidation(TestCase):
         userbeingcreated = UserForm(data=self.data)
         self.assertFalse(userbeingcreated.is_valid())
 
+    # Test if the form with an already registered email is not valid
+    def test_UserForm_is_not_valid_with_duplicated_email(self):
+        user_being_created = UserForm(data=self.data)
+        user_being_created.save()
+
+        self.data['first_name'] = 'Second'
+        self.data['username'] = 'Username22018'
+        new_user_being_created = UserForm(data=self.data)
+        self.assertFalse(new_user_being_created.is_valid())
+
     # Test if the form without the last name is not valid
     def test_UserForm_is_not_valid_without_last_name(self):
         self.data['last_name'] = ""
