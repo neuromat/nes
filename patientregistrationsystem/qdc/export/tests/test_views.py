@@ -9,12 +9,13 @@ from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 
+from custom_user.tests_helper import create_user
 from experiment.models import Component, Subject, SubjectOfGroup
 from experiment.tests_original import ObjectsFactory
 from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
-from survey.models import Survey
+from survey.tests_helper import create_survey
 
 
 class ExportQuestionnaireTest(TestCase):
@@ -52,21 +53,38 @@ class ExportQuestionnaireTest(TestCase):
 
         return column_names_dict
 
+    @staticmethod
+    def create_limesurvey_questionnaire(lime_survey):
+        # create questionnaire at LiveSurvey
+        survey_title = 'Test questionnaire'
+        sid = lime_survey.add_survey(999999, survey_title, 'en', 'G')
+
+        # create required group/questions for LimeSurvey/NES integration
+        with open(os.path.join(
+                settings.BASE_DIR, 'export', 'tests',
+                'NESIdentification_group.lsg'
+        )) as file:
+            content = file.read()
+            lime_survey.insert_questions(sid, content, 'lsg')
+
+        # create other group of questions/questions
+        with open(os.path.join(
+                settings.BASE_DIR, 'export', 'tests',
+                'limesurvey_group_2.lsg'
+        )) as file:
+            content = file.read()
+            lime_survey.insert_questions(sid, content, 'lsg')
+
+        # activate survey and tokens
+        lime_survey.activate_survey(sid)
+        lime_survey.activate_tokens(sid)
+
+        return sid
+
     def setUp(self):
         exec(open('add_initial_data.py').read())
-        self.user = User.objects.create_user(
-            username='jose', email='jose@test.com', password='passwd'
-        )
-        user_profile = self.user.user_profile
-        user_profile.login_enabled = True
-        # this is necessary for surpass the middleware that forces password
-        # change when login in first time
-        user_profile.force_password_change = False
-        user_profile.save()
-
-        for group in Group.objects.all():
-            group.user_set.add(self.user)
-
+        # line above create the groups of users
+        self.user = create_user(Group.objects.all())
         self.client.login(username=self.user.username, password='passwd')
 
         # create experiment/experimental protocol/group
@@ -86,32 +104,11 @@ class ExportQuestionnaireTest(TestCase):
         )
         self.group.subjectofgroup_set.add(self.subject_of_group)
 
-        # create questionnaire at LiveSurvey
-        survey_title = 'Test questionnaire'
         self.lime_survey = Questionnaires()
-        self.sid = self.lime_survey.add_survey(999999, survey_title, 'en', 'G')
-
-        # create required group/questions for LimeSurvey/NES integration
-        with open(os.path.join(
-                settings.BASE_DIR, 'export', 'tests',
-                'NESIdentification_group.lsg'
-        )) as file:
-            content = file.read()
-            self.lime_survey.insert_questions(self.sid, content, 'lsg')
-
-        # create other group of questions/questions
-        with open(os.path.join(
-                settings.BASE_DIR, 'export', 'tests', 'limesurvey_group_2.lsg'
-        )) as file:
-            content = file.read()
-            self.lime_survey.insert_questions(self.sid, content, 'lsg')
-
-        # activate survey and tokens
-        self.lime_survey.activate_survey(self.sid)
-        self.lime_survey.activate_tokens(self.sid)
+        self.sid = self.create_limesurvey_questionnaire(self.lime_survey)
 
         # create questionnaire in NES
-        self.survey = Survey.objects.create(lime_survey_id=self.sid)
+        self.survey = create_survey(self.sid)
         # create questionnaire component
         questionnaire = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE,
