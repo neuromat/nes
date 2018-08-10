@@ -110,7 +110,6 @@ class ObjectsFactory(object):
             experiment=experiment, researcher=user
         )
 
-
     @staticmethod
     def create_publication(list_of_experiments):
         """
@@ -333,7 +332,7 @@ class ObjectsFactory(object):
         return filter_type
 
     @staticmethod
-    def create_tag(name = 'TAG name'):
+    def create_tag(name='TAG name'):
         tag = Tag.objects.create(
             name=name
         )
@@ -645,15 +644,10 @@ class ExperimentalProtocolTest(TestCase):
             self.data
         )
         self.assertEqual(response.status_code, 302)
-        # check if redirected to list of components
-        self.assertTrue(
-            "/experiment/" + str(experiment.id) + "/components" in response.url
-        )
-        self.assertTrue(
-            Stimulus.objects.filter(
-                identification='Stimulus identification', stimulus_type=1
-            ).exists()
-        )
+        # Check if redirected to list of components
+        self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
+        self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification",
+                                                stimulus_type=stimulus_type).exists())
 
         self.data = {'action': 'save', 'identification': 'Pause identification',
                      'description': 'Pause description', 'duration_value': 2, 'duration_unit': 'h'}
@@ -2411,7 +2405,6 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("manufacturer_view", args=(manufacturer.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Manufacturer.objects.all().count(), 0)
-
 
     def test_amplifier_register(self):
         manufacturer = ObjectsFactory.create_manufacturer()

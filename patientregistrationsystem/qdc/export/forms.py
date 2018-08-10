@@ -6,8 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from patient.models import Patient, Diagnosis
 
-from django.core.exceptions import ValidationError
-
 HEADINGS_CHOICES = (
     ('code', _("Question code")),
     ('full', _("Full question text")),
@@ -47,6 +45,7 @@ class ExportForm(Form):
         }),
         choices=RESPONSES_CHOICES, required=False
     )
+
 
 
 class ParticipantsSelectionForm(ModelForm):
@@ -99,6 +98,7 @@ class AgeIntervalForm(Form):
     max_age = IntegerField(min_value=0, widget=NumberInput(attrs={'class': 'form-control', 'required': "",
                                                                   'data-error': _('Max age must be filled.'),
                                                                   'disabled': ''}))
+
     def clean(self):
         cleaned_data = super(AgeIntervalForm, self).clean()
         min_age = cleaned_data.get("min_age")

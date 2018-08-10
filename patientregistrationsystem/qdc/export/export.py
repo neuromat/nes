@@ -1981,12 +1981,13 @@ class ExportExecution:
                         if not path.exists(path_additional_data):
                             # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                             # /Step_X_COMPONENT_TYPE
-                            error_msg, path_additional_data = create_directory(path_per_participant, directory_step_name)
+                            error_msg, path_additional_data = create_directory(path_per_participant,
+                                                                               directory_step_name)
 
                             if error_msg != "":
                                 return error_msg
 
-                        # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_COMPONENT_TYPE
+                        # ex. /NES_EXPORT/Experiment_data/Group_XX/Per_participant/Participant_123/Step_X_COMPONENT_TYPE
                         export_step_additional_data_directory = path.join(participant_export_directory,
                                                                        directory_step_name)
 
@@ -2052,7 +2053,7 @@ class ExportExecution:
                                 path_per_emg_data = path.join(path_goalkeeper_game_data, directory_data_name)
                                 if not path.exists(path_per_emg_data):
                                     # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
-                                    #  /Step_X_aaa/GoalkeeperDATA_# 
+                                    #  /Step_X_aaa/GoalkeeperDATA_
                                     error_msg, path_per_goalkeeper_game_data = create_directory(
                                         path_goalkeeper_game_data, directory_data_name)
 
@@ -2060,7 +2061,7 @@ class ExportExecution:
                                         return error_msg
 
                                 # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
-                                # /Step_X_aaa /GoalkeeperDATA_# 
+                                # /Step_X_aaa/GoalkeeperDATA_
                                 export_goalkeeper_data_directory = path.join(export_goalkeeper_game_directory,
                                                                              directory_data_name)
 
@@ -2068,7 +2069,7 @@ class ExportExecution:
                                     path_context_tree_file = context_tree_file['digital_game_filename']
                                     file_name = path_context_tree_file.split('/')[-1]
                                     # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant
-                                    # /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
+                                    #  /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
                                     complete_goalkeeper_game_filename = path.join(path_per_goalkeeper_game_data,
                                                                                   file_name)
                                     with open(path_context_tree_file, 'rb') as f:
@@ -2093,10 +2094,10 @@ class ExportExecution:
 
     def get_headers_and_fields(self, output_list):
         """
-            :param output_list: list with fields and headers
-            :return: list of headers
-                     list of fields
-            """
+
+        :param output_list:
+        :return: list of headers and list of fields
+        """
 
         headers = []
         fields = []

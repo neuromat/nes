@@ -1167,8 +1167,7 @@ def send_all_experiments_to_portal():
 
                         for questionnaire_response in questionnaire_responses:
                             component_id = \
-                                questionnaire_response.data_configuration_tree.\
-                                    component_configuration.component_id
+                                questionnaire_response.data_configuration_tree.component_configuration.component_id
                             questionnaire = \
                                 Questionnaire.objects.get(pk=component_id)
                             limesurvey_id = questionnaire.survey.lime_survey_id
@@ -6264,7 +6263,8 @@ def get_sensors_position(eeg_data):
                 #
                 # file_power_espectral_name = 'power_spectral_' + str(eeg_data.id) + ".png"
                 # fig_psd.savefig(path.join(path_complete, file_power_espectral_name))
-                # file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_power_espectral_name)
+                # file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"),
+                #                                       file_power_espectral_name)
 
     return file_path
 
@@ -9273,8 +9273,16 @@ def component_create(request, experiment_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
     component_form = ComponentForm(request.POST or None)
-    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    ###########################################################################
+    # This is needed for the form to be able to validate the presence of a
+    # duration in a pause component only. Since there is no creation of
+    # components (Component) without being an inherited model, eg: 'stimulus',
+    # 'instruction' etc., it does not make sense to create a ComponentForm
+    # just for model use Pause. It would make more sense to create a PauseForm
+    # as is the case for other types of components.
+
     component_form.component_type = component_type
+    ###########################################################################
     questionnaires_list = []
     specific_form = None
 
@@ -10842,7 +10850,6 @@ def component_update(request, path_of_the_components):
                         if component_type == 'stimulus':
                             stimulus = get_object_or_404(Stimulus, pk=component.id)
                             specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
-
 
                         # Only save if there was a change.
                         if component_form.has_changed() or specific_form.has_changed():
