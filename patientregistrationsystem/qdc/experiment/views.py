@@ -286,7 +286,9 @@ def research_project_view(request, research_project_id, template_name="experimen
             for group in groups:
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
-                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+                    image = get_experimental_protocol_image(
+                        group.experimental_protocol, tree, True
+                    )
                     group_and_image = [group.title, image]
                     experimental_protocol_image.append(group_and_image)
 
@@ -1072,7 +1074,10 @@ def send_all_experiments_to_portal():
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
                     textual_description = get_description_from_experimental_protocol_tree(tree)
-                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+                    image = get_experimental_protocol_image(
+                        group.experimental_protocol, tree, True
+                    )
+                    image = image.split(settings.MEDIA_URL)
 
                     # steps
                     step_list = send_steps_to_portal(portal_group['id'], tree,
@@ -1470,7 +1475,9 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
 
         tree = get_block_tree(group.experimental_protocol, request.LANGUAGE_CODE)
         experimental_protocol_description = get_description_from_experimental_protocol_tree(tree)
-        experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
+        experimental_protocol_image = get_experimental_protocol_image(
+            group.experimental_protocol, tree, True
+        )
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -8492,15 +8499,21 @@ def split_node_identification_for_graph(identification):
     return '\n'.join(result)
 
 
-def get_experimental_protocol_image(experimental_protocol, tree):
+def get_experimental_protocol_image(experimental_protocol, tree, url=False):
 
     graph = pydot.Dot(graph_type='digraph')
 
     subgraph, first_node, last_node = get_subgraph(tree)
     graph.add_subgraph(subgraph)
 
-    initial_node = pydot.Node('initial_node', label='', style="filled", shape='circle', fillcolor='green')
-    ending_node = pydot.Node('ending_node', label='', style="filled", shape='circle', fillcolor='red')
+    initial_node = pydot.Node(
+        'initial_node', label='', style="filled", shape='circle',
+        fillcolor='green'
+    )
+    ending_node = pydot.Node(
+        'ending_node', label='', style="filled", shape='circle',
+        fillcolor='red'
+    )
     subgraph.add_node(initial_node)
     subgraph.add_node(ending_node)
     if first_node:
@@ -8509,7 +8522,8 @@ def get_experimental_protocol_image(experimental_protocol, tree):
         subgraph.add_edge(pydot.Edge(last_node, ending_node))
 
     # graph file name
-    file_name = "experimental_protocol_" + str(experimental_protocol.id) + ".png"
+    file_name = \
+        "experimental_protocol_" + str(experimental_protocol.id) + ".png"
 
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
@@ -8519,7 +8533,10 @@ def get_experimental_protocol_image(experimental_protocol, tree):
     except:
         return None
 
-    return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+    return path.join(
+        settings.MEDIA_URL if url else settings.MEDIA_ROOT,
+        'temp', file_name
+    )
 
 
 def get_description_from_experimental_protocol_tree(component, component_configuration_attributes=[]):

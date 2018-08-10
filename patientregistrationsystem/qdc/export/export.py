@@ -18,6 +18,8 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 
 from export.export_utils import create_list_of_trees, can_export_nwb
+# from qdc import settings
+# from qdc.settings import MEDIA_ROOT
 
 from survey.survey_utils import QuestionnaireUtils
 
@@ -182,7 +184,8 @@ def is_patient_active(subject_id):
 
 
 class LogMessages:
-    def __init__(self, user, file_name=path.join(settings.MEDIA_ROOT, "export_log")):
+    def __init__(self, user, file_name=path.join(settings.MEDIA_ROOT,
+                                                 "export_log")):
         self.user = user
         self.file_name = file_name
 
@@ -225,8 +228,9 @@ class ExportExecution:
         self.questionnaire_utils = QuestionnaireUtils()
 
     def set_directory_base(self, user_id, export_id):
-        self.directory_base = path.join(self.base_directory_name, str(user_id))
-        self.directory_base = path.join(self.directory_base, str(export_id))
+        self.directory_base = path.join(
+            self.base_directory_name, str(user_id), str(export_id)
+        )
 
     def get_directory_base(self):
 
@@ -566,7 +570,8 @@ class ExportExecution:
                             sensors_positions_image = get_sensors_position(eeg_data)
                             sensors_positions_filename = None
                             if sensors_positions_image:
-                                sensors_positions_filename = settings.BASE_DIR + str(sensors_positions_image)
+                                sensors_positions_filename = \
+                                    settings.BASE_DIR + str(sensors_positions_image)
 
                             if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
@@ -2332,7 +2337,7 @@ class ExportExecution:
                     complete_protocol_image_filename = path.join(directory_experimental_protocol,
                                                                  filename_protocol_image)
 
-                    image_protocol = settings.BASE_DIR + experimental_protocol_image
+                    image_protocol = experimental_protocol_image
                     with open(image_protocol, 'rb') as f:
                         data = f.read()
 
