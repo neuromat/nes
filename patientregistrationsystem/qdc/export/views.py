@@ -128,7 +128,7 @@ header_explanation_fields = ['questionnaire_id',
                              'option_value',
                              'column_title']
 
-
+# TODO: code bloat
 def create_export_instance(user):
     export_instance = Export(user=user)
 
@@ -177,10 +177,11 @@ def update_participants_list(participants_list, heading_type):
                 participant[1] = abbreviated_data(header_translated, heading_type)
 
         # include participant_code
-
         for field, header in patient_fields_inclusion:
             header_translated = ug_(header[heading_type])
-            participants_list.insert(0, [field, abbreviated_data(header_translated, heading_type)])
+            participants_list.insert(
+                0, [field, abbreviated_data(header_translated, heading_type)]
+            )
 
 
 def update_diagnosis_list(diagnosis_list, heading_type):
@@ -347,8 +348,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             update_export_instance(input_export_file, output_export_file, export_instance)
 
         # delete temporary directory: from base_directory and below
-        # base_export_directory = export.get_export_directory()  # DEBUG (voltar)
-        # rmtree(base_export_directory, ignore_errors=True)  # DEBUG (voltar)
+        base_export_directory = export.get_export_directory()
+        rmtree(base_export_directory, ignore_errors=True)
 
         return export_complete_filename
 
@@ -550,7 +551,8 @@ def export_view(request, template_name="export/export_data.html"):
                     selected_diagnosis.append(diagnosis[0])
         else:
             messages.error(
-                request, _("No data was select. Export data was not generated.")
+                request,
+                _("No data was select. Export data was not generated.")
             )
 
     surveys = Questionnaires()
