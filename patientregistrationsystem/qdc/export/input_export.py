@@ -29,8 +29,6 @@ class InputExport:
         self.data = {}
 
     def read(self, input_filename, update_input_data=True):
-        # print("read")
-
         with open(input_filename.encode('utf-8'), 'r') as input_file:
             input_data_temp = load(self.data, input_file)
 
@@ -40,7 +38,6 @@ class InputExport:
         return self.data
 
     def write(self, output_filename):
-        # print("write")
         with open(output_filename.encode('utf-8'), 'w', encoding='UTF-8') as outfile:
             dump(self.data, outfile)
 
@@ -60,24 +57,17 @@ class InputExport:
         self.data[variable_name] = variable_data
 
     def build_diagnosis_participant(self, strut_name, output_filename, field_header_list):
-        # print("participant or diagnosis")
         self.data[strut_name] = {
             "output_filename": output_filename,
             "output_list": [],
             "data_list": []
         }
-        # self.data[strut_name].append({"output_filename": output_filename, "output_list": [], "data_list": []})
-
-        # field_header_list[0] -> field
-        # field_header_list[1] -> header
         for field, header in field_header_list:
             output_data = {"header": header, "field": field}
             self.data[strut_name]["output_list"].append(output_data)
             # self.data[strut_name][0]["output_list"]
 
     def build_questionnaire(self, questionnaire_list, language, entrance_questionnaire):
-
-        # print("questionnaire")
         questionnaire_lime_survey = Questionnaires()
         if "questionnaire_language" not in self.data:
             self.data["questionnaire_language"] = {}
