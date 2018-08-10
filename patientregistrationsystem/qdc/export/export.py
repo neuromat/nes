@@ -455,8 +455,10 @@ class ExportExecution:
                                         self.per_group_data[group_id]['data_per_participant'][subject_code][
                                             'token_list'].append(questionnaire_response_dic)
 
-                                        if questionnaire_id not in self.per_group_data[group_id]['questionnaires_per_group']:
-                                            self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id] = {
+                                        if questionnaire_id not in self.per_group_data[group_id][
+                                            'questionnaires_per_group']:
+                                            self.per_group_data[group_id]['questionnaires_per_group'][
+                                                questionnaire_id] = {
                                                 'questionnaire_code': questionnaire_code,
                                                 'header_filtered_list': [],
                                                 'token_list': []
@@ -507,7 +509,7 @@ class ExportExecution:
                                 step_number = data['step_number']
                             else:
                                 step_number = 0
-                                component_type = 'experimental_protocol' # root
+                                component_type = 'experimental_protocol'  # root
                             for additional_data in data['additional_data_list']:
                                 subject_code = additional_data.subject_of_group.subject.patient.code
                                 additional_data_file_list = []
@@ -627,8 +629,8 @@ class ExportExecution:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
                             if 'emg_data_list' not in self.per_group_data[group_id]['data_per_participant'][
                                 subject_code]:
-                                self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data_list'] \
-                                    = []
+                                self.per_group_data[group_id]['data_per_participant'][subject_code]['emg_data_list'] =\
+                                    []
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] = 1
                             else:
                                 self.per_group_data[group_id]['data_per_participant'][subject_code]['data_index'] += 1
@@ -2442,7 +2444,7 @@ class ExportExecution:
                             export_directory_stimulus_data = path.join(export_group_directory,
                                                                        stimulus_data['directory_step_name'])
                             stimulus_file_name = stimulus_data['stimulus_file'].split("/")[-1]
-                            stimulus_data_file_name = path.join(settings.BASE_DIR, "media") + "/" + \
+                            stimulus_data_file_name = path.join(settings.BASE_DIR, "media") + "/" +\
                                                       stimulus_data['stimulus_file']
                             complete_stimulus_data_filename = path.join(path_stimulus_data, stimulus_file_name)
 
@@ -2978,8 +2980,7 @@ def get_eeg_setting_description(eeg_setting_id):
             'description': eeg_electrode_localization_system_attributes['description'],
             'map_filename': eeg_electrode_localization_system_attributes['map_image_file'].split('/')[-1],
             'eeg_electrode_net': {
-                'manufacturer_name': eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system
-                    .eeg_electrode_net.manufacturer.name,
+                'manufacturer_name': eeg_setting.eeg_electrode_layout_setting.eeg_electrode_net_system.eeg_electrode_net.manufacturer.name,
                 'equipment_type': eeg_electrode_net_attributes['equipment_type'],
                 'identification': eeg_electrode_net_attributes['identification'],
                 'description': eeg_electrode_net_attributes['description'],
