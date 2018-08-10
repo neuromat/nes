@@ -621,7 +621,7 @@ class ExperimentalProtocolTest(TestCase):
                      'eeg_setting': self.eeg_setting.id}
         response = self.client.post(reverse("component_new", args=(experiment.id, "eeg")), self.data)
         self.assertEqual(response.status_code, 302)
-        # Check if redirected to list of components
+        # check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
         self.assertTrue(EEG.objects.filter(description=description, identification=identification).exists())
 
@@ -629,19 +629,31 @@ class ExperimentalProtocolTest(TestCase):
                      'description': 'Instruction description', 'text': 'Instruction text'}
         response = self.client.post(reverse("component_new", args=(experiment.id, "instruction")), self.data)
         self.assertEqual(response.status_code, 302)
-        # Check if redirected to list of components
+        # check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
         self.assertTrue(Instruction.objects.filter(text="Instruction text").exists())
 
         stimulus_type = StimulusType.objects.create(name="Auditivo")
         stimulus_type.save()
-        self.data = {'action': 'save', 'identification': 'Stimulus identification',
-                     'description': 'Stimulus description', 'stimulus_type': stimulus_type.id}
-        response = self.client.post(reverse("component_new", args=(experiment.id, "stimulus")), self.data)
+        self.data = {
+            'action': 'save', 'identification': 'Stimulus identification',
+            'description': 'Stimulus description',
+            'stimulus_type': stimulus_type.id
+        }
+        response = self.client.post(
+            reverse("component_new", args=(experiment.id, "stimulus")),
+            self.data
+        )
         self.assertEqual(response.status_code, 302)
-        # Check if redirected to list of components
-        self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
-        self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification", stimulus_type=1).exists())
+        # check if redirected to list of components
+        self.assertTrue(
+            "/experiment/" + str(experiment.id) + "/components" in response.url
+        )
+        self.assertTrue(
+            Stimulus.objects.filter(
+                identification='Stimulus identification', stimulus_type=1
+            ).exists()
+        )
 
         self.data = {'action': 'save', 'identification': 'Pause identification',
                      'description': 'Pause description', 'duration_value': 2, 'duration_unit': 'h'}
