@@ -5,7 +5,7 @@ from faker import Factory
 def create_user(groups, username=None, force_password_change=False):
     """
     Create user to login in NES
-    :param groups: QuerySet with groups to add to the user
+    :param groups: QuerySet with groups of permissions to add to the user
     :param username: username
     :param force_password_change: False avoids to enter in password change page
     :return:
