@@ -19,11 +19,7 @@ class PatientForm(ModelForm):
         super(PatientForm, self).__init__(data, *args, **kwargs)
         self.fields['zipcode'].widget.attrs['onBlur'] = 'pesquisacep(this.value);'
         # The default country will be the one defined in LocalInstitution
-        try:
-            local_institution = LocalInstitution.objects.get(pk=1)
-            self.fields['country'].initial = local_institution.institution.country
-        except LocalInstitution.DoesNotExist:
-            pass
+        self.fields['country'].initial = 'BR'
 
     anonymous = forms.BooleanField(required=False,
                                    initial=False,
