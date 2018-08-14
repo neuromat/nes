@@ -5,16 +5,19 @@ import zipfile
 from datetime import datetime
 
 import shutil
+from unittest import skip
+
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 
+from custom_user.tests_helper import create_user
 from experiment.models import Component, Subject, SubjectOfGroup
 from experiment.tests_original import ObjectsFactory
 from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
-from survey.models import Survey
+from survey.tests_helper import create_survey
 
 
 class ExportQuestionnaireTest(TestCase):
@@ -52,44 +55,11 @@ class ExportQuestionnaireTest(TestCase):
 
         return column_names_dict
 
-    def setUp(self):
-        exec(open('add_initial_data.py').read())
-        self.user = User.objects.create_user(
-            username='jose', email='jose@test.com', password='passwd'
-        )
-        user_profile = self.user.user_profile
-        user_profile.login_enabled = True
-        # this is necessary for surpass the middleware that forces password
-        # change when login in first time
-        user_profile.force_password_change = False
-        user_profile.save()
-
-        for group in Group.objects.all():
-            group.user_set.add(self.user)
-
-        self.client.login(username=self.user.username, password='passwd')
-
-        # create experiment/experimental protocol/group
-        self.experiment = ObjectsFactory.create_experiment(
-            ObjectsFactory.create_research_project(self.user)
-        )
-        self.root_component = ObjectsFactory.create_block(self.experiment)
-        self.group = ObjectsFactory.create_group(
-            self.experiment, self.root_component
-        )
-
-        # create subject of group
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
-        subject = Subject.objects.create(patient=patient)
-        self.subject_of_group = SubjectOfGroup.objects.create(
-            subject=subject, group=self.group
-        )
-        self.group.subjectofgroup_set.add(self.subject_of_group)
-
+    @staticmethod
+    def create_limesurvey_questionnaire(lime_survey):
         # create questionnaire at LiveSurvey
         survey_title = 'Test questionnaire'
-        self.lime_survey = Questionnaires()
-        self.sid = self.lime_survey.add_survey(999999, survey_title, 'en', 'G')
+        sid = lime_survey.add_survey(999999, survey_title, 'en', 'G')
 
         # create required group/questions for LimeSurvey/NES integration
         with open(os.path.join(
@@ -97,37 +67,46 @@ class ExportQuestionnaireTest(TestCase):
                 'NESIdentification_group.lsg'
         )) as file:
             content = file.read()
-            self.lime_survey.insert_questions(self.sid, content, 'lsg')
+            lime_survey.insert_questions(sid, content, 'lsg')
 
-        # create other group of questions/questions
+        # create other group of questions/questions for the tests
         with open(os.path.join(
-                settings.BASE_DIR, 'export', 'tests', 'limesurvey_group_2.lsg'
+                settings.BASE_DIR, 'export', 'tests',
+                'limesurvey_group_2.lsg'
         )) as file:
             content = file.read()
-            self.lime_survey.insert_questions(self.sid, content, 'lsg')
+            lime_survey.insert_questions(sid, content, 'lsg')
 
         # activate survey and tokens
-        self.lime_survey.activate_survey(self.sid)
-        self.lime_survey.activate_tokens(self.sid)
+        lime_survey.activate_survey(sid)
+        lime_survey.activate_tokens(sid)
 
-        # create questionnaire in NES
-        self.survey = Survey.objects.create(lime_survey_id=self.sid)
-        # create questionnaire component
+        return sid
+
+    def create_nes_questionnaire(self, root_component):
+        """
+        Create questionnaire component in experimental protocol and return
+        data configuration tree associated to that questionnaire component
+        :return: DataConfigurationTree model instance
+        """
         questionnaire = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE,
             kwargs={'sid': self.survey.id}
         )
-
         # include questionnaire in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, questionnaire
+            root_component, questionnaire
         )
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        return ObjectsFactory.create_data_configuration_tree(component_config)
 
-        # add response to limesurvey survey and the references in our db
+    def add_responses_to_limesurvey_survey(self, subject_of_group, dct):
         result = UtilTests().create_survey_participant(self.survey)
+        # TODO:
+        # acho que não precisa criar resposta do participante enquanto
+        # estamos testando resposta para experimento.
         UtilTests().create_response_survey_mock(
-            self.user, patient, self.survey, result['tid']
+            self.user, subject_of_group.subject.patient, self.survey,
+            result['tid']
         )
         response_table_columns = self.get_limesurvey_table_question_codes()
         response_data = {
@@ -135,7 +114,7 @@ class ExportQuestionnaireTest(TestCase):
             'lastpage': 2,
             response_table_columns['acquisitiondate']: str(datetime.now()),
             response_table_columns['responsibleid']: self.user.id,
-            response_table_columns['subjectid']: subject.id,
+            response_table_columns['subjectid']: subject_of_group.subject.id,
             response_table_columns['firstQuestion']: 'Olá Mundo!',
             response_table_columns['secondQuestion']: 'Hallo Welt!'
         }
@@ -151,7 +130,69 @@ class ExportQuestionnaireTest(TestCase):
         ObjectsFactory.create_questionnaire_response(
             dct=dct,
             responsible=self.user, token_id=result['tid'],
-            subject_of_group=self.subject_of_group
+            subject_of_group=subject_of_group
+        )
+
+    def create_subject_of_group(self, group):
+        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = Subject.objects.create(patient=patient)
+        subject_of_group = SubjectOfGroup.objects.create(
+            subject=subject, group=group
+        )
+        self.group.subjectofgroup_set.add(subject_of_group)
+
+        return subject_of_group
+
+    def append_group_session_variable(self, variable, group_ids):
+        """
+        See:
+        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
+        # for the form that it is done
+
+        :param variable: variable to be appended to session
+        :param group_ids: list of group ids (strins) as the value of the
+        session variable
+        """
+        session = self.client.session
+        session[variable] = group_ids
+        session.save()
+
+    def get_zipped_file(self, response):
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+        return zipped_file
+
+    def setUp(self):
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
+
+        self.user = create_user(Group.objects.all())
+        self.client.login(username=self.user.username, password='passwd')
+
+        # create experiment/experimental protocol/group
+        self.experiment = ObjectsFactory.create_experiment(
+            ObjectsFactory.create_research_project(self.user)
+        )
+        self.root_component = ObjectsFactory.create_block(self.experiment)
+        self.group = ObjectsFactory.create_group(
+            self.experiment, self.root_component
+        )
+
+        # create patient/subject/subject_of_group
+        self.subject_of_group = self.create_subject_of_group(self.group)
+
+        self.lime_survey = Questionnaires()
+        self.sid = self.create_limesurvey_questionnaire(self.lime_survey)
+
+        # create questionnaire in NES
+        self.survey = create_survey(self.sid)
+        dct = self.create_nes_questionnaire(self.root_component)
+
+        # add response to limesurvey survey and the references in our db
+        self.add_responses_to_limesurvey_survey(
+            self.subject_of_group, dct
         )
 
     def tearDown(self):
@@ -161,72 +202,23 @@ class ExportQuestionnaireTest(TestCase):
     def test_same_questionnaire_used_in_different_steps_return_correct_zipfile_content(self):
         # TODO: testar com sobreposição do subdiretório media
 
-        ##
-        # Create component (step) QUESTIONNAIRE
-        ##
-        # create other component (step) QUESTIONNAIRE in same experimental
-        # protocol
-        questionnaire = ObjectsFactory.create_component(
-            self.experiment, Component.QUESTIONNAIRE,
-            kwargs={'sid': self.survey.id}
-        )
-        # include questionnaire in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, questionnaire
-        )
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        # Create other component (step) QUESTIONNAIRE in same experimental
+        # protocol, from LimeSurvey survey created in setUp
+        dct = self.create_nes_questionnaire(self.root_component)
 
-        ##
-        # Create patient/subject/subject_of_group
-        ##
-        # create other subject of group
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
-        subject = Subject.objects.create(patient=patient)
-        subject_of_group = SubjectOfGroup.objects.create(
-            subject=subject, group=self.group
-        )
-        self.group.subjectofgroup_set.add(subject_of_group)
+        # Create one more patient/subject/subject_of_group besides those of
+        # setUp
+        subject_of_group = self.create_subject_of_group(self.group)
 
-        ##
-        # Add response to questionnaire in NES and LimeSurvey
-        ##
-        # add response to limesurvey survey and the references in our db
-        result = UtilTests().create_survey_participant(self.survey)
-        # TODO:
-        # acho que não precisa criar resposta do participante enquanto
-        # estamos testando resposta para experimento.
-        UtilTests().create_response_survey_mock(
-            self.user, patient, self.survey, result['tid']
-        )
-        response_table_columns = self.get_limesurvey_table_question_codes()
-        response_data = {
-            'token': result['token'],
-            'lastpage': 2,
-            response_table_columns['acquisitiondate']: str(datetime.now()),
-            response_table_columns['responsibleid']: self.user.id,
-            response_table_columns['subjectid']: subject.id,
-            response_table_columns['firstQuestion']: 'Al mondo!',
-            response_table_columns['secondQuestion']: 'Til verden!'
-        }
-        self.lime_survey.add_response(self.sid, response_data)
-        # Set participant as completed (in participants table).
-        # See:
-        # https://www.limesurvey.org/de/foren/can-i-do-this-with-limesurvey/
-        # 113443-help-with-remote-control-add-response
-        self.lime_survey.set_participant_properties(
-            self.sid, result['tid'],
-            {'completed': datetime.utcnow().strftime('%Y-%m-%d')}
-        )
-        ObjectsFactory.create_questionnaire_response(
-            dct=dct,
-            responsible=self.user, token_id=result['tid'],
-            subject_of_group=subject_of_group
+        self.add_responses_to_limesurvey_survey(subject_of_group, dct)
+
+        # Put 'group_selected_list' in request session.
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
         )
 
-        ##
-        # Post data to view
-        ##
-        # data style that is posted to export_view in template
+        # Post data to view: data style that is posted to export_view in
+        # template
         data = {
             'per_participant': ['on'],
             'action': ['run'],
@@ -243,161 +235,75 @@ class ExportQuestionnaireTest(TestCase):
             'patient_selected': ['age*age'],
             'responses': ['short']
         }
-
-        # Put 'group_selected_list' in request session. See:
-        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
-        session = self.client.session
-        session['group_selected_list'] = [str(self.group.id)]
-        session.save()
         response = self.client.post(reverse('export_view'), data)
 
-        ##
-        # Get file and make assertions
-        ##
         # get the zipped file to test against its content
-        file = io.BytesIO(response.content)
-        zipped_file = zipfile.ZipFile(file, 'r')
-        self.assertIsNone(zipped_file.testzip())
+        zipped_file = self.get_zipped_file(response)
 
-        # TODO: use subdirectory separator
         self.assertTrue(
-            any('Per_questionnaire/Step_1_QUESTIONNAIRE/' + self.survey.code +
-                '_test-questionnaire_en.csv'
-                in element for element in zipped_file.namelist()),
-            'Per_questionnaire/Step_1_QUESTIONNAIRE/' + self.survey.code +
-            '_test-questionnaire_en.csv not in: ' + str(zipped_file.namelist())
+            any(os.path.join(
+                'Per_questionnaire',
+                'Step_1_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.csv'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Per_questionnaire',
+                'Step_1_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.csv'
+            ) +
+            'not in: ' + str(zipped_file.namelist())
         )
         self.assertTrue(
-            any('Per_questionnaire/Step_2_QUESTIONNAIRE/' + self.survey.code +
-                '_test-questionnaire_en.csv'
-                in element for element in zipped_file.namelist()),
-            'Per_questionnaire/Step_2_QUESTIONNAIRE/' + self.survey.code +
-            '_test-questionnaire_en.csv not in: ' + str(zipped_file.namelist())
+            any(os.path.join(
+                'Per_questionnaire',
+                'Step_2_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.csv'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Per_questionnaire',
+                'Step_2_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.csv'
+            ) +
+            'not in: ' + str(zipped_file.namelist())
         )
 
     def test_same_questionnaire_used_in_different_steps_return_correct_responses_content(self):
         """
         Without reuse
         """
-        ##
-        # Create component (step) QUESTIONNAIRE
-        ##
-        # create other component (step) QUESTIONNAIRE in same experimental
-        # protocol
-        questionnaire = ObjectsFactory.create_component(
-            self.experiment, Component.QUESTIONNAIRE,
-            kwargs={'sid': self.survey.id}
-        )
-        # include questionnaire in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, questionnaire
-        )
-        dct = ObjectsFactory.create_data_configuration_tree(
-            component_config)
+        # create questionnaire in NES
+        dct = self.create_nes_questionnaire(self.root_component)
 
-        # First participant
-        # Create patient/subject/subject_of_group
-        # create other subject of group
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
-        subject = Subject.objects.create(patient=patient)
-        subject_of_group = SubjectOfGroup.objects.create(
-            subject=subject, group=self.group
-        )
-        self.group.subjectofgroup_set.add(subject_of_group)
-
-        # Add response to questionnaire in NES and LimeSurvey
-
+        # Create first patient/subject/subject_of_group besides those of
+        # setUp
+        subject_of_group = self.create_subject_of_group(self.group)
         # add response to limesurvey survey and the references in our db
-        result = UtilTests().create_survey_participant(self.survey)
-        # TODO:
-        # acho que não precisa criar resposta do participante enquanto
-        # estamos testando resposta para experimento.
-        UtilTests().create_response_survey_mock(
-            self.user, patient, self.survey, result['tid']
+        self.add_responses_to_limesurvey_survey(
+            subject_of_group, dct
         )
-        response_table_columns = self.get_limesurvey_table_question_codes()
-        response_data = {
-            'token': result['token'],
-            'lastpage': 2,
-            response_table_columns['acquisitiondate']: str(datetime.now()),
-            response_table_columns['responsibleid']: self.user.id,
-            response_table_columns['subjectid']: subject.id,
-            response_table_columns['firstQuestion']: 'Al mondo!',
-            response_table_columns['secondQuestion']: 'Til verden!'
-        }
-        self.lime_survey.add_response(self.sid, response_data)
-        # Set participant as completed (in participants table).
-        # See:
-        # https://www.limesurvey.org/de/foren/can-i-do-this-with-limesurvey/
-        # 113443-help-with-remote-control-add-response
-        self.lime_survey.set_participant_properties(
-            self.sid, result['tid'],
-            {'completed': datetime.utcnow().strftime('%Y-%m-%d')}
-        )
-        ObjectsFactory.create_questionnaire_response(
-            dct=dct,
-            responsible=self.user, token_id=result['tid'],
-            subject_of_group=subject_of_group
-        )
-        # End first participant
 
-        # Second participant
-
-        # Create patient/subject/subject_of_group
-
-        # create other subject of group
-        patient2 = UtilTests().create_patient_mock(changed_by=self.user)
-        subject2 = Subject.objects.create(patient=patient2)
-        subject_of_group2 = SubjectOfGroup.objects.create(
-            subject=subject2, group=self.group
-        )
-        self.group.subjectofgroup_set.add(subject_of_group2)
-
-        # Add response to questionnaire in NES and LimeSurvey
+        # Create second patient/subject/subject_of_group
+        subject_of_group2 = self.create_subject_of_group(self.group)
         # add response to limesurvey survey and the references in our db
-        result = UtilTests().create_survey_participant(self.survey)
-        # TODO:
-        # acho que não precisa criar resposta do participante enquanto
-        # estamos testando resposta para experimento.
-        UtilTests().create_response_survey_mock(
-            self.user, patient2, self.survey, result['tid']
+        self.add_responses_to_limesurvey_survey(
+            subject_of_group2, dct
         )
-        response_table_columns = self.get_limesurvey_table_question_codes()
-        response_data = {
-            'token': result['token'],
-            'lastpage': 2,
-            response_table_columns['acquisitiondate']: str(datetime.now()),
-            response_table_columns['responsibleid']: self.user.id,
-            response_table_columns['subjectid']: subject2.id,
-            response_table_columns['firstQuestion']: 'Ola mundo!',
-            response_table_columns['secondQuestion']: 'Halló heimur!'
-        }
-        self.lime_survey.add_response(self.sid, response_data)
-        # Set participant as completed (in participants table).
-        # See:
-        # https://www.limesurvey.org/de/foren/can-i-do-this-with-limesurvey/
-        # 113443-help-with-remote-control-add-response
-        self.lime_survey.set_participant_properties(
-            self.sid, result['tid'],
-            {'completed': datetime.utcnow().strftime('%Y-%m-%d')}
-        )
-        ObjectsFactory.create_questionnaire_response(
-            dct=dct,
-            responsible=self.user, token_id=result['tid'],
-            subject_of_group=subject_of_group2
-        )
-        # End second participant
 
-        # Post data to view
-        # data style that is posted to export_view in template
+        # Put 'group_selected_list' in request session.
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
         data = {
             'per_participant': ['on'],
             'action': ['run'],
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(self.sid) + '*Test '
-                                                                  'questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*acquisitiondate*acquisitiondate',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
@@ -406,30 +312,33 @@ class ExportQuestionnaireTest(TestCase):
             'patient_selected': ['age*age'],
             'responses': ['short']
         }
-
-        # Put 'group_selected_list' in request session. See:
-        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
-        session = self.client.session
-        session['group_selected_list'] = [str(self.group.id)]
-        session.save()
         response = self.client.post(reverse('export_view'), data)
 
-        # Extract zip file and make assertions
         # get the zipped file to test against its content
-        file = io.BytesIO(response.content)
-        zipped_file = zipfile.ZipFile(file, 'r')
+        zipped_file = self.get_zipped_file(response)
+
         zipped_file.extract(
-            'NES_EXPORT/Experiment_data/Group_' +
-            self.group.title.lower() +
-            '/Per_questionnaire/Step_2_QUESTIONNAIRE/' +
-            self.survey.code + '_test-questionnaire_en.csv', '/tmp'
+            os.path.join(
+                'NES_EXPORT',
+                'Experiment_data',
+                'Group_' + self.group.title.lower(),
+                'Per_questionnaire', 'Step_2_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.csv'
+            ),
+            '/tmp'
         )
 
         with open(
-                '/tmp/NES_EXPORT/Experiment_data/Group_' +
-                self.group.title.lower() +
-                '/Per_questionnaire/Step_2_QUESTIONNAIRE/' +
+            os.path.join(
+                os.sep, 'tmp',
+                'NES_EXPORT',
+                'Experiment_data',
+                'Group_' + self.group.title.lower(),
+                'Per_questionnaire',
+                'Step_2_QUESTIONNAIRE',
                 self.survey.code + '_test-questionnaire_en.csv'
+            )
+
         ) as file:
             self.assertEqual(len(file.readlines()), 3)
 
@@ -437,72 +346,33 @@ class ExportQuestionnaireTest(TestCase):
         """
         With reuse
         """
-        # by now: simple testing in browser is working (but make this test!)
+        # by now: simple testing in browser is working (but, make this test ;)
         pass
 
     def test_two_groups_with_questionnaire_step_in_both_returns_correct_directory_structure(self):
 
         # create other group/experimental protocol
-        root_component_2 = ObjectsFactory.create_block(self.experiment)
-        group_2 = ObjectsFactory.create_group(
-            self.experiment, root_component_2
-        )
+        root_component2 = ObjectsFactory.create_block(self.experiment)
+        group2 = ObjectsFactory.create_group(self.experiment, root_component2)
 
-        # create subject of group
-        patient_2 = UtilTests().create_patient_mock(changed_by=self.user)
-        subject_2 = Subject.objects.create(patient=patient_2)
-        subject_of_group_2 = SubjectOfGroup.objects.create(
-            subject=subject_2, group=group_2
-        )
-        group_2.subjectofgroup_set.add(subject_of_group_2)
+        # create patient/subject/subject_of_group
+        subject_of_group2 = self.create_subject_of_group(group2)
 
         # create questionnaire component (reuse Survey created in setUp)
-        questionnaire_2 = ObjectsFactory.create_component(
-            self.experiment, Component.QUESTIONNAIRE,
-            kwargs={'sid': self.survey.id}
-        )
-
-        # include questionnaire in experimental protocol
-        component_config_2 = ObjectsFactory.create_component_configuration(
-            root_component_2, questionnaire_2
-        )
-        dct_2 = \
-            ObjectsFactory.create_data_configuration_tree(component_config_2)
+        dct2 = self.create_nes_questionnaire(root_component2)
 
         # add response to limesurvey survey and the references in our db
-        result_2 = UtilTests().create_survey_participant(self.survey)
-        UtilTests().create_response_survey_mock(
-            self.user, patient_2, self.survey, result_2['tid']
-        )
-        response_table_columns = self.get_limesurvey_table_question_codes()
-        response_data = {
-            'token': result_2['token'],
-            'lastpage': 2,
-            response_table_columns['acquisitiondate']: str(datetime.now()),
-            response_table_columns['responsibleid']: self.user.id,
-            response_table_columns['subjectid']: subject_2.id,
-            response_table_columns['firstQuestion']: 'Olá Mundo!',
-            response_table_columns['secondQuestion']: 'Hallo Welt!'
-        }
-        self.lime_survey.add_response(self.sid, response_data)
-
-        # Set participant as completed (in participants table).
-        # See:
-        # https://www.limesurvey.org/de/foren/can-i-do-this-with-limesurvey/113443-help-with-remote-control-add-response
-        self.lime_survey.set_participant_properties(
-            self.sid, result_2['tid'],
-            {'completed': datetime.utcnow().strftime('%Y-%m-%d')}
-        )
-        ObjectsFactory.create_questionnaire_response(
-            dct=dct_2,
-            responsible=self.user, token_id=result_2['tid'],
-            subject_of_group=subject_of_group_2
+        self.add_responses_to_limesurvey_survey(
+            subject_of_group2, dct2
         )
 
-        ##
-        # Post data to view
-        ##
-        # data style that is posted to export_view in template
+        # Put 'group_selected_list' in request session.
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id), str(group2.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
         data = {
             'per_participant': ['on'],
             'action': ['run'],
@@ -516,85 +386,106 @@ class ExportQuestionnaireTest(TestCase):
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
 
-                '1*' + str(group_2.id) + '*' + str(self.sid) + '*Test '
+                '1*' + str(group2.id) + '*' + str(self.sid) + '*Test '
                 'questionnaire*acquisitiondate*acquisitiondate',
-                '1*' + str(group_2.id) + '*' + str(self.sid) +
+                '1*' + str(group2.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '1*' + str(group_2.id) + '*' + str(self.sid) +
+                '1*' + str(group2.id) + '*' + str(self.sid) +
                 '*Test questionnaire*secondQuestion*secondQuestion'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short']
         }
-
-        # Put 'group_selected_list' in request session. See:
-        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
-        session = self.client.session
-        session['group_selected_list'] = [str(self.group.id), str(group_2.id)]
-        session.save()
         response = self.client.post(reverse('export_view'), data)
 
-        ##
-        # Get file and make assertions
-        ##
         # get the zipped file to test against its content
-        file = io.BytesIO(response.content)
-        zipped_file = zipfile.ZipFile(file, 'r')
-        self.assertIsNone(zipped_file.testzip())
+        zipped_file = self.get_zipped_file(response)
 
-        # TODO: use subdirectory separator
         # assertions for first group
         self.assertTrue(
-            any('Group_' + self.group.title + '/Experimental_protocol/' in
-                element for element in zipped_file.namelist()),
-            'Group_' + self.group.title + '/Experimental_Protocol/ not in:' +
+            any(os.path.join(
+                'Group_' + self.group.title, 'Experimental_protocol'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + self.group.title, 'Experimental_Protocol'
+            ) +
+            'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
-            any('Group_' + self.group.title + '/Per_participant/' in
-                element for element in zipped_file.namelist()),
-            'Group_' + self.group.title + '/Per_participant/ not in:' +
+            any(os.path.join(
+                'Group_' + self.group.title, 'Per_participant'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + self.group.title, 'Per_participant'
+            ) +
+            'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
-            any('Group_' + self.group.title + '/Per_questionnaire/' in
-                element for element in zipped_file.namelist()),
-            'Group_' + self.group.title + '/Per_questionnaire/ not in:' +
+            any(os.path.join(
+                'Group_' + self.group.title, 'Per_questionnaire'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + self.group.title, 'Per_questionnaire'
+            ) +
+            'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
-            any('Group_' + self.group.title + '/Questionnaire_metadata/' in
-                element for element in zipped_file.namelist()),
-            'Group_' + self.group.title + '/Questionnaire_metadata/ not in:' +
+            any(os.path.join(
+                'Group_' + self.group.title, 'Questionnaire_metadata'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + self.group.title, 'Questionnaire_metadata'
+            ) +
+            'not in:' +
             str(zipped_file.namelist())
         )
 
         # assertions for second group
         self.assertTrue(
-            any('Group_' + group_2.title + '/Experimental_protocol/' in
-                element for element in zipped_file.namelist()),
-            'Group_' + group_2.title + '/Experimental_Protocol/ not in:' +
+            any(os.path.join(
+                'Group_' + group2.title, 'Experimental_protocol'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + group2.title, 'Experimental_Protocol'
+            ) +
+            'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
-            any('Group_' + group_2.title + '/Per_participant/' in
-                element for element in zipped_file.namelist()),
-            'Group_' + group_2.title + '/Per_participant/ not in:' +
+            any(os.path.join(
+                'Group_' + group2.title, 'Per_participant'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + group2.title, 'Per_participant'
+            ) +
+            'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
-            any('Group_' + group_2.title + '/Per_questionnaire/' in
-                element for element in zipped_file.namelist()),
-            'Group_' + group_2.title + '/Per_questionnaire/ not in:' +
+            any(os.path.join(
+                'Group_' + group2.title, 'Per_questionnaire'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + group2.title, 'Per_questionnaire'
+            ) +
+            'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
-            any('Group_' + group_2.title + '/Questionnaire_metadata/' in
-                element for element in zipped_file.namelist()),
-            'Group_' + group_2.title + '/Questionnaire_metadata/ not in:' +
+            any(os.path.join(
+                'Group_' + group2.title, 'Questionnaire_metadata'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + group2.title, 'Questionnaire_metadata'
+            ) +
+            'not in:' +
             str(zipped_file.namelist())
         )
 
+    @skip  # this test is in progress
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_generic_data_colletion(self):
 
@@ -667,5 +558,6 @@ class ExportQuestionnaireTest(TestCase):
             'Per_questionnaire/Step_5_Generic_data_collection/ not in: ' +
             str(zipped_file.namelist())
         )
+
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
