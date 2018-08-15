@@ -93,7 +93,7 @@ diagnosis_fields = [
      "header": 'classification_of_diseases_description', "description": _("Disease Abbreviated Description")},
 ]
 
-patient_fields_inclusion = [
+PATIENT_FIELDS_INCLUSION = [
     ["code", {"code": "participant_code", "full": _("Participant code"),
               "abbreviated": _("Participant code")}],
 ]
@@ -177,7 +177,7 @@ def update_participants_list(participants_list, heading_type):
                 participant[1] = abbreviated_data(header_translated, heading_type)
 
         # include participant_code
-        for field, header in patient_fields_inclusion:
+        for field, header in PATIENT_FIELDS_INCLUSION:
             header_translated = ug_(header[heading_type])
             participants_list.insert(
                 0, [field, abbreviated_data(header_translated, heading_type)]
@@ -453,7 +453,13 @@ def export_view(request, template_name="export/export_data.html"):
                 per_participant = True
                 per_questionnaire = False
                 responses_type = None
-                heading_type = export_form.cleaned_data['headings']
+                # TODO:
+                # When there'are not questionnaires avulsely answered
+                # by participants, export_form.cleaned_data['headings'] = '',
+                # in fact there aren't questionnaires stuff at all. So this
+                # form attribute doesn't make sense. By now we make 'code'
+                # as value of that attribute for doesn't breaking the code.
+                heading_type = export_form.cleaned_data['headings'] or 'code'
 
                 update_participants_list(participants_list, heading_type)
                 update_diagnosis_list(diagnosis_list, heading_type)
@@ -871,10 +877,7 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
 
 def get_questionnaire_header(questionnaire_lime_survey, questionnaire_id, fields, heading_type="code",
                              current_language="pt-BR"):
-    # return: {"<question_code>": "question_heading_type", "<question_code1>": "question_heading_type1"...}
-    # ("<question_code>": "question_heading_type")
 
-    # questionnaire_header = []
     questionnaire_list = []
 
     language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
