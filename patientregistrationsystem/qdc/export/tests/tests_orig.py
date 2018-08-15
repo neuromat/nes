@@ -374,10 +374,13 @@ class AdvancedSearchTest(TestCase):
                 gender_name = "Male"
 
             birthday = datetime.now() - relativedelta(years=delta)
-            date_birth = '%s-%s-%s' % (birthday.year, birthday.month, birthday.day)
-            self.util.create_patient_mock(name=self._testMethodName + str(index),
-                                          user=self.user, gender_name=gender_name,
-                                          date_birth=date_birth)
+            date_birth = \
+                '%s-%s-%s' % (birthday.year, birthday.month, birthday.day)
+            self.util.create_patient_mock(
+                name=self._testMethodName + str(index),
+                user=self.user, gender_name=gender_name,
+                date_birth=date_birth
+            )
             delta += 5
 
         for marital_status_name in marital_status_list:

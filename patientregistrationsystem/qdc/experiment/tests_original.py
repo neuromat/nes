@@ -541,6 +541,7 @@ class ObjectsFactory(object):
             subject_of_group=subj_of_group
         )
 
+    @staticmethod
     def create_binary_file(path):
         with open(os.path.join(path, 'file.bin'), 'wb') as f:
             f.write(b'carambola')
@@ -561,22 +562,6 @@ class ObjectsFactory(object):
             gdcf.save()
 
         return gdcf
-
-    @staticmethod
-    def append_group_session_variable(client, variable, group_ids):
-        """
-        See:
-        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
-        # for the form that it is done
-
-        :param client: TestCase.client instance
-        :param variable: variable to be appended to session
-        :param group_ids: list of group ids (strins) as the value of the
-        session variable
-        """
-        session = client.session
-        session[variable] = group_ids
-        session.save()
 
 
 class ExperimentalProtocolTest(TestCase):

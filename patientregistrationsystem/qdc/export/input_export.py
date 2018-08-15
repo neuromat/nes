@@ -65,7 +65,6 @@ class InputExport:
         for field, header in field_header_list:
             output_data = {"header": header, "field": field}
             self.data[strut_name]["output_list"].append(output_data)
-            # self.data[strut_name][0]["output_list"]
 
     def build_questionnaire(self, questionnaire_list, language, entrance_questionnaire):
         questionnaire_lime_survey = Questionnaires()
