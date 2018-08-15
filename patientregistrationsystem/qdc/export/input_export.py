@@ -148,8 +148,6 @@ def build_partial_export_structure(export_per_participant, participant_field_hea
     json_data.build_header()
     json_data.build_dynamic_header("export_per_participant", export_per_participant)
     json_data.build_diagnosis_participant("participants", OUTPUT_FILENAME_PARTICIPANTS, participant_field_header_list)
-    # json_data.build_diagnosis_participant("diagnosis", OUTPUT_FILENAME_DIAGNOSIS, diagnosis_field_header_list)
-    # json_data.build_questionnaire(questionnaires_list, language)
     json_data.write(output_filename)
 
 

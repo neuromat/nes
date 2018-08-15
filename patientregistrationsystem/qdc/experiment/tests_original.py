@@ -32,7 +32,8 @@ from experiment.models import Experiment, Group, Subject, \
     EMGElectrodePlacement, EMGElectrodePlacementSetting, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
     ContextTree, ExperimentResearcher, InformationType, \
-    GenericDataCollectionData, GenericDataCollectionFile
+    GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
+    GenericDataCollection
 
 from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
@@ -230,17 +231,17 @@ class ObjectsFactory(object):
                          kwargs=None):
         faker = Factory.create()
 
-        # Due to some model Component's constants for component_type being
-        # different from models that inheritade from Component model,
-        # change the component_type string for using with get_model below
         if component_type == Component.TASK_EXPERIMENT:
-            component_type = 'taskfortheexperimenter'  # TaskForTheExperimenter
+            model = TaskForTheExperimenter.__name__  #
+            # TaskForTheExperimenter
         elif component_type == Component.DIGITAL_GAME_PHASE:
-            component_type = 'digitalgamephase'  # DigitalGamePhase
+            model = DigitalGamePhase.__name__  # DigitalGamePhase
         elif component_type == Component.GENERIC_DATA_COLLECTION:
-            component_type = 'genericdatacollection'  # GenericDataCollection
+            model = GenericDataCollection.__name__  # GenericDataCollection
+        else:
+            model = component_type
 
-        component = get_model('experiment', component_type)(
+        component = get_model('experiment', model)(
             experiment=experiment,
             identification=identification or faker.ssn(),
             component_type=component_type,
@@ -252,8 +253,7 @@ class ObjectsFactory(object):
                 component.survey_id = kwargs['sid']
             except KeyError:
                 print('You must specify \'sid\' key in kwargs dict')
-        # TODO: DRY -- better to define constants (it's repeting from above)
-        elif component_type == 'genericdatacollection':
+        elif component_type == Component.GENERIC_DATA_COLLECTION:
             try:
                 component.information_type = kwargs['it']
             except KeyError:
@@ -283,6 +283,28 @@ class ObjectsFactory(object):
             experimental_protocol=experimental_protocol
         )
         return group
+
+    @staticmethod
+    def create_subject(patient):
+        """
+        :param patient: Patient model instance
+        :return: Subject model instance
+        """
+        return Subject.objects.create(patient=patient)
+
+    @staticmethod
+    def create_subject_of_group(group, subject):
+        """
+        :param group: Group model instance
+        :param subject: Subject model instance
+        :return: SubjectOfGroup model instance
+        """
+        subject_of_group = SubjectOfGroup.objects.create(
+            subject=subject, group=group
+        )
+        group.subjectofgroup_set.add(subject_of_group)
+
+        return subject_of_group
 
     @staticmethod
     def create_block(experiment):
@@ -540,6 +562,22 @@ class ObjectsFactory(object):
 
         return gdcf
 
+    @staticmethod
+    def append_group_session_variable(client, variable, group_ids):
+        """
+        See:
+        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
+        # for the form that it is done
+
+        :param client: TestCase.client instance
+        :param variable: variable to be appended to session
+        :param group_ids: list of group ids (strins) as the value of the
+        session variable
+        """
+        session = client.session
+        session[variable] = group_ids
+        session.save()
+
 
 class ExperimentalProtocolTest(TestCase):
 
@@ -559,7 +597,9 @@ class ExperimentalProtocolTest(TestCase):
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        self.emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        self.emg_setting = ObjectsFactory.create_emg_setting(
+            experiment, software_version
+        )
 
     def test_component_list(self):
         experiment = Experiment.objects.first()
