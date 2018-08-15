@@ -469,6 +469,7 @@ class ExportExecution:
                                             self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id][
                                                 'token_list'].append(questionnaire_response_dic)
 
+            if group.experimental_protocol is not None:
                 if self.get_input_data('component_list')['per_additional_data']:
                     subject_step_data_query = \
                         SubjectStepData.objects.filter(subject_of_group=subject_of_group,
@@ -771,8 +772,11 @@ class ExportExecution:
                             generic_data_collection_data_list = []
                             for generic_data in generic_data_collection_data.generic_data_collection_files.all():
                                 generic_data_collection_data_list.append({
-                                    'generic_data_filename': settings.BASE_DIR + settings.MEDIA_URL +
-                                                             generic_data.file.name,
+                                    'generic_data_filename':
+                                    path.join(
+                                        settings.MEDIA_ROOT,
+                                        generic_data.file.name
+                                    )
                                 })
 
                             if subject_code not in self.per_group_data[group_id]['data_per_participant']:
@@ -1667,15 +1671,15 @@ class ExportExecution:
                 # ex. Participant_P123
                 participant_name = prefix_filename_participant + str(participant_code)
                 participant_data_directory = self.per_group_data[group_id]['group']['participant_data_directory']
-                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                 path_per_participant = path.join(participant_data_directory, participant_name)
 
-                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                 participant_data_export_directory = self.per_group_data[group_id]['group'][
                     'participant_data_export_directory']
                 participant_export_directory = path.join(participant_data_export_directory, participant_name)
                 if 'token_list' in participant_list[participant_code] and self.get_input_data('export_per_participant'):
-                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != "":
@@ -1710,7 +1714,7 @@ class ExportExecution:
                             # Responses_Q123.csv
                             export_filename = "%s_%s_%s.csv" % (str(questionnaire_code), slugify(questionnaire_title), language)
 
-                            # ex. /NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
+                            # ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
                             complete_filename = path.join(directory_step_participant, export_filename)
 
                             export_rows_participants = self.get_participant_row_data(token_data['subject_code'])
@@ -2044,7 +2048,7 @@ class ExportExecution:
                                 if error_msg != "":
                                     return error_msg
 
-                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_COMPONENT_TYPE
                                 export_goalkeeper_game_directory = path.join(participant_export_directory,
                                                                              directory_step_name)
@@ -2054,7 +2058,7 @@ class ExportExecution:
 
                                 path_per_emg_data = path.join(path_goalkeeper_game_data, directory_data_name)
                                 if not path.exists(path_per_emg_data):
-                                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
+                                    # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
                                     #  /Step_X_aaa/GoalkeeperDATA_
                                     error_msg, path_per_goalkeeper_game_data = create_directory(
                                         path_goalkeeper_game_data, directory_data_name)
@@ -2062,7 +2066,7 @@ class ExportExecution:
                                     if error_msg != "":
                                         return error_msg
 
-                                # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/GoalkeeperDATA_
                                 export_goalkeeper_data_directory = path.join(export_goalkeeper_game_directory,
                                                                              directory_data_name)
@@ -2070,7 +2074,7 @@ class ExportExecution:
                                 for context_tree_file in goalkeeper_game_data['digital_game_file_list']:
                                     path_context_tree_file = context_tree_file['digital_game_filename']
                                     file_name = path_context_tree_file.split('/')[-1]
-                                    # ex. /NES_EXPORT/Experiment_data/Group_XXX/Per_participant
+                                    # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
                                     #  /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
                                     complete_goalkeeper_game_filename = path.join(path_per_goalkeeper_game_data,
                                                                                   file_name)
@@ -2082,6 +2086,70 @@ class ExportExecution:
 
                                     self.files_to_zip_list.append([complete_goalkeeper_game_filename,
                                                                    export_goalkeeper_data_directory])
+
+                if 'generic_data_collection_data_list' \
+                        in self.per_group_data[group_id]['data_per_participant'][participant_code]:
+                    if not path.exists(path_per_participant):
+                        error_msg, path_per_participant = \
+                            create_directory(
+                                participant_data_directory, participant_name
+                            )
+                        if error_msg != '':
+                            return error_msg
+                    generic_data_collection_data_list = \
+                        self.per_group_data[group_id]['data_per_participant'][participant_code]['generic_data_collection_data_list']
+                    for generic_data_collection_data in \
+                            generic_data_collection_data_list:
+                        directory_step_name = \
+                            generic_data_collection_data['directory_step_name']
+                        path_generic_data_collection_data = path.join(
+                            path_per_participant, directory_step_name
+                        )
+                        if not path.exists(
+                                path_generic_data_collection_data):
+                            error_msg, path_generic_data_collection_data\
+                                = create_directory(path_per_participant,
+                                                   directory_step_name)
+                            if error_msg:
+                                return error_msg
+                        export_generic_data_directory = path.join(
+                            participant_export_directory,
+                            directory_step_name
+                        )
+                        directory_data_name = \
+                            generic_data_collection_data['generic_data_collection_directory']
+                        path_per_generic_data = path.join(
+                            path_generic_data_collection_data,
+                            directory_data_name
+                        )
+                        if not path.exists(path_per_generic_data):
+                            error_msg, path_per_generic_data = \
+                                create_directory(
+                                    path_generic_data_collection_data,
+                                    directory_data_name
+                                )
+                            if error_msg:
+                                return error_msg
+                        export_generic_data_directory = path.join(
+                            export_generic_data_directory,
+                            directory_data_name
+                        )
+                        for generic_data_file in \
+                                generic_data_collection_data['generic_data_collection_file_list']:
+                            path_generic_data_collection_file = \
+                                generic_data_file['generic_data_filename']
+                            file_name = \
+                                path_generic_data_collection_file.split('/')[-1]
+                            complete_generic_data_filename = path.join(
+                                path_per_generic_data, file_name
+                            )
+                            with open(path_generic_data_collection_file, 'rb') as f:
+                                data = f.read()
+                            with open(complete_generic_data_filename, 'wb') as f:
+                                f.write(data)
+                            self.files_to_zip_list.append(
+                                [complete_generic_data_filename, export_generic_data_directory]
+                            )
 
         return error_msg
 
