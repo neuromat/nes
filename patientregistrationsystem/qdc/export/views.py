@@ -345,7 +345,9 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 )
             )
 
-            update_export_instance(input_export_file, output_export_file, export_instance)
+            update_export_instance(
+                input_export_file, output_export_file, export_instance
+            )
 
         # delete temporary directory: from base_directory and below
         base_export_directory = export.get_export_directory()

@@ -5,15 +5,16 @@ import zipfile
 from datetime import datetime
 
 import shutil
-from unittest import skip
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import slugify
 from django.test import TestCase, override_settings
 
 from custom_user.tests_helper import create_user
-from experiment.models import Component, Subject, SubjectOfGroup
+from experiment.models import Component, ComponentConfiguration
 from experiment.tests_original import ObjectsFactory
+from export.export_utils import create_list_of_trees
 from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
@@ -21,7 +22,6 @@ from survey.tests_helper import create_survey
 
 
 class ExportQuestionnaireTest(TestCase):
-    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def get_lime_survey_question_groups(self, sid):
         question_groups_all = \
@@ -133,16 +133,6 @@ class ExportQuestionnaireTest(TestCase):
             subject_of_group=subject_of_group
         )
 
-    def create_subject_of_group(self, group):
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
-        subject = Subject.objects.create(patient=patient)
-        subject_of_group = SubjectOfGroup.objects.create(
-            subject=subject, group=group
-        )
-        self.group.subjectofgroup_set.add(subject_of_group)
-
-        return subject_of_group
-
     def append_group_session_variable(self, variable, group_ids):
         """
         See:
@@ -181,7 +171,10 @@ class ExportQuestionnaireTest(TestCase):
         )
 
         # create patient/subject/subject_of_group
-        self.subject_of_group = self.create_subject_of_group(self.group)
+        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        self.subject_of_group = \
+            ObjectsFactory.create_subject_of_group(self.group, subject)
 
         self.lime_survey = Questionnaires()
         self.sid = self.create_limesurvey_questionnaire(self.lime_survey)
@@ -208,13 +201,16 @@ class ExportQuestionnaireTest(TestCase):
 
         # Create one more patient/subject/subject_of_group besides those of
         # setUp
-        subject_of_group = self.create_subject_of_group(self.group)
+        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = \
+            ObjectsFactory.create_subject_of_group(self.group, subject)
 
         self.add_responses_to_limesurvey_survey(subject_of_group, dct)
 
         # Put 'group_selected_list' in request session.
-        self.append_group_session_variable(
-            'group_selected_list', [str(self.group.id)]
+        ObjectsFactory.append_group_session_variable(
+            self.client, 'group_selected_list', [str(self.group.id)]
         )
 
         # Post data to view: data style that is posted to export_view in
@@ -276,22 +272,28 @@ class ExportQuestionnaireTest(TestCase):
 
         # Create first patient/subject/subject_of_group besides those of
         # setUp
-        subject_of_group = self.create_subject_of_group(self.group)
+        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = \
+            ObjectsFactory.create_subject_of_group(self.group, subject)
         # add response to limesurvey survey and the references in our db
         self.add_responses_to_limesurvey_survey(
             subject_of_group, dct
         )
 
         # Create second patient/subject/subject_of_group
-        subject_of_group2 = self.create_subject_of_group(self.group)
+        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group2 = \
+            ObjectsFactory.create_subject_of_group(self.group, subject)
         # add response to limesurvey survey and the references in our db
         self.add_responses_to_limesurvey_survey(
             subject_of_group2, dct
         )
 
         # Put 'group_selected_list' in request session.
-        self.append_group_session_variable(
-            'group_selected_list', [str(self.group.id)]
+        ObjectsFactory.append_group_session_variable(
+            self.client, 'group_selected_list', [str(self.group.id)]
         )
 
         # Post data to view: data style that is posted to export_view in
@@ -356,7 +358,10 @@ class ExportQuestionnaireTest(TestCase):
         group2 = ObjectsFactory.create_group(self.experiment, root_component2)
 
         # create patient/subject/subject_of_group
-        subject_of_group2 = self.create_subject_of_group(group2)
+        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group2 = \
+            ObjectsFactory.create_subject_of_group(group2, subject)
 
         # create questionnaire component (reuse Survey created in setUp)
         dct2 = self.create_nes_questionnaire(root_component2)
@@ -367,7 +372,8 @@ class ExportQuestionnaireTest(TestCase):
         )
 
         # Put 'group_selected_list' in request session.
-        self.append_group_session_variable(
+        ObjectsFactory.append_group_session_variable(
+            self.client,
             'group_selected_list', [str(self.group.id), str(group2.id)]
         )
 
@@ -404,40 +410,40 @@ class ExportQuestionnaireTest(TestCase):
         # assertions for first group
         self.assertTrue(
             any(os.path.join(
-                'Group_' + self.group.title, 'Experimental_protocol'
+                'Group_' + slugify(self.group.title), 'Experimental_protocol'
             ) in element for element in zipped_file.namelist()),
             os.path.join(
-                'Group_' + self.group.title, 'Experimental_Protocol'
+                'Group_' + slugify(self.group.title), 'Experimental_Protocol'
             ) +
             'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
             any(os.path.join(
-                'Group_' + self.group.title, 'Per_participant'
+                'Group_' + slugify(self.group.title), 'Per_participant'
             ) in element for element in zipped_file.namelist()),
             os.path.join(
-                'Group_' + self.group.title, 'Per_participant'
+                'Group_' + slugify(self.group.title), 'Per_participant'
             ) +
             'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
             any(os.path.join(
-                'Group_' + self.group.title, 'Per_questionnaire'
+                'Group_' + slugify(self.group.title), 'Per_questionnaire'
             ) in element for element in zipped_file.namelist()),
             os.path.join(
-                'Group_' + self.group.title, 'Per_questionnaire'
+                'Group_' + slugify(self.group.title), 'Per_questionnaire'
             ) +
             'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
             any(os.path.join(
-                'Group_' + self.group.title, 'Questionnaire_metadata'
+                'Group_' + slugify(self.group.title), 'Questionnaire_metadata'
             ) in element for element in zipped_file.namelist()),
             os.path.join(
-                'Group_' + self.group.title, 'Questionnaire_metadata'
+                'Group_' + slugify(self.group.title), 'Questionnaire_metadata'
             ) +
             'not in:' +
             str(zipped_file.namelist())
@@ -446,49 +452,77 @@ class ExportQuestionnaireTest(TestCase):
         # assertions for second group
         self.assertTrue(
             any(os.path.join(
-                'Group_' + group2.title, 'Experimental_protocol'
+                'Group_' + slugify(group2.title), 'Experimental_protocol'
             ) in element for element in zipped_file.namelist()),
             os.path.join(
-                'Group_' + group2.title, 'Experimental_Protocol'
+                'Group_' + slugify(group2.title), 'Experimental_Protocol'
+            ) +
+            ' not in:' +
+            str(zipped_file.namelist())
+        )
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group2.title), 'Per_participant'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group2.title), 'Per_participant'
             ) +
             'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
             any(os.path.join(
-                'Group_' + group2.title, 'Per_participant'
+                'Group_' + slugify(group2.title), 'Per_questionnaire'
             ) in element for element in zipped_file.namelist()),
             os.path.join(
-                'Group_' + group2.title, 'Per_participant'
+                'Group_' + slugify(group2.title), 'Per_questionnaire'
             ) +
             'not in:' +
             str(zipped_file.namelist())
         )
         self.assertTrue(
             any(os.path.join(
-                'Group_' + group2.title, 'Per_questionnaire'
+                'Group_' + slugify(group2.title), 'Questionnaire_metadata'
             ) in element for element in zipped_file.namelist()),
             os.path.join(
-                'Group_' + group2.title, 'Per_questionnaire'
-            ) +
-            'not in:' +
-            str(zipped_file.namelist())
-        )
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + group2.title, 'Questionnaire_metadata'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + group2.title, 'Questionnaire_metadata'
+                'Group_' + slugify(group2.title), 'Questionnaire_metadata'
             ) +
             'not in:' +
             str(zipped_file.namelist())
         )
 
-    @skip  # this test is in progress
+
+class ExportDataCollectionTest(TestCase):
+    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
+
+    def setUp(self):
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
+
+        self.user = create_user(Group.objects.all())
+        self.client.login(username=self.user.username, password='passwd')
+
+        # create experiment/experimental protocol/group
+        self.experiment = ObjectsFactory.create_experiment(
+            ObjectsFactory.create_research_project(self.user)
+        )
+        self.root_component = ObjectsFactory.create_block(self.experiment)
+        self.group = ObjectsFactory.create_group(
+            self.experiment, self.root_component
+        )
+
+        # create patient/subject/subject_of_group
+        self.patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(self.patient)
+        self.subject_of_group = \
+            ObjectsFactory.create_subject_of_group(self.group, subject)
+
+    def tearDown(self):
+        self.client.logout()
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_generic_data_colletion(self):
-
         # create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(
@@ -508,56 +542,47 @@ class ExportQuestionnaireTest(TestCase):
         )
         ObjectsFactory.create_generic_data_colletion_file(gdc_data)
 
-        ##
-        # Post data to view
-        ##
-        # data style that is posted to export_view in template
-        data = {
-            'per_participant': ['on'],
-            'action': ['run'],
-            'per_questionnaire': ['on'],
-            'patient_selected': ['age*age'],
-            'per_generic_data': ['on'],
-            'headings': ['code'],
-            'from[]': [
-                '0*' + str(self.group.id) + '*' + str(self.sid) +
-                '*First Survey*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(self.sid) +
-                '*First Survey*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(self.sid) +
-                '*First Survey*secondQuestion*secondQuestion',
-                '1*' + str(self.group.id) + '*' + str(self.sid) +
-                '*First Survey*acquisitiondate*acquisitiondate',
-                '1*' + str(self.group.id) + '*' + str(self.sid) +
-                '*First Survey*firstQuestion*firstQuestion',
-                '1*' + str(self.group.id) + '*' + str(self.sid) +
-                '*First Survey*secondQuestion*secondQuestion'
-            ],
-            'responses': ['short']
-        }
-
         # Put 'group_selected_list' in request session. See:
         # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
-        session = self.client.session
-        session['group_selected_list'] = [str(self.group.id)]
-        session.save()
+        ObjectsFactory.append_group_session_variable(
+            self.client, 'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_generic_data': ['on'],
+            'headings': ['code'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
         response = self.client.post(reverse('export_view'), data)
 
-        ##
-        # Get file and make assertions
-        ##
         # get the zipped file to test against its content
         file = io.BytesIO(response.content)
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        # TODO: use subdirectory separator
-        self.assertTrue(
-            any('Per_participant/Step_5_Generic_data_collection/'
-                in element for element in zipped_file.namelist()),
-            'Per_questionnaire/Step_5_Generic_data_collection/ not in: ' +
-            str(zipped_file.namelist())
-        )
+        for path in create_list_of_trees(self.group.experimental_protocol,
+                                         "generic_data_collection"):
+            generic_component_configuration = \
+                ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = generic_component_configuration.component
+            step_number = path[-1][4]
 
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+            self.assertTrue(
+                any(os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                )
+                    in element for element in zipped_file.namelist()),
+                os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                ) + ' not in: ' + str(zipped_file.namelist())
+            )
