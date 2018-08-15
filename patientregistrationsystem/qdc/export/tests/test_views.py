@@ -6,22 +6,21 @@ from datetime import datetime
 
 import shutil
 
-from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
-from django.test import TestCase, override_settings
+from django.test import override_settings
 
-from custom_user.tests_helper import create_user
 from experiment.models import Component, ComponentConfiguration
 from experiment.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
+from export.tests.tests_helper import ExportTestCase
 from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
 from survey.tests_helper import create_survey
 
 
-class ExportQuestionnaireTest(TestCase):
+class ExportQuestionnaireTest(ExportTestCase):
 
     def get_lime_survey_question_groups(self, sid):
         question_groups_all = \
@@ -84,9 +83,10 @@ class ExportQuestionnaireTest(TestCase):
         return sid
 
     def create_nes_questionnaire(self, root_component):
-        """
-        Create questionnaire component in experimental protocol and return
+        """Create questionnaire component in experimental protocol and return
         data configuration tree associated to that questionnaire component
+
+        :param root_component: Block(Component) model instance
         :return: DataConfigurationTree model instance
         """
         questionnaire = ObjectsFactory.create_component(
@@ -101,13 +101,7 @@ class ExportQuestionnaireTest(TestCase):
 
     def add_responses_to_limesurvey_survey(self, subject_of_group, dct):
         result = UtilTests().create_survey_participant(self.survey)
-        # TODO:
-        # acho que não precisa criar resposta do participante enquanto
-        # estamos testando resposta para experimento.
-        UtilTests().create_response_survey_mock(
-            self.user, subject_of_group.subject.patient, self.survey,
-            result['tid']
-        )
+
         response_table_columns = self.get_limesurvey_table_question_codes()
         response_data = {
             'token': result['token'],
@@ -133,48 +127,8 @@ class ExportQuestionnaireTest(TestCase):
             subject_of_group=subject_of_group
         )
 
-    def append_group_session_variable(self, variable, group_ids):
-        """
-        See:
-        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
-        # for the form that it is done
-
-        :param variable: variable to be appended to session
-        :param group_ids: list of group ids (strins) as the value of the
-        session variable
-        """
-        session = self.client.session
-        session[variable] = group_ids
-        session.save()
-
-    def get_zipped_file(self, response):
-        file = io.BytesIO(response.content)
-        zipped_file = zipfile.ZipFile(file, 'r')
-        self.assertIsNone(zipped_file.testzip())
-
-        return zipped_file
-
     def setUp(self):
-        # create the groups of users and their permissions
-        exec(open('add_initial_data.py').read())
-
-        self.user = create_user(Group.objects.all())
-        self.client.login(username=self.user.username, password='passwd')
-
-        # create experiment/experimental protocol/group
-        self.experiment = ObjectsFactory.create_experiment(
-            ObjectsFactory.create_research_project(self.user)
-        )
-        self.root_component = ObjectsFactory.create_block(self.experiment)
-        self.group = ObjectsFactory.create_group(
-            self.experiment, self.root_component
-        )
-
-        # create patient/subject/subject_of_group
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
-        subject = ObjectsFactory.create_subject(patient)
-        self.subject_of_group = \
-            ObjectsFactory.create_subject_of_group(self.group, subject)
+        super(ExportQuestionnaireTest, self).setUp()
 
         self.lime_survey = Questionnaires()
         self.sid = self.create_limesurvey_questionnaire(self.lime_survey)
@@ -208,9 +162,8 @@ class ExportQuestionnaireTest(TestCase):
 
         self.add_responses_to_limesurvey_survey(subject_of_group, dct)
 
-        # Put 'group_selected_list' in request session.
-        ObjectsFactory.append_group_session_variable(
-            self.client, 'group_selected_list', [str(self.group.id)]
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
         )
 
         # Post data to view: data style that is posted to export_view in
@@ -233,7 +186,6 @@ class ExportQuestionnaireTest(TestCase):
         }
         response = self.client.post(reverse('export_view'), data)
 
-        # get the zipped file to test against its content
         zipped_file = self.get_zipped_file(response)
 
         self.assertTrue(
@@ -291,9 +243,8 @@ class ExportQuestionnaireTest(TestCase):
             subject_of_group2, dct
         )
 
-        # Put 'group_selected_list' in request session.
-        ObjectsFactory.append_group_session_variable(
-            self.client, 'group_selected_list', [str(self.group.id)]
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
         )
 
         # Post data to view: data style that is posted to export_view in
@@ -316,7 +267,6 @@ class ExportQuestionnaireTest(TestCase):
         }
         response = self.client.post(reverse('export_view'), data)
 
-        # get the zipped file to test against its content
         zipped_file = self.get_zipped_file(response)
 
         zipped_file.extract(
@@ -371,9 +321,7 @@ class ExportQuestionnaireTest(TestCase):
             subject_of_group2, dct2
         )
 
-        # Put 'group_selected_list' in request session.
-        ObjectsFactory.append_group_session_variable(
-            self.client,
+        self.append_group_session_variable(
             'group_selected_list', [str(self.group.id), str(group2.id)]
         )
 
@@ -404,7 +352,6 @@ class ExportQuestionnaireTest(TestCase):
         }
         response = self.client.post(reverse('export_view'), data)
 
-        # get the zipped file to test against its content
         zipped_file = self.get_zipped_file(response)
 
         # assertions for first group
@@ -492,30 +439,11 @@ class ExportQuestionnaireTest(TestCase):
         )
 
 
-class ExportDataCollectionTest(TestCase):
+class ExportDataCollectionTest(ExportTestCase):
     TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def setUp(self):
-        # create the groups of users and their permissions
-        exec(open('add_initial_data.py').read())
-
-        self.user = create_user(Group.objects.all())
-        self.client.login(username=self.user.username, password='passwd')
-
-        # create experiment/experimental protocol/group
-        self.experiment = ObjectsFactory.create_experiment(
-            ObjectsFactory.create_research_project(self.user)
-        )
-        self.root_component = ObjectsFactory.create_block(self.experiment)
-        self.group = ObjectsFactory.create_group(
-            self.experiment, self.root_component
-        )
-
-        # create patient/subject/subject_of_group
-        self.patient = UtilTests().create_patient_mock(changed_by=self.user)
-        subject = ObjectsFactory.create_subject(self.patient)
-        self.subject_of_group = \
-            ObjectsFactory.create_subject_of_group(self.group, subject)
+        super(ExportDataCollectionTest, self).setUp()
 
     def tearDown(self):
         self.client.logout()
@@ -542,10 +470,8 @@ class ExportDataCollectionTest(TestCase):
         )
         ObjectsFactory.create_generic_data_colletion_file(gdc_data)
 
-        # Put 'group_selected_list' in request session. See:
-        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
-        ObjectsFactory.append_group_session_variable(
-            self.client, 'group_selected_list', [str(self.group.id)]
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
         )
 
         # Post data to view: data style that is posted to export_view in
@@ -586,3 +512,24 @@ class ExportDataCollectionTest(TestCase):
                     component_step.component_type.upper()
                 ) + ' not in: ' + str(zipped_file.namelist())
             )
+
+
+class ExportParticipants(ExportTestCase):
+
+    def setUp(self):
+        super(ExportParticipants, self).setUp()
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_export_participants_without_questionnaires_returns_zipped_file(self):
+        """
+        Test created when exporting participants, without questionnaires
+        avulsely answered by them, gave yellow screen. See Jira Issue NES-864.
+        """
+
+        data = {'patient_selected': ['age*age'], 'action': ['run']}
+        response = self.client.post(reverse('export_view'), data)
+        self.assertEqual(response.status_code, 200)
+
+        self.get_zipped_file(response)

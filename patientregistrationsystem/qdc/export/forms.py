@@ -47,7 +47,6 @@ class ExportForm(Form):
     )
 
 
-
 class ParticipantsSelectionForm(ModelForm):
     class Meta:
         model = Patient
