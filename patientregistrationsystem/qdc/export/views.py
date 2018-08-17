@@ -44,6 +44,7 @@ JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
 EXPORT_DIRECTORY = "export"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
+MAX_ABBREVIATED_QUESTION_LENGTH = 17
 
 patient_fields = [
     {"field": 'age', "header": 'age', "description": _("Age")},
@@ -128,6 +129,7 @@ header_explanation_fields = ['questionnaire_id',
                              'option_value',
                              'column_title']
 
+
 # TODO: code bloat
 def create_export_instance(user):
     export_instance = Export(user=user)
@@ -158,8 +160,9 @@ def find_description(field_to_find, fields_inclusion):
 
 def abbreviated_data(data_to_abbreviate, heading_type):
 
-    if heading_type == "abbreviated":
-        data_updated = data_to_abbreviate[:17] + ".."
+    if heading_type == 'abbreviated':
+        data_updated = \
+            data_to_abbreviate[:MAX_ABBREVIATED_QUESTION_LENGTH] + '...'
     else:
         data_updated = data_to_abbreviate
 
@@ -490,7 +493,7 @@ def export_view(request, template_name="export/export_data.html"):
 
                     if questionnaires_selected_list:
                         questionnaires_list = update_questionnaire_list(
-                            questionnaires_list, heading_type, 0,
+                            questionnaires_list, heading_type, False,
                             request.LANGUAGE_CODE
                         )
 
@@ -499,7 +502,7 @@ def export_view(request, template_name="export/export_data.html"):
                         experiment_questionnaires_list = \
                             update_questionnaire_list(
                                 experiment_questionnaires_list,
-                                heading_type, 1, request.LANGUAGE_CODE
+                                heading_type, True, request.LANGUAGE_CODE
                             )
 
                 export_instance = create_export_instance(request.user)
@@ -759,9 +762,9 @@ def get_component_with_data_and_metadata(group, component_list):
         if stimulus_file_exist:
             component_list.append('stimulus_data')
     if 'generic_data' not in component_list:
-        # generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group).distinct(
-        #     'data_configuration_tree')
-        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+        generic_data_list = GenericDataCollectionData.objects.filter(
+            subject_of_group__group=group
+        )
         if generic_data_list:
             component_list.append('generic_data')
 
@@ -840,8 +843,9 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
     questionnaire_lime_survey = Questionnaires()
     experiment_questionnaire_response_dict = {}
     for questionnaire in questionnaire_list:
-
-        if experiment_questionnaire:  # position 2: id, position 3: title, position 4: output_list (field, header)
+        # position 2: id, position 3: title,
+        # position 4: output_list (field, header)
+        if experiment_questionnaire:
             questionnaire_field_header = []
             questionnaire_id = questionnaire[2]
             fields, headers = zip(*questionnaire[4])
@@ -849,24 +853,51 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
             title = questionnaire[3]
             group_id = questionnaire[1]
             if not experiment_questionnaire_response_dict:
-                experiment_questionnaire_response_dict = get_experiment_questionnaire_response_list(group_id)
-            elif group_id not in experiment_questionnaire_response_dict:
-                experiment_questionnaire_response_dict = get_experiment_questionnaire_response_list(group_id)
-            elif questionnaire_id in experiment_questionnaire_response_dict[group_id]:
-                token_id = experiment_questionnaire_response_dict[group_id][questionnaire_id][0].token_id
-                questionnaire_field_header = get_questionnaire_experiment_header(questionnaire_lime_survey,
-                                                                                 questionnaire_id, token_id, fields,
-                                                                                 heading_type, current_language)
+                experiment_questionnaire_response_dict = \
+                    get_experiment_questionnaire_response_list(group_id)
 
-            questionnaire_list_updated.append([index, group_id, questionnaire_id, title, questionnaire_field_header])
-        else:  # position 1: id, postion 2: title, position 2: output_list (field, header)
+                #
+                token_id = \
+                    experiment_questionnaire_response_dict[group_id][
+                        questionnaire_id][0].token_id
+                questionnaire_field_header = \
+                    get_questionnaire_experiment_header(
+                        questionnaire_lime_survey,
+                        questionnaire_id, token_id, fields,
+                        heading_type, current_language
+                    )
+                #
+
+            elif group_id not in experiment_questionnaire_response_dict:
+                experiment_questionnaire_response_dict = \
+                    get_experiment_questionnaire_response_list(group_id)
+
+            elif questionnaire_id in experiment_questionnaire_response_dict[group_id]:
+                token_id = \
+                    experiment_questionnaire_response_dict[group_id][questionnaire_id][0].token_id
+                questionnaire_field_header = \
+                    get_questionnaire_experiment_header(
+                        questionnaire_lime_survey,
+                        questionnaire_id, token_id, fields,
+                        heading_type, current_language
+                    )
+
+            questionnaire_list_updated.append(
+                [index, group_id, questionnaire_id, title,
+                 questionnaire_field_header]
+            )
+        # position 1: id, postion 2: title,
+        # position 2: output_list (field, header)
+        else:
             questionnaire_id = questionnaire[1]
             fields, headers = zip(*questionnaire[3])
             index = questionnaire[0]
             title = questionnaire[2]
 
-            questionnaire_field_header = get_questionnaire_header(questionnaire_lime_survey, questionnaire_id,
-                                                                  fields, heading_type, current_language)
+            questionnaire_field_header = get_questionnaire_header(
+                questionnaire_lime_survey, questionnaire_id,
+                fields, heading_type, current_language
+            )
 
             questionnaire_list_updated.append([index, questionnaire_id, title, questionnaire_field_header])
 

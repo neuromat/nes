@@ -1,3 +1,4 @@
+import csv
 import os
 import io
 import tempfile
@@ -220,7 +221,8 @@ class ExportQuestionnaireTest(ExportTestCase):
         Without reuse
         """
         # create questionnaire in NES
-        dct = self.create_nes_questionnaire(self.root_component)
+        dct = self.create_nes_questionnaire(self.root_component)  # TODO: já
+        #  criado no setUP
 
         # Create first patient/subject/subject_of_group besides those of
         # setUp
@@ -277,12 +279,12 @@ class ExportQuestionnaireTest(ExportTestCase):
                 'Per_questionnaire', 'Step_2_QUESTIONNAIRE',
                 self.survey.code + '_test-questionnaire_en.csv'
             ),
-            '/tmp'
+            '/tmp'  # TODO: 1) use os.sep; 2) use tempfile
         )
 
         with open(
             os.path.join(
-                os.sep, 'tmp',
+                os.sep, 'tmp',  # TODO: use tempfile
                 'NES_EXPORT',
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
@@ -290,8 +292,8 @@ class ExportQuestionnaireTest(ExportTestCase):
                 'Step_2_QUESTIONNAIRE',
                 self.survey.code + '_test-questionnaire_en.csv'
             )
-
         ) as file:
+            # there's 3 lines, header line + 2 responses lines
             self.assertEqual(len(file.readlines()), 3)
 
     def test_same_questionnaire_used_in_different_steps_return_correct_responses_content_2(self):
@@ -437,6 +439,58 @@ class ExportQuestionnaireTest(ExportTestCase):
             'not in:' +
             str(zipped_file.namelist())
         )
+
+    def test_export_with_abbreviated_question_text(self):
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_participant': ['on'],
+            'action': ['run'],
+            'per_questionnaire': ['on'],
+            'headings': ['abbreviated'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*firstQuestion*firstQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*secondQuestion*secondQuestion'
+            ],
+            'patient_selected': ['age*age'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+
+        zipped_file.extract(
+            os.path.join(
+                'NES_EXPORT',
+                'Experiment_data',
+                'Group_' + self.group.title.lower(),
+                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.csv'
+            ),
+            '/tmp'  # TODO: 1) use os.sep; 2) use tempfile
+        )
+
+        with open(
+                os.path.join(
+                    os.sep, 'tmp',  # TODO: use tempfile
+                    'NES_EXPORT',
+                    'Experiment_data',
+                    'Group_' + self.group.title.lower(),
+                    'Per_questionnaire',
+                    'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.csv'
+                )
+        ) as file:
+            csv_line1 = next(csv.reader(file))
+            self.assertEqual(len(csv_line1), 5)
 
 
 class ExportDataCollectionTest(ExportTestCase):
