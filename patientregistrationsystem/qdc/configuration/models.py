@@ -31,4 +31,3 @@ class RightsSupport(models.Model):
         permissions = (
             ('upgrade_rights', 'Can upgrade NES version'),
         )
-

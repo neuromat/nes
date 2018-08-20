@@ -1365,8 +1365,6 @@ class DigitalGamePhaseData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
     def __str__(self):
         return self.description
 
@@ -1380,10 +1378,7 @@ class DigitalGamePhaseData(DataFile, DataCollection):
 
 
 class GenericDataCollectionData(DataFile, DataCollection):
-    # Audit trail - Simple History
     history = HistoricalRecords()
-
-    # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
         return self.description

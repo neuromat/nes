@@ -1,11 +1,10 @@
 from django.test import TestCase
-from survey.models import *
-from survey.forms import *
-from survey.views import *
+from survey.forms import SurveyForm
 from django.contrib.auth.models import User
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
+
 
 # Tests about the form of creation of a patient (sometimes called participant)
 # Briefly, this class tests the first form of the tab 0 of app Patient
@@ -16,7 +15,7 @@ class SurveyFormValidation(TestCase):
         self.user.is_superuser = True
         self.user.save()
 
-        self.data={}
+        self.data = {}
 
     # Test if the form with only the required fields filled is valid
     def test_SurveyForm_is_valid(self):

@@ -143,6 +143,36 @@ class FormUserValidation(TestCase):
         self.assertFormError(response, "form", "email", 'Informe um endereço de email válido.')
         self.assertEqual(User.objects.filter(username='').count(), 0)
 
+    def test_user_duplicated_email(self):
+        """
+        Testa inclusao de usuario com sucesso
+        """
+        username = 'test_username'
+        self.data['username'] = username
+        self.data['login_enabled'] = True
+
+        response = self.client.post(reverse(USER_NEW), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(User.objects.filter(username=username).count(), 1)
+
+        username2 = 'test_username2'
+        self.data['username']=[username2]
+        self.data['first_name'] = ['Fulano']
+
+        response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_researcher_without_user(self):
+        """
+        Testa inclusao de usuario com sucesso
+        """
+        del self.user
+        self.data['login_enabled'] = False
+
+        response = self.client.post(reverse(USER_NEW), self.data)
+        self.assertEqual(response.status_code, 302)
+
     def test_user_passwords_doesnt_match(self):
         """
         Testa senhas não conferem

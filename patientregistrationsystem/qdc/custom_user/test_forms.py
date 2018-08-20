@@ -1,12 +1,11 @@
 # -*- coding: UTF-8 -*-
 from django.test import TestCase
-from custom_user.models import *
-from custom_user.forms import *
 from custom_user.views import *
 from django.contrib.auth.models import User
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
+
 
 # Tests of the form of institutions
 class InstitutionFormValidation(TestCase):
@@ -29,18 +28,20 @@ class InstitutionFormValidation(TestCase):
 
     # Test if the form without the name is not valid
     def test_InstitutionForm_is_not_valid_without_name(self):
-        institution = InstitutionForm(data={'name':"",'acronym':self.data['acronym'],'country':self.data['country']})
+        institution = InstitutionForm(data={'name': "", 'acronym': self.data['acronym'],
+                                            'country': self.data['country']})
         self.assertFalse(institution.is_valid())
 
     # Test if the form without the acronym is not valid
     def test_InstitutionForm_is_not_valid_without_acronym(self):
-        institution = InstitutionForm(data={'name':self.data['name'],'acronym':"",'country':self.data['country']})
+        institution = InstitutionForm(data={'name': self.data['name'], 'acronym': "", 'country': self.data['country']})
         self.assertFalse(institution.is_valid())
 
     # Test if the form without the country is not valid
     def test_InstitutionForm_is_not_valid_without_country(self):
-        institution = InstitutionForm(data={'name':self.data['name'],'acronym':self.data['acronym'],'country':""})
+        institution = InstitutionForm(data={'name': self.data['name'], 'acronym': self.data['acronym'], 'country': ""})
         self.assertFalse(institution.is_valid())
+
 
 # Tests of the form of users with login and password
 class UserFormValidation(TestCase):
@@ -69,39 +70,50 @@ class UserFormValidation(TestCase):
 
     # Test if the form without the first name is not valid
     def test_UserForm_is_not_valid_without_first_name(self):
-        self.data['first_name']=""
+        self.data['first_name'] = ""
         userbeingcreated = UserForm(data=self.data)
         self.assertFalse(userbeingcreated.is_valid())
 
+    # Test if the form with an already registered email is not valid
+    def test_UserForm_is_not_valid_with_duplicated_email(self):
+        user_being_created = UserForm(data=self.data)
+        user_being_created.save()
+
+        self.data['first_name'] = 'Second'
+        self.data['username'] = 'Username22018'
+        new_user_being_created = UserForm(data=self.data)
+        self.assertFalse(new_user_being_created.is_valid())
+
     # Test if the form without the last name is not valid
     def test_UserForm_is_not_valid_without_last_name(self):
-        self.data['last_name']=""
+        self.data['last_name'] = ""
         userbeingcreated = UserForm(data=self.data)
         self.assertFalse(userbeingcreated.is_valid())
 
     # Test if the form without the email is not valid
     def test_UserForm_is_not_valid_without_email(self):
-        self.data['email']=""
+        self.data['email'] = ""
         userbeingcreated = UserForm(data=self.data)
         self.assertFalse(userbeingcreated.is_valid())
 
     # Test if the form without the username is not valid
     def test_UserForm_is_not_valid_without_username(self):
-        self.data['username']=""
+        self.data['username'] = ""
         userbeingcreated = UserForm(data=self.data)
         self.assertFalse(userbeingcreated.is_valid())
 
     # Test if the form without the password is not valid
     def test_UserForm_is_not_valid_without_password(self):
-        self.data['password']=""
+        self.data['password'] = ""
         userbeingcreated = UserForm(data=self.data)
         self.assertFalse(userbeingcreated.is_valid())
 
     # Test if the form without the group is not valid
-    #def test_UserForm_is_not_valid_without_group(self):
+    # def test_UserForm_is_not_valid_without_group(self):
     #    self.data['groups']=""
     #    userbeingcreated = UserForm(data=self.data)
     #    self.assertFalse(userbeingcreated.is_valid())
+
 
 # Tests of the form of researchers (users without login and password)
 class ResearcherFormValidation(TestCase):
@@ -124,18 +136,18 @@ class ResearcherFormValidation(TestCase):
 
     # Test if the form without the first name is not valid
     def test_ResearcherForm_is_not_valid_without_first_name(self):
-        self.data['first_name']=""
+        self.data['first_name'] = ""
         researcher = ResearcherForm(data=self.data)
         self.assertFalse(researcher.is_valid())
 
     # Test if the form without the last name is not valid
     def test_ResearcherForm_is_not_valid_without_last_name(self):
-        self.data['last_name']=""
+        self.data['last_name'] = ""
         researcher = ResearcherForm(data=self.data)
         self.assertFalse(researcher.is_valid())
 
     # Test if the form without the email is not valid
     def test_ResearcherForm_is_not_valid_without_email(self):
-        self.data['email']=""
+        self.data['email'] = ""
         researcher = ResearcherForm(data=self.data)
         self.assertFalse(researcher.is_valid())

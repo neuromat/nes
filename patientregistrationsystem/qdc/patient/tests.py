@@ -374,7 +374,6 @@ class PatientFormValidation(TestCase):
 
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
-
     def fill_management_form(self):
         self.data['telephone_set-TOTAL_FORMS'] = '3'
         self.data['telephone_set-INITIAL_FORMS'] = '0'
@@ -1248,9 +1247,9 @@ class QuestionnaireFormValidation(TestCase):
         """
         Test to see if LimeSurvey is available under circumstances
         """
-        nameMethod = self._testMethodName
-        userMethod = self.user
-        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+        namemethod = self._testMethodName
+        usermethod = self.user
+        patient_mock = self.util.create_patient_mock(namemethod, usermethod)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
         request.user = self.user
@@ -1326,15 +1325,15 @@ class QuestionnaireFormValidation(TestCase):
         Test delete from 2 views: update and view
         of the type: entrance evaluation questionnaire
         """
-        nameMethod = self._testMethodName
-        userMethod = self.user
-        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+        namemethod = self._testMethodName
+        usermethod = self.user
+        patient_mock = self.util.create_patient_mock(namemethod, usermethod)
         # patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
 
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
 
         # response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
-        response_survey_mock = self.util.create_response_survey_mock(userMethod, patient_mock, survey_mock)
+        response_survey_mock = self.util.create_response_survey_mock(usermethod, patient_mock, survey_mock)
 
         # delete questionnaire response when it is in mode
         url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey_mock.pk], current_app='patient')
@@ -1351,7 +1350,7 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 404)  # error - response already deleted
 
-        response_survey_mock = self.util.create_response_survey_mock(userMethod, patient_mock, survey_mock)
+        response_survey_mock = self.util.create_response_survey_mock(usermethod, patient_mock, survey_mock)
 
         # workaround because reverse is getting experiment url instead of patient
         url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
@@ -1366,9 +1365,9 @@ class QuestionnaireFormValidation(TestCase):
         Test view of questionnaire response when questionnaire is complete
         of the type: entrance evaluation questionnaire
         """
-        nameMethod = self._testMethodName
-        userMethod = self.user
-        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+        namemethod = self._testMethodName
+        usermethod = self.user
+        patient_mock = self.util.create_patient_mock(namemethod, usermethod)
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
         response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 2)
 
