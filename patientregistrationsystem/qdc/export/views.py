@@ -44,7 +44,7 @@ JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
 EXPORT_DIRECTORY = "export"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
-MAX_ABBREVIATED_QUESTION_LENGTH = 17
+MAX_STRING_LENGTH = 17
 
 patient_fields = [
     {"field": 'age', "header": 'age', "description": _("Age")},
@@ -160,13 +160,11 @@ def find_description(field_to_find, fields_inclusion):
 
 def abbreviated_data(data_to_abbreviate, heading_type):
 
-    if heading_type == 'abbreviated':
-        data_updated = \
-            data_to_abbreviate[:MAX_ABBREVIATED_QUESTION_LENGTH] + '...'
+    if heading_type == 'abbreviated' and len(data_to_abbreviate) > \
+            MAX_STRING_LENGTH:
+        return data_to_abbreviate[:MAX_STRING_LENGTH]
     else:
-        data_updated = data_to_abbreviate
-
-    return data_updated
+        return data_to_abbreviate
 
 
 def update_participants_list(participants_list, heading_type):
@@ -841,46 +839,26 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
         return questionnaire_list
 
     questionnaire_lime_survey = Questionnaires()
-    experiment_questionnaire_response_dict = {}
     for questionnaire in questionnaire_list:
         # position 2: id, position 3: title,
         # position 4: output_list (field, header)
         if experiment_questionnaire:
-            questionnaire_field_header = []
             questionnaire_id = questionnaire[2]
             fields, headers = zip(*questionnaire[4])
             index = questionnaire[0]
             title = questionnaire[3]
             group_id = questionnaire[1]
-            if not experiment_questionnaire_response_dict:
-                experiment_questionnaire_response_dict = \
-                    get_experiment_questionnaire_response_list(group_id)
 
-                #
-                token_id = \
-                    experiment_questionnaire_response_dict[group_id][
-                        questionnaire_id][0].token_id
-                questionnaire_field_header = \
-                    get_questionnaire_experiment_header(
-                        questionnaire_lime_survey,
-                        questionnaire_id, token_id, fields,
-                        heading_type, current_language
-                    )
-                #
-
-            elif group_id not in experiment_questionnaire_response_dict:
-                experiment_questionnaire_response_dict = \
-                    get_experiment_questionnaire_response_list(group_id)
-
-            elif questionnaire_id in experiment_questionnaire_response_dict[group_id]:
-                token_id = \
-                    experiment_questionnaire_response_dict[group_id][questionnaire_id][0].token_id
-                questionnaire_field_header = \
-                    get_questionnaire_experiment_header(
-                        questionnaire_lime_survey,
-                        questionnaire_id, token_id, fields,
-                        heading_type, current_language
-                    )
+            experiment_questionnaire_response_dict = \
+                get_experiment_questionnaire_response_list(group_id)
+            token_id = \
+                experiment_questionnaire_response_dict[group_id][questionnaire_id][0].token_id
+            questionnaire_field_header = \
+                get_questionnaire_experiment_header(
+                    questionnaire_lime_survey,
+                    questionnaire_id, token_id, fields,
+                    heading_type, current_language
+                )
 
             questionnaire_list_updated.append(
                 [index, group_id, questionnaire_id, title,
