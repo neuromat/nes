@@ -323,7 +323,11 @@ def get_owner_full_name(research_project):
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    check_can_change(request.user, research_project)
+    #com o decorator @permission_required('experiment.change_researchproject'),
+    # a função abaixo é desnecessaria:
+    #
+    #check_can_change(request.user, research_project)
+
 
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
     research_project_owner_form = ResearchProjectOwnerForm(request.POST or None, instance=research_project)
