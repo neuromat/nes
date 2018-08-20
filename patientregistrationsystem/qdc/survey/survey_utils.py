@@ -204,7 +204,6 @@ class QuestionnaireUtils:
 
         return new_header, new_fields
 
-
     def redefine_header_and_fields_experiment(self, questionnaire_id, header_filtered, fields, header_list):
         header_questionnaire = self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"]
         fields_saved = self.questionnaires_experiment_data[questionnaire_id]["fields"]

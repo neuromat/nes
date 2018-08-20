@@ -116,6 +116,7 @@ class ABCSearchEngine(ABC):
     def get_survey_title(self, sid, language):
         """
         :param sid: survey ID
+        :param language: language
         :return: title of the survey
         """
 

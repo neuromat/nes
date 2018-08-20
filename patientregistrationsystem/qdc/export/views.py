@@ -44,6 +44,7 @@ JSON_EXPERIMENT_FILENAME = "json_experiment_export.json"
 EXPORT_DIRECTORY = "export"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
+MAX_STRING_LENGTH = 17
 
 patient_fields = [
     {"field": 'age', "header": 'age', "description": _("Age")},
@@ -93,7 +94,7 @@ diagnosis_fields = [
      "header": 'classification_of_diseases_description', "description": _("Disease Abbreviated Description")},
 ]
 
-patient_fields_inclusion = [
+PATIENT_FIELDS_INCLUSION = [
     ["code", {"code": "participant_code", "full": _("Participant code"),
               "abbreviated": _("Participant code")}],
 ]
@@ -129,6 +130,7 @@ header_explanation_fields = ['questionnaire_id',
                              'column_title']
 
 
+# TODO: code bloat
 def create_export_instance(user):
     export_instance = Export(user=user)
 
@@ -158,12 +160,11 @@ def find_description(field_to_find, fields_inclusion):
 
 def abbreviated_data(data_to_abbreviate, heading_type):
 
-    if heading_type == "abbreviated":
-        data_updated = data_to_abbreviate[:17] + ".."
+    if heading_type == 'abbreviated' and len(data_to_abbreviate) > \
+            MAX_STRING_LENGTH:
+        return data_to_abbreviate[:MAX_STRING_LENGTH]
     else:
-        data_updated = data_to_abbreviate
-
-    return data_updated
+        return data_to_abbreviate
 
 
 def update_participants_list(participants_list, heading_type):
@@ -177,10 +178,11 @@ def update_participants_list(participants_list, heading_type):
                 participant[1] = abbreviated_data(header_translated, heading_type)
 
         # include participant_code
-
-        for field, header in patient_fields_inclusion:
+        for field, header in PATIENT_FIELDS_INCLUSION:
             header_translated = ug_(header[heading_type])
-            participants_list.insert(0, [field, abbreviated_data(header_translated, heading_type)])
+            participants_list.insert(
+                0, [field, abbreviated_data(header_translated, heading_type)]
+            )
 
 
 def update_diagnosis_list(diagnosis_list, heading_type):
@@ -344,11 +346,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 )
             )
 
-            update_export_instance(input_export_file, output_export_file, export_instance)
+            update_export_instance(
+                input_export_file, output_export_file, export_instance
+            )
 
         # delete temporary directory: from base_directory and below
-        # base_export_directory = export.get_export_directory()  # DEBUG (voltar)
-        # rmtree(base_export_directory, ignore_errors=True)  # DEBUG (voltar)
+        base_export_directory = export.get_export_directory()
+        rmtree(base_export_directory, ignore_errors=True)
 
         return export_complete_filename
 
@@ -450,7 +454,13 @@ def export_view(request, template_name="export/export_data.html"):
                 per_participant = True
                 per_questionnaire = False
                 responses_type = None
-                heading_type = export_form.cleaned_data['headings']
+                # TODO:
+                # When there'are not questionnaires avulsely answered
+                # by participants, export_form.cleaned_data['headings'] = '',
+                # in fact there aren't questionnaires stuff at all. So this
+                # form attribute doesn't make sense. By now we make 'code'
+                # as value of that attribute for doesn't breaking the code.
+                heading_type = export_form.cleaned_data['headings'] or 'code'
 
                 update_participants_list(participants_list, heading_type)
                 update_diagnosis_list(diagnosis_list, heading_type)
@@ -481,7 +491,7 @@ def export_view(request, template_name="export/export_data.html"):
 
                     if questionnaires_selected_list:
                         questionnaires_list = update_questionnaire_list(
-                            questionnaires_list, heading_type, 0,
+                            questionnaires_list, heading_type, False,
                             request.LANGUAGE_CODE
                         )
 
@@ -490,7 +500,7 @@ def export_view(request, template_name="export/export_data.html"):
                         experiment_questionnaires_list = \
                             update_questionnaire_list(
                                 experiment_questionnaires_list,
-                                heading_type, 1, request.LANGUAGE_CODE
+                                heading_type, True, request.LANGUAGE_CODE
                             )
 
                 export_instance = create_export_instance(request.user)
@@ -550,7 +560,8 @@ def export_view(request, template_name="export/export_data.html"):
                     selected_diagnosis.append(diagnosis[0])
         else:
             messages.error(
-                request, _("No data was select. Export data was not generated.")
+                request,
+                _("No data was select. Export data was not generated.")
             )
 
     surveys = Questionnaires()
@@ -749,9 +760,9 @@ def get_component_with_data_and_metadata(group, component_list):
         if stimulus_file_exist:
             component_list.append('stimulus_data')
     if 'generic_data' not in component_list:
-        # generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group).distinct(
-        #     'data_configuration_tree')
-        generic_data_list = GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+        generic_data_list = GenericDataCollectionData.objects.filter(
+            subject_of_group__group=group
+        )
         if generic_data_list:
             component_list.append('generic_data')
 
@@ -828,35 +839,43 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
         return questionnaire_list
 
     questionnaire_lime_survey = Questionnaires()
-    experiment_questionnaire_response_dict = {}
     for questionnaire in questionnaire_list:
-
-        if experiment_questionnaire:  # position 2: id, position 3: title, position 4: output_list (field, header)
-            questionnaire_field_header = []
+        # position 2: id, position 3: title,
+        # position 4: output_list (field, header)
+        if experiment_questionnaire:
             questionnaire_id = questionnaire[2]
             fields, headers = zip(*questionnaire[4])
             index = questionnaire[0]
             title = questionnaire[3]
             group_id = questionnaire[1]
-            if not experiment_questionnaire_response_dict:
-                experiment_questionnaire_response_dict = get_experiment_questionnaire_response_list(group_id)
-            elif group_id not in experiment_questionnaire_response_dict:
-                experiment_questionnaire_response_dict = get_experiment_questionnaire_response_list(group_id)
-            elif questionnaire_id in experiment_questionnaire_response_dict[group_id]:
-                token_id = experiment_questionnaire_response_dict[group_id][questionnaire_id][0].token_id
-                questionnaire_field_header = get_questionnaire_experiment_header(questionnaire_lime_survey,
-                                                                                 questionnaire_id, token_id, fields,
-                                                                                 heading_type, current_language)
 
-            questionnaire_list_updated.append([index, group_id, questionnaire_id, title, questionnaire_field_header])
-        else:  # position 1: id, postion 2: title, position 2: output_list (field, header)
+            experiment_questionnaire_response_dict = \
+                get_experiment_questionnaire_response_list(group_id)
+            token_id = \
+                experiment_questionnaire_response_dict[group_id][questionnaire_id][0].token_id
+            questionnaire_field_header = \
+                get_questionnaire_experiment_header(
+                    questionnaire_lime_survey,
+                    questionnaire_id, token_id, fields,
+                    heading_type, current_language
+                )
+
+            questionnaire_list_updated.append(
+                [index, group_id, questionnaire_id, title,
+                 questionnaire_field_header]
+            )
+        # position 1: id, postion 2: title,
+        # position 2: output_list (field, header)
+        else:
             questionnaire_id = questionnaire[1]
             fields, headers = zip(*questionnaire[3])
             index = questionnaire[0]
             title = questionnaire[2]
 
-            questionnaire_field_header = get_questionnaire_header(questionnaire_lime_survey, questionnaire_id,
-                                                                  fields, heading_type, current_language)
+            questionnaire_field_header = get_questionnaire_header(
+                questionnaire_lime_survey, questionnaire_id,
+                fields, heading_type, current_language
+            )
 
             questionnaire_list_updated.append([index, questionnaire_id, title, questionnaire_field_header])
 
@@ -867,10 +886,7 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
 
 def get_questionnaire_header(questionnaire_lime_survey, questionnaire_id, fields, heading_type="code",
                              current_language="pt-BR"):
-    # return: {"<question_code>": "question_heading_type", "<question_code1>": "question_heading_type1"...}
-    # ("<question_code>": "question_heading_type")
 
-    # questionnaire_header = []
     questionnaire_list = []
 
     language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
@@ -1405,4 +1421,3 @@ def select_groups_by_experiment(request, experiment_id):
     json_group_list = serializers.serialize("json", group_list)
 
     return HttpResponse(json_group_list, content_type='application/json')
-

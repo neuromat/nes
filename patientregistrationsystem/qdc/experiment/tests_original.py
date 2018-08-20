@@ -1,10 +1,15 @@
 # coding=utf-8
 import datetime
 import random
+import tempfile
 
+import os
+
+import shutil
+from django.core.files import File
 from django.db import IntegrityError
 from django.db.models.loading import get_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -26,7 +31,9 @@ from experiment.models import Experiment, Group, Subject, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, \
     EMGElectrodePlacement, EMGElectrodePlacementSetting, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
-    ContextTree, ExperimentResearcher
+    ContextTree, ExperimentResearcher, InformationType, \
+    GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
+    GenericDataCollection
 
 from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
@@ -103,7 +110,6 @@ class ObjectsFactory(object):
         return ExperimentResearcher.objects.create(
             experiment=experiment, researcher=user
         )
-
 
     @staticmethod
     def create_publication(list_of_experiments):
@@ -225,17 +231,17 @@ class ObjectsFactory(object):
                          kwargs=None):
         faker = Factory.create()
 
-        # Due to some model Component's constants for component_type being
-        # different from models that inheritade from Component model,
-        # change the component_type string
         if component_type == Component.TASK_EXPERIMENT:
-            component_type = 'taskfortheexperimenter'  # TaskForTheExperimenter
+            model = TaskForTheExperimenter.__name__  #
+            # TaskForTheExperimenter
         elif component_type == Component.DIGITAL_GAME_PHASE:
-            component_type = 'digitalgamephase'  # DigitalGamePhase
+            model = DigitalGamePhase.__name__  # DigitalGamePhase
         elif component_type == Component.GENERIC_DATA_COLLECTION:
-            component_type = 'genericdatacollection'  # GenericDataCollection
+            model = GenericDataCollection.__name__  # GenericDataCollection
+        else:
+            model = component_type
 
-        component = get_model('experiment', component_type)(
+        component = get_model('experiment', model)(
             experiment=experiment,
             identification=identification or faker.ssn(),
             component_type=component_type,
@@ -245,13 +251,19 @@ class ObjectsFactory(object):
         if component_type == Component.QUESTIONNAIRE:
             try:
                 component.survey_id = kwargs['sid']
-            except IntegrityError:
-                print('You need to specify "survey" argument with a Survey '
-                      'object id to create a Questionnaire component')
             except KeyError:
                 print('You must specify \'sid\' key in kwargs dict')
+        elif component_type == Component.GENERIC_DATA_COLLECTION:
+            try:
+                component.information_type = kwargs['it']
+            except KeyError:
+                print('You must specify \'it\' key in kwargs dict')
 
-        component.save()
+        try:
+            component.save()
+        except IntegrityError:
+            print('Have you remembered to give specific attribute for '
+                  'the specific component?')
 
         return component
 
@@ -262,13 +274,37 @@ class ObjectsFactory(object):
         :param experimental_protocol: experimental protocol
         :return: group
         """
+        faker = Factory.create()
+
         group = Group.objects.create(
             experiment=experiment,
-            title="Group-update",
-            description="Descricao do Group-update",
+            title=faker.word(),
+            description=faker.text(),
             experimental_protocol=experimental_protocol
         )
         return group
+
+    @staticmethod
+    def create_subject(patient):
+        """
+        :param patient: Patient model instance
+        :return: Subject model instance
+        """
+        return Subject.objects.create(patient=patient)
+
+    @staticmethod
+    def create_subject_of_group(group, subject):
+        """
+        :param group: Group model instance
+        :param subject: Subject model instance
+        :return: SubjectOfGroup model instance
+        """
+        subject_of_group = SubjectOfGroup.objects.create(
+            subject=subject, group=group
+        )
+        group.subjectofgroup_set.add(subject_of_group)
+
+        return subject_of_group
 
     @staticmethod
     def create_block(experiment):
@@ -318,7 +354,7 @@ class ObjectsFactory(object):
         return filter_type
 
     @staticmethod
-    def create_tag(name = 'TAG name'):
+    def create_tag(name='TAG name'):
         tag = Tag.objects.create(
             name=name
         )
@@ -474,6 +510,59 @@ class ObjectsFactory(object):
             subject_of_group=subject_of_group
         )
 
+    @staticmethod
+    def create_information_type():
+        faker = Factory.create()
+
+        return InformationType.objects.create(
+            name=faker.word(), description=faker.text()
+        )
+
+    @staticmethod
+    def create_file_format():
+
+        faker = Factory.create()
+
+        return FileFormat.objects.create(
+            name=faker.file_extension(), description=faker.text()
+        )
+
+    @staticmethod
+    def create_generic_data_collection_data(data_conf_tree,
+                                            subj_of_group):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return GenericDataCollectionData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group
+        )
+
+    @staticmethod
+    def create_binary_file(path):
+        with open(os.path.join(path, 'file.bin'), 'wb') as f:
+            f.write(b'carambola')
+            return f
+
+    @staticmethod
+    def create_generic_data_colletion_file(gdc_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
+                bin_file.write(b'carambola')
+
+            gdcf = GenericDataCollectionFile.objects.create(
+                generic_data_collection_data=gdc_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                gdcf.file.save('file.bin', f)
+            gdcf.save()
+
+        return gdcf
+
 
 class ExperimentalProtocolTest(TestCase):
 
@@ -493,7 +582,9 @@ class ExperimentalProtocolTest(TestCase):
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        self.emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        self.emg_setting = ObjectsFactory.create_emg_setting(
+            experiment, software_version
+        )
 
     def test_component_list(self):
         experiment = Experiment.objects.first()
@@ -554,7 +645,7 @@ class ExperimentalProtocolTest(TestCase):
                      'eeg_setting': self.eeg_setting.id}
         response = self.client.post(reverse("component_new", args=(experiment.id, "eeg")), self.data)
         self.assertEqual(response.status_code, 302)
-        # Check if redirected to list of components
+        # check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
         self.assertTrue(EEG.objects.filter(description=description, identification=identification).exists())
 
@@ -562,19 +653,26 @@ class ExperimentalProtocolTest(TestCase):
                      'description': 'Instruction description', 'text': 'Instruction text'}
         response = self.client.post(reverse("component_new", args=(experiment.id, "instruction")), self.data)
         self.assertEqual(response.status_code, 302)
-        # Check if redirected to list of components
+        # check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
         self.assertTrue(Instruction.objects.filter(text="Instruction text").exists())
 
         stimulus_type = StimulusType.objects.create(name="Auditivo")
         stimulus_type.save()
-        self.data = {'action': 'save', 'identification': 'Stimulus identification',
-                     'description': 'Stimulus description', 'stimulus_type': stimulus_type.id}
-        response = self.client.post(reverse("component_new", args=(experiment.id, "stimulus")), self.data)
+        self.data = {
+            'action': 'save', 'identification': 'Stimulus identification',
+            'description': 'Stimulus description',
+            'stimulus_type': stimulus_type.id
+        }
+        response = self.client.post(
+            reverse("component_new", args=(experiment.id, "stimulus")),
+            self.data
+        )
         self.assertEqual(response.status_code, 302)
         # Check if redirected to list of components
         self.assertTrue("/experiment/" + str(experiment.id) + "/components" in response.url)
-        self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification", stimulus_type=stimulus_type).exists())
+        self.assertTrue(Stimulus.objects.filter(identification="Stimulus identification",
+                                                stimulus_type=stimulus_type).exists())
 
         self.data = {'action': 'save', 'identification': 'Pause identification',
                      'description': 'Pause description', 'duration_value': 2, 'duration_unit': 'h'}
@@ -2332,7 +2430,6 @@ class EEGEquipmentRegisterTest(TestCase):
         response = self.client.post(reverse("manufacturer_view", args=(manufacturer.id,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Manufacturer.objects.all().count(), 0)
-
 
     def test_amplifier_register(self):
         manufacturer = ObjectsFactory.create_manufacturer()
