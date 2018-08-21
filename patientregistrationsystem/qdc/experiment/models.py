@@ -869,9 +869,9 @@ class Component(models.Model):
     )
 
     identification = models.CharField(max_length=50)
-    description = models.TextField(blank=True)
+    description = models.TextField(null=True, blank=True)
     duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
-    duration_unit = models.CharField(blank=True, max_length=15, choices=TIME_UNITS)
+    duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
     experiment = models.ForeignKey(Experiment)
     component_type = models.CharField(max_length=30, choices=COMPONENT_TYPES)
 
