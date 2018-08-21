@@ -162,7 +162,7 @@ def abbreviated_data(data_to_abbreviate, heading_type):
 
     if heading_type == 'abbreviated' and len(data_to_abbreviate) > \
             MAX_STRING_LENGTH:
-        return data_to_abbreviate[:MAX_STRING_LENGTH]
+        return data_to_abbreviate[:MAX_STRING_LENGTH] + '..'
     else:
         return data_to_abbreviate
 
@@ -805,23 +805,35 @@ def get_questionnaire_experiment_header(questionnaire_lime_survey, questionnaire
                                         heading_type="code", current_language="pt-BR"):
 
     questionnaire_list = []
-    language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
+    language_new = get_questionnaire_language(
+        questionnaire_lime_survey, questionnaire_id, current_language
+    )
 
-    token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+    token = questionnaire_lime_survey.get_participant_properties(
+        questionnaire_id, token_id, "token"
+    )
 
-    responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
+    responses_string = questionnaire_lime_survey.get_header_response(
+        questionnaire_id, language_new, token
+    )
 
     if not isinstance(responses_string, dict):
 
-        questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
+        questionnaire_questions = \
+            QuestionnaireUtils.responses_to_csv(responses_string)
 
-        responses_heading_type = questionnaire_lime_survey.get_header_response(questionnaire_id,
-                                                                               language_new, token,
-                                                                               heading_type=heading_type)
+        responses_heading_type = \
+            questionnaire_lime_survey.get_header_response(
+                questionnaire_id, language_new, token,
+                heading_type=heading_type
+            )
 
-        questionnaire_questions_heading_type = QuestionnaireUtils.responses_to_csv(responses_heading_type)
+        questionnaire_questions_heading_type = \
+            QuestionnaireUtils.responses_to_csv(responses_heading_type)
 
-        questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
+        questionnaire_header = list(zip(
+            questionnaire_questions_heading_type[0], questionnaire_questions[0]
+        ))
 
         # line 0 - header information
         for question in questionnaire_header:
@@ -877,7 +889,9 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
                 fields, heading_type, current_language
             )
 
-            questionnaire_list_updated.append([index, questionnaire_id, title, questionnaire_field_header])
+            questionnaire_list_updated.append(
+                [index, questionnaire_id, title, questionnaire_field_header]
+            )
 
     questionnaire_lime_survey.release_session_key()
 
