@@ -286,7 +286,9 @@ def research_project_view(request, research_project_id, template_name="experimen
             for group in groups:
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
-                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+                    image = get_experimental_protocol_image(
+                        group.experimental_protocol, tree, True
+                    )
                     group_and_image = [group.title, image]
                     experimental_protocol_image.append(group_and_image)
 
@@ -323,7 +325,11 @@ def get_owner_full_name(research_project):
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    check_can_change(request.user, research_project)
+    #com o decorator @permission_required('experiment.change_researchproject'),
+    # a função abaixo é desnecessaria:
+    #
+    #check_can_change(request.user, research_project)
+
 
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
     research_project_owner_form = ResearchProjectOwnerForm(request.POST or None, instance=research_project)
@@ -754,7 +760,8 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
     collaborators_added = ExperimentResearcher.objects.filter(experiment_id=experiment_id)
     collaborators_added_ids = collaborators_added.values_list('researcher_id', flat=True)
 
-    collaborators = User.objects.filter(is_active=True).exclude(pk__in=collaborators_added_ids).order_by('first_name', 'last_name')
+    collaborators = User.objects.filter(is_active=True).exclude(pk__in=collaborators_added_ids).order_by('first_name',
+                                                                                                         'last_name')
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -1072,7 +1079,10 @@ def send_all_experiments_to_portal():
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
                     textual_description = get_description_from_experimental_protocol_tree(tree)
-                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+                    image = get_experimental_protocol_image(
+                        group.experimental_protocol, tree, True
+                    )
+                    image = image.split(settings.MEDIA_URL)
 
                     # steps
                     step_list = send_steps_to_portal(portal_group['id'], tree,
@@ -1162,8 +1172,7 @@ def send_all_experiments_to_portal():
 
                         for questionnaire_response in questionnaire_responses:
                             component_id = \
-                                questionnaire_response.data_configuration_tree.\
-                                    component_configuration.component_id
+                                questionnaire_response.data_configuration_tree.component_configuration.component_id
                             questionnaire = \
                                 Questionnaire.objects.get(pk=component_id)
                             limesurvey_id = questionnaire.survey.lime_survey_id
@@ -1370,16 +1379,16 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 
         list_of_questionnaires_configuration.append(
             {
-            "survey_title": surveys.get_survey_title(
-                questionnaire.survey.lime_survey_id,
-                get_questionnaire_language(
-                    surveys, questionnaire.survey.lime_survey_id, language_code
-                )
-            ),
-            "fills_per_participant": fills_per_participant,
-            "total_fills_needed": total_fills_needed,
-            "total_fills_done": amount_of_completed_questionnaires,
-            "id": questionnaire_configuration.id
+                "survey_title": surveys.get_survey_title(
+                    questionnaire.survey.lime_survey_id,
+                    get_questionnaire_language(
+                        surveys, questionnaire.survey.lime_survey_id, language_code
+                    )
+                ),
+                "fills_per_participant": fills_per_participant,
+                "total_fills_needed": total_fills_needed,
+                "total_fills_done": amount_of_completed_questionnaires,
+                "id": questionnaire_configuration.id
             }
         )
 
@@ -1387,14 +1396,13 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
             parent_id=block_id, component__component_type="block"
     ):
 
-        list_of_questionnaires_configuration = \
-            recursively_create_list_of_questionnaires_and_statistics(
-                Block.objects.get(id=block_configuration.component.id),
-                list_of_questionnaires_configuration,
-                surveys,
-                num_participants,
-                language_code
-            )
+        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires_and_statistics(
+            Block.objects.get(id=block_configuration.component.id),
+            list_of_questionnaires_configuration,
+            surveys,
+            num_participants,
+            language_code
+        )
 
     return list_of_questionnaires_configuration
 
@@ -1470,7 +1478,9 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
 
         tree = get_block_tree(group.experimental_protocol, request.LANGUAGE_CODE)
         experimental_protocol_description = get_description_from_experimental_protocol_tree(tree)
-        experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
+        experimental_protocol_image = get_experimental_protocol_image(
+            group.experimental_protocol, tree, True
+        )
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -5023,8 +5033,8 @@ def get_data_collections_from_group(group, data_type=None):
             AdditionalData.objects.filter(
                 subject_of_group__group=group,
                 data_configuration_tree_id=data_configuration_tree_id).values(
-                'subject_of_group__subject').distinct().count() if data_type is None or \
-                                                                   data_type == "additional_data" else None
+                'subject_of_group__subject').distinct().count() if data_type is None or data_type ==\
+                                                                   "additional_data" else None
 
         data_list = [{'type': 'additional_data',
                       'icon_class': icon_class['additional_data'],
@@ -5821,12 +5831,14 @@ def load_questionnaire_data(request, group_id):
     group = get_object_or_404(Group, id=group_id)
 
     number_of_imported_data = 0
-    list_of_paths = create_list_of_trees(group.experimental_protocol, "questionnaire")
+    list_of_paths = create_list_of_trees(
+        group.experimental_protocol, 'questionnaire'
+    )
 
     reused_tokens = {}
     # first loop: knowing tokens that was already reused
-    for path in list_of_paths:
-        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+    for path_ in list_of_paths:
+        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path_[-1][0])
         questionnaire_responses = \
             QuestionnaireResponse.objects.filter(
                 data_configuration_tree__component_configuration=questionnaire_configuration)
@@ -5838,15 +5850,15 @@ def load_questionnaire_data(request, group_id):
             update_list_of_reused_tokens(questionnaire_response, questionnaire, reused_tokens)
 
     # main loop: importing
-    for path in list_of_paths:
+    for path_ in list_of_paths:
 
-        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path_[-1][0])
 
         data_configuration_tree_id = \
-            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path])
+            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path_])
 
         if not data_configuration_tree_id:
-            data_configuration_tree_id = create_data_configuration_tree([item[0] for item in path])
+            data_configuration_tree_id = create_data_configuration_tree([item[0] for item in path_])
 
         data_configuration_tree = get_object_or_404(DataConfigurationTree, pk=data_configuration_tree_id)
 
@@ -6255,7 +6267,8 @@ def get_sensors_position(eeg_data):
                 #
                 # file_power_espectral_name = 'power_spectral_' + str(eeg_data.id) + ".png"
                 # fig_psd.savefig(path.join(path_complete, file_power_espectral_name))
-                # file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_power_espectral_name)
+                # file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"),
+                #                                       file_power_espectral_name)
 
     return file_path
 
@@ -8490,15 +8503,21 @@ def split_node_identification_for_graph(identification):
     return '\n'.join(result)
 
 
-def get_experimental_protocol_image(experimental_protocol, tree):
+def get_experimental_protocol_image(experimental_protocol, tree, url=False):
 
     graph = pydot.Dot(graph_type='digraph')
 
     subgraph, first_node, last_node = get_subgraph(tree)
     graph.add_subgraph(subgraph)
 
-    initial_node = pydot.Node('initial_node', label='', style="filled", shape='circle', fillcolor='green')
-    ending_node = pydot.Node('ending_node', label='', style="filled", shape='circle', fillcolor='red')
+    initial_node = pydot.Node(
+        'initial_node', label='', style="filled", shape='circle',
+        fillcolor='green'
+    )
+    ending_node = pydot.Node(
+        'ending_node', label='', style="filled", shape='circle',
+        fillcolor='red'
+    )
     subgraph.add_node(initial_node)
     subgraph.add_node(ending_node)
     if first_node:
@@ -8507,7 +8526,8 @@ def get_experimental_protocol_image(experimental_protocol, tree):
         subgraph.add_edge(pydot.Edge(last_node, ending_node))
 
     # graph file name
-    file_name = "experimental_protocol_" + str(experimental_protocol.id) + ".png"
+    file_name = \
+        "experimental_protocol_" + str(experimental_protocol.id) + ".png"
 
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
@@ -8517,7 +8537,10 @@ def get_experimental_protocol_image(experimental_protocol, tree):
     except:
         return None
 
-    return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+    return path.join(
+        settings.MEDIA_URL if url else settings.MEDIA_ROOT,
+        'temp', file_name
+    )
 
 
 def get_description_from_experimental_protocol_tree(component, component_configuration_attributes=[]):
@@ -9254,8 +9277,16 @@ def component_create(request, experiment_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
     component_form = ComponentForm(request.POST or None)
-    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    ###########################################################################
+    # This is needed for the form to be able to validate the presence of a
+    # duration in a pause component only. Since there is no creation of
+    # components (Component) without being an inherited model, eg: 'stimulus',
+    # 'instruction' etc., it does not make sense to create a ComponentForm
+    # just for model use Pause. It would make more sense to create a PauseForm
+    # as is the case for other types of components.
+
     component_form.component_type = component_type
+    ###########################################################################
     questionnaires_list = []
     specific_form = None
 
@@ -9576,8 +9607,8 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     back_cancel_url = create_back_cancel_url(component_type, component_configuration, path_of_the_components,
                                              list_of_ids_of_components_and_configurations, experiment, updating)
 
-    return component, component_configuration, component_form, configuration_form, experiment, component_type, \
-           template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, \
+    return component, component_configuration, component_form, configuration_form, experiment, component_type,\
+           template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group,\
            back_cancel_url
 
 
@@ -9737,9 +9768,13 @@ def get_uses_of_step_with_data(experiment):
             data_configuration_tree__component_configuration__component__experiment=experiment).values(
             'data_configuration_tree__component_configuration').distinct()]
 
-    return steps_questionnaire + \
-           steps_eeg + steps_emg + steps_tms + \
-           steps_goalkeeper_game + steps_additional_data + steps_generic_data_collection
+    return steps_questionnaire +\
+           steps_eeg +\
+           steps_emg +\
+           steps_tms +\
+           steps_goalkeeper_game +\
+           steps_additional_data +\
+           steps_generic_data_collection
 
 
 def clone_data_configuration_tree(dct, orig_and_clone):
@@ -10399,7 +10434,6 @@ def copy_tms_setting(tms_setting, new_experiment):
 
 def create_component(component, new_experiment, orig_and_clone):
 
-    clone = None  # TODO: it's not necessary
     component_type = component.component_type
     file = None  # define variable that can be used in conditionals below
 
@@ -10824,7 +10858,6 @@ def component_update(request, path_of_the_components):
                         if component_type == 'stimulus':
                             stimulus = get_object_or_404(Stimulus, pk=component.id)
                             specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
-
 
                         # Only save if there was a change.
                         if component_form.has_changed() or specific_form.has_changed():

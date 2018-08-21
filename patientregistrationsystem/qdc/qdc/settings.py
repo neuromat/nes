@@ -55,7 +55,6 @@ PROJECT_APPS = (
     'custom_user',
     'experiment',
     'survey',
-    'cep',
     'export',
     'configuration'
 )
@@ -193,4 +192,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.40'
+VERSION = '1.43'

@@ -270,7 +270,7 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
 
                 # electrode position
                 electrode_position_portal = send_eeg_electrode_position_to_portal(
-                    portal_eeg_setting['id'], electrode_model_portal['id'] , position)
+                    portal_eeg_setting['id'], electrode_model_portal['id'], position)
 
     return portal_eeg_setting
 
@@ -407,7 +407,8 @@ def send_eeg_electrode_localization_system_to_portal(
               'description': eeg_electrode_localization_system.description}
 
     if eeg_electrode_localization_system.map_image_file:
-        map_image_file = open(path.join(settings.MEDIA_ROOT, eeg_electrode_localization_system.map_image_file.name), 'rb')
+        map_image_file = open(path.join(settings.MEDIA_ROOT, eeg_electrode_localization_system.map_image_file.name),
+                              'rb')
         params["map_image_file"] = \
             coreapi.utils.File(
                 os.path.basename(eeg_electrode_localization_system.map_image_file.name),
@@ -747,7 +748,7 @@ def send_emg_intramuscular_placement_to_portal(experiment_nes_id,
     action_keys = ['experiments', 'emg_intramuscular_placement', 'create']
 
     portal_intramuscular_placement = rest.client.action(rest.schema, action_keys,
-                                                  params=params, encoding="multipart/form-data")
+                                                        params=params, encoding="multipart/form-data")
 
     return portal_intramuscular_placement
 
@@ -782,7 +783,7 @@ def send_emg_needle_placement_to_portal(experiment_nes_id,
     action_keys = ['experiments', 'emg_needle_placement', 'create']
 
     portal_needle_placement = rest.client.action(rest.schema, action_keys,
-                                                  params=params, encoding="multipart/form-data")
+                                                 params=params, encoding="multipart/form-data")
 
     return portal_needle_placement
 
@@ -1133,7 +1134,7 @@ def send_research_project_to_portal(experiment: Experiment):
 
     action_keys = ['experiments', 'studies', 'create']
 
-    portal_research_project = rest.client.action(rest.schema, action_keys , params=params)
+    portal_research_project = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_research_project
 

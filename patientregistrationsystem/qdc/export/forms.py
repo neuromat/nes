@@ -1,16 +1,10 @@
 # coding=utf-8
-from django.forms import ModelForm, Form, TextInput, Textarea, CharField, BooleanField, MultipleChoiceField, \
+from django.forms import ModelForm, Form, TextInput, CharField, BooleanField, MultipleChoiceField, \
     CheckboxSelectMultiple, ChoiceField, SelectMultiple, IntegerField, NumberInput, RadioSelect
 
 from django.utils.translation import ugettext_lazy as _
 
-
 from patient.models import Patient, Diagnosis
-
-# SEARCH_PARTICIPANTS_CHOICES = (
-#     ('all', _('All participants')),
-#     ('selected', _('Selected participants'))
-# )
 
 HEADINGS_CHOICES = (
     ('code', _("Question code")),
@@ -25,7 +19,10 @@ RESPONSES_CHOICES = (
 
 
 class ExportForm(Form):
-    title = CharField(required=False, widget=TextInput(attrs={'class': 'form-control', 'disabled': ''}))
+    title = CharField(
+        required=False,
+        widget=TextInput(attrs={'class': 'form-control', 'disabled': ''})
+    )
     per_participant = BooleanField(initial=True, required=False)
     per_questionnaire = BooleanField(initial=True, required=False)
     per_eeg_raw_data = BooleanField(initial=True, required=False)
@@ -39,16 +36,18 @@ class ExportForm(Form):
 
     questionnaire_entrance_selected = []
 
-    # patient_fields_selected = MultipleChoiceField(required=True,
-    #                                               widget=CheckboxSelectMultiple, choices=FAVORITE_COLORS_CHOICES)
-
-    headings = ChoiceField(widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False)
-    responses = MultipleChoiceField(widget=CheckboxSelectMultiple(attrs={'data-error': _('Response must be selected')}),
-                                    choices=RESPONSES_CHOICES, required=False)
+    headings = ChoiceField(
+        widget=RadioSelect(), choices=HEADINGS_CHOICES, required=False
+    )
+    responses = MultipleChoiceField(
+        widget=CheckboxSelectMultiple(attrs={
+            'data-error': _('Response must be selected')
+        }),
+        choices=RESPONSES_CHOICES, required=False
+    )
 
 
 class ParticipantsSelectionForm(ModelForm):
-
     class Meta:
         model = Patient
 
@@ -72,6 +71,23 @@ class ParticipantsSelectionForm(ModelForm):
         self.fields['state'].empty_label = None
         self.fields['city'].empty_label = None
 
+        self.fields['gender'].required = True
+        self.fields['marital_status'].required = True
+        self.fields['country'].required = True
+        self.fields['state'].required = True
+        self.fields['city'].required = True
+
+        if not self.data.get("gender"):
+            self.fields['gender'].required = False
+        if not self.data.get("marital_status"):
+            self.fields['marital_status'].required = False
+        if not self.data.get("country"):
+            self.fields['country'].required = False
+        if not self.data.get("state"):
+            self.fields['state'].required = False
+        if not self.data.get("city"):
+            self.fields['city'].required = False
+
 
 class AgeIntervalForm(Form):
 
@@ -81,6 +97,21 @@ class AgeIntervalForm(Form):
     max_age = IntegerField(min_value=0, widget=NumberInput(attrs={'class': 'form-control', 'required': "",
                                                                   'data-error': _('Max age must be filled.'),
                                                                   'disabled': ''}))
+
+    def clean(self):
+        cleaned_data = super(AgeIntervalForm, self).clean()
+        min_age = cleaned_data.get("min_age")
+        max_age = cleaned_data.get("max_age")
+
+        if max_age and min_age and max_age < min_age:
+            msg = "Idade mínima deve ser menor que idade máxima."
+            self._errors["min_age"] = self.error_class([msg])
+            self._errors["max_age"] = self.error_class([msg])
+
+            del cleaned_data["min_age"]
+            del cleaned_data["max_age"]
+
+        return cleaned_data
 
 
 class DiagnosisSelectionForm(ModelForm):

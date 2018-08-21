@@ -806,9 +806,9 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
 
                                         answer_list.append(answer)
 
-                                        groups_of_questions = \
+                                        groups_of_questions =\
                                             add_questionnaire_response_to_group(
-                                            groups_of_questions, question,
+                                                groups_of_questions, question,
                                                 answer_list, None,
                                                 no_response_flag
                                             )

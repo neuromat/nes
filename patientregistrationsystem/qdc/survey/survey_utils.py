@@ -204,7 +204,6 @@ class QuestionnaireUtils:
 
         return new_header, new_fields
 
-
     def redefine_header_and_fields_experiment(self, questionnaire_id, header_filtered, fields, header_list):
         header_questionnaire = self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"]
         fields_saved = self.questionnaires_experiment_data[questionnaire_id]["fields"]
@@ -422,9 +421,9 @@ class QuestionnaireUtils:
                 question_ids = survey.list_questions(
                     survey_id, group['id']['gid']
                 )
-                for id in question_ids:
+                for id_ in question_ids:
                     properties = survey.get_question_properties(
-                        id, group['id']['language']
+                        id_, group['id']['language']
                     )
                     # Multiple question ('M' or 'P') will be question if
                     # properties['subquestions'] is a dict, otherwise will

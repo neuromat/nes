@@ -81,7 +81,6 @@ class FormUserValidation(TestCase):
             'protocol': use_https and 'https' or 'http',
         }
 
-        # send_mail(_("Your account for %s") % site_name, t.render(Context(c)), None, [user_added.email])
         subject_template_name = 'registration/password_reset_subject.txt'
         subject = loader.render_to_string(subject_template_name, context)
 
@@ -99,22 +98,26 @@ class FormUserValidation(TestCase):
         msg.send()
 
     def test_user_password_pattern(self):
-        """Testa o pattern definido """
-        # Detalhamento do pattern
-        # (			# Start of group
-        # (?=.*\d)		#   must contains one digit from 0-9
-        # (?=.*[a-z])		#   must contains one lowercase characters
-        # (?=.*[A-Z])		#   must contains one uppercase characters
-        # (?=.*[@#$%])		#   must contains one special symbols in the list "@#$%"
-        # .		#     match anything with previous condition checking
-        # {6,20}	#        length at least 6 characters and maximum of 20
-        # )
+        """
+        Testa o pattern definido
+
+        Detalhamento do pattern
+        (			# Start of group
+        (?=.*\d)		#   must contains one digit from 0-9
+        (?=.*[a-z])		#   must contains one lowercase characters
+        (?=.*[A-Z])		#   must contains one uppercase characters
+        (?=.*[@#$%])		#   must contains one special symbols in the list "@#$%"
+        .		#     match anything with previous condition checking
+        {6,20}	#        length at least 6 characters and maximum of 20
+        )
+        """
         pattern = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
         password = "abcC2@!$"
 
         self.assertTrue(self.confirm_password(pattern, password), True)
 
-    def confirm_password(self, pattern, password):
+    @staticmethod
+    def confirm_password(pattern, password):
         return re.compile(pattern).match(password)
 
     def test_user_invalid_username(self):
@@ -139,6 +142,36 @@ class FormUserValidation(TestCase):
         response = self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertFormError(response, "form", "email", 'Informe um endereço de email válido.')
         self.assertEqual(User.objects.filter(username='').count(), 0)
+
+    def test_user_duplicated_email(self):
+        """
+        Testa inclusao de usuario com sucesso
+        """
+        username = 'test_username'
+        self.data['username'] = username
+        self.data['login_enabled'] = True
+
+        response = self.client.post(reverse(USER_NEW), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(User.objects.filter(username=username).count(), 1)
+
+        username2 = 'test_username2'
+        self.data['username']=[username2]
+        self.data['first_name'] = ['Fulano']
+
+        response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_researcher_without_user(self):
+        """
+        Testa inclusao de usuario com sucesso
+        """
+        del self.user
+        self.data['login_enabled'] = False
+
+        response = self.client.post(reverse(USER_NEW), self.data)
+        self.assertEqual(response.status_code, 302)
 
     def test_user_passwords_doesnt_match(self):
         """
@@ -243,7 +276,6 @@ class FormUserValidation(TestCase):
         """
         Testa visualizar usuario
         """
-
 
         self.data['login_enabled'] = True
         # Create an instance of a GET request.

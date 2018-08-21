@@ -340,7 +340,7 @@ msgid "Edit details"
 msgstr "Editar detalhes"
 
 #: patient/templates/patient/medical_record.html:148
-msgid "Detais"
+msgid "Details"
 msgstr "Detalhes"
 
 #: patient/templates/patient/medical_record.html:162
@@ -870,8 +870,8 @@ msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
 
-#~ msgid "Fill date must be filled"
-#~ msgstr "Data de preenchimento deve ser preenchida"
+msgid "Fill date must be filled."
+msgstr "Data de preenchimento deve ser preenchida."
 
 #~ msgid "Entrance evaluation"
 #~ msgstr "Avaliação de entrada"
