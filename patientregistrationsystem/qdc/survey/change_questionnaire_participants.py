@@ -5,16 +5,16 @@ import sys
 import os
 import django
 
+from survey.abc_search_engine import Questionnaires
+from experiment.models import Questionnaire, \
+    QuestionnaireResponse as EQuestionnaireResponse
+from patient.models import QuestionnaireResponse as PQuestionnaireResponse
+
 sys.path.append(
     '/home/caco/Workspace/nes-system/nes/patientregistrationsystem/qdc'
 )
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'qdc.settings')
 django.setup()
-
-from survey.abc_search_engine import Questionnaires
-from experiment.models import Questionnaire, \
-    QuestionnaireResponse as EQuestionnaireResponse
-from patient.models import QuestionnaireResponse as PQuestionnaireResponse
 
 
 def parse_options(argv):
@@ -86,9 +86,7 @@ def main(argv):
 
     print('Updating experiment questionnaire responses ...')
     for q_experiment_response in EQuestionnaireResponse.objects.filter(
-            data_configuration_tree__component_configuration__component
-            =questionnaire.id
-    ):
+            data_configuration_tree__component_configuration__component=questionnaire.id):
         update_questionnaire_response(
             old_tokens, new_tokens, q_experiment_response
         )

@@ -84,17 +84,17 @@ class ABCSearchEngine(ABC):
 
         participant_data = {'email': '', 'firstname': '', 'lastname': ''}
 
-        participant_data_result = self.server.add_participants(
+        result = self.server.add_participants(
             self.session_key, sid, [participant_data], True
         )
 
-        if participant_data_result \
-                and isinstance(participant_data_result, list) \
-                and isinstance(participant_data_result[0], dict) \
-                and 'error' not in participant_data_result[0]:
+        if result \
+                and isinstance(result, list) \
+                and isinstance(result[0], dict) \
+                and 'error' not in result[0]:
 
-            return {'token': participant_data_result[0]['token'],
-                    'tid': participant_data_result[0]['tid']}
+            return {'token': result[0]['token'],
+                    'tid': result[0]['tid']}
         else:
             return None
 
@@ -116,6 +116,7 @@ class ABCSearchEngine(ABC):
     def get_survey_title(self, sid, language):
         """
         :param sid: survey ID
+        :param language: language
         :return: title of the survey
         """
 
@@ -207,16 +208,18 @@ class ABCSearchEngine(ABC):
         return isinstance(result, int)
 
     @abstractmethod
-    def add_survey(self, wish_sid, title, language, survey_format):
+    def add_survey(self, sid, title, language, survey_format):
         """ Adds a survey to the LimeSurvey
-        :param wish_sid: survey ID
+        :param sid: survey ID
         :param title: title of the survey
         :param language: language of the survey
         :param survey_format: format of the survey
         :return: survey ID generated
         """
 
-        survey_id_generated = self.server.add_survey(self.session_key, wish_sid, title, language, survey_format)
+        survey_id_generated = self.server.add_survey(
+            self.session_key, sid, title, language, survey_format
+        )
         return survey_id_generated
 
     @abstractmethod
@@ -347,6 +350,9 @@ class ABCSearchEngine(ABC):
 
         return properties
 
+    def set_question_properties(self, sid, data):
+        return self.server.set_question_properties(self.session_key, sid, data)
+
     @abstractmethod
     def list_groups(self, sid):
         """
@@ -367,6 +373,11 @@ class ABCSearchEngine(ABC):
         :return: list of group properties
         """
         return self.server.get_group_properties(self.session_key, gid)
+
+    def set_group_properties(self, sid, data):
+        return self.server.set_group_properties(
+            self.session_key, sid, data
+        )
 
     @abstractmethod
     def list_questions(self, sid, gid):
@@ -394,6 +405,17 @@ class ABCSearchEngine(ABC):
         )
 
         return tokens
+
+    def add_group(self, sid, title, description):
+        return self.server.add_group(self.session_key, sid, title)
+
+    def add_response(self, sid, response_data):
+        return self.server.add_response(self.session_key, sid, response_data)
+
+    def set_participant_properties(self, sid, tid, properties_dict):
+        return self.server.set_participant_properties(
+            self.session_key, sid, tid, properties_dict
+        )
 
 
 class Questionnaires(ABCSearchEngine):
@@ -429,8 +451,10 @@ class Questionnaires(ABCSearchEngine):
     def survey_has_token_table(self, sid):
         return super(Questionnaires, self).survey_has_token_table(sid)
 
-    def add_survey(self, wish_sid, title, language, survey_format):
-        return super(Questionnaires, self).add_survey(wish_sid, title, language, survey_format)
+    def add_survey(self, sid, title, language, survey_format):
+        return super(Questionnaires, self).add_survey(
+            sid, title, language, survey_format
+        )
 
     def delete_survey(self, sid):
         return super(Questionnaires, self).delete_survey(sid)
@@ -459,14 +483,31 @@ class Questionnaires(ABCSearchEngine):
     def get_question_properties(self, question_id, language):
         return super(Questionnaires, self).get_question_properties(question_id, language)
 
+    def set_question_properties(self, sid, data):
+        return super(Questionnaires, self).set_question_properties(sid, data)
+
     def list_groups(self, sid):
         return super(Questionnaires, self).list_groups(sid)
 
     def get_group_properties(self, gid):
         return super(Questionnaires, self).get_group_properties(gid)
+    
+    def set_group_properties(self, sid, data):
+        return super(Questionnaires, self).set_group_properties(sid, data)
 
     def insert_questions(self, sid, questions_data, format_import_file):
         return super(Questionnaires, self).insert_questions(sid, questions_data, format_import_file)
 
     def find_tokens_by_questionnaire(self, sid):
         return super(Questionnaires, self).find_tokens_by_questionnaire(sid)
+
+    def add_group(self, sid, title, description=None):
+        return super(Questionnaires, self).add_group(sid, title, description)
+
+    def add_response(self, sid, response_data):
+        return super(Questionnaires, self).add_response(sid, response_data)
+
+    def set_participant_properties(self, sid, tid, properties_dict):
+        return super(Questionnaires, self).set_participant_properties(
+            sid, tid, properties_dict
+        )
