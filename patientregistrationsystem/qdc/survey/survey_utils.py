@@ -43,7 +43,8 @@ question_types = {
     'S': 'Short Free Text',
     'T': 'Long Free Text',
     'U': 'Huge Free Text',
-    'X': 'Boilerplate Question',  # não encontrado na versão do Neuromat
+    # não encontrado na versão do Neuromat
+    'X': 'Boilerplate Question',
     'Y': 'Yes/No',
     '!': 'List (Dropdown)',
     # não encontrado na versão atual do Neuromat

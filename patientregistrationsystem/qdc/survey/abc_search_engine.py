@@ -257,7 +257,7 @@ class ABCSearchEngine(ABC):
         return responses_txt
 
     @abstractmethod
-    def get_responses(self, sid, language, response_type='short', fields=None, heading_type='code'):
+    def get_responses(self, sid, language, response_type, fields, heading_type):
         """ Obtains responses from a determined survey
         :param sid: survey ID
         :param language: language
@@ -280,20 +280,24 @@ class ABCSearchEngine(ABC):
 
         return responses_txt
 
-    def get_header_response(self, sid, language, token, heading_type='full'):
-        """ Obtains header responses
+    def get_header_response(self, sid, language, token, heading_type):
+        """ Obtain header responses
         :param sid: survey ID
         :param language: language
         :param heading_type: heading type (can be 'code' or 'full')
         :return: responses in the txt format
         """
 
-        responses = self.server.export_responses_by_token(self.session_key, sid, 'csv', token, language,
-                                                          'complete', heading_type, 'short')
+        responses = self.server.export_responses_by_token(
+            self.session_key, sid, 'csv', token, language,
+            'complete', heading_type, 'short'
+        )
 
         if not isinstance(responses, str):
-            responses = self.server.export_responses(self.session_key, sid, 'csv', language,
-                                                     'complete', heading_type, 'short')
+            responses = self.server.export_responses(
+                self.session_key, sid, 'csv', language,
+                'complete', heading_type, 'short'
+            )
         if isinstance(responses, str):
             responses_txt = b64decode(responses)
         else:
@@ -472,7 +476,9 @@ class Questionnaires(ABCSearchEngine):
         return super(Questionnaires, self).get_responses(sid, language, response_type, fields, heading_type)
 
     def get_header_response(self, sid, language, token=1, heading_type='code'):
-        return super(Questionnaires, self).get_header_response(sid, language, token, heading_type)
+        return super(Questionnaires, self).get_header_response(
+            sid, language, token, heading_type
+        )
 
     def get_summary(self, sid, stat_name):
         return super(Questionnaires, self).get_summary(sid, stat_name)

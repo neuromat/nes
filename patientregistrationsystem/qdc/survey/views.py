@@ -622,7 +622,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                 'question': properties['question'],
                                 'question_id': properties['title'],
                                 'answer_options': 'super_question',
-                                'type': 'X',   # properties['type'],
+                                'type': 'X',
                                 'other': False,
                                 'attributes_lang': properties['attributes_lang'],
                                 'hidden': 'hidden' in properties['attributes'] and
