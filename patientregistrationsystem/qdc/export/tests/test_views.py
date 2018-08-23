@@ -136,11 +136,13 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         # create questionnaire in NES
         self.survey = create_survey(self.sid)
-        dct = self.create_nes_questionnaire(self.root_component)
+        self.data_configuration_tree = self.create_nes_questionnaire(
+            self.root_component
+        )
 
         # add response to limesurvey survey and the references in our db
         self.add_responses_to_limesurvey_survey(
-            self.subject_of_group, dct
+            self.subject_of_group, self.data_configuration_tree
         )
 
     def tearDown(self):
@@ -491,6 +493,79 @@ class ExportQuestionnaireTest(ExportTestCase):
         ) as file:
             csv_line1 = next(csv.reader(file))
             self.assertEqual(len(csv_line1), 5)
+
+    def test_reusing_experimental_protocol_in_two_groups_returns_correct_directory_structure(self):
+
+        # create other group and associate the same experimental protocol
+        group2 = ObjectsFactory.create_group(
+            self.experiment, self.root_component
+        )
+
+        # create patient/subject/subject_of_group
+        patient2 = UtilTests().create_patient_mock(changed_by=self.user)
+        subject2 = ObjectsFactory.create_subject(patient2)
+        subject_of_group2 = \
+            ObjectsFactory.create_subject_of_group(group2, subject2)
+
+        # add response to limesurvey survey and the references in our db
+        self.add_responses_to_limesurvey_survey(
+            subject_of_group2, self.data_configuration_tree
+        )
+
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id), str(group2.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_participant': ['on'],
+            'action': ['run'],
+            'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*firstQuestion*firstQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*secondQuestion*secondQuestion',
+
+                '1*' + str(group2.id) + '*' + str(self.sid) +
+                '*Test questionnaire*acquisitiondate*acquisitiondate',
+                '1*' + str(group2.id) + '*' + str(self.sid) +
+                '*Test questionnaire*firstQuestion*firstQuestion',
+                '1*' + str(group2.id) + '*' + str(self.sid) +
+                '*Test questionnaire*secondQuestion*secondQuestion'
+            ],
+            'patient_selected': ['age*age'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+
+        # assertions for first group
+        self.assertFalse(
+            any(os.path.join(
+                'Group_' + slugify(self.group.title), 'Per_participant',
+                'Participant_' + patient2.code
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(self.group.title), 'Per_participant',
+                'Participant_' + patient2.code
+            ) + ' is in: ' + str(zipped_file.namelist())
+        )
+        self.assertFalse(
+            any(os.path.join(
+                'Group_' + slugify(group2.title), 'Per_participant',
+                'Participant_' + self.patient.code
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group2.title), 'Per_participant',
+                'Participant_' + self.patient.code
+            ) + ' is in: ' + str(zipped_file.namelist())
+        )
 
 
 class ExportDataCollectionTest(ExportTestCase):

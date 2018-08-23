@@ -407,7 +407,8 @@ def export_view(request, template_name="export/export_data.html"):
 
         # for experiment questionnaires
         if request.POST.getlist('to_experiment[]'):
-            experiment_questionnaires_selected_list = request.POST.getlist('to_experiment[]')
+            experiment_questionnaires_selected_list = \
+                request.POST.getlist('to_experiment[]')
             previous_questionnaire_id = -1
             output_list = []
             for questionnaire in experiment_questionnaires_selected_list:
