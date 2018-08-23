@@ -12,8 +12,9 @@ def create_user(groups, username=None, force_password_change=False):
     """
     faker = Factory.create()
 
+    password = 'passwd'
     user = User.objects.create_user(
-        username=username or faker.name(), password='passwd'
+        username=username or faker.name(), password=password
     )
     user.user_profile.login_enabled = True
     # disable force_password_change to avoid this step by now
@@ -23,4 +24,4 @@ def create_user(groups, username=None, force_password_change=False):
     for group in groups:
         user.groups.add(group)
 
-    return user
+    return [user, password]
