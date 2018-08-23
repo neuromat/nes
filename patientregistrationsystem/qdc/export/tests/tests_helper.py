@@ -16,8 +16,9 @@ class ExportTestCase(TestCase):
         # create the groups of users and their permissions
         exec(open('add_initial_data.py').read())
 
-        self.user = create_user(Group.objects.all())
-        self.client.login(username=self.user.username, password='passwd')
+        self.user, passwd = create_user(Group.objects.all())
+        # TODO: passar password de self.user e não como 'passwd'
+        self.client.login(username=self.user.username, password=passwd)
 
         # create experiment/experimental protocol/group
         self.experiment = ObjectsFactory.create_experiment(

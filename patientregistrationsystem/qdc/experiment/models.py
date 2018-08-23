@@ -937,7 +937,9 @@ class Block(Component):
     SEQUENCE = 'sequence'
     PARALLEL_BLOCK = 'parallel_block'
     BLOCK_TYPES = ((SEQUENCE, _("Sequence")), (PARALLEL_BLOCK, _("Parallel")))
-    number_of_mandatory_components = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
+    number_of_mandatory_components = models.IntegerField(
+        null=True, blank=True, validators=[MinValueValidator(0)]
+    )
     type = models.CharField(null=False, max_length=20,
                             choices=BLOCK_TYPES)
 
@@ -1060,7 +1062,9 @@ class Group(models.Model):
     description = models.TextField(null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
-    experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
+    experimental_protocol = models.ForeignKey(
+        Component, null=True, on_delete=models.SET_NULL
+    )
 
     class Meta:
         verbose_name = _('Group')
@@ -1172,7 +1176,8 @@ class DataConfigurationTree(models.Model):
 
 
 class SubjectStepData(models.Model):
-    # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
+    # data_configuration_tree null means that the DataCollection is
+    # associated to the whole experimental protocol
     data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)
 
     subject_of_group = models.ForeignKey(SubjectOfGroup)
