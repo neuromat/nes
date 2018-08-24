@@ -1869,11 +1869,14 @@ class SEP_Pause_FormTest(TestCase):
         # duration_value = self.component.duration_value
         # identification = self.component.identification
         duration_value = "5"
+        duration_unit = "ms"
         identification = "Identification"
         experiment = self.experiment
+        # component_type = "pause"
 
         sep_pause_form = ComponentForm(data={'identification': identification,
                                              'duration_value': duration_value,
+                                             'duration_unit': duration_unit,
                                              'experiment': experiment
         })
         sep_pause_form.component_type = self.component.component_type #jury-rig

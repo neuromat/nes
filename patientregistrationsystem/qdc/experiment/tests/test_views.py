@@ -71,7 +71,7 @@ class PermissionsresearchprojectupdateViewtest(TestCase):
         response = self.client.get(reverse('research_project_edit',
                                            kwargs={'research_project_id':
                                                        self.research_project.pk}))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
         self.assertRaises(PermissionDenied)
 
 
@@ -87,8 +87,8 @@ class ResearchprojectviewviewTest(TestCase):
         user_profile.force_password_change = False
         user_profile.save()
 
-        # for group in Group.objects.all():
-        for group in Group.objects.filter(name='Administrator'):
+        for group in Group.objects.all():
+        # for group in Group.objects.filter(name='Administrator'):
                 group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')

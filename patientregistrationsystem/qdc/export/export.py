@@ -401,8 +401,9 @@ class ExportExecution:
                         while step < size:
                             path_questionnaire += path_experiment[0][step] + "/"
                             step += 2
-                        questionnaire_configuration = get_object_or_404(ComponentConfiguration,
-                                                                        pk=path_experiment[-1][0])
+                        questionnaire_configuration = get_object_or_404(
+                            ComponentConfiguration, pk=path_experiment[-1][0]
+                        )
                         component_type = \
                             questionnaire_configuration.component.component_type
                         questionnaire = Questionnaire.objects.get(
@@ -419,12 +420,16 @@ class ExportExecution:
                             )
 
                             for data_configuration_tree in configuration_tree_list:
-                                experiment_questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
-                                    data_configuration_tree_id=data_configuration_tree.id)
+                                experiment_questionnaire_response_list = \
+                                    ExperimentQuestionnaireResponse.objects.filter(
+                                        data_configuration_tree_id=data_configuration_tree.id,
+                                        subject_of_group=subject_of_group
+                                    )
                                 for questionnaire_response in experiment_questionnaire_response_list:
                                     token_id = questionnaire_response.token_id
                                     completed = surveys.get_participant_properties(
-                                        questionnaire_id, token_id, "completed")
+                                        questionnaire_id, token_id, "completed"
+                                    )
                                     # load complete questionnaires data
                                     if completed is not None and completed != 'N' and completed != '':
                                         subject_code = questionnaire_response.subject_of_group.subject.patient.code
