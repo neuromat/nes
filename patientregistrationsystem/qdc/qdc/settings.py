@@ -133,8 +133,6 @@ LANGUAGES = (
     ('en', 'English'),
 )
 
-# os.path.join(BASE_DIR, 'locale'),
-# LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale'),]
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
     os.path.join(BASE_DIR, 'patient/locale'),

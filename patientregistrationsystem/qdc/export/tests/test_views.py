@@ -165,7 +165,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         self.add_responses_to_limesurvey_survey(subject_of_group, dct)
 
-        self.append_group_session_variable(
+        self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
 
@@ -247,7 +247,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             subject_of_group2, dct
         )
 
-        self.append_group_session_variable(
+        self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
 
@@ -325,7 +325,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             subject_of_group2, dct2
         )
 
-        self.append_group_session_variable(
+        self.append_session_variable(
             'group_selected_list', [str(self.group.id), str(group2.id)]
         )
 
@@ -443,7 +443,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         )
 
     def test_export_with_abbreviated_question_text(self):
-        self.append_group_session_variable(
+        self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
 
@@ -512,7 +512,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             subject_of_group2, self.data_configuration_tree
         )
 
-        self.append_group_session_variable(
+        self.append_session_variable(
             'group_selected_list', [str(self.group.id), str(group2.id)]
         )
 
@@ -599,7 +599,7 @@ class ExportDataCollectionTest(ExportTestCase):
         )
         ObjectsFactory.create_generic_data_colletion_file(gdc_data)
 
-        self.append_group_session_variable(
+        self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
 
@@ -662,3 +662,47 @@ class ExportParticipants(ExportTestCase):
         self.assertEqual(response.status_code, 200)
 
         self.get_zipped_file(response)
+
+
+class ExportSelection(ExportTestCase):
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_expire_section_when_in_last_export_form_returns_to_first_export_page(self):
+        """ Path that is followed when the session is expired and it tries
+        to generates the zipped file after loggin again
+        1. Flush the session
+        2. Post data to export view: the response contains the url to
+        reverse to login page
+        3. Post credentials in login page to login
+        4. Get the reversed url that has to point at export's first page
+        """
+
+        self.client.session.flush()
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'headings': ['code'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        response2 = self.client.post(response.url, {
+            'username': self.user.username,
+            'password': self.user_passwd
+        })
+
+        # when session expires the request is made with get
+        response3 = self.client.get(response2.url)
+
+        # TODO:
+        # see if it's possible to get 'http://testserver' without hardcode
+        self.assertEqual(
+            response3.url, 'http://testserver' + reverse('export_menu')
+        )
