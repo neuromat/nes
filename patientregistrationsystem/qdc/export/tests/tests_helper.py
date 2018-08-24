@@ -16,8 +16,11 @@ class ExportTestCase(TestCase):
         # create the groups of users and their permissions
         exec(open('add_initial_data.py').read())
 
-        self.user = create_user(Group.objects.all())
-        self.client.login(username=self.user.username, password='passwd')
+        # return user password to use when necessary in subclasses
+        self.user, self.user_passwd = create_user(Group.objects.all())
+        self.client.login(
+            username=self.user.username, password=self.user_passwd
+        )
 
         # create experiment/experimental protocol/group
         self.experiment = ObjectsFactory.create_experiment(
@@ -34,18 +37,18 @@ class ExportTestCase(TestCase):
         self.subject_of_group = \
             ObjectsFactory.create_subject_of_group(self.group, subject)
 
-    def append_group_session_variable(self, variable, group_ids):
+    def append_session_variable(self, key, value):
         """
         See:
         # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
         # for the form that it is done
 
-        :param variable: variable to be appended to session
-        :param group_ids: list of group ids (strins) as the value of the
+        :param key: key to be appended to session
+        :param value: list of group ids (strins) as the value of the
         session variable
         """
         session = self.client.session
-        session[variable] = group_ids
+        session[key] = value
         session.save()
 
     def get_zipped_file(self, response):
