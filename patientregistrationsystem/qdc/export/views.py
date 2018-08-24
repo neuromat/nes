@@ -621,6 +621,12 @@ def export_view(request, template_name="export/export_data.html"):
                 )
 
     if surveys:
+        # If called from expired session return to fist export options.
+        # This is to workaround in a code break arising from trying to
+        # export after an expired session
+        if 'filtered_participant_data' not in request.session:
+            return HttpResponseRedirect(reverse('export_menu'))
+
         # Obter a lista dos participantes filtrados que têm questionários de
         # entrada preenchidos.
         patient_questionnaire_response_list = \
