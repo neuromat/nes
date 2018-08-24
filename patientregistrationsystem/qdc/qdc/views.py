@@ -35,8 +35,12 @@ def contact(request):
     if check_upgrade(request):
         if_upgrade = True
         if request.user.has_perm('configuration.upgrade_rights'):
-            messages.info(request, mark_safe('<a href="/home/upgrade_nes/">There is a new version of NES. Click '
-                                             'for upgrade</a>'))
+            messages.info(
+                request, mark_safe(
+                    '<a href="/home/upgrade_nes/">There is a new version of NES. Click '
+                    'for upgrade</a>'
+                )
+            )
 
         else:
             messages.success(request, _("There is a new version, please contact your NES administrator to update !"))
