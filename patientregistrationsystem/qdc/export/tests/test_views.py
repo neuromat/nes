@@ -642,6 +642,75 @@ class ExportDataCollectionTest(ExportTestCase):
                 ) + ' not in: ' + str(zipped_file.namelist())
             )
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_digital_game_phase_data_colletion(self):
+        # create digital game phase (dgp) component
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        context_tree = ObjectsFactory.create_context_tree(self.experiment)
+
+        dgp = ObjectsFactory.create_component(
+            self.experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': software_version, 'context_tree': context_tree}
+        )
+
+        # include dgp component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, dgp
+        )
+
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' digital game data file
+        dgp_data = ObjectsFactory.create_digital_game_phase_data(
+            dct, self.subject_of_group
+        )
+
+        ObjectsFactory.create_digital_game_phase_file(dgp_data)
+
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_goalkeeper_game_data': ['on'],
+            'headings': ['code'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        # get the zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+        for path in create_list_of_trees(self.group.experimental_protocol,
+                                         "digital_game_phase"):
+            digital_game_phase_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = digital_game_phase_component_configuration.component
+            step_number = path[-1][4]
+
+            self.assertTrue(
+                any(os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                )
+                    in element for element in zipped_file.namelist()),
+                os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                ) + ' not in: ' + str(zipped_file.namelist())
+            )
+
 
 class ExportParticipants(ExportTestCase):
 
