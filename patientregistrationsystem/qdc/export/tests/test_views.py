@@ -669,7 +669,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_digital_game_phase_file(dgp_data)
 
-        self.append_group_session_variable(
+        self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
 
