@@ -178,12 +178,12 @@ PermissionTable = [
 ]
 
 GroupTable = [
-    _("Administrator"),
     _("Attendant"),
     _("Physiotherapist"),
     _("Doctor"),
     _("Junior researcher"),
     _("Senior researcher"),
+    _("Administrator"),
 ]
 
 patient_content_type = ContentType.objects.get(app_label='patient', model='patient')
@@ -297,7 +297,7 @@ for permission in senior_researcher_permission_list:
 # CREATE ADMINISTRATOR
 group_admininstrator, administrator_created = Group.objects.get_or_create(name='Administrator')
 
-administrator_permission_list = list(junior_researcher_permission_list)
+administrator_permission_list = list(senior_researcher_permission_list)
 administrator_permission_list += [Permission.objects.get(codename='add_user',
                                                          content_type=user_content_type),
                                   Permission.objects.get(codename='change_user',
