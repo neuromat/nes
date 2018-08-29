@@ -192,6 +192,7 @@ survey_content_type = ContentType.objects.get(app_label='survey', model='survey'
 patient_quest_response_content_type = ContentType.objects.get(app_label='patient', model='questionnaireresponse')
 researchproject_content_type = ContentType.objects.get(app_label='experiment', model='researchproject')
 experiment_content_type = ContentType.objects.get(app_label='experiment', model='experiment')
+subject_content_type = ContentType.objects.get(app_label='experiment', model='subject')
 questionnaireresponse_content_type = ContentType.objects.get(app_label='experiment', model='questionnaireresponse')
 equipment_content_type = ContentType.objects.get(app_label='experiment', model='equipment')
 user_content_type = ContentType.objects.get(app_label='auth', model='user')
@@ -269,7 +270,13 @@ junior_researcher_permission_list += [Permission.objects.get(codename='add_resea
                                       Permission.objects.get(codename='delete_questionnaireresponse',
                                                              content_type=questionnaireresponse_content_type),
                                       Permission.objects.get(codename='register_equipment',
-                                                             content_type=equipment_content_type)]
+                                                             content_type=equipment_content_type),
+                                      Permission.objects.get(codename='add_subject',
+                                                             content_type=subject_content_type),
+                                      Permission.objects.get(codename='change_subject',
+                                                             content_type=subject_content_type),
+                                      Permission.objects.get(codename='delete_subject',
+                                                             content_type=subject_content_type)]
 
 for permission in junior_researcher_permission_list:
     group_junior_researcher.permissions.add(permission)
