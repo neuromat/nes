@@ -643,10 +643,10 @@ class ExportDataCollectionTest(ExportTestCase):
             )
 
 
-class ExportParticipants(ExportTestCase):
+class ExportParticipantsTest(ExportTestCase):
 
     def setUp(self):
-        super(ExportParticipants, self).setUp()
+        super(ExportParticipantsTest, self).setUp()
 
     def tearDown(self):
         self.client.logout()
@@ -662,3 +662,218 @@ class ExportParticipants(ExportTestCase):
         self.assertEqual(response.status_code, 200)
 
         self.get_zipped_file(response)
+
+class ExportEegTest(ExportTestCase):
+    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
+
+    def setUp(self):
+        super(ExportEegTest, self).setUp()
+
+    def tearDown(self):
+        self.client.logout()
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_eeg(self):
+        # create eeg component
+        eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
+        eeg_comp = ObjectsFactory.create_component(
+            self.experiment, Component.EEG,
+            kwargs={'eeg_set': eeg_set}
+        )
+
+        # include eeg component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, eeg_comp
+        )
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' eeg file
+        eegdata = ObjectsFactory.create_eeg_data_collection_data(
+            dct, self.subject_of_group, eeg_set
+        )
+        ObjectsFactory.create_eeg_data_collection_file(eegdata)
+
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_eeg_raw_data ': ['on'],
+            'headings': ['abbreviated'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        # get the zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+        for path in create_list_of_trees(self.group.experimental_protocol,
+                                         "eeg"):
+            eeg_conf = \
+                ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = eeg_conf.component
+            step_number = path[-1][4]
+
+            lst = os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper())
+
+            self.assertTrue(
+                any(os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                )
+                    in element for element in zipped_file.namelist()),
+                os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                ) + ' not in: ' + str(zipped_file.namelist())
+            )
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_emg(self):
+        # create emg component
+        self.manufacturer = ObjectsFactory.create_manufacturer()
+        self.software = ObjectsFactory.create_software(self.manufacturer)
+        self.software_version = ObjectsFactory.create_software_version(
+            self.software)
+        self.tag_emg = ObjectsFactory.create_tag('EMG')
+        emg_set = ObjectsFactory.create_emg_setting(self.experiment,
+                                                    self.software_version)
+        emg_comp = ObjectsFactory.create_component(self.experiment,
+                                                   Component.EMG,
+                                                   kwargs={'emg_set': emg_set}
+        )
+
+        # include emg component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, emg_comp
+        )
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' emg file
+        emgdata = ObjectsFactory.create_emg_data_collection_data(
+            dct, self.subject_of_group, emg_set
+        )
+        ObjectsFactory.create_emg_data_collection_file(emgdata)
+
+        self.append_group_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_emg_data': ['on'],
+            'headings': ['abbreviated'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        # get the zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+        for path in create_list_of_trees(self.group.experimental_protocol,
+                                         "emg"):
+            emg_conf = \
+                ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = emg_conf.component
+            step_number = path[-1][4]
+
+            lst = os.path.join('Per_participant',
+                               'Participant_' +
+                               self.patient.code,
+                               'Step_' + str(step_number) + '_' +
+                               component_step.component_type.upper())
+
+            self.assertTrue(
+                any(os.path.join(lst) in element for element in
+                    zipped_file.namelist()),
+                    lst + ' not in: ' + str(zipped_file.namelist())
+            )
+
+    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    # def test_export_experiment_with_stimulus(self):
+    #     # create stimulus component
+    #     stimulus_type = StimulusType.objects.create(name="Auditivo")
+    #     stimulus_set = Stimulus.objects.create(identification="Stimulus "
+    #                                                   "identification",
+    #                                            stimulus_type=stimulus_type
+    #     )
+    #
+    #     stimulus_comp = ObjectsFactory.create_component(self.experiment,
+    #                                                Component.STIMULUS,
+    #                                                kwargs={'stimulus_set': stimulus_set}
+    #     )
+    #
+    #     # include emg component in experimental protocol
+    #     component_config = ObjectsFactory.create_component_configuration(
+    #         self.root_component, stimulus_comp
+    #     )
+    #     dct = ObjectsFactory.create_data_configuration_tree(component_config)
+    #
+    #     # 'upload' stimulus file
+    #     stimulusdata = ObjectsFactory.create_stimulus_data_collection_data(
+    #         dct, self.subject_of_group, stimulus_set
+    #     )
+    #     ObjectsFactory.create_stimulus_data_collection_file(stimulusdata)
+    #
+    #     self.append_group_session_variable(
+    #         'group_selected_list', [str(self.group.id)]
+    #     )
+    #
+    #     # Post data to view: data style that is posted to export_view in
+    #     # template
+    #     data = {
+    #         'per_questionnaire': ['on'],
+    #         'per_participant': ['on'],
+    #         'per_generic_data': ['on'],
+    #         'headings': ['code'],
+    #         'patient_selected': ['age*age'],
+    #         'action': ['run'],
+    #         'responses': ['short']
+    #     }
+    #     response = self.client.post(reverse('export_view'), data)
+    #
+    #     # get the zipped file to test against its content
+    #     file = io.BytesIO(response.content)
+    #     zipped_file = zipfile.ZipFile(file, 'r')
+    #     self.assertIsNone(zipped_file.testzip())
+    #
+    #     for path in create_list_of_trees(self.group.experimental_protocol,
+    #                                      "stimulus"):
+    #         stimulus_conf = \
+    #             ComponentConfiguration.objects.get(pk=path[-1][0])
+    #         component_step = stimulus_conf.component
+    #         step_number = path[-1][4]
+    #
+    #         lst = os.path.join('Per_participant',
+    #                            'Participant_' +
+    #                            self.patient.code,
+    #                            'Step_' + str(step_number) + '_' +
+    #                            component_step.component_type.upper())
+    #
+    #         self.assertTrue(
+    #             any(os.path.join(lst) in element for element in
+    #                 zipped_file.namelist()),
+    #                 lst + ' not in: ' + str(zipped_file.namelist())
+    #         )
+    #
