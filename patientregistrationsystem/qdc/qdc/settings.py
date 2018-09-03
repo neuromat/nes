@@ -133,8 +133,6 @@ LANGUAGES = (
     ('en', 'English'),
 )
 
-# os.path.join(BASE_DIR, 'locale'),
-# LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale'),]
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
     os.path.join(BASE_DIR, 'patient/locale'),
@@ -192,4 +190,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.43.1'
+VERSION = '1.44.1'

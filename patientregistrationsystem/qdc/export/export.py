@@ -713,8 +713,11 @@ class ExportExecution:
                             digital_game_file_list = []
                             for digital_game_file in digital_game_data.digital_game_phase_files.all():
                                 digital_game_file_list.append({
-                                    'digital_game_filename': settings.BASE_DIR + settings.MEDIA_URL +
-                                                             digital_game_file.file.name
+                                    'digital_game_filename':
+                                        path.join(
+                                            settings.MEDIA_ROOT,
+                                            digital_game_file.file.name
+                                        )
                                 })
 
                             if subject_code not in self.per_group_data[group_id]['data_per_participant']:
@@ -2076,8 +2079,8 @@ class ExportExecution:
                                 # to create Game_digital_dataData directory 
                                 directory_data_name = goalkeeper_game_data['digital_game_data_directory']
 
-                                path_per_emg_data = path.join(path_goalkeeper_game_data, directory_data_name)
-                                if not path.exists(path_per_emg_data):
+                                path_per_goalkeeper_game_data = path.join(path_goalkeeper_game_data, directory_data_name)
+                                if not path.exists(path_per_goalkeeper_game_data):
                                     # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
                                     #  /Step_X_aaa/GoalkeeperDATA_
                                     error_msg, path_per_goalkeeper_game_data = create_directory(
