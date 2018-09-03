@@ -11,29 +11,25 @@ from patient.quiz_widget import SelectBoxCountries
 
 
 class UserForm(ModelForm):
-    first_name = CharField(required=True)
-    last_name = CharField(required=True)
-    email = CharField(required=True)
+    first_name = CharField(required=True, widget=TextInput(attrs={'class': 'form-control', 'autofocus': "true",
+                                                                  'placeholder': _('Type first name')}))
+    last_name = CharField(required=True, widget=TextInput(attrs={'class': 'form-control', 'autofocus': "true",
+                                                                 'placeholder': _('Type last name')}))
+    email = CharField(required=True, widget=TextInput(
+        attrs={'class': 'form-control', 'placeholder': _('Type e-mail'), 'id': "email", 'type': 'email',
+               'data-error': "E-mail inválido", 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
+                                                           '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}))
 
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
 
         widgets = {
-            'first_name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
-                                           'placeholder': _('Type first name')}),
-            'last_name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
-                                          'placeholder': _('Type last name')}),
             'username': TextInput(attrs={'class': 'form-control', 'required': "",
                                          'placeholder': _('Type user name')}),
             'password': PasswordInput(attrs={'id': 'id_new_password1', 'required': "",
                                              'class': 'form-control', 'placeholder': _('Type password'),
                                              'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPassExt();"}),
-            'email': TextInput(attrs={'class': 'form-control', 'required': "",
-                                      'placeholder': _('Type e-mail'), 'id': "email",
-                                      'type': 'email', 'data-error': "E-mail inválido",
-                                      'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
-                                                 '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'groups': CheckboxSelectMultiple(),
         }
 
