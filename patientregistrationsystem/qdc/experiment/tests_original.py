@@ -33,7 +33,8 @@ from experiment.models import Experiment, Group, Subject, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
     ContextTree, ExperimentResearcher, InformationType, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
-    GenericDataCollection,DigitalGamePhaseData,DigitalGamePhaseFile
+    GenericDataCollection,DigitalGamePhaseData,DigitalGamePhaseFile, \
+    AdditionalData, AdditionalDataFile, ComponentAdditionalFile
 
 from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
@@ -533,6 +534,12 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
+    def create_binary_file(path, filename, fileextension):
+        with open(os.path.join(path, filename + '.' + fileextension), 'wb') as f:
+            f.write(b'carambola')
+            return f
+
+    @staticmethod
     def create_generic_data_collection_data(data_conf_tree,
                                             subj_of_group):
 
@@ -547,23 +554,16 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_binary_file(path):
-        with open(os.path.join(path, 'file.bin'), 'wb') as f:
-            f.write(b'carambola')
-            return f
-
-    @staticmethod
     def create_generic_data_colletion_file(gdc_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'generic', 'bin')
 
             gdcf = GenericDataCollectionFile.objects.create(
                 generic_data_collection_data=gdc_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                gdcf.file.save('file.bin', f)
+                gdcf.file.save('generic.bin', f)
             gdcf.save()
 
         return gdcf
@@ -585,17 +585,44 @@ class ObjectsFactory(object):
     def create_digital_game_phase_file(dgp_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'goalkeeper', 'bin')
 
             dgpf = DigitalGamePhaseFile.objects.create(
                 digital_game_phase_data=dgp_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                dgpf.file.save('file.bin', f)
+                dgpf.file.save('goalkeeper.bin', f)
             dgpf.save()
 
         return dgpf
+
+    @staticmethod
+    def create_additional_data_data(data_conf_tree, subj_of_group):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return AdditionalData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group
+        )
+
+    @staticmethod
+    def create_additional_data_file(ad_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'additionaldata', 'bin')
+
+            adf = AdditionalDataFile.objects.create(
+                additional_data=ad_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                adf.file.save('additionaldata.bin', f)
+            adf.save()
+
+        return adf
 
 
 class ExperimentalProtocolTest(TestCase):
