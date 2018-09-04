@@ -1814,7 +1814,8 @@ class ExportExecution:
                                                                export_eeg_data_directory])
 
                             for eeg_file in eeg_data['eeg_file_list']:
-                                path_eeg_data_file = settings.BASE_DIR + settings.MEDIA_URL + eeg_file.file.name
+                                # path_eeg_data_file = settings.BASE_DIR + settings.MEDIA_URL + eeg_file.file.name
+                                path_eeg_data_file = str(eeg_file.file.file)
 
                                 eeg_data_filename = eeg_file.file.name.split('/')[-1]
                                 complete_eeg_data_filename = path.join(path_per_eeg_data, eeg_data_filename)
@@ -1893,14 +1894,28 @@ class ExportExecution:
                             # /EMGData_#
                             export_emg_data_directory = path.join(export_emg_step_directory, directory_data_name)
 
+                            url_segment1 = path_per_emg_data.rpartition(
+                                'export')
+                            url1 = url_segment1[0]
+
+                            url_parcial = emg_data['emg_file_list'][0][
+                                'file_name']
+                            url_segment2=url_parcial.rpartition('media/')
+                            url2 = url_segment2[2]
+
+                            url = url1+url2
+
                             for emg_file in emg_data['emg_file_list']:
                                 path_emg_data_file = emg_file['file_name']
 
                                 emg_data_filename = path_emg_data_file.split('/')[-1]
                                 complete_emg_data_filename = path.join(path_per_emg_data, emg_data_filename)
 
-                                with open(path_emg_data_file, 'rb') as f:
-                                    data = f.read()
+                                # path_emg_data_file="/var/folders/zq/s0gdvy0j5bq26mr0g4rqks180000gt/T/tmp6nbs3ido/data_collection_files/59/59/59/59/emg/file.bin"
+
+                                # with open(path_emg_data_file, 'rb') as f:
+                                with open(url, 'rb') as f:
+                                        data = f.read()
 
                                 with open(complete_emg_data_filename, 'wb') as f:
                                     f.write(data)

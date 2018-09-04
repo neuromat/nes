@@ -55,7 +55,8 @@ class PermissionsresearchprojectupdateViewtest(TestCase):
         user_profile.force_password_change = False
         user_profile.save()
 
-        for group in Group.objects.filter(name='Administrator'):
+        for group in Group.objects.all():
+        # for group in Group.objects.filter(name='Attendant'):
             group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
@@ -88,7 +89,7 @@ class ResearchprojectviewviewTest(TestCase):
         user_profile.save()
 
         for group in Group.objects.all():
-        # for group in Group.objects.filter(name='Administrator'):
+        # for group in Group.objects.filter(name='Attendant'):
                 group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
@@ -106,6 +107,7 @@ class ResearchprojectviewviewTest(TestCase):
         self.assertEqual(self.research_project.keywords.count(), 0)
         response = self.client.get(reverse('keyword_new', args=(
             self.research_project.pk, "first_test_keyword")), follow=True)
+        # self.assertEqual(response.status_code, 403)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Keyword.objects.all().count(), 1)
         self.assertEqual(self.research_project.keywords.count(), 1)
