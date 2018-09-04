@@ -11,10 +11,11 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.test import override_settings
 
-from experiment.models import Component, ComponentConfiguration
+from experiment.models import Component, ComponentConfiguration, AdditionalData, AdditionalDataFile
 from experiment.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
 from export.tests.tests_helper import ExportTestCase
+from export.export import ExportExecution
 from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
@@ -632,7 +633,9 @@ class ExportDataCollectionTest(ExportTestCase):
                 any(os.path.join(
                     'Per_participant', 'Participant_' + self.patient.code,
                     'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
+                    component_step.component_type.upper(),
+                    'Generic_Collection_Data_1',
+                    'generic.bin'
                 )
                     in element for element in zipped_file.namelist()),
                 os.path.join(
@@ -669,6 +672,11 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_digital_game_phase_file(dgp_data)
 
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
+
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
@@ -679,6 +687,7 @@ class ExportDataCollectionTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'per_participant': ['on'],
             'per_goalkeeper_game_data': ['on'],
+            'per_additional_data': ['on'],
             'headings': ['code'],
             'patient_selected': ['age*age'],
             'action': ['run'],
@@ -701,13 +710,31 @@ class ExportDataCollectionTest(ExportTestCase):
                 any(os.path.join(
                     'Per_participant', 'Participant_' + self.patient.code,
                     'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
+                    component_step.component_type.upper(),
+                    'DigitalGamePhaseData_1',
+                    'goalkeeper.bin'
                 )
                     in element for element in zipped_file.namelist()),
                 os.path.join(
                     'Per_participant', 'Participant_' + self.patient.code,
                     'Step_' + str(step_number) + '_' +
                     component_step.component_type.upper()
+                ) + ' not in: ' + str(zipped_file.namelist())
+            )
+
+            self.assertTrue(
+                any(os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                                       'Step_' + str(step_number) + '_' +
+                                       component_step.component_type.upper(),
+                    'AdditionalData_1',
+                    'additionaldata.bin'
+                )
+                    in element for element in zipped_file.namelist()),
+                os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                                       'Step_' + str(step_number) + '_' +
+                                       component_step.component_type.upper()
                 ) + ' not in: ' + str(zipped_file.namelist())
             )
 
