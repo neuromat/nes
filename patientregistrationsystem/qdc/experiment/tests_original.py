@@ -605,17 +605,16 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_eeg_data_collection_file(generic_data):
+    def create_eeg_data_collection_file(eeg_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'eeg','bin')
 
             eegf = EEGFile.objects.create(
-                eeg_data=generic_data
+                eeg_data=eeg_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                eegf.file.save('file.bin', f)
+                eegf.file.save('eeg.bin', f)
             eegf.save()
 
         return eegf
@@ -634,17 +633,16 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_emg_data_collection_file(generic_data):
+    def create_emg_data_collection_file(emg_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'emg','bin')
 
             emgf = EMGFile.objects.create(
-                emg_data=generic_data
+                emg_data=emg_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                emgf.file.save('file.bin', f)
+                emgf.file.save('emg.bin', f)
             emgf.save()
 
         return emgf

@@ -804,7 +804,7 @@ class ExportExecution:
                                     'step_identification': step_identification,
                                     'directory_step_name': "Step_" + str(step_number) + "_" +
                                                            component_step.component_type.upper(),
-                                    'generic_data_collection_directory': "Generic_Collection_Data_" + index,
+                                    'generic_data_collection_directory': "Generic_Data_Collection_" + index,
                                     'generic_data_collection_file_list': generic_data_collection_data_list,
                                 })
 
