@@ -1,4 +1,5 @@
 import io
+import os
 import zipfile
 
 from django.contrib.auth.models import Group
@@ -58,3 +59,21 @@ class ExportTestCase(TestCase):
 
         return zipped_file
 
+    def assert_per_participant_step_file_exists(self,step_number,component_step,
+                                                data_collection_folder,filename,
+                                                zipped_file):
+        self.assertTrue(
+            any(os.path.join(
+                'Per_participant', 'Participant_' + self.patient.code,
+                'Step_' + str(step_number) + '_' +
+                component_step.component_type.upper(),
+                data_collection_folder,
+                filename
+            )
+                in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Per_participant', 'Participant_' + self.patient.code,
+                'Step_' + str(step_number) + '_' +
+                component_step.component_type.upper()
+            ) + ' not in: ' + str(zipped_file.namelist())
+        )
