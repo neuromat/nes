@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages import get_messages
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.test import TestCase
@@ -13,8 +13,8 @@ from django.test.client import RequestFactory
 from django.utils.http import int_to_base36
 from django.utils.translation import ugettext as _
 
-from custom_user.models import User, UserProfile
-from custom_user.views import user_update
+from custom_user.models import User, UserProfile, Institution
+from custom_user.views import user_update, institution_view, institution_create, institution_update
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -316,6 +316,67 @@ class PasswordPattern(TestCase):
         password = '1aB!'
 
         self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
+
+
+class InstitutionTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username=USER_USERNAME,
+            email='jenkins.neuromat@gmail.com',
+            password=USER_PWD
+        )
+        self.user.is_staff = True
+        self.user.save()
+        profile, created = UserProfile.objects.get_or_create(user=self.user)
+        profile.force_password_change = False
+        profile.save()
+
+        self.factory = RequestFactory()
+
+        self.data = {'username': ['username'],
+                     'first_name': ['General'],
+                     'last_name': ['Test'],
+                     'password': ['Adm!123'],
+                     'password2': ['Adm!123'],
+                     'email': ['email@test.com'],
+                     'action': 'save'}
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+        Institution.objects.create(name='CEPID NeuroMat', acronym='NeuroMat', country='BR')
+
+    def test_institution_new_status_code(self):
+        url = reverse('institution_new')
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'custom_user/institution_register.html')
+
+    def test_institution_new_url_resolves_institution_new_view(self):
+        view = resolve('/user/institution/new/')
+        self.assertEquals(view.func, institution_create)
+
+    def test_institution_view_status_code(self):
+        institution = Institution.objects.first()
+        url = reverse('institution_view', args=(institution.id,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'custom_user/institution_register.html')
+
+    def test_institution_view_url_resolves_institution_view_view(self):
+        view = resolve('/user/institution/1/')
+        self.assertEquals(view.func, institution_view)
+
+    def test_institution_update_status_code(self):
+        institution = Institution.objects.first()
+        url = reverse('institution_edit', args=(institution.id,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'custom_user/institution_register.html')
+
+    def test_institution_update_url_resolves_institution_update_view(self):
+        view = resolve('/user/institution/edit/1/')
+        self.assertEquals(view.func, institution_update)
 
 
 class PasswordResetTests(TestCase):
