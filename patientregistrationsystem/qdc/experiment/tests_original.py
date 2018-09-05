@@ -32,11 +32,13 @@ from experiment.models import Experiment, Group, Subject, \
     EMGElectrodePlacement, EMGElectrodePlacementSetting, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
     ContextTree, ExperimentResearcher, InformationType, \
-    GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
-    GenericDataCollection,DigitalGamePhaseData,DigitalGamePhaseFile
+    GenericDataCollection, GenericDataCollectionData, GenericDataCollectionFile, \
+    DigitalGamePhase, DigitalGamePhaseData,DigitalGamePhaseFile, \
+    AdditionalData, AdditionalDataFile,EEGFile, EMGData, EMGFile
 
-from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
-    publication_add_experiment
+from .views import experiment_update, upload_file, research_project_update, \
+    publication_update, context_tree_update, \
+    publication_add_experiment, STIMULUS
 
 from custom_user.views import User
 
@@ -153,7 +155,6 @@ class ObjectsFactory(object):
                                                 name='EMG-Setting name',
                                                 description='EMG-Setting description',
                                                 acquisition_software_version=acquisition_software_version,)
-        emg_setting.save()
         return emg_setting
 
     @staticmethod
@@ -238,6 +239,12 @@ class ObjectsFactory(object):
             model = DigitalGamePhase.__name__  # DigitalGamePhase
         elif component_type == Component.GENERIC_DATA_COLLECTION:
             model = GenericDataCollection.__name__  # GenericDataCollection
+        elif component_type == Component.EEG:
+            model = EEG.__name__  # EEG
+        elif component_type == Component.EMG:
+            model = EMG.__name__  # EMG
+        # elif component_type == Component.STIMULUS:
+        #     model = STIMULUS.__name__  # STIMULUS
         else:
             model = component_type
 
@@ -264,6 +271,23 @@ class ObjectsFactory(object):
                 component.context_tree = kwargs['context_tree']
             except KeyError:
                 print('You must specify \'software_version\' and \'context_tree\' key in kwargs dict')
+        elif component_type == Component.EEG:
+            try:
+                component.eeg_setting = kwargs['eeg_set']
+            except KeyError:
+                print('You must specify \'eeg_setting\' key in kwargs dict')
+        elif component_type == Component.EMG:
+            try:
+                component.emg_setting = kwargs['emg_set']
+            except KeyError:
+                print('You must specify \'emg_setting\' key in kwargs dict')
+
+        # elif component_type == Component.STIMULUS:
+        #     try:
+        #         component.emg_setting = kwargs['emg_set']
+        #     except KeyError:
+        #         print('You must specify \'emg_setting\' key in kwargs dict')
+
         try:
             component.save()
         except IntegrityError:
@@ -533,6 +557,12 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
+    def create_binary_file(path, filename, fileextension):
+        with open(os.path.join(path, filename + '.' + fileextension), 'wb') as f:
+            f.write(b'carambola')
+            return f
+
+    @staticmethod
     def create_generic_data_collection_data(data_conf_tree,
                                             subj_of_group):
 
@@ -547,26 +577,75 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_binary_file(path):
-        with open(os.path.join(path, 'file.bin'), 'wb') as f:
-            f.write(b'carambola')
-            return f
-
-    @staticmethod
     def create_generic_data_colletion_file(gdc_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'generic', 'bin')
 
             gdcf = GenericDataCollectionFile.objects.create(
                 generic_data_collection_data=gdc_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                gdcf.file.save('file.bin', f)
+                gdcf.file.save('generic.bin', f)
             gdcf.save()
 
         return gdcf
+
+    def create_eeg_data_collection_data(data_conf_tree,
+                                            subj_of_group, eeg_set):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return EEGData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group, eeg_setting=eeg_set
+        )
+
+    @staticmethod
+    def create_eeg_data_collection_file(eeg_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'eeg','bin')
+
+            eegf = EEGFile.objects.create(
+                eeg_data=eeg_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                eegf.file.save('eeg.bin', f)
+            eegf.save()
+
+        return eegf
+
+    def create_emg_data_collection_data(data_conf_tree,
+                                            subj_of_group, emg_set):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return EMGData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group, emg_setting=emg_set
+        )
+
+    @staticmethod
+    def create_emg_data_collection_file(emg_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'emg','bin')
+
+            emgf = EMGFile.objects.create(
+                emg_data=emg_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                emgf.file.save('emg.bin', f)
+            emgf.save()
+
+        return emgf
 
     @staticmethod
     def create_digital_game_phase_data(data_conf_tree, subj_of_group):
@@ -585,17 +664,74 @@ class ObjectsFactory(object):
     def create_digital_game_phase_file(dgp_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'goalkeeper', 'bin')
 
             dgpf = DigitalGamePhaseFile.objects.create(
                 digital_game_phase_data=dgp_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                dgpf.file.save('file.bin', f)
+                dgpf.file.save('goalkeeper.bin', f)
             dgpf.save()
 
         return dgpf
+
+    @staticmethod
+    def create_additional_data_data(data_conf_tree, subj_of_group):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return AdditionalData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group
+        )
+
+    @staticmethod
+    def create_additional_data_file(ad_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'additionaldata', 'bin')
+
+            adf = AdditionalDataFile.objects.create(
+                additional_data=ad_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                adf.file.save('additionaldata.bin', f)
+            adf.save()
+
+        return adf
+
+
+    # def create_stimulus_data_collection_data(data_conf_tree,
+    #                                         subj_of_group, emg_set):
+    #
+    #     faker = Factory.create()
+    #
+    #     file_format = ObjectsFactory.create_file_format()
+    #     return EMGData.objects.create(
+    #         description=faker.text(), file_format=file_format,
+    #         file_format_description=faker.text(),
+    #         data_configuration_tree=data_conf_tree,
+    #         subject_of_group=subj_of_group, emg_setting=emg_set
+    #     )
+    #
+    # @staticmethod
+    # def create_stimulus_data_collection_file(generic_data):
+    #
+    #     with tempfile.TemporaryDirectory() as tmpdirname:
+    #         with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
+    #             bin_file.write(b'carambola')
+    #
+    #             stimulusf = EMGFile.objects.create(
+    #             emg_data=generic_data
+    #         )
+    #         with File(open(bin_file.name, 'rb')) as f:
+    #             stimulusf.file.save('file.bin', f)
+    #             stimulusf.save()
+    #
+    #     return stimulusf
 
 
 class ExperimentalProtocolTest(TestCase):
