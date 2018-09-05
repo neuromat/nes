@@ -333,12 +333,9 @@ class InstitutionTests(TestCase):
 
         self.factory = RequestFactory()
 
-        self.data = {'username': ['username'],
-                     'first_name': ['General'],
-                     'last_name': ['Test'],
-                     'password': ['Adm!123'],
-                     'password2': ['Adm!123'],
-                     'email': ['email@test.com'],
+        self.data = {'name': ['name'],
+                     'acronym': ['acronym'],
+                     'country': ['country'],
                      'action': 'save'}
 
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
@@ -377,6 +374,26 @@ class InstitutionTests(TestCase):
     def test_institution_update_url_resolves_institution_update_view(self):
         view = resolve('/user/institution/edit/1/')
         self.assertEquals(view.func, institution_update)
+
+    def test_institution_create(self):
+        self.data['name'] = 'Faculdade de Medicina'
+        self.data['acronym'] = 'FM'
+        self.data['country'] = 'BR'
+
+        response = self.client.post(reverse('institution_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Institution.objects.filter(name='Faculdade de Medicina').count(), 1)
+
+    def test_institution_view_and_action_remove(self):
+        self.data['name'] = 'Faculdade de Agronomia'
+        self.data['acronym'] = 'FA'
+        self.data['country'] = 'BR'
+        self.client.post(reverse('institution_new'), self.data)
+
+        institution = Institution.objects.get(acronym='FA')
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('institution_view', args=(institution.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
 
 
 class PasswordResetTests(TestCase):
