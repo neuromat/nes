@@ -34,7 +34,9 @@ from experiment.models import Experiment, Group, Subject, \
     ContextTree, ExperimentResearcher, InformationType, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
     GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
-    EEGFile, EMGData, EMGFile
+    EEGFile, EMGData, EMGFile, TMSSetting, TMS, TMSData, HotSpot, \
+    DirectionOfTheInducedCurrent, BrainAreaSystem, BrainArea, \
+    TMSLocalizationSystem, CoilOrientation, TMSDeviceSetting
 
 from .views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -146,7 +148,6 @@ class ObjectsFactory(object):
         eeg_setting = EEGSetting.objects.create(experiment=experiment,
                                                 name='EEG-Setting name',
                                                 description='EEG-Setting description')
-        # eeg_setting.save()
         return eeg_setting
 
     @staticmethod
@@ -156,6 +157,13 @@ class ObjectsFactory(object):
                                                 description='EMG-Setting description',
                                                 acquisition_software_version=acquisition_software_version,)
         return emg_setting
+
+    @staticmethod
+    def create_tms_setting(experiment):
+        tms_setting = TMSSetting.objects.create(experiment=experiment,
+                                                name='TMS-Setting name',
+                                                description='TMS-Setting description')
+        return tms_setting
 
     @staticmethod
     def create_emg_electrode_setting(emg_setting, electrode_model):
@@ -243,8 +251,8 @@ class ObjectsFactory(object):
             model = EEG.__name__  # EEG
         elif component_type == Component.EMG:
             model = EMG.__name__  # EMG
-        # elif component_type == Component.STIMULUS:
-        #     model = STIMULUS.__name__  # STIMULUS
+        elif component_type == Component.TMS:
+            model = TMS.__name__  # TMS
         else:
             model = component_type
 
@@ -281,12 +289,11 @@ class ObjectsFactory(object):
                 component.emg_setting = kwargs['emg_set']
             except KeyError:
                 print('You must specify \'emg_setting\' key in kwargs dict')
-
-        # elif component_type == Component.STIMULUS:
-        #     try:
-        #         component.emg_setting = kwargs['emg_set']
-        #     except KeyError:
-        #         print('You must specify \'emg_setting\' key in kwargs dict')
+        elif component_type == Component.TMS:
+            try:
+                component.tms_setting = kwargs['tms_set']
+            except KeyError:
+                print('You must specify \'tms_setting\' key in kwargs dict')
 
         try:
             component.save()
@@ -592,6 +599,7 @@ class ObjectsFactory(object):
 
         return gdcf
 
+    @staticmethod
     def create_eeg_data_collection_data(data_conf_tree,
                                             subj_of_group, eeg_set):
 
@@ -621,6 +629,7 @@ class ObjectsFactory(object):
 
         return eegf
 
+    @staticmethod
     def create_emg_data_collection_data(data_conf_tree,
                                             subj_of_group, emg_set):
 
@@ -679,35 +688,20 @@ class ObjectsFactory(object):
 
         return dgpf
 
+    @staticmethod
+    def create_hotspot_data_collection_file(hotspot):
 
-    # def create_stimulus_data_collection_data(data_conf_tree,
-    #                                         subj_of_group, emg_set):
-    #
-    #     faker = Factory.create()
-    #
-    #     file_format = ObjectsFactory.create_file_format()
-    #     return EMGData.objects.create(
-    #         description=faker.text(), file_format=file_format,
-    #         file_format_description=faker.text(),
-    #         data_configuration_tree=data_conf_tree,
-    #         subject_of_group=subj_of_group, emg_setting=emg_set
-    #     )
-    #
-    # @staticmethod
-    # def create_stimulus_data_collection_file(generic_data):
-    #
-    #     with tempfile.TemporaryDirectory() as tmpdirname:
-    #         with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-    #             bin_file.write(b'carambola')
-    #
-    #             stimulusf = EMGFile.objects.create(
-    #             emg_data=generic_data
-    #         )
-    #         with File(open(bin_file.name, 'rb')) as f:
-    #             stimulusf.file.save('file.bin', f)
-    #             stimulusf.save()
-    #
-    #     return stimulusf
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
+                bin_file.write(b'carambola')
+
+
+            with File(open(bin_file.name, 'rb')) as f:
+                hotspot.hot_spot_map.save('file.bin', f)
+
+            hotspot.save()
+
+        return hotspot
 
 
 class ExperimentalProtocolTest(TestCase):

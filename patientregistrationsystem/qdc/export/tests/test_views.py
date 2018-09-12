@@ -10,8 +10,11 @@ import shutil
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.test import override_settings
+from faker import Factory
 
-from experiment.models import Component, ComponentConfiguration
+from experiment.models import Component, ComponentConfiguration, \
+    BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
+    CoilOrientation, DirectionOfTheInducedCurrent, CoilShape
 from experiment.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
 from export.tests.tests_helper import ExportTestCase
@@ -19,7 +22,7 @@ from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
 from survey.tests_helper import create_survey
-
+from experiment.views import get_pulse_stimulus_name
 
 class ExportQuestionnaireTest(ExportTestCase):
 
@@ -776,11 +779,11 @@ class ExportSelection(ExportTestCase):
         )
 
 
-class ExportEegTest(ExportTestCase):
+class ExportEegEmgTmsTest(ExportTestCase):
     TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def setUp(self):
-        super(ExportEegTest, self).setUp()
+        super(ExportEegEmgTmsTest, self).setUp()
 
     def tearDown(self):
         self.client.logout()
@@ -809,8 +812,6 @@ class ExportEegTest(ExportTestCase):
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
-        # self.append_group_session_variable(
-        #     'group_selected_list', [str(self.group.id)]
         )
 
         # Post data to view: data style that is posted to export_view in
@@ -886,8 +887,6 @@ class ExportEegTest(ExportTestCase):
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
-        # self.append_group_session_variable(
-        #     'group_selected_list', [str(self.group.id)]
         )
 
         # Post data to view: data style that is posted to export_view in
@@ -927,34 +926,147 @@ class ExportEegTest(ExportTestCase):
                     lst + ' not in: ' + str(zipped_file.namelist())
             )
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_tms(self):
+
+        # create tms component
+        tms_set = ObjectsFactory.create_tms_setting(self.experiment)
+
+        tms_comp = ObjectsFactory.create_component(
+            self.experiment, Component.TMS,
+            kwargs={'tms_set': tms_set}
+        )
+
+        # include tms component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, tms_comp
+        )
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        doic = DirectionOfTheInducedCurrent.objects.create(
+            name="Direction of Induced Current"
+        )
+
+        coilor = CoilOrientation.objects.create(
+            name="Coil Orientation"
+        )
+
+        tmsdataaux=TMSData.objects.create(
+            tms_setting=tms_set,
+            data_configuration_tree=dct,
+            subject_of_group=self.subject_of_group,
+            coil_orientation=coilor,
+            description="Teste TMS",
+            direction_of_induced_current=doic
+        )
+
+        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
+
+        brainarea = BrainArea.objects.create(name='Lobo frontal',
+                                             brain_area_system=brainareasystem)
+
+        temp_dir = tempfile.mkdtemp()
+        with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
+            f.write(b'carambola')
+        temp_file=f.name
+
+        tms_local_sys = TMSLocalizationSystem.objects.create(
+            name="TMS name", brain_area=brainarea,
+            tms_localization_system_image=temp_file
+        )
+
+        hotspot = HotSpot.objects.create(
+            tms_data=tmsdataaux,
+            name="TMS Data Collection File",
+            tms_localization_system=tms_local_sys
+        )
+
+        ObjectsFactory.create_hotspot_data_collection_file(hotspot)
+
+        self.append_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_tms_data': ['on'],
+            'headings': ['abbreviated'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        # get the zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+        for path in create_list_of_trees(self.group.experimental_protocol,
+                                         "tms"):
+            tms_conf = \
+                ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = tms_conf.component
+            step_number = path[-1][4]
+
+            lst = os.path.join('Per_participant',
+                               'Participant_' +
+                               self.patient.code,
+                               'Step_' + str(step_number) + '_' +
+                               component_step.component_type.upper())
+
+            self.assertTrue(
+                any(os.path.join(lst) in element for element in
+                    zipped_file.namelist()),
+                    lst + ' not in: ' + str(zipped_file.namelist())
+            )
+
     # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # def test_export_experiment_with_stimulus(self):
-    #     # create stimulus component
-    #     stimulus_type = StimulusType.objects.create(name="Auditivo")
-    #     stimulus_set = Stimulus.objects.create(identification="Stimulus "
-    #                                                   "identification",
-    #                                            stimulus_type=stimulus_type
+    # def test_export_experiment_with_generic_data_colletion_2_grupos(self):
+    #     # create second group
+    #     # create patient/subject/subject_of_group
+    #     root_component1 = ObjectsFactory.create_block(self.experiment)
+    #     group1 = ObjectsFactory.create_group(
+    #         self.experiment, root_component1
+    #     )
+    #     patient1 = UtilTests().create_patient_mock(changed_by=self.user)
+    #     subject1 = ObjectsFactory.create_subject(patient1)
+    #     subject_of_group1 = \
+    #         ObjectsFactory.create_subject_of_group(group1, subject1)
+    #
+    #
+    #     # create generic data collection (gdc) component
+    #     it = ObjectsFactory.create_information_type()
+    #     gdc = ObjectsFactory.create_component(
+    #         self.experiment, Component.GENERIC_DATA_COLLECTION,
+    #         kwargs={'it': it}
     #     )
     #
-    #     stimulus_comp = ObjectsFactory.create_component(self.experiment,
-    #                                                Component.STIMULUS,
-    #                                                kwargs={'stimulus_set': stimulus_set}
-    #     )
-    #
-    #     # include emg component in experimental protocol
+    #     # include gdc component in experimental protocol
     #     component_config = ObjectsFactory.create_component_configuration(
-    #         self.root_component, stimulus_comp
+    #         self.root_component, gdc
     #     )
     #     dct = ObjectsFactory.create_data_configuration_tree(component_config)
     #
-    #     # 'upload' stimulus file
-    #     stimulusdata = ObjectsFactory.create_stimulus_data_collection_data(
-    #         dct, self.subject_of_group, stimulus_set
+    #     # 'upload' generic data collection file
+    #     gdc_data = ObjectsFactory.create_generic_data_collection_data(
+    #         dct, self.subject_of_group
     #     )
-    #     ObjectsFactory.create_stimulus_data_collection_file(stimulusdata)
+    #     gdc_data1 = ObjectsFactory.create_generic_data_collection_data(
+    #         dct, subject_of_group1
+    #     )
+    #     ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+    #     ObjectsFactory.create_generic_data_colletion_file(gdc_data1)
     #
-    #     self.append_group_session_variable(
+    #     self.append_session_variable(
     #         'group_selected_list', [str(self.group.id)]
+    #     )
+    #
+    #     self.append_session_variable(
+    #         'group_selected_list1', [str(group1.id)]
     #     )
     #
     #     # Post data to view: data style that is posted to export_view in
@@ -976,21 +1088,43 @@ class ExportEegTest(ExportTestCase):
     #     self.assertIsNone(zipped_file.testzip())
     #
     #     for path in create_list_of_trees(self.group.experimental_protocol,
-    #                                      "stimulus"):
-    #         stimulus_conf = \
+    #                                      "generic_data_collection"):
+    #         generic_component_configuration = \
     #             ComponentConfiguration.objects.get(pk=path[-1][0])
-    #         component_step = stimulus_conf.component
+    #         component_step = generic_component_configuration.component
     #         step_number = path[-1][4]
     #
-    #         lst = os.path.join('Per_participant',
-    #                            'Participant_' +
-    #                            self.patient.code,
-    #                            'Step_' + str(step_number) + '_' +
-    #                            component_step.component_type.upper())
-    #
     #         self.assertTrue(
-    #             any(os.path.join(lst) in element for element in
-    #                 zipped_file.namelist()),
-    #                 lst + ' not in: ' + str(zipped_file.namelist())
+    #             any(os.path.join(
+    #                 'Per_participant', 'Participant_' + self.patient.code,
+    #                 'Step_' + str(step_number) + '_' +
+    #                 component_step.component_type.upper()
+    #             )
+    #                 in element for element in zipped_file.namelist()),
+    #             os.path.join(
+    #                 'Per_participant', 'Participant_' + self.patient.code,
+    #                 'Step_' + str(step_number) + '_' +
+    #                 component_step.component_type.upper()
+    #             ) + ' not in: ' + str(zipped_file.namelist())
     #         )
     #
+    #     for path in create_list_of_trees(group1.experimental_protocol,
+    #                                      "generic_data_collection1"):
+    #         generic_component_configuration = \
+    #             ComponentConfiguration.objects.get(pk=path[-1][0])
+    #         component_step = generic_component_configuration.component
+    #         step_number = path[-1][4]
+    #
+    #         self.assertTrue(
+    #             any(os.path.join(
+    #                 'Per_participant', 'Participant_' + self.patient.code,
+    #                 'Step_' + str(step_number) + '_' +
+    #                 component_step.component_type.upper()
+    #             )
+    #                 in element for element in zipped_file.namelist()),
+    #             os.path.join(
+    #                 'Per_participant', 'Participant_' + self.patient.code,
+    #                 'Step_' + str(step_number) + '_' +
+    #                 component_step.component_type.upper()
+    #             ) + ' not in: ' + str(zipped_file.namelist())
+    #         )
