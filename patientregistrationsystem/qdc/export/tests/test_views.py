@@ -601,6 +601,11 @@ class ExportDataCollectionTest(ExportTestCase):
         )
         ObjectsFactory.create_generic_data_colletion_file(gdc_data)
 
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
+
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
@@ -611,6 +616,7 @@ class ExportDataCollectionTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'per_participant': ['on'],
             'per_generic_data': ['on'],
+            'per_additional_data': ['on'],
             'headings': ['code'],
             'patient_selected': ['age*age'],
             'action': ['run'],
@@ -630,19 +636,15 @@ class ExportDataCollectionTest(ExportTestCase):
             component_step = generic_component_configuration.component
             step_number = path[-1][4]
 
-            self.assertTrue(
-                any(os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                )
-                    in element for element in zipped_file.namelist()),
-                os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                ) + ' not in: ' + str(zipped_file.namelist())
-            )
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'Generic_Data_Collection_1',
+                                                         'generic.bin',
+                                                         zipped_file)
+
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'AdditionalData_1',
+                                                         'additionaldata.bin',
+                                                         zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_digital_game_phase_data_colletion(self):
@@ -671,6 +673,11 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_digital_game_phase_file(dgp_data)
 
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
+
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
@@ -681,6 +688,7 @@ class ExportDataCollectionTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'per_participant': ['on'],
             'per_goalkeeper_game_data': ['on'],
+            'per_additional_data': ['on'],
             'headings': ['code'],
             'patient_selected': ['age*age'],
             'action': ['run'],
@@ -699,95 +707,15 @@ class ExportDataCollectionTest(ExportTestCase):
             component_step = digital_game_phase_component_configuration.component
             step_number = path[-1][4]
 
-            self.assertTrue(
-                any(os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                )
-                    in element for element in zipped_file.namelist()),
-                os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                ) + ' not in: ' + str(zipped_file.namelist())
-            )
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'DigitalGamePhaseData_1',
+                                                         'goalkeeper.bin',
+                                                         zipped_file)
 
-
-class ExportParticipants(ExportTestCase):
-
-    def setUp(self):
-        super(ExportParticipants, self).setUp()
-
-    def tearDown(self):
-        self.client.logout()
-
-    def test_export_participants_without_questionnaires_returns_zipped_file(self):
-        """
-        Test created when exporting participants, without questionnaires
-        avulsely answered by them, gave yellow screen. See Jira Issue NES-864.
-        """
-
-        data = {'patient_selected': ['age*age'], 'action': ['run']}
-        response = self.client.post(reverse('export_view'), data)
-        self.assertEqual(response.status_code, 200)
-
-        self.get_zipped_file(response)
-
-
-class ExportSelection(ExportTestCase):
-
-    def tearDown(self):
-        self.client.logout()
-
-    def test_expire_section_when_in_last_export_form_returns_to_first_export_page(self):
-        """ Path that is followed when the session is expired and it tries
-        to generates the zipped file after loggin again
-        1. Flush the session
-        2. Post data to export view: the response contains the url to
-        reverse to login page
-        3. Post credentials in login page to login
-        4. Get the reversed url that has to point at export's first page
-        """
-
-        self.client.session.flush()
-
-        # Post data to view: data style that is posted to export_view in
-        # template
-        data = {
-            'per_questionnaire': ['on'],
-            'per_participant': ['on'],
-            'headings': ['code'],
-            'patient_selected': ['age*age'],
-            'action': ['run'],
-            'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
-
-        response2 = self.client.post(response.url, {
-            'username': self.user.username,
-            'password': self.user_passwd
-        })
-
-        # when session expires the request is made with get
-        response3 = self.client.get(response2.url)
-
-        # TODO:
-        # see if it's possible to get 'http://testserver' without hardcode
-        self.assertEqual(
-            response3.url, 'http://testserver' + reverse('export_menu')
-        )
-
-
-class ExportEegEmgTmsTest(ExportTestCase):
-    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
-
-    def setUp(self):
-        super(ExportEegEmgTmsTest, self).setUp()
-
-    def tearDown(self):
-        self.client.logout()
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'AdditionalData_1',
+                                                         'additionaldata.bin',
+                                                         zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_eeg(self):
@@ -810,6 +738,11 @@ class ExportEegEmgTmsTest(ExportTestCase):
         )
         ObjectsFactory.create_eeg_data_collection_file(eegdata)
 
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
+
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
@@ -820,6 +753,7 @@ class ExportEegEmgTmsTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'per_participant': ['on'],
             'per_eeg_raw_data ': ['on'],
+            'per_additional_data': ['on'],
             'headings': ['abbreviated'],
             'patient_selected': ['age*age'],
             'action': ['run'],
@@ -839,24 +773,15 @@ class ExportEegEmgTmsTest(ExportTestCase):
             component_step = eeg_conf.component
             step_number = path[-1][4]
 
-            lst = os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper())
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'EEGData_1',
+                                                         'eeg.bin',
+                                                         zipped_file)
 
-            self.assertTrue(
-                any(os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                )
-                    in element for element in zipped_file.namelist()),
-                os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                ) + ' not in: ' + str(zipped_file.namelist())
-            )
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'AdditionalData_1',
+                                                         'additionaldata.bin',
+                                                         zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_emg(self):
@@ -871,7 +796,7 @@ class ExportEegEmgTmsTest(ExportTestCase):
         emg_comp = ObjectsFactory.create_component(self.experiment,
                                                    Component.EMG,
                                                    kwargs={'emg_set': emg_set}
-        )
+                                                   )
 
         # include emg component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(
@@ -885,6 +810,11 @@ class ExportEegEmgTmsTest(ExportTestCase):
         )
         ObjectsFactory.create_emg_data_collection_file(emgdata)
 
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
+
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
@@ -895,6 +825,7 @@ class ExportEegEmgTmsTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'per_participant': ['on'],
             'per_emg_data': ['on'],
+            'per_additional_data': ['on'],
             'headings': ['abbreviated'],
             'patient_selected': ['age*age'],
             'action': ['run'],
@@ -914,17 +845,16 @@ class ExportEegEmgTmsTest(ExportTestCase):
             component_step = emg_conf.component
             step_number = path[-1][4]
 
-            lst = os.path.join('Per_participant',
-                               'Participant_' +
-                               self.patient.code,
-                               'Step_' + str(step_number) + '_' +
-                               component_step.component_type.upper())
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'EMGData_1',
+                                                         'emg.bin',
+                                                         zipped_file)
 
-            self.assertTrue(
-                any(os.path.join(lst) in element for element in
-                    zipped_file.namelist()),
-                    lst + ' not in: ' + str(zipped_file.namelist())
-            )
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'AdditionalData_1',
+                                                         'additionaldata.bin',
+                                                         zipped_file)
+
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_tms(self):
@@ -1018,11 +948,69 @@ class ExportEegEmgTmsTest(ExportTestCase):
                                'Step_' + str(step_number) + '_' +
                                component_step.component_type.upper())
 
-            self.assertTrue(
-                any(os.path.join(lst) in element for element in
-                    zipped_file.namelist()),
-                    lst + ' not in: ' + str(zipped_file.namelist())
-            )
+class ExportParticipants(ExportTestCase):
+
+    def setUp(self):
+        super(ExportParticipants, self).setUp()
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_export_participants_without_questionnaires_returns_zipped_file(self):
+        """
+        Test created when exporting participants, without questionnaires
+        avulsely answered by them, gave yellow screen. See Jira Issue NES-864.
+        """
+
+        data = {'patient_selected': ['age*age'], 'action': ['run']}
+        response = self.client.post(reverse('export_view'), data)
+        self.assertEqual(response.status_code, 200)
+
+        self.get_zipped_file(response)
+
+
+class ExportSelection(ExportTestCase):
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_expire_section_when_in_last_export_form_returns_to_first_export_page(self):
+        """ Path that is followed when the session is expired and it tries
+        to generates the zipped file after loggin again
+        1. Flush the session
+        2. Post data to export view: the response contains the url to
+        reverse to login page
+        3. Post credentials in login page to login
+        4. Get the reversed url that has to point at export's first page
+        """
+
+        self.client.session.flush()
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'headings': ['code'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        response2 = self.client.post(response.url, {
+            'username': self.user.username,
+            'password': self.user_passwd
+        })
+
+        # when session expires the request is made with get
+        response3 = self.client.get(response2.url)
+
+        # TODO:
+        # see if it's possible to get 'http://testserver' without hardcode
+        self.assertEqual(
+            response3.url, 'http://testserver' + reverse('export_menu')
+        )
 
     # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     # def test_export_experiment_with_generic_data_colletion_2_grupos(self):
@@ -1075,6 +1063,7 @@ class ExportEegEmgTmsTest(ExportTestCase):
     #         'per_questionnaire': ['on'],
     #         'per_participant': ['on'],
     #         'per_generic_data': ['on'],
+    #         'per_additional_data': ['on'],
     #         'headings': ['code'],
     #         'patient_selected': ['age*age'],
     #         'action': ['run'],
