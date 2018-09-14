@@ -948,6 +948,119 @@ class ExportDataCollectionTest(ExportTestCase):
                                'Step_' + str(step_number) + '_' +
                                component_step.component_type.upper())
 
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_generic_data_colletion_2_grupos(self):
+        # create second group
+        # create patient/subject/subject_of_group
+        root_component1 = ObjectsFactory.create_block(self.experiment)
+        group1 = ObjectsFactory.create_group(
+            self.experiment, root_component1
+        )
+        patient1 = UtilTests().create_patient_mock(changed_by=self.user)
+        subject1 = ObjectsFactory.create_subject(patient1)
+        subject_of_group1 = \
+            ObjectsFactory.create_subject_of_group(group1, subject1)
+
+
+        # create generic data collection (gdc) component
+        it = ObjectsFactory.create_information_type()
+        gdc = ObjectsFactory.create_component(
+            self.experiment, Component.GENERIC_DATA_COLLECTION,
+            kwargs={'it': it}
+        )
+
+        # include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, gdc
+        )
+        component_config1 = ObjectsFactory.create_component_configuration(
+            root_component1, gdc
+        )
+
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
+
+        # 'upload' generic data collection file
+        gdc_data = ObjectsFactory.create_generic_data_collection_data(
+            dct, self.subject_of_group
+        )
+        gdc_data1 = ObjectsFactory.create_generic_data_collection_data(
+            dct1, subject_of_group1
+        )
+
+        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        ObjectsFactory.create_generic_data_colletion_file(gdc_data1)
+
+
+        self.append_session_variable(
+            'group_selected_list', [str(self.group.id), str(group1.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_generic_data': ['on'],
+            'per_additional_data': ['on'],
+            'headings': ['code'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+
+        response = self.client.post(reverse('export_view'), data)
+
+        # get the zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+        for path in create_list_of_trees(self.group.experimental_protocol,
+                                         "generic_data_collection"):
+            generic_component_configuration = \
+                ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = generic_component_configuration.component
+            step_number = path[-1][4]
+
+            self.assertTrue(
+                any(os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                )
+                    in element for element in zipped_file.namelist()),
+                os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                ) + ' not in: ' + str(zipped_file.namelist())
+            )
+
+
+        for path in create_list_of_trees(group1.experimental_protocol,
+                                         "generic_data_collection1"):
+            generic_component_configuration = \
+                ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = generic_component_configuration.component
+            step_number = path[-1][4]
+
+            self.assertTrue(
+                any(os.path.join(
+                    'Per_participant', 'Participant_' + patient1.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                )
+                    in element for element in zipped_file.namelist()),
+                os.path.join(
+                    'Per_participant', 'Participant_' + patient1.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                ) + ' not in: ' + str(zipped_file.namelist())
+            )
+
+ 
 class ExportParticipants(ExportTestCase):
 
     def setUp(self):
@@ -1012,108 +1125,3 @@ class ExportSelection(ExportTestCase):
             response3.url, 'http://testserver' + reverse('export_menu')
         )
 
-    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # def test_export_experiment_with_generic_data_colletion_2_grupos(self):
-    #     # create second group
-    #     # create patient/subject/subject_of_group
-    #     root_component1 = ObjectsFactory.create_block(self.experiment)
-    #     group1 = ObjectsFactory.create_group(
-    #         self.experiment, root_component1
-    #     )
-    #     patient1 = UtilTests().create_patient_mock(changed_by=self.user)
-    #     subject1 = ObjectsFactory.create_subject(patient1)
-    #     subject_of_group1 = \
-    #         ObjectsFactory.create_subject_of_group(group1, subject1)
-    #
-    #
-    #     # create generic data collection (gdc) component
-    #     it = ObjectsFactory.create_information_type()
-    #     gdc = ObjectsFactory.create_component(
-    #         self.experiment, Component.GENERIC_DATA_COLLECTION,
-    #         kwargs={'it': it}
-    #     )
-    #
-    #     # include gdc component in experimental protocol
-    #     component_config = ObjectsFactory.create_component_configuration(
-    #         self.root_component, gdc
-    #     )
-    #     dct = ObjectsFactory.create_data_configuration_tree(component_config)
-    #
-    #     # 'upload' generic data collection file
-    #     gdc_data = ObjectsFactory.create_generic_data_collection_data(
-    #         dct, self.subject_of_group
-    #     )
-    #     gdc_data1 = ObjectsFactory.create_generic_data_collection_data(
-    #         dct, subject_of_group1
-    #     )
-    #     ObjectsFactory.create_generic_data_colletion_file(gdc_data)
-    #     ObjectsFactory.create_generic_data_colletion_file(gdc_data1)
-    #
-    #     self.append_session_variable(
-    #         'group_selected_list', [str(self.group.id)]
-    #     )
-    #
-    #     self.append_session_variable(
-    #         'group_selected_list1', [str(group1.id)]
-    #     )
-    #
-    #     # Post data to view: data style that is posted to export_view in
-    #     # template
-    #     data = {
-    #         'per_questionnaire': ['on'],
-    #         'per_participant': ['on'],
-    #         'per_generic_data': ['on'],
-    #         'per_additional_data': ['on'],
-    #         'headings': ['code'],
-    #         'patient_selected': ['age*age'],
-    #         'action': ['run'],
-    #         'responses': ['short']
-    #     }
-    #     response = self.client.post(reverse('export_view'), data)
-    #
-    #     # get the zipped file to test against its content
-    #     file = io.BytesIO(response.content)
-    #     zipped_file = zipfile.ZipFile(file, 'r')
-    #     self.assertIsNone(zipped_file.testzip())
-    #
-    #     for path in create_list_of_trees(self.group.experimental_protocol,
-    #                                      "generic_data_collection"):
-    #         generic_component_configuration = \
-    #             ComponentConfiguration.objects.get(pk=path[-1][0])
-    #         component_step = generic_component_configuration.component
-    #         step_number = path[-1][4]
-    #
-    #         self.assertTrue(
-    #             any(os.path.join(
-    #                 'Per_participant', 'Participant_' + self.patient.code,
-    #                 'Step_' + str(step_number) + '_' +
-    #                 component_step.component_type.upper()
-    #             )
-    #                 in element for element in zipped_file.namelist()),
-    #             os.path.join(
-    #                 'Per_participant', 'Participant_' + self.patient.code,
-    #                 'Step_' + str(step_number) + '_' +
-    #                 component_step.component_type.upper()
-    #             ) + ' not in: ' + str(zipped_file.namelist())
-    #         )
-    #
-    #     for path in create_list_of_trees(group1.experimental_protocol,
-    #                                      "generic_data_collection1"):
-    #         generic_component_configuration = \
-    #             ComponentConfiguration.objects.get(pk=path[-1][0])
-    #         component_step = generic_component_configuration.component
-    #         step_number = path[-1][4]
-    #
-    #         self.assertTrue(
-    #             any(os.path.join(
-    #                 'Per_participant', 'Participant_' + self.patient.code,
-    #                 'Step_' + str(step_number) + '_' +
-    #                 component_step.component_type.upper()
-    #             )
-    #                 in element for element in zipped_file.namelist()),
-    #             os.path.join(
-    #                 'Per_participant', 'Participant_' + self.patient.code,
-    #                 'Step_' + str(step_number) + '_' +
-    #                 component_step.component_type.upper()
-    #             ) + ' not in: ' + str(zipped_file.namelist())
-    #         )
