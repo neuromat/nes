@@ -10,19 +10,18 @@ import shutil
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.test import override_settings
-from faker import Factory
 
 from experiment.models import Component, ComponentConfiguration, \
     BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
-    CoilOrientation, DirectionOfTheInducedCurrent, CoilShape
-from experiment.tests_original import ObjectsFactory
+    CoilOrientation, DirectionOfTheInducedCurrent
+from experiment.tests.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
 from export.tests.tests_helper import ExportTestCase
 from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
 from survey.tests_helper import create_survey
-from experiment.views import get_pulse_stimulus_name
+
 
 class ExportQuestionnaireTest(ExportTestCase):
 
@@ -599,12 +598,12 @@ class ExportDataCollectionTest(ExportTestCase):
         gdc_data = ObjectsFactory.create_generic_data_collection_data(
             dct, self.subject_of_group
         )
-        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        gdcf = ObjectsFactory.create_generic_data_colletion_file(gdc_data)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
 
-        ObjectsFactory.create_additional_data_file(additional_data)
+        adf = ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
@@ -629,22 +628,25 @@ class ExportDataCollectionTest(ExportTestCase):
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        for path in create_list_of_trees(self.group.experimental_protocol,
-                                         "generic_data_collection"):
-            generic_component_configuration = \
-                ComponentConfiguration.objects.get(pk=path[-1][0])
-            component_step = generic_component_configuration.component
-            step_number = path[-1][4]
+        # we have only the generic_data_collection step, so we get the first
+        # element: [0]
+        path = create_list_of_trees(
+            self.group.experimental_protocol, "generic_data_collection"
+        )[0]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'Generic_Data_Collection_1',
-                                                         'generic.bin',
-                                                         zipped_file)
+        generic_component_configuration = \
+            ComponentConfiguration.objects.get(pk=path[-1][0])
+        component_step = generic_component_configuration.component
+        step_number = path[-1][4]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'AdditionalData_1',
-                                                         'additionaldata.bin',
-                                                         zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'Generic_Data_Collection_1',
+            os.path.basename(gdcf.file.name), zipped_file
+        )
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'AdditionalData_1',
+            os.path.basename(adf.file.name), zipped_file
+        )
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_digital_game_phase_data_colletion(self):
@@ -950,7 +952,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_with_generic_data_colletion_2_grupos(self):
+    def test_export_experiment_with_generic_data_colletion_2_groups(self):
         # create second group
         # create patient/subject/subject_of_group
         root_component1 = ObjectsFactory.create_block(self.experiment)
@@ -1124,4 +1126,3 @@ class ExportSelection(ExportTestCase):
         self.assertEqual(
             response3.url, 'http://testserver' + reverse('export_menu')
         )
-
