@@ -35,7 +35,7 @@ from experiment.models import Experiment, Group, Subject, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
     GenericDataCollection
 
-from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
+from experiment.views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
     publication_add_experiment
 
 from custom_user.views import User

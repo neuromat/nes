@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from experiment.models import Keyword
-from experiment.tests_original import ObjectsFactory
+from experiment.tests.tests_original import ObjectsFactory
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'

@@ -12,7 +12,7 @@ from django.template.defaultfilters import slugify
 from django.test import override_settings
 
 from experiment.models import Component, ComponentConfiguration
-from experiment.tests_original import ObjectsFactory
+from experiment.tests.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
 from export.tests.tests_helper import ExportTestCase
 from patient.tests import UtilTests

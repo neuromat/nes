@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from custom_user.tests_helper import create_user
-from experiment.tests_original import ObjectsFactory
+from experiment.tests.tests_original import ObjectsFactory
 from patient.tests import UtilTests
 
 
