@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from custom_user.tests_helper import create_user
-from experiment.tests_original import ObjectsFactory
+from experiment.tests.tests_original import ObjectsFactory
 from patient.tests import UtilTests
 
 
@@ -59,8 +59,10 @@ class ExportTestCase(TestCase):
 
         return zipped_file
 
-    def assert_per_participant_step_file_exists(self,step_number,component_step,
-                                                data_collection_folder,filename,
+    def assert_per_participant_step_file_exists(self, step_number,
+                                                component_step,
+                                                data_collection_folder,
+                                                filename,
                                                 zipped_file):
         self.assertTrue(
             any(os.path.join(
@@ -92,5 +94,11 @@ class ExportTestCase(TestCase):
             os.path.join(
                 'Experimental_protocol', 'Step_' + str(step_number) + '_' +
                 component_step.component_type.upper(),data_collection_folder,filename
+            ) + ' not in: ' + str(zipped_file.namelist())
+        )
+
+                component_step.component_type.upper(),
+                data_collection_folder,
+                filename
             ) + ' not in: ' + str(zipped_file.namelist())
         )

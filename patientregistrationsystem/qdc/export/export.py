@@ -24,12 +24,18 @@ from export.export_utils import create_list_of_trees, can_export_nwb
 from survey.survey_utils import QuestionnaireUtils
 
 from patient.models import Patient, QuestionnaireResponse
-from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, Group, \
-    ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData, EEGSetting, EMGData, EMGSetting, TMSData, \
-    TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, GenericDataCollectionData, \
-    ContextTree, SubjectStepData, EEGElectrodePositionSetting, SurfaceElectrode, IntramuscularElectrode, \
-    NeedleElectrode, EMGElectrodeSetting, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement,\
-    ComponentAdditionalFile, Component
+from experiment.models import \
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, \
+    Group, \
+    ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData, \
+    EEGSetting, EMGData, EMGSetting, TMSData, \
+    TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, \
+    GenericDataCollectionData, \
+    ContextTree, SubjectStepData, EEGElectrodePositionSetting, \
+    SurfaceElectrode, IntramuscularElectrode, \
+    NeedleElectrode, EMGElectrodeSetting, EMGIntramuscularPlacement, \
+    EMGSurfacePlacement, EMGNeedlePlacement, ComponentAdditionalFile
+
 from experiment.views import get_block_tree, get_experimental_protocol_image, \
     get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, \
     list_data_configuration_tree
@@ -1984,7 +1990,9 @@ class ExportExecution:
                                     hotspot_map_filename = "%s.png" % "hotspot_map"
                                     complete_hotspot_filename = path.join(path_per_tms_participant,
                                                                           hotspot_map_filename)
-                                    path_hot_spot_image = path.join(settings.BASE_DIR, "media") + "/" + hotspot_image
+                                    path_hot_spot_image = path.join(
+                                        settings.MEDIA_ROOT,
+                                        hotspot_image)
                                     with open(path_hot_spot_image, 'rb') as f:
                                         data = f.read()
 
@@ -3468,11 +3476,11 @@ def get_tms_data_description(tms_data_id):
     coil_orientation_name = ''
     if coil_orientation:
         coil_orientation_name = coil_orientation.name
-    tms_description['stimulation_description'] = {
+        tms_description['stimulation_description'] = {
         'tms_stimulation_description': tms_data_attributes['description'],
         'resting_motor threshold-RMT(%)': tms_data_attributes['resting_motor_threshold'],
         'test_pulse_intensity_of_simulation(% over the %RMT)': tms_data_attributes[
-            'test_pulse_intensity_of_simulation'],
+        'test_pulse_intensity_of_simulation'],
         'interval_between_pulses': tms_data_attributes['interval_between_pulses'],
         'interval_between_pulses_unit': tms_data_attributes['interval_between_pulses_unit'],
         'repetitive_pulse_frequency': tms_data_attributes['repetitive_pulse_frequency'],

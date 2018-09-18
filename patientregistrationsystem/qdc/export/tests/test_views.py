@@ -12,8 +12,11 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.test import override_settings
 
-from experiment.models import Component, ComponentConfiguration, ComponentAdditionalFile
-from experiment.tests_original import ObjectsFactory
+from experiment.models import Component, ComponentConfiguration, \
+    ComponentAdditionalFile, BrainAreaSystem, BrainArea,\
+    TMSLocalizationSystem, HotSpot, TMSData, \
+    CoilOrientation, DirectionOfTheInducedCurrent
+from experiment.tests.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
 from export.tests.tests_helper import ExportTestCase
 from patient.tests import UtilTests
@@ -597,12 +600,12 @@ class ExportDataCollectionTest(ExportTestCase):
         gdc_data = ObjectsFactory.create_generic_data_collection_data(
             dct, self.subject_of_group
         )
-        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        gdcf = ObjectsFactory.create_generic_data_colletion_file(gdc_data)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
 
-        ObjectsFactory.create_additional_data_file(additional_data)
+        adf = ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
@@ -627,22 +630,25 @@ class ExportDataCollectionTest(ExportTestCase):
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        for path in create_list_of_trees(self.group.experimental_protocol,
-                                         "generic_data_collection"):
-            generic_component_configuration = \
-                ComponentConfiguration.objects.get(pk=path[-1][0])
-            component_step = generic_component_configuration.component
-            step_number = path[-1][4]
+        # we have only the generic_data_collection step, so we get the first
+        # element: [0]
+        path = create_list_of_trees(
+            self.group.experimental_protocol, "generic_data_collection"
+        )[0]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'Generic_Data_Collection_1',
-                                                         'file.bin',
-                                                         zipped_file)
+        generic_component_configuration = \
+            ComponentConfiguration.objects.get(pk=path[-1][0])
+        component_step = generic_component_configuration.component
+        step_number = path[-1][4]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'AdditionalData_1',
-                                                         'file.bin',
-                                                         zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'Generic_Data_Collection_1',
+            os.path.basename(gdcf.file.name), zipped_file
+        )
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'AdditionalData_1',
+            os.path.basename(adf.file.name), zipped_file
+        )
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_digital_game_phase_data_colletion(self):
@@ -669,12 +675,12 @@ class ExportDataCollectionTest(ExportTestCase):
             dct, self.subject_of_group
         )
 
-        ObjectsFactory.create_digital_game_phase_file(dgp_data)
+        dgpf = ObjectsFactory.create_digital_game_phase_file(dgp_data)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
 
-        ObjectsFactory.create_additional_data_file(additional_data)
+        adf = ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
@@ -699,21 +705,22 @@ class ExportDataCollectionTest(ExportTestCase):
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        for path in create_list_of_trees(self.group.experimental_protocol,
-                                         "digital_game_phase"):
-            digital_game_phase_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
-            component_step = digital_game_phase_component_configuration.component
-            step_number = path[-1][4]
+        # we have only the digital_game_phase step, so we get the first
+        # element: [0]
+        path = create_list_of_trees(self.group.experimental_protocol, "digital_game_phase")[0]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'DigitalGamePhaseData_1',
-                                                         'file.bin',
-                                                         zipped_file)
+        digital_game_phase_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        component_step = digital_game_phase_component_configuration.component
+        step_number = path[-1][4]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'AdditionalData_1',
-                                                         'file.bin',
-                                                         zipped_file)
+        self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                     'DigitalGamePhaseData_1',
+                                                     os.path.basename(dgpf.file.name),
+                                                     zipped_file)
+        self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                     'AdditionalData_1',
+                                                     os.path.basename(adf.file.name),
+                                                     zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_eeg(self):
@@ -734,12 +741,13 @@ class ExportDataCollectionTest(ExportTestCase):
         eegdata = ObjectsFactory.create_eeg_data_collection_data(
             dct, self.subject_of_group, eeg_set
         )
-        ObjectsFactory.create_eeg_data_collection_file(eegdata)
+
+        eegf = ObjectsFactory.create_eeg_data_collection_file(eegdata)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
 
-        ObjectsFactory.create_additional_data_file(additional_data)
+        adf = ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
@@ -764,22 +772,17 @@ class ExportDataCollectionTest(ExportTestCase):
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        for path in create_list_of_trees(self.group.experimental_protocol,
-                                         "eeg"):
-            eeg_conf = \
-                ComponentConfiguration.objects.get(pk=path[-1][0])
-            component_step = eeg_conf.component
-            step_number = path[-1][4]
+        # we have only the generic_data_collection step, so we get the first
+        # element: [0]
+        path = create_list_of_trees(self.group.experimental_protocol,"eeg")
+        eeg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
+        component_step = eeg_conf.component
+        step_number = path[-1][4]
+        self.assert_per_participant_step_file_exists(step_number, component_step,'EEGData_1',
+                                                     os.path.basename(eegf.file.name),zipped_file)
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'EEGData_1',
-                                                         'file.bin',
-                                                         zipped_file)
-
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'AdditionalData_1',
-                                                         'file.bin',
-                                                         zipped_file)
+        self.assert_per_participant_step_file_exists(step_number, component_step,'AdditionalData_1',
+                                                     os.path.basename(adf.file.name),zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_emg(self):
@@ -806,12 +809,13 @@ class ExportDataCollectionTest(ExportTestCase):
         emgdata = ObjectsFactory.create_emg_data_collection_data(
             dct, self.subject_of_group, emg_set
         )
-        ObjectsFactory.create_emg_data_collection_file(emgdata)
+
+        emgf = ObjectsFactory.create_emg_data_collection_file(emgdata)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
 
-        ObjectsFactory.create_additional_data_file(additional_data)
+        adf = ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
@@ -836,22 +840,222 @@ class ExportDataCollectionTest(ExportTestCase):
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
+        # we have only the generic_data_collection step, so we get the first
+        # element: [0]
+        path = create_list_of_trees(self.group.experimental_protocol,"emg")
+        emg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
+        component_step = emg_conf.component
+        step_number = path[-1][4]
+
+        self.assert_per_participant_step_file_exists(step_number, component_step, 'EMGData_1',
+                                                     os.path.basename(emgf.file.name), zipped_file)
+
+        self.assert_per_participant_step_file_exists(step_number, component_step, 'AdditionalData_1',
+                                                     os.path.basename(adf.file.name), zipped_file)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_tms(self):
+
+        # create tms component
+        tms_set = ObjectsFactory.create_tms_setting(self.experiment)
+
+        tms_comp = ObjectsFactory.create_component(
+            self.experiment, Component.TMS,
+            kwargs={'tms_set': tms_set}
+        )
+
+        # include tms component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, tms_comp
+        )
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        doic = DirectionOfTheInducedCurrent.objects.create(
+            name="Direction of Induced Current"
+        )
+
+        coilor = CoilOrientation.objects.create(
+            name="Coil Orientation"
+        )
+
+        tmsdataaux=TMSData.objects.create(
+            tms_setting=tms_set,
+            data_configuration_tree=dct,
+            subject_of_group=self.subject_of_group,
+            coil_orientation=coilor,
+            description="Teste TMS",
+            direction_of_induced_current=doic
+        )
+
+        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
+
+        brainarea = BrainArea.objects.create(name='Lobo frontal',
+                                             brain_area_system=brainareasystem)
+
+        temp_dir = tempfile.mkdtemp()
+        with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
+            f.write(b'carambola')
+        temp_file=f.name
+
+        tms_local_sys = TMSLocalizationSystem.objects.create(
+            name="TMS name", brain_area=brainarea,
+            tms_localization_system_image=temp_file
+        )
+
+        hotspot = HotSpot.objects.create(
+            tms_data=tmsdataaux,
+            name="TMS Data Collection File",
+            tms_localization_system=tms_local_sys
+        )
+
+        ObjectsFactory.create_hotspot_data_collection_file(hotspot)
+
+        self.append_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_tms_data': ['on'],
+            'headings': ['abbreviated'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        # get the zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
         for path in create_list_of_trees(self.group.experimental_protocol,
-                                         "emg"):
-            emg_conf = \
+                                         "tms"):
+            tms_conf = \
                 ComponentConfiguration.objects.get(pk=path[-1][0])
-            component_step = emg_conf.component
+            component_step = tms_conf.component
             step_number = path[-1][4]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'EMGData_1',
-                                                         'file.bin',
-                                                         zipped_file)
+            lst = os.path.join('Per_participant',
+                               'Participant_' +
+                               self.patient.code,
+                               'Step_' + str(step_number) + '_' +
+                               component_step.component_type.upper())
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'AdditionalData_1',
-                                                         'file.bin',
-                                                         zipped_file)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_generic_data_colletion_2_groups(self):
+        # create second group
+        # create patient/subject/subject_of_group
+        root_component1 = ObjectsFactory.create_block(self.experiment)
+        group1 = ObjectsFactory.create_group(
+            self.experiment, root_component1
+        )
+        patient1 = UtilTests().create_patient_mock(changed_by=self.user)
+        subject1 = ObjectsFactory.create_subject(patient1)
+        subject_of_group1 = \
+            ObjectsFactory.create_subject_of_group(group1, subject1)
+
+
+        # create generic data collection (gdc) component
+        it = ObjectsFactory.create_information_type()
+        gdc = ObjectsFactory.create_component(
+            self.experiment, Component.GENERIC_DATA_COLLECTION,
+            kwargs={'it': it}
+        )
+
+        # include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, gdc
+        )
+        component_config1 = ObjectsFactory.create_component_configuration(
+            root_component1, gdc
+        )
+
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
+
+        # 'upload' generic data collection file
+        gdc_data = ObjectsFactory.create_generic_data_collection_data(
+            dct, self.subject_of_group
+        )
+        gdc_data1 = ObjectsFactory.create_generic_data_collection_data(
+            dct1, subject_of_group1
+        )
+
+        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        ObjectsFactory.create_generic_data_colletion_file(gdc_data1)
+
+
+        self.append_session_variable(
+            'group_selected_list', [str(self.group.id), str(group1.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_generic_data': ['on'],
+            'per_additional_data': ['on'],
+            'headings': ['code'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+
+        response = self.client.post(reverse('export_view'), data)
+
+        # get the zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+        for path in create_list_of_trees(self.group.experimental_protocol,
+                                         "generic_data_collection"):
+            generic_component_configuration = \
+                ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = generic_component_configuration.component
+            step_number = path[-1][4]
+
+            self.assertTrue(
+                any(os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                )
+                    in element for element in zipped_file.namelist()),
+                os.path.join(
+                    'Per_participant', 'Participant_' + self.patient.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                ) + ' not in: ' + str(zipped_file.namelist())
+            )
+
+
+        for path in create_list_of_trees(group1.experimental_protocol,
+                                         "generic_data_collection1"):
+            generic_component_configuration = \
+                ComponentConfiguration.objects.get(pk=path[-1][0])
+            component_step = generic_component_configuration.component
+            step_number = path[-1][4]
+
+            self.assertTrue(
+                any(os.path.join(
+                    'Per_participant', 'Participant_' + patient1.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                )
+                    in element for element in zipped_file.namelist()),
+                os.path.join(
+                    'Per_participant', 'Participant_' + patient1.code,
+                    'Step_' + str(step_number) + '_' +
+                    component_step.component_type.upper()
+                ) + ' not in: ' + str(zipped_file.namelist())
+            )
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_step_additional_data(self):
@@ -911,14 +1115,14 @@ class ExportDataCollectionTest(ExportTestCase):
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        for path in create_list_of_trees(self.group.experimental_protocol,
-                                         "generic_data_collection"):
-            generic_component_configuration = \
-                ComponentConfiguration.objects.get(pk=path[-1][0])
-            component_step = generic_component_configuration.component
-            step_number = path[-1][4]
+        # we have only the generic_data_collection step, so we get the first
+        # element: [0]
+        path = create_list_of_trees(self.group.experimental_protocol, "generic_data_collection")
+        generic_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        component_step = generic_component_configuration.component
+        step_number = path[-1][4]
 
-            self.assert_step_data_files_exists(step_number, component_step,
+        self.assert_step_data_files_exists(step_number, component_step,
                                                'AdditionalData',
                                                os.path.basename(f.name),
                                                zipped_file)
@@ -971,19 +1175,17 @@ class ExportDataCollectionTest(ExportTestCase):
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        for path in create_list_of_trees(self.group.experimental_protocol,
-                                         "stimulus"):
-            stimulus_component_configuration = \
-                ComponentConfiguration.objects.get(pk=path[-1][0])
-            component_step = stimulus_component_configuration.component
-            step_number = path[-1][4]
+        # we have only the generic_data_collection step, so we get the first
+        # element: [0]
+        path = create_list_of_trees(self.group.experimental_protocol,"stimulus")
+        stimulus_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        component_step = stimulus_component_configuration.component
+        step_number = path[-1][4]
 
-            self.assert_step_data_files_exists(step_number, component_step,
-                                               '',
-                                               os.path.basename(f.name),
-                                               zipped_file)
+        self.assert_step_data_files_exists(step_number, component_step, '',
+                                           os.path.basename(f.name), zipped_file)
 
-
+ 
 class ExportParticipants(ExportTestCase):
 
     def setUp(self):

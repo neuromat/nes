@@ -32,11 +32,13 @@ from experiment.models import Experiment, Group, Subject, \
     EMGElectrodePlacement, EMGElectrodePlacementSetting, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
     ContextTree, ExperimentResearcher, InformationType, \
-    GenericDataCollection, GenericDataCollectionData, GenericDataCollectionFile, \
-    DigitalGamePhase, DigitalGamePhaseData,DigitalGamePhaseFile, \
-    AdditionalData, AdditionalDataFile,EEGFile, EMGData, EMGFile
+    GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
+    GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
+    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, TMSData, HotSpot, \
+    DirectionOfTheInducedCurrent, BrainAreaSystem, BrainArea, \
+    TMSLocalizationSystem, CoilOrientation, TMSDeviceSetting
 
-from .views import experiment_update, upload_file, research_project_update, \
+from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
     publication_add_experiment, STIMULUS
 
@@ -146,7 +148,6 @@ class ObjectsFactory(object):
         eeg_setting = EEGSetting.objects.create(experiment=experiment,
                                                 name='EEG-Setting name',
                                                 description='EEG-Setting description')
-        # eeg_setting.save()
         return eeg_setting
 
     @staticmethod
@@ -156,6 +157,13 @@ class ObjectsFactory(object):
                                                 description='EMG-Setting description',
                                                 acquisition_software_version=acquisition_software_version,)
         return emg_setting
+
+    @staticmethod
+    def create_tms_setting(experiment):
+        tms_setting = TMSSetting.objects.create(experiment=experiment,
+                                                name='TMS-Setting name',
+                                                description='TMS-Setting description')
+        return tms_setting
 
     @staticmethod
     def create_emg_electrode_setting(emg_setting, electrode_model):
@@ -242,6 +250,8 @@ class ObjectsFactory(object):
             model = EEG.__name__  # EEG
         elif component_type == Component.EMG:
             model = EMG.__name__  # EMG
+        elif component_type == Component.TMS:
+            model = TMS.__name__  # TMS
         else:
             model = component_type
 
@@ -278,13 +288,17 @@ class ObjectsFactory(object):
                 component.emg_setting = kwargs['emg_set']
             except KeyError:
                 print('You must specify \'emg_setting\' key in kwargs dict')
-
         elif component_type == Component.STIMULUS:
             try:
                 component.stimulus_type = kwargs['stimulus_type']
                 component.media_file = kwargs['media_file']
             except KeyError:
                 print('You must specify \'stimulus_type\' and \'media_file\' key in kwargs dict')
+        elif component_type == Component.TMS:
+            try:
+                component.tms_setting = kwargs['tms_set']
+            except KeyError:
+                print('You must specify \'tms_setting\' key in kwargs dict')
         try:
             component.save()
         except IntegrityError:
@@ -560,6 +574,7 @@ class ObjectsFactory(object):
             return f
 
     @staticmethod
+
     def create_generic_data_collection_data(data_conf_tree,
                                             subj_of_group):
 
@@ -572,6 +587,12 @@ class ObjectsFactory(object):
             data_configuration_tree=data_conf_tree,
             subject_of_group=subj_of_group
         )
+
+    @staticmethod
+    def create_binary_file(path):
+        with open(os.path.join(path, 'file.bin'), 'wb') as f:
+            f.write(b'carambola')
+            return f
 
     @staticmethod
     def create_generic_data_colletion_file(gdc_data):
@@ -588,6 +609,7 @@ class ObjectsFactory(object):
 
         return gdcf
 
+    @staticmethod
     def create_eeg_data_collection_data(data_conf_tree,
                                             subj_of_group, eeg_set):
 
@@ -616,6 +638,7 @@ class ObjectsFactory(object):
 
         return eegf
 
+    @staticmethod
     def create_emg_data_collection_data(data_conf_tree,
                                             subj_of_group, emg_set):
 
@@ -714,6 +737,20 @@ class ObjectsFactory(object):
             stimulus_type=stimulus_type,
             media_file=mediafile
         )
+
+    @staticmethod
+    def create_hotspot_data_collection_file(hotspot):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
+                bin_file.write(b'carambola')
+
+
+            with File(open(bin_file.name, 'rb')) as f:
+                hotspot.hot_spot_map.save('file.bin', f)
+            hotspot.save()
+
+        return hotspot
 
 
 class ExperimentalProtocolTest(TestCase):
