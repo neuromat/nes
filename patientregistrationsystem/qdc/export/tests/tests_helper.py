@@ -74,6 +74,23 @@ class ExportTestCase(TestCase):
             os.path.join(
                 'Per_participant', 'Participant_' + self.patient.code,
                 'Step_' + str(step_number) + '_' +
-                component_step.component_type.upper()
+                component_step.component_type.upper(),data_collection_folder,filename
+            ) + ' not in: ' + str(zipped_file.namelist())
+        )
+
+    def assert_step_data_files_exists(self,step_number, component_step,
+                                      data_collection_folder,filename,
+                                      zipped_file):
+        self.assertTrue(
+            any(os.path.join(
+                'Experimental_protocol', 'Step_' + str(step_number) + '_' +
+                component_step.component_type.upper(),
+                data_collection_folder,
+                filename
+            )
+                in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Experimental_protocol', 'Step_' + str(step_number) + '_' +
+                component_step.component_type.upper(),data_collection_folder,filename
             ) + ' not in: ' + str(zipped_file.namelist())
         )
