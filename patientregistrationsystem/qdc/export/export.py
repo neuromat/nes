@@ -28,7 +28,8 @@ from experiment.models import QuestionnaireResponse as ExperimentQuestionnaireRe
     ComponentConfiguration, Questionnaire, DataConfigurationTree, EEGData, EEGSetting, EMGData, EMGSetting, TMSData, \
     TMSSetting, AdditionalData, DigitalGamePhaseData, Stimulus, GenericDataCollectionData, \
     ContextTree, SubjectStepData, EEGElectrodePositionSetting, SurfaceElectrode, IntramuscularElectrode, \
-    NeedleElectrode, EMGElectrodeSetting, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement
+    NeedleElectrode, EMGElectrodeSetting, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement,\
+    ComponentAdditionalFile, Component
 from experiment.views import get_block_tree, get_experimental_protocol_image, \
     get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, \
     list_data_configuration_tree
@@ -757,7 +758,7 @@ class ExportExecution:
                             self.per_group_data[group_id]['stimulus_data'].append({
                                 'step_number': step_number,
                                 'step_identification': step_identification,
-                                'directory_step_name': "Step_" + str(step_number) + "_" + component_step.upper(),
+                                'directory_step_name': "Experimental_protocol/"+"Step_" + str(step_number) + "_" + component_step.component_type.upper(),
                                 'stimulus_file': stimulus_data.media_file.name
                             })
 
@@ -2512,7 +2513,37 @@ class ExportExecution:
                         self.files_to_zip_list.append([complete_context_tree_filename,
                                                        export_directory_experimental_protocol])
 
-                # process participant/diagnosis per Participant of each group
+                for component in tree['list_of_component_configuration']:
+                    for additionalfile in ComponentAdditionalFile.objects.filter(component=component['component']['component']):
+                        step_number = str(component['component']['numeration'])
+
+                        step_name = additionalfile.component.component_type.upper()
+
+                        path_additional_data = path.join(group_file_directory,"Experimental_protocol",'Step_'+step_number+'_'+step_name,'AdditionalData')
+                        if not path.exists(path_additional_data):
+                            error_msg, directory_additional_data = create_directory(group_file_directory,
+                                                                                    path.join("Experimental_protocol",'Step_' + step_number + '_' + step_name,
+                                                                                    'AdditionalData'))
+                            if error_msg != "":
+                                return error_msg
+
+                        export_directory_additional_data = path.join(export_group_directory,"Experimental_protocol",'Step_' + step_number + '_' + step_name,
+                                                                                    'AdditionalData')
+                        additional_data_file_name = additionalfile.file.name.split("/")[-1]
+                        additional_data_data_file_name = path.join(settings.MEDIA_ROOT) + "/" + additionalfile.file.name
+
+                        complete_additional_data_filename = path.join(path_additional_data,additional_data_file_name)
+
+                        with open(additional_data_data_file_name, "rb") as f:
+                            data = f.read()
+
+                        with open(complete_additional_data_filename, "wb") as f:
+                            f.write(data)
+
+                        self.files_to_zip_list.append([complete_additional_data_filename,
+                                                       export_directory_additional_data])
+
+                    # process participant/diagnosis per Participant of each group
                 participant_group_list = []
                 subject_of_group = SubjectOfGroup.objects.filter(group=group)
                 for subject in subject_of_group:
@@ -2534,8 +2565,8 @@ class ExportExecution:
                             export_directory_stimulus_data = path.join(export_group_directory,
                                                                        stimulus_data['directory_step_name'])
                             stimulus_file_name = stimulus_data['stimulus_file'].split("/")[-1]
-                            stimulus_data_file_name = path.join(settings.BASE_DIR, "media") + "/" +\
-                                                      stimulus_data['stimulus_file']
+                            stimulus_data_file_name = path.join(settings.MEDIA_ROOT) + "/" +\
+                                                      stimulus_data['stimulus_file'] # data['stimulus_file']
                             complete_stimulus_data_filename = path.join(path_stimulus_data, stimulus_file_name)
 
                             with open(stimulus_data_file_name, "rb") as f:

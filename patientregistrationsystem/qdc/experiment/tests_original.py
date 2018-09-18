@@ -233,8 +233,7 @@ class ObjectsFactory(object):
         faker = Factory.create()
 
         if component_type == Component.TASK_EXPERIMENT:
-            model = TaskForTheExperimenter.__name__  #
-            # TaskForTheExperimenter
+            model = TaskForTheExperimenter.__name__  #TaskForTheExperimenter
         elif component_type == Component.DIGITAL_GAME_PHASE:
             model = DigitalGamePhase.__name__  # DigitalGamePhase
         elif component_type == Component.GENERIC_DATA_COLLECTION:
@@ -243,8 +242,6 @@ class ObjectsFactory(object):
             model = EEG.__name__  # EEG
         elif component_type == Component.EMG:
             model = EMG.__name__  # EMG
-        # elif component_type == Component.STIMULUS:
-        #     model = STIMULUS.__name__  # STIMULUS
         else:
             model = component_type
 
@@ -282,12 +279,12 @@ class ObjectsFactory(object):
             except KeyError:
                 print('You must specify \'emg_setting\' key in kwargs dict')
 
-        # elif component_type == Component.STIMULUS:
-        #     try:
-        #         component.emg_setting = kwargs['emg_set']
-        #     except KeyError:
-        #         print('You must specify \'emg_setting\' key in kwargs dict')
-
+        elif component_type == Component.STIMULUS:
+            try:
+                component.stimulus_type = kwargs['stimulus_type']
+                component.media_file = kwargs['media_file']
+            except KeyError:
+                print('You must specify \'stimulus_type\' and \'media_file\' key in kwargs dict')
         try:
             component.save()
         except IntegrityError:
@@ -557,8 +554,8 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_binary_file(path, filename, fileextension):
-        with open(os.path.join(path, filename + '.' + fileextension), 'wb') as f:
+    def create_binary_file(path):
+        with open(os.path.join(path,'file.bin'), 'wb') as f:
             f.write(b'carambola')
             return f
 
@@ -580,13 +577,13 @@ class ObjectsFactory(object):
     def create_generic_data_colletion_file(gdc_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'generic', 'bin')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
             gdcf = GenericDataCollectionFile.objects.create(
                 generic_data_collection_data=gdc_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                gdcf.file.save('generic.bin', f)
+                gdcf.file.save('file.bin', f)
             gdcf.save()
 
         return gdcf
@@ -608,13 +605,13 @@ class ObjectsFactory(object):
     def create_eeg_data_collection_file(eeg_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'eeg','bin')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
             eegf = EEGFile.objects.create(
                 eeg_data=eeg_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                eegf.file.save('eeg.bin', f)
+                eegf.file.save('file.bin', f)
             eegf.save()
 
         return eegf
@@ -636,13 +633,13 @@ class ObjectsFactory(object):
     def create_emg_data_collection_file(emg_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'emg','bin')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
             emgf = EMGFile.objects.create(
                 emg_data=emg_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                emgf.file.save('emg.bin', f)
+                emgf.file.save('file.bin', f)
             emgf.save()
 
         return emgf
@@ -664,13 +661,13 @@ class ObjectsFactory(object):
     def create_digital_game_phase_file(dgp_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'goalkeeper', 'bin')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
             dgpf = DigitalGamePhaseFile.objects.create(
                 digital_game_phase_data=dgp_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                dgpf.file.save('goalkeeper.bin', f)
+                dgpf.file.save('file.bin', f)
             dgpf.save()
 
         return dgpf
@@ -692,46 +689,31 @@ class ObjectsFactory(object):
     def create_additional_data_file(ad_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname, 'additionaldata', 'bin')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
             adf = AdditionalDataFile.objects.create(
                 additional_data=ad_data
             )
             with File(open(bin_file.name, 'rb')) as f:
-                adf.file.save('additionaldata.bin', f)
+                adf.file.save('file.bin', f)
             adf.save()
 
         return adf
 
+    @staticmethod
+    def create_stimulus_type():
+        faker = Factory.create()
 
-    # def create_stimulus_data_collection_data(data_conf_tree,
-    #                                         subj_of_group, emg_set):
-    #
-    #     faker = Factory.create()
-    #
-    #     file_format = ObjectsFactory.create_file_format()
-    #     return EMGData.objects.create(
-    #         description=faker.text(), file_format=file_format,
-    #         file_format_description=faker.text(),
-    #         data_configuration_tree=data_conf_tree,
-    #         subject_of_group=subj_of_group, emg_setting=emg_set
-    #     )
-    #
-    # @staticmethod
-    # def create_stimulus_data_collection_file(generic_data):
-    #
-    #     with tempfile.TemporaryDirectory() as tmpdirname:
-    #         with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-    #             bin_file.write(b'carambola')
-    #
-    #             stimulusf = EMGFile.objects.create(
-    #             emg_data=generic_data
-    #         )
-    #         with File(open(bin_file.name, 'rb')) as f:
-    #             stimulusf.file.save('file.bin', f)
-    #             stimulusf.save()
-    #
-    #     return stimulusf
+        return StimulusType.objects.create(
+            name=faker.word()
+        )
+
+    @staticmethod
+    def create_stimulus_step(stimulus_type,mediafile):
+        return Stimulus.objects.create(
+            stimulus_type=stimulus_type,
+            media_file=mediafile
+        )
 
 
 class ExperimentalProtocolTest(TestCase):
