@@ -774,7 +774,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"eeg")
+        path = create_list_of_trees(self.group.experimental_protocol,"eeg")[0]
         eeg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = eeg_conf.component
         step_number = path[-1][4]
@@ -842,7 +842,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"emg")
+        path = create_list_of_trees(self.group.experimental_protocol,"emg")[0]
         emg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = emg_conf.component
         step_number = path[-1][4]
@@ -1117,7 +1117,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol, "generic_data_collection")
+        path = create_list_of_trees(self.group.experimental_protocol, "generic_data_collection")[0]
         generic_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = generic_component_configuration.component
         step_number = path[-1][4]
@@ -1177,7 +1177,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"stimulus")
+        path = create_list_of_trees(self.group.experimental_protocol,"stimulus")[0]
         stimulus_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = stimulus_component_configuration.component
         step_number = path[-1][4]
