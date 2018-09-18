@@ -1082,7 +1082,6 @@ def send_all_experiments_to_portal():
                     image = get_experimental_protocol_image(
                         group.experimental_protocol, tree, True
                     )
-                    image = image.split(settings.MEDIA_URL)
 
                     # steps
                     step_list = send_steps_to_portal(portal_group['id'], tree,
@@ -1239,7 +1238,7 @@ def send_all_experiments_to_portal():
                                     limesurvey_response['questions'] = []
                                     limesurvey_response['answers'] = []
 
-                                    for question_index, question_name in  enumerate(responses_list[0]):
+                                    for question_index, question_name in enumerate(responses_list[0]):
                                         if question_name in fields_to_send:
                                             limesurvey_response['questions'].append(question_name)
                                             limesurvey_response['answers'].append(responses_list[1][question_index])
@@ -1300,7 +1299,7 @@ def send_all_experiments_to_portal():
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
             # update the schedule to 'sent'
-            schedule_of_sending.status = "sent"
+            schedule_of_sending.status = 'sent'
             schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
             schedule_of_sending.save()
 
