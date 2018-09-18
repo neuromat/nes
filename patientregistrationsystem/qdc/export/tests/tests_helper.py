@@ -96,9 +96,3 @@ class ExportTestCase(TestCase):
                 component_step.component_type.upper(),data_collection_folder,filename
             ) + ' not in: ' + str(zipped_file.namelist())
         )
-
-                component_step.component_type.upper(),
-                data_collection_folder,
-                filename
-            ) + ' not in: ' + str(zipped_file.namelist())
-        )
