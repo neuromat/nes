@@ -759,12 +759,8 @@ def get_component_with_data_and_metadata(group, component_list):
         if goalkeeper_game_data_list:
             component_list.append('goalkeeper_game_data')
     if 'stimulus_data' not in component_list:
-        stimulus_file_exist = False
         stimulus_data_list = Stimulus.objects.filter(experiment=group.experiment)
-        for stimulus_file in stimulus_data_list:
-            if hasattr(stimulus_file, 'media_file.file'):
-                stimulus_file_exist = True
-        if stimulus_file_exist:
+        if stimulus_data_list:
             component_list.append('stimulus_data')
     if 'generic_data' not in component_list:
         generic_data_list = GenericDataCollectionData.objects.filter(
