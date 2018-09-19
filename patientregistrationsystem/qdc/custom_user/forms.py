@@ -19,12 +19,10 @@ class UserForm(ModelForm):
         attrs={'class': 'form-control', 'placeholder': _('Type e-mail'), 'id': "email", 'type': 'email',
                'data-error': "E-mail inválido", 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                            '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}))
-    citation_name = CharField(widget=TextInput(attrs={'class': 'form-control',
-                                                                     'placeholder': _('Type citation name')}))
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups', 'citation_name',]
+        fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
 
         widgets = {
             'username': TextInput(attrs={'class': 'form-control', 'required': "",
