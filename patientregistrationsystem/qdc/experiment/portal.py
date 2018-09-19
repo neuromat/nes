@@ -39,8 +39,10 @@ class RestApiClient(object):
     active = False
 
     def __init__(self):
-        auth = coreapi.auth.BasicAuthentication(username=settings.PORTAL_API['USER'],
-                                                password=settings.PORTAL_API['PASSWORD'])
+        auth = coreapi.auth.BasicAuthentication(
+            username=settings.PORTAL_API['USER'],
+            password=settings.PORTAL_API['PASSWORD']
+        )
         self.client = coreapi.Client(auth=auth)
 
         try:
@@ -62,19 +64,26 @@ def get_portal_status():
 
 
 def send_experiment_to_portal(experiment: Experiment):
-
+    """
+    :param experiment: Experiment model instance
+    :return: coreapi.Client().action returning entity
+    """
     rest = RestApiClient()
 
     if not rest.active:
         return None
 
     # general params
-    params = {"nes_id": str(experiment.id),
-              "title": experiment.title,
-              "description": experiment.description,
-              "data_acquisition_done": str(experiment.data_acquisition_is_concluded),
-              "project_url": experiment.source_code_url,
-              "ethics_committee_url": experiment.ethics_committee_project_url
+    params = {'nes_id': str(experiment.id),
+              'title': experiment.title,
+              'description': experiment.description,
+              'data_acquisition_done':
+                  str(experiment.data_acquisition_is_concluded),
+              'project_url': experiment.source_code_url,
+              'ethics_committee_url': experiment.ethics_committee_project_url,
+              'release_notes':
+                  experiment.schedule_of_sending.get(
+                      status='scheduled').reason_for_resending
               }
 
     action_keys = ['experiments', 'create']
