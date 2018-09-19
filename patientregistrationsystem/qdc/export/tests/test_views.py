@@ -952,7 +952,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
             self.assert_per_participant_step_file_exists(step_number, component_step,
                                                          'AdditionalData_1',
-                                                         'additionaldata.bin',
+                                                         'file.bin',
                                                          zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -1036,12 +1036,12 @@ class ExportDataCollectionTest(ExportTestCase):
 
             self.assert_per_participant_step_file_exists(step_number, component_step,
                                                          'Generic_Data_Collection_1',
-                                                         'generic.bin',
+                                                         'file.bin',
                                                          zipped_file)
 
             self.assert_per_participant_step_file_exists(step_number, component_step,
                                                          'AdditionalData_1',
-                                                         'additionaldata.bin',
+                                                         'file.bin',
                                                          zipped_file)
 
 
@@ -1055,12 +1055,12 @@ class ExportDataCollectionTest(ExportTestCase):
 
             self.assert_per_participant_step_file_exists(step_number, component_step,
                                                          'Generic_Data_Collection_1',
-                                                         'generic.bin',
+                                                         'file.bin',
                                                          zipped_file)
 
             self.assert_per_participant_step_file_exists(step_number, component_step,
                                                          'AdditionalData_1',
-                                                         'additionaldata.bin',
+                                                         'file.bin',
                                                          zipped_file)
 
 
