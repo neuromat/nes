@@ -910,6 +910,11 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_hotspot_data_collection_file(hotspot)
 
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
+
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
         )
@@ -920,6 +925,7 @@ class ExportDataCollectionTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'per_participant': ['on'],
             'per_tms_data': ['on'],
+            'per_additional_data': ['on'],
             'headings': ['abbreviated'],
             'patient_selected': ['age*age'],
             'action': ['run'],
@@ -939,12 +945,15 @@ class ExportDataCollectionTest(ExportTestCase):
             component_step = tms_conf.component
             step_number = path[-1][4]
 
-            lst = os.path.join('Per_participant',
-                               'Participant_' +
-                               self.patient.code,
-                               'Step_' + str(step_number) + '_' +
-                               component_step.component_type.upper())
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         '',
+                                                         'hotspot_map.png',
+                                                         zipped_file)
 
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'AdditionalData_1',
+                                                         'file.bin',
+                                                         zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_generic_data_colletion_2_groups(self):
@@ -989,6 +998,10 @@ class ExportDataCollectionTest(ExportTestCase):
         ObjectsFactory.create_generic_data_colletion_file(gdc_data)
         ObjectsFactory.create_generic_data_colletion_file(gdc_data1)
 
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id), str(group1.id)]
@@ -1021,41 +1034,35 @@ class ExportDataCollectionTest(ExportTestCase):
             component_step = generic_component_configuration.component
             step_number = path[-1][4]
 
-            self.assertTrue(
-                any(os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                )
-                    in element for element in zipped_file.namelist()),
-                os.path.join(
-                    'Per_participant', 'Participant_' + self.patient.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                ) + ' not in: ' + str(zipped_file.namelist())
-            )
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'Generic_Data_Collection_1',
+                                                         'file.bin',
+                                                         zipped_file)
+
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'AdditionalData_1',
+                                                         'file.bin',
+                                                         zipped_file)
 
 
         for path in create_list_of_trees(group1.experimental_protocol,
-                                         "generic_data_collection1"):
+                                         "generic_data_collection"):
             generic_component_configuration = \
                 ComponentConfiguration.objects.get(pk=path[-1][0])
             component_step = generic_component_configuration.component
             step_number = path[-1][4]
 
-            self.assertTrue(
-                any(os.path.join(
-                    'Per_participant', 'Participant_' + patient1.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                )
-                    in element for element in zipped_file.namelist()),
-                os.path.join(
-                    'Per_participant', 'Participant_' + patient1.code,
-                    'Step_' + str(step_number) + '_' +
-                    component_step.component_type.upper()
-                ) + ' not in: ' + str(zipped_file.namelist())
-            )
+
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'Generic_Data_Collection_1',
+                                                         'file.bin',
+                                                         zipped_file)
+
+            self.assert_per_participant_step_file_exists(step_number, component_step,
+                                                         'AdditionalData_1',
+                                                         'file.bin',
+                                                         zipped_file)
+
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_step_additional_data(self):
@@ -1185,7 +1192,6 @@ class ExportDataCollectionTest(ExportTestCase):
         self.assert_step_data_files_exists(step_number, component_step, '',
                                            os.path.basename(f.name), zipped_file)
 
- 
 class ExportParticipants(ExportTestCase):
 
     def setUp(self):
