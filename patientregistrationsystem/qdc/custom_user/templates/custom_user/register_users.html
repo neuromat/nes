@@ -191,7 +191,8 @@
             </div>
 
             <div class="row" id="div_password">
-                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left" title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >
+{#                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left" title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >#}
+                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left">
                     <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
                         <label for="id_new_password1" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm right-inner-addon">
