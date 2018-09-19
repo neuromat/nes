@@ -2,13 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-10 10:24-0300\n"
+"POT-Creation-Date: 2018-09-19 16:58-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,52 +17,52 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export/export.py:63 export/export.py:64 export/views.py:97
-#: export/views.py:98 export/views.py:102 export/views.py:103
+#: export/export.py:78 export/export.py:79 export/views.py:98
+#: export/views.py:99 export/views.py:103 export/views.py:104
 msgid "Participant code"
 msgstr "Código de Participante"
 
-#: export/export.py:145 export/tests.py:187
+#: export/export.py:170 export/tests/tests_orig.py:157
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/export.py:2002 export/export.py:2808 export/views.py:1227
+#: export/export.py:2191 export/export.py:3021 export/views.py:1246
 msgid "Yes"
 msgstr "Sim"
 
-#: export/export.py:2002 export/export.py:2808 export/views.py:1227
+#: export/export.py:2191 export/export.py:3021 export/views.py:1246
 msgid "No"
 msgstr "Não"
 
-#: export/forms.py:16
+#: export/forms.py:10
 msgid "Question code"
 msgstr "Código da questão"
 
-#: export/forms.py:17
+#: export/forms.py:11
 msgid "Full question text"
 msgstr "Texto completo da pergunta"
 
-#: export/forms.py:18
+#: export/forms.py:12
 msgid "Abbreviated question text"
 msgstr "Texto abreviado da pergunta"
 
-#: export/forms.py:22
+#: export/forms.py:16
 msgid "Answer codes"
 msgstr "Códigos de resposta"
 
-#: export/forms.py:23
+#: export/forms.py:17
 msgid "Full answers"
 msgstr "Respostas completas"
 
-#: export/forms.py:46
+#: export/forms.py:44
 msgid "Response must be selected"
 msgstr "Resposta deve ser selecionada"
 
-#: export/forms.py:79
+#: export/forms.py:95
 msgid "Min age must be filled."
 msgstr "Idade mínima deve ser preenchida."
 
-#: export/forms.py:82
+#: export/forms.py:98
 msgid "Max age must be filled."
 msgstr "Idade máxima deve ser preenchida."
 
@@ -151,43 +150,43 @@ msgstr "Pelo menos uma das opções deve ser selecionada"
 msgid "Information's organization for exportation of questionnaires data"
 msgstr "Organização da informação para exportação dos dados de questionários"
 
-#: export/templates/export/export_data.html:88
-#: export/templates/export/export_experiment_data.html:107 export/views.py:1122
+#: export/templates/export/export_data.html:89
+#: export/templates/export/export_experiment_data.html:107 export/views.py:1150
 msgid "Per participant"
 msgstr "Por participante"
 
-#: export/templates/export/export_data.html:95
+#: export/templates/export/export_data.html:96
 #: export/templates/export/export_experiment_data.html:114
 msgid "Per questionnaire"
 msgstr "Por questionário"
 
-#: export/templates/export/export_data.html:111
+#: export/templates/export/export_data.html:112
 #: export/templates/export/export_experiment_data.html:127
 msgid "Headings"
 msgstr "Cabeçalhos"
 
-#: export/templates/export/export_data.html:122
+#: export/templates/export/export_data.html:123
 #: export/templates/export/export_experiment_data.html:138
 msgid "Responses"
 msgstr "Respostas"
 
-#: export/templates/export/export_data.html:136
+#: export/templates/export/export_data.html:137
 #: export/templates/export/export_experiment_data.html:227
 #: export/templates/export/export_experiment_data.html:325
 msgid "Questionnaire information"
 msgstr "Informações de questionários"
 
-#: export/templates/export/export_data.html:139
+#: export/templates/export/export_data.html:140
 msgid "Questionnaire - Answered by participants"
 msgstr "Questionários - Respondidos pelos participantes"
 
-#: export/templates/export/export_data.html:158
+#: export/templates/export/export_data.html:159
 #: export/templates/export/export_experiment_data.html:245
 #: export/templates/export/export_experiment_data.html:346
 msgid "Fields available:"
 msgstr "Campos disponíveis:"
 
-#: export/templates/export/export_data.html:163
+#: export/templates/export/export_data.html:164
 #: export/templates/export/export_experiment_data.html:250
 #: export/templates/export/export_experiment_data.html:351
 msgid "Please, select a questionnaire from the list."
@@ -331,13 +330,13 @@ msgstr "Participantes selecionados"
 
 #: export/templates/export/participant_selection.html:69
 #: export/templates/export/show_selected_participants.html:50
-#: export/views.py:50
+#: export/views.py:51
 msgid "Gender"
 msgstr "Sexo"
 
 #: export/templates/export/participant_selection.html:80
 #: export/templates/export/show_selected_participants.html:54
-#: export/views.py:53
+#: export/views.py:54
 msgid "Marital status"
 msgstr "Estado civil"
 
@@ -355,7 +354,7 @@ msgstr "Entre com um diagnóstico"
 
 #: export/templates/export/participant_selection.html:157
 #: export/templates/export/show_selected_participants.html:49
-#: export/views.py:49
+#: export/views.py:50
 msgid "Age"
 msgstr "Idade"
 
@@ -380,17 +379,17 @@ msgid "Code"
 msgstr "Código"
 
 #: export/templates/export/show_selected_participants.html:51
-#: export/views.py:57
+#: export/views.py:58
 msgid "Country"
 msgstr "País"
 
 #: export/templates/export/show_selected_participants.html:52
-#: export/views.py:56
+#: export/views.py:57
 msgid "State"
 msgstr "Estado"
 
 #: export/templates/export/show_selected_participants.html:53
-#: export/views.py:55
+#: export/views.py:56
 msgid "City"
 msgstr "Cidade"
 
@@ -398,114 +397,114 @@ msgstr "Cidade"
 msgid "Previous"
 msgstr "Anterior"
 
-#: export/views.py:51
+#: export/views.py:52
 msgid "Date of birth"
 msgstr "Data de nascimento"
 
-#: export/views.py:54
+#: export/views.py:55
 msgid "Origin"
 msgstr "Origem"
 
-#: export/views.py:58
+#: export/views.py:59
 msgid "Natural of"
 msgstr "Natural de"
 
-#: export/views.py:59
+#: export/views.py:60
 msgid "Schooling"
 msgstr "Grau de instrução do chefe de família - Critério Brasil 2013"
 
-#: export/views.py:61
+#: export/views.py:62
 msgid "Schooling of the patient"
 msgstr "Escolaridade do participante"
 
-#: export/views.py:62
+#: export/views.py:63
 msgid "Profession"
 msgstr "Profissão"
 
-#: export/views.py:64
+#: export/views.py:65
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: export/views.py:65
+#: export/views.py:66
 msgid "Occupation"
 msgstr "Ocupação"
 
-#: export/views.py:67
+#: export/views.py:68
 msgid ""
 "Do you receive some benefit from the municipal level, state or federal "
 "government?"
 msgstr ""
 "Recebe algum benefício de escala municipal, estadual ou federal de governo?"
 
-#: export/views.py:68
+#: export/views.py:69
 msgid "Religion"
 msgstr "Religião"
 
-#: export/views.py:69
+#: export/views.py:70
 msgid "Flesh tone"
 msgstr "Cor da pele"
 
-#: export/views.py:70
+#: export/views.py:71
 msgid "Citizenship"
 msgstr "País de nascimento"
 
-#: export/views.py:71
+#: export/views.py:72
 msgid "What form of payment of the treatment performed"
 msgstr "Qual a forma de pagamento do tratamento realizado?"
 
-#: export/views.py:73
+#: export/views.py:74
 msgid "Smoker"
 msgstr "Tabagismo"
 
-#: export/views.py:75
+#: export/views.py:76
 msgid "Cigarretes/Day"
 msgstr "Cigarros/Dia"
 
-#: export/views.py:76
+#: export/views.py:77
 msgid "Former smoker"
 msgstr "Ex-tabagista"
 
-#: export/views.py:77
+#: export/views.py:78
 msgid "Alcoholic"
 msgstr "Etilismo"
 
-#: export/views.py:79
+#: export/views.py:80
 msgid "Frequency"
 msgstr "Frequência"
 
-#: export/views.py:80
+#: export/views.py:81
 msgid "Period"
 msgstr "Período"
 
-#: export/views.py:81
+#: export/views.py:82
 msgid "Drugs"
 msgstr "Uso de drogas ilícitas"
 
-#: export/views.py:85
+#: export/views.py:86
 msgid "Date"
 msgstr "Data"
 
-#: export/views.py:87
+#: export/views.py:88
 msgid "Observation"
 msgstr "Observação"
 
-#: export/views.py:89
+#: export/views.py:90
 msgid "Disease code (ICD)"
 msgstr "Código da doença (CID)"
 
-#: export/views.py:91
+#: export/views.py:92
 msgid "Disease Description"
 msgstr "Descrição da doença"
 
-#: export/views.py:93
+#: export/views.py:94
 msgid "Disease Abbreviated Description"
 msgstr "Descrição da doença abreviada"
 
-#: export/views.py:274
+#: export/views.py:239
 msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
 
-#: export/views.py:537
+#: export/views.py:536
 msgid "Export was finished correctly"
 msgstr "Exportação foi finalizada com sucesso"
 
@@ -513,91 +512,91 @@ msgstr "Exportação foi finalizada com sucesso"
 msgid "Export data was not generated."
 msgstr "Exportação não foi gerada."
 
-#: export/views.py:563
+#: export/views.py:565
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 
-#: export/views.py:1127
+#: export/views.py:1155
 msgid "Per experiments"
 msgstr "Por experimentos"
 
-#: export/views.py:1216
+#: export/views.py:1235
 msgid "Name of use"
 msgstr "Nome do uso"
 
-#: export/views.py:1218
+#: export/views.py:1237
 msgid "Number of repetitions"
 msgstr "Número de repetições"
 
-#: export/views.py:1220
+#: export/views.py:1239
 msgid "Interval between repetitions value"
 msgstr "Valor do entervalo entre repetições"
 
-#: export/views.py:1222
+#: export/views.py:1241
 msgid "Interval between repetitions unit"
 msgstr "Unidade do intervalo entre repetições"
 
-#: export/views.py:1223
+#: export/views.py:1242
 msgid "Order"
 msgstr "Ordem"
 
-#: export/views.py:1225
+#: export/views.py:1244
 msgid "Position in the set of steps "
 msgstr "Posição no conjunto de passos"
 
-#: export/views.py:1225
+#: export/views.py:1244
 msgid "Random"
 msgstr "Aleatório"
 
-#: export/views.py:1225
+#: export/views.py:1244
 msgid "Fixed"
 msgstr "Fixo"
 
-#: export/views.py:1227
+#: export/views.py:1246
 msgid "Requires start and end datetime"
 msgstr "Requer datas de início e fim"
 
-#: export/views.py:1266
+#: export/views.py:1285
 msgid "Identification"
 msgstr "Identificação"
 
-#: export/views.py:1268
+#: export/views.py:1287
 msgid "Description"
 msgstr "Descrição"
 
-#: export/views.py:1270
+#: export/views.py:1289
 msgid "Duration value"
 msgstr "Valor da duração"
 
-#: export/views.py:1272
+#: export/views.py:1291
 msgid "Duration unit"
 msgstr "Unidade da duração"
 
-#: export/views.py:1278
+#: export/views.py:1297
 msgid "Type"
 msgstr "Tipo"
 
-#: export/views.py:1280
+#: export/views.py:1299
 msgid "Number of mandatory components"
 msgstr "Número de passos obrigatórios"
 
-#: export/views.py:1286
+#: export/views.py:1305
 msgid "Text"
 msgstr "Texto"
 
-#: export/views.py:1292
+#: export/views.py:1311
 msgid "LimeSurvey ID"
 msgstr ""
 
-#: export/views.py:1300
+#: export/views.py:1319
 msgid "Questionnaire title"
 msgstr "Título do questionário"
 
-#: export/views.py:1307
+#: export/views.py:1326
 msgid "Stimulus type"
 msgstr "Tipo de estímulo"
 
-#: export/views.py:1309
+#: export/views.py:1328
 msgid "Media file"
 msgstr "Arquivo de mídia"
 

@@ -19,10 +19,12 @@ class UserForm(ModelForm):
         attrs={'class': 'form-control', 'placeholder': _('Type e-mail'), 'id': "email", 'type': 'email',
                'data-error': "E-mail inválido", 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                            '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}))
+    citation_name = CharField(widget=TextInput(attrs={'class': 'form-control',
+                                                                     'placeholder': _('Type citation name')}))
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
+        fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups', 'citation_name',]
 
         widgets = {
             'username': TextInput(attrs={'class': 'form-control', 'required': "",
@@ -81,11 +83,12 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['institution', 'login_enabled']
+        fields = ['institution', 'login_enabled', 'citation_name']
 
         widgets = {
             'institution': Select(attrs={'class': 'form-control'}),
             'login_enabled': RadioSelect(attrs={'id': 'optradio'}),
+            'citation_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Type citation name')}),
         }
 
 
@@ -93,10 +96,11 @@ class ResearcherForm(ModelForm):
     first_name = CharField(required=True)
     last_name = CharField(required=True)
     email = CharField(required=True)
+    citation_name = CharField(required=False)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'citation_name']
 
         widgets = {
             'first_name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
@@ -108,6 +112,8 @@ class ResearcherForm(ModelForm):
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
+            'citation_name': TextInput(attrs={'class': 'form-control',
+                                              'placeholder': _('Type citation name')}),
         }
 
 
