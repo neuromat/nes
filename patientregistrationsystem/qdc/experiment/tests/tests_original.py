@@ -37,6 +37,7 @@ from experiment.models import Experiment, Group, Subject, \
     AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, TMSData, HotSpot, \
     DirectionOfTheInducedCurrent, BrainAreaSystem, BrainArea, \
     TMSLocalizationSystem, CoilOrientation, TMSDeviceSetting
+from custom_user.models import UserProfile
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -109,8 +110,10 @@ class ObjectsFactory(object):
         :return: ExperimentResearcher model instance
         """
         user = User.objects.create_user(
-            username='toninho', email='toninho@example.com', password='toninho'
+            username='toninho', email='toninho@example.com', password='toninho',
         )
+        user.user_profile.citation_name = "VESPOLI, Toninho"
+
         return ExperimentResearcher.objects.create(
             experiment=experiment, researcher=user
         )
