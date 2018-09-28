@@ -391,8 +391,8 @@ class PatientFormValidation(TestCase):
 
     def fill_social_demographic_data(self):
         """ Criar uma opcao de Schooling """
-
         school = Schooling.objects.create(name='Fundamental Completo')
+        school.pk = '2'
         school.save()
 
         self.data['citizenship'] = ''
