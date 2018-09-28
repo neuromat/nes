@@ -1609,6 +1609,51 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'], '')
 
+    def test_subject_search_on_group_already_with_subject_being_searched(self):
+        """
+        Teste de visualizacao de participante após cadastro na base de dados
+        """
+
+        # Create a research project
+        research_project = ObjectsFactory.create_research_project()
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Criar um grupo mock para ser utilizado no teste
+        group = ObjectsFactory.create_group(experiment)
+
+        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
+        patient_mock.save()
+
+        subject = Subject()
+        subject.patient = patient_mock
+        subject.save()
+
+        SubjectOfGroup(subject=subject, group=group).save()
+
+        self.data = {
+            SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id,
+            'group_id': group.id
+        }
+
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, patient_mock.name)
+        self.assertEqual(response.context['patients'].count(), 0)
+
+        self.data[SEARCH_TEXT] = 374
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patients'].count(), 0)
+        self.assertNotContains(response, patient_mock.cpf)
+
+        self.data[SEARCH_TEXT] = ''
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patients'], '')
+
     def test_subject_view(self):
         """
         Test exhibition of subjects of a group
