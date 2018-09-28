@@ -630,7 +630,7 @@ class ObjectsFactory(object):
     def create_eeg_data_collection_file(eeg_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname,)
 
             eegf = EEGFile.objects.create(
                 eeg_data=eeg_data
