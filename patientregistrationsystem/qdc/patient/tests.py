@@ -144,25 +144,21 @@ class UtilTests:
         return result['tid']
 
     @staticmethod
-    def create_survey_participant(survey):
-        questionnaire_lime_survey = Questionnaires()
+    def create_limesurvey_participant(survey, lime_survey):
         result = \
-            questionnaire_lime_survey.add_participant(survey.lime_survey_id)
-        questionnaire_lime_survey.release_session_key()
+            lime_survey.add_participant(survey.lime_survey_id)
 
         return result
 
-    def create_response_survey_mock(self, user, patient, survey, token_id=None):
+    @staticmethod
+    def create_response_survey_mock(responsible, patient, survey, token_id=None):
         if not token_id:
-            token_id = self.create_token_id_mock(survey)
+            token_id = UtilTests.create_token_id_mock(survey)
 
-        questionnaire_response = QuestionnaireResponse(
+        return QuestionnaireResponse.objects.create(
             patient=patient, survey=survey, token_id=token_id,
-            questionnaire_responsible=user
+            questionnaire_responsible=responsible
         )
-        questionnaire_response.save()
-
-        return questionnaire_response
 
 
 class CpfValidationTest(TestCase):
