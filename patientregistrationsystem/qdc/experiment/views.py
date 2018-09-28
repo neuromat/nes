@@ -9074,12 +9074,22 @@ def search_patients_ajax(request):
                     patient_list = \
                         Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
+                subjects_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+                for subject in subjects_of_group:
+                    if subject.subject.patient in patient_list:
+                        patient_list = patient_list.exclude(id=subject.subject.patient.id)
+
             return render_to_response('experiment/ajax_search_patients.html',
                                       {'patients': patient_list, 'group_id': group_id})
         else:
             if search_text:
                 patient_list = \
                     Patient.objects.filter(code__iexact=search_text).exclude(removed=True).order_by('code')
+
+                subjects_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+                for subject in subjects_of_group:
+                    if subject.subject.patient in patient_list:
+                        patient_list = patient_list.exclude(id=subject.subject.patient.id)
 
             return render_to_response('experiment/ajax_search_patients_not_sensitive.html',
                                       {'patients': patient_list, 'group_id': group_id})
