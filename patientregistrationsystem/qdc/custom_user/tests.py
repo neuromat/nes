@@ -353,6 +353,28 @@ class InstitutionTests(TestCase):
         view = resolve('/user/institution/new/')
         self.assertEquals(view.func, institution_create)
 
+    def test_institution_create(self):
+        self.data = {
+            'name': 'Faculdade de Medicina',
+            'acronym': 'FM',
+            'country': 'BR',
+            'action': 'save'
+        }
+        response = self.client.post(reverse('institution_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Institution.objects.filter(name='Faculdade de Medicina').count(), 1)
+
+    def test_institution_create_wrong_action(self):
+        self.data = {
+            'name': 'Faculdade de Medicina',
+            'acronym': 'FM',
+            'country': 'BR',
+            'action': 'bla'
+        }
+        response = self.client.post(reverse('institution_new'), self.data)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
     def test_institution_view_status_code(self):
         institution = Institution.objects.first()
         url = reverse('institution_view', args=(institution.id,))
@@ -363,6 +385,12 @@ class InstitutionTests(TestCase):
     def test_institution_view_url_resolves_institution_view_view(self):
         view = resolve('/user/institution/1/')
         self.assertEquals(view.func, institution_view)
+
+    def test_institution_view_and_action_remove(self):
+        institution = Institution.objects.first()
+        self.data['action'] = 'remove'
+        self.client.post(reverse('institution_view', args=(institution.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 0)
 
     def test_institution_update_status_code(self):
         institution = Institution.objects.first()
@@ -375,25 +403,17 @@ class InstitutionTests(TestCase):
         view = resolve('/user/institution/edit/1/')
         self.assertEquals(view.func, institution_update)
 
-    def test_institution_create(self):
-        self.data['name'] = 'Faculdade de Medicina'
-        self.data['acronym'] = 'FM'
-        self.data['country'] = 'BR'
-
-        response = self.client.post(reverse('institution_new'), self.data)
+    def test_institution_update(self):
+        institution = Institution.objects.first()
+        self.data = {
+            'name': 'RIDC NeuroMat',
+            'acronym': 'NeuroMat',
+            'country': 'BR',
+            'action': 'save'
+        }
+        response = self.client.post(reverse("institution_edit", args=(institution.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Institution.objects.filter(name='Faculdade de Medicina').count(), 1)
-
-    def test_institution_view_and_action_remove(self):
-        self.data['name'] = 'Faculdade de Agronomia'
-        self.data['acronym'] = 'FA'
-        self.data['country'] = 'BR'
-        self.client.post(reverse('institution_new'), self.data)
-
-        institution = Institution.objects.get(acronym='FA')
-        self.data['action'] = 'remove'
-        response = self.client.post(reverse('institution_view', args=(institution.pk,)), self.data, follow=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Institution.objects.filter(name='RIDC NeuroMat').count(), 1)
 
 
 class PasswordResetTests(TestCase):
