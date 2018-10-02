@@ -5159,28 +5159,20 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                 if "gender_checkbox" in request.POST and 'gender' in request.POST:
                     gender_list = request.POST.getlist('gender')
                     participants_list = participants_list.filter(gender__id__in=gender_list)
-                    # participants_list = [item for item in participants_list if str(item.gender.id) in gender_list]
 
                 if "marital_status_checkbox" in request.POST and 'marital_status' in request.POST:
                     marital_status_list = request.POST.getlist('marital_status')
                     participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
-                    # participants_list = [item for item in participants_list if str(item.marital_status_id) in
-                    #                      marital_status_list]
 
                 if "age_checkbox" in request.POST and 'max_age' in request.POST and 'min_age' in request.POST:
                     date_birth_min = datetime.now() - relativedelta(years=int(request.POST['max_age']))
                     date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
-                    # participants_list = [item for item in participants_list if datetime.combine(item.date_birth, datetime.min.time()) in range(date_birth_min, date_birth_max)]
-                    # for participant in participants_list:
-                    #     date_birth = datetime.combine(participant.date_birth, datetime.min.time())
-                    #     # if date_birth in range():
 
                 if "location_checkbox" in request.POST:
                     if 'selected_locals' in request.POST:
                         locations_selected = request.POST.getlist('selected_locals')
                         participants_list = participants_list.filter(city__in=locations_selected)
-                        # participants_list = [item for item in participants_list if item.city in locations_selected]
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
@@ -5188,9 +5180,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                     participants_list = participants_list.filter(
                         medicalrecorddata__diagnosis__classification_of_diseases__in=classification_of_diseases_list). \
                         distinct()
-                    # participants_list = [item for item in participants_list if
-                    #                      item.medicalrecorddata__diagnosis__classification_of_diseases in
-                    #                      classification_of_diseases_list]
 
             # participants that not is in group
             filtered_participants_list = [item for item in participants_list if item.id not in patient_list]
@@ -5206,15 +5195,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                 "group": group,
             }
             return render(request, "experiment/show_selected_participants.html", context)
-
-            # else:
-            #
-            #     context = {
-            #         "total_of_participants": len(participants_list),
-            #         "participants_list": participants_list,
-            #         "group": group,
-            #     }
-            #     return render(request, "experiment/show_selected_participants.html", context)
 
         if request.POST['action'] == 'previous-step-2':
             context = {
@@ -5263,7 +5243,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
         "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
         'subject_id': subject_id,
-        # "limesurvey_available": limesurvey_available,
         "experimental_protocol_info": experimental_protocol_info,
         "participant_selection_form": participant_selection_form,
         "age_interval_form": age_interval_form
@@ -9075,12 +9054,22 @@ def search_patients_ajax(request):
                     patient_list = \
                         Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
+                subjects_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+                for subject in subjects_of_group:
+                    if subject.subject.patient in patient_list:
+                        patient_list = patient_list.exclude(id=subject.subject.patient.id)
+
             return render_to_response('experiment/ajax_search_patients.html',
                                       {'patients': patient_list, 'group_id': group_id})
         else:
             if search_text:
                 patient_list = \
                     Patient.objects.filter(code__iexact=search_text).exclude(removed=True).order_by('code')
+
+                subjects_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+                for subject in subjects_of_group:
+                    if subject.subject.patient in patient_list:
+                        patient_list = patient_list.exclude(id=subject.subject.patient.id)
 
             return render_to_response('experiment/ajax_search_patients_not_sensitive.html',
                                       {'patients': patient_list, 'group_id': group_id})

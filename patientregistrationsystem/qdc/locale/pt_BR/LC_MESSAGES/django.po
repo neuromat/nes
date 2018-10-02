@@ -2,13 +2,11 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-10 10:24-0300\n"
+"POT-Creation-Date: 2018-10-02 11:46-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -651,28 +649,28 @@ msgid "Can view sensitive patient data"
 msgstr "Pode ver dados sensíveis de participante"
 
 #: add_initial_data.py:181
-msgid "Administrator"
-msgstr "Administrador"
-
-#: add_initial_data.py:182
 msgid "Attendant"
 msgstr "Atendente"
 
-#: add_initial_data.py:183
+#: add_initial_data.py:182
 msgid "Physiotherapist"
 msgstr "Fisioterapeuta"
 
-#: add_initial_data.py:184
+#: add_initial_data.py:183
 msgid "Doctor"
 msgstr "Médico"
 
-#: add_initial_data.py:185
+#: add_initial_data.py:184
 msgid "Junior researcher"
 msgstr "Pesquisador júnior"
 
-#: add_initial_data.py:186
+#: add_initial_data.py:185
 msgid "Senior researcher"
 msgstr "Pesquisador sênior"
+
+#: add_initial_data.py:186
+msgid "Administrator"
+msgstr "Administrador"
 
 #: templates/admin/base_site.html:4
 msgid "QDC site admin test"

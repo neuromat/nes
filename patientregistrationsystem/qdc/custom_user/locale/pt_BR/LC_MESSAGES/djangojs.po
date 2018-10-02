@@ -2,8 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -29,6 +28,10 @@ msgstr ""
 #: custom_user/forms.py:22
 msgid "Type user name"
 msgstr ""
+
+#: custom_user/forms.py:22
+msgid "Type citation name"
+msgstr "Entrar nome para citação"
 
 #: custom_user/forms.py:24 custom_user/forms.py:47
 msgid "Type password"

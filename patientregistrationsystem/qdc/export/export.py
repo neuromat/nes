@@ -18,8 +18,6 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 
 from export.export_utils import create_list_of_trees, can_export_nwb
-# from qdc import settings
-# from qdc.settings import MEDIA_ROOT
 
 from survey.survey_utils import QuestionnaireUtils
 
@@ -37,8 +35,9 @@ from experiment.models import \
     EMGSurfacePlacement, EMGNeedlePlacement, ComponentAdditionalFile
 
 from experiment.views import get_block_tree, get_experimental_protocol_image, \
-    get_description_from_experimental_protocol_tree, get_sensors_position, create_nwb_file, \
-    list_data_configuration_tree
+    get_description_from_experimental_protocol_tree, get_sensors_position, \
+    create_nwb_file, \
+    list_data_configuration_tree, date_of_first_data_collection
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import limesurvey_available
@@ -276,7 +275,6 @@ class ExportExecution:
         return True
 
     def get_input_data(self, key):
-
         return self.input_data[key] if key in self.input_data.keys() else ''
 
     def include_in_per_participant_data(self, to_be_included_list, participant_id, questionnaire_id, language):
@@ -839,7 +837,8 @@ class ExportExecution:
 
     def get_participant_row_data(self, subject_code):
         participant_rows = []
-        participant_data_list = self.get_input_data('participants')['data_list']
+        participant_data_list = \
+            self.get_input_data('participants')['data_list']
         header = participant_data_list[0]
         for sublist in participant_data_list[1:len(participant_data_list)]:
             if subject_code in sublist:
@@ -870,7 +869,7 @@ class ExportExecution:
 
     def set_participants_filtered_data(self, participants_filtered_list):
 
-        participants = Patient.objects.filter(removed=False).values_list("id")
+        participants = Patient.objects.filter(removed=False).values_list('id')
 
         self.participants_filtered_data = participants.filter(id__in=participants_filtered_list)
 
@@ -1371,7 +1370,7 @@ class ExportExecution:
                         str(questionnaire_code), questionnaire_title
                     )
 
-                    # metadata directory para export
+                    # metadata directory for export
                     # Ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/
                     metadata_directory = \
                     self.per_group_data[group_id]['group'][
@@ -1386,7 +1385,7 @@ class ExportExecution:
                         metadata_directory,
                         directory_questionnaire_name
                     )
-                    if error_msg != "":
+                    if error_msg != '':
                         return error_msg
 
                     questionnaire_language = \
@@ -1696,7 +1695,7 @@ class ExportExecution:
                     # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
-                        if error_msg != "":
+                        if error_msg != '':
                             return error_msg
 
                     for token_data in participant_list[participant_code]['token_list']:
@@ -1738,7 +1737,8 @@ class ExportExecution:
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
 
                             per_participant_rows = self.merge_questionnaire_answer_list_per_participant(
-                                export_rows_participants[1], answer_list[1: len(answer_list)])
+                                export_rows_participants[1], answer_list[1: len(answer_list)]
+                            )
 
                             header = \
                                 self.build_header_questionnaire_per_participant(
@@ -2238,30 +2238,72 @@ class ExportExecution:
 
         return fields_en
 
-    def calculate_age_by_participant(self, participants_list):
+    @staticmethod
+    def calculate_age_by_participant(participants_list):
         age_value_dict = {}
-        for participant_id in participants_list:
-            subject = get_object_or_404(Patient, pk=participant_id[0])
-            age_value = format((date.today() - subject.date_birth) / timedelta(days=365.2425), '.4')
+        for participant in participants_list:
+            # (a, b, c,) -> True: patient is subject of a group
+            # (a,) -> False: patient comes from exporting Per participant
+            length_tupple = len(participant)
+            if length_tupple > 1:
+                # put first data collection 1 day ahead for first iteration
+                first_data_collection = date.today() + timedelta(days=1)
+                for i in range(1, length_tupple):
+                    date_data_collection = \
+                        date_of_first_data_collection(participant[i])
+                    # subject of group has no data collection
+                    if date_data_collection:
+                        first_data_collection = min(
+                            first_data_collection,
+                            date_of_first_data_collection(participant[i])
+                        )
+            else:
+                first_data_collection = None
+            subject = get_object_or_404(Patient, pk=participant[0])
+            date_ = \
+                first_data_collection if first_data_collection else date.today()
+            age_value = format(
+                (date_ - subject.date_birth) / timedelta(days=365.2425),
+                '.4'
+            )
             if subject.code not in age_value_dict:
                 age_value_dict[subject.code] = age_value
 
         return age_value_dict
 
-    def process_participant_data(self, participants_output_fields, participants_list, language):
+    @staticmethod
+    def add_subject_of_group(participants, group_ids):
+        for group_id in group_ids:
+            group = Group.objects.get(id=group_id)
+            # Patient.objects.filter(subject__subjectofgroup__group=group).values('id')
+            subjects_of_group = group.subjectofgroup_set.all()
+            for sog in subjects_of_group:
+                patient_sog = sog.subject.patient
+                for i in range(len(participants)):
+                    if participants[i][0] == patient_sog.id:
+                        participants[i] = participants[i] + (sog.id,)
+
+        return participants
+
+    def process_participant_data(self, participants_output_fields, participants, language):
         # TODO: fix translation model functionality
         # for participant in participants_output_fields:
         age_value_dict = {}
         headers, fields = self.get_headers_and_fields(participants_output_fields)
         model_to_export = getattr(modules['patient.models'], 'Patient')
         if 'age' in fields:
-            age_value_dict = self.calculate_age_by_participant(participants_list)
+            age_value_dict = self.calculate_age_by_participant(participants)
             fields.remove('age')
 
         if language != 'pt-br':  # read english fields
             fields = self.get_field_en(fields)
 
-        db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(order_by=['id'])
+        # pick up the first terms of participants: required because
+        # participants list of tupples can have subject of groups elements
+        # corresponding to participants when we have to consider in case of
+        # calculating based in data collections
+        participants = [item[0] for item in list(participants)]
+        db_data = model_to_export.objects.filter(id__in=participants).values_list(*fields).extra(order_by=['id'])
 
         export_rows_participants = [headers]
 
