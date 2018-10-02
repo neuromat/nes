@@ -122,6 +122,16 @@ class Experiment(models.Model):
 class ExperimentResearcher(models.Model):
     experiment = models.ForeignKey(Experiment, related_name='researchers')
     researcher = models.ForeignKey(User)
+    channel_index = models.IntegerField(null=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.pk and not self.channel_index:
+            top = \
+                ExperimentResearcher.objects.filter(
+                    experiment=self.experiment).order_by(
+                    '-channel_index').first()
+            self.channel_index = top.channel_index + 1 if top else 1
+        super(ExperimentResearcher, self).save()
 
 
 class Publication(models.Model):
