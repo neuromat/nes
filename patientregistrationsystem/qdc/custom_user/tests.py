@@ -392,6 +392,28 @@ class InstitutionTests(TestCase):
         self.client.post(reverse('institution_view', args=(institution.pk,)), self.data)
         self.assertEqual(Institution.objects.count(), 0)
 
+    def test_institution_view_and_action_remove_denied_because_there_are_people_associated(self):
+        institution = Institution.objects.first()
+        profile, created = UserProfile.objects.get_or_create(user=self.user)
+        profile.institution = institution
+        profile.save()
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('institution_view', args=(institution.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 1)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
+    def test_institution_view_and_action_remove_denied_because_there_is_institution_associated(self):
+        parent = Institution.objects.create(name='Example', acronym='example', country='BR')
+        institution = Institution.objects.first()
+        institution.parent = parent
+        institution.save()
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('institution_view', args=(parent.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 2)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
     def test_institution_update_status_code(self):
         institution = Institution.objects.first()
         url = reverse('institution_edit', args=(institution.id,))
