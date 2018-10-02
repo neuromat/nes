@@ -145,5 +145,5 @@ def get_institutions_recursively(institution):
     children = Institution.objects.filter(parent=institution)
     for child in children:
         if child not in institution_list:
-            institution_list |= get_institutions_recursively(child)
+            institution_list = get_institutions_recursively(child)
     return institution_list
