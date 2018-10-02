@@ -221,6 +221,20 @@ class FormUserValidation(TestCase):
 
         self.assertEqual(user_first_name.first_name, first_name)
 
+    def test_user_update_login_enable_false(self):
+        email = 'test@example.com'
+        self.data = {
+            'first_name': 'Fulano',
+            'last_name': 'de Tal',
+            'email': email,
+            'login_enabled': False,
+            'action': 'save'
+        }
+
+        self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
+        user_updated = User.objects.filter(first_name='Fulano')
+        self.assertEqual(user_updated.count(), 1)
+
     def test_user_remove(self):
         user_str = 'user_remove'
         user_to_delete = User.objects.create_user(username=user_str, email='test@delete.com',
@@ -353,6 +367,28 @@ class InstitutionTests(TestCase):
         view = resolve('/user/institution/new/')
         self.assertEquals(view.func, institution_create)
 
+    def test_institution_create(self):
+        self.data = {
+            'name': 'Faculdade de Medicina',
+            'acronym': 'FM',
+            'country': 'BR',
+            'action': 'save'
+        }
+        response = self.client.post(reverse('institution_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Institution.objects.filter(name='Faculdade de Medicina').count(), 1)
+
+    def test_institution_create_wrong_action(self):
+        self.data = {
+            'name': 'Faculdade de Medicina',
+            'acronym': 'FM',
+            'country': 'BR',
+            'action': 'bla'
+        }
+        response = self.client.post(reverse('institution_new'), self.data)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
     def test_institution_view_status_code(self):
         institution = Institution.objects.first()
         url = reverse('institution_view', args=(institution.id,))
@@ -363,6 +399,34 @@ class InstitutionTests(TestCase):
     def test_institution_view_url_resolves_institution_view_view(self):
         view = resolve('/user/institution/1/')
         self.assertEquals(view.func, institution_view)
+
+    def test_institution_view_and_action_remove(self):
+        institution = Institution.objects.first()
+        self.data['action'] = 'remove'
+        self.client.post(reverse('institution_view', args=(institution.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 0)
+
+    def test_institution_view_and_action_remove_denied_because_there_are_people_associated(self):
+        institution = Institution.objects.first()
+        profile, created = UserProfile.objects.get_or_create(user=self.user)
+        profile.institution = institution
+        profile.save()
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('institution_view', args=(institution.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 1)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
+    def test_institution_view_and_action_remove_denied_because_there_is_institution_associated(self):
+        parent = Institution.objects.create(name='Example', acronym='example', country='BR')
+        institution = Institution.objects.first()
+        institution.parent = parent
+        institution.save()
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('institution_view', args=(parent.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 2)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
 
     def test_institution_update_status_code(self):
         institution = Institution.objects.first()
@@ -375,25 +439,17 @@ class InstitutionTests(TestCase):
         view = resolve('/user/institution/edit/1/')
         self.assertEquals(view.func, institution_update)
 
-    def test_institution_create(self):
-        self.data['name'] = 'Faculdade de Medicina'
-        self.data['acronym'] = 'FM'
-        self.data['country'] = 'BR'
-
-        response = self.client.post(reverse('institution_new'), self.data)
+    def test_institution_update(self):
+        institution = Institution.objects.first()
+        self.data = {
+            'name': 'RIDC NeuroMat',
+            'acronym': 'NeuroMat',
+            'country': 'BR',
+            'action': 'save'
+        }
+        response = self.client.post(reverse("institution_edit", args=(institution.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Institution.objects.filter(name='Faculdade de Medicina').count(), 1)
-
-    def test_institution_view_and_action_remove(self):
-        self.data['name'] = 'Faculdade de Agronomia'
-        self.data['acronym'] = 'FA'
-        self.data['country'] = 'BR'
-        self.client.post(reverse('institution_new'), self.data)
-
-        institution = Institution.objects.get(acronym='FA')
-        self.data['action'] = 'remove'
-        response = self.client.post(reverse('institution_view', args=(institution.pk,)), self.data, follow=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Institution.objects.filter(name='RIDC NeuroMat').count(), 1)
 
 
 class PasswordResetTests(TestCase):

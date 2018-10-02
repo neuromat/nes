@@ -144,6 +144,18 @@
             </div>
 
             <div class="row">
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group  id="citation_name_id">
+                        <label>{% trans "Citation name" %}</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            {{ profile_form.citation_name }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-xs-10 col-sm-10">
                     <div class="form-group">
                         <input type="text" id="operation" value="{% if creating %}creating{% elif editing %}editing{% else %}viewing{% endif %}" hidden="hidden">

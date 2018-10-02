@@ -1158,7 +1158,8 @@ def send_researcher_to_portal(research_project_id, researcher: User):
     params = {"id": research_project_id,
               "first_name": researcher.first_name,
               "last_name": researcher.last_name,
-              "email": researcher.email}
+              "email": researcher.email,
+              "citation_name": researcher.user_profile.citation_name}
 
     action_keys = ['studies', 'researcher', 'create']
 
@@ -1169,8 +1170,20 @@ def send_researcher_to_portal(research_project_id, researcher: User):
 
 def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
 
-    if not researcher.researcher.first_name and not \
-            researcher.researcher.last_name:
+    first_name = ""
+    last_name = ""
+    citation_name = ""
+
+    if researcher.researcher.first_name:
+        first_name = researcher.researcher.first_name
+
+    if researcher.researcher.last_name:
+        last_name = researcher.researcher.last_name
+
+    if researcher.researcher.user_profile.citation_name:
+        citation_name = researcher.researcher.user_profile.citation_name
+
+    if citation_name == "" and first_name == "" and last_name == "":
         return None
 
     rest = RestApiClient()
@@ -1184,8 +1197,8 @@ def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
               'email': researcher.researcher.email,
               'institution':
                   researcher.researcher.user_profile.institution.name
-                  if researcher.researcher.user_profile.institution else ''
-              }
+                  if researcher.researcher.user_profile.institution else '',
+              'citation_name': researcher.researcher.user_profile.citation_name}
 
     action_keys = ['experiments', 'researchers', 'create']
 

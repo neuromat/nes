@@ -37,10 +37,6 @@ def validate_date_questionnaire_response(value):
         raise ValidationError(_("Date cannot be greater than today's date."))
 
 
-class Subject(models.Model):
-    patient = models.ForeignKey(Patient)
-
-
 class StimulusType(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
 
@@ -1149,6 +1145,10 @@ def get_data_file_dir(instance, filename):
             'digital_game_phase')
 
     return path.join(directory, filename)
+
+
+class Subject(models.Model):
+    patient = models.ForeignKey(Patient)
 
 
 class SubjectOfGroup(models.Model):

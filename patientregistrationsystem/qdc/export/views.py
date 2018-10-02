@@ -130,21 +130,6 @@ header_explanation_fields = ['questionnaire_id',
                              'column_title']
 
 
-# TODO: code bloat
-def create_export_instance(user):
-    export_instance = Export(user=user)
-
-    export_instance.save()
-
-    return export_instance
-
-
-def get_export_instance(user, export_id):
-    export_instance = Export.objects.get(user=user, id=export_id)
-
-    return export_instance
-
-
 def update_export_instance(input_file, output_export, export_instance):
     export_instance.input_file = input_file
     export_instance.output_export = output_export
@@ -202,7 +187,7 @@ def update_diagnosis_list(diagnosis_list, heading_type):
 
 def export_create(request, export_id, input_filename, template_name="export/export_data.html"):
     try:
-        export_instance = get_export_instance(request.user, export_id)
+        export_instance = Export.objects.get(user=request.user, id=export_id)
 
         export = ExportExecution(export_instance.user.id, export_instance.id)
 
@@ -219,7 +204,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         base_directory, path_to_create = path.split(export.get_directory_base())
         # create directory base
         error_msg, base_directory_name = create_directory(base_directory, path_to_create)
-        if error_msg != "":
+        if error_msg != '':
             messages.error(request, error_msg)
             return render(request, template_name)
 
@@ -242,15 +227,25 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # create directory base for export: /NES_EXPORT
         error_msg = export.create_export_directory()
 
-        if error_msg != "":
+        if error_msg != '':
             messages.error(request, error_msg)
             return render(request, template_name)
         # export participants data
         if export.get_input_data('participants')['output_list']:
             participants_input_data = export.get_input_data("participants")['output_list']
-            participants_list = (export.get_participants_filtered_data())
-            export_rows_participants = export.process_participant_data(participants_input_data, participants_list,
-                                                                       language_code)
+            participants_list = export.get_participants_filtered_data()
+            # If it's Per experiment exporting, add subject of group to
+            # participants list of tuples for further processing participant
+            # age based on first data collection
+            if 'group_selected_list' in request.session:
+                participants_list = export.add_subject_of_group(
+                    # required convertion from ValuesListQuerySet to list
+                    list(participants_list),
+                    request.session['group_selected_list']
+                )
+            export_rows_participants = export.process_participant_data(
+                participants_input_data, participants_list, language_code
+            )
             export.get_input_data('participants')['data_list'] = export_rows_participants
             # create file participants.csv and diagnosis.csv
             error_msg = export.build_participant_export_data('group_selected_list' in request.session)
@@ -266,7 +261,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 export.get_questionnaires_responses()
 
             error_msg = export.create_group_data_directory()
-            if error_msg != "":
+            if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
@@ -457,8 +452,8 @@ def export_view(request, template_name="export/export_data.html"):
                 responses_type = None
                 # TODO:
                 # When there'are not questionnaires avulsely answered
-                # by participants, export_form.cleaned_data['headings'] = '',
-                # in fact there aren't questionnaires stuff at all. So this
+                # by participants, export_form.cleaned_data['headings'] = ''.
+                # In fact there aren't questionnaires stuff at all. So this
                 # form attribute doesn't make sense. By now we make 'code'
                 # as value of that attribute for doesn't breaking the code.
                 heading_type = export_form.cleaned_data['headings'] or 'code'
@@ -504,12 +499,11 @@ def export_view(request, template_name="export/export_data.html"):
                                 heading_type, True, request.LANGUAGE_CODE
                             )
 
-                export_instance = create_export_instance(request.user)
+                export_instance = Export.objects.create(user=request.user)
 
                 input_export_file = path.join(
-                    EXPORT_DIRECTORY,
-                    path.join(str(request.user.id), str(export_instance.id),
-                              str(JSON_FILENAME))
+                    EXPORT_DIRECTORY, str(request.user.id),
+                    str(export_instance.id), str(JSON_FILENAME)
                 )
 
                 # copy data to media/export/<user_id>/<export_id>/

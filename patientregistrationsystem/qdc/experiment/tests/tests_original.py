@@ -37,6 +37,7 @@ from experiment.models import Experiment, Group, Subject, \
     AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, TMSData, HotSpot, \
     DirectionOfTheInducedCurrent, BrainAreaSystem, BrainArea, \
     TMSLocalizationSystem, CoilOrientation, TMSDeviceSetting
+from custom_user.models import UserProfile
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -109,8 +110,10 @@ class ObjectsFactory(object):
         :return: ExperimentResearcher model instance
         """
         user = User.objects.create_user(
-            username='toninho', email='toninho@example.com', password='toninho'
+            username='toninho', email='toninho@example.com', password='toninho',
         )
+        user.user_profile.citation_name = "VESPOLI, Toninho"
+
         return ExperimentResearcher.objects.create(
             experiment=experiment, researcher=user
         )
@@ -627,7 +630,7 @@ class ObjectsFactory(object):
     def create_eeg_data_collection_file(eeg_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname,)
 
             eegf = EEGFile.objects.create(
                 eeg_data=eeg_data
@@ -1600,6 +1603,51 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'].count(), 1)
         self.assertContains(response, patient_mock.cpf)
+
+        self.data[SEARCH_TEXT] = ''
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patients'], '')
+
+    def test_subject_search_on_group_already_with_subject_being_searched(self):
+        """
+        Teste de visualizacao de participante após cadastro na base de dados
+        """
+
+        # Create a research project
+        research_project = ObjectsFactory.create_research_project()
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Criar um grupo mock para ser utilizado no teste
+        group = ObjectsFactory.create_group(experiment)
+
+        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
+        patient_mock.save()
+
+        subject = Subject()
+        subject.patient = patient_mock
+        subject.save()
+
+        SubjectOfGroup(subject=subject, group=group).save()
+
+        self.data = {
+            SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id,
+            'group_id': group.id
+        }
+
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, patient_mock.name)
+        self.assertEqual(response.context['patients'].count(), 0)
+
+        self.data[SEARCH_TEXT] = 374
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patients'].count(), 0)
+        self.assertNotContains(response, patient_mock.cpf)
 
         self.data[SEARCH_TEXT] = ''
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)

@@ -61,6 +61,7 @@
                                         <th>{% trans "E-mail" %}</th>
                                         <th>{% trans "Institution" %}</th>
                                         <th class="text-center">{% trans "Username" %}</th>
+                                        <th>{% trans "Citation name" %}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -74,6 +75,7 @@
                                             <td>{{ user.email }}</td>
                                             <td>{% if user.user_profile.institution %}{{ user.user_profile.institution.acronym }}{% endif %}</td>
                                             <td class="text-center">{% if user.user_profile.login_enabled %}{{ user.username }}{% else %}---{% endif %}</td>
+                                            <td>{% if user.user_profile.citation_name %}{{ user.user_profile.citation_name }}{% else %}---{% endif %}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
