@@ -2,12 +2,11 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-19 16:58-0300\n"
+"POT-Creation-Date: 2018-10-02 11:46-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,38 +16,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: custom_user/forms.py:15 custom_user/forms.py:107
+#: custom_user/forms.py:15 custom_user/forms.py:105
 msgid "Type first name"
 msgstr "Entrar primeiro nome"
 
-#: custom_user/forms.py:17 custom_user/forms.py:109
+#: custom_user/forms.py:17 custom_user/forms.py:107
 msgid "Type last name"
 msgstr "Entrar último nome"
 
-#: custom_user/forms.py:19 custom_user/forms.py:111
+#: custom_user/forms.py:19 custom_user/forms.py:109
 msgid "Type e-mail"
 msgstr "Entra e-mail"
 
-#: custom_user/forms.py:23 custom_user/forms.py:91 custom_user/forms.py:116
-msgid "Type citation name"
-msgstr "Entrar nome para citação"
-
-#: custom_user/forms.py:31
+#: custom_user/forms.py:29
 msgid "Type user name"
 msgstr "Entrar nome do usuário"
 
-#: custom_user/forms.py:33 custom_user/forms.py:51
-#: custom_user/templates/custom_user/register_users.html:215
+#: custom_user/forms.py:31 custom_user/forms.py:49
+#: custom_user/templates/custom_user/register_users.html:216
 msgid "Type password"
 msgstr "Entrar senha"
 
-#: custom_user/forms.py:44 custom_user/views.py:170
+#: custom_user/forms.py:42 custom_user/views.py:170
 msgid "E-mail already registered"
 msgstr "E-mail já cadastrado"
 
-#: custom_user/forms.py:77 custom_user/forms.py:78
+#: custom_user/forms.py:75 custom_user/forms.py:76
 msgid "E-mail is not registered"
 msgstr "E-mail não cadastrado"
+
+#: custom_user/forms.py:89 custom_user/forms.py:114
+msgid "Type citation name"
+msgstr "Entrar nome para citação"
 
 #: custom_user/models.py:8
 msgid "No"
@@ -105,7 +104,7 @@ msgstr "Citação"
 #: custom_user/templates/custom_user/initial_page.html:71
 #: custom_user/templates/custom_user/initial_page.html:73
 #: custom_user/templates/custom_user/institution_register.html:126
-#: custom_user/templates/custom_user/register_users.html:276
+#: custom_user/templates/custom_user/register_users.html:277
 msgid "Edit"
 msgstr "Editar"
 
@@ -163,21 +162,21 @@ msgid "Delete institution"
 msgstr "Remover instituição"
 
 #: custom_user/templates/custom_user/institution_register.html:140
-#: custom_user/templates/custom_user/register_users.html:273
+#: custom_user/templates/custom_user/register_users.html:274
 msgid "Save"
 msgstr "Salvar"
 
 #: custom_user/templates/custom_user/institution_register.html:144
 #: custom_user/templates/custom_user/institution_register.html:163
-#: custom_user/templates/custom_user/register_users.html:282
-#: custom_user/templates/custom_user/register_users.html:302
-#: custom_user/templates/custom_user/register_users.html:316
+#: custom_user/templates/custom_user/register_users.html:283
+#: custom_user/templates/custom_user/register_users.html:303
+#: custom_user/templates/custom_user/register_users.html:317
 msgid "Cancel"
 msgstr "Cancelar"
 
 #: custom_user/templates/custom_user/institution_register.html:148
-#: custom_user/templates/custom_user/register_users.html:285
-#: custom_user/templates/custom_user/register_users.html:288
+#: custom_user/templates/custom_user/register_users.html:286
+#: custom_user/templates/custom_user/register_users.html:289
 msgid "Back"
 msgstr "Voltar"
 
@@ -186,8 +185,8 @@ msgid "Are you sure you want to delete this institution?"
 msgstr "Tem certeza que deseja excluir esta instituição?"
 
 #: custom_user/templates/custom_user/institution_register.html:164
-#: custom_user/templates/custom_user/register_users.html:268
-#: custom_user/templates/custom_user/register_users.html:303
+#: custom_user/templates/custom_user/register_users.html:269
+#: custom_user/templates/custom_user/register_users.html:304
 msgid "Delete"
 msgstr "Remover"
 
@@ -211,44 +210,36 @@ msgstr "Sobrenome"
 msgid "Can this researcher access the system?"
 msgstr "Este pesquisador pode acessar o sistema?"
 
-#: custom_user/templates/custom_user/register_users.html:194
-msgid ""
-"Password must contain at least 8 characters, including at least one "
-"uppercase letter, digit or special character."
-msgstr ""
-"Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
-"maiúscula, dígito ou caractere especial."
-
-#: custom_user/templates/custom_user/register_users.html:196
+#: custom_user/templates/custom_user/register_users.html:197
 msgid "Password"
 msgstr "Senha"
 
-#: custom_user/templates/custom_user/register_users.html:211
+#: custom_user/templates/custom_user/register_users.html:212
 msgid "Please confirm password"
 msgstr "Confirmar senha"
 
-#: custom_user/templates/custom_user/register_users.html:229
+#: custom_user/templates/custom_user/register_users.html:230
 msgid "Update password"
 msgstr "Alterar senha"
 
-#: custom_user/templates/custom_user/register_users.html:237
+#: custom_user/templates/custom_user/register_users.html:238
 msgid "Profiles"
 msgstr "Perfis"
 
-#: custom_user/templates/custom_user/register_users.html:239
+#: custom_user/templates/custom_user/register_users.html:240
 msgid "In which these profiles does user identify?"
 msgstr "Em quais desses perfis o usuário se identifica?"
 
-#: custom_user/templates/custom_user/register_users.html:299
+#: custom_user/templates/custom_user/register_users.html:300
 msgid "Are you sure you want to delete this researcher?"
 msgstr "Tem certeza que deseja excluir este pesquisador?"
 
-#: custom_user/templates/custom_user/register_users.html:313
+#: custom_user/templates/custom_user/register_users.html:314
 msgid "Are you sure you want to deactivate this researcher's system access?"
 msgstr ""
 "Tem certeza que deseja desativar o acesso ao sistema deste pesquisador?"
 
-#: custom_user/templates/custom_user/register_users.html:317
+#: custom_user/templates/custom_user/register_users.html:318
 msgid "Deactivate"
 msgstr "Desativar"
 
@@ -274,7 +265,7 @@ msgstr "Pesquisador removido com sucesso."
 msgid "Researcher updated successfully."
 msgstr "Pesquisador atualizado com sucesso."
 
-#: custom_user/views.py:180 custom_user/views.py:301
+#: custom_user/views.py:180 custom_user/views.py:293
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
@@ -286,33 +277,26 @@ msgstr "Pesquisador removido com sucesso."
 msgid "Researcher disabled successfully."
 msgstr "Pesquisador desabilitado do sistema com sucesso."
 
-#: custom_user/views.py:223
+#: custom_user/views.py:222
 msgid "Institution created successfully."
 msgstr "Instituição criada com sucesso."
 
-#: custom_user/views.py:227
+#: custom_user/views.py:226
 msgid "Information not saved."
 msgstr "Informação não salva."
 
-#: custom_user/views.py:229
+#: custom_user/views.py:228
 msgid "Action not available."
 msgstr "Ação não disponível."
 
-#: custom_user/views.py:258
+#: custom_user/views.py:254
 msgid ""
-"This institution cannot be removed because there are people associated with "
-"it."
+"This institution cannot be removed because there are researchers associated "
+"with it."
 msgstr ""
-"Esta instituição não pode ser removida porque há pessoas associadas a ela."
+"Esta instituição não pode ser removida porque existem pesquisadores associados a ela."
 
-#: custom_user/views.py:262
-msgid ""
-"This institution cannot be removed because there is a person associated with "
-"it."
-msgstr ""
-"Esta instituição não pode ser removida porque há uma pessoa associada a ela."
-
-#: custom_user/views.py:268
+#: custom_user/views.py:261
 msgid ""
 "This institution cannot be removed because there is (are) other "
 "institution(s) associated with it."
@@ -320,10 +304,10 @@ msgstr ""
 "Esta instituição não pode ser removida porque há outra instituição associada "
 "a ela."
 
-#: custom_user/views.py:275
+#: custom_user/views.py:268
 msgid "Institution removed successfully."
 msgstr "Instituição removida com sucesso."
 
-#: custom_user/views.py:299
+#: custom_user/views.py:291
 msgid "Institution updated successfully."
 msgstr "Instituição atualizada com sucesso."

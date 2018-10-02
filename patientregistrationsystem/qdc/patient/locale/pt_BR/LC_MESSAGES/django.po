@@ -3,12 +3,11 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-19 16:58-0300\n"
+"POT-Creation-Date: 2018-10-02 11:46-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +21,7 @@ msgstr ""
 msgid "Anonymous participant?"
 msgstr "Participante anônimo?"
 
-#: patient/forms.py:38 patient/forms.py:71 patient/tests.py:534
+#: patient/forms.py:38 patient/forms.py:71 patient/tests.py:530
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
@@ -43,7 +42,7 @@ msgstr "Data de nascimento deve ser preenchida"
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:60 patient/tests.py:519
+#: patient/forms.py:60 patient/tests.py:515
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
@@ -756,31 +755,31 @@ msgstr "*Aparelho independente ou parte da geladeira duplex."
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: patient/tests.py:313
+#: patient/tests.py:309
 msgid " is not valid"
 msgstr " não é válido"
 
-#: patient/tests.py:434 patient/tests.py:453 patient/tests.py:461
+#: patient/tests.py:430 patient/tests.py:449 patient/tests.py:457
 msgid "Social class was not calculated"
 msgstr "Classe Social não calculada"
 
-#: patient/tests.py:451 patient/views.py:249
+#: patient/tests.py:447 patient/views.py:249
 msgid "Social demographic data successfully written."
 msgstr "Dados sociodemográficos gravados com sucesso."
 
-#: patient/tests.py:464
+#: patient/tests.py:460
 msgid "Less than 1 pack"
 msgstr "Menos de 1 maço"
 
-#: patient/tests.py:467
+#: patient/tests.py:463
 msgid "Sporadically"
 msgstr "Esporadicamente"
 
-#: patient/tests.py:470
+#: patient/tests.py:466
 msgid "Less than 1 year"
 msgstr "Menos de 1 ano"
 
-#: patient/tests.py:504 patient/views.py:277
+#: patient/tests.py:500 patient/views.py:277
 msgid "Social history successfully recorded."
 msgstr "História social gravada com sucesso."
 
