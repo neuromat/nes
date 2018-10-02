@@ -221,6 +221,20 @@ class FormUserValidation(TestCase):
 
         self.assertEqual(user_first_name.first_name, first_name)
 
+    def test_user_update_login_enable_false(self):
+        email = 'test@example.com'
+        self.data = {
+            'first_name': 'Fulano',
+            'last_name': 'de Tal',
+            'email': email,
+            'login_enabled': False,
+            'action': 'save'
+        }
+
+        self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
+        user_updated = User.objects.filter(first_name='Fulano')
+        self.assertEqual(user_updated.count(), 1)
+
     def test_user_remove(self):
         user_str = 'user_remove'
         user_to_delete = User.objects.create_user(username=user_str, email='test@delete.com',
