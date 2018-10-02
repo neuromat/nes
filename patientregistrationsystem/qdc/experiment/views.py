@@ -644,7 +644,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     tms_setting_list = TMSSetting.objects.filter(experiment=experiment).order_by('name')
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
-    collaborators = ExperimentResearcher.objects.filter(experiment=experiment).order_by('researcher__first_name')
+    collaborators = ExperimentResearcher.objects.filter(experiment=experiment).order_by('channel_index')
 
     for field in experiment_form.fields:
         experiment_form.fields[field].widget.attrs['disabled'] = True
@@ -6858,6 +6858,7 @@ def get_nwb_eeg_amplifier_impedance_description(eeg_amplifier_setting):
     return response
 
 
+
 @login_required
 @permission_required('experiment.change_experiment')
 def eeg_electrode_position_collection_status_change_the_order(request,
@@ -11445,6 +11446,45 @@ def eeg_electrode_position_change_the_order(request, eeg_electrode_position_id, 
 
     redirect_url = reverse("eeg_electrode_localization_system_view",
                            args=(eeg_electrode_position.eeg_electrode_localization_system_id,))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def experiment_research_change_order(request, collaborator_position_id, command):
+    position_status = get_object_or_404(ExperimentResearcher, pk=collaborator_position_id)
+
+    all_positions = ExperimentResearcher.objects.filter(experiment=position_status.experiment)
+
+    if command == "down":
+        position_to_change = all_positions.order_by('channel_index').filter(
+            channel_index__gt=position_status.channel_index).first()
+    else:
+        # position_to_change = all_positions.order_by('-channel_index').filter(
+        #     channel_index__gt=position_status.channel_index).first()
+        position_to_change = \
+            all_positions.filter(
+                channel_index__lt=position_status.channel_index
+            ).order_by('-channel_index').first()
+
+    bottom_position_setting = all_positions.order_by('-channel_index').first()
+    # bottom_position_setting = position_status.objects.order_by('-channel_index').first()
+
+    channel_index_current = position_status.channel_index
+    channel_index_to_change = position_to_change.channel_index
+
+    position_to_change.channel_index = bottom_position_setting.channel_index + 1
+    position_to_change.save()
+
+    position_status.channel_index = channel_index_to_change
+    position_status.save()
+
+    position_to_change.channel_index = channel_index_current
+    position_to_change.save()
+
+
+    redirect_url = reverse("experiment_view", args=(position_status.experiment.id,))
 
     return HttpResponseRedirect(redirect_url)
 
