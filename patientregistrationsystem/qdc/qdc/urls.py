@@ -3,6 +3,8 @@ from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from .forms import PasswordChangeFormCustomized
 from django.contrib import admin
+import os
+from django.views.static import serve as staticserve
 
 from custom_user.forms import CustomPasswordResetForm
 
@@ -55,5 +57,11 @@ js_info_dict = {
 urlpatterns += patterns(
     '', (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
 )
+
+if settings.DEBUG404:
+    urlpatterns += patterns('',
+        (r'^static/(?P<path>.*)$', staticserve,
+            {'document_root': os.path.join(os.path.dirname(__file__), 'static')} ),
+        )
 
 handler403 = 'qdc.views.qdc_permission_denied_view'
