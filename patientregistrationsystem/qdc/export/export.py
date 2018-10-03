@@ -2242,8 +2242,9 @@ class ExportExecution:
     def calculate_age_by_participant(participants_list):
         age_value_dict = {}
         for participant in participants_list:
-            # (a, b, c,) -> True: patient is subject of a group
-            # (a,) -> False: patient comes from exporting Per participant
+            # (a, b, c,) -> patient is subject of a group: a: patient; b, c,
+            #  are subjects of group
+            # (a,) -> patient comes from exporting Per participant
             length_tupple = len(participant)
             if length_tupple > 1:
                 # put first data collection 1 day ahead for first iteration
@@ -2257,6 +2258,10 @@ class ExportExecution:
                             first_data_collection,
                             date_of_first_data_collection(participant[i])
                         )
+                # if first_data_collection = date.today() + timedelta(days=1),
+                # there're no data collections for all subjects of groups
+                if first_data_collection > date.today():
+                    first_data_collection = None
             else:
                 first_data_collection = None
             subject = get_object_or_404(Patient, pk=participant[0])
