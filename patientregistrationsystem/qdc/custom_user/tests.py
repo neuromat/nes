@@ -24,6 +24,7 @@ USER_EDIT = 'user_edit'
 PATTERN = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
 
 
+
 class FormUserValidation(TestCase):
 
     user = ''
@@ -170,6 +171,19 @@ class FormUserValidation(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(User.objects.filter(username=username).count(), 1)
 
+    def test_user_create_failed_because_email_already_registered(self):
+        email = 'jenkins.neuromat@gmail.com'
+        self.data = {
+            'username': email,
+            'email': email,
+            'login_enabled': True,
+            'action': 'save'
+        }
+
+        response = self.client.post(reverse(USER_NEW), self.data)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
     def test_user_create_mail_password_define(self):
         username = 'test_username'
         self.data['email'] = 'romulojosefranco@gmail.com'
@@ -234,6 +248,54 @@ class FormUserValidation(TestCase):
         self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
         user_updated = User.objects.filter(first_name='Fulano')
         self.assertEqual(user_updated.count(), 1)
+
+    def test_user_update_deactivate_user(self):
+        self.data = {
+            'action': 'deactivate'
+        }
+
+        self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
+        user = User.objects.first()
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.has_usable_password())
+
+    def test_user_update_with_password_flag_checked(self):
+        email = 'jenkins.neuromat@gmail.com'
+        self.data = {
+            'first_name': 'Fulano',
+            'last_name': 'de Tal',
+            'username': USER_USERNAME,
+            'email': email,
+            'login_enabled': True,
+            'password_flag': True,
+            'password': USER_PWD,
+            'action': 'save'
+        }
+
+        self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
+        user_updated = User.objects.filter(first_name='Fulano')
+        self.assertEqual(user_updated.count(), 1)
+
+    def test_user_update_failed_because_email_already_registered(self):
+        user_str = 'user_to_update'
+        new_user = User.objects.create_user(username=user_str, email='test@example.com', password='Bla!123')
+        new_user.is_staff = True
+        new_user.is_active = True
+        new_user.save()
+
+        email = 'jenkins.neuromat@gmail.com'
+        self.data = {
+            'first_name': 'Fulano',
+            'last_name': 'de Tal',
+            'username': user_str,
+            'email': email,
+            'login_enabled': False,
+            'action': 'save'
+        }
+
+        response = self.client.post(reverse(USER_EDIT, args=(new_user.pk,)), self.data)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
 
     def test_user_remove(self):
         user_str = 'user_remove'
