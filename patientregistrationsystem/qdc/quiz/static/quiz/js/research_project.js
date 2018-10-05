@@ -22,18 +22,19 @@ $(document).ready(function () {
         $('#search-results-keywords').html(data);
     }
 
-    // workaround for cleaning end_date input field to avoid error message
+    // Workaround for cleaning end_date input field to avoid error message
     // when start_date (required) is filled and end_date is not filled.
+    // TODO:
+    // see if it's a matter of Bootstrap Validator and JQuery Date picker
+    // libraries.
     $("#id_save_button").click(function (e) {
-        // e.preventDefault();
-        setTimeout(function (e) {
-            console.log($("#id_start_date").val());
-            if ($("#id_start_date").val() != "" && $("#id_description").val() != "") {
-                // debugger;
-                console.log('abc');
-                $("#id_end_date").val("");
-            }
-        }, 50);
+        console.log($("#id_start_date").val());
+        if ( $("#id_end_date").val() == "__/__/____" ) {
+            $("#id_end_date").val("");
+        }
+        if ( $("#id_start_date").val() == "__/__/____" ) {
+            $("#id_start_date").val("");
+        }
     });
 });
 
