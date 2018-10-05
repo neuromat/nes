@@ -10,7 +10,7 @@ from .models import Experiment, QuestionnaireResponse, StimulusType, FileFormat,
     CoilShape, TMSDevice, CoilModel, CoilOrientation, DirectionOfTheInducedCurrent, BrainArea, BrainAreaSystem, \
     InformationType, GoalkeeperGame, GoalkeeperPhase
 
-admin.site.register(Experiment, SimpleHistoryAdmin)
+# admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
 
 
@@ -22,7 +22,7 @@ class FileFormatAdmin(TranslationAdmin):
     pass
 
 admin.site.register(StimulusType, StimulusTypeAdmin)
-admin.site.register(FileFormat, FileFormatAdmin)
+# admin.site.register(FileFormat, FileFormatAdmin)
 admin.site.register(Tag)
 
 admin.site.register(ElectrodeShape)
@@ -36,16 +36,16 @@ admin.site.register(Software)
 admin.site.register(SoftwareVersion)
 admin.site.register(ADConverter)
 admin.site.register(StandardizationSystem)
-admin.site.register(EMGIntramuscularPlacement)
-admin.site.register(EMGSurfacePlacement)
-admin.site.register(EMGNeedlePlacement)
+# admin.site.register(EMGIntramuscularPlacement)
+# admin.site.register(EMGSurfacePlacement)
+# admin.site.register(EMGNeedlePlacement)
 admin.site.register(Muscle)
-admin.site.register(MuscleSubdivision)
-admin.site.register(MuscleSide)
+# admin.site.register(MuscleSubdivision)
+# admin.site.register(MuscleSide)
 
-admin.site.register(CoilShape)
+# admin.site.register(CoilShape)
 admin.site.register(TMSDevice)
-admin.site.register(CoilModel)
+# admin.site.register(CoilModel)
 admin.site.register(CoilOrientation)
 admin.site.register(DirectionOfTheInducedCurrent)
 admin.site.register(BrainArea)
