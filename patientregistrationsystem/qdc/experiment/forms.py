@@ -297,19 +297,33 @@ class ResearchProjectForm(ModelForm):
         fields = ['start_date', 'end_date', 'title', 'description']
 
         widgets = {
-            'title': TextInput(attrs={'class': 'form-control', 'required': "",
-                                      'data-error': _('Title must be filled.'),
-                                      'autofocus': ''}),
-            # Even though maxlength is already set in the model, it has be be repeated here, because the form dos not
-            # respect that information.
-            'description': Textarea(attrs={'class': 'form-control', 'rows': '4', 'required': "",
-                                           'data-error': _('Description must be filled.')}),
-            'start_date': DateInput(format=_("%m/%d/%Y"),
-                                    attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
-                                           'required': "", 'data-error': _("Initial date must be filled.")}, ),
-            'end_date': DateInput(format=_("%m/%d/%Y"),
-                                  attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')}),
-
+            'title': TextInput(
+                attrs={'class': 'form-control', 'required': "",
+                       'data-error': _('Title must be filled.'),
+                       'autofocus': ''}
+            ),
+            # Even though maxlength is already set in the model, it has be
+            # repeated here, because the form dos not respect that information.
+            'description': Textarea(
+                attrs={
+                    'id': 'id_description',
+                    'class': 'form-control', 'rows': '4', 'required': "",
+                    'data-error': _('Description must be filled.')
+                }),
+            'start_date': DateInput(
+                format=_("%m/%d/%Y"),
+                attrs={
+                    'id': 'id_start_date', 'class': 'form-control datepicker',
+                    'placeholder': _('mm/dd/yyyy'),
+                    'required': "",
+                    'data-error': _("Initial date must be filled.")
+                }, ),
+            'end_date': DateInput(
+                format=_("%m/%d/%Y"),
+                attrs={
+                    'id': 'id_end_date', 'class': 'form-control datepicker',
+                    'placeholder': _('mm/dd/yyyy')
+                }),
         }
 
     def clean(self):

@@ -5,7 +5,6 @@
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% block header %}
-    <script src="{% static 'quiz/js/research_project.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -211,7 +210,7 @@
                 </div>
                 {% if editing %}
                     <div class="btn-group pull-right">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                        <button id="id_save_button" type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
                     <div class="btn-group pull-right">
                         <a href="/experiment/research_project/{% if creating %}list{% else %}{{ research_project.id }}{% endif %}"
@@ -297,14 +296,17 @@
         </div>
     </div>
 
+{% block script %}
     <script>
         $("#modalCopyExperiment").on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var experiment_id = button.data('experiment_id');
             var modal = $(this);
             modal.find('#id_experiment_hidden').attr('value', experiment_id);
-        })
+        });
     </script>
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
+{% endblock %}
 
 {% endblock %}
 
