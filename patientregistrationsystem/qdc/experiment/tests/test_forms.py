@@ -483,7 +483,7 @@ class TMSDeviceRegisterFormValidation(TestCase):
         self.assertFalse(tmsdevice.is_valid())
 
 
-class ResearchProject_FormTest(TestCase):
+class ResearchProjectFormTest(TestCase):
     def setUp(self):
         self.research_projects = ResearchProject.objects.all()
         # self.research_projects.save()
