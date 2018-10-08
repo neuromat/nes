@@ -644,7 +644,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     tms_setting_list = TMSSetting.objects.filter(experiment=experiment).order_by('name')
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
-    collaborators = ExperimentResearcher.objects.filter(experiment=experiment).order_by('researcher__first_name')
+    collaborators = ExperimentResearcher.objects.filter(experiment=experiment).order_by('channel_index')
 
     for field in experiment_form.fields:
         experiment_form.fields[field].widget.attrs['disabled'] = True
@@ -1082,7 +1082,6 @@ def send_all_experiments_to_portal():
                     image = get_experimental_protocol_image(
                         group.experimental_protocol, tree, True
                     )
-                    image = image.split(settings.MEDIA_URL)
 
                     # steps
                     step_list = send_steps_to_portal(portal_group['id'], tree,
@@ -1239,7 +1238,7 @@ def send_all_experiments_to_portal():
                                     limesurvey_response['questions'] = []
                                     limesurvey_response['answers'] = []
 
-                                    for question_index, question_name in  enumerate(responses_list[0]):
+                                    for question_index, question_name in enumerate(responses_list[0]):
                                         if question_name in fields_to_send:
                                             limesurvey_response['questions'].append(question_name)
                                             limesurvey_response['answers'].append(responses_list[1][question_index])
@@ -1300,7 +1299,7 @@ def send_all_experiments_to_portal():
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
             # update the schedule to 'sent'
-            schedule_of_sending.status = "sent"
+            schedule_of_sending.status = 'sent'
             schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
             schedule_of_sending.save()
 
@@ -5160,28 +5159,20 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                 if "gender_checkbox" in request.POST and 'gender' in request.POST:
                     gender_list = request.POST.getlist('gender')
                     participants_list = participants_list.filter(gender__id__in=gender_list)
-                    # participants_list = [item for item in participants_list if str(item.gender.id) in gender_list]
 
                 if "marital_status_checkbox" in request.POST and 'marital_status' in request.POST:
                     marital_status_list = request.POST.getlist('marital_status')
                     participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
-                    # participants_list = [item for item in participants_list if str(item.marital_status_id) in
-                    #                      marital_status_list]
 
                 if "age_checkbox" in request.POST and 'max_age' in request.POST and 'min_age' in request.POST:
                     date_birth_min = datetime.now() - relativedelta(years=int(request.POST['max_age']))
                     date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
-                    # participants_list = [item for item in participants_list if datetime.combine(item.date_birth, datetime.min.time()) in range(date_birth_min, date_birth_max)]
-                    # for participant in participants_list:
-                    #     date_birth = datetime.combine(participant.date_birth, datetime.min.time())
-                    #     # if date_birth in range():
 
                 if "location_checkbox" in request.POST:
                     if 'selected_locals' in request.POST:
                         locations_selected = request.POST.getlist('selected_locals')
                         participants_list = participants_list.filter(city__in=locations_selected)
-                        # participants_list = [item for item in participants_list if item.city in locations_selected]
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
@@ -5189,9 +5180,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                     participants_list = participants_list.filter(
                         medicalrecorddata__diagnosis__classification_of_diseases__in=classification_of_diseases_list). \
                         distinct()
-                    # participants_list = [item for item in participants_list if
-                    #                      item.medicalrecorddata__diagnosis__classification_of_diseases in
-                    #                      classification_of_diseases_list]
 
             # participants that not is in group
             filtered_participants_list = [item for item in participants_list if item.id not in patient_list]
@@ -5207,15 +5195,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                 "group": group,
             }
             return render(request, "experiment/show_selected_participants.html", context)
-
-            # else:
-            #
-            #     context = {
-            #         "total_of_participants": len(participants_list),
-            #         "participants_list": participants_list,
-            #         "group": group,
-            #     }
-            #     return render(request, "experiment/show_selected_participants.html", context)
 
         if request.POST['action'] == 'previous-step-2':
             context = {
@@ -5264,7 +5243,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
         "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
         'subject_id': subject_id,
-        # "limesurvey_available": limesurvey_available,
         "experimental_protocol_info": experimental_protocol_info,
         "participant_selection_form": participant_selection_form,
         "age_interval_form": age_interval_form
@@ -6857,6 +6835,7 @@ def get_nwb_eeg_amplifier_impedance_description(eeg_amplifier_setting):
     if eeg_amplifier_setting.eeg_amplifier.input_impedance_unit:
         response += " " + eeg_amplifier_setting.eeg_amplifier.input_impedance_unit
     return response
+
 
 
 @login_required
@@ -9075,12 +9054,22 @@ def search_patients_ajax(request):
                     patient_list = \
                         Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
+                subjects_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+                for subject in subjects_of_group:
+                    if subject.subject.patient in patient_list:
+                        patient_list = patient_list.exclude(id=subject.subject.patient.id)
+
             return render_to_response('experiment/ajax_search_patients.html',
                                       {'patients': patient_list, 'group_id': group_id})
         else:
             if search_text:
                 patient_list = \
                     Patient.objects.filter(code__iexact=search_text).exclude(removed=True).order_by('code')
+
+                subjects_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+                for subject in subjects_of_group:
+                    if subject.subject.patient in patient_list:
+                        patient_list = patient_list.exclude(id=subject.subject.patient.id)
 
             return render_to_response('experiment/ajax_search_patients_not_sensitive.html',
                                       {'patients': patient_list, 'group_id': group_id})
@@ -11446,6 +11435,45 @@ def eeg_electrode_position_change_the_order(request, eeg_electrode_position_id, 
 
     redirect_url = reverse("eeg_electrode_localization_system_view",
                            args=(eeg_electrode_position.eeg_electrode_localization_system_id,))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def experiment_research_change_order(request, collaborator_position_id, command):
+    position_status = get_object_or_404(ExperimentResearcher, pk=collaborator_position_id)
+
+    all_positions = ExperimentResearcher.objects.filter(experiment=position_status.experiment)
+
+    if command == "down":
+        position_to_change = all_positions.order_by('channel_index').filter(
+            channel_index__gt=position_status.channel_index).first()
+    else:
+        # position_to_change = all_positions.order_by('-channel_index').filter(
+        #     channel_index__gt=position_status.channel_index).first()
+        position_to_change = \
+            all_positions.filter(
+                channel_index__lt=position_status.channel_index
+            ).order_by('-channel_index').first()
+
+    bottom_position_setting = all_positions.order_by('-channel_index').first()
+    # bottom_position_setting = position_status.objects.order_by('-channel_index').first()
+
+    channel_index_current = position_status.channel_index
+    channel_index_to_change = position_to_change.channel_index
+
+    position_to_change.channel_index = bottom_position_setting.channel_index + 1
+    position_to_change.save()
+
+    position_status.channel_index = channel_index_to_change
+    position_status.save()
+
+    position_to_change.channel_index = channel_index_current
+    position_to_change.save()
+
+
+    redirect_url = reverse("experiment_view", args=(position_status.experiment.id,))
 
     return HttpResponseRedirect(redirect_url)
 

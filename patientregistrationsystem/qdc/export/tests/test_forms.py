@@ -89,7 +89,7 @@ class AgeIntervalFormValidation(TestCase):
         self.assertFalse(export.is_valid())
 
     def test_AgeIntervalForm_is_not_valid_with_min_age_higher_than_max_age(self):
-        self.data['max_age'] = -1
+        self.data['max_age'] = 1
         self.data['min_age'] = 2
         export = AgeIntervalForm(data=self.data)
         self.assertFalse(export.is_valid())

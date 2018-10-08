@@ -33,10 +33,15 @@ from experiment.models import Experiment, Group, Subject, \
     EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
     ContextTree, ExperimentResearcher, InformationType, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
-    GenericDataCollection,DigitalGamePhaseData,DigitalGamePhaseFile
+    GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
+    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, TMSData, HotSpot, \
+    DirectionOfTheInducedCurrent, BrainAreaSystem, BrainArea, \
+    TMSLocalizationSystem, CoilOrientation, TMSDeviceSetting
+from custom_user.models import UserProfile
 
-from .views import experiment_update, upload_file, research_project_update, publication_update, context_tree_update, \
-    publication_add_experiment
+from experiment.views import experiment_update, upload_file, research_project_update, \
+    publication_update, context_tree_update, \
+    publication_add_experiment, STIMULUS
 
 from custom_user.views import User
 
@@ -105,8 +110,10 @@ class ObjectsFactory(object):
         :return: ExperimentResearcher model instance
         """
         user = User.objects.create_user(
-            username='toninho', email='toninho@example.com', password='toninho'
+            username='toninho', email='toninho@example.com', password='toninho',
         )
+        user.user_profile.citation_name = "VESPOLI, Toninho"
+
         return ExperimentResearcher.objects.create(
             experiment=experiment, researcher=user
         )
@@ -144,7 +151,6 @@ class ObjectsFactory(object):
         eeg_setting = EEGSetting.objects.create(experiment=experiment,
                                                 name='EEG-Setting name',
                                                 description='EEG-Setting description')
-        # eeg_setting.save()
         return eeg_setting
 
     @staticmethod
@@ -153,8 +159,14 @@ class ObjectsFactory(object):
                                                 name='EMG-Setting name',
                                                 description='EMG-Setting description',
                                                 acquisition_software_version=acquisition_software_version,)
-        emg_setting.save()
         return emg_setting
+
+    @staticmethod
+    def create_tms_setting(experiment):
+        tms_setting = TMSSetting.objects.create(experiment=experiment,
+                                                name='TMS-Setting name',
+                                                description='TMS-Setting description')
+        return tms_setting
 
     @staticmethod
     def create_emg_electrode_setting(emg_setting, electrode_model):
@@ -232,12 +244,17 @@ class ObjectsFactory(object):
         faker = Factory.create()
 
         if component_type == Component.TASK_EXPERIMENT:
-            model = TaskForTheExperimenter.__name__  #
-            # TaskForTheExperimenter
+            model = TaskForTheExperimenter.__name__  #TaskForTheExperimenter
         elif component_type == Component.DIGITAL_GAME_PHASE:
             model = DigitalGamePhase.__name__  # DigitalGamePhase
         elif component_type == Component.GENERIC_DATA_COLLECTION:
             model = GenericDataCollection.__name__  # GenericDataCollection
+        elif component_type == Component.EEG:
+            model = EEG.__name__  # EEG
+        elif component_type == Component.EMG:
+            model = EMG.__name__  # EMG
+        elif component_type == Component.TMS:
+            model = TMS.__name__  # TMS
         else:
             model = component_type
 
@@ -264,6 +281,27 @@ class ObjectsFactory(object):
                 component.context_tree = kwargs['context_tree']
             except KeyError:
                 print('You must specify \'software_version\' and \'context_tree\' key in kwargs dict')
+        elif component_type == Component.EEG:
+            try:
+                component.eeg_setting = kwargs['eeg_set']
+            except KeyError:
+                print('You must specify \'eeg_setting\' key in kwargs dict')
+        elif component_type == Component.EMG:
+            try:
+                component.emg_setting = kwargs['emg_set']
+            except KeyError:
+                print('You must specify \'emg_setting\' key in kwargs dict')
+        elif component_type == Component.STIMULUS:
+            try:
+                component.stimulus_type = kwargs['stimulus_type']
+                component.media_file = kwargs['media_file']
+            except KeyError:
+                print('You must specify \'stimulus_type\' and \'media_file\' key in kwargs dict')
+        elif component_type == Component.TMS:
+            try:
+                component.tms_setting = kwargs['tms_set']
+            except KeyError:
+                print('You must specify \'tms_setting\' key in kwargs dict')
         try:
             component.save()
         except IntegrityError:
@@ -533,6 +571,13 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
+    def create_binary_file(path):
+        with open(os.path.join(path,'file.bin'), 'wb') as f:
+            f.write(b'carambola')
+            return f
+
+    @staticmethod
+
     def create_generic_data_collection_data(data_conf_tree,
                                             subj_of_group):
 
@@ -556,8 +601,7 @@ class ObjectsFactory(object):
     def create_generic_data_colletion_file(gdc_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
             gdcf = GenericDataCollectionFile.objects.create(
                 generic_data_collection_data=gdc_data
@@ -567,6 +611,64 @@ class ObjectsFactory(object):
             gdcf.save()
 
         return gdcf
+
+    @staticmethod
+    def create_eeg_data_collection_data(data_conf_tree,
+                                            subj_of_group, eeg_set):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return EEGData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group, eeg_setting=eeg_set
+        )
+
+    @staticmethod
+    def create_eeg_data_collection_file(eeg_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname,)
+
+            eegf = EEGFile.objects.create(
+                eeg_data=eeg_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                eegf.file.save('file.bin', f)
+            eegf.save()
+
+        return eegf
+
+    @staticmethod
+    def create_emg_data_collection_data(data_conf_tree,
+                                            subj_of_group, emg_set):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return EMGData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group, emg_setting=emg_set
+        )
+
+    @staticmethod
+    def create_emg_data_collection_file(emg_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+
+            emgf = EMGFile.objects.create(
+                emg_data=emg_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                emgf.file.save('file.bin', f)
+            emgf.save()
+
+        return emgf
 
     @staticmethod
     def create_digital_game_phase_data(data_conf_tree, subj_of_group):
@@ -585,8 +687,7 @@ class ObjectsFactory(object):
     def create_digital_game_phase_file(dgp_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
             dgpf = DigitalGamePhaseFile.objects.create(
                 digital_game_phase_data=dgp_data
@@ -596,6 +697,63 @@ class ObjectsFactory(object):
             dgpf.save()
 
         return dgpf
+
+    @staticmethod
+    def create_additional_data_data(data_conf_tree, subj_of_group):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return AdditionalData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group
+        )
+
+    @staticmethod
+    def create_additional_data_file(ad_data):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+
+            adf = AdditionalDataFile.objects.create(
+                additional_data=ad_data
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                adf.file.save('file.bin', f)
+            adf.save()
+
+        return adf
+
+    @staticmethod
+    def create_stimulus_type():
+        faker = Factory.create()
+
+        return StimulusType.objects.create(
+            name=faker.word()
+        )
+
+    @staticmethod
+    def create_stimulus_step(stimulus_type,mediafile):
+        return Stimulus.objects.create(
+            stimulus_type=stimulus_type,
+            media_file=mediafile
+        )
+
+    @staticmethod
+    def create_hotspot_data_collection_file(hotspot):
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
+                bin_file.write(b'carambola')
+
+
+            with File(open(bin_file.name, 'rb')) as f:
+                hotspot.hot_spot_map.save('file.bin', f)
+            hotspot.save()
+
+        return hotspot
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -1445,6 +1603,51 @@ class SubjectTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'].count(), 1)
         self.assertContains(response, patient_mock.cpf)
+
+        self.data[SEARCH_TEXT] = ''
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patients'], '')
+
+    def test_subject_search_on_group_already_with_subject_being_searched(self):
+        """
+        Teste de visualizacao de participante após cadastro na base de dados
+        """
+
+        # Create a research project
+        research_project = ObjectsFactory.create_research_project()
+
+        # Criar um experimento mock para ser utilizado no teste
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Criar um grupo mock para ser utilizado no teste
+        group = ObjectsFactory.create_group(experiment)
+
+        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
+        patient_mock.save()
+
+        subject = Subject()
+        subject.patient = patient_mock
+        subject.save()
+
+        SubjectOfGroup(subject=subject, group=group).save()
+
+        self.data = {
+            SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id,
+            'group_id': group.id
+        }
+
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, patient_mock.name)
+        self.assertEqual(response.context['patients'].count(), 0)
+
+        self.data[SEARCH_TEXT] = 374
+        response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['patients'].count(), 0)
+        self.assertNotContains(response, patient_mock.cpf)
 
         self.data[SEARCH_TEXT] = ''
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
