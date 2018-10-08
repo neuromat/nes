@@ -37,10 +37,6 @@ def validate_date_questionnaire_response(value):
         raise ValidationError(_("Date cannot be greater than today's date."))
 
 
-class Subject(models.Model):
-    patient = models.ForeignKey(Patient)
-
-
 class StimulusType(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
 
@@ -122,6 +118,16 @@ class Experiment(models.Model):
 class ExperimentResearcher(models.Model):
     experiment = models.ForeignKey(Experiment, related_name='researchers')
     researcher = models.ForeignKey(User)
+    channel_index = models.IntegerField(null=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.pk and not self.channel_index:
+            top = \
+                ExperimentResearcher.objects.filter(
+                    experiment=self.experiment).order_by(
+                    '-channel_index').first()
+            self.channel_index = top.channel_index + 1 if top else 1
+        super(ExperimentResearcher, self).save()
 
 
 class Publication(models.Model):
@@ -822,8 +828,8 @@ class TMSLocalizationSystem(models.Model):
             self.tms_localization_system_image = None
             super(TMSLocalizationSystem, self).save(*args, **kwargs)
             self.tms_localization_system_image = saved_file
-
-        super(TMSLocalizationSystem, self).save(*args, **kwargs)
+        else:
+            super(TMSLocalizationSystem, self).save(*args, **kwargs)
 
 
 class CoilOrientation(models.Model):
@@ -1138,16 +1144,11 @@ def get_data_file_dir(instance, filename):
                 if instance.digital_game_phase_data.data_configuration_tree else 0),
             'digital_game_phase')
 
-    elif isinstance(instance, HotSpot):
-        directory = path.join('data_collection_files',
-                              str(instance.tms_data.subject_of_group.group.experiment.id),
-                              str(instance.tms_data.subject_of_group.group.id),
-                              str(instance.tms_data.subject_of_group.subject.id),
-                              str(instance.tms_data.data_configuration_tree.id if
-                                  instance.tms_data.data_configuration_tree else 0))
-        directory = path.join(directory, 'tms_hot_spot')
-
     return path.join(directory, filename)
+
+
+class Subject(models.Model):
+    patient = models.ForeignKey(Patient)
 
 
 class SubjectOfGroup(models.Model):
@@ -1312,7 +1313,6 @@ class TMSData(DataCollection):
     def _history_user(self, value):
         self.changed_by = value
 
-
 class HotSpot(models.Model):
     name = models.CharField(max_length=50)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -1323,7 +1323,6 @@ class HotSpot(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class AdditionalData(DataFile, DataCollection):
     # Audit trail - Simple History
@@ -1406,7 +1405,6 @@ class EMGFile(models.Model):
     emg_data = models.ForeignKey(EMGData, related_name='emg_files')
     file = models.FileField(upload_to=get_data_file_dir)
 
-
 class AdditionalDataFile(models.Model):
     additional_data = models.ForeignKey(AdditionalData, related_name='additional_data_files')
     file = models.FileField(upload_to=get_data_file_dir)
@@ -1421,7 +1419,6 @@ class GenericDataCollectionFile(models.Model):
     generic_data_collection_data = models.ForeignKey(GenericDataCollectionData,
                                                      related_name='generic_data_collection_files')
     file = models.FileField(upload_to=get_data_file_dir)
-
 
 class EEGElectrodePositionCollectionStatus(models.Model):
     eeg_data = models.ForeignKey(EEGData, related_name='electrode_positions')

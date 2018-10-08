@@ -3,22 +3,26 @@ import re
 
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.messages import get_messages
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils.http import int_to_base36
+from django.utils.translation import ugettext as _
 
-from custom_user.models import User, UserProfile
-from custom_user.views import user_update
+from custom_user.models import User, UserProfile, Institution
+from custom_user.views import user_update, institution_view, institution_create, institution_update
 
-# Constantes para testes de User
-USER_EDIT = 'user_edit'
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
 USER_NEW = 'user_new'
+USER_VIEW = 'user_view'
+USER_EDIT = 'user_edit'
+PATTERN = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
+
 
 
 class FormUserValidation(TestCase):
@@ -26,8 +30,6 @@ class FormUserValidation(TestCase):
     user = ''
 
     def setUp(self):
-        """ Configura autenticacao e variaveis para iniciar cada teste """
-
         self.user = User.objects.create_superuser(username=USER_USERNAME, email='jenkins.neuromat@gmail.com',
                                                   password=USER_PWD)
         self.user.is_staff = True
@@ -97,32 +99,7 @@ class FormUserValidation(TestCase):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
-    def test_user_password_pattern(self):
-        """
-        Testa o pattern definido
-
-        Detalhamento do pattern
-        (			# Start of group
-        (?=.*\d)		#   must contains one digit from 0-9
-        (?=.*[a-z])		#   must contains one lowercase characters
-        (?=.*[A-Z])		#   must contains one uppercase characters
-        (?=.*[@#$%])		#   must contains one special symbols in the list "@#$%"
-        .		#     match anything with previous condition checking
-        {6,20}	#        length at least 6 characters and maximum of 20
-        )
-        """
-        pattern = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
-        password = "abcC2@!$"
-
-        self.assertTrue(self.confirm_password(pattern, password), True)
-
-    @staticmethod
-    def confirm_password(pattern, password):
-        return re.compile(pattern).match(password)
-
     def test_user_invalid_username(self):
-        """ Teste de inclusao de usuario com nome de usuario invalido"""
-
         self.data['username'] = ''
         self.data['login_enabled'] = True
 
@@ -132,10 +109,6 @@ class FormUserValidation(TestCase):
         self.assertEqual(User.objects.filter(username='').count(), 0)
 
     def test_user_invalid_email(self):
-        """
-        Testa inclusao de usuario com sucesso
-        """
-
         self.data['email'] = 'email@invalid.'
         self.data['login_enabled'] = True
 
@@ -143,30 +116,25 @@ class FormUserValidation(TestCase):
         self.assertFormError(response, "form", "email", 'Informe um endereço de email válido.')
         self.assertEqual(User.objects.filter(username='').count(), 0)
 
-    def test_user_duplicated_email(self):
-        """
-        Testa inclusao de usuario com sucesso
-        """
-        username = 'test_username'
-        self.data['username'] = username
-        self.data['login_enabled'] = True
-
-        response = self.client.post(reverse(USER_NEW), self.data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(User.objects.filter(username=username).count(), 1)
-
-        username2 = 'test_username2'
-        self.data['username']=[username2]
-        self.data['first_name'] = ['Fulano']
+    def test_user_email_already_registered(self):
+        self.data['username'] = 'email_registered'
+        self.data['first_name'] = 'Fulano'
+        self.data['last_name'] = 'de Tal'
+        self.data['email'] = 'jenkins.neuromat@gmail.com'
+        self.data['login_enabled'] = False
 
         response = self.client.post(reverse(USER_NEW), self.data, follow=True)
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]),
+                         _('A researcher with this email address has already been registered before. '
+                           'Please contact your system administrator if you want to reactivate this account.')
+                         )
+        self.assertEqual(User.objects.filter(username='email_registered').count(), 0)
 
         self.assertEqual(response.status_code, 200)
 
     def test_researcher_without_user(self):
-        """
-        Testa inclusao de usuario com sucesso
-        """
         del self.user
         self.data['login_enabled'] = False
 
@@ -174,9 +142,6 @@ class FormUserValidation(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_user_passwords_doesnt_match(self):
-        """
-        Testa senhas não conferem
-        """
         user_pwd = 'test_pwd'
         self.data['username'] = user_pwd
         self.data['password'] = 'abc123'
@@ -186,50 +151,7 @@ class FormUserValidation(TestCase):
         self.client.post(reverse(USER_NEW), self.data, follow=True)
         self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
 
-    def test_user_password_check_valid_pattern(self):
-        """
-        Testa padrao valido de senha definido para o usuario
-        """
-        user_pwd = 'test_pwd_1'
-        pattern = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
-        password = 'Abc$123'
-        self.assertTrue(self.confirm_password(pattern=pattern, password=password), True)
-
-        self.data['username'] = user_pwd
-        self.data['password'] = password
-        self.data['login_enabled'] = True
-
-        self.client.post(reverse(USER_NEW), self.data, follow=True)
-        self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
-
-    def test_user_password_check_invalid_pattern_abc(self):
-        """
-        Testa padrao invalido de senha definido para o usuario (senha: abc)
-        """
-        user_pwd = 'test_pwd_1'
-        self.data['username'] = user_pwd
-        self.data['password'] = 'abc'
-        self.data['login_enabled'] = True
-
-        self.client.post(reverse(USER_NEW), self.data, follow=True)
-        self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
-
-    def test_user_password_check_invalid_pattern_123(self):
-        """
-        Testa padrao invalido de senha definido para o usuario (senha: 123)
-        """
-        user_pwd = 'test_pwd_1'
-        self.data['username'] = user_pwd
-        self.data['password'] = '123'
-        self.data['login_enabled'] = True
-
-        self.client.post(reverse(USER_NEW), self.data, follow=True)
-        self.assertEqual(User.objects.filter(username=user_pwd).count(), 1)
-
     def test_user_empty_password(self):
-        """
-        Testa senha em branco
-        """
         user_pwd = 'test_pwd_2'
         self.data['username'] = user_pwd
         self.data['password'] = ''
@@ -241,9 +163,6 @@ class FormUserValidation(TestCase):
         self.assertEqual(User.objects.filter(username=user_pwd).count(), 0)
 
     def test_user_create(self):
-        """
-        Testa inclusao de usuario com sucesso
-        """
         username = 'test_username'
         self.data['username'] = username
         self.data['login_enabled'] = True
@@ -252,10 +171,20 @@ class FormUserValidation(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(User.objects.filter(username=username).count(), 1)
 
+    def test_user_create_failed_because_email_already_registered(self):
+        email = 'jenkins.neuromat@gmail.com'
+        self.data = {
+            'username': email,
+            'email': email,
+            'login_enabled': True,
+            'action': 'save'
+        }
+
+        response = self.client.post(reverse(USER_NEW), self.data)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
     def test_user_create_mail_password_define(self):
-        """
-        Testa inclusao de usuario com sucesso
-        """
         username = 'test_username'
         self.data['email'] = 'romulojosefranco@gmail.com'
         self.data['username'] = username
@@ -273,10 +202,6 @@ class FormUserValidation(TestCase):
         self.reset(user_added, request)
 
     def test_user_read(self):
-        """
-        Testa visualizar usuario
-        """
-
         self.data['login_enabled'] = True
         # Create an instance of a GET request.
         request = self.factory.get(reverse(USER_EDIT, args=[self.user.pk]))
@@ -289,10 +214,6 @@ class FormUserValidation(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_user_update_get(self):
-        """
-        Testa atualizar usuario - Metodo GET
-        """
-
         # Create an instance of a GET request.
         request = self.factory.get(reverse(USER_EDIT, args=[self.user.pk]))
         request.user = self.user
@@ -302,10 +223,6 @@ class FormUserValidation(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_user_update_post(self):
-        """
-        Testa atualizar usuario - Metodo POST
-        """
-
         first_name = 'test_username'
         self.data['first_name'] = first_name
         self.data['login_enabled'] = True
@@ -318,10 +235,69 @@ class FormUserValidation(TestCase):
 
         self.assertEqual(user_first_name.first_name, first_name)
 
+    def test_user_update_login_enable_false(self):
+        email = 'test@example.com'
+        self.data = {
+            'first_name': 'Fulano',
+            'last_name': 'de Tal',
+            'email': email,
+            'login_enabled': False,
+            'action': 'save'
+        }
+
+        self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
+        user_updated = User.objects.filter(first_name='Fulano')
+        self.assertEqual(user_updated.count(), 1)
+
+    def test_user_update_deactivate_user(self):
+        self.data = {
+            'action': 'deactivate'
+        }
+
+        self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
+        user = User.objects.first()
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.has_usable_password())
+
+    def test_user_update_with_password_flag_checked(self):
+        email = 'jenkins.neuromat@gmail.com'
+        self.data = {
+            'first_name': 'Fulano',
+            'last_name': 'de Tal',
+            'username': USER_USERNAME,
+            'email': email,
+            'login_enabled': True,
+            'password_flag': True,
+            'password': USER_PWD,
+            'action': 'save'
+        }
+
+        self.client.post(reverse(USER_EDIT, args=(self.user.pk,)), self.data)
+        user_updated = User.objects.filter(first_name='Fulano')
+        self.assertEqual(user_updated.count(), 1)
+
+    def test_user_update_failed_because_email_already_registered(self):
+        user_str = 'user_to_update'
+        new_user = User.objects.create_user(username=user_str, email='test@example.com', password='Bla!123')
+        new_user.is_staff = True
+        new_user.is_active = True
+        new_user.save()
+
+        email = 'jenkins.neuromat@gmail.com'
+        self.data = {
+            'first_name': 'Fulano',
+            'last_name': 'de Tal',
+            'username': user_str,
+            'email': email,
+            'login_enabled': False,
+            'action': 'save'
+        }
+
+        response = self.client.post(reverse(USER_EDIT, args=(new_user.pk,)), self.data)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
     def test_user_remove(self):
-        """
-        Testa deletar usuario
-        """
         user_str = 'user_remove'
         user_to_delete = User.objects.create_user(username=user_str, email='test@delete.com',
                                                   password='Del!123')
@@ -345,3 +321,206 @@ class FormUserValidation(TestCase):
 
         response = user_update(request, user_id=user_to_delete.pk)
         self.assertEqual(response, None)
+
+    def test_create_researcher_without_system_access(self):
+        username = 'fulano@detal.com'
+        self.data['first_name'] = 'Fulano'
+        self.data['last_name'] = 'de Tal'
+        self.data['email'] = 'fulano@detal.com'
+        self.data['username'] = username
+        self.data['login_enabled'] = False
+        self.client.post(reverse(USER_NEW), self.data)
+
+        fulano = User.objects.get(username=username)
+        self.assertTrue(fulano.is_active)
+        self.assertFalse(fulano.has_usable_password())
+
+    def test_remove_researcher_without_system_access(self):
+        username = 'fulano@detal.com'
+        self.data['first_name'] = 'Fulano'
+        self.data['last_name'] = 'de Tal'
+        self.data['email'] = 'fulano@detal.com'
+        self.data['username'] = username
+        self.data['login_enabled'] = False
+        self.client.post(reverse(USER_NEW), self.data)
+
+        resercher = User.objects.get(username=username)
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse(USER_VIEW, args=(resercher.pk,)), self.data, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+
+class PasswordPattern(TestCase):
+    """
+        Test of the defined pattern
+
+        (	    		#   Start
+        (?=.*\d)		#   must contains one digit from 0-9
+        (?=.*[a-z])		#   must contains one lowercase characters
+        (?=.*[A-Z])		#   must contains one uppercase characters
+        (?=.*[@#$%])	#   must contains one special symbols in the list "@#$%"
+        .		        #   match anything with previous condition checking
+        {6,20}	        #   length at least 6 characters and maximum of 20
+        )               #   End
+    """
+
+    @staticmethod
+    def confirm_password(pattern, password):
+        return re.compile(pattern).match(password)
+
+    def test_user_password_check_valid_pattern(self):
+        password = "abcC2@!$"
+
+        self.assertTrue(self.confirm_password(PATTERN, password), True)
+
+    def test_user_password_check_invalid_pattern_only_letters(self):
+        password = 'abcdefgh'
+
+        self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
+
+    def test_user_password_check_invalid_pattern_only_numbers(self):
+        password = '12345678'
+
+        self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
+
+    def test_user_password_check_invalid_pattern_without_special_symbols(self):
+        password = '123abcDEF'
+
+        self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
+
+    def test_user_password_check_invalid_pattern_less_than_six_chars(self):
+        password = '1aB!'
+
+        self.assertFalse(self.confirm_password(pattern=PATTERN, password=password))
+
+
+class InstitutionTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username=USER_USERNAME,
+            email='jenkins.neuromat@gmail.com',
+            password=USER_PWD
+        )
+        self.user.is_staff = True
+        self.user.save()
+        profile, created = UserProfile.objects.get_or_create(user=self.user)
+        profile.force_password_change = False
+        profile.save()
+
+        self.factory = RequestFactory()
+
+        self.data = {'name': ['name'],
+                     'acronym': ['acronym'],
+                     'country': ['country'],
+                     'action': 'save'}
+
+        logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+        self.assertEqual(logged, True)
+
+        Institution.objects.create(name='CEPID NeuroMat', acronym='NeuroMat', country='BR')
+
+    def test_institution_new_status_code(self):
+        url = reverse('institution_new')
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'custom_user/institution_register.html')
+
+    def test_institution_new_url_resolves_institution_new_view(self):
+        view = resolve('/user/institution/new/')
+        self.assertEquals(view.func, institution_create)
+
+    def test_institution_create(self):
+        self.data = {
+            'name': 'Faculdade de Medicina',
+            'acronym': 'FM',
+            'country': 'BR',
+            'action': 'save'
+        }
+        response = self.client.post(reverse('institution_new'), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Institution.objects.filter(name='Faculdade de Medicina').count(), 1)
+
+    def test_institution_create_wrong_action(self):
+        self.data = {
+            'name': 'Faculdade de Medicina',
+            'acronym': 'FM',
+            'country': 'BR',
+            'action': 'bla'
+        }
+        response = self.client.post(reverse('institution_new'), self.data)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
+    def test_institution_view_status_code(self):
+        institution = Institution.objects.first()
+        url = reverse('institution_view', args=(institution.id,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'custom_user/institution_register.html')
+
+    def test_institution_view_url_resolves_institution_view_view(self):
+        view = resolve('/user/institution/1/')
+        self.assertEquals(view.func, institution_view)
+
+    def test_institution_view_and_action_remove(self):
+        institution = Institution.objects.first()
+        self.data['action'] = 'remove'
+        self.client.post(reverse('institution_view', args=(institution.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 0)
+
+    def test_institution_view_and_action_remove_denied_because_there_are_people_associated(self):
+        institution = Institution.objects.first()
+        profile, created = UserProfile.objects.get_or_create(user=self.user)
+        profile.institution = institution
+        profile.save()
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('institution_view', args=(institution.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 1)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
+    def test_institution_view_and_action_remove_denied_because_there_is_institution_associated(self):
+        parent = Institution.objects.create(name='Example', acronym='example', country='BR')
+        institution = Institution.objects.first()
+        institution.parent = parent
+        institution.save()
+        self.data['action'] = 'remove'
+        response = self.client.post(reverse('institution_view', args=(parent.pk,)), self.data)
+        self.assertEqual(Institution.objects.count(), 2)
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(message), 1)
+
+    def test_institution_update_status_code(self):
+        institution = Institution.objects.first()
+        url = reverse('institution_edit', args=(institution.id,))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'custom_user/institution_register.html')
+
+    def test_institution_update_url_resolves_institution_update_view(self):
+        view = resolve('/user/institution/edit/1/')
+        self.assertEquals(view.func, institution_update)
+
+    def test_institution_update(self):
+        institution = Institution.objects.first()
+        self.data = {
+            'name': 'RIDC NeuroMat',
+            'acronym': 'NeuroMat',
+            'country': 'BR',
+            'action': 'save'
+        }
+        response = self.client.post(reverse("institution_edit", args=(institution.id,)), self.data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Institution.objects.filter(name='RIDC NeuroMat').count(), 1)
+
+
+class PasswordResetTests(TestCase):
+    def setUp(self):
+        url = reverse('password_reset')
+        self.response = self.client.get(url)
+
+    def test_status_code(self):
+        self.assertEquals(self.response.status_code, 200)
+
+    def test_csrf(self):
+        self.assertContains(self.response, 'csrfmiddlewaretoken')

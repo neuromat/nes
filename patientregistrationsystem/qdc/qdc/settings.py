@@ -23,6 +23,7 @@ SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+DEBUG404 = True
 
 TEMPLATE_DEBUG = DEBUG
 
@@ -190,4 +191,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.44.1'
+VERSION = '1.47.0'

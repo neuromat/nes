@@ -12,10 +12,12 @@ function checkPass(){
         confirmation.attr('class', 'has-success');
         $('#id_new_password1_form_group').removeClass('has-error');
         $("#message").text("");
+        $("#submit").prop('disabled', false);
         return false;
     }else{
         confirmation.attr('class', 'has-error');
         $("#message").text(gettext("Passwords don't match"));
+        $("#submit").prop('disabled', true);
         return true;
     }
 }
