@@ -866,19 +866,19 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                                             if answer != 'Y':
                                                                 no_response_flag = True
 
-                                                    if question['type'] == '|' and answer:
-                                                        link = \
-                                                            settings.LIMESURVEY['URL_WEB'] + \
-                                                            '/index.php/admin/responses/sa/browse/fieldname/' + \
-                                                            str(lime_survey_id) + 'X' + \
-                                                            str(question['gid']) + 'X' + \
-                                                            str(question['qid']) + \
-                                                            '/id/' + \
-                                                            responses_list[1][0] + \
-                                                            '/surveyid/' + \
-                                                            str(lime_survey_id) + \
-                                                            '/downloadindividualfile/' + \
-                                                            json.loads(answer[1:-1])['name']
+                                                    #if question['type'] == '|' and answer:
+                                                    #    link = \
+                                                    #        settings.LIMESURVEY['URL_WEB'] + \
+                                                    #        '/index.php/admin/responses/sa/browse/fieldname/' + \
+                                                    #        str(lime_survey_id) + 'X' + \
+                                                    #        str(question['gid']) + 'X' + \
+                                                    #        str(question['qid']) + \
+                                                    #        '/id/' + \
+                                                    #        responses_list[1][0] + \
+                                                    #        '/surveyid/' + \
+                                                    #        str(lime_survey_id) + \
+                                                    #        '/downloadindividualfile/' + \
+                                                    #        json.loads(answer[1:-1])['name']
                                         groups_of_questions = \
                                             add_questionnaire_response_to_group(
                                                 groups_of_questions, question,
