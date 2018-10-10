@@ -242,21 +242,16 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th style="text-align: left">{% trans "Index" %}</th>
                                     <th style="text-align: left">{% trans "Person" %}</th>
                                     <th style="text-align: left">{% trans "Institution" %}</th>
                                     <th style="text-align: right">{% trans "Order" %}</th>
+                                    <th></th>
                                     <th style="text-align: right">{% trans "Remove" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
-{#                            collaborators.researcher.all|dictsort:"channel_index"#}
                             {% for collaborator in collaborators.all|dictsort:"channel_index" %}
                                 <tr>
-                                    <td style="text-align: left">
-                                        {{ collaborator.channel_index }}
-                                    </td>
-
                                     <td style="text-align: left">
                                         {{ collaborator.researcher.first_name }} {{ collaborator.researcher.last_name }}
                                     </td>
@@ -279,8 +274,6 @@
                                                href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/up/"></a>
                                         {% endif %}
                                     </td>
-
-
                                     <td style="text-align: right">
                                         {% if can_change %}
                                             <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
@@ -288,7 +281,6 @@
                                     </td>
                                 </tr>
                             {% endfor %}
-
                             </tbody>
                         </table>
                     </div>
