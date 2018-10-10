@@ -73,7 +73,7 @@ class PortalAPITest(TestCase):
         send_experiment_researcher_to_portal(researcher)
 
         api_fields = {'experiment_nes_id', 'first_name', 'last_name',
-                      'email', 'institution', 'citation_name'}
+                      'email', 'institution', 'citation_name', 'citation_order'}
 
         (api_schema, action_keys), kwargs = \
             mockRestApiClientClass.return_value.client.action.call_args

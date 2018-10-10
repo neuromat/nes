@@ -1173,6 +1173,7 @@ def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
     first_name = ""
     last_name = ""
     citation_name = ""
+    citation_order = ""
 
     if researcher.researcher.first_name:
         first_name = researcher.researcher.first_name
@@ -1186,6 +1187,9 @@ def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
     if citation_name == "" and first_name == "" and last_name == "":
         return None
 
+    if researcher.channel_index:
+        citation_order = researcher.channel_index
+
     rest = RestApiClient()
 
     if not rest.active:
@@ -1198,7 +1202,9 @@ def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
               'institution':
                   researcher.researcher.user_profile.institution.name
                   if researcher.researcher.user_profile.institution else '',
-              'citation_name': researcher.researcher.user_profile.citation_name}
+              'citation_name': researcher.researcher.user_profile.citation_name,
+              'citation_order': citation_order
+              }
 
     action_keys = ['experiments', 'researchers', 'create']
 
