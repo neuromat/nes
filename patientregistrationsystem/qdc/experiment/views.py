@@ -9290,7 +9290,7 @@ def component_create(request, experiment_id, component_type):
     elif component_type == 'tms':
         specific_form = TMSForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
-        questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
+        questionnaires_list = Survey.objects.all()
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         # component_form.fields['duration_value'].widget.attrs['disabled'] = True
@@ -9339,30 +9339,30 @@ def component_create(request, experiment_id, component_type):
                     redirect_url = reverse("component_list", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
 
+    questionnaire_with_names = []
+
+    for questionnaire in questionnaires_list:
+         questionnaire_with_names.append(find_questionnaire_name(questionnaire.lime_survey_id,request.LANGUAGE_CODE))
+
     context = {"back_cancel_url": "/experiment/" + str(experiment.id) + "/components",
                "component_form": component_form,
                "creating": True,
                "can_change": can_change,
                "experiment": experiment,
-               "questionnaires_list": questionnaires_list,
+               "questionnaires_list": questionnaires_with_names,
                "specific_form": specific_form}
     return render(request, template_name, context)
 
 
-def find_active_questionnaires(language_code):
+def find_questionnaire_name(sid, language):
 
     surveys = Questionnaires()
 
-    questionnaires_list = surveys.find_all_active_questionnaires()
-
-    for questionnaire in questionnaires_list:
-        questionnaire_id = questionnaire["sid"]
-        language = get_questionnaire_language(surveys, questionnaire_id, language_code)
-        questionnaire['surveyls_title'] = surveys.get_survey_title(questionnaire_id, language)
+    name = surveys.get_survey_title(sid, language)
 
     surveys.release_session_key()
 
-    return questionnaires_list
+    return {'sid': sid, 'name': name}
 
 
 def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
@@ -11080,7 +11080,7 @@ def component_add_new(request, path_of_the_components, component_type):
     elif component_type == 'tms':
         specific_form = TMSForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
-        questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
+        questionnaires_list = Survey.objects.all()
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         duration_string = "0"
@@ -11169,6 +11169,11 @@ def component_add_new(request, path_of_the_components, component_type):
 
                     return HttpResponseRedirect(redirect_url)
 
+    questionnaires_with_names=[]
+
+    for questionnaire in questionnaires_list:
+         questionnaires_with_names.append(find_questionnaire_name(questionnaire.lime_survey_id,request.LANGUAGE_CODE))
+
     context = {"back_cancel_url": back_cancel_url,
                "block": block,
                "block_duration": duration_string,
@@ -11182,7 +11187,7 @@ def component_add_new(request, path_of_the_components, component_type):
                "list_of_breadcrumbs": list_of_breadcrumbs,
                "number_of_uses_form": number_of_uses_form,
                "position": position,
-               "questionnaires_list": questionnaires_list,
+               "questionnaires_list": questionnaires_with_names,
                "path_of_the_components": path_of_the_components,
                "specific_form": specific_form,
                "can_change": True}
