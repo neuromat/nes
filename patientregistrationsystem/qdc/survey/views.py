@@ -96,8 +96,6 @@ def survey_create(request, template_name="survey/survey_register.html"):
     if limesurvey_available:
         questionnaires_list = surveys.find_all_active_questionnaires()
 
-    surveys.release_session_key()
-
     if questionnaires_list:
         # removing surveys already registered
         used_surveys = Survey.objects.all()
@@ -119,10 +117,25 @@ def survey_create(request, template_name="survey/survey_register.html"):
                     lime_survey_id=request.POST['questionnaire_selected'],
                     is_initial_evaluation=survey_added.is_initial_evaluation)
 
+                has_file_upload_question = is_type_of_question_in_survey(
+                    surveys=surveys,
+                    survey=survey,
+                    type="|"
+                )
+
+                surveys.release_session_key()
+
                 if created:
+                    if has_file_upload_question:
+                        messages.warning(request, _('NES can\'t retrieve files from \"file upload\" '
+                                                    'questions from LimeSurvey.') + ' ' +
+                                         _('See \"Best Pratices and Recommendations\" at '
+                                           'https://nes.rtfd.io for more details.'))
                     messages.success(request, _('Questionnaire created successfully.'))
                     redirect_url = reverse("survey_list")
                     return HttpResponseRedirect(redirect_url)
+
+    surveys.release_session_key()
 
     context = {
         "survey_form": survey_form,
@@ -248,6 +261,21 @@ def survey_update_sensitive_questions(request, survey_id, template_name="survey/
         "survey_title": survey_title}
 
     return render(request, template_name, context)
+
+
+def is_type_of_question_in_survey(surveys, survey, type):
+    groups_list = surveys.list_groups(sid=survey.lime_survey_id)
+    if not 'status' in groups_list:
+        for group in groups_list:
+            group_questions = surveys.list_questions(sid=survey.lime_survey_id,
+                                                     gid=group['gid'])
+
+            for question in group_questions:
+                group_properties = surveys.get_question_properties(question_id=question,
+                                                                   language=group['language'])
+                if group_properties['type'] == type:
+                    return True
+    return False
 
 
 def get_survey_header(surveys, survey, language, heading_type):
@@ -866,24 +894,25 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                                             if answer != 'Y':
                                                                 no_response_flag = True
 
-                                                    if question['type'] == '|' and answer:
-                                                        link = \
-                                                            settings.LIMESURVEY['URL_WEB'] + \
-                                                            '/index.php/admin/responses/sa/browse/fieldname/' + \
-                                                            str(lime_survey_id) + 'X' + \
-                                                            str(question['gid']) + 'X' + \
-                                                            str(question['qid']) + \
-                                                            '/id/' + \
-                                                            responses_list[1][0] + \
-                                                            '/surveyid/' + \
-                                                            str(lime_survey_id) + \
-                                                            '/downloadindividualfile/' + \
-                                                            json.loads(answer[1:-1])['name']
-                                        groups_of_questions = \
-                                            add_questionnaire_response_to_group(
-                                                groups_of_questions, question,
-                                                answer, link, no_response_flag
-                                            )
+                                                    #if question['type'] == '|' and answer:
+                                                    #    link = \
+                                                    #        settings.LIMESURVEY['URL_WEB'] + \
+                                                    #        '/index.php/admin/responses/sa/browse/fieldname/' + \
+                                                    #        str(lime_survey_id) + 'X' + \
+                                                    #        str(question['gid']) + 'X' + \
+                                                    #        str(question['qid']) + \
+                                                    #        '/id/' + \
+                                                    #        responses_list[1][0] + \
+                                                    #        '/surveyid/' + \
+                                                    #        str(lime_survey_id) + \
+                                                    #        '/downloadindividualfile/' + \
+                                                    #        json.loads(answer[1:-1])['name']
+                                        if question['type'] != '|':
+                                            groups_of_questions = \
+                                                add_questionnaire_response_to_group(
+                                                    groups_of_questions, question,
+                                                    answer, link, no_response_flag
+                                                )
 
                                         # checking if the super-question
                                         # should be unmarked
