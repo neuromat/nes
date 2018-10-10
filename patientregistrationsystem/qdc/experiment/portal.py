@@ -1210,7 +1210,6 @@ def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
 
     return rest.client.action(rest.schema, action_keys, params=params)
 
-
 def get_experiment_status_portal(experiment_id):
 
     rest = RestApiClient()

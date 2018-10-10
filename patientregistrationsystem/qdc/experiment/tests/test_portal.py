@@ -9,7 +9,6 @@ from experiment.portal import send_experiment_to_portal, send_experiment_researc
     send_researcher_to_portal
 from experiment.tests.tests_original import ObjectsFactory
 
-
 class PortalAPITest(TestCase):
 
     @patch('experiment.portal.RestApiClient')
