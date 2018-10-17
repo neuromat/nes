@@ -18,10 +18,10 @@
   </fields>
   <rows>
    <row>
-    <gid><![CDATA[2]]></gid>
-    <sid><![CDATA[915325]]></sid>
+    <gid><![CDATA[6839]]></gid>
+    <sid><![CDATA[216517]]></sid>
     <group_name><![CDATA[First group]]></group_name>
-    <group_order><![CDATA[2]]></group_order>
+    <group_order><![CDATA[1]]></group_order>
     <description/>
     <language><![CDATA[en]]></language>
     <randomization_group/>
@@ -51,10 +51,10 @@
   </fields>
   <rows>
    <row>
-    <qid><![CDATA[4]]></qid>
+    <qid><![CDATA[91379]]></qid>
     <parent_qid><![CDATA[0]]></parent_qid>
-    <sid><![CDATA[915325]]></sid>
-    <gid><![CDATA[2]]></gid>
+    <sid><![CDATA[216517]]></sid>
+    <gid><![CDATA[6839]]></gid>
     <type><![CDATA[T]]></type>
     <title><![CDATA[firstQuestion]]></title>
     <question><![CDATA[First question]]></question>
@@ -70,10 +70,10 @@
     <modulename/>
    </row>
    <row>
-    <qid><![CDATA[5]]></qid>
+    <qid><![CDATA[91380]]></qid>
     <parent_qid><![CDATA[0]]></parent_qid>
-    <sid><![CDATA[915325]]></sid>
-    <gid><![CDATA[2]]></gid>
+    <sid><![CDATA[216517]]></sid>
+    <gid><![CDATA[6839]]></gid>
     <type><![CDATA[T]]></type>
     <title><![CDATA[secondQuestion]]></title>
     <question><![CDATA[Second question]]></question>
@@ -87,6 +87,24 @@
     <same_default><![CDATA[0]]></same_default>
     <relevance><![CDATA[1]]></relevance>
     <modulename/>
+   </row>
+   <row>
+    <qid><![CDATA[91389]]></qid>
+    <parent_qid><![CDATA[0]]></parent_qid>
+    <sid><![CDATA[216517]]></sid>
+    <gid><![CDATA[6839]]></gid>
+    <type><![CDATA[|]]></type>
+    <title><![CDATA[fileUpload]]></title>
+    <question><![CDATA[Has fileupload?]]></question>
+    <preg/>
+    <help/>
+    <other><![CDATA[N]]></other>
+    <mandatory><![CDATA[N]]></mandatory>
+    <question_order><![CDATA[3]]></question_order>
+    <language><![CDATA[en]]></language>
+    <scale_id><![CDATA[0]]></scale_id>
+    <same_default><![CDATA[0]]></same_default>
+    <relevance><![CDATA[1]]></relevance>
    </row>
   </rows>
  </questions>

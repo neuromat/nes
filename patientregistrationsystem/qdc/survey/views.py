@@ -60,14 +60,22 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     language_code = request.LANGUAGE_CODE
 
+    count_surveys_with_fileupload_question = 0
+
     for survey in Survey.objects.all():
         language = get_questionnaire_language(surveys, survey.lime_survey_id, language_code)
+
+        has_fileupload_question = is_type_of_question_in_survey(surveys, survey, '|')
+        if has_fileupload_question:
+            count_surveys_with_fileupload_question += 1
+
         questionnaires_list.append(
             {
                 'id': survey.id,
                 'lime_survey_id': survey.lime_survey_id,
                 'title': surveys.get_survey_title(survey.lime_survey_id, language),
-                'is_initial_evaluation': survey.is_initial_evaluation
+                'is_initial_evaluation': survey.is_initial_evaluation,
+                'has_file_upload_question': has_fileupload_question
             }
         )
 
@@ -77,7 +85,8 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     context = {
         'questionnaires_list': questionnaires_list,
-        'limesurvey_available': limesurvey_available
+        'limesurvey_available': limesurvey_available,
+        'count_surveys_with_fileupload_question': count_surveys_with_fileupload_question
     }
 
     return render(request, template_name, context)
