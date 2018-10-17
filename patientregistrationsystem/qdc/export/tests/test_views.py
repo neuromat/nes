@@ -489,7 +489,9 @@ class ExportQuestionnaireTest(ExportTestCase):
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
-                '*Test questionnaire*secondQuestion*secondQuestion'
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short']
