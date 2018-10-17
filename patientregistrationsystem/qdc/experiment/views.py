@@ -9342,7 +9342,7 @@ def component_create(request, experiment_id, component_type):
     questionnaires_with_names = []
 
     for questionnaire in questionnaires_list:
-         questionnaire_with_names.append(find_questionnaire_name(questionnaire.lime_survey_id,request.LANGUAGE_CODE))
+         questionnaires_with_names.append(find_questionnaire_name(questionnaire.lime_survey_id,request.LANGUAGE_CODE))
 
     context = {"back_cancel_url": "/experiment/" + str(experiment.id) + "/components",
                "component_form": component_form,
