@@ -70,7 +70,7 @@ class QuestionnaireUtils:
 
         questionnaire_id = questionnaire["id"]
         for output_list in questionnaire["output_list"]:
-            if output_list["field"]:
+            if output_list["field"] != 'fileUpload' and output_list["field"] != 'fileUpload[filecount]':
                 headers.append(output_list["header"])
                 fields.append(output_list["field"])
 

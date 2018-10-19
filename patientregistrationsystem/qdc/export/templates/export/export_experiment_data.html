@@ -318,7 +318,10 @@
                                                 {% endfor %}
                                             </div>
                                         </div>
-
+                                    </div>
+                                    <div class="form-group">
+                                    <label class="control-label"><b style="color: red;">{% trans "Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                                        (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
                                     </div>
                                 </div>
                             {% else %}
@@ -424,7 +427,10 @@
 
                                         </div>
                                     </div>
-
+                                    <div class="form-group">
+                                            <label class="control-label"><b style="color: red;">{% trans "Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                                                (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
+                                    </div>
                                 </div>
                             {% endif %}
                         {% endif %}
