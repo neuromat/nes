@@ -37,7 +37,7 @@
                         {% if updating %}<option selected="selected" value="{{ questionnaire_id }}">{{ questionnaire_title }} ({{ questionnaire_id }})</option>
                         {% else %}
                             {% for survey in questionnaires_list %}
-                                <option value="{{ survey.sid }}">{{ survey.surveyls_title }} ({{ survey.sid }})</option>
+                                <option value="{{ survey.sid }}">{{ survey.name }} ({{ survey.sid }})</option>
                             {% endfor %}
                         {% endif %}
                     {% endif %}
