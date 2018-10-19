@@ -17,6 +17,10 @@ RESPONSES_CHOICES = (
     ('long', _("Full answers")),
 )
 
+FORMATS_CHOICES = (
+    ('csv', _("Comma separated values")),
+    ('tsv', _("Tab separated values")),
+)
 
 class ExportForm(Form):
     title = CharField(
@@ -45,7 +49,9 @@ class ExportForm(Form):
         }),
         choices=RESPONSES_CHOICES, required=False
     )
-
+    filesformat = ChoiceField(
+        widget=RadioSelect(), choices=FORMATS_CHOICES, required=False
+    )
 
 class ParticipantsSelectionForm(ModelForm):
     class Meta:

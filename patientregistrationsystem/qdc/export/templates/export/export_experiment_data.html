@@ -146,6 +146,20 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12">
+                                            <label for="filesformat"
+                                                   class="control-label">{% trans "Files format: " %}
+                                            </label>
+                                            <div class="form-group {% if export_form.errors.filesformat %}has-error{% endif %}">
+                                                {% for check in export_form.filesformat %}
+                                                    <div class="checkbox">
+                                                       {{ check }}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 {% if component_list %}
                                     <div class="container span6 offset3 well ">

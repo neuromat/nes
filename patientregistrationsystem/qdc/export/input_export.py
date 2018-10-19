@@ -152,8 +152,9 @@ def build_partial_export_structure(export_per_participant, participant_field_hea
 
 def build_complete_export_structure(export_per_participant, export_per_questionnaire, export_per_experiment,
                                     participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
-                                    experiment_questionnaires_list, response_type, heading_type, output_filename,
-                                    component_list, language):
+                                    experiment_questionnaires_list, response_type, heading_type,
+                                    output_filename, component_list, language, filesformat_type
+                                    ):
 
     json_data = InputExport()
 
@@ -166,6 +167,8 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
     json_data.build_dynamic_header("response_type", response_type)
 
     json_data.build_dynamic_header("heading_type", heading_type)
+
+    json_data.build_dynamic_header("filesformat_type", filesformat_type)
 
     json_data.build_dynamic_header("output_language", language)
 

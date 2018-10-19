@@ -324,7 +324,7 @@ class InputExportTest(TestCase):
                                         questionnaires_list,
                                         experiment_questionnaires_list,
                                         ["short"], "full", output_filename,
-                                        component_list, "pt-BR")
+                                        component_list, "pt-BR", "tsv")
 
         self.assertTrue(path.isfile(output_filename))
 
@@ -336,7 +336,7 @@ class InputExportTest(TestCase):
                                         questionnaires_list,
                                         experiment_questionnaires_list,
                                         ["short", "long"], "full",
-                                        output_filename, component_list, "en")
+                                        output_filename, component_list, "en", "csv")
 
         self.assertTrue(path.isfile(output_filename))
         remove(output_filename)
