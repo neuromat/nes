@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 11:46-0300\n"
+"POT-Creation-Date: 2018-10-19 17:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: patient/forms.py:26 patient/templates/patient/register_personal_data.html:52
+#: patient/forms.py:26
+#: patient/templates/patient/register_personal_data.html:52
 msgid "Anonymous participant?"
 msgstr "Participante anônimo?"
 

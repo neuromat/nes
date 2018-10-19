@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 11:46-0300\n"
+"POT-Creation-Date: 2018-10-19 17:35-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -672,6 +672,24 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
+#: templates/404.html:14
+#: templates/registration/change_password_custom.html:143
+#: templates/registration/logged_out.html:4
+msgid "Home"
+msgstr "Home"
+
+#: templates/404.html:20
+msgid "404 Page Not Found"
+msgstr "404 Página Não Encontrada"
+
+#: templates/404.html:21
+msgid "This page does not exist yet!"
+msgstr "Esta página ainda não existe!"
+
+#: templates/404.html:28
+msgid "Back"
+msgstr "Voltar"
+
 #: templates/admin/base_site.html:4
 msgid "QDC site admin test"
 msgstr "QDC site admin teste"
@@ -706,11 +724,6 @@ msgstr ""
 #: templates/registration/change_password_custom.html:137
 msgid "Save"
 msgstr "Salvar"
-
-#: templates/registration/change_password_custom.html:143
-#: templates/registration/logged_out.html:4
-msgid "Home"
-msgstr "Home"
 
 #: templates/registration/change_password_custom.html:145
 msgid "Logout"
@@ -915,9 +928,6 @@ msgstr "Alterar senha em %(site_name)s"
 
 #~ msgid "Insert new"
 #~ msgstr "Inserir novo"
-
-#~ msgid "Back"
-#~ msgstr "Voltar"
 
 #~ msgid "New"
 #~ msgstr "Novo"
