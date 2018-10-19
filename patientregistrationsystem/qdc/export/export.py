@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import csv
+import fileinput
 import json
 import random
 import re
@@ -94,7 +95,7 @@ def to_number(value):
     return int(float(value))
 
 
-def save_to_csv(complete_filename, rows_to_be_saved, mode='w'):
+def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w'):
     """
     :param complete_filename: filename and directory structure where file is
     going to be saved
@@ -103,12 +104,18 @@ def save_to_csv(complete_filename, rows_to_be_saved, mode='w'):
     :param mode: mode for openning file
     :return:
     """
+
+    if filesformat_type =='tsv':
+        separator = '\t'
+    else:
+        separator = ','
+
     with open(
             complete_filename.encode('utf-8'), mode, newline='',
             encoding='UTF-8'
     ) as csv_file:
         export_writer = csv.writer(
-            csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC
+            csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC, delimiter=separator
         )
         for row in rows_to_be_saved:
             export_writer.writerow(row)
@@ -1032,6 +1039,8 @@ class ExportExecution:
         path_per_questionnaire = ''
         path_per_questionnaire_metadata = ''
 
+        filesformat_type = self.get_input_data("filesformat_type")
+
         # and save per_participant data
         if self.get_input_data("export_per_questionnaire"):
             # check if exist fields selected from questionnaires
@@ -1093,11 +1102,12 @@ class ExportExecution:
                 # <per_questionnaire>/<q_code_title>
                 if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
                     export_filename = \
-                        "%s_%s_%s.csv" % (questionnaire["prefix_filename_responses"], str(questionnaire_code), language)
+                        "%s_%s_%s.%s" % (questionnaire["prefix_filename_responses"], str(questionnaire_code),
+                                         language, filesformat_type)
                     # path ex. NES_EXPORT/Per_questionnaire.Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename)
 
-                    save_to_csv(complete_filename, fields_description)
+                    save_to_csv(complete_filename, fields_description, filesformat_type)
                     self.files_to_zip_list.append([complete_filename, export_directory])
 
             # questionnaire metadata
@@ -1115,12 +1125,12 @@ class ExportExecution:
                             entrance_questionnaire
                         )
 
-                    export_filename = "%s_%s_%s.csv" % (questionnaire["prefix_filename_fields"],
-                                                        str(questionnaire_code), language)
+                    export_filename = "%s_%s_%s.%s" % (questionnaire["prefix_filename_fields"],
+                                                        str(questionnaire_code), language, filesformat_type)
 
                     complete_filename = path.join(export_metadata_path, export_filename)
 
-                    save_to_csv(complete_filename, questionnaire_fields)
+                    save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
                     self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
 
@@ -1129,6 +1139,8 @@ class ExportExecution:
         return error_msg
 
     def process_per_entrance_questionnaire(self):
+        filesformat_type = self.get_input_data("filesformat_type")
+
         path_participant_data = path.join(
             self.get_export_directory(),
             self.get_input_data("participant_data_directory")
@@ -1225,13 +1237,13 @@ class ExportExecution:
                 )
                 if self.get_input_data("export_per_questionnaire") and \
                         (len(fields_description) > 1):
-                    export_filename = "%s_%s_%s.csv" % \
+                    export_filename = "%s_%s_%s.%s" % \
                                       (questionnaire["prefix_filename_responses"],
-                                       str(questionnaire_code), language)
+                                       str(questionnaire_code), language, filesformat_type)
                     # /NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename)
 
-                    save_to_csv(complete_filename, fields_description)
+                    save_to_csv(complete_filename, fields_description, filesformat_type)
                     self.files_to_zip_list.append([complete_filename, export_directory])
 
             entrance_questionnaire = True
@@ -1250,16 +1262,15 @@ class ExportExecution:
                         questionnaire_lime_survey, fields,
                         entrance_questionnaire
                     )
-
-                export_filename = "%s_%s_%s.csv" % \
+                export_filename = "%s_%s_%s.%s" % \
                                   (questionnaire["prefix_filename_fields"],
-                                   str(questionnaire_code), language)
+                                   str(questionnaire_code), language, filesformat_type)
 
                 # path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
                 complete_filename = path.join(
                     export_metadata_path, export_filename
                 )
-                save_to_csv(complete_filename, questionnaire_fields)
+                save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
                 self.files_to_zip_list.append(
                     [complete_filename, export_questionnaire_metadata_directory]
                 )
@@ -1343,6 +1354,8 @@ class ExportExecution:
 
     def process_per_experiment_questionnaire(self):
         error_msg = ''
+
+        filesformat_type = self.get_input_data("filesformat_type")
 
         for group_id in self.per_group_data:
             if 'questionnaires_per_group' in self.per_group_data[group_id]:
@@ -1431,9 +1444,9 @@ class ExportExecution:
 
                         for language in language_list:
                             # Q123_<questionnaire_title>_<lang>.csv
-                            export_filename = "%s_%s_%s.csv" % (
+                            export_filename = "%s_%s_%s.%s" % (
                                 str(questionnaire_code), questionnaire_title,
-                                language
+                                language, filesformat_type
                             )
                             # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/Q123_<questionnaire_title>_<lang>.csv
                             complete_filename = path.join(
@@ -1473,6 +1486,7 @@ class ExportExecution:
                                     # already exists
                                     save_to_csv(complete_filename,
                                                 fields_description[1:],
+                                                filesformat_type,
                                                 mode='a')
                                     file_exists = True
                                     break
@@ -1480,7 +1494,7 @@ class ExportExecution:
 
                             # save array list into a file to export
                             if not file_exists:
-                                save_to_csv(complete_filename, fields_description)
+                                save_to_csv(complete_filename, fields_description, filesformat_type)
                                 self.files_to_zip_list.append(
                                     [complete_filename, export_directory]
                                 )
@@ -1496,12 +1510,12 @@ class ExportExecution:
                             str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
                         # # build metadata export - Fields_Q123.csv
-                        export_filename = "%s_%s_%s.csv" % (prefix_filename_fields, str(questionnaire_code),
-                                                            language)
+                        export_filename = "%s_%s_%s.%s" % (prefix_filename_fields, str(questionnaire_code),
+                                                            language, filesformat_type)
 
                         complete_filename = path.join(complete_export_metadata_path, export_filename)
 
-                        save_to_csv(complete_filename, questionnaire_fields)
+                        save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
                         self.files_to_zip_list.append([complete_filename, export_metadata_directory])
 
@@ -1554,13 +1568,15 @@ class ExportExecution:
 
                     # select language list
                     questionnaire_language = self.get_input_data("questionnaire_language")[str(questionnaire_id)]
+                    filesformat_type = self.get_input_data("filesformat_type")
+
                     if 'long' in self.get_input_data('response_type'):
                         language_list = questionnaire_language['language_list']
                     else:
                         language_list = [questionnaire_language['output_language']]
 
                     for language in language_list:
-                        export_filename = "%s_%s_%s.csv" % ("Responses", str(questionnaire_code), language)
+                        export_filename = "%s_%s_%s.%s" % ("Responses", str(questionnaire_code), language, filesformat_type)
 
                         participant_rows = self.get_per_participant_data(participant_code, questionnaire_code)[
                             language][0]
@@ -1570,7 +1586,7 @@ class ExportExecution:
                         # /Responses_Q123_aaa.csv
                         complete_filename = path.join(path_per_questionnaire, export_filename)
 
-                        save_to_csv(complete_filename, per_participant_rows)
+                        save_to_csv(complete_filename, per_participant_rows, filesformat_type)
 
                         self.files_to_zip_list.append([complete_filename, export_questionnaire_directory])
 
@@ -1598,6 +1614,8 @@ class ExportExecution:
         )
         # path ex. NES_EXPORT/Participant_data/Per_participant/
         export_directory_base = path.join(export_participant_data, self.get_input_data("per_participant_directory"))
+
+        filesformat_type = self.get_input_data("filesformat_type")
 
         for participant_code in self.get_per_participant_data():
             patient_id = \
@@ -1645,9 +1663,9 @@ class ExportExecution:
 
                                 for language in language_list:
                                     export_filename = \
-                                        "%s_%s_%s.csv" % \
+                                        "%s_%s_%s.%s" % \
                                         (questionnaire["prefix_filename_responses"],
-                                         str(questionnaire_code), language)
+                                         str(questionnaire_code), language, filesformat_type)
 
                                     # add participant personal data header
                                     questionnaire_header = \
@@ -1668,7 +1686,7 @@ class ExportExecution:
                                     # path ex. NES_EXPORT/Participant_data/Per_participant/Q123_title
                                     complete_filename = path.join(questionnaire_path_directory, export_filename)
 
-                                    save_to_csv(complete_filename, per_participant_rows)
+                                    save_to_csv(complete_filename, per_participant_rows, filesformat_type)
 
                                     self.files_to_zip_list.append([complete_filename, export_directory])
 
@@ -1721,13 +1739,17 @@ class ExportExecution:
                         )
                         # select questionnaire language
                         questionnaire_language = self.get_input_data("questionnaire_language")[str(questionnaire_id)]
+
+                        filesformat_type = self.get_input_data("filesformat_type")
+
                         if 'long' in self.get_input_data('response_type'):
                             language_list = questionnaire_language['language_list']
                         else:
                             language_list = [questionnaire_language['output_language']]
                         for language in language_list:
                             # Responses_Q123.csv
-                            export_filename = "%s_%s_%s.csv" % (str(questionnaire_code), slugify(questionnaire_title), language)
+                            export_filename = "%s_%s_%s.%s" % (str(questionnaire_code), slugify(questionnaire_title),
+                                                              language, filesformat_type)
 
                             # path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
                             complete_filename = path.join(directory_step_participant, export_filename)
@@ -1749,7 +1771,7 @@ class ExportExecution:
                                 )
                             per_participant_rows.insert(0, header)
 
-                            save_to_csv(complete_filename, per_participant_rows)
+                            save_to_csv(complete_filename, per_participant_rows, filesformat_type)
 
                             self.files_to_zip_list.append([complete_filename, step_participant_export_directory])
 
@@ -2373,8 +2395,12 @@ class ExportExecution:
                 if error_msg != "":
                     return error_msg
 
-
-        export_filename = "%s.csv" % self.get_input_data('participants')["output_filename"]  # "participants.csv"
+        if 'tsv' in self.get_input_data('filesformat_type'):
+            separator = '\t'
+            export_filename = "%s.tsv" % self.get_input_data('participants')["output_filename"]  # "participants.tsv"
+        else:
+            separator = ','
+            export_filename = "%s.csv" % self.get_input_data('participants')["output_filename"]  # "participants.csv"
 
         complete_filename = path.join(base_export_directory, export_filename)
 
@@ -2385,7 +2411,7 @@ class ExportExecution:
         export_rows_participants = self.get_input_data('participants')['data_list']
 
         with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-            export_writer = csv.writer(csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+            export_writer = csv.writer(csv_file, quotechar='"', delimiter=separator, quoting=csv.QUOTE_NONNUMERIC)
             for row in export_rows_participants:
                 export_writer.writerow(row)
 
@@ -2395,7 +2421,10 @@ class ExportExecution:
         if diagnosis_input_data['output_list'] and participants_filtered_list:
             export_rows_diagnosis = self.process_diagnosis_data(diagnosis_input_data['output_list'], participants_filtered_list)
 
-            export_filename = "%s.csv" % self.get_input_data('diagnosis')["output_filename"]  # "Diagnosis.csv"
+            if 'tsv' in self.get_input_data('filesformat_type'):
+                export_filename = "%s.tsv" % self.get_input_data('diagnosis')["output_filename"]  # "Diagnosis.tsv"
+            else:
+                export_filename = "%s.csv" % self.get_input_data('diagnosis')["output_filename"]  # "Diagnosis.csv"
 
             complete_filename = path.join(base_export_directory, export_filename)
 
@@ -2403,7 +2432,7 @@ class ExportExecution:
             self.files_to_zip_list.append([complete_filename, base_directory])
 
             with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
-                export_writer = writer(csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+                export_writer = writer(csv_file, quotechar='"', delimiter=separator, quoting=csv.QUOTE_NONNUMERIC)
                 for row in export_rows_diagnosis:
                     export_writer.writerow(row)
 
@@ -2415,6 +2444,8 @@ class ExportExecution:
         for group_id in self.per_group_data:
             group = get_object_or_404(Group, pk=group_id)
 
+        filesformat_type = self.get_input_data("filesformat_type")
+
         study = group.experiment.research_project
         experiment = group.experiment
 
@@ -2424,7 +2455,10 @@ class ExportExecution:
         experiment_resume = [study.title, study.description, str(study.start_date), str(study.end_date),
                              experiment.title, experiment.description]
 
-        filename_experiment_resume = "%s.csv" % "Experiment"
+        if 'tsv' in self.get_input_data('filesformat_type'):
+            filename_experiment_resume = "%s.tsv" % "Experiment"
+        else:
+            filename_experiment_resume = "%s.csv" % "Experiment"
 
         # path ex. NES_EXPORT/Experiment_data
         export_experiment_data = path.join(self.get_input_data("base_directory"),
@@ -2440,7 +2474,7 @@ class ExportExecution:
         experiment_description_fields = []
         experiment_description_fields.insert(0, experiment_resume_header)
         experiment_description_fields.insert(1, experiment_resume)
-        save_to_csv(complete_filename_experiment_resume, experiment_description_fields)
+        save_to_csv(complete_filename_experiment_resume, experiment_description_fields, filesformat_type)
 
         self.files_to_zip_list.append([complete_filename_experiment_resume, export_experiment_data])
 
@@ -2672,6 +2706,15 @@ class ExportExecution:
             heading_type = ["code"]
 
         return heading_type
+
+    def get_filesformat_type(self):
+
+        filesformat_type = self.get_input_data("filesformat_type")
+
+        if not filesformat_type:
+            filesformat_type = ["csv"]
+
+        return filesformat_type
 
     def get_questionnaires_responses(self):
         questionnaire_lime_survey = Questionnaires()
