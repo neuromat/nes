@@ -282,8 +282,9 @@ def is_type_of_question_in_survey(surveys, survey, type):
             for question in group_questions:
                 group_properties = surveys.get_question_properties(question_id=question,
                                                                    language=group['language'])
-                if group_properties['type'] == type:
-                    return True
+                if 'type' in group_properties:
+                    if group_properties['type'] == type:
+                        return True
     return False
 
 
@@ -806,7 +807,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                             answer_options = \
                                                 question['answer_options']
                                             answer = \
-                                                question['attributes_lang']['dualscale_headerA'] + ": "
+                                                question['question_id'] + "[1]: "
                                             if responses_list[1][index] in \
                                                     answer_options:
                                                 answer_option = \
@@ -829,7 +830,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                             answer_options = \
                                                 question['answer_options']
                                             answer = \
-                                                question['attributes_lang']['dualscale_headerB'] + ": "
+                                                question['question_id'] + "[2]: "
                                             if responses_list[1][index] in \
                                                     answer_options:
                                                 answer_option = \

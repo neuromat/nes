@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 11:46-0300\n"
+"POT-Creation-Date: 2018-10-19 17:35-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -243,7 +243,7 @@ msgstr ""
 msgid "Deactivate"
 msgstr "Desativar"
 
-#: custom_user/tests.py:129 custom_user/views.py:68 custom_user/views.py:86
+#: custom_user/tests.py:130 custom_user/views.py:68 custom_user/views.py:86
 msgid ""
 "A researcher with this email address has already been registered before. "
 "Please contact your system administrator if you want to reactivate this "
@@ -294,7 +294,8 @@ msgid ""
 "This institution cannot be removed because there are researchers associated "
 "with it."
 msgstr ""
-"Esta instituição não pode ser removida porque existem pesquisadores associados a ela."
+"Esta instituição não pode ser removida porque existem pesquisadores "
+"associados a ela."
 
 #: custom_user/views.py:261
 msgid ""
