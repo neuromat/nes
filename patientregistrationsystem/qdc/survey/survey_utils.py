@@ -11,7 +11,7 @@ from survey.models import Survey
 
 HEADER_EXPLANATION_FIELDS = [
     'questionnaire_code', 'questionnaire_title',
-    'question_group',
+    'question_group', 'question_order',
     'question_type', 'question_type_description',
     'question_index',
     'question_code', 'question_description',
@@ -311,12 +311,14 @@ class QuestionnaireUtils:
                         properties['gid'],
                         language
                     )
+                question_order = properties['question_order']
 
                 questionnaire_list = \
                     [smart_str(questionnaire_code),
                      smart_str(questionnaire_title)]
                 question_type_list = \
-                    [question_type, question_type_description]
+                    [smart_str(question_order), question_type,
+                     question_type_description]
                 question_list = \
                     [smart_str(question_code),
                      smart_str(question_description)]
@@ -453,7 +455,7 @@ class QuestionnaireUtils:
     @staticmethod
     def get_group_properties(survey, survey_id, gid, lang):
         """
-        Return group in correct language, as of this date LimeSurvey Remote
+        Return group in correct language, as at this date LimeSurvey Remote
         Control API does not return correct group by language
         :param survey: Questionnaires instance
         :param survey_id: Questionnaire (Survey) id
