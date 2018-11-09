@@ -27,6 +27,7 @@ from survey.tests.tests_helper import create_survey
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
 
+
 class ExportQuestionnaireTest(ExportTestCase):
 
     def setUp(self):
@@ -36,7 +37,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         self.sid = self.create_limesurvey_questionnaire()
 
         # create questionnaire data collection in NES
-        # TODO: before commit use method already existent in patient.tests. See other places
+        # TODO: use method already existent in patient.tests. See other places
         self.survey = create_survey(self.sid)
         self.data_configuration_tree = self.create_nes_questionnaire(
             self.root_component
