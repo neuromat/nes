@@ -28,7 +28,7 @@ DEBUG404 = True
 TEMPLATE_DEBUG = DEBUG
 
 # SECURITY WARNING: don't run with "is testing" on in production
-IS_TESTING = False
+IS_TESTING = True
 
 ALLOWED_HOSTS = ['localhost']
 
