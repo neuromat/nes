@@ -7,11 +7,10 @@ from datetime import datetime, date
 
 import shutil
 
-from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
-from django.test import override_settings, RequestFactory
+from django.test import override_settings
 
 from experiment.models import Component, ComponentConfiguration, \
     ComponentAdditionalFile, BrainAreaSystem, BrainArea,\
@@ -19,19 +18,15 @@ from experiment.models import Component, ComponentConfiguration, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
-from export.forms import ExportForm
-from export.models import Export
 from export.tests.tests_helper import ExportTestCase
-from export.views import export_create
 from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
-from survey.tests_helper import create_survey
-from export.input_export import InputExport, build_complete_export_structure
-from os import mkdir, remove, path
+from survey.tests.tests_helper import create_survey
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
+
 
 class ExportQuestionnaireTest(ExportTestCase):
 
@@ -42,7 +37,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         self.sid = self.create_limesurvey_questionnaire()
 
         # create questionnaire data collection in NES
-        # TODO: before commit use method already existent in patient.tests. See other places
+        # TODO: use method already existent in patient.tests. See other places
         self.survey = create_survey(self.sid)
         self.data_configuration_tree = self.create_nes_questionnaire(
             self.root_component

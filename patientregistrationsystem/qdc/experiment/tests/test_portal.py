@@ -1,13 +1,21 @@
+import csv
+from io import StringIO
 from unittest.mock import patch
 
 from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from custom_user.tests_helper import create_user
-from experiment.models import ScheduleOfSending
-from experiment.portal import send_experiment_to_portal, send_experiment_researcher_to_portal,\
-    send_researcher_to_portal
+from experiment.models import ScheduleOfSending, Component
+from experiment.portal import send_experiment_to_portal, \
+    send_experiment_researcher_to_portal, \
+    send_researcher_to_portal, send_steps_to_portal
 from experiment.tests.tests_original import ObjectsFactory
+from experiment.views import get_block_tree
+from survey.abc_search_engine import ABCSearchEngine
+from survey.survey_utils import HEADER_EXPLANATION_FIELDS
+from survey.tests.tests_helper import create_survey
+
 
 class PortalAPITest(TestCase):
 
@@ -80,3 +88,76 @@ class PortalAPITest(TestCase):
             set(kwargs['params'].keys()).issubset(api_fields),
             str(set(kwargs['params'].keys())) + ' not in ' + str(api_fields)
         )
+
+    @patch('experiment.portal.RestApiClient')
+    @patch('survey.abc_search_engine.Server')
+    def test_send_questionnaire_to_portal_has_correct_metadata_columns(
+        self, mockServerClass, mockRestApiClientClass):
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
+
+        # create objects necessary to send questionnaire step to portal
+        research_project = ObjectsFactory.create_research_project()
+        experiment = ObjectsFactory.create_experiment(research_project)
+        experimental_protocol = ObjectsFactory.create_block(experiment)
+        group = ObjectsFactory.create_group(experiment, experimental_protocol)
+        survey = create_survey(212121)  # fake number
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE,
+            kwargs={'sid': survey.id}
+        )
+        ObjectsFactory.create_component_configuration(
+            experimental_protocol, questionnaire_step
+        )
+        tree = get_block_tree(group.experimental_protocol, 'en')
+
+        # mock methods used in test calling methods
+        survey_languages = {'language': 'en', 'additional_languages': None}
+        mockServerClass.return_value.get_survey_properties.return_value = \
+            survey_languages
+        mockServerClass.return_value.export_responses.return_value = \
+            b'"id","submitdate","lastpage","startlanguage","token",' \
+            b'"responsibleid","fakeQuestion"\n' \
+            b'"8","1980-01-01 00:00:00","2","en","x44rdqy4a0lhb4L","2",' \
+            b'"5","texto longo"\n\n'
+        mockServerClass.return_value.get_language_properties.return_value = \
+            {'surveyls_title': 'Ein wunderbar Titel'}
+        mockServerClass.return_value.list_questions.return_value = [
+            {'id': {'qid': 1}}
+        ]
+        # Mock get_question_properties LimeSurvey API method using
+        # ABCSearchEngine.QUESTION_PROPERTIES constant list with fake values
+        question_order = 21
+        group_id = 981
+        question_properties = dict(
+            zip(
+                ABCSearchEngine.QUESTION_PROPERTIES,
+                [group_id, 'Question Title', question_order,
+                 'No available answers', 'No available answer options',
+                 'fakeQuestion', 'N', 'No available attributes',
+                 {'hidden', '1'}, 'N']
+            )
+        )
+        mockServerClass.return_value.get_question_properties.return_value = \
+            question_properties
+        # mock list_groups LimeSurvey API method (fake values)
+        language = 'en'
+        mockServerClass.return_value.list_groups.return_value = \
+            [{'randomization_group': '',
+              'id': {'gid': group_id, 'language': language},
+              'group_name': 'Grupo 1', 'description': '', 'group_order': 1,
+              'sid': survey.lime_survey_id, 'gid': group_id,
+              'language': language, 'grelevance': ''}]
+
+        send_steps_to_portal(21, tree, None, None, None, None, 'en')
+
+        # use mockRestApiClientClass to get metadata value that will be sent
+        (api_schema, action_keys), kwargs = \
+            mockRestApiClientClass.return_value.client.action.call_args
+        for field in HEADER_EXPLANATION_FIELDS:
+            self.assertIn(field, kwargs['params']['survey_metadata'])
+        survey_metadata = csv.reader(
+            StringIO(kwargs['params']['survey_metadata'])
+        )
+        for row in survey_metadata:
+            self.assertEqual(len(row), len(HEADER_EXPLANATION_FIELDS))

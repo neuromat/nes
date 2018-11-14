@@ -7,6 +7,11 @@ from django.conf import settings
 
 
 class ABCSearchEngine(ABC):
+    QUESTION_PROPERTIES = [
+        'gid', 'question', 'question_order', 'subquestions', 'answeroptions',
+        'title', 'type', 'attributes_lang', 'attributes', 'other'
+    ]
+
     session_key = None
     server = None
 
@@ -346,10 +351,7 @@ class ABCSearchEngine(ABC):
         """
 
         properties = self.server.get_question_properties(
-            self.session_key, question_id,
-            ['gid', 'question', 'subquestions', 'answeroptions', 'title',
-             'type', 'attributes_lang', 'attributes', 'other'],
-            language
+            self.session_key, question_id, self.QUESTION_PROPERTIES, language
         )
 
         return properties
