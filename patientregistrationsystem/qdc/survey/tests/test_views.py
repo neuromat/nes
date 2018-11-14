@@ -337,7 +337,7 @@ class SurveyTest(TestCase):
         response = self.client.post(reverse('survey_edit', args=(survey.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-    def _test_survey_view(self):
+    def test_survey_view(self):
 
         # Create a survey to be used in the test
         # survey = Survey.objects.create(lime_survey_id=1)
