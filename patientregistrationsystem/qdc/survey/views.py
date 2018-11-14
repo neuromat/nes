@@ -75,7 +75,8 @@ def survey_list(request, template_name='survey/survey_list.html'):
                 'lime_survey_id': survey.lime_survey_id,
                 'title': surveys.get_survey_title(survey.lime_survey_id, language),
                 'is_initial_evaluation': survey.is_initial_evaluation,
-                'has_file_upload_question': has_fileupload_question
+                'has_file_upload_question': has_fileupload_question,
+                'is_active': surveys.get_survey_properties(survey.lime_survey_id, 'active'),
             }
         )
 
@@ -436,20 +437,21 @@ def create_experiments_questionnaire_data_list(survey, surveys):
 
     # Add questionnaires from the experiments that have no answers and are not in an experimental protocol of a group.
     for use in ComponentConfiguration.objects.filter(component__component_type="questionnaire"):
-        q = Questionnaire.objects.get(id=use.component_id)
+        q = Questionnaire.objects.filter(id=use.component_id).first()
 
-        if q.survey == survey:
-            if use.id not in experiments_questionnaire_data_dictionary:
-                experiments_questionnaire_data_dictionary[use.id] = {
-                    'experiment_title': use.component.experiment.title,
-                    'group_title': '',  # It is not in use in any group.
-                    'parent_identification': use.parent.identification,
-                    'component_identification': use.component.identification,
-                    # TODO After update to Django 1.8, override from_db to avoid this if.
-                    # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
-                    'use_name': use.name if use.name is not None else "",
-                    'patients': {}  # There is no answers.
-                }
+        if q is not None:
+            if q.survey== survey:
+                if use.id not in experiments_questionnaire_data_dictionary:
+                    experiments_questionnaire_data_dictionary[use.id] = {
+                        'experiment_title': use.component.experiment.title,
+                        'group_title': '',  # It is not in use in any group.
+                        'parent_identification': use.parent.identification,
+                        'component_identification': use.component.identification,
+                        # TODO After update to Django 1.8, override from_db to avoid this if.
+                        # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
+                        'use_name': use.name if use.name is not None else "",
+                        'patients': {}  # There is no answers.
+                    }
 
     # Transform dictionary into a list to include questionnaire components that are not in use and to sort.
     experiments_questionnaire_data_list = []
