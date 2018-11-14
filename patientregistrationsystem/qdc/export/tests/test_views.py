@@ -1341,120 +1341,80 @@ class ExportDataCollectionTest(ExportTestCase):
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
-    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # def test_export_experiment_with_goalkeeper_game_data_2_groups(self):
-    #
-    #     # create second group
-    #     # create patient/subject/subject_of_group
-    #     root_component1 = ObjectsFactory.create_block(self.experiment)
-    #     group1 = ObjectsFactory.create_group(
-    #         self.experiment, root_component1
-    #     )
-    #     patient1 = UtilTests().create_patient_mock(changed_by=self.user)
-    #     subject1 = ObjectsFactory.create_subject(patient1)
-    #     subject_of_group1 = \
-    #         ObjectsFactory.create_subject_of_group(group1, subject1)
-    #
-    #     # create digital game phase (dgp) component
-    #     manufacturer = ObjectsFactory.create_manufacturer()
-    #     software = ObjectsFactory.create_software(manufacturer)
-    #     software_version = ObjectsFactory.create_software_version(software)
-    #     context_tree = ObjectsFactory.create_context_tree(self.experiment)
-    #
-    #     dgp = ObjectsFactory.create_component(
-    #         self.experiment, Component.DIGITAL_GAME_PHASE,
-    #         kwargs={'software_version': software_version, 'context_tree': context_tree}
-    #     )
-    #
-    #     # include gdc component in experimental protocol
-    #     component_config = ObjectsFactory.create_component_configuration(
-    #         self.root_component, dgp
-    #     )
-    #     component_config1 = ObjectsFactory.create_component_configuration(
-    #         root_component1, dgp
-    #     )
-    #
-    #     dct = ObjectsFactory.create_data_configuration_tree(component_config)
-    #     dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
-    #
-    #     # 'upload' data game phase collection file
-    #     dgp_data = ObjectsFactory.create_digital_game_phase_data(
-    #         dct, self.subject_of_group
-    #     )
-    #
-    #     dgp_data1 = ObjectsFactory.create_digital_game_phase_data(
-    #         dct1, subject_of_group1
-    #     )
-    #
-    #     ObjectsFactory.create_digital_game_phase_file(dgp_data)
-    #     ObjectsFactory.create_digital_game_phase_file(dgp_data1)
-    #
-    #     # Create additional data to this step
-    #     additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
-    #
-    #     ObjectsFactory.create_additional_data_file(additional_data)
-    #
-    #     self.append_session_variable(
-    #         'group_selected_list', [str(self.group.id), str(group1.id)]
-    #     )
-    #
-    #     # Post data to view: data style that is posted to export_view in
-    #     # template
-    #     data = {
-    #         'per_questionnaire': ['on'],
-    #         'per_participant': ['on'],
-    #         'per_goalkeeper_game_data': ['on'],
-    #         # 'per_additional_data': ['on'],
-    #         'headings': ['code'],
-    #         'filesformat':['csv'],
-    #         'responses': ['short'],
-    #         'patient_selected': ['age*age'],
-    #         'action': ['run']
-    #     }
-    #     response = self.client.post(reverse('export_view'), data)
-    #
-    #     zipped_file = self.get_zipped_file(response)
-    #
-    #     # we have only the digital_game_phase step, so we get the first
-    #     # element: [0]
-    #     for path in create_list_of_trees(self.group.experimental_protocol,
-    #                                      "digital_game_phase")[0]:
-    #         digital_game_phase_component_configuration = \
-    #             ComponentConfiguration.objects.get(pk=path[-1][0])
-    #         component_step = digital_game_phase_component_configuration.component
-    #         step_number = path[-1][4]
-    #
-    #         self.assert_per_participant_step_file_exists(step_number, component_step,
-    #                                                      'DigitalGamePhaseData_1',
-    #                                                      'file.bin',
-    #                                                      zipped_file)
-    #
-    #         self.assert_per_participant_step_file_exists(step_number, component_step,
-    #                                                      'AdditionalData_1',
-    #                                                      'file.bin',
-    #                                                      zipped_file)
-    #
-    #     # we have only the digital_game_phase step, so we get the first
-    #     # element: [0]
-    #     for path in create_list_of_trees(group1.experimental_protocol,
-    #                                      "digital_game_phase")[0]:
-    #         digital_game_phase_component_configuration = \
-    #             ComponentConfiguration.objects.get(pk=path[-1][0])
-    #         component_step = digital_game_phase_component_configuration.component
-    #         step_number = path[-1][4]
-    #
-    #         self.assert_per_participant_step_file_exists(step_number, component_step,
-    #                                                      'DigitalGamePhaseData_1',
-    #                                                      'file.bin',
-    #                                                      zipped_file)
-    #
-    #         self.assert_per_participant_step_file_exists(step_number, component_step,
-    #                                                      'AdditionalData_1',
-    #                                                      'file.bin',
-    #                                                      zipped_file)
-    #
-    #     shutil.rmtree(self.TEMP_MEDIA_ROOT)
-    #
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_goalkeeper_game_data_2_groups(self):
+
+        # create second group
+        # create patient/subject/subject_of_group
+        root_component1 = ObjectsFactory.create_block(self.experiment)
+        group1 = ObjectsFactory.create_group(
+            self.experiment, root_component1
+        )
+        patient1 = UtilTests().create_patient_mock(changed_by=self.user)
+        subject1 = ObjectsFactory.create_subject(patient1)
+        subject_of_group1 = \
+            ObjectsFactory.create_subject_of_group(group1, subject1)
+
+        # create digital game phase (dgp) component
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        context_tree = ObjectsFactory.create_context_tree(self.experiment)
+
+        dgp = ObjectsFactory.create_component(
+            self.experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': software_version, 'context_tree': context_tree}
+        )
+
+        # include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, dgp
+        )
+        component_config1 = ObjectsFactory.create_component_configuration(
+            root_component1, dgp
+        )
+
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
+
+        # 'upload' data game phase collection file
+        dgp_data = ObjectsFactory.create_digital_game_phase_data(
+            dct, self.subject_of_group
+        )
+
+        dgp_data1 = ObjectsFactory.create_digital_game_phase_data(
+            dct1, subject_of_group1
+        )
+
+        ObjectsFactory.create_digital_game_phase_file(dgp_data)
+        ObjectsFactory.create_digital_game_phase_file(dgp_data1)
+
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
+
+        self.append_session_variable(
+            'group_selected_list', [str(self.group.id), str(group1.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_goalkeeper_game_data': ['on'],
+            # 'per_additional_data': ['on'],
+            'headings': ['code'],
+            'filesformat':['csv'],
+            'responses': ['short'],
+            'patient_selected': ['age*age'],
+            'action': ['run']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_step_additional_data(self):
         # create generic data collection (gdc) component, it could've been any data collection
