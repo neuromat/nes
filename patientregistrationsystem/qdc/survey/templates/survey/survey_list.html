@@ -47,6 +47,7 @@
                         <tr>
                             <th>{% trans "Questionnaire" %}</th>
                             <th style="text-align: center">{% trans "Required fill" %}</th>
+                            <th style="text-align: center">{% trans "Is active?" %}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -54,6 +55,7 @@
                             <tr>
                                 <td><a data-toggle="tooltip" data-placement="left" title="{% trans "View" %}" href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }} {% if questionnaire.has_file_upload_question %}<big><b style="color: red;">!</b></big> {% endif %}</a></td>
                                 <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
+                                <td style="text-align: center">{% if questionnaire.is_active == 'Y' %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% else %}<span class="glyphicon glyphicon-remove" style="color: red"></span> {% endif %}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
