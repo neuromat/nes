@@ -390,6 +390,8 @@ class ExportExecution:
                 'questionnaire_metadata_export_directory': '',
                 'participant_data_directory': '',
                 'participant_data_export_directory': '',
+                'goalkeeper_game_data_directory': '',
+                'goalkeeper_game_data_export_directory': '',
                 'eeg_default_setting_id': '',
                 'emg_default_setting_id': '',
                 'tms_default_setting_id': '',
@@ -1350,6 +1352,21 @@ class ExportExecution:
                 self.per_group_data[group_id]['group'][
                     'participant_data_export_directory'] = participant_data_export_directory
 
+            if self.get_input_data('component_list')['per_goalkeeper_game_data']:
+                # path ex. NES_EXPORT/Experiment_data/Group_xxx/Goalkeeper_game_data
+                error_msg, directory_participant_data = create_directory(
+                    directory_group, self.get_input_data("goalkeeper_game_data_directory"))
+                if error_msg != "":
+                    return error_msg
+                # path ex. NES_EXPORT/Experiment_data/Group_xxx/Goalkeeper_game_data/
+                participant_data_export_directory = path.join(
+                    export_directory_group, self.get_input_data("goalkeeper_game_data_directory"))
+
+                self.per_group_data[group_id]['group'][
+                    'goalkeeper_game_data_directory'] = directory_participant_data
+                self.per_group_data[group_id]['group'][
+                    'goalkeeper_game_data_export_directory'] = participant_data_export_directory
+
         return error_msg
 
     def process_per_experiment_questionnaire(self):
@@ -2033,6 +2050,12 @@ class ExportExecution:
                         if error_msg != "":
                             return error_msg
 
+                    goalkeeper_game_directory = self.per_group_data[group_id]['group']['goalkeeper_game_data_directory']
+                    if not path.exists(path_per_participant):
+                        error_msg, path_per_participant = create_directory(goalkeeper_game_directory, '')
+                        if error_msg != "":
+                            return error_msg
+
                     goalkeeper_game_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
                         'digital_game_data_list']
 
@@ -2074,10 +2097,12 @@ class ExportExecution:
                                 for context_tree_file in goalkeeper_game_data['digital_game_file_list']:
                                     path_context_tree_file = context_tree_file['digital_game_filename']
                                     file_name = path_context_tree_file.split('/')[-1]
+                                    file_name_digital = "AMPARO2017"
                                     # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
                                     #  /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
                                     complete_goalkeeper_game_filename = path.join(path_per_goalkeeper_game_data,
                                                                                   file_name)
+
                                     with open(path_context_tree_file, 'rb') as f:
                                         data = f.read()
 
@@ -2086,6 +2111,29 @@ class ExportExecution:
 
                                     self.files_to_zip_list.append([complete_goalkeeper_game_filename,
                                                                    export_goalkeeper_data_directory])
+
+                                    complete_digital_game_filename = path.join(goalkeeper_game_directory,
+                                                                                  file_name_digital)
+
+                                    if 'tsv' in self.get_input_data('filesformat_type'):
+                                        separator = '\t'
+                                        export_filename = "%s.tsv" % file_name_digital  # ".tsv"
+                                    else:
+                                        separator = ','
+                                        export_filename = "%s.csv" % file_name_digital  # ".csv"
+
+                                    complete_digital_filename = path.join(goalkeeper_game_directory, export_filename)
+
+                                    with open(complete_goalkeeper_game_filename, 'r') as infile, open(complete_digital_filename,
+                                                                                           'a') as outfile:
+                                        stripped = (line.strip() for line in infile)
+                                        lines = (line.split(",") for line in stripped if line)
+                                        writer = csv.writer(outfile)
+                                        writer.writerows(lines)
+
+                    goalkeeper_game_data_export_directory = self.per_group_data[group_id]['group']['goalkeeper_game_data_export_directory']
+                    self.files_to_zip_list.append([complete_digital_filename, goalkeeper_game_data_export_directory])
+
 
                 if 'generic_data_collection_data_list' \
                         in self.per_group_data[group_id]['data_per_participant'][participant_code]:
@@ -2440,11 +2488,12 @@ class ExportExecution:
 
     def process_experiment_data(self, language_code):
         error_msg = ""
+
+        filesformat_type = self.get_input_data("filesformat_type")
+
         # process of experiment description
         for group_id in self.per_group_data:
             group = get_object_or_404(Group, pk=group_id)
-
-        filesformat_type = self.get_input_data("filesformat_type")
 
         study = group.experiment.research_project
         experiment = group.experiment

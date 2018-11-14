@@ -10,6 +10,7 @@ PER_QUESTIONNAIRE_DIRECTORY = "Per_questionnaire"
 QUESTIONNAIRE_METADATA_DIRECTORY = "Questionnaire_metadata"
 PARTICIPANT_DATA_DIRECTORY = "Participant_data"
 EXPERIMENT_DATA_DIRECTORY = "Experiment_data"
+GOALKEEPER_GAME_DATA_DIRECTORY = "Goalkeeper_game_data"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 
@@ -52,6 +53,7 @@ class InputExport:
         if export_per_experiment:
             self.data["experiment_data_directory"] = EXPERIMENT_DATA_DIRECTORY
             self.data["participant_data_directory"] = PARTICIPANT_DATA_DIRECTORY
+            self.data["goalkeeper_game_data_directory"] = GOALKEEPER_GAME_DATA_DIRECTORY
 
     def build_dynamic_header(self, variable_name, variable_data):
         self.data[variable_name] = variable_data
