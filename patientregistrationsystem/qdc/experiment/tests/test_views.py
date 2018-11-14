@@ -4,8 +4,14 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from experiment.models import Keyword
+from experiment.models import Keyword, GoalkeeperGameConfig,\
+    Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults,\
+    FileFormat
+from configuration.models import LocalInstitution
+from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
+
+from patient.tests import UtilTests
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -158,3 +164,150 @@ class ResearchprojectviewviewTest(TestCase):
     #                data={'action': 'remove'})
     #
     #     self.assertEqual(response.status_code, 403)
+
+class LoadGameKeeperTest(TestCase):
+    def setUp(self):
+        exec(open('add_initial_data.py').read())
+        self.user = User.objects.create_user(
+            username='jose', email='jose@test.com', password='passwd'
+        )
+
+        # create experiment/experimental protocol/group
+        self.experiment = ObjectsFactory.create_experiment(
+            ObjectsFactory.create_research_project(self.user)
+        )
+        self.root_component = ObjectsFactory.create_block(self.experiment)
+        self.group = ObjectsFactory.create_group(
+            self.experiment, self.root_component
+        )
+
+        # create patient/subject/subject_of_group
+        self.patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(self.patient)
+        self.subject_of_group = \
+            ObjectsFactory.create_subject_of_group(self.group, subject)
+
+        user_profile = self.user.user_profile
+        user_profile.login_enabled = True
+        user_profile.force_password_change = False
+        user_profile.save()
+
+        for group in Group.objects.all():
+            group.user_set.add(self.user)
+
+        self.client.login(username=self.user.username, password='passwd')
+        self.research_project = ObjectsFactory.create_research_project()
+        self.experiment = ObjectsFactory.create_experiment(self.research_project)
+
+        self.idconfig = 0
+        self.idgameresult = 0
+
+        GoalkeeperGameConfig.objects.filter(idconfig=self.idconfig).using("goalkeeper").delete()
+        GoalkeeperGameConfig.objects.filter(idconfig=self.idconfig).using("goalkeeper").delete()
+
+        self.goalkeepergameconfig = GoalkeeperGameConfig.objects.using("goalkeeper").create(
+            idconfig=self.idconfig,
+            institution='TESTINST',
+            groupcode='TESTGROUP',
+            soccerteam='TESTTEAM',
+            game='TE',
+            phase=0,
+            playeralias=self.subject_of_group.subject.patient.code,
+            sequexecuted='000100100100',
+            gamedata='190101',
+            gametime='010101',
+            idresult=self.idgameresult,
+            playid='TESTEPLAYID',
+            sessiontime=0.1,
+            relaxtime=0.1,
+            playermachine='TESTPLAYERMACHINE',
+            gamerandom=100,
+            limitplays=1,
+            totalcorrect=0,
+            successrate=0,
+            gamemode=0,
+            status=0,
+            playstorelax=0,
+            scoreboard=True,
+            finalscoreboard=0,
+            animationtype=0,
+            minhits=1
+        )
+
+        self.goalkeepergameresults = GoalkeeperGameResults.objects.using("goalkeeper").create(
+            idgameresult=self.idgameresult,
+            idconfig=self.idconfig,
+            move=0,
+            timeuntilanykey=0.1,
+            timeuntilshowagain=0.1,
+            waitedresult=1,
+            ehrandom='n',
+            optionchoosen=0,
+            movementtime=0.1,
+            decisiontime=0.1
+        )
+
+        self.group.code = GoalkeeperGameConfig.objects.using("goalkeeper").first().groupcode
+        self.group.save()
+
+
+    def test_load_goalkeeper_data(self):
+        self.assertEqual(GoalkeeperGameConfig.objects.using("goalkeeper").count(), 1)
+
+        # create digital game phase (dgp) component
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        context_tree = ObjectsFactory.create_context_tree(self.experiment)
+
+        dgp = ObjectsFactory.create_component(
+            self.experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': software_version, 'context_tree': context_tree}
+        )
+
+        # include dgp component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, dgp
+        )
+
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+
+        # Create a instance of institution and local institution
+        institution = Institution.objects.create(
+            name=self.goalkeepergameconfig.institution,
+            acronym='TESTINST',
+            country='TESTCOUNTRY',
+        )
+
+        LocalInstitution.objects.create(
+            code='TESTINST',
+            institution=institution)
+
+        # Create a Goalkeeper game
+        goalkeepergame = GoalkeeperGame.objects.create(
+            code=self.goalkeepergameconfig.game,
+            name='TESTGOALKEEPERGAME')
+
+        # Create a phase of the Goalkeeper game
+        GoalkeeperPhase.objects.create(
+            game=goalkeepergame,
+            phase=self.goalkeepergameconfig.phase,
+            pk=dct.code
+        )
+
+        # Create fileformat in db
+        FileFormat.objects.create(nes_code='other')
+
+        response = self.client.post(reverse("load_group_goalkeeper_game_data", args=(self.group.id,)))
+
+        self.assertEqual(response.status_code, 302)
+
+        Institution.objects.filter(name='TESTINSTITUTION').delete()
+        LocalInstitution.objects.filter(code='TESTLOCALINST').delete()
+        GoalkeeperGame.objects.filter(code = self.goalkeepergameconfig.game).delete()
+        GoalkeeperPhase.objects.filter(phase=0).delete()
+
+    def tearDown(self):
+        GoalkeeperGameConfig.objects.filter(idconfig=self.idconfig).using("goalkeeper").delete()
+        GoalkeeperGameResults.objects.filter(idgameresult=self.idgameresult).using("goalkeeper").delete()

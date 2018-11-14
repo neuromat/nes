@@ -9,6 +9,7 @@ from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from simple_history.models import HistoricalRecords
+from django.conf import settings
 
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
@@ -1482,19 +1483,42 @@ class GoalkeeperGameConfig(models.Model):
     date = models.CharField(name="gamedata", max_length=6)
     time = models.CharField(name="gametime", max_length=6)
     result_id = models.IntegerField(name="idresult")
+    playid = models.TextField(name="playid", default="")
+    sessiontime = models.FloatField(name="sessiontime", default="")
+    relaxtime = models.FloatField(name="relaxtime", default="")
+    playermachine = models.TextField(name="playermachine", default="")
+    gamerandom = models.TextField(name="gamerandom", default="")
+    limitplays = models.SmallIntegerField(name="limitplays", default="")
+    totalcorrect = models.SmallIntegerField(name="totalcorrect", default="")
+    successrate = models.FloatField(name="successrate", default="")
+    gamemode = models.TextField(name="gamemode", default="")
+    status = models.SmallIntegerField(name="status", default="")
+    playstorelax = models.SmallIntegerField(name="playstorelax", default="")
+    scoreboard = models.BooleanField(name="scoreboard", default="")
+    finalscoreboard = models.SmallIntegerField(name="finalscoreboard", default="")
+    animationtype = models.SmallIntegerField(name="animationtype", default="")
+    minhits = models.SmallIntegerField(name="minhits", default="")
 
     class Meta:
-        managed = False
+        managed = settings.IS_TESTING
         db_table = '"public"."gameconfig"'
 
 
 class GoalkeeperGameResults(models.Model):
-    id = models.IntegerField(name="id", primary_key=True)
-    file_content = models.TextField(name='filecontent')
+    id = models.IntegerField(name="idgameresult", primary_key=True, default="")
+    id_config = models.IntegerField(name="idconfig", default="")
+    move = models.SmallIntegerField(name='move', default="")
+    timeuntilanykey = models.FloatField(name='timeuntilanykey', default="")
+    timeuntilshowagain = models.FloatField(name='timeuntilshowagain', default="")
+    waitedresult = models.SmallIntegerField(name='waitedresult', default="")
+    ehrandom = models.CharField(name='ehrandom', max_length=3, default="")
+    optionchoosen = models.SmallIntegerField(name='optionchoosen', default="")
+    movementtime = models.FloatField(name='movementtime', default="")
+    decisiontime = models.FloatField(name='decisiontime', default="")
 
     class Meta:
-        managed = False
-        db_table = '"public"."results"'
+        managed = settings.IS_TESTING
+        db_table = '"public"."gameresults"'
 
 
 class ScheduleOfSending(models.Model):
