@@ -10,6 +10,7 @@ PER_QUESTIONNAIRE_DIRECTORY = "Per_questionnaire"
 QUESTIONNAIRE_METADATA_DIRECTORY = "Questionnaire_metadata"
 PARTICIPANT_DATA_DIRECTORY = "Participant_data"
 EXPERIMENT_DATA_DIRECTORY = "Experiment_data"
+GOALKEEPER_GAME_DATA_DIRECTORY = "Goalkeeper_game_data"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 
@@ -52,6 +53,7 @@ class InputExport:
         if export_per_experiment:
             self.data["experiment_data_directory"] = EXPERIMENT_DATA_DIRECTORY
             self.data["participant_data_directory"] = PARTICIPANT_DATA_DIRECTORY
+            self.data["goalkeeper_game_data_directory"] = GOALKEEPER_GAME_DATA_DIRECTORY
 
     def build_dynamic_header(self, variable_name, variable_data):
         self.data[variable_name] = variable_data
@@ -152,8 +154,9 @@ def build_partial_export_structure(export_per_participant, participant_field_hea
 
 def build_complete_export_structure(export_per_participant, export_per_questionnaire, export_per_experiment,
                                     participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
-                                    experiment_questionnaires_list, response_type, heading_type, output_filename,
-                                    component_list, language):
+                                    experiment_questionnaires_list, response_type, heading_type,
+                                    output_filename, component_list, language, filesformat_type
+                                    ):
 
     json_data = InputExport()
 
@@ -166,6 +169,8 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
     json_data.build_dynamic_header("response_type", response_type)
 
     json_data.build_dynamic_header("heading_type", heading_type)
+
+    json_data.build_dynamic_header("filesformat_type", filesformat_type)
 
     json_data.build_dynamic_header("output_language", language)
 

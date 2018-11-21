@@ -60,14 +60,23 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     language_code = request.LANGUAGE_CODE
 
+    count_surveys_with_fileupload_question = 0
+
     for survey in Survey.objects.all():
         language = get_questionnaire_language(surveys, survey.lime_survey_id, language_code)
+
+        has_fileupload_question = is_type_of_question_in_survey(surveys, survey, '|')
+        if has_fileupload_question:
+            count_surveys_with_fileupload_question += 1
+
         questionnaires_list.append(
             {
                 'id': survey.id,
                 'lime_survey_id': survey.lime_survey_id,
                 'title': surveys.get_survey_title(survey.lime_survey_id, language),
-                'is_initial_evaluation': survey.is_initial_evaluation
+                'is_initial_evaluation': survey.is_initial_evaluation,
+                'has_file_upload_question': has_fileupload_question,
+                'is_active': surveys.get_survey_properties(survey.lime_survey_id, 'active'),
             }
         )
 
@@ -77,7 +86,8 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     context = {
         'questionnaires_list': questionnaires_list,
-        'limesurvey_available': limesurvey_available
+        'limesurvey_available': limesurvey_available,
+        'count_surveys_with_fileupload_question': count_surveys_with_fileupload_question
     }
 
     return render(request, template_name, context)
@@ -95,8 +105,6 @@ def survey_create(request, template_name="survey/survey_register.html"):
 
     if limesurvey_available:
         questionnaires_list = surveys.find_all_active_questionnaires()
-
-    surveys.release_session_key()
 
     if questionnaires_list:
         # removing surveys already registered
@@ -119,10 +127,25 @@ def survey_create(request, template_name="survey/survey_register.html"):
                     lime_survey_id=request.POST['questionnaire_selected'],
                     is_initial_evaluation=survey_added.is_initial_evaluation)
 
+                has_file_upload_question = is_type_of_question_in_survey(
+                    surveys=surveys,
+                    survey=survey,
+                    type="|"
+                )
+
+                surveys.release_session_key()
+
                 if created:
+                    if has_file_upload_question:
+                        messages.warning(request, _('NES can\'t retrieve files from \"file upload\" '
+                                                    'questions from LimeSurvey.') + ' ' +
+                                         _('See \"Best Pratices and Recommendations\" at '
+                                           'https://nes.rtfd.io for more details.'))
                     messages.success(request, _('Questionnaire created successfully.'))
                     redirect_url = reverse("survey_list")
                     return HttpResponseRedirect(redirect_url)
+
+    surveys.release_session_key()
 
     context = {
         "survey_form": survey_form,
@@ -248,6 +271,22 @@ def survey_update_sensitive_questions(request, survey_id, template_name="survey/
         "survey_title": survey_title}
 
     return render(request, template_name, context)
+
+
+def is_type_of_question_in_survey(surveys, survey, type):
+    groups_list = surveys.list_groups(sid=survey.lime_survey_id)
+    if not 'status' in groups_list:
+        for group in groups_list:
+            group_questions = surveys.list_questions(sid=survey.lime_survey_id,
+                                                     gid=group['gid'])
+
+            for question in group_questions:
+                group_properties = surveys.get_question_properties(question_id=question,
+                                                                   language=group['language'])
+                if 'type' in group_properties:
+                    if group_properties['type'] == type:
+                        return True
+    return False
 
 
 def get_survey_header(surveys, survey, language, heading_type):
@@ -398,20 +437,21 @@ def create_experiments_questionnaire_data_list(survey, surveys):
 
     # Add questionnaires from the experiments that have no answers and are not in an experimental protocol of a group.
     for use in ComponentConfiguration.objects.filter(component__component_type="questionnaire"):
-        q = Questionnaire.objects.get(id=use.component_id)
+        q = Questionnaire.objects.filter(id=use.component_id).first()
 
-        if q.survey == survey:
-            if use.id not in experiments_questionnaire_data_dictionary:
-                experiments_questionnaire_data_dictionary[use.id] = {
-                    'experiment_title': use.component.experiment.title,
-                    'group_title': '',  # It is not in use in any group.
-                    'parent_identification': use.parent.identification,
-                    'component_identification': use.component.identification,
-                    # TODO After update to Django 1.8, override from_db to avoid this if.
-                    # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
-                    'use_name': use.name if use.name is not None else "",
-                    'patients': {}  # There is no answers.
-                }
+        if q is not None:
+            if q.survey== survey:
+                if use.id not in experiments_questionnaire_data_dictionary:
+                    experiments_questionnaire_data_dictionary[use.id] = {
+                        'experiment_title': use.component.experiment.title,
+                        'group_title': '',  # It is not in use in any group.
+                        'parent_identification': use.parent.identification,
+                        'component_identification': use.component.identification,
+                        # TODO After update to Django 1.8, override from_db to avoid this if.
+                        # https://docs.djangoproject.com/en/1.8/ref/models/instances/#customizing-model-loading
+                        'use_name': use.name if use.name is not None else "",
+                        'patients': {}  # There is no answers.
+                    }
 
     # Transform dictionary into a list to include questionnaire components that are not in use and to sort.
     experiments_questionnaire_data_list = []
@@ -769,7 +809,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                             answer_options = \
                                                 question['answer_options']
                                             answer = \
-                                                question['attributes_lang']['dualscale_headerA'] + ": "
+                                                question['question_id'] + "[1]: "
                                             if responses_list[1][index] in \
                                                     answer_options:
                                                 answer_option = \
@@ -792,7 +832,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                             answer_options = \
                                                 question['answer_options']
                                             answer = \
-                                                question['attributes_lang']['dualscale_headerB'] + ": "
+                                                question['question_id'] + "[2]: "
                                             if responses_list[1][index] in \
                                                     answer_options:
                                                 answer_option = \
@@ -866,24 +906,13 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                                             if answer != 'Y':
                                                                 no_response_flag = True
 
-                                                    #if question['type'] == '|' and answer:
-                                                    #    link = \
-                                                    #        settings.LIMESURVEY['URL_WEB'] + \
-                                                    #        '/index.php/admin/responses/sa/browse/fieldname/' + \
-                                                    #        str(lime_survey_id) + 'X' + \
-                                                    #        str(question['gid']) + 'X' + \
-                                                    #        str(question['qid']) + \
-                                                    #        '/id/' + \
-                                                    #        responses_list[1][0] + \
-                                                    #        '/surveyid/' + \
-                                                    #        str(lime_survey_id) + \
-                                                    #        '/downloadindividualfile/' + \
-                                                    #        json.loads(answer[1:-1])['name']
-                                        groups_of_questions = \
-                                            add_questionnaire_response_to_group(
-                                                groups_of_questions, question,
-                                                answer, link, no_response_flag
-                                            )
+                                        # not show fileupload questions
+                                        if question['type'] != '|':
+                                            groups_of_questions = \
+                                                add_questionnaire_response_to_group(
+                                                    groups_of_questions, question,
+                                                    answer, link, no_response_flag
+                                                )
 
                                         # checking if the super-question
                                         # should be unmarked

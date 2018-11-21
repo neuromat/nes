@@ -7424,6 +7424,37 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
     return render(request, template_name, context)
 
 
+def create_csv_for_goalkeeper(complete_filename, config, results):
+    header = ['player alias','group code','institution','id',
+              'soccer team','game','phase','session time(s)',
+              'relax time(s)','game data','game time','game random',
+              'limit plays','total correct','success rate',
+              'game mode','status','plays to relax',
+              'scoreboard','final scoreboard','animation type',
+              'min hits','playermachine',
+              'move','time until any key(s)','time until show again(s)','waited result',
+              'eh random?','option chosen','movement time(s)','decision time(s)',
+              'sequence executed']
+    rows_to_be_saved = []
+    rows_to_be_saved.append(header)
+    for result in results:
+        rows_to_be_saved.append([config.playeralias, config.groupcode, config.institution, config.idresult,
+                                 config.soccerteam, config.game, config.phase, config.sessiontime,
+                                 config.relaxtime, config.gamedata, config.gametime, config.gamerandom,
+                                 config.limitplays, config.totalcorrect, config.successrate,
+                                 config.gamemode, config.status, config.playstorelax,
+                                 config.scoreboard, config.finalscoreboard, config.animationtype,
+                                 config.minhits, config.playermachine,
+                                 result.move, result.timeuntilanykey, result.timeuntilshowagain,result.waitedresult,
+                                 result.ehrandom, result.optionchoosen, result.movementtime, result.decisiontime,
+                                 config.sequexecuted])
+
+    with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+        export_writer = csv.writer(csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC, delimiter=',')
+        for row in rows_to_be_saved:
+            export_writer.writerow(row)
+
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def load_group_goalkeeper_game_data(request, group_id):
@@ -7466,6 +7497,9 @@ def load_group_goalkeeper_game_data(request, group_id):
                         if phase == None:
                             phase = 0
 
+                    # Create the folder to temporarily store the csv files to be saved as participant data collection
+                    errors, path_to_goalkeeper_files = create_directory(settings.MEDIA_ROOT, "temp_goalkeepergames")
+
                     # for each subject
                     for subject_of_group in group.subjectofgroup_set.all():
 
@@ -7480,10 +7514,10 @@ def load_group_goalkeeper_game_data(request, group_id):
 
                             for goalkeeper_game_configuration in goalkeeper_games:
 
-                                result = GoalkeeperGameResults.objects.using('goalkeeper').filter(
-                                    id=goalkeeper_game_configuration.idresult).first()
+                                results = GoalkeeperGameResults.objects.using('goalkeeper').filter(
+                                    idconfig=goalkeeper_game_configuration.idconfig).all()
 
-                                if result:
+                                if results:
 
                                     game_date = datetime.strptime(goalkeeper_game_configuration.gamedata, '%y%m%d')
                                     game_time = datetime.strptime(goalkeeper_game_configuration.gametime, '%H%M%S')
@@ -7516,7 +7550,7 @@ def load_group_goalkeeper_game_data(request, group_id):
                                                    subject_of_group.subject.patient.code)
 
                                         digital_game_phase_data.file_format = \
-                                            get_object_or_404(FileFormat, nes_code='txt')
+                                            get_object_or_404(FileFormat, nes_code='other')
 
                                         digital_game_phase_data.sequence_used_in_context_tree = \
                                             goalkeeper_game_configuration.sequexecuted
@@ -7524,9 +7558,18 @@ def load_group_goalkeeper_game_data(request, group_id):
                                         digital_game_phase_data.save()
 
                                         # Digital Game Phase File
-                                        file_name = "%s_%s.txt" % (group.code,
+                                        file_name = "%s_%s.csv" % (group.code,
                                                                    subject_of_group.subject.patient.code)
-                                        file_content = result.filecontent
+
+                                        complete_file_name = os.path.join(path_to_goalkeeper_files, file_name)
+
+                                        # CSV to be stored as data collection of the participant
+                                        create_csv_for_goalkeeper(complete_file_name,
+                                                                  goalkeeper_game_configuration,
+                                                                  results)
+
+                                        with open(complete_file_name, "r") as file:
+                                            file_content = file.read()
 
                                         digital_game_phase_file = DigitalGamePhaseFile(
                                             digital_game_phase_data=digital_game_phase_data)
@@ -7536,6 +7579,12 @@ def load_group_goalkeeper_game_data(request, group_id):
                                         digital_game_phase_file.save()
 
                                         number_of_imported_data += 1
+
+                                        # Delete the temporary file created
+                                        os.remove(complete_file_name)
+
+                    # Remove directory where the files of each subject were temporarily stored
+                    os.rmdir(path_to_goalkeeper_files)
 
         if number_of_imported_data:
             if number_of_imported_data == 1:
@@ -9290,7 +9339,7 @@ def component_create(request, experiment_id, component_type):
     elif component_type == 'tms':
         specific_form = TMSForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
-        questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
+        questionnaires_list = Survey.objects.all()
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         # component_form.fields['duration_value'].widget.attrs['disabled'] = True
@@ -9339,30 +9388,30 @@ def component_create(request, experiment_id, component_type):
                     redirect_url = reverse("component_list", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
 
+    questionnaires_with_names = []
+
+    for questionnaire in questionnaires_list:
+         questionnaires_with_names.append(find_questionnaire_name(questionnaire.lime_survey_id,request.LANGUAGE_CODE))
+
     context = {"back_cancel_url": "/experiment/" + str(experiment.id) + "/components",
                "component_form": component_form,
                "creating": True,
                "can_change": can_change,
                "experiment": experiment,
-               "questionnaires_list": questionnaires_list,
+               "questionnaires_list": questionnaires_with_names,
                "specific_form": specific_form}
     return render(request, template_name, context)
 
 
-def find_active_questionnaires(language_code):
+def find_questionnaire_name(sid, language):
 
     surveys = Questionnaires()
 
-    questionnaires_list = surveys.find_all_active_questionnaires()
-
-    for questionnaire in questionnaires_list:
-        questionnaire_id = questionnaire["sid"]
-        language = get_questionnaire_language(surveys, questionnaire_id, language_code)
-        questionnaire['surveyls_title'] = surveys.get_survey_title(questionnaire_id, language)
+    name = surveys.get_survey_title(sid, language)
 
     surveys.release_session_key()
 
-    return questionnaires_list
+    return {'sid': sid, 'name': name}
 
 
 def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
@@ -11080,7 +11129,7 @@ def component_add_new(request, path_of_the_components, component_type):
     elif component_type == 'tms':
         specific_form = TMSForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
-        questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
+        questionnaires_list = Survey.objects.all()
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         duration_string = "0"
@@ -11169,6 +11218,11 @@ def component_add_new(request, path_of_the_components, component_type):
 
                     return HttpResponseRedirect(redirect_url)
 
+    questionnaires_with_names=[]
+
+    for questionnaire in questionnaires_list:
+         questionnaires_with_names.append(find_questionnaire_name(questionnaire.lime_survey_id,request.LANGUAGE_CODE))
+
     context = {"back_cancel_url": back_cancel_url,
                "block": block,
                "block_duration": duration_string,
@@ -11182,7 +11236,7 @@ def component_add_new(request, path_of_the_components, component_type):
                "list_of_breadcrumbs": list_of_breadcrumbs,
                "number_of_uses_form": number_of_uses_form,
                "position": position,
-               "questionnaires_list": questionnaires_list,
+               "questionnaires_list": questionnaires_with_names,
                "path_of_the_components": path_of_the_components,
                "specific_form": specific_form,
                "can_change": True}

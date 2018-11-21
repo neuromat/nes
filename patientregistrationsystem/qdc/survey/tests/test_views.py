@@ -1,7 +1,6 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -9,9 +8,9 @@ from django.test.client import RequestFactory
 from jsonrpc_requests import Server, TransportError
 
 from patient.tests import UtilTests
-from .models import Survey
-from .views import survey_update
-from .abc_search_engine import Questionnaires
+from survey.models import Survey
+from survey.views import survey_update
+from survey.abc_search_engine import Questionnaires
 
 from custom_user.views import User
 
@@ -338,7 +337,7 @@ class SurveyTest(TestCase):
         response = self.client.post(reverse('survey_edit', args=(survey.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-    def _test_survey_view(self):
+    def test_survey_view(self):
 
         # Create a survey to be used in the test
         # survey = Survey.objects.create(lime_survey_id=1)
@@ -419,3 +418,70 @@ class SurveyTest(TestCase):
 
         response = self.client.get(reverse('survey_view', args=(survey.pk,)))
         self.assertEqual(response.status_code, 200)
+
+    def test_survey_create_with_fileupload_question(self):
+        lime_survey = Questionnaires()
+        sid = None
+
+        try:
+            # Cria uma nova survey no lime survey
+            title_survey = 'Questionario de teste'
+            sid = lime_survey.add_survey(9999, title_survey, 'en', 'G')
+
+            # Obtenho o titulo da survey
+            survey_title = lime_survey.get_survey_title(sid)
+            self.assertEqual(survey_title, title_survey)
+
+            # Verifica se esta ativa
+            survey_active = lime_survey.get_survey_properties(sid, 'active')
+            self.assertEqual(survey_active, 'N')
+
+            # Obtem uma propriedade - Administrador da Survey
+            survey_admin = lime_survey.get_survey_properties(sid, 'admin')
+            self.assertEqual(survey_admin, None)
+
+            # Importar grupo de questoes
+            handle_file_import = \
+                open('quiz/static/quiz/tests/limesurvey_groups_with_fileupload.lsg', 'r')
+            questions_data = handle_file_import.read()
+            questions_id = \
+                lime_survey.insert_questions(sid, questions_data, 'lsg')
+            self.assertGreaterEqual(questions_id, 1)
+
+            # Inicia tabela de tokens
+            self.assertEqual(lime_survey.activate_tokens(sid), 'OK')
+
+            # Ativar survey
+            self.assertEqual(lime_survey.activate_survey(sid), 'OK')
+
+            # Verifica se esta ativa
+            survey_active = lime_survey.get_survey_properties(sid, 'active')
+            self.assertEqual(survey_active, 'Y')
+
+            # Request the survey register screen
+            response = self.client.get(reverse('survey_create'))
+            self.assertEqual(response.status_code, 200)
+
+            # Set survey data
+            # self.data = {'action': 'save', 'title': 'Survey title'}
+            self.data = {'action': 'save', 'questionnaire_selected': sid}
+
+            # Count the number of surveys currently in database
+            count_before_insert = Survey.objects.all().count()
+
+            # Add the new survey
+            response = self.client.post(reverse('survey_create'), self.data)
+            self.assertEqual(response.status_code, 302)
+
+            # Assert if the message is parsed
+            self.assertEqual(response.wsgi_request._messages._queued_messages[0].message, 'NES can\'t retrieve files from "file upload" questions from LimeSurvey. See "Best Pratices and Recommendations" at https://nes.rtfd.io for more details.')
+
+            # Count the number of surveys currently in database
+            count_after_insert = Survey.objects.all().count()
+
+            # Check if it has increased
+            self.assertEqual(count_after_insert, count_before_insert + 1)
+
+        finally:
+            # Deleta a survey gerada no Lime Survey
+            self.assertEqual(lime_survey.delete_survey(sid), 'OK')

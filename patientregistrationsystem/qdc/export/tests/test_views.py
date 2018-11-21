@@ -22,7 +22,10 @@ from export.tests.tests_helper import ExportTestCase
 from patient.tests import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
-from survey.tests_helper import create_survey
+from survey.tests.tests_helper import create_survey
+
+USER_USERNAME = 'myadmin'
+USER_PWD = 'mypassword'
 
 
 class ExportQuestionnaireTest(ExportTestCase):
@@ -34,7 +37,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         self.sid = self.create_limesurvey_questionnaire()
 
         # create questionnaire data collection in NES
-        # TODO: before commit use method already existent in patient.tests. See other places
+        # TODO: use method already existent in patient.tests. See other places
         self.survey = create_survey(self.sid)
         self.data_configuration_tree = self.create_nes_questionnaire(
             self.root_component
@@ -196,7 +199,9 @@ class ExportQuestionnaireTest(ExportTestCase):
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
-                '*Test questionnaire*secondQuestion*secondQuestion'
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short']
@@ -290,7 +295,9 @@ class ExportQuestionnaireTest(ExportTestCase):
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
-                '*Test questionnaire*secondQuestion*secondQuestion'
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short']
@@ -372,13 +379,17 @@ class ExportQuestionnaireTest(ExportTestCase):
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload',
 
                 '1*' + str(group2.id) + '*' + str(self.sid) + '*Test '
                 'questionnaire*acquisitiondate*acquisitiondate',
                 '1*' + str(group2.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '1*' + str(group2.id) + '*' + str(self.sid) +
-                '*Test questionnaire*secondQuestion*secondQuestion'
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '1*' + str(group2.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short']
@@ -489,7 +500,9 @@ class ExportQuestionnaireTest(ExportTestCase):
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
-                '*Test questionnaire*secondQuestion*secondQuestion'
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short']
@@ -521,7 +534,7 @@ class ExportQuestionnaireTest(ExportTestCase):
                 )
         ) as file:
             csv_line1 = next(csv.reader(file))
-            self.assertEqual(len(csv_line1), 5)
+            self.assertEqual(len(csv_line1), 6)
 
     def test_reusing_experimental_protocol_in_two_groups_returns_correct_directory_structure(self):
 
@@ -566,13 +579,17 @@ class ExportQuestionnaireTest(ExportTestCase):
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload',
 
                 '1*' + str(group2.id) + '*' + str(self.sid) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
                 '1*' + str(group2.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '1*' + str(group2.id) + '*' + str(self.sid) +
-                '*Test questionnaire*secondQuestion*secondQuestion'
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '1*' + str(group2.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short']
@@ -628,7 +645,9 @@ class ExportQuestionnaireTest(ExportTestCase):
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.group.id) + '*' + str(self.sid) +
-                '*Test questionnaire*secondQuestion*secondQuestion'
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short']
@@ -695,7 +714,9 @@ class ExportQuestionnaireTest(ExportTestCase):
                 '0*' + str(self.sid) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
                 '0*' + str(self.sid) +
-                '*Test questionnaire*secondQuestion*secondQuestion'
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short'],
@@ -724,6 +745,117 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         shutil.rmtree(temp_dir)
 
+    def test_export_create_file_csv_separated_with_commas(self):
+        self.append_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_participant': ['on'],
+            'action': ['run'],
+            'per_questionnaire': ['on'],
+            'headings': ['abbreviated'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*firstQuestion*firstQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
+            ],
+            'patient_selected': ['age*age'],
+            'responses': ['short'],
+            'filesformat': ['csv']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+
+        zipped_file.extract(
+            os.path.join(
+                'NES_EXPORT',
+                'Experiment_data',
+                'Group_' + self.group.title.lower(),
+                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.csv'
+            ),
+            '/tmp'  # TODO: 1) use os.sep; 2) use tempfile
+        )
+
+        with open(
+                os.path.join(
+                    os.sep, 'tmp',  # TODO: use tempfile
+                    'NES_EXPORT',
+                    'Experiment_data',
+                    'Group_' + self.group.title.lower(),
+                    'Per_questionnaire',
+                    'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.csv'
+                )
+        ) as file:
+            dialect = csv.Sniffer().sniff(file.readline(), [',', '\t'])
+            file.seek(0)
+            self.assertEqual(dialect.delimiter, ",")
+
+    def test_export_create_file_tsv_separated_with_tabs(self):
+        self.append_session_variable(
+            'group_selected_list', [str(self.group.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_participant': ['on'],
+            'action': ['run'],
+            'per_questionnaire': ['on'],
+            'headings': ['abbreviated'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*firstQuestion*firstQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(self.sid) +
+                '*Test questionnaire*fileUpload*fileUpload'
+            ],
+            'patient_selected': ['age*age'],
+            'responses': ['short'],
+            'filesformat': ['tsv']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+
+        zipped_file.extract(
+            os.path.join(
+                'NES_EXPORT',
+                'Experiment_data',
+                'Group_' + self.group.title.lower(),
+                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.tsv'
+            ),
+            '/tmp'  # TODO: 1) use os.sep; 2) use tempfile
+        )
+
+        with open(
+                os.path.join(
+                    os.sep, 'tmp',  # TODO: use tempfile
+                    'NES_EXPORT',
+                    'Experiment_data',
+                    'Group_' + self.group.title.lower(),
+                    'Per_questionnaire',
+                    'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.tsv'
+                )
+        ) as file:
+            dialect = csv.Sniffer().sniff(file.readline(), [',', '\t'])
+            file.seek(0)
+            self.assertEqual(dialect.delimiter, "\t")
 
 class ExportDataCollectionTest(ExportTestCase):
     TEMP_MEDIA_ROOT = tempfile.mkdtemp()
@@ -1210,6 +1342,80 @@ class ExportDataCollectionTest(ExportTestCase):
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_with_goalkeeper_game_data_2_groups(self):
+
+        # create second group
+        # create patient/subject/subject_of_group
+        root_component1 = ObjectsFactory.create_block(self.experiment)
+        group1 = ObjectsFactory.create_group(
+            self.experiment, root_component1
+        )
+        patient1 = UtilTests().create_patient_mock(changed_by=self.user)
+        subject1 = ObjectsFactory.create_subject(patient1)
+        subject_of_group1 = \
+            ObjectsFactory.create_subject_of_group(group1, subject1)
+
+        # create digital game phase (dgp) component
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        context_tree = ObjectsFactory.create_context_tree(self.experiment)
+
+        dgp = ObjectsFactory.create_component(
+            self.experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': software_version, 'context_tree': context_tree}
+        )
+
+        # include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(
+            self.root_component, dgp
+        )
+        component_config1 = ObjectsFactory.create_component_configuration(
+            root_component1, dgp
+        )
+
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
+
+        # 'upload' data game phase collection file
+        dgp_data = ObjectsFactory.create_digital_game_phase_data(
+            dct, self.subject_of_group
+        )
+
+        dgp_data1 = ObjectsFactory.create_digital_game_phase_data(
+            dct1, subject_of_group1
+        )
+
+        ObjectsFactory.create_digital_game_phase_file(dgp_data)
+        ObjectsFactory.create_digital_game_phase_file(dgp_data1)
+
+        # Create additional data to this step
+        additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
+
+        ObjectsFactory.create_additional_data_file(additional_data)
+
+        self.append_session_variable(
+            'group_selected_list', [str(self.group.id), str(group1.id)]
+        )
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_goalkeeper_game_data': ['on'],
+            # 'per_additional_data': ['on'],
+            'headings': ['code'],
+            'filesformat':['csv'],
+            'responses': ['short'],
+            'patient_selected': ['age*age'],
+            'action': ['run']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_step_additional_data(self):
         # create generic data collection (gdc) component, it could've been any data collection
         it = ObjectsFactory.create_information_type()
@@ -1560,3 +1766,93 @@ class ExportSelection(ExportTestCase):
         self.assertEqual(
             response3.url, 'http://testserver' + reverse('export_menu')
         )
+
+# class UploadPaperTest(ExportTestCase):
+#
+#     # def setUp(self):
+#     #     self.user = User.objects.create_user(
+#     #         username=USER_USERNAME, email='test@dummy.com', password=USER_PWD
+#     #     )
+#     #     self.user.is_staff = True
+#     #     self.user.is_superuser = True
+#     #     self.user.save()
+#     #
+#     #     self.factory = RequestFactory()
+#     #
+#     #     logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
+#     #     self.assertEqual(logged, True)
+#     #
+#     #     self.client.session.flush()
+#     #
+#     #     # Post data to view: data style that is posted to export_view in
+#     #     # template
+#
+#
+#     def generate_file(self):
+#         try:
+#             myfile = open('test_C.csv', 'wb')
+#             wr = csv.writer(myfile)
+#             wr.writerow(('Paper ID', 'Paper Title', 'Authors'))
+#             wr.writerow(('1', 'Title1', 'Author1'))
+#             wr.writerow(('2', 'Title2', 'Author2'))
+#             wr.writerow(('3', 'Title3', 'Author3'))
+#         finally:
+#             myfile.close()
+#
+#         return myfile
+#
+#     def test_export_create(self):
+#
+#         data = {
+#             'per_questionnaire': ['on'],
+#             'per_participant': ['on'],
+#             'headings': ['code'],
+#             'patient_selected': ['age*age'],
+#             'action': ['run'],
+#             'responses': ['short'],
+#             'filesformat': ['csv']
+#         }
+#         response = self.client.post(reverse('export_view'), data)
+#
+#         participant_field_header_list = [("id", "id"), ("name", "name")]
+#
+#         questionnaires_list = [(0, 271192, "title", [("header1", "field1")]), ]
+#
+#         diagnosis_field_header_list = ""
+#
+#         output_filename = path.join(settings.MEDIA_ROOT, "export/test123.json")
+#
+#         if path.isfile(output_filename):
+#             remove(output_filename)
+#
+#         self.assertTrue(not path.isfile(output_filename))
+#         experiment_questionnaires_list = []
+#         component_list = []
+#
+#         export_instance = Export.objects.create(user=self.user)
+#
+#         build_complete_export_structure(0, 1, 0,
+#                                         participant_field_header_list,
+#                                         diagnosis_field_header_list,
+#                                         questionnaires_list,
+#                                         experiment_questionnaires_list,
+#                                         ["short"], "full", output_filename,
+#                                         component_list, "pt-BR", "tsv")
+#
+#         self.assertTrue(path.isfile(output_filename))
+#
+#         self.assertTrue(export_create(self, export_instance.id, output_filename))
+#
+#
+#     # def test_csv_export(self):
+#     #
+#     #     response = self.client.get('/my/export/api')
+#     #     self.assertEqual(response.status_code, 200)
+#     #
+#     #     content = response.content.decode('utf-8')
+#     #     cvs_reader = csv.reader(io.StringIO(content))
+#     #     body = list(cvs_reader)
+#     #     headers = body.pop(0)
+#     #
+#     #     # print(body)
+#     #     # print(headers)

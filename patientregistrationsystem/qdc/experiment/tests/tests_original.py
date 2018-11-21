@@ -355,7 +355,7 @@ class ObjectsFactory(object):
             identification='Block identification',
             description='Block description',
             experiment=experiment,
-            component_type='block',
+            component_type=Component.BLOCK,
             type="sequence"
         )
         block.save()
