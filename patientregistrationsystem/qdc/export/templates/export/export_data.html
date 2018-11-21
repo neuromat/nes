@@ -106,31 +106,56 @@
 
                             </div>
                         </div>
-                            <div class="row">
-                                <div class="col-xs-6 col-sm-6">
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6">
                                         <label for="headings"
                                             class="control-label">{% trans "Headings" %}</label>
 
-                                   <div class="form-group {% if export_form.errors.headings %}has-error{% endif %}">
+                                <div class="form-group {% if export_form.errors.headings %}has-error{% endif %}">
                                        {% for radio in export_form.headings %}
                                            <div class="radio">
                                                {{ radio }}
                                            </div>
                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <div class="col-xs-6 col-sm-6">
-                                        <label>{% trans "Responses" %}</label>
-
-                                        <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">
-                                                {% for check in export_form.responses %}
-                                                    <div class="checkbox">
-                                                        {{ check }}
-                                                    </div>
-                                                {% endfor %}
-                                        </div>
                                 </div>
                             </div>
+                            <div class="col-xs-6 col-sm-6">
+                                <label>{% trans "Responses" %}</label>
+
+                                <div class="form-group {% if export_form.errors.responses %}has-error{% endif %}">
+                                    {% for check in export_form.responses %}
+                                        <div class="checkbox">
+                                           {{ check }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <label for="filesformat"
+                                       class="control-label">{% trans "Files format: " %}
+                                </label>
+                                <div class="form-group {% if export_form.errors.filesformat %}has-error{% endif %}">
+                                    {% for check in export_form.filesformat %}
+                                        <div class="checkbox">
+                                           {{ check }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+{#                                <div class="radio" style="margin-top: 0px">#}
+{#                                    <input id="selection_remove" name="action_selection" type="radio" value="CSV" checked>#}
+{#                                    {% trans "CSV (Comma Separated Values) format" %}#}
+{#                                    </input>#}
+{#                                </div>#}
+{##}
+{#                                <div class="radio">#}
+{#                                    <input id="selection_transfer" name="action_selection" type="radio" value="TSV">#}
+{#                                    {% trans "TSV (Tab-Separated Values) format" %}#}
+{#                                    </input>#}
+{#                                </div>#}
+                            </div>
+                        </div>
                     </div>
 
                     <div class="container span6 offset3 well ">

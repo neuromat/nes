@@ -38,6 +38,13 @@ Either one or both options can be checked. You should not leave all the options 
 
 .. _questionnaire-information-export-participant:
 
+Format files can be choose in two types:
+
+* CSV (Comma Separated Values);
+* TSV (TabSeparated Values);
+
+Only one choice can be checked.
+
 Questionnaire Information
 -------------------------
 

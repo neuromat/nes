@@ -362,7 +362,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 def export_view(request, template_name="export/export_data.html"):
     export_form = ExportForm(
         request.POST or None,
-        initial={'title': 'title', 'responses': ['short'], 'headings': 'code'}
+        initial={'title': 'title', 'responses': ['short'], 'headings': 'code', 'filesformat': 'csv'}
     )
 
     selected_ev_quest = []
@@ -456,6 +456,8 @@ def export_view(request, template_name="export/export_data.html"):
                 # In fact there aren't questionnaires stuff at all. So this
                 # form attribute doesn't make sense. By now we make 'code'
                 # as value of that attribute for doesn't breaking the code.
+
+                filesformat_type = export_form.cleaned_data['filesformat'] or 'csv'
                 heading_type = export_form.cleaned_data['headings'] or 'code'
 
                 update_participants_list(participants_list, heading_type)
@@ -519,7 +521,7 @@ def export_view(request, template_name="export/export_data.html"):
                     participants_list, diagnosis_list, questionnaires_list,
                     experiment_questionnaires_list, responses_type,
                     heading_type, input_filename, component_list,
-                    language_code
+                    language_code, filesformat_type
                 )
 
                 complete_filename = \

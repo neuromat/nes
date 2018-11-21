@@ -27,6 +27,9 @@ DEBUG404 = True
 
 TEMPLATE_DEBUG = DEBUG
 
+# SECURITY WARNING: don't run with "is testing" on in production
+IS_TESTING = True
+
 ALLOWED_HOSTS = ['localhost']
 
 SESSION_SAVE_EVERY_REQUEST = True
@@ -191,4 +194,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.47.1'
+VERSION = '1.49'

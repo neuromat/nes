@@ -81,7 +81,7 @@ Deploying NES with Apache, PostgreSQL and mod_wsgi
 
     exit
 
-3. Use this `template <https://raw.githubusercontent.com/neuromat/nes/dev/resources/settings/settings_local_template.py>`_ to create a file called settings_local.py and configure the database::
+3. Use this `template <https://github.com/neuromat/nes/blob/master/patientregistrationsystem/qdc/qdc/settings_local_template.py>`_ to create a file called settings_local.py and configure the database::
 
     cd /usr/local/nes-system/nes/patientregistrationsystem/qdc
 
