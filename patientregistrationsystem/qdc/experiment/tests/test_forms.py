@@ -1833,6 +1833,19 @@ class SEP_Instruction_FormTest(TestCase):
         self.assertFalse(sep_Instruction_form.is_valid())
         self.assertEqual(sep_Instruction_form.errors["text"], ["Este campo é obrigatório."])
 
+    def test_SEP_Instruction_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_Instruction_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_Instruction_Fix_Random_form.is_valid())
+
+    def test_SEP_Instruction_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_Instruction_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_Instruction_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_Instruction_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+
 
 class SEP_Pause_FormTest(TestCase):
 
@@ -1912,6 +1925,20 @@ class SEP_Pause_FormTest(TestCase):
         self.assertEqual(sep_pause_form.errors["duration_value"],
                          ["Tempo da duração deve ser preenchido"])
 
+    def test_SEP_Pause_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_Pause_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_Pause_Fix_Random_form.is_valid())
+
+    def test_SEP_Pause_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_Pause_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_Pause_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_Pause_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+
+
 
 class SEP_Questionnaire_FormTest(TestCase):
 
@@ -1990,6 +2017,18 @@ class SEP_Questionnaire_FormTest(TestCase):
         self.assertEqual(sep_questionnaire_form.errors["identification"],
                          ["Este campo é obrigatório."])
 
+    def test_SEP_Questionnaire_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_Questionnaire_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_Questionnaire_Fix_Random_form.is_valid())
+
+    def test_SEP_Questionnaire_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_Questionnaire_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_Questionnaire_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_Questionnaire_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
 
 class SEP_Stimulus_FormTest(TestCase):
 
@@ -2027,6 +2066,18 @@ class SEP_Stimulus_FormTest(TestCase):
                                          stimulus_type=cls.stimulus_type
          )
 
+    def test_SEP_Stimulus_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_Stimulus_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_Stimulus_Fix_Random_form.is_valid())
+
+    def test_SEP_Stimulus_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_Stimulus_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_Stimulus_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_Stimulus_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
 
     def test_SEP_Stimulus_is_valid(self):
         stimulus_type = self.stimulus.stimulus_type.id
@@ -2103,6 +2154,18 @@ class SEP_Task_FormTest(TestCase):
         self.assertEqual(sep_task_form.errors["identification"],
                          ["Este campo é obrigatório."])
 
+    def test_SEP_Task_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_Task_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_Task_Fix_Random_form.is_valid())
+
+    def test_SEP_Task_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_Task_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_Task_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_Task_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
 
 class SEP_Task_Experiment_FormTest(TestCase):
 
@@ -2220,6 +2283,18 @@ class SEP_EEG_FormTest(TestCase):
         self.assertEqual(sep_eeg_form.errors["eeg_setting"],
                          ["Este campo é obrigatório."])
 
+    def test_SEP_EEG_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_EEG_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_EEG_Fix_Random_form.is_valid())
+
+    def test_SEP_EEG_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_EEG_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_EEG_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_EEG_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
 
 class SEP_EMG_FormTest(TestCase):
 
@@ -2297,6 +2372,19 @@ class SEP_EMG_FormTest(TestCase):
         self.assertEqual(sep_emg_form.errors["emg_setting"],
                          ["Este campo é obrigatório."])
 
+    def test_SEP_EMG_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_EMG_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_EMG_Fix_Random_form.is_valid())
+
+    def test_SEP_EMG_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_EMG_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_EMG_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_EMG_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+
 
 class SEP_TMS_FormTest(TestCase):
 
@@ -2362,6 +2450,18 @@ class SEP_TMS_FormTest(TestCase):
         self.assertEqual(sep_tms_form.errors["tms_setting"],
                          ["Este campo é obrigatório."])
 
+    def test_SEP_TMS_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_TMS_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_TMS_Fix_Random_form.is_valid())
+
+    def test_SEP_TMS_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_TMS_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_TMS_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_TMS_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
 
 class SEP_GenericDataCollection_FormTest(TestCase):
 
@@ -2429,6 +2529,19 @@ class SEP_GenericDataCollection_FormTest(TestCase):
         self.assertEqual(sep_gdc_form.errors["information_type"],
                          ["Este campo é obrigatório."]
         )
+
+    def test_SEP_GenericDataCollection_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_GenericDataCollection_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_GenericDataCollection_Fix_Random_form.is_valid())
+
+    def test_SEP_GenericDataCollection_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_GenericDataCollection_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_GenericDataCollection_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_GenericDataCollection_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
 
 
 class SEP_DigitalGamePhase_FormTest(TestCase):
@@ -2530,3 +2643,17 @@ class SEP_DigitalGamePhase_FormTest(TestCase):
         self.assertEqual(sep_dgp_form.errors["context_tree"],
                          ["Este campo é obrigatório."]
         )
+
+    def test_SEP_DigitalGamePhase_Fix_Random_is_valid(self):
+        number_of_uses_to_insert = 1  #valor inicial >=1
+
+        number_of_uses_SEP_DigitalGamePhase_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertTrue(number_of_uses_SEP_DigitalGamePhase_Fix_Random_form.is_valid())
+
+    def test_SEP_DigitalGamePhase_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
+        number_of_uses_to_insert = 0  #valor inicial >=1
+
+        number_of_uses_SEP_DigitalGamePhase_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        self.assertFalse(number_of_uses_SEP_DigitalGamePhase_Fix_Random_form.is_valid())
+        self.assertEqual(number_of_uses_SEP_DigitalGamePhase_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+
