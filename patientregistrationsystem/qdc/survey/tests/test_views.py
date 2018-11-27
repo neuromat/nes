@@ -474,7 +474,8 @@ class SurveyTest(TestCase):
             self.assertEqual(response.status_code, 302)
 
             # Assert if the message is parsed
-            self.assertEqual(response.wsgi_request._messages._queued_messages[0].message, 'NES can\'t retrieve files from "file upload" questions from LimeSurvey. See "Best Pratices and Recommendations" at https://nes.rtfd.io for more details.')
+            self.assertEqual(response.wsgi_request._messages._queued_messages[0].message,
+                             'NES não importa arquivos carregados em questões no LimeSurvey. Veja "Best Pratices and Recommendations" em https://nes.rtfd.io para mais detalhes.')
 
             # Count the number of surveys currently in database
             count_after_insert = Survey.objects.all().count()
