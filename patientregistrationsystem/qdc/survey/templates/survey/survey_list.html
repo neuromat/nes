@@ -53,7 +53,7 @@
                         <tbody>
                         {% for questionnaire in questionnaires_list %}
                             <tr>
-                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "View" %}" href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }} {% if questionnaire.has_file_upload_question %}<big><b style="color: red;">!</b></big> {% endif %}</a></td>
+                                <td><a data-toggle="tooltip" data-placement="left" title="{% trans "View" %}" href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }}</a></td>
                                 <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
                                 <td style="text-align: center">{% if questionnaire.is_active == 'Y' %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% else %}<span class="glyphicon glyphicon-remove" style="color: red"></span> {% endif %}</td>
                             </tr>
@@ -61,12 +61,10 @@
                         </tbody>
                     </table>
                 </div>
-                {% if count_surveys_with_fileupload_question > 0 %}
-                    <div class="form-group">
-                        <label class="control-label"><b style="color: red;"><big>!</big> {% trans "Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
-                            (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
-                    </div>
-                {% endif %}
+                <div class="form-group">
+                    <label class="control-label"><b style="color: red;"><big>!</big> {% trans "Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                        (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
+                </div>
                 {% if perms.survey.add_survey %}
                     <div class="btn-group pull-left">
                         <a href="/survey/new/" class="btn btn-primary" {% if not limesurvey_available  %} disabled {% endif %}>{% trans "Insert new questionnaire" %}</a>
