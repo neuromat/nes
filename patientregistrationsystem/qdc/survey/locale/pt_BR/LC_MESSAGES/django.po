@@ -198,7 +198,7 @@ msgstr "Questionário não encontrado"
 
 #: survey/views.py:140
 msgid "NES can't retrieve files from \"file upload\" questions from LimeSurvey."
-msgstr "NES não importa arquivos carregados em questões no LimeSurvey"
+msgstr "NES não importa arquivos carregados em questões no LimeSurvey."
 
 #: survey/views.py:142
 msgid "See \"Best Pratices and Recommendations\" at https://nes.rtfd.io for more details."
