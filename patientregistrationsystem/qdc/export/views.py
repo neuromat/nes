@@ -1177,18 +1177,22 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
             subject_list = []
             group_selected_list = request.POST.getlist('group_selected')
             request.session['group_selected_list'] = group_selected_list
-            for group_selected_id in group_selected_list:
-                group_selected = Group.objects.filter(pk=group_selected_id)
-                subject_of_group = SubjectOfGroup.objects.filter(group=group_selected)
-                for subject in subject_of_group:
-                    patient = subject.subject.patient
-                    if patient.id not in subject_list:
-                        subject_list.append(patient.id)
 
-            participants_list = participants_list.filter(pk__in=subject_list)
-            request.session['filtered_participant_data'] = [item.id for item in participants_list]
-            redirect_url = reverse("export_view", args=())
-            return HttpResponseRedirect(redirect_url)
+            if len(group_selected_list) > 0:
+                for group_selected_id in group_selected_list:
+                    group_selected = Group.objects.filter(pk=group_selected_id)
+                    subject_of_group = SubjectOfGroup.objects.filter(group=group_selected)
+                    for subject in subject_of_group:
+                        patient = subject.subject.patient
+                        if patient.id not in subject_list:
+                            subject_list.append(patient.id)
+
+                participants_list = participants_list.filter(pk__in=subject_list)
+                request.session['filtered_participant_data'] = [item.id for item in participants_list]
+                redirect_url = reverse("export_view", args=())
+                return HttpResponseRedirect(redirect_url)
+            else:
+                messages.error(request, _("No group(s) selected!"))
 
     context = {
         "study_list": study_list,
