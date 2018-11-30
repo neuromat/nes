@@ -2131,6 +2131,13 @@ class ExportExecution:
                                         writer = csv.writer(outfile)
                                         writer.writerows(lines)
 
+                    with open(complete_digital_filename) as f:
+                        data_list = list(csv.reader(f))
+                        new_data = [a for i, a in enumerate(data_list) if a not in data_list[:i]]
+                        with open(complete_digital_filename, 'w') as t:
+                             write = csv.writer(t)
+                             write.writerows(new_data)
+
                     goalkeeper_game_data_export_directory = self.per_group_data[group_id]['group']['goalkeeper_game_data_export_directory']
                     self.files_to_zip_list.append([complete_digital_filename, goalkeeper_game_data_export_directory])
 
