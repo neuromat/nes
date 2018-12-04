@@ -2098,8 +2098,11 @@ class ExportExecution:
                                 for context_tree_file in goalkeeper_game_data['digital_game_file_list']:
                                     path_context_tree_file = context_tree_file['digital_game_filename']
                                     file_name = path_context_tree_file.split('/')[-1]
-                                    file_name_digital = "AMPARO2017"
-                                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
+
+                                    # Arquivo CSV geral
+                                    file_name_digital = file_name.split('_')[0]
+
+                                     # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
                                     #  /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
                                     complete_goalkeeper_game_filename = path.join(path_per_goalkeeper_game_data,
                                                                                   file_name)
