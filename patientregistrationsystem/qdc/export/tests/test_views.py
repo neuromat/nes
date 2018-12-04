@@ -1725,9 +1725,47 @@ class ExportParticipants(ExportTestCase):
 
 
 class ExportSelection(ExportTestCase):
+    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
+
+    def setUp(self):
+        super(ExportSelection, self).setUp()
 
     def tearDown(self):
         self.client.logout()
+
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_experiment_selection_selecting_group(self):
+
+        data = {
+            'id_research_projects': self.experiment.research_project.id,
+            'id_experiments': self.experiment.id,
+            'group_selected': self.group.id,
+            'action': 'next-step-participants'
+        }
+
+        self.append_session_variable('id_research_projects', [str(self.experiment.research_project.id)])
+        self.append_session_variable('id_experiments', [str(self.experiment.id)])
+        self.append_session_variable('group_selected', [str(self.group.id)])
+
+        response = self.client.post(reverse('experiment_selection'), data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, 'http://testserver/export/view/')
+
+    def test_experiment_selection_withou_select_group(self):
+
+        data = {
+            'id_research_projects': self.experiment.research_project.id,
+            'id_experiments': self.experiment.id,
+            'action': 'next-step-participants'
+        }
+
+        self.append_session_variable('id_research_projects', [str(self.experiment.research_project.id)])
+        self.append_session_variable('id_experiments', [str(self.experiment.id)])
+        response = self.client.post(reverse('experiment_selection'), data)
+        self.assertEqual(response.status_code, 200)
 
     def test_expire_section_when_in_last_export_form_returns_to_first_export_page(self):
         """ Path that is followed when the session is expired and it tries
