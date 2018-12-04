@@ -1712,6 +1712,7 @@ class ExportExecution:
     def process_per_participant_per_experiment(self):
 
         error_msg = ''
+        header_saved = False
 
         for group_id in self.per_group_data:
             participant_list = self.per_group_data[group_id]['data_per_participant']
@@ -2124,19 +2125,16 @@ class ExportExecution:
 
                                     complete_digital_filename = path.join(goalkeeper_game_directory, export_filename)
 
-                                    with open(complete_goalkeeper_game_filename, 'r') as infile, open(complete_digital_filename,
-                                                                                           'a') as outfile:
-                                        stripped = (line.strip() for line in infile)
-                                        lines = (line.split(",") for line in stripped if line)
-                                        writer = csv.writer(outfile)
-                                        writer.writerows(lines)
 
-                    with open(complete_digital_filename) as f:
-                        data_list = list(csv.reader(f))
-                        new_data = [a for i, a in enumerate(data_list) if a not in data_list[:i]]
-                        with open(complete_digital_filename, 'w') as t:
-                             write = csv.writer(t)
-                             write.writerows(new_data)
+                                    with open(complete_goalkeeper_game_filename, 'r') as infile, \
+                                         open(complete_digital_filename, 'a') as outfile:
+                                        header = next(infile)
+                                        if not header_saved:
+                                          outfile.write(header)
+                                          header_saved = True
+                                        for line in infile:
+                                          outfile.write(line)
+
 
                     goalkeeper_game_data_export_directory = self.per_group_data[group_id]['group']['goalkeeper_game_data_export_directory']
                     self.files_to_zip_list.append([complete_digital_filename, goalkeeper_game_data_export_directory])
