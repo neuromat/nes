@@ -4,17 +4,19 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from experiment.models import Keyword, GoalkeeperGameConfig,\
-    Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults,\
-    FileFormat
+from experiment.models import Keyword, GoalkeeperGameConfig, \
+    Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
+    FileFormat, ExperimentResearcher
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
+from custom_user.tests_helper import create_user
 from experiment.tests.tests_original import ObjectsFactory
 
 from patient.tests import UtilTests
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
+USER_NEW = 'user_new'
 
 
 class ScheduleOfSendingListViewTest(TestCase):
@@ -311,3 +313,70 @@ class LoadGameKeeperTest(TestCase):
     def tearDown(self):
         GoalkeeperGameConfig.objects.filter(idconfig=self.idconfig).using("goalkeeper").delete()
         GoalkeeperGameResults.objects.filter(idgameresult=self.idgameresult).using("goalkeeper").delete()
+
+class CollaboratorTest(TestCase):
+    def setUp(self):
+
+        exec(open('add_initial_data.py').read())
+        self.user = User.objects.create_user(
+            username='jose', email='jose@test.com', password='passwd'
+        )
+        user_profile = self.user.user_profile
+        user_profile.login_enabled = True
+
+        user_profile.force_password_change = False
+        user_profile.save()
+
+        for group in Group.objects.all():
+        # for group in Group.objects.filter(name='Attendant'):
+            group.user_set.add(self.user)
+
+        self.client.login(username=self.user.username, password='passwd')
+
+        self.research_project = ObjectsFactory.create_research_project()
+
+        self.experiment = ObjectsFactory.create_experiment(self.research_project)
+
+        self.researcher = ObjectsFactory.create_experiment_researcher(self.experiment)
+
+        # create experiment/experimental protocol/group
+        self.experiment = ObjectsFactory.create_experiment(
+            ObjectsFactory.create_research_project(self.user)
+        )
+        self.root_component = ObjectsFactory.create_block(self.experiment)
+        self.group = ObjectsFactory.create_group(
+            self.experiment, self.root_component
+        )
+
+        # create patient/subject/subject_of_group
+        self.patient = UtilTests().create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(self.patient)
+        self.subject_of_group = \
+            ObjectsFactory.create_subject_of_group(self.group, subject)
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_collaborator_create(self):
+
+        # Insert collaborator
+        response = self.client.get(reverse('collaborator_new',
+                                           kwargs={'experiment_id':
+                                                       self.experiment.id}))
+        self.assertEqual(response.status_code, 200)
+
+        collaborators_added = ExperimentResearcher.objects.filter(experiment_id=self.experiment.id)
+        collaborators_added_ids = collaborators_added.values_list('researcher_id', flat=True)
+
+        collaborators = User.objects.filter(is_active=True).exclude(pk__in=collaborators_added_ids).order_by(
+            'first_name',
+            'last_name')
+        # collaborators_selected = request.POST.getlist('collaborators')
+        if collaborators:
+            collaborators_selected = collaborators.first()
+            response = self.client.post(reverse('collaborator_new',
+                       kwargs={'experiment_id': self.experiment.id}),
+                               # 'researcher_id': collaborators_selected}),
+            data={'collaborators':collaborators_selected.id,
+                  'action': 'save'})
+            self.assertEqual(response.status_code, 302)
