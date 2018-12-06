@@ -1128,7 +1128,7 @@ class ExportExecution:
                         )
 
                     export_filename = "%s_%s_%s.%s" % (questionnaire["prefix_filename_fields"],
-                                                        str(questionnaire_code), language, filesformat_type)
+                                                       str(questionnaire_code), language, filesformat_type)
 
                     complete_filename = path.join(export_metadata_path, export_filename)
 
@@ -1449,8 +1449,7 @@ class ExportExecution:
                             return error_msg
 
                         export_directory_per_questionnaire = \
-                            self.per_group_data[group_id]['group'][
-                            'questionnaire_data_export_directory']
+                            self.per_group_data[group_id]['group']['questionnaire_data_export_directory']
                         export_directory = path.join(
                             export_directory_per_questionnaire,
                             token['directory_step_name']
@@ -1465,7 +1464,8 @@ class ExportExecution:
                                 str(questionnaire_code), questionnaire_title,
                                 language, filesformat_type
                             )
-                            # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/Q123_<questionnaire_title>_<lang>.csv
+                            # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/\
+                            # Q123_<questionnaire_title>_<lang>.csv
                             complete_filename = path.join(
                                 complete_export_path, export_filename
                             )
@@ -1593,7 +1593,8 @@ class ExportExecution:
                         language_list = [questionnaire_language['output_language']]
 
                     for language in language_list:
-                        export_filename = "%s_%s_%s.%s" % ("Responses", str(questionnaire_code), language, filesformat_type)
+                        export_filename = "%s_%s_%s.%s" % \
+                                          ("Responses", str(questionnaire_code), language, filesformat_type)
 
                         participant_rows = self.get_per_participant_data(participant_code, questionnaire_code)[
                             language][0]
@@ -1741,7 +1742,7 @@ class ExportExecution:
                         questionnaire_id = token_data['questionnaire_id']
                         questionnaire_title = self.get_input_data('questionnaires_from_experiments')[group_id][
                             str(questionnaire_id)]['questionnaire_name']
-                        # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
+                        # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         error_msg, directory_step_participant = \
                             create_directory(
                                 path_per_participant,
@@ -1750,7 +1751,7 @@ class ExportExecution:
                         if error_msg != "":
                             return error_msg
 
-                        # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
+                        # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         step_participant_export_directory = path.join(
                             participant_export_directory,
                             token_data['directory_step_name']
@@ -1767,9 +1768,10 @@ class ExportExecution:
                         for language in language_list:
                             # Responses_Q123.csv
                             export_filename = "%s_%s_%s.%s" % (str(questionnaire_code), slugify(questionnaire_title),
-                                                              language, filesformat_type)
+                                                               language, filesformat_type)
 
-                            # path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
+                            # path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/\
+                            # Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
                             complete_filename = path.join(directory_step_participant, export_filename)
 
                             export_rows_participants = self.get_participant_row_data(token_data['subject_code'])
@@ -2102,10 +2104,10 @@ class ExportExecution:
                                     # Arquivo CSV geral
                                     file_name_digital = file_name.split('_')[0]
 
-                                     # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
+                                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
                                     #  /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
-                                    complete_goalkeeper_game_filename = path.join(path_per_goalkeeper_game_data,
-                                                                                  file_name)
+                                    complete_goalkeeper_game_filename = path.join(
+                                        path_per_goalkeeper_game_data, file_name)
 
                                     with open(path_context_tree_file, 'rb') as f:
                                         data = f.read()
@@ -2116,25 +2118,21 @@ class ExportExecution:
                                     self.files_to_zip_list.append([complete_goalkeeper_game_filename,
                                                                    export_goalkeeper_data_directory])
 
-                                    complete_digital_game_filename = path.join(goalkeeper_game_directory,
-                                                                                  file_name_digital)
-
                                     if 'tsv' in self.get_input_data('filesformat_type'):
-                                        separator = '\t'
                                         export_filename = "%s.tsv" % file_name_digital  # ".tsv"
                                     else:
-                                        separator = ','
                                         export_filename = "%s.csv" % file_name_digital  # ".csv"
 
                                     complete_digital_filename = path.join(goalkeeper_game_directory, export_filename)
 
-
                                     with open(complete_goalkeeper_game_filename, 'r') as infile, \
-                                         open(complete_digital_filename, 'a') as outfile:
+                                        open(complete_digital_filename, 'a') as outfile:
                                         header = next(infile)
+
                                         if not header_saved:
-                                          outfile.write(header)
-                                          header_saved = True
+                                            outfile.write(header)
+                                            header_saved = True
+
                                         for line in infile:
                                           outfile.write(line)
 
@@ -2829,12 +2827,10 @@ class ExportExecution:
                             # below
                             question_list = \
                                 QuestionnaireUtils.get_question_list(
-                                questionnaire_lime_survey, questionnaire_id,
-                                language
-                            )
-                            replace_multiple_question_answers(
-                                fill_list2, question_list
-                            )
+                                    questionnaire_lime_survey, questionnaire_id,
+                                    language
+                                )
+                            replace_multiple_question_answers(fill_list2, question_list)
                         else:
                             fill_list2 = fill_list1
 
@@ -3626,19 +3622,19 @@ def get_tms_data_description(tms_data_id):
     if coil_orientation:
         coil_orientation_name = coil_orientation.name
         tms_description['stimulation_description'] = {
-        'tms_stimulation_description': tms_data_attributes['description'],
-        'resting_motor threshold-RMT(%)': tms_data_attributes['resting_motor_threshold'],
-        'test_pulse_intensity_of_simulation(% over the %RMT)': tms_data_attributes[
-        'test_pulse_intensity_of_simulation'],
-        'interval_between_pulses': tms_data_attributes['interval_between_pulses'],
-        'interval_between_pulses_unit': tms_data_attributes['interval_between_pulses_unit'],
-        'repetitive_pulse_frequency': tms_data_attributes['repetitive_pulse_frequency'],
-        'coil_orientation': coil_orientation_name,
-        'coil_orientation_angle': tms_data_attributes['coil_orientation_angle'],
-        'second_test_pulse_intensity (% over the %RMT)': tms_data_attributes['second_test_pulse_intensity'],
-        'time_between_mep_trials': tms_data_attributes['time_between_mep_trials'],
-        'time_between_mep_trials_unit': tms_data_attributes['time_between_mep_trials_unit'],
-    }
+            'tms_stimulation_description': tms_data_attributes['description'],
+            'resting_motor threshold-RMT(%)': tms_data_attributes['resting_motor_threshold'],
+            'test_pulse_intensity_of_simulation(% over the %RMT)':
+                tms_data_attributes['test_pulse_intensity_of_simulation'],
+            'interval_between_pulses': tms_data_attributes['interval_between_pulses'],
+            'interval_between_pulses_unit': tms_data_attributes['interval_between_pulses_unit'],
+            'repetitive_pulse_frequency': tms_data_attributes['repetitive_pulse_frequency'],
+            'coil_orientation': coil_orientation_name,
+            'coil_orientation_angle': tms_data_attributes['coil_orientation_angle'],
+            'second_test_pulse_intensity (% over the %RMT)': tms_data_attributes['second_test_pulse_intensity'],
+            'time_between_mep_trials': tms_data_attributes['time_between_mep_trials'],
+            'time_between_mep_trials_unit': tms_data_attributes['time_between_mep_trials_unit'],
+        }
 
     hotspot = tms_data.hotspot
     brain_area = hotspot.tms_localization_system.brain_area
