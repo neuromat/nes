@@ -1314,6 +1314,7 @@ class TMSData(DataCollection):
     def _history_user(self, value):
         self.changed_by = value
 
+
 class HotSpot(models.Model):
     name = models.CharField(max_length=50)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -1324,6 +1325,7 @@ class HotSpot(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class AdditionalData(DataFile, DataCollection):
     # Audit trail - Simple History
@@ -1406,6 +1408,7 @@ class EMGFile(models.Model):
     emg_data = models.ForeignKey(EMGData, related_name='emg_files')
     file = models.FileField(upload_to=get_data_file_dir)
 
+
 class AdditionalDataFile(models.Model):
     additional_data = models.ForeignKey(AdditionalData, related_name='additional_data_files')
     file = models.FileField(upload_to=get_data_file_dir)
@@ -1420,6 +1423,7 @@ class GenericDataCollectionFile(models.Model):
     generic_data_collection_data = models.ForeignKey(GenericDataCollectionData,
                                                      related_name='generic_data_collection_files')
     file = models.FileField(upload_to=get_data_file_dir)
+
 
 class EEGElectrodePositionCollectionStatus(models.Model):
     eeg_data = models.ForeignKey(EEGData, related_name='electrode_positions')
