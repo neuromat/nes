@@ -325,11 +325,10 @@ def get_owner_full_name(research_project):
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    #com o decorator @permission_required('experiment.change_researchproject'),
-    # a função abaixo é desnecessaria:
+    #  com o decorator @permission_required('experiment.change_researchproject'),
+    #  a função abaixo é desnecessaria:
     #
-    #check_can_change(request.user, research_project)
-
+    #  check_can_change(request.user, research_project)
 
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
     research_project_owner_form = ResearchProjectOwnerForm(request.POST or None, instance=research_project)
@@ -1216,7 +1215,8 @@ def send_all_experiments_to_portal():
                                     # Import here because of ImportError
                                     # (cannot import name) exception
                                     # possibly due to circular import error.
-                                    # TODO: see answer in https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
+                                    # TODO: see answer in:
+                                    # https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
                                     # TODO: for other solutions
                                     from export.export import \
                                         replace_multiple_question_answers
@@ -1365,9 +1365,7 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
         )
 
         for subject_response in QuestionnaireResponse.objects.filter(
-                data_configuration_tree__component_configuration=
-                questionnaire_configuration
-        ):
+                data_configuration_tree__component_configuration=questionnaire_configuration):
             response_result = surveys.get_participant_properties(
                 questionnaire.survey.lime_survey_id,
                 subject_response.token_id, "completed"
@@ -9391,7 +9389,7 @@ def component_create(request, experiment_id, component_type):
     questionnaires_with_names = []
 
     for questionnaire in questionnaires_list:
-         questionnaires_with_names.append(find_questionnaire_name(questionnaire.lime_survey_id,request.LANGUAGE_CODE))
+        questionnaires_with_names.append(find_questionnaire_name(questionnaire.lime_survey_id, request.LANGUAGE_CODE))
 
     context = {"back_cancel_url": "/experiment/" + str(experiment.id) + "/components",
                "component_form": component_form,
@@ -9839,8 +9837,7 @@ def clone_electrode_positions(old_eeg_data, orig_and_clone):
         )
         new_eeg_electrode_position_setting = \
             EEGElectrodePositionSetting.objects.get(
-                pk=orig_and_clone['eeg_electrode_position_setting'][
-                eepcs.eeg_electrode_position_setting.id]
+                pk=orig_and_clone['eeg_electrode_position_setting'][eepcs.eeg_electrode_position_setting.id]
             )
         eepcs.eeg_data = new_eeg_data
         eepcs.eeg_electrode_position_setting = \
