@@ -197,9 +197,6 @@ msgid "No questionnaire found."
 msgstr "Questionário não encontrado"
 
 #: survey/views.py:132
-#, fuzzy
-#| msgid ""
-#| "NES can't retrieve files from 'file upload' questions from LimeSurvey."
 msgid ""
 "NES can't retrieve files from \"file upload\" questions from LimeSurvey."
 msgstr ""
