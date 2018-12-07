@@ -475,7 +475,7 @@ class SurveyTest(TestCase):
 
             # Assert if the message is parsed
             self.assertEqual(response.wsgi_request._messages._queued_messages[0].message,
-                             'NES não importa arquivos carregados em questões no LimeSurvey. Veja "Best Pratices and Recommendations" em https://nes.rtfd.io para mais detalhes.')
+                             'O NES não importa arquivos carregados pelo Limesurvey através de questões do tipo \'Envio de arquivo\'. Veja \"Best Pratices and Recommendations\" em https://nes.rtfd.io para mais detalhes.')
 
             # Count the number of surveys currently in database
             count_after_insert = Survey.objects.all().count()
