@@ -201,7 +201,7 @@ msgid ""
 "NES can't retrieve files from \"file upload\" questions from LimeSurvey."
 msgstr ""
 "O NES não importa arquivos carregados pelo Limesurvey através de questões do "
-"tipo 'Envio de arquivo'"
+"tipo 'Envio de arquivo'."
 
 #: survey/views.py:134
 msgid ""
