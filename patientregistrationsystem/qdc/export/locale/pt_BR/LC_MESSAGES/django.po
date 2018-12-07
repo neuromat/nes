@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 11:55-0200\n"
+"POT-Creation-Date: 2018-12-07 16:50-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,11 +25,11 @@ msgstr "Código de Participante"
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/export.py:2215 export/export.py:3113 export/views.py:1242
+#: export/export.py:2265 export/export.py:3162 export/views.py:1246
 msgid "Yes"
 msgstr "Sim"
 
-#: export/export.py:2215 export/export.py:3113 export/views.py:1242
+#: export/export.py:2265 export/export.py:3162 export/views.py:1246
 msgid "No"
 msgstr "Não"
 
@@ -99,23 +99,23 @@ msgstr "Exportar"
 msgid "Experiment selection"
 msgstr "Seleção de experimento"
 
-#: export/templates/export/experiment_selection.html:35
+#: export/templates/export/experiment_selection.html:52
 msgid "Filters selection"
 msgstr "Seleção de filtros"
 
-#: export/templates/export/experiment_selection.html:41
+#: export/templates/export/experiment_selection.html:58
 msgid "Studies"
 msgstr "Estudos"
 
-#: export/templates/export/experiment_selection.html:58
+#: export/templates/export/experiment_selection.html:75
 msgid "Experiments"
 msgstr "Experimentos"
 
-#: export/templates/export/experiment_selection.html:74
+#: export/templates/export/experiment_selection.html:91
 msgid "Groups"
 msgstr "Grupos"
 
-#: export/templates/export/experiment_selection.html:80
+#: export/templates/export/experiment_selection.html:97
 #: export/templates/export/export_data.html:267
 #: export/templates/export/export_data.html:289
 #: export/templates/export/export_experiment_data.html:458
@@ -125,13 +125,13 @@ msgstr ""
 "* use control-click para selecionar mais do que um campo. (command-click em "
 "Mac)"
 
-#: export/templates/export/experiment_selection.html:95
+#: export/templates/export/experiment_selection.html:112
 #: export/templates/export/participant_selection.html:192
 #: export/templates/export/show_selected_participants.html:87
 msgid "Next"
 msgstr "Próximo"
 
-#: export/templates/export/experiment_selection.html:101
+#: export/templates/export/experiment_selection.html:118
 #: export/templates/export/export_data.html:303
 #: export/templates/export/export_experiment_data.html:498
 #: export/templates/export/participant_selection.html:198
@@ -546,83 +546,87 @@ msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 msgid "Per experiments"
 msgstr "Por experimentos"
 
-#: export/views.py:1231
+#: export/views.py:1195
+msgid "No group(s) selected!"
+msgstr ""
+
+#: export/views.py:1235
 msgid "Name of use"
 msgstr "Nome do uso"
 
-#: export/views.py:1233
+#: export/views.py:1237
 msgid "Number of repetitions"
 msgstr "Número de repetições"
 
-#: export/views.py:1235
+#: export/views.py:1239
 msgid "Interval between repetitions value"
 msgstr "Valor do entervalo entre repetições"
 
-#: export/views.py:1237
+#: export/views.py:1241
 msgid "Interval between repetitions unit"
 msgstr "Unidade do intervalo entre repetições"
 
-#: export/views.py:1238
+#: export/views.py:1242
 msgid "Order"
 msgstr "Ordem"
 
-#: export/views.py:1240
+#: export/views.py:1244
 msgid "Position in the set of steps "
 msgstr "Posição no conjunto de passos"
 
-#: export/views.py:1240
+#: export/views.py:1244
 msgid "Random"
 msgstr "Aleatório"
 
-#: export/views.py:1240
+#: export/views.py:1244
 msgid "Fixed"
 msgstr "Fixo"
 
-#: export/views.py:1242
+#: export/views.py:1246
 msgid "Requires start and end datetime"
 msgstr "Requer datas de início e fim"
 
-#: export/views.py:1281
+#: export/views.py:1285
 msgid "Identification"
 msgstr "Identificação"
 
-#: export/views.py:1283
+#: export/views.py:1287
 msgid "Description"
 msgstr "Descrição"
 
-#: export/views.py:1285
+#: export/views.py:1289
 msgid "Duration value"
 msgstr "Valor da duração"
 
-#: export/views.py:1287
+#: export/views.py:1291
 msgid "Duration unit"
 msgstr "Unidade da duração"
 
-#: export/views.py:1293
+#: export/views.py:1297
 msgid "Type"
 msgstr "Tipo"
 
-#: export/views.py:1295
+#: export/views.py:1299
 msgid "Number of mandatory components"
 msgstr "Número de passos obrigatórios"
 
-#: export/views.py:1301
+#: export/views.py:1305
 msgid "Text"
 msgstr "Texto"
 
-#: export/views.py:1307
+#: export/views.py:1311
 msgid "LimeSurvey ID"
 msgstr ""
 
-#: export/views.py:1315
+#: export/views.py:1319
 msgid "Questionnaire title"
 msgstr "Título do questionário"
 
-#: export/views.py:1322
+#: export/views.py:1326
 msgid "Stimulus type"
 msgstr "Tipo de estímulo"
 
-#: export/views.py:1324
+#: export/views.py:1328
 msgid "Media file"
 msgstr "Arquivo de mídia"
 

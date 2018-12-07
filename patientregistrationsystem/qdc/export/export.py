@@ -1636,10 +1636,8 @@ class ExportExecution:
         filesformat_type = self.get_input_data("filesformat_type")
 
         for participant_code in self.get_per_participant_data():
-            patient_id = \
-                Patient.objects.filter(code=participant_code).values('id')[0]['id']
-            path_participant = prefix_filename_participant + \
-                               str(participant_code)
+            patient_id = Patient.objects.filter(code=participant_code).values('id')[0]['id']
+            path_participant = prefix_filename_participant + str(participant_code)
             # /NES_EXPORT/Participant_data/Per_participant/Participant_P123/
             error_msg, participant_path = create_directory(
                 path_per_participant, path_participant
@@ -1713,9 +1711,9 @@ class ExportExecution:
     def process_per_participant_per_experiment(self):
 
         error_msg = ''
-        header_saved = False
 
         for group_id in self.per_group_data:
+            header_saved = False
             participant_list = self.per_group_data[group_id]['data_per_participant']
             # participant data
             for participant_code in participant_list:
@@ -2136,10 +2134,8 @@ class ExportExecution:
                                         for line in infile:
                                           outfile.write(line)
 
-
                     goalkeeper_game_data_export_directory = self.per_group_data[group_id]['group']['goalkeeper_game_data_export_directory']
                     self.files_to_zip_list.append([complete_digital_filename, goalkeeper_game_data_export_directory])
-
 
                 if 'generic_data_collection_data_list' \
                         in self.per_group_data[group_id]['data_per_participant'][participant_code]:
