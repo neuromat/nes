@@ -1426,7 +1426,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # create a file and add it as an additional file of the step
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname,'stepadditionaldata.bin'),'wb') as f:
+            with open(os.path.join(tmpdirname, 'stepadditionaldata.bin'), 'wb') as f:
                 f.write(b'carambola')
 
                 with File(open(f.name, 'rb')) as file:
