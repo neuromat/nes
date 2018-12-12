@@ -9,15 +9,14 @@ from experiment.admin import ExperimentResource, ResearchProjectResource
 from experiment.models import Experiment
 
 
-TEMP_DIR = tempfile.mkdtemp()
-TEMP_MEDIA = path.join(TEMP_DIR, 'media')
+MEDIA_SUBDIR = 'media'
 ZIP_FILE_NAME = 'experiment'
 
 
-def export_research_project(experiment):
+def export_research_project(temp_dirname, experiment):
     dataset = ResearchProjectResource().export(id=experiment.research_project.id)
-    temp_file = path.join(TEMP_DIR, 'research_project.csv')
-    with open(temp_file, 'w') as f:
+    temp_filename = path.join(temp_dirname, 'research_project.csv')
+    with open(temp_filename, 'w') as f:
         f.write(dataset.csv)
 
 
@@ -26,26 +25,29 @@ def make_zip(temp_dir):
     shutil.make_archive(path.join(temp_dir_zip, ZIP_FILE_NAME), 'zip', temp_dir)
 
 
-def copy_media_file(file_path):
-    dir_media_file = path.join(TEMP_MEDIA, path.dirname(file_path))
-    os.makedirs(dir_media_file)  # TODO: test for existence
-    shutil.copy(path.join(settings.MEDIA_ROOT, file_path), dir_media_file)
+def copy_media_file(temp_media_subdirname, file_path):
+    data_collection_subdirname = path.join(temp_media_subdirname, file_path)
+    os.makedirs(data_collection_subdirname)  # TODO: test for existence
+    shutil.copy(path.join(settings.MEDIA_ROOT, file_path), data_collection_subdirname)
 
 
 def export_experiment(id_):
+    temp_dirname = tempfile.mkdtemp()
+    temp_media_subdirname = path.join(temp_dirname, MEDIA_SUBDIR)
+    os.mkdir(temp_media_subdirname)
+
     experiment = Experiment.objects.get(id=id_)  # TODO: test for existence
-    export_research_project(experiment)
+    export_research_project(temp_dirname, experiment)
     dataset = ExperimentResource().export(id=experiment.id)
-    temp_file = path.join(TEMP_DIR, 'experiment.csv')
+    temp_file = path.join(temp_dirname, 'experiment.csv')
     with open(temp_file, 'w') as f:
         f.write(dataset.csv)
 
-    os.mkdir(TEMP_MEDIA)
-    file_path = dataset['ethics_committee_project_file'][0]  # TODO: better way?
-    copy_media_file(file_path)
+    file_path = dataset['ethics_committee_project_file'][0]  # TODO: better way with tablib?
+    copy_media_file(temp_media_subdirname, file_path)
 
-    make_zip(TEMP_DIR)
+    make_zip(temp_dirname)
 
 
-def remove_tem_dir():
-    shutil.rmtree(TEMP_DIR)
+def remove_temp_dir(temp_dir):
+    shutil.rmtree(temp_dir)
