@@ -39,7 +39,7 @@ class ExperimentResource(resources.ModelResource):
 
     class Meta:
         model = Experiment
-        exclude = ('id', 'research_project')
+        exclude = ('id', )
 
     def export(self, queryset=None, *args, **kwargs):
         queryset = Experiment.objects.filter(id=kwargs['id'])
