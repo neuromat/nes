@@ -39,6 +39,8 @@ def export_experiment(id_):
     experiment = Experiment.objects.get(id=id_)  # TODO: test for existence
     export_research_project(temp_dirname, experiment)
     dataset = ExperimentResource().export(id=experiment.id)
+    # remove research_project from dataset; it'll be included when importing
+    del(dataset['research_project'])
     temp_file = path.join(temp_dirname, 'experiment.csv')
     with open(temp_file, 'w') as f:
         f.write(dataset.csv)
