@@ -37,8 +37,6 @@ def import_experiment(base_dir, file_name, research_project):
 
 def upload_file(base_dir, experiment):
     ethics_committee_filename = experiment.ethics_committee_project_file.name
-    # print(base_dir)  # DEBUG
-    # print(ethics_committee_filename)  # DEBUG
     with open(path.join(base_dir, ethics_committee_filename), 'rb') as f:
         experiment.ethics_committee_project_file.save(path.basename(f.name), File(f))
 
@@ -51,6 +49,5 @@ def import_all(zip_path):
 
     research_project = import_research_project(temp_dir, 'research_project.csv')
     experiment = import_experiment(temp_dir, 'experiment.csv', research_project)
-    print(experiment.ethics_committee_project_file.name)  # DEBUG
     if experiment.ethics_committee_project_file.name:
         upload_file(temp_media, experiment)
