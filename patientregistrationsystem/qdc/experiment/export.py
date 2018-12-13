@@ -25,16 +25,16 @@ def make_zip(temp_dir):
     shutil.make_archive(path.join(temp_dir_zip, ZIP_FILE_NAME), 'zip', temp_dir)
 
 
-def copy_media_file(temp_media_subdirname, file_path):
-    data_collection_subdirname = path.join(temp_media_subdirname, file_path)
-    os.makedirs(data_collection_subdirname)  # TODO: test for existence
-    shutil.copy(path.join(settings.MEDIA_ROOT, file_path), data_collection_subdirname)
+def copy_media_file(temp_media_subdir, file_path):
+    data_collection_subdir = path.join(temp_media_subdir, path.dirname(file_path))
+    os.makedirs(data_collection_subdir)  # TODO: test for existence
+    shutil.copy(path.join(settings.MEDIA_ROOT, file_path), data_collection_subdir)
 
 
 def export_experiment(id_):
     temp_dirname = tempfile.mkdtemp()
-    temp_media_subdirname = path.join(temp_dirname, MEDIA_SUBDIR)
-    os.mkdir(temp_media_subdirname)
+    temp_media_subdir = path.join(temp_dirname, MEDIA_SUBDIR)
+    os.mkdir(temp_media_subdir)
 
     experiment = Experiment.objects.get(id=id_)  # TODO: test for existence
     export_research_project(temp_dirname, experiment)
@@ -46,7 +46,7 @@ def export_experiment(id_):
         f.write(dataset.csv)
 
     file_path = dataset['ethics_committee_project_file'][0]  # TODO: better way with tablib?
-    copy_media_file(temp_media_subdirname, file_path)
+    copy_media_file(temp_media_subdir, file_path)
 
     make_zip(temp_dirname)
 
