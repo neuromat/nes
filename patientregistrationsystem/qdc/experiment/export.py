@@ -27,7 +27,7 @@ def make_zip(temp_dir):
 
 def copy_media_file(temp_media_subdir, file_path):
     data_collection_subdir = path.join(temp_media_subdir, path.dirname(file_path))
-    os.makedirs(data_collection_subdir)  # TODO: test for existence
+    os.makedirs(data_collection_subdir)
     shutil.copy(path.join(settings.MEDIA_ROOT, file_path), data_collection_subdir)
 
 
@@ -45,8 +45,9 @@ def export_experiment(id_):
     with open(temp_file, 'w') as f:
         f.write(dataset.csv)
 
-    file_path = dataset['ethics_committee_project_file'][0]  # TODO: better way with tablib?
-    copy_media_file(temp_media_subdir, file_path)
+    file_path = dataset['ethics_committee_project_file'][0]  # TODO: better way using tablib?
+    if file_path:
+        copy_media_file(temp_media_subdir, file_path)
 
     make_zip(temp_dirname)
 
