@@ -40,6 +40,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
+from experiment.export import ExportExperiment
 from qdc.settings import MEDIA_ROOT
 from survey.survey_utils import QuestionnaireUtils
 from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
@@ -792,6 +793,22 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
                "editing": True}
 
     return render(request, template_name, context)
+
+
+@login_required
+# @permission_required('experiment.export_experiment')  # TODO: add permisson
+def experiment_export(request, experiment_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    export = ExportExperiment(experiment)
+    export.export_all()
+
+    file = open(path.join(export.temp_dir_zip, export.ZIP_FILE_NAME + '.zip'), 'rb')
+    response = HttpResponse(file, content_type='application/zip')
+    response['Content-Length'] = path.getsize(file.name)
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('experiment.zip')
+
+    return response
 
 
 @login_required

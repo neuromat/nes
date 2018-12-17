@@ -1,15 +1,24 @@
+import csv
+import io
+import shutil
+import tempfile
+import zipfile
+from os import path
+
 from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import PermissionDenied
+from django.core.files import File
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils.encoding import smart_str
 
+from custom_user.tests_helper import create_user
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
-from custom_user.tests_helper import create_user
 from experiment.tests.tests_original import ObjectsFactory
 
 from patient.tests import UtilTests
@@ -84,7 +93,7 @@ class PermissionsresearchprojectupdateViewtest(TestCase):
         self.assertRaises(PermissionDenied)
 
 
-class ResearchprojectviewviewTest(TestCase):
+class ResearchProjectViewTest(TestCase):
 
     def setUp(self):
         exec(open('add_initial_data.py').read())
@@ -97,8 +106,7 @@ class ResearchprojectviewviewTest(TestCase):
         user_profile.save()
 
         for group in Group.objects.all():
-        # for group in Group.objects.filter(name='Attendant'):
-                group.user_set.add(self.user)
+            group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
 
@@ -314,6 +322,7 @@ class LoadGameKeeperTest(TestCase):
         GoalkeeperGameConfig.objects.filter(idconfig=self.idconfig).using("goalkeeper").delete()
         GoalkeeperGameResults.objects.filter(idgameresult=self.idgameresult).using("goalkeeper").delete()
 
+
 class CollaboratorTest(TestCase):
     def setUp(self):
 
@@ -374,9 +383,117 @@ class CollaboratorTest(TestCase):
         # collaborators_selected = request.POST.getlist('collaborators')
         if collaborators:
             collaborators_selected = collaborators.first()
-            response = self.client.post(reverse('collaborator_new',
-                       kwargs={'experiment_id': self.experiment.id}),
-                               # 'researcher_id': collaborators_selected}),
-            data={'collaborators':collaborators_selected.id,
-                  'action': 'save'})
+            response = self.client.post(
+                reverse('collaborator_new', kwargs={'experiment_id': self.experiment.id}),
+                data={'collaborators': collaborators_selected.id, 'action': 'save'}
+            )
             self.assertEqual(response.status_code, 302)
+
+
+class ExportExperimentTest(TestCase):
+
+    def setUp(self):
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
+
+        user, passwd = create_user(Group.objects.all())
+
+        self.research_project = ObjectsFactory.create_research_project()
+        self.experiment = ObjectsFactory.create_experiment(self.research_project)
+        self.client.login(username=user.username, password=passwd)
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_GET_experiment_export_returns_zip_file(self):
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEquals(
+            response.get('Content-Disposition'),
+            'attachment; filename=%s' % smart_str('experiment.zip')
+        )
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zip_file.testzip())
+        
+    def test_GET_experiment_export_returns_research_project_in_zip_file(self):
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        self.assertTrue(
+            any('research_project.csv' in item for item in zip_file.namelist()),
+            'research_project.csv not in %s' % str(zip_file.namelist())
+        )
+
+    def test_GET_experiment_export_returns_research_project_right_content(self):
+        # TODO: testing only for headers, not for values (last is trickier, maybe later)
+
+        # ResearchProject fields that have to be in csv file
+        research_project_fields = ['title', 'description', 'start_date', 'end_date', 'keywords']
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        temp_dir = tempfile.mkdtemp()
+        zip_file.extractall(temp_dir)
+        with open(path.join(temp_dir, 'research_project.csv')) as f:
+            # must have two lines (one for headers and one for values)
+            self.assertEqual(len(f.readlines()), 2)
+        with open(path.join(temp_dir, 'research_project.csv')) as f:
+            reader = csv.reader(f)
+            headers = next(reader)
+            self.assertSetEqual(set(headers), set(research_project_fields))
+
+        shutil.rmtree(temp_dir)
+
+    def test_GET_experiment_export_returns_experiment_in_zip_file(self):
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        self.assertTrue(
+            any('experiment.csv' in item for item in zip_file.namelist()),
+            'experiment.csv not in %s' % str(zip_file.namelist())
+        )
+
+    def test_GET_experiment_export_returns_experiment_right_content(self):
+        # TODO: testing only for headers, not for values (last is trickier, maybe later)
+
+        # ResearchProject fields that have to be in csv file
+        experiment_fields = [
+            'title', 'description', 'is_public', 'data_acquisition_is_concluded', 'source_code_url',
+            'ethics_committee_project_url', 'ethics_committee_project_file', 'last_update',
+            'last_sending'
+        ]
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        temp_dir = tempfile.mkdtemp()
+        zip_file.extractall(temp_dir)
+        with open(path.join(temp_dir, 'experiment.csv')) as f:
+            # must have two lines (one for headers and one for values)
+            self.assertEqual(len(f.readlines()), 2)
+        with open(path.join(temp_dir, 'experiment.csv')) as f:
+            reader = csv.reader(f)
+            headers = next(reader)
+            self.assertSetEqual(set(headers), set(experiment_fields))
+
+        shutil.rmtree(temp_dir)
+
+    def test_GET_experiment_export_returns_experiment_file(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            file = ObjectsFactory.create_binary_file(temp_dir)
+            with File(open(file.name, 'rb')) as f:
+                self.experiment.ethics_committee_project_file.save('file.pdf', f)
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        file_path = self.experiment.ethics_committee_project_file.name
+        self.assertTrue(
+            any(file_path in item for item in zip_file.namelist()),
+            '%s not in %s' % (file_path, str(zip_file.namelist()))
+        )
+
+    def test_GET_experiment_export_removes_temporary_dirs(self):
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        # TODO: implement it

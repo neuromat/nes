@@ -37,6 +37,8 @@ urlpatterns = patterns(
     url(r'^edit/(?P<experiment_id>\d+)/$', 'experiment_update', name='experiment_edit'),
     url(r'^experiment_research/change_the_order/(?P<collaborator_position_id>\d+)/(?P<command>\w+)/$',
         'experiment_research_change_order', name='experiment_research_change_order'),
+    # export
+    url(r'^(?P<experiment_id>\d+)/export/$', 'experiment_export', name='experiment_export'),
 
     # Schedule of sending
     url(r'^schedule_of_sending/(?P<experiment_id>\d+)/$',
