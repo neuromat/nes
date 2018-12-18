@@ -6,7 +6,7 @@ from modeltranslation.admin import TranslationAdmin
 from .models import QuestionnaireResponse, StimulusType, Tag, ADConverter, StandardizationSystem, ElectrodeShape, \
     MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, CoilOrientation, \
     DirectionOfTheInducedCurrent, BrainArea, BrainAreaSystem, InformationType, GoalkeeperGame, GoalkeeperPhase, \
-    Experiment, ResearchProject
+    ResearchProject, Experiment
 
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
 
@@ -35,6 +35,20 @@ admin.site.register(GoalkeeperGame)
 admin.site.register(GoalkeeperPhase)
 
 
+class ResearchProjectResource(resources.ModelResource):
+
+    class Meta:
+        model = ResearchProject
+        exclude = ('id', 'owner')
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = ResearchProject.objects.filter(id=kwargs['id'])
+        return super(ResearchProjectResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False
+
+
 class ExperimentResource(resources.ModelResource):
 
     class Meta:
@@ -44,20 +58,6 @@ class ExperimentResource(resources.ModelResource):
     def export(self, queryset=None, *args, **kwargs):
         queryset = Experiment.objects.filter(id=kwargs['id'])
         return super(ExperimentResource, self).export(queryset, *args, **kwargs)
-
-    def get_instance(self, instance_loader, row):
-        return False
-
-
-class ResearchProjectResource(resources.ModelResource):
-
-    class Meta:
-        model = ResearchProject
-        exclude = ('id', )
-
-    def export(self, queryset=None, *args, **kwargs):
-        queryset = ResearchProject.objects.filter(id=kwargs['id'])
-        return super(ResearchProjectResource, self).export(queryset, *args, **kwargs)
 
     def get_instance(self, instance_loader, row):
         return False

@@ -571,13 +571,6 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_binary_file(path):
-        with open(os.path.join(path,'file.bin'), 'wb') as f:
-            f.write(b'carambola')
-            return f
-
-    @staticmethod
-
     def create_generic_data_collection_data(data_conf_tree,
                                             subj_of_group):
 
