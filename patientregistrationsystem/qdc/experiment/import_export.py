@@ -1,6 +1,7 @@
 import os
 import shutil
 import tempfile
+import zipfile
 from os import path, mkdir
 
 from django.conf import settings
@@ -58,3 +59,36 @@ class ExportExperiment:
         self.export_experiment()
 
         shutil.make_archive(path.join(self.temp_dir_zip, self.ZIP_FILE_NAME), 'zip', self.temp_dir)
+
+
+class ImportExperiment:
+
+    MEDIA_SUBDIR = 'media'
+    RESEARCH_PROJECT_CSV = 'research_project.csv'
+    BAD_ZIP_FILE = 1
+    FILE_NOT_FOUND_ERROR = 2
+
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.temp_dir = tempfile.mkdtemp()
+
+    def __del__(self):
+        shutil.rmtree(self.temp_dir)
+
+    def import_all(self):
+        try:
+            zipfile.ZipFile(self.file_path)
+        except zipfile.BadZipFile:
+            return (
+                self.BAD_ZIP_FILE, 'Not a zip file. Aborting import experiment.'
+            )
+
+        with zipfile.ZipFile(self.file_path) as f:
+            f.extractall(self.temp_dir)
+        try:
+            open(path.join(self.temp_dir, self.RESEARCH_PROJECT_CSV))
+        except FileNotFoundError:
+            return (
+                self.FILE_NOT_FOUND_ERROR, '%s not found in zip file. Aborting import experiment.'
+                % self.RESEARCH_PROJECT_CSV
+            )
