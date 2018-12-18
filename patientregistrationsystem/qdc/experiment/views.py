@@ -3,6 +3,7 @@ import csv
 import re
 import json
 import random
+import tempfile
 
 import numpy as np
 
@@ -40,7 +41,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
-from experiment.export import ExportExperiment
+from experiment.import_export import ExportExperiment, ImportExperiment
 from qdc.settings import MEDIA_ROOT
 from survey.survey_utils import QuestionnaireUtils
 from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
@@ -809,6 +810,31 @@ def experiment_export(request, experiment_id):
     response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('experiment.zip')
 
     return response
+
+
+def handle_uploaded_file(file):
+    with tempfile.NamedTemporaryFile('wb+', delete=False) as f:
+        for chunk in file.chunks():
+            f.write(chunk)
+        return f.name
+
+
+@login_required
+# @permission_required('experiment.import_experiment')  # TODO: add permisson
+def experiment_import(request, template_name='experiment/experiment_import.html'):
+    if request.method == 'GET':
+        return render(request, template_name)
+    if request.method == 'POST':
+        file = request.FILES.get('zip_file')
+        file_name = handle_uploaded_file(file)
+        import_experiment = ImportExperiment(file_name)
+        err_code, err_message = import_experiment.import_all()
+        os.remove(file_name)
+
+        if err_code:
+            messages.error(request, _(err_message))
+
+        return HttpResponseRedirect(reverse('experiment_import'))
 
 
 @login_required

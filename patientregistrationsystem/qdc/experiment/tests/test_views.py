@@ -14,6 +14,7 @@ from django.test import TestCase
 from django.utils.encoding import smart_str
 
 from custom_user.tests_helper import create_user
+from experiment.import_export import ImportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher
@@ -497,3 +498,58 @@ class ExportExperimentTest(TestCase):
     def test_GET_experiment_export_removes_temporary_dirs(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         # TODO: implement it
+
+
+class ImportExperimentTest(TestCase):
+
+    def setUp(self):
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
+
+        user, passwd = create_user(Group.objects.all())
+
+        self.research_project = ObjectsFactory.create_research_project()
+        self.experiment = ObjectsFactory.create_experiment(self.research_project)
+        self.client.login(username=user.username, password=passwd)
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_GET_experiment_import_file_uses_correct_template(self):
+        response = self.client.get(reverse('experiment_import'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'experiment/experiment_import.html')
+
+    def test_POST_experiment_import_file_has_bad_zip_file_redirects_with_error_message(self):
+        temp_dir = tempfile.mkdtemp()
+        dummy_file = ObjectsFactory.create_binary_file(temp_dir)
+
+        with open(dummy_file.name, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'zip_file': file}, follow=True)
+        self.assertRedirects(response, reverse('experiment_import'))
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Not a zip file. Aborting import experiment.')
+
+        shutil.rmtree(temp_dir)
+
+    def test_POST_experiment_import_file_has_no_research_project_csv_file_redirects_with_error_message(self):
+        temp_dir = tempfile.mkdtemp()
+        dummy_file = ObjectsFactory.create_binary_file(temp_dir)
+        temp_zip_dir = tempfile.mkdtemp()
+        zip_file = zipfile.ZipFile(path.join(temp_zip_dir, 'dummy_file.zip'), 'w')
+        zip_file.write(dummy_file.name, path.basename(dummy_file.name))
+        zip_file.close()
+
+        with open(zip_file.filename, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'zip_file': file}, follow=True)
+        self.assertRedirects(response, reverse('experiment_import'))
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(
+            message, '%s not found in zip file. Aborting import experiment.' % ImportExperiment.RESEARCH_PROJECT_CSV
+        )
+
+        shutil.rmtree(temp_dir)
+        shutil.rmtree(temp_zip_dir)
+
+    def test_POST_experiment_import_file_has_no_minimum_csv_files_redirects_with_error_message(self):
+        pass
