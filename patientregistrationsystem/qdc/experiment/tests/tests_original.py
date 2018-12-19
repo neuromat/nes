@@ -322,7 +322,7 @@ class ObjectsFactory(object):
         group = Group.objects.create(
             experiment=experiment,
             title=faker.word(),
-            description=faker.text(),
+            description=faker.text(max_nb_chars=15),
             experimental_protocol=experimental_protocol
         )
         return group
