@@ -17,7 +17,7 @@ from custom_user.tests_helper import create_user
 from experiment.import_export import ImportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
-    FileFormat, ExperimentResearcher
+    FileFormat, ExperimentResearcher, InformationType
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
@@ -74,7 +74,7 @@ class PermissionsresearchprojectupdateViewtest(TestCase):
         user_profile.save()
 
         for group in Group.objects.all():
-        # for group in Group.objects.filter(name='Attendant'):
+            # for group in Group.objects.filter(name='Attendant'):
             group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
@@ -88,8 +88,7 @@ class PermissionsresearchprojectupdateViewtest(TestCase):
 
     def test_permissions_research_project_update(self):
         response = self.client.get(reverse('research_project_edit',
-                                           kwargs={'research_project_id':
-                                                       self.research_project.pk}))
+                                           kwargs={'research_project_id': self.research_project.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertRaises(PermissionDenied)
 
@@ -141,10 +140,9 @@ class ResearchProjectViewTest(TestCase):
         self.assertEqual(self.research_project.keywords.count(), 2)
 
         response = self.client.post(reverse('research_project_view',
-                   kwargs={'research_project_id': self.research_project.pk}),
-                   data={'action': 'remove'})
+                                            kwargs={'research_project_id': self.research_project.pk}),
+                                    data={'action': 'remove'})
         self.assertEqual(response.status_code, 302)
-
 
     # def test_research_project_view_remove_except(self):
     #
@@ -175,6 +173,7 @@ class ResearchProjectViewTest(TestCase):
     #                data={'action': 'remove'})
     #
     #     self.assertEqual(response.status_code, 403)
+
 
 class LoadGameKeeperTest(TestCase):
     def setUp(self):
@@ -261,7 +260,6 @@ class LoadGameKeeperTest(TestCase):
         self.group.code = GoalkeeperGameConfig.objects.using("goalkeeper").first().groupcode
         self.group.save()
 
-
     def test_load_goalkeeper_data(self):
         self.assertEqual(GoalkeeperGameConfig.objects.using("goalkeeper").count(), 1)
 
@@ -282,7 +280,6 @@ class LoadGameKeeperTest(TestCase):
         )
 
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
-
 
         # Create a instance of institution and local institution
         institution = Institution.objects.create(
@@ -316,7 +313,7 @@ class LoadGameKeeperTest(TestCase):
 
         Institution.objects.filter(name='TESTINSTITUTION').delete()
         LocalInstitution.objects.filter(code='TESTLOCALINST').delete()
-        GoalkeeperGame.objects.filter(code = self.goalkeepergameconfig.game).delete()
+        GoalkeeperGame.objects.filter(code=self.goalkeepergameconfig.game).delete()
         GoalkeeperPhase.objects.filter(phase=0).delete()
 
     def tearDown(self):
@@ -338,7 +335,7 @@ class CollaboratorTest(TestCase):
         user_profile.save()
 
         for group in Group.objects.all():
-        # for group in Group.objects.filter(name='Attendant'):
+            # for group in Group.objects.filter(name='Attendant'):
             group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
@@ -370,9 +367,7 @@ class CollaboratorTest(TestCase):
     def test_collaborator_create(self):
 
         # Insert collaborator
-        response = self.client.get(reverse('collaborator_new',
-                                           kwargs={'experiment_id':
-                                                       self.experiment.id}))
+        response = self.client.get(reverse('collaborator_new', kwargs={'experiment_id': self.experiment.id}))
         self.assertEqual(response.status_code, 200)
 
         collaborators_added = ExperimentResearcher.objects.filter(experiment_id=self.experiment.id)
@@ -401,6 +396,12 @@ class ExportExperimentTest(TestCase):
 
         self.research_project = ObjectsFactory.create_research_project()
         self.experiment = ObjectsFactory.create_experiment(self.research_project)
+        self.root = ObjectsFactory.create_component(self.experiment, 'block')
+        information_type = InformationType.objects.create(name='it')
+        self.component = ObjectsFactory.create_component(self.experiment, 'generic_data_collection',
+                                                         kwargs={'it': information_type})
+        self.componentconfig = ObjectsFactory.create_component_configuration(self.root, self.component)
+        self.group = ObjectsFactory.create_group(self.experiment, experimental_protocol=self.root)
         self.client.login(username=user.username, password=passwd)
 
     def tearDown(self):
@@ -494,6 +495,88 @@ class ExportExperimentTest(TestCase):
             any(file_path in item for item in zip_file.namelist()),
             '%s not in %s' % (file_path, str(zip_file.namelist()))
         )
+
+    def test_GET_experiment_export_returns_groups_in_zip_file(self):
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        self.assertTrue(
+            any('groups.csv' in item for item in zip_file.namelist()),
+            'groups.csv not in %s' % str(zip_file.namelist())
+        )
+
+    def test_GET_experiment_export_returns_groups_right_contents(self):
+        # TODO: testing only for headers, not for values (last is trickier, maybe later)
+
+        # ResearchProject fields that have to be in csv file
+        groups_fields = ['title', 'description', 'code', 'classification_of_diseases', 'experimental_protocol']
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        temp_dir = tempfile.mkdtemp()
+        zip_file.extractall(temp_dir)
+        with open(path.join(temp_dir, 'groups.csv')) as f:
+            # must have two lines (one for headers and one for values)
+            self.assertEqual(len(f.readlines()), 2)
+        with open(path.join(temp_dir, 'groups.csv')) as f:
+            reader = csv.reader(f)
+            headers = next(reader)
+            self.assertSetEqual(set(headers), set(groups_fields))
+
+        shutil.rmtree(temp_dir)
+
+    def test_GET_experiment_export_returns_components_in_zip_file(self):
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        self.assertTrue(
+            any('components.csv' in item for item in zip_file.namelist()),
+            'components.csv not in %s' % str(zip_file.namelist())
+        )
+
+        self.assertTrue(
+            any('componentsconfig.csv' in item for item in zip_file.namelist()),
+            'componentsconfig.csv not in %s' % str(zip_file.namelist())
+        )
+
+    def test_GET_experiment_export_returns_components_right_contents(self):
+        # TODO: testing only for headers, not for values (last is trickier, maybe later)
+
+        # ResearchProject fields that have to be in csv file
+        components_fields = ['id', 'identification', 'description',
+                             'duration_value', 'duration_unit',
+                             'experiment', 'component_type']
+
+        components_config_fields = ['name', 'number_of_repetitions', 'interval_between_repetitions_value',
+                                    'interval_between_repetitions_unit', 'component', 'parent', 'order',
+                                    'random_position', 'requires_start_and_end_datetime']
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        file = io.BytesIO(response.content)
+        zip_file = zipfile.ZipFile(file, 'r')
+        temp_dir = tempfile.mkdtemp()
+        zip_file.extractall(temp_dir)
+
+        with open(path.join(temp_dir, 'components.csv')) as f:
+            # must have three lines (one for headers, one for the root component and one for the other component)
+            self.assertEqual(len(f.readlines()), 3)
+
+        with open(path.join(temp_dir, 'components.csv')) as f:
+            reader = csv.reader(f)
+            headers = next(reader)
+            self.assertSetEqual(set(headers), set(components_fields))
+
+        with open(path.join(temp_dir, 'componentsconfig.csv')) as f:
+            # must have two lines (one for headers and one for the component)
+            self.assertEqual(len(f.readlines()), 2)
+
+        with open(path.join(temp_dir, 'componentsconfig.csv')) as f:
+            reader = csv.reader(f)
+            headers = next(reader)
+            self.assertSetEqual(set(headers), set(components_config_fields))
+
+        shutil.rmtree(temp_dir)
 
     def test_GET_experiment_export_removes_temporary_dirs(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))

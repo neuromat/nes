@@ -6,7 +6,9 @@ from os import path, mkdir
 
 from django.conf import settings
 
-from experiment.admin import ResearchProjectResource, ExperimentResource
+from experiment.admin import ResearchProjectResource, ExperimentResource, GroupResource, ComponentResource,\
+    ComponentConfigResource
+from experiment.models import Group, ComponentConfiguration
 
 
 class ExportExperiment:
@@ -15,6 +17,9 @@ class ExportExperiment:
     MEDIA_SUBDIR = 'media'
     RESEARCH_PROJECT_CSV = 'research_project.csv'
     EXPERIMENT_CSV = 'experiment.csv'
+    GROUPS_CSV = 'groups.csv'
+    COMPONENTS_CSV = 'components.csv'
+    COMPONENTS_CONFIG_CSV = 'componentsconfig.csv'
 
     def __init__(self, experiment):
         self.experiment = experiment
@@ -29,7 +34,8 @@ class ExportExperiment:
 
     def copy_file(self, file_path):
         absolute_path = path.join(self.temp_media_dir, path.dirname(file_path))
-        os.makedirs(absolute_path)
+        if not path.exists(absolute_path):
+            os.makedirs(absolute_path)
         shutil.copy(path.join(settings.MEDIA_ROOT, file_path), absolute_path)
 
     def export_research_project(self):
@@ -54,9 +60,39 @@ class ExportExperiment:
         if file_path:
             self.copy_file(file_path)
 
+    def export_groups(self):
+        dataset = GroupResource().export(experiment=self.experiment)
+        temp_filename = path.join(self.temp_dir, self.GROUPS_CSV)
+        with open(temp_filename, 'w') as f:
+            f.write(dataset.csv)
+
+    def export_components(self):
+        groups = Group.objects.filter(experiment=self.experiment)
+        list_components_ids = []
+        list_rootcomponents_ids = []
+        for group in groups:
+            rootcomponent_id = group.experimental_protocol_id
+            list_components_ids.append(rootcomponent_id)
+            list_rootcomponents_ids.append(rootcomponent_id)
+            components = ComponentConfiguration.objects.filter(parent_id=rootcomponent_id)
+            for component in components:
+                list_components_ids.append(component.component_id)
+
+        dataset_components = ComponentResource().export(ids=list_components_ids)
+        temp_file = path.join(self.temp_dir, self.COMPONENTS_CSV)
+        with open(temp_file, 'w') as f:
+            f.write(dataset_components.csv)
+
+        dataset_components_config = ComponentConfigResource().export(ids=list_rootcomponents_ids)
+        temp_file = path.join(self.temp_dir, self.COMPONENTS_CONFIG_CSV)
+        with open(temp_file, 'w') as f:
+            f.write(dataset_components_config.csv)
+
     def export_all(self):
         self.export_research_project()
         self.export_experiment()
+        self.export_groups()
+        self.export_components()
 
         shutil.make_archive(path.join(self.temp_dir_zip, self.ZIP_FILE_NAME), 'zip', self.temp_dir)
 
