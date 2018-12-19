@@ -5,11 +5,10 @@ import tempfile
 
 import os
 
-import shutil
 from django.core.files import File
 from django.db import IntegrityError
 from django.db.models.loading import get_model
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -34,14 +33,11 @@ from experiment.models import Experiment, Group, Subject, \
     ContextTree, ExperimentResearcher, InformationType, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
     GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
-    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, TMSData, HotSpot, \
-    DirectionOfTheInducedCurrent, BrainAreaSystem, BrainArea, \
-    TMSLocalizationSystem, CoilOrientation, TMSDeviceSetting
-from custom_user.models import UserProfile
+    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
-    publication_add_experiment, STIMULUS
+    publication_add_experiment
 
 from custom_user.views import User
 
@@ -585,9 +581,16 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_binary_file(path):
-        with open(os.path.join(path, 'file.bin'), 'wb') as f:
+    def create_binary_file(path, name='file.bin'):
+        with open(os.path.join(path, name), 'wb') as f:
             f.write(b'carambola')
+            return f
+
+    @staticmethod
+    def create_csv_file(path, name='file.csv'):
+        with open(os.path.join(path, name), 'w') as f:
+            f.write('h1, h2\n')
+            f.write('v1, v2\n')
             return f
 
     @staticmethod
@@ -606,8 +609,7 @@ class ObjectsFactory(object):
         return gdcf
 
     @staticmethod
-    def create_eeg_data_collection_data(data_conf_tree,
-                                            subj_of_group, eeg_set):
+    def create_eeg_data_collection_data(data_conf_tree, subj_of_group, eeg_set):
 
         faker = Factory.create()
 

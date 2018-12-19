@@ -7466,17 +7466,17 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
 
 
 def create_csv_for_goalkeeper(complete_filename, config, results):
-    header = ['player alias','group code','institution','id',
-              'soccer team','game','phase','session time(s)',
-              'relax time(s)','game data','game time','game random',
-              'limit plays','total correct','success rate',
-              'game mode','status','plays to relax',
-              'scoreboard','final scoreboard','animation type',
-              'min hits','playermachine',
-              'move','time until any key(s)','time until show again(s)','waited result',
-              'eh random?','option chosen','movement time(s)','decision time(s)',
+    header = ['player alias', 'group code', 'institution', 'id',
+              'soccer team', 'game', 'phase', 'session time(s)',
+              'relax time(s)', 'game data', 'game time', 'game random',
+              'limit plays', 'total correct', 'success rate',
+              'game mode', 'status', 'plays to relax',
+              'scoreboard', 'final scoreboard', 'animation type',
+              'min hits', 'playermachine',
+              'move', 'time until any key(s)', 'time until show again(s)', 'waited result',
+              'eh random?', 'option chosen', 'movement time(s)', 'decision time(s)',
               'sequence executed']
-    rows_to_be_saved = []
+    rows_to_be_saved = list()
     rows_to_be_saved.append(header)
     for result in results:
         rows_to_be_saved.append([config.playeralias, config.groupcode, config.institution, config.idresult,
