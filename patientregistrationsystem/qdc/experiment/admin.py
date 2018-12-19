@@ -6,7 +6,7 @@ from modeltranslation.admin import TranslationAdmin
 from .models import QuestionnaireResponse, StimulusType, Tag, ADConverter, StandardizationSystem, ElectrodeShape, \
     MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, CoilOrientation, \
     DirectionOfTheInducedCurrent, BrainArea, BrainAreaSystem, InformationType, GoalkeeperGame, GoalkeeperPhase, \
-    ResearchProject, Experiment
+    ResearchProject, Experiment, Group, Component, ComponentConfiguration, ComponentAdditionalFile
 
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
 
@@ -58,6 +58,47 @@ class ExperimentResource(resources.ModelResource):
     def export(self, queryset=None, *args, **kwargs):
         queryset = Experiment.objects.filter(id=kwargs['id'])
         return super(ExperimentResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False
+
+
+class GroupResource(resources.ModelResource):
+
+    class Meta:
+        model = Group
+        exclude = ('experiment', 'id')
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = Group.objects.filter(experiment=kwargs['experiment'])
+        return super(GroupResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False
+
+
+class ComponentResource(resources.ModelResource):
+
+    class Meta:
+        model = Component
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = Component.objects.filter(id__in=kwargs['ids'])
+        return super(ComponentResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False
+
+
+class ComponentConfigResource(resources.ModelResource):
+
+    class Meta:
+        model = ComponentConfiguration
+        exclude = ('id', )
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = ComponentConfiguration.objects.filter(parent_id__in=kwargs['ids'])
+        return super(ComponentConfigResource, self).export(queryset, *args, **kwargs)
 
     def get_instance(self, instance_loader, row):
         return False

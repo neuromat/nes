@@ -262,7 +262,7 @@ class ObjectsFactory(object):
             experiment=experiment,
             identification=identification or faker.ssn(),
             component_type=component_type,
-            description=faker.text(),
+            description=faker.text(max_nb_chars=15),
         )
 
         if component_type == Component.QUESTIONNAIRE:
