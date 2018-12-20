@@ -5,7 +5,6 @@ import sys
 import tempfile
 import zipfile
 from os import path
-from unittest import skip
 
 from django.conf import settings
 from django.contrib.auth.models import Group, User
@@ -16,11 +15,11 @@ from django.test import TestCase
 from django.utils.encoding import smart_str
 
 from custom_user.tests_helper import create_user
-from experiment.admin import ResearchProjectResource
+from experiment.admin import ResearchProjectResource, ExperimentResource
 from experiment.import_export import ImportExperiment, ExportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
-    FileFormat, ExperimentResearcher, InformationType
+    FileFormat, ExperimentResearcher, InformationType, Experiment, ResearchProject
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
@@ -432,6 +431,8 @@ class ExportExperimentTest(TestCase):
         # TODO: testing only for headers, not for values (last is trickier, maybe later)
 
         # ResearchProject fields that have to be in csv file
+        # TODO: get fields like in
+        #  test_POST_experiment_import_file_import_experiment_create_model_object_with_right_content
         research_project_fields = ['title', 'description', 'start_date', 'end_date', 'keywords']
 
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
@@ -461,11 +462,12 @@ class ExportExperimentTest(TestCase):
     def test_GET_experiment_export_returns_experiment_right_content(self):
         # TODO: testing only for headers, not for values (last is trickier, maybe later)
 
-        # ResearchProject fields that have to be in csv file
+        # Experiment fields that have to be in csv file
+        # TODO: get fields like in
+        #  test_POST_experiment_import_file_import_experiment_create_model_object_with_right_content
         experiment_fields = [
             'title', 'description', 'is_public', 'data_acquisition_is_concluded', 'source_code_url',
-            'ethics_committee_project_url', 'ethics_committee_project_file', 'last_update',
-            'last_sending'
+            'ethics_committee_project_url', 'ethics_committee_project_file'
         ]
 
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
@@ -709,3 +711,34 @@ class ImportExperimentTest(TestCase):
 
         shutil.rmtree(temp_dir)
         shutil.rmtree(temp_zip_dir)
+
+    def test_POST_experiment_import_file_import_experiment_create_model_object_with_right_content(self):
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+
+        with open(path.join(export.temp_dir_zip, export.ZIP_FILE_NAME + '.zip'), 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'zip_file': file}, follow=True)
+
+        self.assertRedirects(response, reverse('experiment_import'))
+        new_research_project = ResearchProject.objects.last()
+        new_experiment = Experiment.objects.last()
+
+        # get ResearchProject fields except forward and reverse fields
+        fields = set([f.name for f in ResearchProject._meta.get_fields() if not f.is_relation])
+        # Excluded fields in ResearchProjectResource.Meta must be excluded
+        # from comparison as they will be created
+        fields -= set(ResearchProjectResource.Meta.exclude)
+
+        for field in fields:
+            self.assertEqual(getattr(self.research_project, field), getattr(new_research_project, field))
+
+        # get ResearchProject fields except forward and reverse fields
+        fields = set([f.name for f in Experiment._meta.get_fields() if not f.is_relation])
+        # Excluded fields in ExperimentResource.Meta must be excluded
+        # from comparison as they will be created
+        fields -= set(ExperimentResource.Meta.exclude)
+
+        for field in fields:
+            self.assertEqual(
+                getattr(self.experiment, field) or '', getattr(new_experiment, field) or ''
+            )
