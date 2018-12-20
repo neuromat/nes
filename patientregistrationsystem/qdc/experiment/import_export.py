@@ -103,9 +103,9 @@ class ImportExperiment:
     MEDIA_SUBDIR = 'media'
     RESEARCH_PROJECT_CSV = 'research_project.csv'
     EXPERIMENT_CSV = 'experiment.csv'
-    BAD_ZIP_FILE = 1
+    BAD_ZIP_FILE_ERROR = 1
     FILE_NOT_FOUND_ERROR = 2
-    BAD_CSV_FILE = 3
+    BAD_CSV_FILE_ERROR = 3
 
     def __init__(self, file_path):
         self.file_path = file_path
@@ -119,7 +119,7 @@ class ImportExperiment:
             zipfile.ZipFile(self.file_path)
         except zipfile.BadZipFile:
             return (
-                self.BAD_ZIP_FILE, 'Not a zip file. Aborting import experiment.'
+                self.BAD_ZIP_FILE_ERROR, 'Not a zip file. Aborting import experiment.'
             )
 
         with zipfile.ZipFile(self.file_path) as f:
@@ -145,8 +145,8 @@ class ImportExperiment:
         file_path = path.join(self.temp_dir, self.RESEARCH_PROJECT_CSV)
         dataset = Dataset().load(open(file_path).read())
         result = ResearchProjectResource().import_data(dataset, dry_run=True)
-        if result.has_errors():
-            return 'Bad %s file' % self.RESEARCH_PROJECT_CSV
+        if (not self._is_dataset_valid(dataset, ResearchProject.__name__)) or result.has_errors():
+            return None
 
         ResearchProjectResource().import_data(dataset)
         return ResearchProject.objects.last()
@@ -155,10 +155,9 @@ class ImportExperiment:
         file_path = path.join(self.temp_dir, self.EXPERIMENT_CSV)
         dataset = Dataset().load(open(file_path).read())
         dataset.append_col([research_project.id], header='research_project')
-        result1 = self._validate_dataset(dataset, 'Experiment')
-        result2 = ExperimentResource().import_data(dataset, dry_run=True)
-        if result2.has_errors():
-            return 'Bad %s file' % self.EXPERIMENT_CSV
+        result = ExperimentResource().import_data(dataset, dry_run=True)
+        if (not self._is_dataset_valid(dataset, Experiment.__name__)) or result.has_errors():
+            return None
 
         ExperimentResource().import_data(dataset, dry_run=False)
         return Experiment.objects.last()
@@ -174,13 +173,35 @@ class ImportExperiment:
         research_project = self.import_research_project()
         if not isinstance(research_project, ResearchProject):
             return (
-                self.BAD_CSV_FILE, 'Bad %s file. Aborting import experiment.' % self.RESEARCH_PROJECT_CSV
+                self.BAD_CSV_FILE_ERROR, 'Bad %s file. Aborting import experiment.' % self.RESEARCH_PROJECT_CSV
             )
         experiment = self.import_experiment(research_project)
         if not isinstance(experiment, Experiment):
             return (
-                self.BAD_CSV_FILE, 'Bad %s file. Aborting import experiment.' % self.EXPERIMENT_CSV
+                self.BAD_CSV_FILE_ERROR, 'Bad %s file. Aborting import experiment.' % self.EXPERIMENT_CSV
             )
 
-    def _validate_dataset(self, dataset, model):
-        pass
+    @staticmethod
+    def _is_dataset_valid(dataset, model):
+        """ django-import-export package seems to not follow blank=False model field
+        validation, neither the dataset headers corresponding to that fields, so by now
+        we made validation by ourselves.
+
+        """
+        if model == Experiment.__name__:
+            fields = set([f.name for f in Experiment._meta.get_fields()])
+            if not (set(dataset.headers) <= fields):
+                return False
+            if (not dataset['title']) or (not dataset['description']):
+                return False
+        if model == ResearchProject.__name__:
+            fields = set([f.name for f in ResearchProject._meta.get_fields()])
+            if not (set(dataset.headers) <= fields):
+                return False
+            if (not dataset['title']) or (not dataset['description']):
+                return False
+        else:
+            raise ValueError('Invalid model')  # TODO: see if there is better exception for argument error
+
+        return True
+
