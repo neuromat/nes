@@ -141,6 +141,29 @@ class ImportExperiment:
 
         return 0, ''
 
+    @staticmethod
+    def _is_dataset_valid(dataset, model):
+        """django-import-export package seems do not follow blank=False model field
+        validation, neither the check for dataset headers corresponding to that fields,
+        so by now we made validation by ourselves.
+        """
+        if model == Experiment.__name__:
+            fields = set([f.name for f in Experiment._meta.get_fields()])
+            if not (set(dataset.headers) <= fields):
+                return False
+            if (not dataset['title']) or (not dataset['description']):
+                return False
+        elif model == ResearchProject.__name__:
+            fields = set([f.name for f in ResearchProject._meta.get_fields()])
+            if not (set(dataset.headers) <= fields):
+                return False
+            if (not dataset['title']) or (not dataset['description']):
+                return False
+        else:
+            raise ValueError('Invalid model')  # TODO: see if there is better exception for argument error
+
+        return True
+
     def import_research_project(self):
         file_path = path.join(self.temp_dir, self.RESEARCH_PROJECT_CSV)
         dataset = Dataset().load(open(file_path).read())
@@ -181,27 +204,4 @@ class ImportExperiment:
                 self.BAD_CSV_FILE_ERROR, 'Bad %s file. Aborting import experiment.' % self.EXPERIMENT_CSV
             )
 
-    @staticmethod
-    def _is_dataset_valid(dataset, model):
-        """ django-import-export package seems to not follow blank=False model field
-        validation, neither the dataset headers corresponding to that fields, so by now
-        we made validation by ourselves.
-
-        """
-        if model == Experiment.__name__:
-            fields = set([f.name for f in Experiment._meta.get_fields()])
-            if not (set(dataset.headers) <= fields):
-                return False
-            if (not dataset['title']) or (not dataset['description']):
-                return False
-        if model == ResearchProject.__name__:
-            fields = set([f.name for f in ResearchProject._meta.get_fields()])
-            if not (set(dataset.headers) <= fields):
-                return False
-            if (not dataset['title']) or (not dataset['description']):
-                return False
-        else:
-            raise ValueError('Invalid model')  # TODO: see if there is better exception for argument error
-
-        return True
-
+        return 0, ''
