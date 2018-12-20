@@ -53,7 +53,7 @@ class ExperimentResource(resources.ModelResource):
 
     class Meta:
         model = Experiment
-        exclude = ('id', )
+        exclude = ('id', 'last_update', 'last_sending')
 
     def export(self, queryset=None, *args, **kwargs):
         queryset = Experiment.objects.filter(id=kwargs['id'])
