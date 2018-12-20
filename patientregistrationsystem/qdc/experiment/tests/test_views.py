@@ -54,8 +54,7 @@ class ScheduleOfSendingListViewTest(TestCase):
         self.assertEqual(len(response.context['research_projects']), 1)
 
         can_send_to_portal = False
-        if settings.PORTAL_API[
-                'URL'] and settings.SHOW_SEND_TO_PORTAL_BUTTON:
+        if settings.PORTAL_API['URL'] and settings.SHOW_SEND_TO_PORTAL_BUTTON:
                 can_send_to_portal = True
 
         # Check if list of research projects returns one item after inserting one.
@@ -77,7 +76,6 @@ class PermissionsresearchprojectupdateViewtest(TestCase):
         user_profile.save()
 
         for group in Group.objects.all():
-        # for group in Group.objects.filter(name='Attendant'):
             group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
@@ -518,12 +516,13 @@ class ImportExperimentTest(TestCase):
     def tearDown(self):
         self.client.logout()
 
-    def create_zipfile(self, zip_dir, file_list):
-        zip_file = zipfile.ZipFile(path.join(zip_dir, 'dummy_file.zip'), 'w')
-        for file in file_list:
-            zip_file.write(file.name, path.basename(file.name))
-        zip_file.close()
-        return zip_file
+    @staticmethod
+    def _create_csv_file(dir_, name):
+        with open(path.join(dir_, name), 'w') as f:
+            if name == 'research_project.csv':
+                f.write('h1,h2,start_date\n')
+                f.write('v1,v2,2011-11-11\n')
+            return f
 
     def test_GET_experiment_import_file_uses_correct_template(self):
         response = self.client.get(reverse('experiment_import'))
@@ -546,7 +545,7 @@ class ImportExperimentTest(TestCase):
         temp_dir = tempfile.mkdtemp()
         dummy_file = ObjectsFactory.create_binary_file(temp_dir)
         temp_zip_dir = tempfile.mkdtemp()
-        zip_file = self.create_zipfile(temp_zip_dir, [dummy_file])
+        zip_file = ObjectsFactory.create_zipfile(temp_zip_dir, [dummy_file])
 
         with open(zip_file.filename, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'zip_file': file}, follow=True)
@@ -563,7 +562,7 @@ class ImportExperimentTest(TestCase):
         temp_dir = tempfile.mkdtemp()
         dummy_file = ObjectsFactory.create_binary_file(temp_dir, 'research_project.csv')
         temp_zip_dir = tempfile.mkdtemp()
-        zip_file = self.create_zipfile(temp_zip_dir, [dummy_file])
+        zip_file = ObjectsFactory.create_zipfile(temp_zip_dir, [dummy_file])
 
         with open(zip_file.filename, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'zip_file': file}, follow=True)
@@ -578,10 +577,10 @@ class ImportExperimentTest(TestCase):
 
     def test_POST_experiment_import_file_import_bad_research_project_returns_error_message(self):
         temp_dir = tempfile.mkdtemp()
-        dummy_csv1 = ObjectsFactory.create_csv_file(temp_dir, 'research_project.csv')
+        dummy_csv1 = self._create_csv_file(temp_dir, 'research_project.csv')
         dummy_csv2 = ObjectsFactory.create_csv_file(temp_dir, 'experiment.csv')
         temp_zip_dir = tempfile.mkdtemp()
-        zip_file = self.create_zipfile(temp_zip_dir, [dummy_csv1, dummy_csv2])
+        zip_file = ObjectsFactory.create_zipfile(temp_zip_dir, [dummy_csv1, dummy_csv2])
 
         # redirect sys.stderr to avoid display error messages
         stderr_backup, sys.stderr = sys.stderr, open('/dev/null', 'w+')
@@ -600,24 +599,24 @@ class ImportExperimentTest(TestCase):
         shutil.rmtree(temp_dir)
         shutil.rmtree(temp_zip_dir)
 
-    @skip  # caco is implementing it
     def test_POST_experiment_import_file_import_bad_experiment_returns_error_message(self):
         temp_dir = tempfile.mkdtemp()
+        temp_zip_dir = tempfile.mkdtemp()
+
         dataset = ResearchProjectResource().export(id=self.research_project.id)
         dummy_csv = ObjectsFactory.create_csv_file(temp_dir, 'experiment.csv')
-        temp_zip_dir = tempfile.mkdtemp()
         temp_filename = path.join(temp_dir, ExportExperiment.RESEARCH_PROJECT_CSV)
         with open(temp_filename, 'w') as file:
             file.write(dataset.csv)
-        zip_file = self.create_zipfile(temp_zip_dir, [file, dummy_csv])
+        zip_file = ObjectsFactory.create_zipfile(temp_zip_dir, [file, dummy_csv])
 
         # redirect sys.stderr to avoid display error messages
-        # stderr_backup, sys.stderr = sys.stderr, open('/dev/null', 'w+')
+        stderr_backup, sys.stderr = sys.stderr, open('/dev/null', 'w+')
         with open(zip_file.filename, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'zip_file': file}, follow=True)
         # restore sys.stderr
-        # sys.stderr.close()
-        # sys.stderr = stderr_backup
+        sys.stderr.close()
+        sys.stderr = stderr_backup
 
         self.assertRedirects(response, reverse('experiment_import'))
         message = str(list(response.context['messages'])[0])

@@ -4,6 +4,7 @@ import random
 import tempfile
 
 import os
+import zipfile
 
 from django.core.files import File
 from django.db import IntegrityError
@@ -587,11 +588,19 @@ class ObjectsFactory(object):
             return f
 
     @staticmethod
-    def create_csv_file(path, name='file.csv'):
-        with open(os.path.join(path, name), 'w') as f:
-            f.write('h1, h2\n')
-            f.write('v1, v2\n')
+    def create_csv_file(dir_, name='file.csv'):
+        with open(os.path.join(dir_, name), 'w') as f:
+            f.write('h1,h2\n')
+            f.write('v1,v2\n')
             return f
+
+    @staticmethod
+    def create_zipfile(zip_dir, file_list):
+        zip_file = zipfile.ZipFile(os.path.join(zip_dir, 'dummy_file.zip'), 'w')
+        for file in file_list:
+            zip_file.write(file.name, os.path.basename(file.name))
+        zip_file.close()
+        return zip_file
 
     @staticmethod
     def create_generic_data_colletion_file(gdc_data):
