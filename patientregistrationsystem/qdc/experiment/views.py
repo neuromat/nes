@@ -826,6 +826,10 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
         return render(request, template_name)
     if request.method == 'POST':
         file = request.FILES.get('zip_file')
+        if not file:
+            messages.warning(request, _('Please select a zip file'))
+            return HttpResponseRedirect(reverse('experiment_import'))
+
         file_name = handle_uploaded_file(file)
         import_experiment = ImportExperiment(file_name)
         err_code, err_message = import_experiment.import_all()
@@ -834,6 +838,7 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
         if err_code:
             messages.error(request, _(err_message))
 
+        messages.success(request, _('Experiment successfuly imported. New study was created'))
         return HttpResponseRedirect(reverse('experiment_import'))
 
 
