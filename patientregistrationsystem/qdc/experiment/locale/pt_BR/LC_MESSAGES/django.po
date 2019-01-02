@@ -3105,7 +3105,7 @@ msgid ""
 "will be imported depends upon the stuff inside zip file."
 msgstr ""
 "Isto irá criar um Estudo/Experimento completo. A extensão dos objetos que "
-"serão importados depend das coisas que estão dentro do arquivo zip."
+"serão importados depende das coisas que estão dentro do arquivo zip."
 
 #: experiment/templates/experiment/experiment_info_pdf.html:36
 #: experiment/templates/experiment/experiment_register.html:72
