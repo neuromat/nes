@@ -37,11 +37,14 @@ urlpatterns = patterns(
     url(r'^edit/(?P<experiment_id>\d+)/$', 'experiment_update', name='experiment_edit'),
     url(r'^experiment_research/change_the_order/(?P<collaborator_position_id>\d+)/(?P<command>\w+)/$',
         'experiment_research_change_order', name='experiment_research_change_order'),
+
     # export
     url(r'^(?P<experiment_id>\d+)/export/$', 'experiment_export', name='experiment_export'),
+    url(r'^(?P<experiment_id>\d+)/export2/$', 'experiment_export2', name='experiment_export2'),
 
     # import
     url(r'^import/$', 'experiment_import', name='experiment_import'),
+    url(r'^import2/$', 'experiment_import2', name='experiment_import2'),
 
     # Schedule of sending
     url(r'^schedule_of_sending/(?P<experiment_id>\d+)/$',

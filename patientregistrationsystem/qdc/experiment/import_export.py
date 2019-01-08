@@ -1,10 +1,14 @@
+import json
 import os
 import shutil
+import sys
 import tempfile
 import zipfile
+from json import JSONDecodeError
 from os import path, mkdir
 
 from django.conf import settings
+from django.core.management import call_command
 from tablib import Dataset
 
 from experiment.admin import ResearchProjectResource, ExperimentResource, GroupResource, ComponentResource,\
@@ -203,5 +207,93 @@ class ImportExperiment:
             return (
                 self.BAD_CSV_FILE_ERROR, 'Bad %s file. Aborting import experiment.' % self.EXPERIMENT_CSV
             )
+
+        return 0, ''
+
+
+class ExportExperiment2:
+
+    FILE_NAME = 'experiment.json'
+
+    def __init__(self, experiment):
+        self.experiment = experiment
+        self.temp_dir = tempfile.mkdtemp()
+
+    def __del__(self):
+        shutil.rmtree(self.temp_dir)
+
+    def export_all(self):
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
+        call_command(
+            'dump_object', 'experiment.group', '--query',
+            '{"pk__in": ' + str([g.id for g in self.experiment.group_set.all()]) + '}'
+        )
+        sys.stdout = sysout
+
+        with open(path.join(self.temp_dir, self.FILE_NAME)) as f:
+            data = f.read().replace('\n', '')
+
+        deserialized = json.loads(data)
+        key = next((index for (index, d) in enumerate(deserialized) if d['model'] == 'auth.user'), None)
+        del(deserialized[key])
+
+        with open(path.join(self.temp_dir, self.FILE_NAME), 'w') as f:
+            f.write(json.dumps(deserialized))
+
+    def get_file_path(self):
+        return path.join(self.temp_dir, self.FILE_NAME)
+
+
+class ImportExperiment2:
+    BAD_JSON_FILE_ERROR = 1
+    FIXTURE_FILE_NAME = 'experiment.json'
+
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.temp_dir = tempfile.mkdtemp()
+
+    def __del__(self):
+        shutil.rmtree(self.temp_dir)
+
+    @staticmethod
+    def _update_pk(data, model, request=None):
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
+        if model == 'experiment.researchproject':
+            data[indexes[0]]['pk'] = ResearchProject.objects.last().id + 1
+            data[indexes[0]]['owner'] = request.user.id
+            index_experiment = next(
+                (index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.experiment'),
+                None
+            )
+            data[index_experiment]['research_project'] = data[indexes[0]]['pk']
+        if model == 'experiment.experiment':
+            data[indexes[0]]['pk'] = Experiment.objects.last().id + 1
+            for (index_group, dict_) in enumerate(data):
+                if dict_['model'] == 'experiment.group':
+                    data[index_group]['experiment'] = data[indexes[0]]['pk']
+        if model == 'experiment.group':
+            next_group_id = Group.objects.last().id + 1
+            for i in indexes:
+                data[i]['pk'] = next_group_id
+                next_group_id += 1
+
+    def _update_pks(self, data, request):
+        self._update_pk(data, 'experiment.researchproject', request)
+        self._update_pk(data, 'experiment.experiment')
+        self._update_pk(data, 'experiment.group')
+
+    def import_all(self, request):
+        try:
+            with open(self.file_path) as f:
+                data = json.load(f)
+        except (ValueError, JSONDecodeError):
+            return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
+
+        self._update_pks(data, request)
+        with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
+            file.write(json.dumps(data))
+
+        call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
 
         return 0, ''

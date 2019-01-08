@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import shutil
 import sys
 import tempfile
@@ -16,10 +17,11 @@ from django.utils.encoding import smart_str
 
 from custom_user.tests_helper import create_user
 from experiment.admin import ResearchProjectResource, ExperimentResource
-from experiment.import_export import ImportExperiment, ExportExperiment
+from experiment.import_export import ImportExperiment, ExportExperiment, ExportExperiment2
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, InformationType, Experiment, ResearchProject
+from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
@@ -583,7 +585,7 @@ class ExportExperimentTest(TestCase):
 
     def test_GET_experiment_export_removes_temporary_dirs(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
-        # TODO: implement it
+        # TODO: implement it!
 
 
 class ImportExperimentTest(TestCase):
@@ -742,3 +744,96 @@ class ImportExperimentTest(TestCase):
             self.assertEqual(
                 getattr(self.experiment, field) or '', getattr(new_experiment, field) or ''
             )
+
+
+class ExportExperimentTest2(TestCase):
+
+    def setUp(self):
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
+
+        user, passwd = create_user(Group.objects.all())
+        self.research_project = ObjectsFactory.create_research_project(owner=user)
+        self.experiment = ObjectsFactory.create_experiment(self.research_project)
+        self.group = ObjectsFactory.create_group(self.experiment)
+
+        self.client.login(username=user.username, password=passwd)
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_GET_experiment_export_returns_json_file(self):
+        response = self.client.get(reverse('experiment_export2', kwargs={'experiment_id': self.experiment.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEquals(
+            response.get('Content-Disposition'),
+            'attachment; filename=%s' % smart_str('experiment.json')
+        )
+
+    def test_GET_experiment_export_returns_json_file_wo_user_object(self):
+        response = self.client.get(reverse('experiment_export2', kwargs={'experiment_id': self.experiment.id}))
+        data = json.loads(response.content.decode('utf-8'))
+        self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
+
+
+class ImportExperimentTest2(TestCase):
+
+    def setUp(self):
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
+
+        user, passwd = create_user(Group.objects.all())
+        self.research_project = ObjectsFactory.create_research_project(owner=user)
+        self.experiment = ObjectsFactory.create_experiment(self.research_project)
+        self.group = ObjectsFactory.create_group(self.experiment)
+
+        self.client.login(username=user.username, password=passwd)
+
+    def tearDown(self):
+        self.client.logout()
+
+    def _assert_new_objects(self, old_objects_count):
+        self.assertEqual(ResearchProject.objects.count(), old_objects_count['research_project'] + 1)
+        self.assertEqual(Experiment.objects.count(), old_objects_count['experiment'] + 1)
+        self.assertEqual(ExperimentGroup.objects.count(), old_objects_count['group'] + 1)
+
+    def test_GET_experiment_import_file_uses_correct_template(self):
+        response = self.client.get(reverse('experiment_import2'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'experiment/experiment_import2.html')
+    
+    def test_POST_experiment_import_file_has_not_file_redirects_with_warning_message(self):
+        response = self.client.post(reverse('experiment_import2'), {'file': ''}, follow=True)
+        self.assertRedirects(response, reverse('experiment_import2'))
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Please select a json file')
+
+    def test_POST_experiment_import_file_has_bad_json_file_redirects_with_error_message(self):
+        temp_dir = tempfile.mkdtemp()
+        dummy_file = ObjectsFactory.create_csv_file(temp_dir, 'experiment.json')
+
+        with open(dummy_file.name, 'rb') as file:
+            response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('experiment_import2'))
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Bad json file. Aborting import experiment.')
+
+        shutil.rmtree(temp_dir)
+
+    def test_POST_experiment_import_file_creates_new_objects_and_returns_successful_message(self):
+        export = ExportExperiment2(self.experiment)
+        export.export_all()
+        
+        file_path = export.get_file_path()
+
+        old_objects_count = {
+            'research_project': ResearchProject.objects.count(),
+            'experiment': Experiment.objects.count(),
+            'group': ExperimentGroup.objects.count()
+        }
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('experiment_import2'))
+        self._assert_new_objects(old_objects_count)
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experiment successfully imported. New study was created.')
