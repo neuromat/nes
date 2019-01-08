@@ -41,7 +41,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
-from experiment.import_export import ExportExperiment, ImportExperiment
+from experiment.import_export import ExportExperiment, ImportExperiment, ExportExperiment2, ImportExperiment2
 from qdc.settings import MEDIA_ROOT
 from survey.survey_utils import QuestionnaireUtils
 from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
@@ -812,6 +812,22 @@ def experiment_export(request, experiment_id):
     return response
 
 
+@login_required
+# @permission_required('experiment.export_experiment')  # TODO: add permisson
+def experiment_export2(request, experiment_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    export = ExportExperiment2(experiment)
+    export.export_all()
+
+    file = open(path.join(export.temp_dir, export.FILE_NAME), 'rb')
+    response = HttpResponse(file, content_type='application/json')
+    response['Content-Length'] = path.getsize(file.name)
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('experiment.json')
+
+    return response
+
+
 def handle_uploaded_file(file):
     with tempfile.NamedTemporaryFile('wb+', delete=False) as f:
         for chunk in file.chunks():
@@ -840,6 +856,31 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
 
         messages.success(request, _('Experiment successfuly imported. New study was created'))
         return HttpResponseRedirect(reverse('experiment_import'))
+
+
+@login_required
+# @permission_required('experiment.import_experiment')  # TODO: add permisson
+def experiment_import2(request, template_name='experiment/experiment_import2.html'):
+    if request.method == 'GET':
+        return render(request, template_name)
+    if request.method == 'POST':
+        file = request.FILES.get('file')
+        if not file:
+            messages.warning(request, _('Please select a json file'))
+            return HttpResponseRedirect(reverse('experiment_import2'))
+
+        file_name = handle_uploaded_file(file)
+        import_experiment = ImportExperiment2(file_name)
+        err_code, err_message = import_experiment.import_all(request)
+        os.remove(file_name)
+
+        if err_code:
+            messages.error(request, _(err_message))
+            return HttpResponseRedirect(reverse('experiment_import2'))
+
+        messages.success(request, _('Experiment successfully imported. New study was created.'))
+        return HttpResponseRedirect(reverse('experiment_import2'))
+
 
 
 @login_required
