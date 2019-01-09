@@ -870,3 +870,12 @@ class ImportExperimentTest2(TestCase):
             self.assertEqual(Experiment.objects.last().id, group.experiment.id)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experiment successfully imported. New study was created.')
+
+    def test_POST_experiment_import_file_group_has_experimental_protocol_returns_successful_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        ep1 = ObjectsFactory.create_block(experiment)
+        ep2 = ObjectsFactory.create_block(experiment)
+        group1 = ObjectsFactory.create_group(experiment, ep1)
+        group2 = ObjectsFactory.create_group(experiment, ep2)
+        group3 = ObjectsFactory.create_group(experiment)

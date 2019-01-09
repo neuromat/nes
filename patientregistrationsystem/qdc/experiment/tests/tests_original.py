@@ -241,17 +241,17 @@ class ObjectsFactory(object):
         faker = Factory.create()
 
         if component_type == Component.TASK_EXPERIMENT:
-            model = TaskForTheExperimenter.__name__  #TaskForTheExperimenter
+            model = TaskForTheExperimenter.__name__
         elif component_type == Component.DIGITAL_GAME_PHASE:
-            model = DigitalGamePhase.__name__  # DigitalGamePhase
+            model = DigitalGamePhase.__name__
         elif component_type == Component.GENERIC_DATA_COLLECTION:
-            model = GenericDataCollection.__name__  # GenericDataCollection
+            model = GenericDataCollection.__name__
         elif component_type == Component.EEG:
-            model = EEG.__name__  # EEG
+            model = EEG.__name__
         elif component_type == Component.EMG:
-            model = EMG.__name__  # EMG
+            model = EMG.__name__
         elif component_type == Component.TMS:
-            model = TMS.__name__  # TMS
+            model = TMS.__name__
         else:
             model = component_type
 
