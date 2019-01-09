@@ -266,12 +266,12 @@ class ImportExperiment2:
                 (index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.experiment'),
                 None
             )
-            data[index_experiment]['research_project'] = data[indexes[0]]['pk']
+            data[index_experiment]['fields']['research_project'] = data[indexes[0]]['pk']
         if model == 'experiment.experiment':
             data[indexes[0]]['pk'] = Experiment.objects.last().id + 1
             for (index_group, dict_) in enumerate(data):
                 if dict_['model'] == 'experiment.group':
-                    data[index_group]['experiment'] = data[indexes[0]]['pk']
+                    data[index_group]['fields']['experiment'] = data[indexes[0]]['pk']
         if model == 'experiment.group':
             next_group_id = Group.objects.last().id + 1
             for i in indexes:
