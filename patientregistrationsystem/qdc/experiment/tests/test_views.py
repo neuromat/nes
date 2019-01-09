@@ -782,12 +782,8 @@ class ImportExperimentTest2(TestCase):
         # create the groups of users and their permissions
         exec(open('add_initial_data.py').read())
 
-        user, passwd = create_user(Group.objects.all())
-        self.research_project = ObjectsFactory.create_research_project(owner=user)
-        self.experiment = ObjectsFactory.create_experiment(self.research_project)
-        self.group = ObjectsFactory.create_group(self.experiment)
-
-        self.client.login(username=user.username, password=passwd)
+        self.user, passwd = create_user(Group.objects.all())
+        self.client.login(username=self.user.username, password=passwd)
 
     def tearDown(self):
         self.client.logout()
@@ -827,17 +823,38 @@ class ImportExperimentTest2(TestCase):
 
         shutil.rmtree(temp_dir)
 
-    def test_POST_experiment_import_file_creates_new_objects_and_returns_successful_message(self):
-        group2 = ObjectsFactory.create_group(self.experiment)
-        export = ExportExperiment2(self.experiment)
+    def test_POST_experiment_import_file_creates_new_experiment_and_returns_successful_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment2(experiment)
         export.export_all()
-        
+
+        file_path = export.get_file_path()
+
+        old_objects_count = {
+            'research_project': ResearchProject.objects.count(),
+            'experiment': Experiment.objects.count(),
+        }
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('experiment_import2'))
+        self.assertEqual(ResearchProject.objects.count(), old_objects_count['research_project'] + 1)
+        self.assertEqual(Experiment.objects.count(), old_objects_count['experiment'] + 1)
+        self.assertEqual(Experiment.objects.last().research_project.id, ResearchProject.objects.last().id)
+
+    def test_POST_experiment_import_file_creates_new_groups_and_returns_successful_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        group1 = ObjectsFactory.create_group(experiment)
+        group2 = ObjectsFactory.create_group(experiment)
+
+        export = ExportExperiment2(experiment)
+        export.export_all()
         file_path = export.get_file_path()
 
         # dictionary to test against new objects created bellow
-        objects_count = {
-            'research_project': ResearchProject.objects.count(),
-            'experiment': Experiment.objects.count(),
+        old_objects_count = {
             'group': {
                 'count': ExperimentGroup.objects.count(),
             }
@@ -845,8 +862,11 @@ class ImportExperimentTest2(TestCase):
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('experiment_import2'))
-        # insert new group objects to test against eperiment relation
-        objects_count['group']['objs'] = ExperimentGroup.objects.exclude(id__in=[self.group.id, group2.id])
-        self._assert_new_objects(objects_count)
+        new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
+        self.assertEqual(
+            ExperimentGroup.objects.count(),
+            old_objects_count['group']['count'] + len(new_groups))
+        for group in new_groups:
+            self.assertEqual(Experiment.objects.last().id, group.experiment.id)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experiment successfully imported. New study was created.')

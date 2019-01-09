@@ -222,14 +222,22 @@ class ExportExperiment2:
     def __del__(self):
         shutil.rmtree(self.temp_dir)
 
-    def export_all(self):
+    def generate_fixture(self):
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
-        call_command(
-            'dump_object', 'experiment.group', '--query',
-            '{"pk__in": ' + str([g.id for g in self.experiment.group_set.all()]) + '}'
-        )
+
+        if not self.experiment.groups.all() and not self.experiment.components.all():
+            call_command('dump_object', 'experiment.experiment', str(self.experiment.id))
+        if self.experiment.groups.all():
+            call_command(
+                'dump_object', 'experiment.group', '--query',
+                '{"pk__in": ' + str([g.id for g in self.experiment.groups.all()]) + '}'
+            )
+
         sys.stdout = sysout
+
+    def export_all(self):
+        self.generate_fixture()
 
         with open(path.join(self.temp_dir, self.FILE_NAME)) as f:
             data = f.read().replace('\n', '')
@@ -281,7 +289,9 @@ class ImportExperiment2:
     def _update_pks(self, data, request):
         self._update_pk(data, 'experiment.researchproject', request)
         self._update_pk(data, 'experiment.experiment')
-        self._update_pk(data, 'experiment.group')
+        has_groups = next((item for item in data if item['model'] == 'experiment.group'), None)
+        if has_groups:
+            self._update_pk(data, 'experiment.group')
 
     def import_all(self, request):
         try:
