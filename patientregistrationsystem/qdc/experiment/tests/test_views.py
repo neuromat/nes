@@ -823,25 +823,25 @@ class ImportExperimentTest2(TestCase):
 
         shutil.rmtree(temp_dir)
 
-    def test_POST_experiment_import_file_creates_new_experiment_and_returns_successful_message(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment2(experiment)
-        export.export_all()
-
-        file_path = export.get_file_path()
-
-        old_objects_count = {
-            'research_project': ResearchProject.objects.count(),
-            'experiment': Experiment.objects.count(),
-        }
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('experiment_import2'))
-        self.assertEqual(ResearchProject.objects.count(), old_objects_count['research_project'] + 1)
-        self.assertEqual(Experiment.objects.count(), old_objects_count['experiment'] + 1)
-        self.assertEqual(Experiment.objects.last().research_project.id, ResearchProject.objects.last().id)
+    # def test_POST_experiment_import_file_creates_new_experiment_and_returns_successful_message(self):
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment2(experiment)
+    #     export.export_all()
+    #
+    #     file_path = export.get_file_path()
+    #
+    #     old_objects_count = {
+    #         'research_project': ResearchProject.objects.count(),
+    #         'experiment': Experiment.objects.count(),
+    #     }
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('experiment_import2'))
+    #     self.assertEqual(ResearchProject.objects.count(), old_objects_count['research_project'] + 1)
+    #     self.assertEqual(Experiment.objects.count(), old_objects_count['experiment'] + 1)
+    #     self.assertEqual(Experiment.objects.last().research_project.id, ResearchProject.objects.last().id)
 
     def test_POST_experiment_import_file_creates_new_groups_and_returns_successful_message(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
