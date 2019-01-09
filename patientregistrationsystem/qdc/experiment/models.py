@@ -878,7 +878,7 @@ class Component(models.Model):
     description = models.TextField(null=True, blank=True)
     duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    experiment = models.ForeignKey(Experiment)
+    experiment = models.ForeignKey(Experiment, related_name='components')
     component_type = models.CharField(max_length=30, choices=COMPONENT_TYPES)
 
     def save(self, *args, **kwargs):
@@ -1063,7 +1063,7 @@ class ComponentConfiguration(models.Model):
 
 
 class Group(models.Model):
-    experiment = models.ForeignKey(Experiment, null=False, blank=False)
+    experiment = models.ForeignKey(Experiment, null=False, blank=False, related_name='groups')
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)

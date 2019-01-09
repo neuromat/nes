@@ -1181,7 +1181,7 @@ class GroupTest(TestCase):
         # Inserting a group in the experiment
         response = self.client.post(reverse("group_new", args=(experiment.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(experiment.group_set.count(), 1)
+        self.assertEqual(experiment.groups.count(), 1)
 
     def test_group_update(self):
 
@@ -1203,7 +1203,7 @@ class GroupTest(TestCase):
         # Editing a group in the experiment
         response = self.client.post(reverse("group_edit", args=(group.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(experiment.group_set.count(), 1)
+        self.assertEqual(experiment.groups.count(), 1)
         self.assertTrue(Group.objects.filter(title="Group-1", description="Description of Group-1").exists())
 
         # Trying to editing a group with no changes
