@@ -222,32 +222,63 @@ class ExportExperiment2:
     def __del__(self):
         shutil.rmtree(self.temp_dir)
 
-    def generate_fixture(self):
+    def generate_fixture(self, filename, element, key_path):
         sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
+        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
 
-        if not self.experiment.groups.all() and not self.experiment.components.all():
-            call_command('dump_object', 'experiment.experiment', str(self.experiment.id))
-        if self.experiment.groups.all():
-            call_command(
-                'dump_object', 'experiment.group', '--query',
-                '{"pk__in": ' + str([g.id for g in self.experiment.groups.all()]) + '}'
-            )
+        call_command('dump_object', 'experiment.' + element, '--query',
+                     '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
+                     )
 
         sys.stdout = sysout
 
-    def export_all(self):
-        self.generate_fixture()
-
-        with open(path.join(self.temp_dir, self.FILE_NAME)) as f:
+    def remove_auth_user_model_from_json(self, filename):
+        with open(path.join(self.temp_dir, filename)) as f:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
         key = next((index for (index, d) in enumerate(deserialized) if d['model'] == 'auth.user'), None)
-        del(deserialized[key])
+        del (deserialized[key])
 
-        with open(path.join(self.temp_dir, self.FILE_NAME), 'w') as f:
+        with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(deserialized))
+
+    def export_all(self):
+        key_path = 'component_ptr_id__experiment_id__in'
+
+        self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
+        self.generate_fixture('componentconfiguration.json', 'componentconfiguration', 'component_id__experiment_id__in')
+        self.generate_fixture('group.json', 'group', 'experiment_id__in')
+        self.generate_fixture('block.json', 'block', key_path)
+        self.generate_fixture('instruction.json', 'instruction', key_path)
+        self.generate_fixture('pause.json', 'pause', key_path)
+        self.generate_fixture('questionnaire.json', 'questionnaire', key_path)
+        self.generate_fixture('stimulus.json', 'stimulus', key_path)
+        self.generate_fixture('task.json', 'task', key_path)
+        self.generate_fixture('task_experiment.json', 'taskfortheexperimenter', key_path)
+        self.generate_fixture('eeg.json', 'eeg', key_path)
+        self.generate_fixture('emg.json', 'emg', key_path)
+        self.generate_fixture('tms.json', 'tms', key_path)
+        self.generate_fixture('digital_game_phase.json', 'digitalgamephase', key_path)
+        self.generate_fixture('generic_data_collection.json', 'genericdatacollection', key_path)
+
+        list_of_files = ['experimentfixture.json', 'componentconfiguration.json', 'group.json', 'block.json',
+                         'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
+                         'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
+                         'generic_data_collection.json']
+
+        fixtures = []
+        for filename in list_of_files:
+            fixtures.append(path.join(self.temp_dir, filename))
+
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
+
+        call_command('merge_fixtures', *fixtures)
+
+        sys.stdout = sysout
+
+        self.remove_auth_user_model_from_json(self.FILE_NAME)
 
     def get_file_path(self):
         return path.join(self.temp_dir, self.FILE_NAME)
