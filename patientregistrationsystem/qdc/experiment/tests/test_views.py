@@ -794,8 +794,15 @@ class ImportExperimentTest2(TestCase):
 
     def _assert_new_objects(self, old_objects_count):
         self.assertEqual(ResearchProject.objects.count(), old_objects_count['research_project'] + 1)
+
         self.assertEqual(Experiment.objects.count(), old_objects_count['experiment'] + 1)
-        self.assertEqual(ExperimentGroup.objects.count(), old_objects_count['group'] + 1)
+        self.assertEqual(Experiment.objects.last().research_project.id, ResearchProject.objects.last().id)
+
+        self.assertEqual(
+            ExperimentGroup.objects.count(),
+            old_objects_count['group']['count'] + len(old_objects_count['group']['objs']))
+        for group in old_objects_count['group']['objs']:
+            self.assertEqual(Experiment.objects.last().id, group.experiment.id)
 
     def test_GET_experiment_import_file_uses_correct_template(self):
         response = self.client.get(reverse('experiment_import2'))
@@ -821,19 +828,25 @@ class ImportExperimentTest2(TestCase):
         shutil.rmtree(temp_dir)
 
     def test_POST_experiment_import_file_creates_new_objects_and_returns_successful_message(self):
+        group2 = ObjectsFactory.create_group(self.experiment)
         export = ExportExperiment2(self.experiment)
         export.export_all()
         
         file_path = export.get_file_path()
 
-        old_objects_count = {
+        # dictionary to test against new objects created bellow
+        objects_count = {
             'research_project': ResearchProject.objects.count(),
             'experiment': Experiment.objects.count(),
-            'group': ExperimentGroup.objects.count()
+            'group': {
+                'count': ExperimentGroup.objects.count(),
+            }
         }
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('experiment_import2'))
-        self._assert_new_objects(old_objects_count)
+        # insert new group objects to test against eperiment relation
+        objects_count['group']['objs'] = ExperimentGroup.objects.exclude(id__in=[self.group.id, group2.id])
+        self._assert_new_objects(objects_count)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experiment successfully imported. New study was created.')
