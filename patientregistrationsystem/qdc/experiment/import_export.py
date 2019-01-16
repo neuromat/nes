@@ -10,10 +10,14 @@ from os import path, mkdir
 from django.conf import settings
 from django.core.management import call_command
 from tablib import Dataset
+from django.apps import apps
 
 from experiment.admin import ResearchProjectResource, ExperimentResource, GroupResource, ComponentResource,\
     ComponentConfigResource
-from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment
+from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
+    Keyword, GoalkeeperGameConfig, Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults,\
+    FileFormat, ExperimentResearcher, InformationType, Block, Instruction, Pause, Questionnaire, Stimulus,\
+    Task, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
 
 
 class ExportExperiment:
@@ -243,6 +247,33 @@ class ExportExperiment2:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(deserialized))
 
+    def remove_researchproject_keywords_model_from_json(self, filename):
+        with open(path.join(self.temp_dir, filename)) as f:
+            data = f.read().replace('\n', '')
+
+        deserialized = json.loads(data)
+        indexes = [index for (index, dict_) in enumerate(deserialized) if
+                   dict_['model'] == 'experiment.researchproject_keywords']
+        for i in sorted(indexes, reverse=True):
+            del (deserialized[i])
+
+        with open(path.join(self.temp_dir, filename), 'w') as f:
+            f.write(json.dumps(deserialized))
+
+    # TODO: In future, import groups verifying existence of group_codes in the database, not excluding them
+    def change_group_code_to_null_from_json(self, filename):
+        with open(path.join(self.temp_dir, filename)) as f:
+            data = f.read().replace('\n', '')
+
+        serialized = json.loads(data)
+        indexes = [index for (index, dict_) in enumerate(serialized) if
+                   dict_['model'] == 'experiment.group']
+        for i in sorted(indexes, reverse=True):
+            serialized[i]['fields']['code'] = None
+
+        with open(path.join(self.temp_dir, filename), 'w') as f:
+            f.write(json.dumps(serialized))
+
     def export_all(self):
         key_path = 'component_ptr_id__experiment_id__in'
 
@@ -262,10 +293,17 @@ class ExportExperiment2:
         self.generate_fixture('digital_game_phase.json', 'digitalgamephase', key_path)
         self.generate_fixture('generic_data_collection.json', 'genericdatacollection', key_path)
 
+        # Generate fixture to keywords of the research project
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, 'keywords.json'), 'w')
+        call_command('dump_object', 'experiment.researchproject_keywords', '--query',
+                     '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
+        sys.stdout = sysout
+
         list_of_files = ['experimentfixture.json', 'componentconfiguration.json', 'group.json', 'block.json',
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
-                         'generic_data_collection.json']
+                         'generic_data_collection.json', 'keywords.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -279,6 +317,8 @@ class ExportExperiment2:
         sys.stdout = sysout
 
         self.remove_auth_user_model_from_json(self.FILE_NAME)
+        self.remove_researchproject_keywords_model_from_json(self.FILE_NAME)
+        self.change_group_code_to_null_from_json(self.FILE_NAME)
 
     def get_file_path(self):
         return path.join(self.temp_dir, self.FILE_NAME)
@@ -295,31 +335,125 @@ class ImportExperiment2:
     def __del__(self):
         shutil.rmtree(self.temp_dir)
 
-    @staticmethod
-    def _update_pk(data, model, request=None):
+    def _get_model_name_by_component_type(self, component_type):
+        if component_type == Component.TASK_EXPERIMENT:
+            model_name = TaskForTheExperimenter.__name__
+        elif component_type == Component.DIGITAL_GAME_PHASE:
+            model_name = DigitalGamePhase.__name__
+        elif component_type == Component.GENERIC_DATA_COLLECTION:
+            model_name = GenericDataCollection.__name__
+        elif component_type == Component.EEG:
+            model_name = EEG.__name__
+        elif component_type == Component.EMG:
+            model_name = EMG.__name__
+        elif component_type == Component.TMS:
+            model_name = TMS.__name__
+        else:
+            model_name = component_type
+
+        return model_name
+
+    def _update_pk(self, data, model, request=None):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
         if model == 'experiment.researchproject':
-            data[indexes[0]]['pk'] = ResearchProject.objects.last().id + 1
+            data[indexes[0]]['pk'] = ResearchProject.objects.last().id + 1 if ResearchProject.objects.count() > 0 else 1
             data[indexes[0]]['owner'] = request.user.id
-            index_experiment = next(
-                (index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.experiment'),
-                None
-            )
-            data[index_experiment]['fields']['research_project'] = data[indexes[0]]['pk']
+
+            for (index_row, dict_) in enumerate(data):
+                if dict_['model'] == 'experiment.experiment':
+                    data[index_row]['fields']['research_project'] = data[indexes[0]]['pk']
+                if dict_['model'] == 'experiment.researchproject_keywords':
+                    data[index_row]['fields']['researchproject'] = data[indexes[0]]['pk']
+
+        if model == 'experiment.keyword':
+            next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
+            indexes_of_keywords_already_updated = []
+            for i in indexes:
+                old_keyword_id = data[i]['pk']
+                old_keyword_string = data[i]['fields']['name']
+                keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
+                if keyword_on_database.count() > 0:
+                    data[i]['pk'] = keyword_on_database.first().id
+                else:
+                    data[i]['pk'] = next_keyword_id
+                    next_keyword_id += 1
+
+                for (index_row, dict_) in enumerate(data):
+                    if dict_['model'] == 'experiment.researchproject_keywords':
+                        if dict_['fields']['keyword'] == old_keyword_id:
+                            data[index_row]['fields']['keyword'] = data[i]['pk']
+                    if dict_['model'] == 'experiment.researchproject':
+                        for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
+                            if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
+                                data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
+                                indexes_of_keywords_already_updated.append(keyword_index)
+
         if model == 'experiment.experiment':
-            data[indexes[0]]['pk'] = Experiment.objects.last().id + 1
-            for (index_group, dict_) in enumerate(data):
-                if dict_['model'] == 'experiment.group':
-                    data[index_group]['fields']['experiment'] = data[indexes[0]]['pk']
+            data[indexes[0]]['pk'] = Experiment.objects.last().id + 1 if Experiment.objects.count() > 0 else 1
+            for (index_row, dict_) in enumerate(data):
+                if "experiment" in data[index_row]['fields']:
+                    data[index_row]['fields']['experiment'] = data[indexes[0]]['pk']
+
         if model == 'experiment.group':
-            next_group_id = Group.objects.last().id + 1
+            next_group_id = Group.objects.last().id + 1 if Group.objects.count() > 0 else 1
             for i in indexes:
                 data[i]['pk'] = next_group_id
                 next_group_id += 1
 
+        if model == 'experiment.component':
+            next_component_id = Component.objects.last().id + 1 if Component.objects.count() > 0 else 1
+            for i in indexes:
+                old_component_id = data[i]['pk']
+                data[i]['pk'] = next_component_id
+                component_type = self._get_model_name_by_component_type(data[i]['fields']['component_type'])
+                for (index_row, dict_) in enumerate(data):
+                    if dict_['model'] == 'experiment.' + component_type.lower():
+                        if dict_['pk'] == old_component_id:
+                            data[index_row]['pk'] = next_component_id
+                    if dict_['model'] == 'experiment.componentconfiguration':
+                        if dict_['fields']['component'] == old_component_id:
+                            data[index_row]['fields']['component'] = next_component_id
+                        if dict_['fields']['parent'] == old_component_id:
+                            data[index_row]['fields']['parent'] = next_component_id
+                    if dict_['model'] == 'experiment.group':
+                        if dict_['fields']['experimental_protocol'] == old_component_id:
+                            data[index_row]['fields']['experimental_protocol'] = next_component_id
+                next_component_id += 1
+
+        if model == 'experiment.componentconfiguration':
+            next_component_config_id = ComponentConfiguration.objects.last().id + 1 \
+                if ComponentConfiguration.objects.count() > 0 else 1
+            for i in indexes:
+                data[i]['pk'] = next_component_config_id
+                next_component_config_id += 1
+
+        list_of_dependent_models = ['eegsetting', 'emgsetting', 'tmssetting', 'informationtype',
+                                    'contexttree', 'stimulustype', 'keywords']
+
+        if model in list_of_dependent_models:
+            model_ = apps.get_model('experiment', model)
+            next_model_id = model_.objects.last().id + 1 if model_.objects.count() > 0 else 1
+            for i in indexes:
+                data[i]['pk'] = next_model_id
+                next_model_id += 1
+
+        if model == 'survey.survey':
+            next_survey_id = Survey.objects.last().id + 1 if Survey.objects.count() > 0 else 1
+            for i in indexes:
+                data[i]['pk'] = next_survey_id
+                next_survey_id += 1
+
     def _update_pks(self, data, request):
         self._update_pk(data, 'experiment.researchproject', request)
+        self._update_pk(data, 'experiment.keyword')
         self._update_pk(data, 'experiment.experiment')
+        has_components = next((item for item in data if item['model'] == 'experiment.component'), None)
+        if has_components:
+            self._update_pk(data, 'experiment.component')
+        has_component_configurations = next((item for item in data
+                                             if item['model'] == 'experiment.componentconfiguration'), None)
+        if has_component_configurations:
+            self._update_pk(data, 'experiment.componentconfiguration')
         has_groups = next((item for item in data if item['model'] == 'experiment.group'), None)
         if has_groups:
             self._update_pk(data, 'experiment.group')
