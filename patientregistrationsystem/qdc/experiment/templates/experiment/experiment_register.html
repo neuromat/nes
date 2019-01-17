@@ -161,9 +161,6 @@
                     <div class="btn-group pull-left">
                         <a href="/experiment/edit/{{ experiment.id }}" class="btn btn-primary">{% trans "Edit" %}</a>
                     </div>
-                    <div class="btn-group pull-right">
-                        <a href="/experiment/{{ experiment.id }}/export2" class="btn btn-default">{% trans "Export" %}</a>
-                    </div>
                 {% endif %}
             </div>
 
@@ -497,6 +494,11 @@
                     <div class="btn-group pull-right">
                         <a href="/experiment/research_project/{{ research_project.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
+                    {% if not editing and can_change %}
+                        <div class="btn-group pull-right">
+                            <a href="/experiment/{{ experiment.id }}/export2" class="btn btn-primary">{% trans "Export" %}</a>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

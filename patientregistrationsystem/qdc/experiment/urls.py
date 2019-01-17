@@ -45,6 +45,8 @@ urlpatterns = patterns(
     # import
     url(r'^import/$', 'experiment_import', name='experiment_import'),
     url(r'^import2/$', 'experiment_import2', name='experiment_import2'),
+    url(r'^import2/(?P<research_project_id>\d+)/$', 'experiment_import2', name='experiment_import2'),
+
 
     # Schedule of sending
     url(r'^schedule_of_sending/(?P<experiment_id>\d+)/$',

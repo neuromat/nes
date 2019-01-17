@@ -18,6 +18,7 @@ from experiment.models import Group, ComponentConfiguration, ResearchProject, Ex
     Keyword, GoalkeeperGameConfig, Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults,\
     FileFormat, ExperimentResearcher, InformationType, Block, Instruction, Pause, Questionnaire, Stimulus,\
     Task, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
+from survey.models import Survey
 
 
 class ExportExperiment:
@@ -353,10 +354,14 @@ class ImportExperiment2:
 
         return model_name
 
-    def _update_pk(self, data, model, request=None):
+    def _update_pk(self, data, model, request=None, research_project_id=None):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
         if model == 'experiment.researchproject':
-            data[indexes[0]]['pk'] = ResearchProject.objects.last().id + 1 if ResearchProject.objects.count() > 0 else 1
+            if research_project_id:
+                data[indexes[0]]['pk'] = int(research_project_id)
+            else:
+                data[indexes[0]]['pk'] = ResearchProject.objects.last().id + 1 \
+                    if ResearchProject.objects.count() > 0 else 1
             data[indexes[0]]['owner'] = request.user.id
 
             for (index_row, dict_) in enumerate(data):
@@ -427,26 +432,50 @@ class ImportExperiment2:
                 data[i]['pk'] = next_component_config_id
                 next_component_config_id += 1
 
-        list_of_dependent_models = ['eegsetting', 'emgsetting', 'tmssetting', 'informationtype',
-                                    'contexttree', 'stimulustype', 'keywords']
+        list_of_dependent_models = ['experiment.eegsetting', 'experiment.emgsetting', 'experiment.tmssetting',
+                                    'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype']
+        list_of_dependent_models_fields = ['eeg_setting', 'emg_setting', 'tms_setting',
+                                           'information_type', 'context_tree', 'stimulus_type']
 
         if model in list_of_dependent_models:
-            model_ = apps.get_model('experiment', model)
+            model_ = apps.get_model('experiment', model.split('.')[-1])
             next_model_id = model_.objects.last().id + 1 if model_.objects.count() > 0 else 1
             for i in indexes:
                 data[i]['pk'] = next_model_id
+                field = list_of_dependent_models_fields[list_of_dependent_models.index(model)]
+                field_indexes = [field_index for (field_index, dict_) in
+                                 enumerate(data) if field in data[field_index]['fields']]
+                for i in field_indexes:
+                    data[i]['fields'][field] = next_model_id
                 next_model_id += 1
 
         if model == 'survey.survey':
             next_survey_id = Survey.objects.last().id + 1 if Survey.objects.count() > 0 else 1
             for i in indexes:
                 data[i]['pk'] = next_survey_id
+                for (index_row, dict_) in enumerate(data):
+                    if 'survey' in dict_[index_row]['fields']:
+                        data[index_row]['fields']['survey'] = next_model_id
                 next_survey_id += 1
 
-    def _update_pks(self, data, request):
-        self._update_pk(data, 'experiment.researchproject', request)
+    def _update_pks(self, data, request, research_project_id=None):
+        self._update_pk(data, 'experiment.researchproject', request, research_project_id)
         self._update_pk(data, 'experiment.keyword')
         self._update_pk(data, 'experiment.experiment')
+
+        dependent_models = ['experiment.eegsetting', 'experiment.emgsetting', 'experiment.tmssetting',
+                            'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype',
+                            'survey.survey']
+        has_dependent_models = next((item for item in data if item['model'] in dependent_models), None)
+        if has_dependent_models:
+            self._update_pk(data, 'experiment.eegsetting')
+            self._update_pk(data, 'experiment.emgsetting')
+            self._update_pk(data, 'experiment.tmssetting')
+            self._update_pk(data, 'experiment.informationtype')
+            self._update_pk(data, 'experiment.contexttree')
+            self._update_pk(data, 'experiment.stimulustype')
+            self._update_pk(data, 'survey.survey')
+
         has_components = next((item for item in data if item['model'] == 'experiment.component'), None)
         if has_components:
             self._update_pk(data, 'experiment.component')
@@ -454,18 +483,20 @@ class ImportExperiment2:
                                              if item['model'] == 'experiment.componentconfiguration'), None)
         if has_component_configurations:
             self._update_pk(data, 'experiment.componentconfiguration')
+
         has_groups = next((item for item in data if item['model'] == 'experiment.group'), None)
         if has_groups:
             self._update_pk(data, 'experiment.group')
 
-    def import_all(self, request):
+
+    def import_all(self, request, research_project_id=None):
         try:
             with open(self.file_path) as f:
                 data = json.load(f)
         except (ValueError, JSONDecodeError):
             return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
 
-        self._update_pks(data, request)
+        self._update_pks(data, request, research_project_id)
         with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
             file.write(json.dumps(data))
 

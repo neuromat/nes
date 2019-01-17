@@ -860,7 +860,7 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
 
 @login_required
 # @permission_required('experiment.import_experiment')  # TODO: add permisson
-def experiment_import2(request, template_name='experiment/experiment_import2.html'):
+def experiment_import2(request, template_name='experiment/experiment_import2.html', research_project_id=None):
     if request.method == 'GET':
         return render(request, template_name)
     if request.method == 'POST':
@@ -871,7 +871,7 @@ def experiment_import2(request, template_name='experiment/experiment_import2.htm
 
         file_name = handle_uploaded_file(file)
         import_experiment = ImportExperiment2(file_name)
-        err_code, err_message = import_experiment.import_all(request)
+        err_code, err_message = import_experiment.import_all(request, research_project_id)
         os.remove(file_name)
 
         if err_code:

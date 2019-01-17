@@ -175,6 +175,9 @@
                                     <th>{% trans "Description" %}</th>
                                     <th style="text-align: center">{% trans "Create PDF" %}</th>
                                     <th style="text-align: center">{% trans 'Copy experiment' %}</th>
+                                    {% if not editing and can_change %}
+                                        <th style="text-align: center">{% trans 'Export experiment' %}</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -189,6 +192,10 @@
                                     <td style="text-align: center"><button type="submit" class="btn" name="action" value="create_pdf-{{ experiment.id }}"><i class="fa fa-download"></i></button></td>
                                     <td style="text-align: center"><a class="btn" data-toggle="modal" data-experiment_id="{{ experiment.id }}"
                                             href="#modalCopyExperiment"><i class="fa fa-copy"></i></a></td>
+                                    {% if not editing and can_change %}
+                                        <td style="text-align: center"><a class="btn" data-toggle="modal" data-experiment_id="{{ experiment.id }}"
+                                                                          href="/experiment/{{ experiment.id }}/export2"><i class="fa fa-download"></i></a></td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -197,6 +204,9 @@
                     {% if perms.experiment.add_experiment and can_change %}
                         <div class="btn-group pull-left">
                             <a href="/experiment/research_project/{{ research_project.id }}/new_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                        </div>
+                        <div class="tn-group pull-left">
+                            <a href="/experiment/import2/{{ research_project.id }}" class="btn btn-default">{% trans "Import Experiment" %}</a>
                         </div>
                     {% endif %}
                 </div>
