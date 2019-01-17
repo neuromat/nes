@@ -13,7 +13,7 @@ from tablib import Dataset
 
 from experiment.admin import ResearchProjectResource, ExperimentResource, GroupResource, ComponentResource,\
     ComponentConfigResource
-from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment
+from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment, Block
 
 
 class ExportExperiment:
@@ -311,11 +311,31 @@ class ImportExperiment2:
             for (index_group, dict_) in enumerate(data):
                 if dict_['model'] == 'experiment.group':
                     data[index_group]['fields']['experiment'] = data[indexes[0]]['pk']
+            for (index_component, dict_) in enumerate(data):
+                if dict_['model'] == 'experiment.component':
+                    data[index_component]['fields']['experiment'] = data[indexes[0]]['pk']
         if model == 'experiment.group':
             next_group_id = Group.objects.last().id + 1
             for i in indexes:
                 data[i]['pk'] = next_group_id
+                if data[i]['fields']['experimental_protocol']:
+                    for (index_block, dict_) in enumerate(data):
+                        if dict_['model'] == 'experiment.block' and \
+                                data[i]['fields']['experimental_protocol'] == data[index_block]['pk']:
+                            data[index_block]['fields']['group'] = data[i]['pk']
                 next_group_id += 1
+        if model == 'experiment.block':
+            next_block_id = Block.objects.last().id + 1
+            for i in indexes:
+                index_component = next(
+                    index for (index, dict_) in enumerate(data)
+                    if dict_['model'] == 'experiment.component' and
+                    dict_['fields']['component_type'] == 'block' and
+                    dict_['pk'] == data[i]['pk']
+                )
+                data[i]['pk'] = next_block_id
+                data[index_component]['pk'] = next_block_id
+                next_block_id += 1
 
     def _update_pks(self, data, request):
         self._update_pk(data, 'experiment.researchproject', request)
@@ -323,6 +343,9 @@ class ImportExperiment2:
         has_groups = next((item for item in data if item['model'] == 'experiment.group'), None)
         if has_groups:
             self._update_pk(data, 'experiment.group')
+        has_blocks = next((item for item in data if item['model'] == 'experiment.block'), None)
+        if has_blocks:
+            self._update_pk(data, 'experiment.block')
 
     def import_all(self, request):
         try:
