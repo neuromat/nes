@@ -856,36 +856,69 @@ class ImportExperimentTest2(TestCase):
         file_path = export.get_file_path()
 
         # dictionary to test against new objects created bellow
-        old_objects_count = {
-            'group': {
-                'count': ExperimentGroup.objects.count(),
-            }
-        }
+        old_groups_count = ExperimentGroup.objects.count()
+
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('experiment_import2'))
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
-        self.assertEqual(
-            ExperimentGroup.objects.count(),
-            old_objects_count['group']['count'] + len(new_groups))
+        self.assertEqual(ExperimentGroup.objects.count(), old_groups_count + new_groups.count())
         for group in new_groups:
             self.assertEqual(Experiment.objects.last().id, group.experiment.id)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experiment successfully imported. New study was created.')
 
-    def test_POST_experiment_import_file_group_has_experimental_protocol_returns_successful_message(self):
+    def test_POST_experiment_import_file_creates_new_components_and_returns_successful_message(self):
+        # We create blocks but could create other type of component
+        # TODO: Component can be created without type, but NES should only allow
+        #  create a component of a determined
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
-        ep1 = ObjectsFactory.create_block(experiment)
-        ep2 = ObjectsFactory.create_block(experiment)
-        group1 = ObjectsFactory.create_group(experiment, ep1)
-        group2 = ObjectsFactory.create_group(experiment, ep2)
-        group3 = ObjectsFactory.create_group(experiment)
+        component1 = ObjectsFactory.create_block(experiment)
+        component2 = ObjectsFactory.create_block(experiment)
 
+        export = ExportExperiment2(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
 
+        old_components_count = Component.objects.count()
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('experiment_import2'))
+        new_components = Component.objects.exclude(id__in=[component1.id, component2.id])
+        self.assertEqual(Component.objects.count(), old_components_count + new_components.count())
+        for component in new_components:
+            self.assertEqual(Experiment.objects.last().id, component.experiment.id)
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experiment successfully imported. New study was created.')
 
-
-
+    # def test_POST_experiment_import_file_group_has_experimental_protocol_returns_successful_message(self):
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     ep1 = ObjectsFactory.create_block(experiment)
+    #     ep2 = ObjectsFactory.create_block(experiment)
+    #     group1 = ObjectsFactory.create_group(experiment, ep1)
+    #     group2 = ObjectsFactory.create_group(experiment, ep2)
+    #     group3 = ObjectsFactory.create_group(experiment)
+    #
+    #     export = ExportExperiment2(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     old_blocks_count = Block.objects.count()
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import2'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('experiment_import2'))
+    #     new_blocks = Block.objects.exclude(id__in=[ep1.id, ep2.id])
+    #     new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id, group3.id])
+    #     self.assertEqual(Block.objects.count(), old_blocks_count + new_blocks.count())
+    #     # find each pair group.experimental_protocol/block that was created
+    #     for block in new_blocks:
+    #         group = next((group for group in new_groups if block.id == group.experimental_protocol.id), None)
+    #         self.assertIsNotNone(group)
+    #         new_groups.exclude(id=group.id)
+    #     # now new_groups has only the group without experimental protocol
+    #     self.assertEqual(new_groups.count(), 1)
 
 
 

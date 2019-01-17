@@ -488,7 +488,6 @@ class ImportExperiment2:
         if has_groups:
             self._update_pk(data, 'experiment.group')
 
-
     def import_all(self, request, research_project_id=None):
         try:
             with open(self.file_path) as f:
@@ -503,3 +502,4 @@ class ImportExperiment2:
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
 
         return 0, ''
+
