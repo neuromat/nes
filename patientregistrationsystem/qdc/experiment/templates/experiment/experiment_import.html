@@ -53,10 +53,18 @@
         <div class="col-md-10">
 
             <div class="container span6 offset3 well ">
-                <h3>{% trans "Import Study/Experiment" %}</h3>
-                <h4><em>{% trans "Choose a json file previously exported by NES" %}</em></h4>
+                {% if research_project_id %}
+                    <h3>{% trans "Import Experiment" %}</h3>
+                {% else %}
+                    <h3>{% trans "Import Study/Experiment" %}</h3>
+                {% endif %}
+                <h4><em>{% trans "Choose a .json file previously exported by NES" %}</em></h4>
                 <p>
-                    {% trans "This will create a whole new Study/Experiment. The extension of objects that will be imported depends upon the stuff inside json file." %}
+                    {% if research_project_id %}
+                        {% trans "This will create a whole new Experiment. The extension of objects that will be imported depends upon the stuff inside json file." %}
+                    {% else %}
+                        {% trans "This will create a whole new Study/Experiment. The extension of objects that will be imported depends upon the stuff inside json file." %}
+                    {% endif %}
                 </p>
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-08 11:48-0200\n"
+"POT-Creation-Date: 2019-01-18 17:33-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -672,7 +672,8 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
-#: templates/404.html:14 templates/registration/change_password_custom.html:143
+#: templates/404.html:14
+#: templates/registration/change_password_custom.html:143
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Home"

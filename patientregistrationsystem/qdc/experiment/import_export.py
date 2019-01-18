@@ -11,6 +11,7 @@ from django.apps import apps
 from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
 
+
 class ExportExperiment:
 
     FILE_NAME = 'experiment.json'
@@ -169,8 +170,6 @@ class ImportExperiment:
         for (index_row, dict_) in enumerate(data):
             if dict_['model'] == 'experiment.experiment':
                 data[index_row]['fields']['research_project'] = data[indexes[0]]['pk']
-            if dict_['model'] == 'experiment.researchproject_keywords':
-                data[index_row]['fields']['researchproject'] = data[indexes[0]]['pk']
 
     @staticmethod
     def _update_pk_keywords(data):
@@ -195,9 +194,6 @@ class ImportExperiment:
 
             # Update all the references to the old keyword to the new one
             for (index_row, dict_) in enumerate(data):
-                if dict_['model'] == 'experiment.researchproject_keywords':
-                    if dict_['fields']['keyword'] == old_keyword_id:
-                        data[index_row]['fields']['keyword'] = data[i]['pk']
                 if dict_['model'] == 'experiment.researchproject':
                     for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
                         if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
