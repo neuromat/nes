@@ -823,7 +823,7 @@ def handle_uploaded_file(file):
 # @permission_required('experiment.import_experiment')  # TODO: add permisson
 def experiment_import(request, template_name='experiment/experiment_import.html', research_project_id=None):
     if request.method == 'GET':
-        return render(request, template_name, context={'research_project_id':research_project_id})
+        return render(request, template_name, context={'research_project_id': research_project_id})
     if request.method == 'POST':
         file = request.FILES.get('file')
         if not file:
@@ -839,9 +839,12 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
             messages.error(request, _(err_message))
             return HttpResponseRedirect(reverse('experiment_import'))
 
-        messages.success(request, _('Experiment successfully imported. New study was created.'))
-        return HttpResponseRedirect(reverse('experiment_import'))
-
+        if research_project_id:
+            messages.success(request, _('Experiment successfully imported.'))
+            return HttpResponseRedirect(reverse('research_project_view', args=(research_project_id,)))
+        else:
+            messages.success(request, _('Experiment successfully imported. New study was created.'))
+            return HttpResponseRedirect(reverse('research_project_list'))
 
 @login_required
 @permission_required('experiment.change_experiment')
