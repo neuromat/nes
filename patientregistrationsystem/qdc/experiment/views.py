@@ -41,7 +41,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
-from experiment.import_export import ExportExperiment, ImportExperiment, ExportExperiment2, ImportExperiment2
+from experiment.import_export import ExportExperiment, ImportExperiment
 from qdc.settings import MEDIA_ROOT
 from survey.survey_utils import QuestionnaireUtils
 from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
@@ -804,22 +804,6 @@ def experiment_export(request, experiment_id):
     export = ExportExperiment(experiment)
     export.export_all()
 
-    file = open(path.join(export.temp_dir_zip, export.ZIP_FILE_NAME + '.zip'), 'rb')
-    response = HttpResponse(file, content_type='application/zip')
-    response['Content-Length'] = path.getsize(file.name)
-    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('experiment.zip')
-
-    return response
-
-
-@login_required
-# @permission_required('experiment.export_experiment')  # TODO: add permisson
-def experiment_export2(request, experiment_id):
-    experiment = get_object_or_404(Experiment, pk=experiment_id)
-
-    export = ExportExperiment2(experiment)
-    export.export_all()
-
     file = open(path.join(export.temp_dir, export.FILE_NAME), 'rb')
     response = HttpResponse(file, content_type='application/json')
     response['Content-Length'] = path.getsize(file.name)
@@ -837,50 +821,26 @@ def handle_uploaded_file(file):
 
 @login_required
 # @permission_required('experiment.import_experiment')  # TODO: add permisson
-def experiment_import(request, template_name='experiment/experiment_import.html'):
-    if request.method == 'GET':
-        return render(request, template_name)
-    if request.method == 'POST':
-        file = request.FILES.get('zip_file')
-        if not file:
-            messages.warning(request, _('Please select a zip file'))
-            return HttpResponseRedirect(reverse('experiment_import'))
-
-        file_name = handle_uploaded_file(file)
-        import_experiment = ImportExperiment(file_name)
-        err_code, err_message = import_experiment.import_all()
-        os.remove(file_name)
-
-        if err_code:
-            messages.error(request, _(err_message))
-
-        messages.success(request, _('Experiment successfuly imported. New study was created'))
-        return HttpResponseRedirect(reverse('experiment_import'))
-
-
-@login_required
-# @permission_required('experiment.import_experiment')  # TODO: add permisson
-def experiment_import2(request, template_name='experiment/experiment_import2.html', research_project_id=None):
+def experiment_import(request, template_name='experiment/experiment_import.html', research_project_id=None):
     if request.method == 'GET':
         return render(request, template_name)
     if request.method == 'POST':
         file = request.FILES.get('file')
         if not file:
             messages.warning(request, _('Please select a json file'))
-            return HttpResponseRedirect(reverse('experiment_import2'))
+            return HttpResponseRedirect(reverse('experiment_import'))
 
         file_name = handle_uploaded_file(file)
-        import_experiment = ImportExperiment2(file_name)
+        import_experiment = ImportExperiment(file_name)
         err_code, err_message = import_experiment.import_all(request, research_project_id)
         os.remove(file_name)
 
         if err_code:
             messages.error(request, _(err_message))
-            return HttpResponseRedirect(reverse('experiment_import2'))
+            return HttpResponseRedirect(reverse('experiment_import'))
 
         messages.success(request, _('Experiment successfully imported. New study was created.'))
-        return HttpResponseRedirect(reverse('experiment_import2'))
-
+        return HttpResponseRedirect(reverse('experiment_import'))
 
 
 @login_required
