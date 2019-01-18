@@ -10,8 +10,6 @@ from django.apps import apps
 
 from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
-from survey.models import Survey
-
 
 class ExportExperiment:
 
@@ -76,7 +74,8 @@ class ExportExperiment:
         key_path = 'component_ptr_id__experiment_id__in'
 
         self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
-        self.generate_fixture('componentconfiguration.json', 'componentconfiguration', 'component_id__experiment_id__in')
+        self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
+                              'component_id__experiment_id__in')
         self.generate_fixture('group.json', 'group', 'experiment_id__in')
         self.generate_fixture('block.json', 'block', key_path)
         self.generate_fixture('instruction.json', 'instruction', key_path)
@@ -152,7 +151,8 @@ class ImportExperiment:
 
         return model_name
 
-    def _update_pk_research_project(self, data, request=None, research_project_id=None):
+    @staticmethod
+    def _update_pk_research_project(data, request=None, research_project_id=None):
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.researchproject']
 
@@ -172,7 +172,8 @@ class ImportExperiment:
             if dict_['model'] == 'experiment.researchproject_keywords':
                 data[index_row]['fields']['researchproject'] = data[indexes[0]]['pk']
 
-    def _update_pk_keywords(self, data):
+    @staticmethod
+    def _update_pk_keywords(data):
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
 
@@ -203,7 +204,8 @@ class ImportExperiment:
                             data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
                             indexes_of_keywords_already_updated.append(keyword_index)
 
-    def _update_pk_experiment(self, data):
+    @staticmethod
+    def _update_pk_experiment(data):
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.experiment']
 
@@ -215,7 +217,8 @@ class ImportExperiment:
             if "experiment" in data[index_row]['fields']:
                 data[index_row]['fields']['experiment'] = data[indexes[0]]['pk']
 
-    def _update_pk_group(self, data):
+    @staticmethod
+    def _update_pk_group(data):
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.group']
 
@@ -267,12 +270,13 @@ class ImportExperiment:
                 # Update the pointer to the experimental protocol (which is a component) in group items of the json
                 if dict_['model'] == 'experiment.group'\
                         and dict_['fields']['experimental_protocol'] == old_component_id\
-                        and index_row not in  indexes_of_components_already_updated:
+                        and index_row not in indexes_of_components_already_updated:
                     data[index_row]['fields']['experimental_protocol'] = next_component_id
                     indexes_of_components_already_updated.append(index_row)
             next_component_id += 1
 
-    def _update_pk_component_configuration(self, data):
+    @staticmethod
+    def _update_pk_component_configuration(data):
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data)
                    if dict_['model'] == 'experiment.componentconfiguration']
@@ -284,7 +288,8 @@ class ImportExperiment:
             data[i]['pk'] = next_component_config_id
             next_component_config_id += 1
 
-    def _update_pk_dependent_model(self, data, model):
+    @staticmethod
+    def _update_pk_dependent_model(data, model):
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
 
