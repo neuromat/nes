@@ -133,7 +133,8 @@ class ImportExperiment:
     def __del__(self):
         shutil.rmtree(self.temp_dir)
 
-    def _get_model_name_by_component_type(self, component_type):
+    @staticmethod
+    def _get_model_name_by_component_type(component_type):
         if component_type == Component.TASK_EXPERIMENT:
             model_name = TaskForTheExperimenter.__name__
         elif component_type == Component.DIGITAL_GAME_PHASE:
@@ -151,139 +152,185 @@ class ImportExperiment:
 
         return model_name
 
-    def _update_pk(self, data, model, request=None, research_project_id=None):
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
-        if model == 'experiment.researchproject':
-            if research_project_id:
-                data[indexes[0]]['pk'] = int(research_project_id)
-            else:
-                data[indexes[0]]['pk'] = ResearchProject.objects.last().id + 1 \
-                    if ResearchProject.objects.count() > 0 else 1
+    def _update_pk_research_project(self, data, request=None, research_project_id=None):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.researchproject']
+
+        # Update the pk of the research project either to research_project_id, if given, or
+        # the id of a new research project
+        if research_project_id:
+            data[indexes[0]]['pk'] = int(research_project_id)
+        else:
+            data[indexes[0]]['pk'] = ResearchProject.objects.last().id + 1\
+                if ResearchProject.objects.count() > 0 else 1
             data[indexes[0]]['owner'] = request.user.id
 
+        # Update all the references to the old research project to the new one
+        for (index_row, dict_) in enumerate(data):
+            if dict_['model'] == 'experiment.experiment':
+                data[index_row]['fields']['research_project'] = data[indexes[0]]['pk']
+            if dict_['model'] == 'experiment.researchproject_keywords':
+                data[index_row]['fields']['researchproject'] = data[indexes[0]]['pk']
+
+    def _update_pk_keywords(self, data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
+
+        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
+        indexes_of_keywords_already_updated = []
+        for i in indexes:
+            # Get the keyword and check on database if the keyword already exists
+            # If exists, update the pk of this keyword to the correspondent in the database
+            # otherwise, update the pk of this keyword to next_keyword_id
+            old_keyword_id = data[i]['pk']
+            old_keyword_string = data[i]['fields']['name']
+            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
+
+            if keyword_on_database.count() > 0:
+                data[i]['pk'] = keyword_on_database.first().id
+            else:
+                data[i]['pk'] = next_keyword_id
+                next_keyword_id += 1
+
+            # Update all the references to the old keyword to the new one
             for (index_row, dict_) in enumerate(data):
-                if dict_['model'] == 'experiment.experiment':
-                    data[index_row]['fields']['research_project'] = data[indexes[0]]['pk']
                 if dict_['model'] == 'experiment.researchproject_keywords':
-                    data[index_row]['fields']['researchproject'] = data[indexes[0]]['pk']
+                    if dict_['fields']['keyword'] == old_keyword_id:
+                        data[index_row]['fields']['keyword'] = data[i]['pk']
+                if dict_['model'] == 'experiment.researchproject':
+                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
+                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
+                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
+                            indexes_of_keywords_already_updated.append(keyword_index)
 
-        if model == 'experiment.keyword':
-            next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
-            indexes_of_keywords_already_updated = []
-            for i in indexes:
-                old_keyword_id = data[i]['pk']
-                old_keyword_string = data[i]['fields']['name']
-                keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
-                if keyword_on_database.count() > 0:
-                    data[i]['pk'] = keyword_on_database.first().id
-                else:
-                    data[i]['pk'] = next_keyword_id
-                    next_keyword_id += 1
+    def _update_pk_experiment(self, data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.experiment']
 
-                for (index_row, dict_) in enumerate(data):
-                    if dict_['model'] == 'experiment.researchproject_keywords':
-                        if dict_['fields']['keyword'] == old_keyword_id:
-                            data[index_row]['fields']['keyword'] = data[i]['pk']
-                    if dict_['model'] == 'experiment.researchproject':
-                        for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
-                            if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
-                                data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
-                                indexes_of_keywords_already_updated.append(keyword_index)
+        # Update the pk of the experiment to the id of a new experiment
+        data[indexes[0]]['pk'] = Experiment.objects.last().id + 1 if Experiment.objects.count() > 0 else 1
 
-        if model == 'experiment.experiment':
-            data[indexes[0]]['pk'] = Experiment.objects.last().id + 1 if Experiment.objects.count() > 0 else 1
+        # Update all the references to the old experiment to the new one
+        for (index_row, dict_) in enumerate(data):
+            if "experiment" in data[index_row]['fields']:
+                data[index_row]['fields']['experiment'] = data[indexes[0]]['pk']
+
+    def _update_pk_group(self, data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.group']
+
+        # Update the pk of each group to a new one
+        next_group_id = Group.objects.last().id + 1 if Group.objects.count() > 0 else 1
+        for i in indexes:
+            data[i]['pk'] = next_group_id
+            next_group_id += 1
+
+    def _update_pk_component(self, data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.component']
+
+        next_component_id = Component.objects.last().id + 1 if Component.objects.count() > 0 else 1
+
+        # It is needed create a list of items in the json that were already updated, so we don't update twice the
+        # same item of the json
+        indexes_of_components_already_updated = []
+        indexes_of_componentconfigs_with_component_field_updated = []
+        indexes_of_componentconfigs_with_parent_field_updated = []
+        for i in indexes:
+            # Get the old component id and then update each reference to it in the json file
+            old_component_id = data[i]['pk']
+            data[i]['pk'] = next_component_id
+            component_type = self._get_model_name_by_component_type(data[i]['fields']['component_type'])
+
             for (index_row, dict_) in enumerate(data):
-                if "experiment" in data[index_row]['fields']:
-                    data[index_row]['fields']['experiment'] = data[indexes[0]]['pk']
+                # Update the component type item
+                if dict_['model'] == 'experiment.' + component_type.lower()\
+                        and dict_['pk'] == old_component_id\
+                        and index_row not in indexes_of_components_already_updated:
+                    data[index_row]['pk'] = next_component_id
+                    indexes_of_components_already_updated.append(index_row)
 
-        if model == 'experiment.group':
-            next_group_id = Group.objects.last().id + 1 if Group.objects.count() > 0 else 1
-            for i in indexes:
-                data[i]['pk'] = next_group_id
-                next_group_id += 1
+                # Update the component configuration 'component' field for that component
+                if dict_['model'] == 'experiment.componentconfiguration'\
+                        and dict_['fields']['component'] == old_component_id\
+                        and index_row not in indexes_of_componentconfigs_with_component_field_updated:
+                    data[index_row]['fields']['component'] = next_component_id
+                    indexes_of_componentconfigs_with_component_field_updated.append(index_row)
 
-        if model == 'experiment.component':
-            next_component_id = Component.objects.last().id + 1 if Component.objects.count() > 0 else 1
-            for i in indexes:
-                old_component_id = data[i]['pk']
-                data[i]['pk'] = next_component_id
-                component_type = self._get_model_name_by_component_type(data[i]['fields']['component_type'])
-                for (index_row, dict_) in enumerate(data):
-                    if dict_['model'] == 'experiment.' + component_type.lower():
-                        if dict_['pk'] == old_component_id:
-                            data[index_row]['pk'] = next_component_id
-                    if dict_['model'] == 'experiment.componentconfiguration':
-                        if dict_['fields']['component'] == old_component_id:
-                            data[index_row]['fields']['component'] = next_component_id
-                        if dict_['fields']['parent'] == old_component_id:
-                            data[index_row]['fields']['parent'] = next_component_id
-                    if dict_['model'] == 'experiment.group':
-                        if dict_['fields']['experimental_protocol'] == old_component_id:
-                            data[index_row]['fields']['experimental_protocol'] = next_component_id
-                next_component_id += 1
+                # Update the component configuration 'parent' field for that component
+                if dict_['model'] == 'experiment.componentconfiguration'\
+                        and dict_['fields']['parent'] == old_component_id\
+                        and index_row not in indexes_of_componentconfigs_with_parent_field_updated:
+                    data[index_row]['fields']['parent'] = next_component_id
+                    indexes_of_componentconfigs_with_parent_field_updated.append(index_row)
 
-        if model == 'experiment.componentconfiguration':
-            next_component_config_id = ComponentConfiguration.objects.last().id + 1 \
-                if ComponentConfiguration.objects.count() > 0 else 1
-            for i in indexes:
-                data[i]['pk'] = next_component_config_id
-                next_component_config_id += 1
+                # Update the pointer to the experimental protocol (which is a component) in group items of the json
+                if dict_['model'] == 'experiment.group'\
+                        and dict_['fields']['experimental_protocol'] == old_component_id\
+                        and index_row not in  indexes_of_components_already_updated:
+                    data[index_row]['fields']['experimental_protocol'] = next_component_id
+                    indexes_of_components_already_updated.append(index_row)
+            next_component_id += 1
+
+    def _update_pk_component_configuration(self, data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data)
+                   if dict_['model'] == 'experiment.componentconfiguration']
+
+        # Update the pk of each component configuration to the id of new component configurations
+        next_component_config_id = ComponentConfiguration.objects.last().id + 1 \
+            if ComponentConfiguration.objects.count() > 0 else 1
+        for i in indexes:
+            data[i]['pk'] = next_component_config_id
+            next_component_config_id += 1
+
+    def _update_pk_dependent_model(self, data, model):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
 
         list_of_dependent_models = ['experiment.eegsetting', 'experiment.emgsetting', 'experiment.tmssetting',
-                                    'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype']
+                                    'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype',
+                                    'survey.survey']
         list_of_dependent_models_fields = ['eeg_setting', 'emg_setting', 'tms_setting',
-                                           'information_type', 'context_tree', 'stimulus_type']
+                                           'information_type', 'context_tree', 'stimulus_type',
+                                           'survey']
 
-        if model in list_of_dependent_models:
-            model_ = apps.get_model('experiment', model.split('.')[-1])
-            next_model_id = model_.objects.last().id + 1 if model_.objects.count() > 0 else 1
-            for i in indexes:
-                data[i]['pk'] = next_model_id
-                field = list_of_dependent_models_fields[list_of_dependent_models.index(model)]
-                field_indexes = [field_index for (field_index, dict_) in
-                                 enumerate(data) if field in data[field_index]['fields']]
-                for i in field_indexes:
-                    data[i]['fields'][field] = next_model_id
-                next_model_id += 1
+        model_ = apps.get_model(model)
+        next_model_id = model_.objects.last().id + 1 if model_.objects.count() > 0 else 1
 
-        if model == 'survey.survey':
-            next_survey_id = Survey.objects.last().id + 1 if Survey.objects.count() > 0 else 1
-            for i in indexes:
-                data[i]['pk'] = next_survey_id
-                for (index_row, dict_) in enumerate(data):
-                    if 'survey' in dict_[index_row]['fields']:
-                        data[index_row]['fields']['survey'] = next_model_id
-                next_survey_id += 1
+        # Get field name based on the model name
+        field = list_of_dependent_models_fields[list_of_dependent_models.index(model)]
+
+        # Update the pk of each dependent model to the id of new dependent model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_model_id = data[i]['pk']
+            data[i]['pk'] = next_model_id
+
+            # Update each item of the json file that have the corresponding field to the dependent model and
+            # point to the old_model_id and has not been already updated
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields']\
+                        and data[index_row]['fields'][field] == old_model_id\
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = next_model_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_model_id += 1
 
     def _update_pks(self, data, request, research_project_id=None):
-        self._update_pk(data, 'experiment.researchproject', request, research_project_id)
-        self._update_pk(data, 'experiment.keyword')
-        self._update_pk(data, 'experiment.experiment')
-
-        dependent_models = ['experiment.eegsetting', 'experiment.emgsetting', 'experiment.tmssetting',
-                            'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype',
-                            'survey.survey']
-        has_dependent_models = next((item for item in data if item['model'] in dependent_models), None)
-        if has_dependent_models:
-            self._update_pk(data, 'experiment.eegsetting')
-            self._update_pk(data, 'experiment.emgsetting')
-            self._update_pk(data, 'experiment.tmssetting')
-            self._update_pk(data, 'experiment.informationtype')
-            self._update_pk(data, 'experiment.contexttree')
-            self._update_pk(data, 'experiment.stimulustype')
-            self._update_pk(data, 'survey.survey')
-
-        has_components = next((item for item in data if item['model'] == 'experiment.component'), None)
-        if has_components:
-            self._update_pk(data, 'experiment.component')
-        has_component_configurations = next((item for item in data
-                                             if item['model'] == 'experiment.componentconfiguration'), None)
-        if has_component_configurations:
-            self._update_pk(data, 'experiment.componentconfiguration')
-
-        has_groups = next((item for item in data if item['model'] == 'experiment.group'), None)
-        if has_groups:
-            self._update_pk(data, 'experiment.group')
+        self._update_pk_research_project(data, request, research_project_id)
+        self._update_pk_keywords(data)
+        self._update_pk_experiment(data)
+        self._update_pk_dependent_model(data, 'experiment.eegsetting')
+        self._update_pk_dependent_model(data, 'experiment.emgsetting')
+        self._update_pk_dependent_model(data, 'experiment.tmssetting')
+        self._update_pk_dependent_model(data, 'experiment.informationtype')
+        self._update_pk_dependent_model(data, 'experiment.contexttree')
+        self._update_pk_dependent_model(data, 'experiment.stimulustype')
+        self._update_pk_dependent_model(data, 'survey.survey')
+        self._update_pk_component(data)
+        self._update_pk_component_configuration(data)
+        self._update_pk_group(data)
 
     def import_all(self, request, research_project_id=None):
         try:
@@ -299,4 +346,3 @@ class ImportExperiment:
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
 
         return 0, ''
-
