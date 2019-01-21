@@ -20,8 +20,6 @@ RUN ln -s /usr/include/locale.h /usr/include/xlocale.h && \
 
 RUN git clone https://github.com/neuromat/nes.git
 
-COPY ./requirements.txt /nes/patientregistrationsystem/qdc
-
 WORKDIR /nes/patientregistrationsystem/qdc 
 
 RUN pip3 install -r requirements.txt
