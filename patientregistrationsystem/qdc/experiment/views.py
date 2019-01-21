@@ -820,7 +820,7 @@ def handle_uploaded_file(file):
 
 
 @login_required
-# @permission_required('experiment.import_experiment')  # TODO: add permisson
+# @permission_required('experiment.import_experiment')  # TODO: add permissons
 def experiment_import(request, template_name='experiment/experiment_import.html', research_project_id=None):
     if request.method == 'GET':
         return render(request, template_name, context={'research_project_id': research_project_id})
@@ -840,11 +840,24 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
             return HttpResponseRedirect(reverse('experiment_import'))
 
         if research_project_id:
+            request.session['research_project_id'] = research_project_id
             messages.success(request, _('Experiment successfully imported.'))
-            return HttpResponseRedirect(reverse('research_project_view', args=(research_project_id,)))
         else:
             messages.success(request, _('Experiment successfully imported. New study was created.'))
-            return HttpResponseRedirect(reverse('research_project_list'))
+
+        return HttpResponseRedirect(reverse('import_log'))
+
+
+@login_required
+# @permission_required('experiment.import_experiment')  # TODO: add permissons
+def import_log(request):
+    research_project_id = request.session.pop('research_project_id', None)
+    context = {'experiment': Experiment.objects.last()}
+    if not research_project_id:  # it's importing ResearchProject/Experiment
+        research_project = ResearchProject.objects.last()
+        context['research_project'] = research_project
+    return render(request, 'experiment/import_log.html', context)
+
 
 @login_required
 @permission_required('experiment.change_experiment')
