@@ -1003,11 +1003,11 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertIn(
-            '1 Study imported: ' + ResearchProject.objects.last().title,
+            '1 Estudo importado: ' + ResearchProject.objects.last().title,
             strip_tags(response.content.decode('utf-8'))
         )
         self.assertIn(
-            '1 Experiment imported: ' + Experiment.objects.last().title,
+            '1 Experimento importado: ' + Experiment.objects.last().title,
             strip_tags(response.content.decode('utf-8'))
         )
 
@@ -1026,11 +1026,11 @@ class ImportExperimentTest(TestCase):
                 {'file': file}, follow=True
             )
         self.assertNotIn(
-            '1 Study imported: ' + ResearchProject.objects.last().title,
+            '1 Estudo importado: ' + ResearchProject.objects.last().title,
             strip_tags(response.content.decode('utf-8'))
         )
         self.assertIn(
-            '1 Experiment imported: ' + Experiment.objects.last().title,
+            '1 Experimento importado: ' + Experiment.objects.last().title,
             strip_tags(response.content.decode('utf-8'))
         )
 
