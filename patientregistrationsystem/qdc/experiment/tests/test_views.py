@@ -1084,3 +1084,17 @@ class ImportExperimentTest(TestCase):
                 'experiment_view', kwargs={'experiment_id': Experiment.objects.last().id}
             )
         )
+
+    def test_POST_experiment_import_file_returns_log_with_number_of_groups_imported(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_group(experiment)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertContains(response, '2 Groups imported')
