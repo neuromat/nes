@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+    db:
+        image: postgres:alpine
+
+        entrypoint: >
+            /bin/ash -c '
+                set -ex ;
+
+                echo "
+                    CREATE USER $$LIMESURVEY_DB_USER WITH PASSWORD '\''$$LIMESURVEY_DB_PASSWORD'\'' ;
+                    CREATE DATABASE $$LIMESURVEY_DB OWNER $$LIMESURVEY_DB_USER ;
+                    GRANT ALL PRIVILEGES ON DATABASE $$LIMESURVEY_DB TO $$LIMESURVEY_DB_USER ;
+                " > /docker-entrypoint-initdb.d/create_limesurvey.sql ;
+                
+                /docker-entrypoint.sh postgres ;
+            '
+
+        environment:
+            - POSTGRES_PASSWORD=password
+            - POSTGRES_DB=database
+            - POSTGRES_USER=postgres
+            - LIMESURVEY_DB=limesurvey_db
+            - LIMESURVEY_DB_USER=limesurvey_user
+            - LIMESURVEY_DB_PASSWORD=limesurvey_password
+
+    limesurvey:
+        build: .
+
+        environment:
+            - APACHE_PORT=8080
+            - DB_TYPE=pgsql
+            - DB_HOST=db
+            - DB_PORT=5432
+            - DB_NAME=limesurvey_db
+            - DB_TABLE_PREFIX=lime_
+            - DB_USERNAME=limesurvey_user
+            - DB_PASSWORD=limesurvey_password
+            - ADMIN_USER=limesurvey_admin
+            - ADMIN_NAME=limesurvey_admin
+            - ADMIN_EMAIL=limesurvey@limemail.com
+            - ADMIN_PASSWORD=limesurvey_admin_password
+            - URL_FORMAT=path
+
+        ports:
+            - "8080:8080"
+
+        depends_on:
+            - db
