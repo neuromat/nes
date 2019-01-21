@@ -63,7 +63,7 @@ EOF
 SECRET_KEY = '$NES_SECRET_KEY'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 DEBUG404 = True
 
 TEMPLATE_DEBUG = DEBUG
@@ -97,6 +97,7 @@ LIMESURVEY = {
 LOGO_INSTITUTION = 'logo-institution.png'
 
 EOF
+
 	python3 manage.py migrate
 	python3 manage.py shell < add_initial_data.py
 	python3 manage.py loaddata load_initial_data.json

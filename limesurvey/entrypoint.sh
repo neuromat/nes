@@ -177,15 +177,7 @@ else
 
     sed -i "s#\($config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
 
-fi
-
-
-# Check if LimeSurvey database is provisioned
-echo 'Info: Check if database already provisioned. Nevermind the Stack trace.'
-if php7 application/commands/console.php updatedb ; then
-    echo 'Info: Database already provisioned'
-else
-    # Check if LIMESURVEY_DB_PASSWORD is set
+        # Check if LIMESURVEY_DB_PASSWORD is set
     if [ -z "$LIMESURVEY_DB_PASSWORD" ]; then
         echo >&2 'Error: Missing LIMESURVEY_DB_PASSWORD'
         exit 1
@@ -200,6 +192,30 @@ else
     echo ''
     echo 'Running console.php install'
     php7 application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
+
 fi
+
+
+# # Check if LimeSurvey database is provisioned
+# echo 'Info: Check if database already provisioned. Nevermind the Stack trace.'
+# if php7 application/commands/console.php updatedb ; then
+#     echo 'Info: Database already provisioned'
+# else
+    #     # Check if LIMESURVEY_DB_PASSWORD is set
+    # if [ -z "$LIMESURVEY_DB_PASSWORD" ]; then
+    #     echo >&2 'Error: Missing LIMESURVEY_DB_PASSWORD'
+    #     exit 1
+    # fi
+
+    # # Check if LIMESURVEY_DB_PASSWORD is set
+    # if [ -z "$LIMESURVEY_ADMIN_PASSWORD" ]; then
+    #     echo >&2 'Error: Missing LIMESURVEY_ADMIN_PASSWORD'
+    #     exit 1
+    # fi
+
+    # echo ''
+    # echo 'Running console.php install'
+    # php7 application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
+# fi
 
 exec "$@"
