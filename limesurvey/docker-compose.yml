@@ -29,19 +29,19 @@ services:
         build: .
 
         environment:
-            - APACHE_PORT=8080
-            - DB_TYPE=pgsql
-            - DB_HOST=db
-            - DB_PORT=5432
-            - DB_NAME=limesurvey_db
-            - DB_TABLE_PREFIX=lime_
-            - DB_USERNAME=limesurvey_user
-            - DB_PASSWORD=limesurvey_password
-            - ADMIN_USER=limesurvey_admin
-            - ADMIN_NAME=limesurvey_admin
-            - ADMIN_EMAIL=limesurvey@limemail.com
-            - ADMIN_PASSWORD=limesurvey_admin_password
-            - URL_FORMAT=path
+            - LIMESURVEY_PORT=8080
+            - LIMESURVEY_DB_TYPE=pgsql
+            - LIMESURVEY_DB_HOST=db
+            - LIMESURVEY_DB_PORT=5432
+            - LIMESURVEY_DB_NAME=limesurvey_db
+            - LIMESURVEY_DB_TABLE_PREFIX=lime_
+            - LIMESURVEY_DB_USERNAME=limesurvey_user
+            - LIMESURVEY_DB_PASSWORD=limesurvey_password
+            - LIMESURVEY_ADMIN_USER=limesurvey_admin
+            - LIMESURVEY_ADMIN_NAME=limesurvey_admin
+            - LIMESURVEY_ADMIN_EMAIL=limesurvey@limemail.com
+            - LIMESURVEY_ADMIN_PASSWORD=limesurvey_admin_password
+            - LIMESURVEY_URL_FORMAT=path
 
         ports:
             - "8080:8080"

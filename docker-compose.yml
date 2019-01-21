@@ -80,7 +80,7 @@ services:
             - NES_SECRET_KEY=_my_very_secret_key_
             - NES_IP=0.0.0.0
             - NES_PORT=8000
-            - NES_ADMIN_NAME=nes_admin_name
+            - NES_ADMIN_USER=nes_admin
             - NES_ADMIN_EMAIL=nes_admin@nesmail.com
             - NES_ADMIN_PASSWORD=nes_admin_password            
 

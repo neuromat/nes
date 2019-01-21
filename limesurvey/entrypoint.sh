@@ -24,7 +24,7 @@
 
 set -ex
 
-LIMESURVEY_APACHE_PORT=${LIMESURVEY_APACHE_PORT:-'8080'}
+LIMESURVEY_PORT=${LIMESURVEY_PORT:-'8080'}
 
 LIMESURVEY_DB_TYPE=${LIMESURVEY_DB_TYPE:-'psql'}
 LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-'db'}
@@ -53,7 +53,7 @@ else
 ServerTokens Prod
 PidFile /tmp/httpd.pid
 ServerRoot /var/www
-Listen $LIMESURVEY_APACHE_PORT
+Listen $LIMESURVEY_PORT
 
 ServerSignature Off
 

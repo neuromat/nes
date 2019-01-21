@@ -18,7 +18,7 @@ LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-'limesurvey_admin_passwor
 NES_SECRET_KEY=${NES_SECRET_KEY:-'your_secret_key'}
 NES_IP=${NES_IP:-'0.0.0.0'}
 NES_PORT=${NES_PORT:-'8000'}
-NES_ADMIN_NAME=${NES_ADMIN_NAME:-'nes_admin_name'}
+NES_ADMIN_USER=${NES_ADMIN_USER:-'nes_admin'}
 NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-'nes_admin@nesmail.com'}
 NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-'nes_admin_password'}
 
@@ -43,7 +43,7 @@ else
 	cat << EOF > /tmp/create_superuser.py
 from django.contrib.auth import get_user_model
 User = get_user_model()
-User.objects.create_superuser('$NES_ADMIN_NAME', '$NES_ADMIN_EMAIL', '$NES_ADMIN_PASSWORD')
+User.objects.create_superuser('$NES_ADMIN_USER', '$NES_ADMIN_EMAIL', '$NES_ADMIN_PASSWORD')
 EOF
 	
 	cat << EOF > /nes/patientregistrationsystem/qdc/qdc/wsgi.py
