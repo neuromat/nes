@@ -10,6 +10,7 @@ from django.apps import apps
 
 from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
+from survey.models import Survey
 
 
 class ExportExperiment:
@@ -33,7 +34,7 @@ class ExportExperiment:
 
         sys.stdout = sysout
 
-    def remove_auth_user_model_from_json(self, filename):
+    def _remove_auth_user_model_from_json(self, filename):
         with open(path.join(self.temp_dir, filename)) as f:
             data = f.read().replace('\n', '')
 
@@ -44,7 +45,7 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(deserialized))
 
-    def remove_researchproject_keywords_model_from_json(self, filename):
+    def _remove_researchproject_keywords_model_from_json(self, filename):
         with open(path.join(self.temp_dir, filename)) as f:
             data = f.read().replace('\n', '')
 
@@ -58,7 +59,7 @@ class ExportExperiment:
             f.write(json.dumps(deserialized))
 
     # TODO: In future, import groups verifying existence of group_codes in the database, not excluding them
-    def change_group_code_to_null_from_json(self, filename):
+    def _change_group_code_to_null_from_json(self, filename):
         with open(path.join(self.temp_dir, filename)) as f:
             data = f.read().replace('\n', '')
 
@@ -67,6 +68,19 @@ class ExportExperiment:
                    dict_['model'] == 'experiment.group']
         for i in sorted(indexes, reverse=True):
             serialized[i]['fields']['code'] = None
+
+        with open(path.join(self.temp_dir, filename), 'w') as f:
+            f.write(json.dumps(serialized))
+
+    def _remove_survey_code(self, filename):
+        with open(path.join(self.temp_dir, filename)) as f:
+            data = f.read().replace('\n', '')
+
+        serialized = json.loads(data)
+        indexes = [index for (index, dict_) in enumerate(serialized) if
+                   dict_['model'] == 'survey.survey']
+        for i in indexes:
+            serialized[i]['fields']['code'] = ''
 
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
@@ -114,9 +128,10 @@ class ExportExperiment:
 
         sys.stdout = sysout
 
-        self.remove_auth_user_model_from_json(self.FILE_NAME)
-        self.remove_researchproject_keywords_model_from_json(self.FILE_NAME)
-        self.change_group_code_to_null_from_json(self.FILE_NAME)
+        self._remove_auth_user_model_from_json(self.FILE_NAME)
+        self._remove_researchproject_keywords_model_from_json(self.FILE_NAME)
+        self._change_group_code_to_null_from_json(self.FILE_NAME)
+        self._remove_survey_code(self.FILE_NAME)
 
     def get_file_path(self):
         return path.join(self.temp_dir, self.FILE_NAME)
@@ -230,7 +245,7 @@ class ImportExperiment:
 
         next_component_id = Component.objects.last().id + 1 if Component.objects.count() > 0 else 1
 
-        # It is needed create a list of items in the json that were already updated, so we don't update twice the
+        # It is needed to create a list of items in the json that were already updated, so we don't update twice the
         # same item of the json
         indexes_of_components_already_updated = []
         indexes_of_componentconfigs_with_component_field_updated = []
@@ -308,8 +323,9 @@ class ImportExperiment:
             old_model_id = data[i]['pk']
             data[i]['pk'] = next_model_id
 
-            # Update each item of the json file that have the corresponding field to the dependent model and
-            # point to the old_model_id and has not been already updated
+            # Update each item of the json file that have the corresponding field to
+            # the dependent model and point to the old_model_id and has not been
+            # already updated
             for (index_row, dict_) in enumerate(data):
                 if field in data[index_row]['fields']\
                         and data[index_row]['fields'][field] == old_model_id\
@@ -317,6 +333,16 @@ class ImportExperiment:
                     data[index_row]['fields'][field] = next_model_id
                     indexes_of_dependent_models_already_updated.append(index_row)
             next_model_id += 1
+            # Update limesurvey references in survey.survey models
+            if model == 'survey.survey':
+                # If model is survey, create dummy limesurvey reference
+                min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+                if min_limesurvey_id >= 0:
+                    new_limesurvey_id = -99
+                else:
+                    min_limesurvey_id -= 1
+                    new_limesurvey_id = min_limesurvey_id
+                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
 
     def _update_pks(self, data, request, research_project_id=None):
         self._update_pk_research_project(data, request, research_project_id)

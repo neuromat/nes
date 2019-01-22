@@ -128,7 +128,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         """
         questionnaire = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE,
-            kwargs={'sid': self.survey.id}
+            kwargs={'survey': self.survey}
         )
         # include questionnaire in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(

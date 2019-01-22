@@ -264,7 +264,7 @@ class ObjectsFactory(object):
 
         if component_type == Component.QUESTIONNAIRE:
             try:
-                component.survey_id = kwargs['sid']
+                component.survey = kwargs['survey']
             except KeyError:
                 print('You must specify \'sid\' key in kwargs dict')
         elif component_type == Component.GENERIC_DATA_COLLECTION:
@@ -291,7 +291,7 @@ class ObjectsFactory(object):
         elif component_type == Component.STIMULUS:
             try:
                 component.stimulus_type = kwargs['stimulus_type']
-                component.media_file = kwargs['media_file']
+                component.media_file = kwargs.get('media_file', None)
             except KeyError:
                 print('You must specify \'stimulus_type\' and \'media_file\' key in kwargs dict')
         elif component_type == Component.TMS:
