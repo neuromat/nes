@@ -15,13 +15,14 @@ from experiment.import_export import ExportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
-    Block, TMS, ComponentConfiguration
+    Block, TMS, ComponentConfiguration, Questionnaire
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 
 from patient.tests import UtilTests
+from survey.tests.tests_helper import create_survey
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -556,16 +557,13 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(new_groups.count(), 1)
 
     def test_POST_experiment_import_file_creates_root_plus_one_component_and_returns_successful_message(self):
-        # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
         experiment = ObjectsFactory.create_experiment(research_project)
-        # Create root component (which is a 'block' type and it is the head of the experimental protocol)
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        # Create another component ('instruction' for this test, but every type, apart from specific parameters,
+        # Create another component, 'instruction', for this test, but every type, apart from specific parameters,
         # all depend on Component, and only this relation needs to be updated
         component = ObjectsFactory.create_component(experiment, 'instruction')
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component)
+        ObjectsFactory.create_component_configuration(rootcomponent, component)
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -585,6 +583,26 @@ class ImportExperimentTest(TestCase):
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_questionnaire_component(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        ObjectsFactory.create_research_project(owner=self.user)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component group 1')
+        ObjectsFactory.create_group(experiment, rootcomponent)
+        survey = create_survey(212121)
+        questionnaire = ObjectsFactory.create_component(experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        questionnaires_before = Questionnaire.objects.count()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertEqual(Questionnaire.objects.count(), questionnaires_before + 1)
 
     def test_POST_experiment_import_file_creates_root_plus_two_or_more_components_and_returns_successful_message(self):
         # Create research project
@@ -621,11 +639,8 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     def test_POST_experiment_import_file_creates_experimental_protocols_and_groups_and_returns_successful_message(self):
-        # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
         experiment = ObjectsFactory.create_experiment(research_project)
-        # Create root component (which is a 'block' type and it is the head of the experimental protocol)
         rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
         rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
         # Create another component ('instruction', for example)
@@ -1098,3 +1113,75 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertContains(response, '2 Groups imported')
+
+    # def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self):
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     ObjectsFactory.create_research_project(owner=self.user)
+    #     rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component group 1')
+    #     rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component group 2')
+    #     group1 = ObjectsFactory.create_group(experiment, rootcomponent1)
+    #     group2 = ObjectsFactory.create_group(experiment, rootcomponent2)
+    #
+    #     # Create experimental protocol steps for the first group (rootcomponent1)
+    #     component1 = ObjectsFactory.create_component(experiment, Component.INSTRUCTION)
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component1)
+    #     component2 = ObjectsFactory.create_component(experiment, Component.PAUSE)
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component2)
+    #     survey = create_survey(123458)
+    #     component3 = ObjectsFactory.create_component(experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component3)
+    #     stimulus_type = ObjectsFactory.create_stimulus_type()
+    #     component4 = ObjectsFactory.create_component(
+    #         experiment, Component.STIMULUS, kwargs={'stimulus_type': stimulus_type}
+    #     )
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component4)
+    #     component5 = ObjectsFactory.create_component(experiment, Component.TASK)
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component5)
+    #     component6 = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component6)
+    #
+    #     # Create experimental protocol steps for the second group (rootcomponent2)
+    #     eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+    #     component9 = ObjectsFactory.create_component(experiment, Component.EEG, kwargs={'eeg_set': eeg_setting})
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent2, component9)
+    #     manufacturer = ObjectsFactory.create_manufacturer()
+    #     software = ObjectsFactory.create_software(manufacturer)
+    #     acquisition_software = ObjectsFactory.create_software_version(software)
+    #     emg_setting = ObjectsFactory.create_emg_setting(experiment, acquisition_software)
+    #     component10 = ObjectsFactory.create_component(experiment, Component.EMG, kwargs={'emg_set': emg_setting})
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent2, component10)
+    #     tms_setting = ObjectsFactory.create_tms_setting(experiment)
+    #     component11 = ObjectsFactory.create_component(experiment, Component.TMS, kwargs={'tms_set': tms_setting})
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent2, component11)
+    #     context_tree = ObjectsFactory.create_context_tree(experiment)
+    #     component12 = ObjectsFactory.create_component(
+    #         experiment, Component.DIGITAL_GAME_PHASE,
+    #         kwargs={'software_version': acquisition_software, 'context_tree': context_tree}
+    #     )
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent2, component12)
+    #     information_type = ObjectsFactory.create_information_type()
+    #     component13 = ObjectsFactory.create_component(
+    #         experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type}
+    #     )
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent2, component13)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertContains(response, 'Steps of Experimental Protocol of Group %s:' % group1.title)
+    #     self.assertContains(response, '1 instruction step imported')
+    #     self.assertContains(response, '1 pause step imported')
+    #     self.assertContains(response, '1 questionnaire step imported')
+    #     self.assertContains(response, '1 stymulus step imported')
+    #     self.assertContains(response, '1 task step imported')
+    #     self.assertContains(response, '1 experiment task step imported')
+    #     self.assertContains(response, 'Steps of Experimental Protocol of Group %s:' % group2.title)
+    #     self.assertContains(response, '1 eeg task step imported')
+    #     self.assertContains(response, '1 emg task step imported')
+    #     self.assertContains(response, '1 tms task step imported')
+    #     self.assertContains(response, '1 digital game fase step imported')
+    #     self.assertContains(response, '1 generic data collection step imported')
