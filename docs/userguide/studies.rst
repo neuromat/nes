@@ -39,6 +39,7 @@ You can manage keywords while viewing the information about a study. To add a ne
 
 .. image:: ../_img/keywords_view.png
 
+.. _exporting-importing-an-experiment-of-a-study
 Experiments of a study
 ----------------------
 A study may have multiple :ref:`experiments`. Again, only users that have :ref:`permissions` to update a study can add experiments. Non-authorized users can't see the `Insert new` button.
