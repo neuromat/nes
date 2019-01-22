@@ -51,18 +51,6 @@ Initial setup
 
     pip install -r requirements.txt
 
-    pip install -U mne
-
-8. Now you need to install the NWB package, that is installed from the source-code::
-
-    cd ../../..
-
-    git clone https://github.com/AllenInstitute/nwb-api.git
-
-    cd nwb-api/ainwb
-
-    python setup.py install
-
 .. _deploying-nes-with-apache-postgresql-and-mod-wsgi:
 
 Deploying NES with Apache, PostgreSQL and mod_wsgi
@@ -191,19 +179,19 @@ After, insert the following content remembering that the paths and the ServerNam
 
     python manage.py loaddata load_initial_data.json
 
-9. Managing img file::
+9. Managing static files::
 
-    mkdir img
+    mkdir static
 
     nano qdc/settings_local.py
 
 10. Edit the ``STATIC_ROOT line``::
 
-     STATIC_ROOT = '/usr/local/nes-system/nes/patientregistrationsystem/qdc/img'
+     STATIC_ROOT = '/usr/local/nes-system/nes/patientregistrationsystem/qdc/static'
 
-11. Collects the img files into ``STATIC_ROOT``::
+11. Collects the static files into ``STATIC_ROOT``::
 
-     python manage.py collectimg
+     python manage.py collecstatic
 
 12. Create the media directory::
 
