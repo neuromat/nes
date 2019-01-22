@@ -820,7 +820,7 @@ def handle_uploaded_file(file):
 
 
 @login_required
-# @permission_required('experiment.import_experiment')  # TODO: add permisson
+# @permission_required('experiment.import_experiment')  # TODO: add permissons
 def experiment_import(request, template_name='experiment/experiment_import.html', research_project_id=None):
     if request.method == 'GET':
         return render(request, template_name, context={'research_project_id': research_project_id})
@@ -830,21 +830,43 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
             messages.warning(request, _('Please select a json file'))
             return HttpResponseRedirect(reverse('experiment_import'))
 
+        groups_before_import = Group.objects.count()
+
         file_name = handle_uploaded_file(file)
         import_experiment = ImportExperiment(file_name)
         err_code, err_message = import_experiment.import_all(request, research_project_id)
         os.remove(file_name)
+
+        groups_after_import = Group.objects.count() - groups_before_import
+        if groups_after_import:
+            request.session['groups_imported'] = groups_after_import
 
         if err_code:
             messages.error(request, _(err_message))
             return HttpResponseRedirect(reverse('experiment_import'))
 
         if research_project_id:
+            request.session['research_project_id'] = research_project_id
             messages.success(request, _('Experiment successfully imported.'))
-            return HttpResponseRedirect(reverse('research_project_view', args=(research_project_id,)))
         else:
             messages.success(request, _('Experiment successfully imported. New study was created.'))
-            return HttpResponseRedirect(reverse('research_project_list'))
+
+        return HttpResponseRedirect(reverse('import_log'))
+
+
+@login_required
+# @permission_required('experiment.import_experiment')  # TODO: add permissons
+def import_log(request):
+    research_project_id = request.session.get('research_project_id', None)
+    groups_imported = request.session.get('groups_imported', None)
+    context = {'experiment': Experiment.objects.last()}
+    if not research_project_id:  # it's importing Study/Experiment
+        research_project = ResearchProject.objects.last()
+        context['research_project'] = research_project
+    if groups_imported:
+        context['groups_imported'] = groups_imported
+    return render(request, 'experiment/import_log.html', context)
+
 
 @login_required
 @permission_required('experiment.change_experiment')

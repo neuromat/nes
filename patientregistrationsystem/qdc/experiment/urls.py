@@ -39,12 +39,12 @@ urlpatterns = patterns(
         'experiment_research_change_order', name='experiment_research_change_order'),
 
     # export
-    url(r'^(?P<experiment_id>\d+)/export2/$', 'experiment_export', name='experiment_export'),
+    url(r'^(?P<experiment_id>\d+)/export/$', 'experiment_export', name='experiment_export'),
 
     # import
-    url(r'^import2/$', 'experiment_import', name='experiment_import'),
-    url(r'^import2/(?P<research_project_id>\d+)/$', 'experiment_import', name='experiment_import'),
-
+    url(r'^import/$', 'experiment_import', name='experiment_import'),
+    url(r'^import/(?P<research_project_id>\d+)/$', 'experiment_import', name='experiment_import'),
+    url(r'^import/results/$', 'import_log', name='import_log'),
 
     # Schedule of sending
     url(r'^schedule_of_sending/(?P<experiment_id>\d+)/$',
