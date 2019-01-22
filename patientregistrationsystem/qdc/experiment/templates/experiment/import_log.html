@@ -1,0 +1,66 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n %}
+
+{% block header %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="researchProjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li class="active">{% trans "Studies" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well import-results">
+                <h1 class="text-center">Results</h1>
+                <hr>
+                <p>
+                    {% if research_project %}
+                        {% trans '1 Study imported' %}: <a href="/experiment/research_project/{{ research_project.id }}/">{{ research_project.title }}</a><br>
+                    {% endif %}
+                    {% trans '1 Experiment imported' %}: <a href="/experiment/{{ experiment.id }}/">{{ experiment.title }}</a><br>
+                    {% if groups_imported %}
+                        {{ groups_imported }} {% trans 'Groups imported' %}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

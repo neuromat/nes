@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.encoding import smart_str
+from django.utils.html import strip_tags
 
 from custom_user.tests_helper import create_user
 from experiment.import_export import ExportExperiment
@@ -474,7 +475,7 @@ class ImportExperimentTest(TestCase):
         }
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         self.assertEqual(ResearchProject.objects.count(), old_objects_count['research_project'] + 1)
         self.assertEqual(Experiment.objects.count(), old_objects_count['experiment'] + 1)
         self.assertEqual(Experiment.objects.last().research_project.id, ResearchProject.objects.last().id)
@@ -494,7 +495,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
         self.assertEqual(ExperimentGroup.objects.count(), old_groups_count + new_groups.count())
         for group in new_groups:
@@ -518,7 +519,7 @@ class ImportExperimentTest(TestCase):
         old_components_count = Component.objects.count()
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         new_components = Component.objects.exclude(id__in=[component1.id, component2.id])
         self.assertEqual(Component.objects.count(), old_components_count + new_components.count())
         for component in new_components:
@@ -542,7 +543,7 @@ class ImportExperimentTest(TestCase):
         old_blocks_count = Block.objects.count()
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         new_blocks = Block.objects.exclude(id__in=[ep1.id, ep2.id])
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id, group3.id])
         self.assertEqual(Block.objects.count(), old_blocks_count + new_blocks.count())
@@ -553,9 +554,6 @@ class ImportExperimentTest(TestCase):
             new_groups = new_groups.exclude(id=group.id)
         # now new_groups has only the group without experimental protocol
         self.assertEqual(new_groups.count(), 1)
-
-        # Pra baixo: Éder
-        # ---------------
 
     def test_POST_experiment_import_file_creates_root_plus_one_component_and_returns_successful_message(self):
         # Create research project
@@ -578,7 +576,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         new_component = Component.objects.exclude(id__in=[rootcomponent.id, component.id])
         self.assertEqual(
             Component.objects.count(),
@@ -612,7 +610,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         new_components = Component.objects.exclude(id__in=[rootcomponent.id, component1.id, component2.id])
         self.assertEqual(
             Component.objects.count(),
@@ -652,7 +650,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
                                                            component1.id, component2.id])
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
@@ -698,7 +696,7 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import', args=(research_project.id,)),
                                         {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_view', args=(research_project.id,)))
+        self.assertRedirects(response, reverse('import_log'))
         new_components = Component.objects.exclude(id__in=[rootcomponent.id, component.id])
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
         self.assertEqual(
@@ -727,10 +725,10 @@ class ImportExperimentTest(TestCase):
         rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
         # Create another component ('instruction', for example)
         component1 = ObjectsFactory.create_component(experiment, 'instruction')
-        component1_config = ObjectsFactory.create_component_configuration(rootcomponent1, component1)
+        ObjectsFactory.create_component_configuration(rootcomponent1, component1)
         # Create another component ('instruction', for example)
         component2 = ObjectsFactory.create_component(experiment, 'instruction')
-        component2_config = ObjectsFactory.create_component_configuration(rootcomponent2, component2)
+        ObjectsFactory.create_component_configuration(rootcomponent2, component2)
 
         # Create groups
         group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
@@ -747,7 +745,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
                                                            component1.id, component2.id])
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
@@ -776,13 +774,13 @@ class ImportExperimentTest(TestCase):
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
         # Create another component ('instruction', for example)
         component1 = ObjectsFactory.create_component(experiment, 'instruction')
-        component1_config = ObjectsFactory.create_component_configuration(rootcomponent, component1)
+        ObjectsFactory.create_component_configuration(rootcomponent, component1)
         # And finally the last one Component. ('tms', for example)
         component2_tms_setting = ObjectsFactory.create_tms_setting(experiment)
         component2 = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': component2_tms_setting})
-        component2_config = ObjectsFactory.create_component_configuration(rootcomponent, component2)
+        ObjectsFactory.create_component_configuration(rootcomponent, component2)
         # Create a reuse of the step 1
-        component3_config = ObjectsFactory.create_component_configuration(rootcomponent, component1)
+        ObjectsFactory.create_component_configuration(rootcomponent, component1)
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -793,7 +791,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
         new_components = Component.objects.exclude(id__in=[rootcomponent.id, component1.id, component2.id])
         self.assertEqual(
             Component.objects.count(),
@@ -840,7 +838,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
 
         new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
                                                            component1.id, component2.id])
@@ -891,7 +889,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
 
         new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
         self.assertEqual(
@@ -924,7 +922,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('research_project_list'))
+        self.assertRedirects(response, reverse('import_log'))
 
         new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
         self.assertEqual(
@@ -934,3 +932,169 @@ class ImportExperimentTest(TestCase):
             self.assertIn(item, ResearchProject.objects.last().keywords.all())
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_redirects_to_importing_log_page_1(self):
+        # import ResearchProject/Experiment
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+    def test_POST_experiment_import_file_redirects_to_importing_log_page_2(self):
+        # import only Experiment
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(
+                reverse('experiment_import', args=(research_project.id,)),
+                {'file': file}, follow=True
+            )
+        self.assertRedirects(response, reverse('import_log'))
+
+    def test_POST_experiment_import_file_redirects_for_correct_template_1(self):
+        # import ResearchProject/Experiment
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertTemplateUsed(response, 'experiment/import_log.html')
+
+    def test_POST_experiment_import_file_redirects_for_correct_template_2(self):
+        # import only Experiment
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(
+                reverse('experiment_import', args=(research_project.id,)),
+                {'file': file}, follow=True
+            )
+        self.assertTemplateUsed(response, 'experiment/import_log.html')
+
+    def test_POST_experiment_import_file_returns_log_with_experiment_and_research_project_titles(self):
+        # import ResearchProject/Experiment
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertIn(
+            '1 Estudo importado: ' + ResearchProject.objects.last().title,
+            strip_tags(response.content.decode('utf-8'))
+        )
+        self.assertIn(
+            '1 Experimento importado: ' + Experiment.objects.last().title,
+            strip_tags(response.content.decode('utf-8'))
+        )
+
+    def test_POST_experiment_import_file_returns_log_with_experiment_title(self):
+        # import only Experiment
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(
+                reverse('experiment_import', args=(research_project.id,)),
+                {'file': file}, follow=True
+            )
+        self.assertNotIn(
+            '1 Estudo importado: ' + ResearchProject.objects.last().title,
+            strip_tags(response.content.decode('utf-8'))
+        )
+        self.assertIn(
+            '1 Experimento importado: ' + Experiment.objects.last().title,
+            strip_tags(response.content.decode('utf-8'))
+        )
+
+    def test_POST_experiment_import_file_returns_research_project_and_experiment_pages_links(self):
+        # import ResearchProject/Experiment
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertContains(
+            response,
+            reverse(
+                'research_project_view', kwargs={'research_project_id': ResearchProject.objects.last().id}
+            )
+        )
+        self.assertContains(
+            response,
+            reverse(
+                'experiment_view', kwargs={'experiment_id': Experiment.objects.last().id}
+            )
+        )
+
+    def test_POST_experiment_import_file_returns_experiment_page_link(self):
+        # import only Experiment
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(
+                reverse('experiment_import', args=(research_project.id,)),
+                {'file': file}, follow=True
+            )
+        self.assertNotContains(
+            response,
+            reverse(
+                'research_project_view', kwargs={'research_project_id': ResearchProject.objects.last().id}
+            )
+        )
+        self.assertContains(
+            response,
+            reverse(
+                'experiment_view', kwargs={'experiment_id': Experiment.objects.last().id}
+            )
+        )
+
+    def test_POST_experiment_import_file_returns_log_with_number_of_groups_imported(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_group(experiment)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertContains(response, '2 Groups imported')
