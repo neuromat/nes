@@ -1,12 +1,13 @@
-import json
 import shutil
 import sys
 import tempfile
+import json
 from json import JSONDecodeError
 from os import path
 
 from django.core.management import call_command
 from django.apps import apps
+from django.db.models import Count
 
 from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
@@ -144,6 +145,8 @@ class ImportExperiment:
     def __init__(self, file_path):
         self.file_path = file_path
         self.temp_dir = tempfile.mkdtemp()
+        self.last_objects_before_import = dict()
+        self.new_objects = dict()
 
     def __del__(self):
         shutil.rmtree(self.temp_dir)
@@ -360,9 +363,11 @@ class ImportExperiment:
         self._update_pk_group(data)
 
     def import_all(self, request, research_project_id=None):
+        # TODO: maybe this try in constructor
         try:
             with open(self.file_path) as f:
                 data = json.load(f)
+                self._set_last_objects_before_import(data, research_project_id)  # to import log page
         except (ValueError, JSONDecodeError):
             return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
 
@@ -372,4 +377,52 @@ class ImportExperiment:
 
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
 
+        self._collect_new_objects()
+
         return 0, ''
+
+    def _set_last_objects_before_import(self, data, research_project_id):
+        """Identify last objects to deduct after import, so
+        we can identify the new objects imported
+        :param data: list created with json.loads from json file with
+        the objects that will be imported
+        """
+        self.last_objects_before_import['experiment'] = Experiment.objects.last()
+        if not research_project_id:
+            self.last_objects_before_import['research_project'] = ResearchProject.objects.last()
+        has_groups = next(
+            (index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.group'), None
+        )
+        has_components = next(
+            (index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.component'), None
+        )
+        if has_groups:
+            self.last_objects_before_import['group'] = Group.objects.last()
+        if has_components:
+            self.last_objects_before_import['component'] = Component.objects.last()
+
+    def _collect_new_objects(self):
+        last_experiment = Experiment.objects.last()
+        self.new_objects['experiment_id'] = last_experiment.id
+        self.new_objects['experiment_title'] = last_experiment.title
+        if 'research_project' in self.last_objects_before_import:
+            last_study = ResearchProject.objects.last()
+            self.new_objects['research_project_id'] = last_study.id
+            self.new_objects['research_project_title'] = last_study.title
+        else:
+            self.new_objects['research_id'] = None
+        if 'group' in self.last_objects_before_import:
+            last_group_before_import = self.last_objects_before_import['group'].id
+            self.new_objects['groups_count'] = Group.objects.filter(id__gt=last_group_before_import).count()
+        else:
+            self.new_objects['groups_count'] = None
+        if 'component' in self.last_objects_before_import:
+            last_component_before_import = self.last_objects_before_import['component'].id
+            components_count = Component.objects.filter(id__gt=last_component_before_import)
+            self.new_objects['components'] = \
+                list(components_count.values('component_type').annotate(count=Count('component_type')))
+        else:
+            self.new_objects['components'] = None
+
+    def get_new_objects(self):
+        return self.new_objects
