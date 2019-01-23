@@ -9,7 +9,10 @@ from django.core.management import call_command
 from django.apps import apps
 
 from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
-    Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
+    Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection,\
+    Subject, SubjectOfGroup
+from patient.models import Patient, SocialHistoryData, SocialDemographicData, Telephone,\
+    MedicalRecordData, QuestionnaireResponse, Diagnosis
 from survey.models import Survey
 
 
@@ -29,6 +32,16 @@ class ExportExperiment:
         sys.stdout = open(path.join(self.temp_dir, filename), 'w')
 
         call_command('dump_object', 'experiment.' + element, '--query',
+                     '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
+                     )
+
+        sys.stdout = sysout
+
+    def generate_patient_fixture(self, filename, element, key_path):
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
+
+        call_command('dump_object', 'patient.' + element, '--query',
                      '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
                      )
 
@@ -104,6 +117,17 @@ class ExportExperiment:
         self.generate_fixture('tms.json', 'tms', key_path)
         self.generate_fixture('digital_game_phase.json', 'digitalgamephase', key_path)
         self.generate_fixture('generic_data_collection.json', 'genericdatacollection', key_path)
+        self.generate_fixture('participant.json', 'subjectofgroup', 'group_id__experiment_id__in')
+        self.generate_patient_fixture('telephone.json', 'telephone',
+                                      'patient__subject__subjectofgroup__group__experiment_id__in')
+        self.generate_patient_fixture('questionnaireresponse.json', 'questionnaireresponse',
+                                      'patient__subject__subjectofgroup__group__experiment_id__in')
+        self.generate_patient_fixture('socialhistorydata.json', 'socialhistorydata',
+                                      'patient__subject__subjectofgroup__group__experiment_id__in')
+        self.generate_patient_fixture('socialdemographicdata.json', 'socialdemographicdata',
+                                      'patient__subject__subjectofgroup__group__experiment_id__in')
+        self.generate_patient_fixture('diagnosis.json', 'diagnosis',
+                                      'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -115,7 +139,9 @@ class ExportExperiment:
         list_of_files = ['experimentfixture.json', 'componentconfiguration.json', 'group.json', 'block.json',
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
-                         'generic_data_collection.json', 'keywords.json']
+                         'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
+                         'questionnaireresponse.json', 'socialhistorydata.json', 'socialdemographicdata.json',
+                         'diagnosis.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -233,10 +259,19 @@ class ImportExperiment:
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.group']
 
-        # Update the pk of each group to a new one
         next_group_id = Group.objects.last().id + 1 if Group.objects.count() > 0 else 1
+
+        indexes_of_groups_already_updated = []
         for i in indexes:
+            old_group_id = data[i]['pk']
             data[i]['pk'] = next_group_id
+
+            for (index_row, dict_) in enumerate(data):
+                if 'group' in data[index_row]['fields']\
+                        and data[index_row]['fields']['group'] == old_group_id\
+                        and index_row not in indexes_of_groups_already_updated:
+                    data[index_row]['fields']['group'] = next_group_id
+                    indexes_of_groups_already_updated.append(index_row)
             next_group_id += 1
 
     def _update_pk_component(self, data):
@@ -344,6 +379,120 @@ class ImportExperiment:
                     new_limesurvey_id = min_limesurvey_id
                 data[i]['fields']['lime_survey_id'] = new_limesurvey_id
 
+    @staticmethod
+    def _update_pk_patient(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
+
+        next_patient_id = Patient.objects.last().id + 1 if Patient.objects.count() > 0 else 1
+        new_patient_code = int(Patient.objects.last().code.split('P')[1]) + 1 if Patient.objects.count() > 0 else 1
+
+        indexes_of_patient_already_updated = []
+        for i in indexes:
+            old_patient_id = data[i]['pk']
+            data[i]['pk'] = next_patient_id
+            data[i]['fields']['code'] = 'P' + str(new_patient_code)
+
+            for (index_row, dict_) in enumerate(data):
+                if 'patient' in data[index_row]['fields']\
+                        and data[index_row]['fields']['patient'] == old_patient_id \
+                        and index_row not in indexes_of_patient_already_updated:
+                    data[index_row]['fields']['patient'] = next_patient_id
+                    indexes_of_patient_already_updated.append(index_row)
+            next_patient_id += 1
+            new_patient_code += 1
+
+    @staticmethod
+    def _update_pk_subject(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.subject']
+
+        next_subject_id = Subject.objects.last().id + 1 if Subject.objects.count() > 0 else 1
+
+        indexes_of_subjects_already_updated = []
+        for i in indexes:
+            old_subject_id = data[i]['pk']
+            data[i]['pk'] = next_subject_id
+
+            for (index_row, dict_) in enumerate(data):
+                if 'subject' in data[index_row]['fields']\
+                        and data[index_row]['fields']['subject'] == old_subject_id\
+                        and index_row not in indexes_of_subjects_already_updated:
+                    data[index_row]['fields']['subject'] = next_subject_id
+                    indexes_of_subjects_already_updated.append(index_row)
+            next_subject_id += 1
+
+    @staticmethod
+    def _update_pk_subject_of_group(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.subjectofgroup']
+
+        next_subject_of_group_id = SubjectOfGroup.objects.last().id + 1 if SubjectOfGroup.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_subject_of_group_id
+            next_subject_of_group_id += 1
+
+    @staticmethod
+    def _update_pk_social_history_data(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.socialhistorydata']
+
+        next_social_history_data_id = SocialHistoryData.objects.last().id + 1\
+            if SocialHistoryData.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_social_history_data_id
+            next_social_history_data_id += 1
+
+    @staticmethod
+    def _update_pk_questionnaire_response(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.questionnaireresponse']
+
+        next_questionnaireresponse_id = QuestionnaireResponse.objects.last().id + 1\
+            if QuestionnaireResponse.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_questionnaireresponse_id
+            next_questionnaireresponse_id += 1
+
+    @staticmethod
+    def _update_pk_telephone(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.telephone']
+
+        next_telephone_id = Telephone.objects.last().id + 1\
+            if Telephone.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_telephone_id
+            next_telephone_id += 1
+
+    @staticmethod
+    def _update_pk_diagnosis(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.diagnosis']
+
+        next_diagnosis_id = Diagnosis.objects.last().id + 1\
+            if Diagnosis.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_diagnosis_id
+            next_diagnosis_id += 1
+
+    @staticmethod
+    def _update_pk_social_demographic_data(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.socialdemographicdata']
+
+        next_social_demographic_data_id = MedicalRecordData.objects.last().id + 1\
+            if MedicalRecordData.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_social_demographic_data_id
+            next_social_demographic_data_id += 1
+
     def _update_pks(self, data, request, research_project_id=None):
         self._update_pk_research_project(data, request, research_project_id)
         self._update_pk_keywords(data)
@@ -357,7 +506,15 @@ class ImportExperiment:
         self._update_pk_dependent_model(data, 'survey.survey')
         self._update_pk_component(data)
         self._update_pk_component_configuration(data)
+        self._update_pk_patient(data)
+        self._update_pk_subject(data)
+        self._update_pk_subject_of_group(data)
         self._update_pk_group(data)
+        self._update_pk_social_history_data(data)
+        self._update_pk_social_demographic_data(data)
+        self._update_pk_telephone(data)
+        self._update_pk_questionnaire_response(data)
+        self._update_pk_diagnosis(data)
 
     def import_all(self, request, research_project_id=None):
         try:
