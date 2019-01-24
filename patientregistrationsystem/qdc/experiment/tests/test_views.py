@@ -575,11 +575,11 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
-        new_component = Component.objects.exclude(id__in=[rootcomponent.id, component.id])
+        new_components = Component.objects.exclude(id__in=[rootcomponent.id, component.id])
         self.assertEqual(
             Component.objects.count(),
-            old_objects_count + len(new_component))
-        for item in new_component:
+            old_objects_count + len(new_components))
+        for item in new_components:
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
@@ -616,7 +616,7 @@ class ImportExperimentTest(TestCase):
         ObjectsFactory.create_component_configuration(rootcomponent, component1)
         # And finally the last one Component. ('tms', for example)
         component2_tms_setting = ObjectsFactory.create_tms_setting(experiment)
-        component2 = TMS.objects.create(experiment=experiment, tms_setting=component2_tms_setting)
+        component2 = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': component2_tms_setting})
         ObjectsFactory.create_component_configuration(rootcomponent, component2)
 
         export = ExportExperiment(experiment)
@@ -1112,7 +1112,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertContains(response, '2 Groups imported')
+        self.assertContains(response, '2 Grupos importados')
 
     def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self):
         # TODO: terrible, excessive etc. Put all that creation in a separate function
@@ -1173,14 +1173,14 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertContains(response, '1 instruction step imported')
-        self.assertContains(response, '1 pause step imported')
-        self.assertContains(response, '1 questionnaire step imported')
-        self.assertContains(response, '1 stimulus step imported')
-        self.assertContains(response, '1 task step imported')
-        self.assertContains(response, '1 task_experiment step imported')
-        self.assertContains(response, '1 eeg step imported')
-        self.assertContains(response, '1 emg step imported')
-        self.assertContains(response, '1 tms step imported')
-        self.assertContains(response, '1 digital_game_phase step imported')
-        self.assertContains(response, '1 generic_data_collection step imported')
+        self.assertContains(response, '1 passo de <em>Instrução</em> importado')
+        self.assertContains(response, '1 passo de <em>Pausa</em> importado')
+        self.assertContains(response, '1 passo de <em>Questionário</em> importado')
+        self.assertContains(response, '1 passo de <em>Estímulo</em> importado')
+        self.assertContains(response, '1 passo de <em>Tarefa para o participante</em> importado')
+        self.assertContains(response, '1 passo de <em>Tarefa para o experimentador</em> importado')
+        self.assertContains(response, '1 passo de <em>EEG</em> importado')
+        self.assertContains(response, '1 passo de <em>EMG</em> importado')
+        self.assertContains(response, '1 passo de <em>TMS</em> importado')
+        self.assertContains(response, '1 passo de <em>Fase de jogo do goleiro</em> importado')
+        self.assertContains(response, '1 passo de <em>Coleta genérica de dados</em> importado')
