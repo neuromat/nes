@@ -418,11 +418,19 @@ class ImportExperiment:
             self.new_objects['groups_count'] = None
         if 'component' in self.last_objects_before_import:
             last_component_before_import = self.last_objects_before_import['component'].id
-            components_count = Component.objects.filter(id__gt=last_component_before_import)
-            self.new_objects['components'] = \
-                list(components_count.values('component_type').annotate(count=Count('component_type')))
+            component_queryset = Component.objects.filter(id__gt=last_component_before_import)
+            components = component_queryset.values('component_type').annotate(count=Count('component_type'))
+            self._include_human_readables(components)
+            self.new_objects['components'] = list(components)
+
         else:
             self.new_objects['components'] = None
 
     def get_new_objects(self):
         return self.new_objects
+
+    @staticmethod
+    def _include_human_readables(components):
+        human_readables = dict(Component.COMPONENT_TYPES)
+        for i, component in enumerate(components):
+            components[i]['human_readable'] = str(human_readables[component['component_type']])
