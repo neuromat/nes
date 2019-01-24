@@ -47,7 +47,7 @@ from patient.tests import UtilTests
 
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
-
+from survey.tests.tests_helper import create_survey
 
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
@@ -758,6 +758,48 @@ class ObjectsFactory(object):
             hotspot.save()
 
         return hotspot
+
+    @staticmethod
+    def create_complete_set_of_components(experiment, rootcomponent):
+        component1 = ObjectsFactory.create_component(experiment, Component.INSTRUCTION)
+        ObjectsFactory.create_component_configuration(rootcomponent, component1)
+        component2 = ObjectsFactory.create_component(experiment, Component.PAUSE)
+        ObjectsFactory.create_component_configuration(rootcomponent, component2)
+        survey = create_survey(123458)
+        component3 = ObjectsFactory.create_component(experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, component3)
+        stimulus_type = ObjectsFactory.create_stimulus_type()
+        component4 = ObjectsFactory.create_component(
+            experiment, Component.STIMULUS, kwargs={'stimulus_type': stimulus_type}
+        )
+        ObjectsFactory.create_component_configuration(rootcomponent, component4)
+        component5 = ObjectsFactory.create_component(experiment, Component.TASK)
+        ObjectsFactory.create_component_configuration(rootcomponent, component5)
+        component6 = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
+        ObjectsFactory.create_component_configuration(rootcomponent, component6)
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+        component9 = ObjectsFactory.create_component(experiment, Component.EEG, kwargs={'eeg_set': eeg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component9)
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        acquisition_software = ObjectsFactory.create_software_version(software)
+        emg_setting = ObjectsFactory.create_emg_setting(experiment, acquisition_software)
+        component10 = ObjectsFactory.create_component(experiment, Component.EMG, kwargs={'emg_set': emg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component10)
+        tms_setting = ObjectsFactory.create_tms_setting(experiment)
+        component11 = ObjectsFactory.create_component(experiment, Component.TMS, kwargs={'tms_set': tms_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component11)
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+        component12 = ObjectsFactory.create_component(
+            experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': acquisition_software, 'context_tree': context_tree}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component12)
+        information_type = ObjectsFactory.create_information_type()
+        component13 = ObjectsFactory.create_component(
+            experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component13)
 
 
 class ExperimentalProtocolTest(TestCase):
