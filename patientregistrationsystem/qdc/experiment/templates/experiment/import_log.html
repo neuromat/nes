@@ -48,7 +48,7 @@
     <div class="tab-pane fade in active" id="mainMenuUserTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well import-results">
-                <h1 class="text-center">Results</h1>
+                <h1 class="text-center">{% trans 'Results' %}</h1>
                 <hr>
                 <p>
                     {% if research_project_id %}
@@ -56,10 +56,20 @@
                     {% endif %}
                     {% trans '1 Experiment imported' %}: <a href="/experiment/{{ experiment_id }}/">{{ experiment_title }}</a><br>
                     {% if groups_count %}
-                        {{ groups_count }} {% trans 'Groups imported' %}
+                        {% blocktrans count count=groups_count %}
+                            {{ count }} Group imported
+                        {% plural %}
+                            {{ count }} Groups imported
+                        {% endblocktrans %}
+                        <br>
                     {% endif %}
                     {% for component in components %}
-                        {{ component.count }} {{ component.component_type }} {% trans 'step imported' %}
+                        {% blocktrans with human_readable=component.human_readable count count=component.count %}
+                            {{ count }} <em>{{ human_readable }}</em> step imported
+                        {% plural %}
+                            {{ count }} <em>{{ human_readable }}</em> steps imported
+                        {% endblocktrans %}
+                        <br>
                     {% endfor %}
                 </p>
             </div>
