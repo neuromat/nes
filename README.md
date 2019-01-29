@@ -114,9 +114,10 @@ The entrypoint will set the required application settings and run the initial sc
 - https://github.com/docker-library/postgres
 
 # TO-DO
-- Integrate this repo with the DockerHub for continuous integration;
-- Split the database in two, each serving a different system (nes/limesurvey);
-- Make the actual template a test version;
-- Make a deploy version with NES on Apache setup;
-- Make NES deployable with different SQL databases and integrate it with docker;
-- Make different deploy templates with other webserver (nginx);
+- [X] Split the database in two, each serving a different system (nes/limesurvey);
+- [ ] :exclamation: Load ICD data :exclamation:;
+- [ ] Integrate this repo with the DockerHub for continuous integration;
+- [ ] Make a deploy version with NES on Apache setup;
+- [ ] Make the actual template a test version;
+- [ ] Make NES deployable with different SQL databases and integrate it with docker;
+- [ ] Make different deploy templates with other webserver (nginx);
