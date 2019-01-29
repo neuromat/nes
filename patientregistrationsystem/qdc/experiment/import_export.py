@@ -13,7 +13,7 @@ from experiment.models import Group, ComponentConfiguration, ResearchProject, Ex
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection,\
     Subject, SubjectOfGroup
 from patient.models import Patient, SocialHistoryData, SocialDemographicData, Telephone,\
-    MedicalRecordData, QuestionnaireResponse, Diagnosis
+    MedicalRecordData, QuestionnaireResponse, Diagnosis, ClassificationOfDiseases
 from survey.models import Survey
 
 
@@ -121,8 +121,6 @@ class ExportExperiment:
         self.generate_fixture('participant.json', 'subjectofgroup', 'group_id__experiment_id__in')
         self.generate_patient_fixture('telephone.json', 'telephone',
                                       'patient__subject__subjectofgroup__group__experiment_id__in')
-        self.generate_patient_fixture('questionnaireresponse.json', 'questionnaireresponse',
-                                      'patient__subject__subjectofgroup__group__experiment_id__in')
         self.generate_patient_fixture('socialhistorydata.json', 'socialhistorydata',
                                       'patient__subject__subjectofgroup__group__experiment_id__in')
         self.generate_patient_fixture('socialdemographicdata.json', 'socialdemographicdata',
@@ -141,8 +139,7 @@ class ExportExperiment:
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
                          'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'questionnaireresponse.json', 'socialhistorydata.json', 'socialdemographicdata.json',
-                         'diagnosis.json']
+                         'socialhistorydata.json', 'socialdemographicdata.json', 'diagnosis.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -343,11 +340,9 @@ class ImportExperiment:
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
 
         list_of_dependent_models = ['experiment.eegsetting', 'experiment.emgsetting', 'experiment.tmssetting',
-                                    'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype',
-                                    'survey.survey']
+                                    'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype']
         list_of_dependent_models_fields = ['eeg_setting', 'emg_setting', 'tms_setting',
-                                           'information_type', 'context_tree', 'stimulus_type',
-                                           'survey']
+                                           'information_type', 'context_tree', 'stimulus_type']
 
         model_ = apps.get_model(model)
         next_model_id = model_.objects.last().id + 1 if model_.objects.count() > 0 else 1
@@ -371,16 +366,43 @@ class ImportExperiment:
                     data[index_row]['fields'][field] = next_model_id
                     indexes_of_dependent_models_already_updated.append(index_row)
             next_model_id += 1
-            # Update limesurvey references in survey.survey models
-            if model == 'survey.survey':
-                # If model is survey, create dummy limesurvey reference
-                min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-                if min_limesurvey_id >= 0:
-                    new_limesurvey_id = -99
-                else:
-                    min_limesurvey_id -= 1
-                    new_limesurvey_id = min_limesurvey_id
-                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
+
+    @staticmethod
+    def _update_pk_survey(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'survey.survey']
+
+        if Survey.objects.count() > 0:
+            next_survey_id = Survey.objects.last().id + 1
+            new_survey_code = int(Survey.objects.all().order_by('-code').first().code.split('Q')[1]) + 1
+            min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+        else:
+            next_survey_id = 1
+            new_survey_code = 1
+            min_limesurvey_id = 1
+
+        # Create a dummy limesurvey reference
+        if min_limesurvey_id >= 0:
+            new_limesurvey_id = -99
+        else:
+            new_limesurvey_id = min_limesurvey_id - 1
+
+        indexes_of_surveys_already_updated = []
+        for i in indexes:
+            old_survey_id = data[i]['pk']
+            data[i]['pk'] = next_survey_id
+            data[i]['fields']['code'] = 'Q' + str(new_survey_code)
+            data[i]['fields']['lime_survey_id'] = new_limesurvey_id
+
+            for (index_row, dict_) in enumerate(data):
+                if 'survey' in data[index_row]['fields']\
+                        and data[index_row]['fields']['survey'] == old_survey_id \
+                        and index_row not in indexes_of_surveys_already_updated:
+                    data[index_row]['fields']['survey'] = next_survey_id
+                    indexes_of_surveys_already_updated.append(index_row)
+            next_survey_id += 1
+            new_survey_code += 1
+            new_limesurvey_id -= 1
 
     @staticmethod
     def _update_pk_patient(data):
@@ -388,7 +410,8 @@ class ImportExperiment:
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
         next_patient_id = Patient.objects.last().id + 1 if Patient.objects.count() > 0 else 1
-        new_patient_code = int(Patient.objects.last().code.split('P')[1]) + 1 if Patient.objects.count() > 0 else 1
+        new_patient_code = int(Patient.objects.all().order_by('-code').first().code.split('P')[1]) + 1\
+            if Patient.objects.count() > 0 else 1
 
         indexes_of_patient_already_updated = []
         for i in indexes:
@@ -449,18 +472,6 @@ class ImportExperiment:
             next_social_history_data_id += 1
 
     @staticmethod
-    def _update_pk_questionnaire_response(data):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.questionnaireresponse']
-
-        next_questionnaireresponse_id = QuestionnaireResponse.objects.last().id + 1\
-            if QuestionnaireResponse.objects.count() > 0 else 1
-
-        for i in indexes:
-            data[i]['pk'] = next_questionnaireresponse_id
-            next_questionnaireresponse_id += 1
-
-    @staticmethod
     def _update_pk_telephone(data):
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.telephone']
@@ -471,6 +482,18 @@ class ImportExperiment:
         for i in indexes:
             data[i]['pk'] = next_telephone_id
             next_telephone_id += 1
+
+    @staticmethod
+    def _update_pk_social_demographic_data(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.socialdemographicdata']
+
+        next_social_demographic_data_id = SocialDemographicData.objects.last().id + 1\
+            if SocialDemographicData.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_social_demographic_data_id
+            next_social_demographic_data_id += 1
 
     @staticmethod
     def _update_pk_diagnosis(data):
@@ -485,16 +508,49 @@ class ImportExperiment:
             next_diagnosis_id += 1
 
     @staticmethod
-    def _update_pk_social_demographic_data(data):
+    def _update_pk_classification_of_diseases(data):
         # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.socialdemographicdata']
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.classificationofdiseases']
 
-        next_social_demographic_data_id = MedicalRecordData.objects.last().id + 1\
+        next_classification_of_diseases_id = ClassificationOfDiseases.objects.last().id + 1\
+            if ClassificationOfDiseases.objects.count() > 0 else 1
+
+        indexes_of_classifications_of_diseases_already_updated = []
+        for i in indexes:
+            old_classification_of_diseases_id = data[i]['pk']
+            cid10 = ClassificationOfDiseases.objects.filter(code=data[i]['fields']['code']).first()
+
+            if cid10:
+                data[i]['pk'] = cid10.id
+            else:
+                data[i]['pk'] = next_classification_of_diseases_id
+                next_classification_of_diseases_id += 1
+
+            for (index_row, dict_) in enumerate(data):
+                if dict_['model'] == 'patient.diagnosis'\
+                        and dict_['fields']['classification_of_diseases'] == old_classification_of_diseases_id\
+                        and index_row not in indexes_of_classifications_of_diseases_already_updated:
+                    data[index_row]['fields']['classification_of_diseases'] = data[i]['pk']
+                    indexes_of_classifications_of_diseases_already_updated.append(index_row)
+
+
+    @staticmethod
+    def _update_pk_medical_record_data(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.medicalrecorddata']
+
+        next_medical_record_data_id = MedicalRecordData.objects.last().id + 1\
             if MedicalRecordData.objects.count() > 0 else 1
 
         for i in indexes:
-            data[i]['pk'] = next_social_demographic_data_id
-            next_social_demographic_data_id += 1
+            old_medical_record_data_id = data[i]['pk']
+            data[i]['pk'] = next_medical_record_data_id
+
+            for (index_row, dict_) in enumerate(data):
+                if dict_['model'] == 'patient.diagnosis'\
+                        and dict_['fields']['medical_record_data'] == old_medical_record_data_id:
+                    data[index_row]['fields']['medical_record_data'] = next_medical_record_data_id
+            next_medical_record_data_id += 1
 
     def _update_pks(self, data, request, research_project_id=None):
         self._update_pk_research_project(data, request, research_project_id)
@@ -506,7 +562,7 @@ class ImportExperiment:
         self._update_pk_dependent_model(data, 'experiment.informationtype')
         self._update_pk_dependent_model(data, 'experiment.contexttree')
         self._update_pk_dependent_model(data, 'experiment.stimulustype')
-        self._update_pk_dependent_model(data, 'survey.survey')
+        self._update_pk_survey(data)
         self._update_pk_component(data)
         self._update_pk_component_configuration(data)
         self._update_pk_patient(data)
@@ -516,8 +572,9 @@ class ImportExperiment:
         self._update_pk_social_history_data(data)
         self._update_pk_social_demographic_data(data)
         self._update_pk_telephone(data)
-        self._update_pk_questionnaire_response(data)
         self._update_pk_diagnosis(data)
+        self._update_pk_medical_record_data(data)
+        self._update_pk_classification_of_diseases(data)
 
     def import_all(self, request, research_project_id=None):
         # TODO: maybe this try in constructor
