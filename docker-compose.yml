@@ -1,50 +1,23 @@
-version: '3'
+version: '2'
 
 services:
-    # Postgres
-    db:
+    # Postgres_LimeSurvey
+    db_limesurvey:
         image: postgres:alpine
-
-        entrypoint: >
-            /bin/ash -c '
-                set -ex ;
-
-                echo "
-                    CREATE USER $$NES_DB_USER WITH PASSWORD '\''$$NES_DB_PASSWORD'\'' ;
-                    CREATE DATABASE $$NES_DB OWNER $$NES_DB_USER ;
-                    GRANT ALL PRIVILEGES ON DATABASE $$NES_DB TO $$NES_DB_USER ;
-                    ALTER ROLE $$NES_DB_USER WITH CREATEDB;
-                " > /docker-entrypoint-initdb.d/create_nes.sql ;
-                
-                echo "
-                    CREATE USER $$LIMESURVEY_DB_USER WITH PASSWORD '\''$$LIMESURVEY_DB_PASSWORD'\'' ;
-                    CREATE DATABASE $$LIMESURVEY_DB OWNER $$LIMESURVEY_DB_USER ;
-                    GRANT ALL PRIVILEGES ON DATABASE $$LIMESURVEY_DB TO $$LIMESURVEY_DB_USER ;
-                " > /docker-entrypoint-initdb.d/create_limesurvey.sql ;
-                
-                /docker-entrypoint.sh postgres ;
-            '
-
         environment:
-            - POSTGRES_PASSWORD=password
-            - POSTGRES_DB=database
-            - POSTGRES_USER=postgres
-            - NES_DB=nes_db
-            - NES_DB_USER=nes_user
-            - NES_DB_PASSWORD=nes_password
-            - LIMESURVEY_DB=limesurvey_db
-            - LIMESURVEY_DB_USER=limesurvey_user
-            - LIMESURVEY_DB_PASSWORD=limesurvey_password
+            - POSTGRES_PASSWORD=limesurvey_password
+            - POSTGRES_DB=limesurvey_db
+            - POSTGRES_USER=limesurvey_user
 
+# LimeSurvey
     limesurvey:
         build:
             context: limesurvey/
             dockerfile: Dockerfile
-
         environment:
             - LIMESURVEY_PORT=8080
             - LIMESURVEY_DB_TYPE=pgsql
-            - LIMESURVEY_DB_HOST=db
+            - LIMESURVEY_DB_HOST=db_limesurvey
             - LIMESURVEY_DB_PORT=5432
             - LIMESURVEY_DB=limesurvey_db
             - LIMESURVEY_DB_TABLE_PREFIX=lime_
@@ -55,37 +28,43 @@ services:
             - LIMESURVEY_ADMIN_EMAIL=limesurvey@limemail.com
             - LIMESURVEY_ADMIN_PASSWORD=limesurvey_admin_password
             - LIMESURVEY_URL_FORMAT=path
-
         ports:
             - "8080:8080"
-
         depends_on:
-            - db
+            - db_limesurvey
 
+# Postgres_NES
+    db_nes:
+        image: postgres:alpine
+        environment:
+            - POSTGRES_PASSWORD=nes_password
+            - POSTGRES_DB=nes_db
+            - POSTGRES_USER=nes_user
+
+# Neuroscience Experiments System
     nes:
         build:
             context: nes/
             dockerfile: Dockerfile
         environment:
             - NES_DB_TYPE=pgsql
-            - NES_DB_HOST=db
+            - NES_DB_HOST=db_nes
             - NES_DB=nes_db
             - NES_DB_USER=nes_user
             - NES_DB_PASSWORD=nes_password
             - NES_DB_PORT=5432
             - LIMESURVEY_HOST=limesurvey
             - LIMESURVEY_PORT=8080
-            - LIMESURVEY_ADMIN_NAME=limesurvey_admin
+            - LIMESURVEY_ADMIN_USER=limesurvey_admin
             - LIMESURVEY_ADMIN_PASSWORD=limesurvey_admin_password
             - NES_SECRET_KEY=_my_very_secret_key_
             - NES_IP=0.0.0.0
             - NES_PORT=8000
             - NES_ADMIN_USER=nes_admin
             - NES_ADMIN_EMAIL=nes_admin@nesmail.com
-            - NES_ADMIN_PASSWORD=nes_admin_password            
-
+            - NES_ADMIN_PASSWORD=nes_admin_password
         ports:
             - "8000:8000"
         depends_on:
-            - db
+            - db_nes
             - limesurvey
