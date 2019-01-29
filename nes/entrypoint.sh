@@ -5,13 +5,14 @@ set -ex
 NES_DB_TYPE=${NES_DB_TYPE:-'pgsql'}
 NES_DB_HOST=${NES_DB_HOST:-'db'}
 NES_DB=${NES_DB:-'nes_db'}
+NES_DB_USER=${NES_DB_USER:-'nes_user'}
 NES_DB_PORT=${NES_DB_PORT:-'5432'}
 NES_DB_PASSWORD=${NES_DB_PASSWORD:-'nes_password'}
 
 # External LimeSurvey settings
 LIMESURVEY_HOST=${LIMESURVEY_HOST:-'limesurvey'}
 LIMESURVEY_PORT=${LIMESURVEY_PORT:-'8080'}
-LIMESURVEY_ADMIN_NAME=${LIMESURVEY_ADMIN_NAME:-'limesurvey_admin'}
+LIMESURVEY_ADMIN_USER=${LIMESURVEY_ADMIN_USER:-'limesurvey_admin'}
 LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-'limesurvey_admin_password'}
 
 # NES specific settings
@@ -45,12 +46,12 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 User.objects.create_superuser('$NES_ADMIN_USER', '$NES_ADMIN_EMAIL', '$NES_ADMIN_PASSWORD')
 EOF
-	
+
 	cat << EOF > /nes/patientregistrationsystem/qdc/qdc/wsgi.py
 import os
 import sys
 import site
-paths = ['/usr/local', '/nes', '/nes/patientregistrationsystem', '/nes/patientregistrationsystem/qdc',]
+paths = ['/nes/patientregistrationsystem/qdc', '/nes/patientregistrationsystem', '/nes', '/usr/local/bin', '/user/bin', '/bin',]
 for path in paths:
     if path not in sys.path:
         sys.path.append(path)
@@ -90,7 +91,7 @@ DATABASES = {
 LIMESURVEY = {
     'URL_API': 'http://$LIMESURVEY_HOST:$LIMESURVEY_PORT',
     'URL_WEB': 'http://$LIMESURVEY_HOST:$LIMESURVEY_PORT',
-    'USER': '$LIMESURVEY_ADMIN_NAME',
+    'USER': '$LIMESURVEY_ADMIN_USER',
     'PASSWORD': '$LIMESURVEY_ADMIN_PASSWORD'
 }
 

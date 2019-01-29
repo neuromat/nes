@@ -11,7 +11,6 @@ RUN apk update && \
 	libjpeg-turbo-dev \
 	python3-dev
 
-
 RUN ln -s /usr/include/locale.h /usr/include/xlocale.h && \
 	echo 'http://linorg.usp.br/AlpineLinux/edge/testing' >> /etc/apk/repositories && \
 	apk update && \
@@ -20,11 +19,9 @@ RUN ln -s /usr/include/locale.h /usr/include/xlocale.h && \
 
 RUN git clone https://github.com/neuromat/nes.git
 
-WORKDIR /nes/patientregistrationsystem/qdc 
+WORKDIR /nes/patientregistrationsystem/qdc
 
 RUN pip3 install -r requirements.txt
-
-########################################################################################################################################################################################################
 
 COPY ./entrypoint.sh /
 

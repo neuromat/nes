@@ -28,7 +28,7 @@ SOFTWARE.
 --->
 # Postgres Configuration
 
-This docker image was kept as close of the original as possible, so all of its configuration is either based strictly on environment variables or are written on the compose file modifying the default entrypoint script. 
+This docker image was kept as close of the original as possible, so all of its configuration is either based strictly on environment variables or are written on the compose file modifying the default entrypoint script.
 
 ## Environment Variables
 
@@ -95,7 +95,7 @@ The entrypoint will set the required application settings and run the initial sc
 | NES_DB_PASSWORD 				| Database user's password 								|
 | LIMESURVEY_HOST 				| LimeSurvey server hostname 							|
 | LIMESURVEY_PORT 				| LimeSurvey server port 								|
-| LIMESURVEY_ADMIN_NAME 		| LimeSurvey Admin User 								|
+| LIMESURVEY_ADMIN_USER 		| LimeSurvey Admin User 								|
 | LIMESURVEY_ADMIN_PASSWORD 	| LimeSurvey Admin Password 							|
 | NES_SECRET_KEY 				| NES Secret Key for Django deployment				 	|
 | NES_IP 						| NES IP address to be user by Django 					|

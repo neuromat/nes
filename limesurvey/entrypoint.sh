@@ -1,17 +1,15 @@
 #!/bin/sh
 
+# Based on the work of:
 # Copyright (c) 2018 Markus Opolka
-
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -143,7 +141,6 @@ EOCONF
 
 fi
 
-
 # Check if already provisioned
 if [ -f application/config/config.php ]; then
     echo 'Info: config.php already provisioned'
@@ -163,7 +160,6 @@ else
     	exit 1
     fi
 
-
     echo 'Info: Using TCP connection'
     sed -i "s#\('connectionString' => \).*,\$#\\1'${LIMESURVEY_DB_TYPE}:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};',#g" application/config/config.php
 
@@ -174,7 +170,6 @@ else
 
     # Set URL config
     sed -i "s#\('urlFormat' => \).*,\$#\\1'${LIMESURVEY_URL_FORMAT}',#g" application/config/config.php
-
     sed -i "s#\($config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
 
         # Check if LIMESURVEY_DB_PASSWORD is set
@@ -194,28 +189,5 @@ else
     php7 application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
 
 fi
-
-
-# # Check if LimeSurvey database is provisioned
-# echo 'Info: Check if database already provisioned. Nevermind the Stack trace.'
-# if php7 application/commands/console.php updatedb ; then
-#     echo 'Info: Database already provisioned'
-# else
-    #     # Check if LIMESURVEY_DB_PASSWORD is set
-    # if [ -z "$LIMESURVEY_DB_PASSWORD" ]; then
-    #     echo >&2 'Error: Missing LIMESURVEY_DB_PASSWORD'
-    #     exit 1
-    # fi
-
-    # # Check if LIMESURVEY_DB_PASSWORD is set
-    # if [ -z "$LIMESURVEY_ADMIN_PASSWORD" ]; then
-    #     echo >&2 'Error: Missing LIMESURVEY_ADMIN_PASSWORD'
-    #     exit 1
-    # fi
-
-    # echo ''
-    # echo 'Running console.php install'
-    # php7 application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
-# fi
 
 exec "$@"
