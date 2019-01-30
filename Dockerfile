@@ -30,8 +30,6 @@ ENV PGDATA=${PGDATA:-"/var/lib/postgresql/data"} \
 		NES_DIR=${NES_DIR:-"/nes"} \
 		NES_PROJECT_PATH=${NES_PROJECT_PATH:-"/nes/patientregistrationsystem/qdc"} \
 		NES_SETUP_PATH=${NES_SETUP_PATH:-"/nes/patientregistrationsystem/qdc/qdc"} \
-		NES_IP=${NES_IP:-0.0.0.0} \
-		NES_PORT=${NES_PORT:-8000} \
 ## SETTINGS_LOCAL OPTIONS
 ### DB
 		NES_DB_TYPE=${NES_DB_TYPE:-"pgsql"} \
@@ -44,7 +42,9 @@ ENV PGDATA=${PGDATA:-"/var/lib/postgresql/data"} \
 		NES_SECRET_KEY=${NES_SECRET_KEY:-"your_secret_key"} \
 		NES_ADMIN_USER=${NES_ADMIN_USER:-"nes_admin"} \
 		NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-"nes_admin@nesmail.false"} \
-		NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-"nes_admin_password"}
+		NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-"nes_admin_password"} \
+		NES_IP=${NES_IP:-0.0.0.0} \
+		NES_PORT=${NES_PORT:-8000}
 
 RUN apk update && \
 		apk add --no-cache \

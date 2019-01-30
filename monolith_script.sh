@@ -31,8 +31,7 @@ LIMESURVEY_DIR=${LIMESURVEY_DIR:-'/var/www/limesurvey'}
 NES_DIR=${NES_DIR:-'/nes'}
 NES_PROJECT_PATH="$NES_DIR"/patientregistrationsystem/qdc
 NES_SETUP_PATH="$NES_PROJECT_PATH"/qdc
-NES_IP=${NES_IP:-0.0.0.0}
-NES_PORT=${NES_PORT:-8000}
+
 
 NES_DB_TYPE=${NES_DB_TYPE:-'pgsql'}
 NES_DB_HOST=${NES_DB_HOST:-'localhost'}
@@ -46,6 +45,8 @@ NES_SECRET_KEY=${NES_SECRET_KEY:-'your_secret_key'}
 NES_ADMIN_USER=${NES_ADMIN_USER:-'nes_admin'}
 NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-'nes_admin@nesmail.false'}
 NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-'nes_admin_password'}
+NES_IP=${NES_IP:-0.0.0.0}
+NES_PORT=${NES_PORT:-8000}
 
 # SETUP POSTGRESQL##################################################
 apk add --no-cache postgresql
