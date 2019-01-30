@@ -418,6 +418,8 @@ class ImportExperiment:
             old_patient_id = data[i]['pk']
             data[i]['pk'] = next_patient_id
             data[i]['fields']['code'] = 'P' + str(new_patient_code)
+            # TODO: decide if we clear the CPF or we check and decide if we update the patient
+            data[i]['fields']['cpf'] = None
 
             for (index_row, dict_) in enumerate(data):
                 if 'patient' in data[index_row]['fields']\
@@ -626,17 +628,22 @@ class ImportExperiment:
         else:
             self.new_objects['research_id'] = None
         if 'group' in self.last_objects_before_import:
-            last_group_before_import = self.last_objects_before_import['group'].id
-            self.new_objects['groups_count'] = Group.objects.filter(id__gt=last_group_before_import).count()
+            if self.last_objects_before_import['group']:
+                last_group_before_import = self.last_objects_before_import['group'].id
+                self.new_objects['groups_count'] = Group.objects.filter(id__gt=last_group_before_import).count()
+            else:
+                self.new_objects['groups_count'] = Group.objects.count()
         else:
             self.new_objects['groups_count'] = None
         if 'component' in self.last_objects_before_import:
-            last_component_before_import = self.last_objects_before_import['component'].id
-            component_queryset = Component.objects.filter(id__gt=last_component_before_import)
+            if self.last_objects_before_import['component']:
+                last_component_before_import = self.last_objects_before_import['component'].id
+                component_queryset = Component.objects.filter(id__gt=last_component_before_import)
+            else:
+                component_queryset = Component.objects.all()
             components = component_queryset.values('component_type').annotate(count=Count('component_type'))
             self._include_human_readables(components)
             self.new_objects['components'] = list(components)
-
         else:
             self.new_objects['components'] = None
 
