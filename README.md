@@ -7,13 +7,13 @@ The environment variables can be organized in the following groups:
 
 ## PostgreSQL
 | Parameter | Description |
-|-------------------------|
+| --------- | ------------ |
 | PGDATA | Directory where PostgreSQL stores its files |
 
 ## LIMESURVEY
 ### SYSTEM OPTIONS
 | Parameter | Description |
-|-------------------------|
+| --------- | ------------ |
 | LIMESURVEY_HOST | Host where LimeSurvey is installed. (default is localhost) |
 | LIMESURVEY_PORT | LimeSurvey port to be used by Apache. |
 | LIMESURVEY_URL_DOWNLOAD | URL used to download a specific LimeSurvey version. |
@@ -22,7 +22,7 @@ The environment variables can be organized in the following groups:
 
 ### CONFIG.PHP OPTIONS
 | Parameter | Description |
-|-------------------------|
+| --------- | ------------ |
 | LIMESURVEY_DB_HOST | Database server hostname. (default is localhost) |
 | LIMESURVEY_DB_PORT | Database server port. |
 | LIMESURVEY_DB | Database name. |
@@ -34,7 +34,7 @@ The environment variables can be organized in the following groups:
 
 ### SUPER USER CREATION OPTION
 | Parameter | Description |
-|-------------------------|
+| --------- | ------------ |
 | LIMESURVEY_ADMIN_USER | LimeSurvey Admin User. |
 | LIMESURVEY_ADMIN_NAME | LimeSurvey Admin Username. |
 | LIMESURVEY_ADMIN_EMAIL | LimeSurvey Admin Email. |
@@ -44,7 +44,7 @@ The environment variables can be organized in the following groups:
 
 ### SYSTEM OPTIONS
 | Parameter | Description |
-|-------------------------|
+| --------- | ------------ |
 | NES_DIR | Directory where NES will be installed. |
 | NES_PROJECT_PATH | Subdirectory where the NES project is located. |
 | NES_SETUP_PATH | Subdirectory where the NES settings are located. |
@@ -53,7 +53,7 @@ The environment variables can be organized in the following groups:
 
 #### DJANGO
 | Parameter | Description |
-|-------------------------|
+| --------- | ------------ |
 | NES_SECRET_KEY | NES Secret Key for Django deployment. |
 | NES_ADMIN_USER | NES Admin User. |
 | NES_ADMIN_EMAIL | NES Admin Email. |
@@ -63,7 +63,7 @@ The environment variables can be organized in the following groups:
 
 #### DB
 | Parameter | Description |
-|-------------------------|
+| --------- | ------------ |
 | NES_DB_TYPE | Database type to use. For now, only works with pgsql. |
 | NES_DB_HOST | Database server hostname. (default is localhost) |
 | NES_DB | Database name. |
@@ -75,7 +75,7 @@ The environment variables can be organized in the following groups:
 *these are the same variables set for LimeSurvey*
 
 | Parameter | Description |
-|-------------------------|
+| --------- | ------------ |
 | LIMESURVEY_HOST | Host where LimeSurvey is installed. (default is localhost) |
 | LIMESURVEY_PORT | LimeSurvey port to be used by Apache. |
 | LIMESURVEY_ADMIN_USER | LimeSurvey Admin User. |
