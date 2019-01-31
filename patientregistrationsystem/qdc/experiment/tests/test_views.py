@@ -22,6 +22,7 @@ from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 
 from patient.tests import UtilTests
+from survey.models import Survey
 from survey.tests.tests_helper import create_survey
 
 USER_USERNAME = 'myadmin'
@@ -576,25 +577,30 @@ class ImportExperimentTest(TestCase):
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
         # Create another component, 'instruction', for this test, but every type, apart from specific parameters,
         # all depend on Component, and only this relation needs to be updated
-        component = ObjectsFactory.create_component(experiment, 'instruction')
-        ObjectsFactory.create_component_configuration(rootcomponent, component)
+        instruction_component = ObjectsFactory.create_component(experiment, 'instruction')
+        ObjectsFactory.create_component_configuration(rootcomponent, instruction_component)
 
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
         # dictionary to test against new objects created bellow
-        old_objects_count = Component.objects.count()
+        components_before_count = Component.objects.count()
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
-        new_components = Component.objects.exclude(id__in=[rootcomponent.id, component.id])
+        new_components = Component.objects.exclude(id__in=[rootcomponent.id, instruction_component.id])
         self.assertEqual(
             Component.objects.count(),
-            old_objects_count + len(new_components))
+            components_before_count + len(new_components))
         for item in new_components:
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+        new_rootcomponent = new_components.get(component_type='block')
+        new_component = new_components.get(component_type='instruction')
+        new_component_configuration = ComponentConfiguration.objects.last()
+        self.assertEqual(new_component_configuration.component.id, new_component.id)
+        self.assertEqual(new_component_configuration.parent.id, new_rootcomponent.id)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
@@ -612,11 +618,16 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        questionnaires_before = Questionnaire.objects.count()
+        survey_before_count = Survey.objects.count()
+        questionnaire_component_before = Component.objects.last()
+        questionnaire_before_count = Questionnaire.objects.count()
 
         with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertEqual(Questionnaire.objects.count(), questionnaires_before + 1)
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+        self.assertEqual(Survey.objects.count(), survey_before_count + 1)
+        self.assertEqual(Questionnaire.objects.count(), questionnaire_before_count + 1)
+        self.assertEqual(Questionnaire.objects.last().survey.id, Survey.objects.last().id)
 
     def test_POST_experiment_import_file_creates_root_plus_two_or_more_components_and_returns_successful_message(self):
         # Create research project
