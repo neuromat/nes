@@ -5,6 +5,7 @@ import json
 from json import JSONDecodeError
 from os import path
 
+import networkx as nx
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count
@@ -124,9 +125,7 @@ class ExportExperiment:
 
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
-
         call_command('merge_fixtures', *fixtures)
-
         sys.stdout = sysout
 
         self._remove_auth_user_model_from_json(self.FILE_NAME)
@@ -347,39 +346,172 @@ class ImportExperiment:
                     new_limesurvey_id = min_limesurvey_id
                 data[i]['fields']['lime_survey_id'] = new_limesurvey_id
 
-    def _update_pks(self, data, request, research_project_id=None):
-        self._update_pk_research_project(data, request, research_project_id)
-        self._update_pk_keywords(data)
-        self._update_pk_experiment(data)
-        self._update_pk_dependent_model(data, 'experiment.eegsetting')
-        self._update_pk_dependent_model(data, 'experiment.emgsetting')
-        self._update_pk_dependent_model(data, 'experiment.tmssetting')
-        self._update_pk_dependent_model(data, 'experiment.informationtype')
-        self._update_pk_dependent_model(data, 'experiment.contexttree')
-        self._update_pk_dependent_model(data, 'experiment.stimulustype')
-        self._update_pk_dependent_model(data, 'survey.survey')
-        self._update_pk_component(data)
-        self._update_pk_component_configuration(data)
-        self._update_pk_group(data)
+    @staticmethod
+    def _get_first_available_id():
+        last_id = 1
+        for app in apps.get_app_configs():
+            if app.verbose_name in ['Experiment', 'Patient', 'Quiz', 'Survey', 'Team']:
+                for model in app.get_models():
+                    if 'Goalkeeper' not in model.__name__:  # TODO: ver modelo com referência a outro bd: dá pau
+                        last_model = model.objects.last()
+                        if last_model:
+                            last_model_id = model.objects.last().id
+                            last_id = last_model_id if last_id < last_model_id else last_id
+        return last_id + 1
 
-    def import_all(self, request, research_project_id=None):
-        # TODO: maybe this try in constructor
-        try:
-            with open(self.file_path) as f:
-                data = json.load(f)
-                self._set_last_objects_before_import(data, research_project_id)  # to import log page
-        except (ValueError, JSONDecodeError):
-            return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
+    def _update_pks3(self, DG, data, successor, next_id):
+        data[successor]['pk'] = next_id
+        for predecessor in DG.predecessors(successor):
+            if 'relation' in DG[predecessor][successor]:
+                relation = DG[predecessor][successor]['relation']
+                data[predecessor]['fields'][relation] = data[successor]['pk']
+            else:
+                data[predecessor]['pk'] = data[successor]['pk']
+            next_id += 1
+            self._update_pks3(DG, data, predecessor, next_id)
 
-        self._update_pks(data, request, research_project_id)
-        with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
-            file.write(json.dumps(data))
+        # If is a leaf and sucessor node is one to one relation pick pk of successor
+        # because in recursion this situation causes leaf to be mistakenly updated
+        # TODO: improve recursion have to do this way
+        if not next(DG.predecessors(successor), None) \
+            and len(list(DG.successors(successor))) == 1 \
+            and 'relation' not in DG[successor][next(DG.successors(successor))]:
+            data[successor]['pk'] = data[next(DG.successors(successor))]['pk']
 
-        call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
+    def _build_graph(self, data):
+        foreign_relations = {
+            'experiment.researchproject': [['', '']],
+            'experiment.experiment': [['experiment.researchproject', 'research_project']],
+            'experiment.group': [
+                ['experiment.experiment', 'experiment'], ['experiment.component', 'experimental_protocol']
+            ],
+            'experiment.component': [['experiment.experiment', 'experiment']]
+        }
+        multi_table_inheritance = {
+            'experiment.block': 'experiment.component',
+            'experiment.instruction': 'experiment.component',
+            'experiment.pause': 'experiment.component',
+            'experiment.questionnaire': 'experiment.component',
+            'experiment.stimulus': 'experiment.component',
+            'experiment.task': 'experiment.component',
+            'experiment.task_experiment': 'experiment.component',
+            'experiment.eeg': 'experiment.component',
+            'experiment.digital_game_phase': 'experiment.component',
+            'experiment.generic_data_collection': 'experiment.component',
+            # 'experiment.component': [
+            #     'experiment.block', 'experiment.instruction', 'experiment.pause',
+            #     'experiment.questionnaire', 'experiment.stimulus', 'experiment.task',
+            #     'experiment.task_experiment', 'experiment.eeg', 'experiment.emg',
+            #     'experiment.tms', 'experiment.digital_game_phase', 'experiment.generic_data_collection'
+            # ]
+        }
+        DG = nx.DiGraph()
+        for index_from, dict_ in enumerate(data):
+            if dict_['model'] in foreign_relations:
+                node_from = dict_['model']
+                nodes_to = foreign_relations[node_from]
+                for node_to in nodes_to:
+                    index_to = next(
+                        (index_foreign for index_foreign, dict_foreign in enumerate(data)
+                         if dict_foreign['model'] == node_to[0] and dict_foreign['pk'] == dict_['fields'][node_to[1]]),
+                        None
+                    )
+                    if index_to is not None:
+                        # DG.add_edge(index_from, index_to)
+                        DG.add_edge(index_from, index_to)
+                        DG[index_from][index_to]['relation'] = node_to[1]
+            if dict_['model'] in multi_table_inheritance:
+                node_from = dict_['model']
+                node_to = multi_table_inheritance[node_from]
+                index_to = next(
+                    (index_inheritade for index_inheritade, dict_inheritade in enumerate(data)
+                     if dict_inheritade['model'] == node_to and dict_inheritade['pk'] == dict_['pk']),
+                    None
+                )
+                if index_to is not None:
+                    # DG.add_edge(index_from, index_to)
+                    DG.add_edge(index_from, index_to)
 
-        self._collect_new_objects()
+        # add node atributes
+        for node in DG.nodes():
+            DG.node[node]['atributes'] = data[node]
 
-        return 0, ''
+        # iterate in all nodes
+        # for n, nbrs in DG.adjacency():
+        #     for nbr in nbrs.items():
+        #         print(n, nbr)
+
+        root_node = \
+            next(index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.researchproject')
+        next_id = self._get_first_available_id()
+        self._update_pks3(DG, data, root_node, next_id)
+
+    # def _update_pks2(self, data, request, research_project_id):
+    #     # Model relations
+    #     relations = {
+    #         'experiment.researchproject': [['experiment.experiment', 'research_project']],
+    #         'experiment.experiment': [['experiment.group', 'experiment'], ['experiment.component', 'experiment']],
+    #         'experiment.component': [
+    #             ['experiment.group', 'experimental_protocol'], ['experiment.componentconfiguration', 'component']
+    #         ]
+    #     }
+    #     multi_table_inheritance = {
+    #         'experiment.component': [
+    #             'experiment.block', 'experiment.instruction', 'experiment.pause',
+    #             'experiment.questionnaire', 'experiment.stimulus', 'experiment.task',
+    #             'experiment.task_experiment', 'experiment.eeg', 'experiment.emg',
+    #             'experiment.tms', 'experiment.digital_game_phase', 'experiment.generic_data_collection'
+    #         ]
+    #     }
+    #
+    #     new_id = self._get_first_available_id()
+    #     component = dict()
+    #     for index, parent_dict in enumerate(data):
+    #         if parent_dict['model'] in relations:  # this model has relations
+    #             dependents = []
+    #             for dependent in relations[parent_dict['model']]:
+    #                 if parent_dict['model'] == 'experiment.component' and dependent[0] == 'experiment.group':
+    #                     print(1)
+    #                     pass
+    #                 for (dependent_index, dependent_dict) in enumerate(data):
+    #                     if dependent_dict['model'] == dependent[0] \
+    #                             and dependent[1] in dependent_dict['fields'] \
+    #                             and dependent_dict['fields'][dependent[1]] == data[index]['pk']:
+    #                         dependents.append([dependent_index, dependent[1]])
+    #             if data[index]['model'] == 'experiment.component':  # keep old pk to update one to one components
+    #                 component[data[index]['pk']] = new_id
+    #             data[index]['pk'] = new_id
+    #             for dependent in dependents:
+    #                 data[dependent[0]]['fields'][dependent[1]] = data[index]['pk']
+    #             new_id += 1
+    #
+    #     for index, parent_dict in enumerate(data):
+    #         if parent_dict['model'] in multi_table_inheritance:
+    #             for dependent in multi_table_inheritance[parent_dict['model']]:
+    #                 for (dependent_index, dependent_dict) in enumerate(data):
+    #                     if dependent_dict['model'] == dependent:  # and parent_dict['pk'] == dependent_dict['pk']:
+    #                         if dependent_dict['pk'] in component:
+    #                             data[dependent_index]['pk'] = component[dependent_dict['pk']]
+    #                         # elif parent_dict['pk'] == dependent_dict['pk']:
+    #                         #     data[index]['pk'] = data[dependent_index]['pk'] = new_id
+    #                         #     new_id += 1
+    #
+    #     pass
+
+    # def _update_pks(self, data, request, research_project_id=None):
+    #     self._update_pk_research_project(data, request, research_project_id)
+    #     self._update_pk_keywords(data)
+    #     self._update_pk_experiment(data)
+    #     self._update_pk_dependent_model(data, 'experiment.eegsetting')
+    #     self._update_pk_dependent_model(data, 'experiment.emgsetting')
+    #     self._update_pk_dependent_model(data, 'experiment.tmssetting')
+    #     self._update_pk_dependent_model(data, 'experiment.informationtype')
+    #     self._update_pk_dependent_model(data, 'experiment.contexttree')
+    #     self._update_pk_dependent_model(data, 'experiment.stimulustype')
+    #     self._update_pk_dependent_model(data, 'survey.survey')
+    #     self._update_pk_component(data)
+    #     self._update_pk_component_configuration(data)
+    #     self._update_pk_group(data)
 
     def _set_last_objects_before_import(self, data, research_project_id):
         """Identify last objects to deduct after import, so
@@ -400,6 +532,12 @@ class ImportExperiment:
             self.last_objects_before_import['group'] = Group.objects.last()
         if has_components:
             self.last_objects_before_import['component'] = Component.objects.last()
+
+    @staticmethod
+    def _include_human_readables(components):
+        human_readables = dict(Component.COMPONENT_TYPES)
+        for i, component in enumerate(components):
+            components[i]['human_readable'] = str(human_readables[component['component_type']])
 
     def _collect_new_objects(self):
         last_experiment = Experiment.objects.last()
@@ -429,8 +567,23 @@ class ImportExperiment:
     def get_new_objects(self):
         return self.new_objects
 
-    @staticmethod
-    def _include_human_readables(components):
-        human_readables = dict(Component.COMPONENT_TYPES)
-        for i, component in enumerate(components):
-            components[i]['human_readable'] = str(human_readables[component['component_type']])
+    def import_all(self, request, research_project_id=None):
+        # TODO: maybe this try in constructor
+        try:
+            with open(self.file_path) as f:
+                data = json.load(f)
+                self._set_last_objects_before_import(data, research_project_id)  # to import log page
+        except (ValueError, JSONDecodeError):
+            return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
+
+        self._build_graph(data)
+        # self._update_pks2(data, request, research_project_id)
+        # self._update_pks(data, request, research_project_id)
+        with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
+            file.write(json.dumps(data))
+
+        call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
+
+        self._collect_new_objects()
+
+        return 0, ''

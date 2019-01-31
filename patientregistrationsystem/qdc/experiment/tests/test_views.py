@@ -452,7 +452,6 @@ class ImportExperimentTest(TestCase):
         self.assertContains(response, '1 passo de <em>Fase de jogo do goleiro</em> importado')
         self.assertContains(response, '1 passo de <em>Coleta genérica de dados</em> importado')
 
-
     def test_GET_experiment_import_file_uses_correct_template(self):
         response = self.client.get(reverse('experiment_import'))
         self.assertEqual(response.status_code, 200)
