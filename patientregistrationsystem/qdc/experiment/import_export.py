@@ -346,6 +346,55 @@ class ImportExperiment:
                     new_limesurvey_id = min_limesurvey_id
                 data[i]['fields']['lime_survey_id'] = new_limesurvey_id
 
+    def _solve_limey_survey_reference(self, data, survey_index):
+        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+        if min_limesurvey_id >= 0:
+            new_limesurvey_id = -99
+        else:
+            min_limesurvey_id -= 1
+            new_limesurvey_id = min_limesurvey_id
+        data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
+
+    def _update_remaining_pks(self, data, next_id):
+        remaining_object_relations = {
+            'survey.survey': ['experiment.questionnaire', 'survey']
+        }
+        survey_indexes = [index for index, dict_ in enumerate(data) if dict_['model'] == 'survey.survey']
+        # for (index_row, dict_) in enumerate(data):
+        #     if dict_['model'] == 'survey.survey':
+        for survey_index in survey_indexes:
+            questionnaire_index = next(
+                index for index, dict_ in enumerate(data)
+                if dict_['model'] == 'experiment.questionnaire'
+                and dict_['fields']['survey'] == data[survey_index]['pk']
+            )
+            data[survey_index]['pk'] = next_id
+            data[questionnaire_index]['fields']['survey'] = next_id
+            next_id += 1
+            # Create dummy limesurvey reference
+            self._solve_limey_survey_reference(data, survey_index)
+
+
+    def _update_pks3(self, DG, data, successor, next_id):
+        if data[successor]['model'] not in ['experiment.block', 'experiment.instruction', 'experiment.questionnaire']:
+            data[successor]['pk'] = next_id
+        for predecessor in DG.predecessors(successor):
+            if 'relation' in DG[predecessor][successor]:
+                relation = DG[predecessor][successor]['relation']
+                data[predecessor]['fields'][relation] = data[successor]['pk']
+            else:
+                data[predecessor]['pk'] = data[successor]['pk']
+            next_id += 1
+            self._update_pks3(DG, data, predecessor, next_id)
+
+        # If is a leaf and sucessor node is one to one relation pick pk of successor
+        # because in recursion this situation causes leaf to be mistakenly updated
+        # TODO: improve recursion have to do this way
+        # if not next(DG.predecessors(successor), None) \
+        #     and len(list(DG.successors(successor))) == 1 \
+        #     and 'relation' not in DG[successor][next(DG.successors(successor))]:
+        #     data[successor]['pk'] = data[next(DG.successors(successor))]['pk']
+
     @staticmethod
     def _get_first_available_id():
         last_id = 1
@@ -359,25 +408,6 @@ class ImportExperiment:
                             last_id = last_model_id if last_id < last_model_id else last_id
         return last_id + 1
 
-    def _update_pks3(self, DG, data, successor, next_id):
-        data[successor]['pk'] = next_id
-        for predecessor in DG.predecessors(successor):
-            if 'relation' in DG[predecessor][successor]:
-                relation = DG[predecessor][successor]['relation']
-                data[predecessor]['fields'][relation] = data[successor]['pk']
-            else:
-                data[predecessor]['pk'] = data[successor]['pk']
-            next_id += 1
-            self._update_pks3(DG, data, predecessor, next_id)
-
-        # If is a leaf and sucessor node is one to one relation pick pk of successor
-        # because in recursion this situation causes leaf to be mistakenly updated
-        # TODO: improve recursion have to do this way
-        if not next(DG.predecessors(successor), None) \
-            and len(list(DG.successors(successor))) == 1 \
-            and 'relation' not in DG[successor][next(DG.successors(successor))]:
-            data[successor]['pk'] = data[next(DG.successors(successor))]['pk']
-
     def _build_graph(self, data):
         foreign_relations = {
             'experiment.researchproject': [['', '']],
@@ -385,7 +415,11 @@ class ImportExperiment:
             'experiment.group': [
                 ['experiment.experiment', 'experiment'], ['experiment.component', 'experimental_protocol']
             ],
-            'experiment.component': [['experiment.experiment', 'experiment']]
+            'experiment.component': [['experiment.experiment', 'experiment']],
+            'experiment.componentconfiguration': [
+                ['experiment.component', 'component'], ['experiment.component', 'parent']
+            ],
+            'experiment.questionnaire': [['survey.survey', 'survey']]
         }
         multi_table_inheritance = {
             'experiment.block': 'experiment.component',
@@ -398,12 +432,6 @@ class ImportExperiment:
             'experiment.eeg': 'experiment.component',
             'experiment.digital_game_phase': 'experiment.component',
             'experiment.generic_data_collection': 'experiment.component',
-            # 'experiment.component': [
-            #     'experiment.block', 'experiment.instruction', 'experiment.pause',
-            #     'experiment.questionnaire', 'experiment.stimulus', 'experiment.task',
-            #     'experiment.task_experiment', 'experiment.eeg', 'experiment.emg',
-            #     'experiment.tms', 'experiment.digital_game_phase', 'experiment.generic_data_collection'
-            # ]
         }
         DG = nx.DiGraph()
         for index_from, dict_ in enumerate(data):
@@ -436,82 +464,11 @@ class ImportExperiment:
         for node in DG.nodes():
             DG.node[node]['atributes'] = data[node]
 
-        # iterate in all nodes
-        # for n, nbrs in DG.adjacency():
-        #     for nbr in nbrs.items():
-        #         print(n, nbr)
-
         root_node = \
             next(index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.researchproject')
         next_id = self._get_first_available_id()
         self._update_pks3(DG, data, root_node, next_id)
-
-    # def _update_pks2(self, data, request, research_project_id):
-    #     # Model relations
-    #     relations = {
-    #         'experiment.researchproject': [['experiment.experiment', 'research_project']],
-    #         'experiment.experiment': [['experiment.group', 'experiment'], ['experiment.component', 'experiment']],
-    #         'experiment.component': [
-    #             ['experiment.group', 'experimental_protocol'], ['experiment.componentconfiguration', 'component']
-    #         ]
-    #     }
-    #     multi_table_inheritance = {
-    #         'experiment.component': [
-    #             'experiment.block', 'experiment.instruction', 'experiment.pause',
-    #             'experiment.questionnaire', 'experiment.stimulus', 'experiment.task',
-    #             'experiment.task_experiment', 'experiment.eeg', 'experiment.emg',
-    #             'experiment.tms', 'experiment.digital_game_phase', 'experiment.generic_data_collection'
-    #         ]
-    #     }
-    #
-    #     new_id = self._get_first_available_id()
-    #     component = dict()
-    #     for index, parent_dict in enumerate(data):
-    #         if parent_dict['model'] in relations:  # this model has relations
-    #             dependents = []
-    #             for dependent in relations[parent_dict['model']]:
-    #                 if parent_dict['model'] == 'experiment.component' and dependent[0] == 'experiment.group':
-    #                     print(1)
-    #                     pass
-    #                 for (dependent_index, dependent_dict) in enumerate(data):
-    #                     if dependent_dict['model'] == dependent[0] \
-    #                             and dependent[1] in dependent_dict['fields'] \
-    #                             and dependent_dict['fields'][dependent[1]] == data[index]['pk']:
-    #                         dependents.append([dependent_index, dependent[1]])
-    #             if data[index]['model'] == 'experiment.component':  # keep old pk to update one to one components
-    #                 component[data[index]['pk']] = new_id
-    #             data[index]['pk'] = new_id
-    #             for dependent in dependents:
-    #                 data[dependent[0]]['fields'][dependent[1]] = data[index]['pk']
-    #             new_id += 1
-    #
-    #     for index, parent_dict in enumerate(data):
-    #         if parent_dict['model'] in multi_table_inheritance:
-    #             for dependent in multi_table_inheritance[parent_dict['model']]:
-    #                 for (dependent_index, dependent_dict) in enumerate(data):
-    #                     if dependent_dict['model'] == dependent:  # and parent_dict['pk'] == dependent_dict['pk']:
-    #                         if dependent_dict['pk'] in component:
-    #                             data[dependent_index]['pk'] = component[dependent_dict['pk']]
-    #                         # elif parent_dict['pk'] == dependent_dict['pk']:
-    #                         #     data[index]['pk'] = data[dependent_index]['pk'] = new_id
-    #                         #     new_id += 1
-    #
-    #     pass
-
-    # def _update_pks(self, data, request, research_project_id=None):
-    #     self._update_pk_research_project(data, request, research_project_id)
-    #     self._update_pk_keywords(data)
-    #     self._update_pk_experiment(data)
-    #     self._update_pk_dependent_model(data, 'experiment.eegsetting')
-    #     self._update_pk_dependent_model(data, 'experiment.emgsetting')
-    #     self._update_pk_dependent_model(data, 'experiment.tmssetting')
-    #     self._update_pk_dependent_model(data, 'experiment.informationtype')
-    #     self._update_pk_dependent_model(data, 'experiment.contexttree')
-    #     self._update_pk_dependent_model(data, 'experiment.stimulustype')
-    #     self._update_pk_dependent_model(data, 'survey.survey')
-    #     self._update_pk_component(data)
-    #     self._update_pk_component_configuration(data)
-    #     self._update_pk_group(data)
+        self._update_remaining_pks(data, next_id)
 
     def _set_last_objects_before_import(self, data, research_project_id):
         """Identify last objects to deduct after import, so
@@ -587,3 +544,5 @@ class ImportExperiment:
         self._collect_new_objects()
 
         return 0, ''
+
+
