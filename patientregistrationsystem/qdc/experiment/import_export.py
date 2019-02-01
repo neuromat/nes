@@ -374,9 +374,12 @@ class ImportExperiment:
             # Create dummy limesurvey reference
             self._solve_limey_survey_reference(data, survey_index)
 
-
     def _update_pks3(self, DG, data, successor, next_id):
-        if data[successor]['model'] not in ['experiment.block', 'experiment.instruction', 'experiment.questionnaire']:
+        # TODO: see if it's worth to put this list in class level
+        if data[successor]['model'] not in [
+            'experiment.block', 'experiment.instruction', 'experiment.questionnaire',
+            'experiment.tms', 'experiment.eeg'
+        ]:
             data[successor]['pk'] = next_id
         for predecessor in DG.predecessors(successor):
             if 'relation' in DG[predecessor][successor]:
@@ -419,7 +422,11 @@ class ImportExperiment:
             'experiment.componentconfiguration': [
                 ['experiment.component', 'component'], ['experiment.component', 'parent']
             ],
-            'experiment.questionnaire': [['survey.survey', 'survey']]
+            'experiment.questionnaire': [['survey.survey', 'survey']],
+            'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
+            'experiment.tmssetting': [['experiment.experiment', 'experiment']],
+            'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
+            'experiment.eegsetting': [['experiment.experiment', 'experiment']]
         }
         multi_table_inheritance = {
             'experiment.block': 'experiment.component',
@@ -430,6 +437,7 @@ class ImportExperiment:
             'experiment.task': 'experiment.component',
             'experiment.task_experiment': 'experiment.component',
             'experiment.eeg': 'experiment.component',
+            'experiment.tms': 'experiment.component',
             'experiment.digital_game_phase': 'experiment.component',
             'experiment.generic_data_collection': 'experiment.component',
         }

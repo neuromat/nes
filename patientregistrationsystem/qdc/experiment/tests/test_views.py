@@ -15,7 +15,7 @@ from experiment.import_export import ExportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
-    Block, TMS, ComponentConfiguration, Questionnaire
+    Block, TMS, ComponentConfiguration, Questionnaire, TMSSetting, EEG, EEGSetting
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
@@ -571,12 +571,13 @@ class ImportExperimentTest(TestCase):
         # now new_groups has only the group without experimental protocol
         self.assertEqual(new_groups.count(), 1)
 
-    def test_POST_experiment_import_file_creates_root_plus_one_component_and_returns_successful_message(self):
+    def test_POST_experiment_import_file_creates_root_component_plus_instruction_and_returns_successful_message(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        # Create another component, 'instruction', for this test, but every type, apart from specific parameters,
-        # all depend on Component, and only this relation needs to be updated
+        # Create another component, 'instruction', for this test, but every
+        # type, apart from specific parameters, all depend on Component,
+        # and only this relation needs to be updated
         instruction_component = ObjectsFactory.create_component(experiment, 'instruction')
         ObjectsFactory.create_component_configuration(rootcomponent, instruction_component)
 
@@ -591,20 +592,21 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
         new_components = Component.objects.exclude(id__in=[rootcomponent.id, instruction_component.id])
-        self.assertEqual(
-            Component.objects.count(),
-            components_before_count + len(new_components))
+        self.assertEqual(Component.objects.count(), components_before_count + len(new_components))
         for item in new_components:
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
         new_rootcomponent = new_components.get(component_type='block')
-        new_component = new_components.get(component_type='instruction')
+        new_instruction = new_components.get(component_type='instruction')
+        # TODO: make assertion to same Instruction id, Component id
         new_component_configuration = ComponentConfiguration.objects.last()
-        self.assertEqual(new_component_configuration.component.id, new_component.id)
+        self.assertEqual(new_component_configuration.component.id, new_instruction.id)
         self.assertEqual(new_component_configuration.parent.id, new_rootcomponent.id)
+        self.assertEqual(new_instruction.experiment.id, Experiment.objects.last().id)
+
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_creates_questionnaire_component(self):
+    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         ObjectsFactory.create_research_project(owner=self.user)
@@ -619,7 +621,6 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         survey_before_count = Survey.objects.count()
-        questionnaire_component_before = Component.objects.last()
         questionnaire_before_count = Questionnaire.objects.count()
 
         with open(file_path, 'rb') as file:
@@ -628,38 +629,86 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(Survey.objects.count(), survey_before_count + 1)
         self.assertEqual(Questionnaire.objects.count(), questionnaire_before_count + 1)
         self.assertEqual(Questionnaire.objects.last().survey.id, Survey.objects.last().id)
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_creates_root_plus_two_or_more_components_and_returns_successful_message(self):
-        # Create research project
+    def test_POST_experiment_import_file_creates_root_component_plus_tms_and_returns_successful_message(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
         experiment = ObjectsFactory.create_experiment(research_project)
-        # Create root component (which is a 'block' type and it is the head of the experimental protocol)
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        # Create another component ('instruction', for example)
-        component1 = ObjectsFactory.create_component(experiment, 'instruction')
-        ObjectsFactory.create_component_configuration(rootcomponent, component1)
-        # And finally the last one Component. ('tms', for example)
-        component2_tms_setting = ObjectsFactory.create_tms_setting(experiment)
-        component2 = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': component2_tms_setting})
-        ObjectsFactory.create_component_configuration(rootcomponent, component2)
+        tms_setting = ObjectsFactory.create_tms_setting(experiment)
+        tms_component = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': tms_setting})
+        ObjectsFactory.create_component_configuration(rootcomponent, tms_component)
 
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
         # dictionary to test against new objects created bellow
-        old_objects_count = Component.objects.count()
+        components_before_count = Component.objects.count()
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
-        new_components = Component.objects.exclude(id__in=[rootcomponent.id, component1.id, component2.id])
-        self.assertEqual(
-            Component.objects.count(),
-            old_objects_count + len(new_components))
+
+        new_components = Component.objects.exclude(id__in=[rootcomponent.id, tms_component.id])
+        self.assertEqual(Component.objects.count(), components_before_count + len(new_components))
         for item in new_components:
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+        new_rootcomponent = new_components.get(component_type='block')
+        new_component = new_components.get(component_type='tms')
+        new_tms = TMS.objects.last()
+        new_experiment = Experiment.objects.last()
+        self.assertEqual(new_component.experiment.id, new_experiment.id)
+        new_component_configuration = ComponentConfiguration.objects.last()
+        self.assertEqual(new_component_configuration.component.id, new_component.id)
+        self.assertEqual(new_component_configuration.parent.id, new_rootcomponent.id)
+        self.assertEqual(new_component.id, new_tms.id)
+        self.assertEqual(2, TMSSetting.objects.count())
+        tms_setting = TMSSetting.objects.last()
+        self.assertEqual(new_tms.tms_setting.id, tms_setting.id)
+        self.assertEqual(tms_setting.experiment.id, new_experiment.id)
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_root_component_plus_eeg_and_returns_successful_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+        eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+        ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # dictionary to test against new objects created bellow
+        components_before_count = Component.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_components = Component.objects.exclude(id__in=[rootcomponent.id, eeg_component.id])
+        self.assertEqual(Component.objects.count(), components_before_count + len(new_components))
+        for item in new_components:
+            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+        new_rootcomponent = new_components.get(component_type='block')
+        new_component = new_components.get(component_type='eeg')
+        new_eeg = EEG.objects.last()
+        new_experiment = Experiment.objects.last()
+        self.assertEqual(new_component.experiment.id, new_experiment.id)
+        new_component_configuration = ComponentConfiguration.objects.last()
+        self.assertEqual(new_component_configuration.component.id, new_component.id)
+        self.assertEqual(new_component_configuration.parent.id, new_rootcomponent.id)
+        self.assertEqual(new_component.id, new_eeg.id)
+        self.assertEqual(2, EEGSetting.objects.count())
+        eeg_setting = EEGSetting.objects.last()
+        self.assertEqual(new_eeg.eeg_setting.id, eeg_setting.id)
+        self.assertEqual(eeg_setting.experiment.id, new_experiment.id)
+
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
@@ -676,30 +725,27 @@ class ImportExperimentTest(TestCase):
         ObjectsFactory.create_component_configuration(rootcomponent2, component2)
 
         # Create groups
-        group1 = ObjectsFactory.create_group(experiment=experiment)
-        group2 = ObjectsFactory.create_group(experiment=experiment)
+        group1 = ObjectsFactory.create_group(experiment)
+        group2 = ObjectsFactory.create_group(experiment)
 
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
-        # dictionary to test against new objects created bellow
-        old_objects_count = Component.objects.count()
+        # dictionary to test against new components created bellow
+        components_before_count = Component.objects.count()
         # dictionary to test against new groups created bellow
-        old_groups_count = ExperimentGroup.objects.count()
+        groups_before_count = ExperimentGroup.objects.count()
 
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
-        new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
-                                                           component1.id, component2.id])
+        new_components = Component.objects.exclude(
+            id__in=[rootcomponent1.id, rootcomponent2.id, component1.id, component2.id]
+        )
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
-        self.assertEqual(
-            Component.objects.count(),
-            old_objects_count + len(new_components))
-        self.assertEqual(
-            ExperimentGroup.objects.count(),
-            old_groups_count + len(new_groups))
+        self.assertEqual(Component.objects.count(), components_before_count + len(new_components))
+        self.assertEqual(ExperimentGroup.objects.count(), groups_before_count + len(new_groups))
 
         for item in new_components:
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
