@@ -9,11 +9,11 @@ from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count
 
-from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
-    Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection,\
-    Subject, SubjectOfGroup
+from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment, \
+    Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection, \
+    Subject, SubjectOfGroup, DataConfigurationTree
 from patient.models import Patient, SocialHistoryData, SocialDemographicData, Telephone,\
-    MedicalRecordData, QuestionnaireResponse, Diagnosis, ClassificationOfDiseases
+    MedicalRecordData, Diagnosis, ClassificationOfDiseases
 from survey.models import Survey
 
 
@@ -105,6 +105,8 @@ class ExportExperiment:
         self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
         self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
                               'component_id__experiment_id__in')
+        self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
+                              'component_configuration__component__experiment_id__in')
         self.generate_fixture('group.json', 'group', 'experiment_id__in')
         self.generate_fixture('block.json', 'block', key_path)
         self.generate_fixture('instruction.json', 'instruction', key_path)
@@ -139,7 +141,8 @@ class ExportExperiment:
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
                          'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'socialhistorydata.json', 'socialdemographicdata.json', 'diagnosis.json']
+                         'socialhistorydata.json', 'socialdemographicdata.json', 'diagnosis.json',
+                         'dataconfigurationtree.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -331,7 +334,13 @@ class ImportExperiment:
         next_component_config_id = ComponentConfiguration.objects.last().id + 1 \
             if ComponentConfiguration.objects.count() > 0 else 1
         for i in indexes:
+            old_pk = data[i]['pk']
             data[i]['pk'] = next_component_config_id
+
+            for (index_relation, dict_relation) in enumerate(data):
+                if dict_relation['model'] == 'experiment.dataconfigurationtree' and \
+                        dict_relation['fields']['component_configuration'] == old_pk:
+                    data[index_relation]['fields']['component_configuration'] = data[i]['pk']
             next_component_config_id += 1
 
     @staticmethod
@@ -535,7 +544,6 @@ class ImportExperiment:
                     data[index_row]['fields']['classification_of_diseases'] = data[i]['pk']
                     indexes_of_classifications_of_diseases_already_updated.append(index_row)
 
-
     @staticmethod
     def _update_pk_medical_record_data(data):
         # Which elements of the json file ("data") represent this model
@@ -553,6 +561,16 @@ class ImportExperiment:
                         and dict_['fields']['medical_record_data'] == old_medical_record_data_id:
                     data[index_row]['fields']['medical_record_data'] = next_medical_record_data_id
             next_medical_record_data_id += 1
+
+    def _update_pk_dataconfiguration_tree(self, data):
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.dataconfigurationtree']
+
+        next_data_con_tree = DataConfigurationTree.objects.last().id + 1 \
+            if DataConfigurationTree.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_data_con_tree
+            next_data_con_tree += 1
 
     def _update_pks(self, data, request, research_project_id=None):
         self._update_pk_research_project(data, request, research_project_id)
@@ -577,6 +595,7 @@ class ImportExperiment:
         self._update_pk_diagnosis(data)
         self._update_pk_medical_record_data(data)
         self._update_pk_classification_of_diseases(data)
+        self._update_pk_dataconfiguration_tree(data)
 
     def import_all(self, request, research_project_id=None):
         # TODO: maybe this try in constructor
