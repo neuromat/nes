@@ -878,56 +878,32 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso.')
 
-    # def test_POST_experiment_import_file_creates_groups_with_experimental_protocol_and_returns_successful_message(self):
-    #     # Create research project
-    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
-    #     # Create experiment
-    #     experiment = ObjectsFactory.create_experiment(research_project)
-    #     # Create root component (which is a 'block' type and it is the head of the experimental protocol)
-    #     rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
-    #     rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
-    #     # Create another component ('instruction', for example)
-    #     component1 = ObjectsFactory.create_component(experiment, 'instruction')
-    #     ObjectsFactory.create_component_configuration(rootcomponent1, component1)
-    #     # Create another component ('instruction', for example)
-    #     component2 = ObjectsFactory.create_component(experiment, 'instruction')
-    #     ObjectsFactory.create_component_configuration(rootcomponent2, component2)
-    #
-    #     # Create groups
-    #     group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
-    #     group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
-    #
-    #     export = ExportExperiment(experiment)
-    #     export.export_all()
-    #     file_path = export.get_file_path()
-    #
-    #     # dictionary to test against new objects created bellow
-    #     old_objects_count = Component.objects.count()
-    #     # dictionary to test against new groups created bellow
-    #     old_groups_count = ExperimentGroup.objects.count()
-    #
-    #     with open(file_path, 'rb') as file:
-    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-    #     self.assertRedirects(response, reverse('import_log'))
-    #     new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
-    #                                                        component1.id, component2.id])
-    #     new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
-    #     self.assertEqual(
-    #         Component.objects.count(),
-    #         old_objects_count + len(new_components))
-    #     self.assertEqual(
-    #         ExperimentGroup.objects.count(),
-    #         old_groups_count + len(new_groups))
-    #
-    #     for item in new_components:
-    #         self.assertEqual(Experiment.objects.last().id, item.experiment.id)
-    #     for item in new_groups:
-    #         self.assertEqual(Experiment.objects.last().id, item.experiment.id)
-    #         self.assertTrue(new_components.filter(id=item.experimental_protocol_id).exists())
-    #
-    #     message = str(list(response.context['messages'])[0])
-    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-    #
+    def test_POST_experiment_import_file_creates_groups_with_experimental_protocol_and_returns_successful_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
+        rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
+        group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
+        group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+        new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id])
+        new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
+        self.assertEqual(2, len(new_components))
+
+        for group in new_groups:
+            self.assertEqual(Experiment.objects.last().id, group.experiment.id)
+            self.assertTrue(new_components.filter(id=group.experimental_protocol_id).exists())
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
     # def test_POST_experiment_import_file_creates_experimental_protocol_with_reuse_and_returns_successful_message(self):
     #     # Create research project
     #     research_project = ObjectsFactory.create_research_project(owner=self.user)
