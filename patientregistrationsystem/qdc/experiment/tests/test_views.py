@@ -15,7 +15,8 @@ from experiment.import_export import ExportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
-    Block, TMS, ComponentConfiguration, Questionnaire, Subject, SubjectOfGroup
+    Block, TMS, ComponentConfiguration, Questionnaire, Subject, SubjectOfGroup, \
+    Manufacturer, Material, TMSDevice, TMSDeviceSetting, CoilModel, CoilShape, TMSSetting, Equipment
 from experiment.models import Group as ExperimentGroup
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     AmountCigarettes, ClassificationOfDiseases, Diagnosis, Gender, AlcoholFrequency, AlcoholPeriod
@@ -454,7 +455,7 @@ class ImportExperimentTest(TestCase):
         self.assertContains(response, '1 passo de <em>Fase de jogo do goleiro</em> importado')
         self.assertContains(response, '1 passo de <em>Coleta genérica de dados</em> importado')
 
-
+    # JSON integrity tests
     def test_GET_experiment_import_file_uses_correct_template(self):
         response = self.client.get(reverse('experiment_import'))
         self.assertEqual(response.status_code, 200)
@@ -478,6 +479,7 @@ class ImportExperimentTest(TestCase):
 
         shutil.rmtree(temp_dir)
 
+    # Experiment, Groups and Components tests
     def test_POST_experiment_import_file_creates_new_experiment_and_returns_successful_message(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
@@ -901,6 +903,252 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
+    def test_POST_experiment_import_file_reuse_keywords_already_in_database_and_returns_successful_message(self):
+        keyword1 = Keyword.objects.create(name='Test1')
+        keyword2 = Keyword.objects.create(name='Test2')
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+
+        research_project.keywords.add(keyword1)
+        research_project.keywords.add(keyword2)
+        research_project.save()
+
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # dictionary to test against new keywords created bellow
+        old_keywords_count = Keyword.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
+        self.assertEqual(
+            Keyword.objects.count(),
+            old_keywords_count + len(new_keywords))
+        for item in new_keywords:
+            self.assertIn(item, ResearchProject.objects.last().keywords.all())
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_keywords_and_returns_successful_message(self):
+        keyword1 = Keyword.objects.create(name='Test1')
+        keyword2 = Keyword.objects.create(name='Test2')
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+
+        research_project.keywords.add(keyword1)
+        research_project.keywords.add(keyword2)
+        research_project.save()
+
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Delete the keyword, so it is not reused, but created a new one
+        Keyword.objects.filter(id=keyword1.id).delete()
+        # dictionary to test against new keywords created bellow
+        old_keywords_count = Keyword.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
+        self.assertEqual(
+            Keyword.objects.count(),
+            old_keywords_count + len(new_keywords))
+        for item in new_keywords:
+            self.assertIn(item, ResearchProject.objects.last().keywords.all())
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    # TMS tests
+    def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_and_returns_successful_message(self):
+        # Create research project
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        # Create experiment
+        experiment = ObjectsFactory.create_experiment(research_project)
+        # Create tms setting
+        tms_setting = TMSSetting.objects.create(experiment=experiment,
+                                                name='TMS-Setting name',
+                                                description='TMS-Setting description')
+
+        # Create tms device setting; This is the set up of the equipment of TMS
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER1')
+        tms_device = TMSDevice.objects.create(manufacturer=manufacturer)
+        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
+        coil_shape = CoilShape.objects.create(name='TEST_COIL_SHAPE')
+        coil_model = CoilModel.objects.create(name='TEST_COIL_MODEL', coil_shape=coil_shape, material=material)
+
+        tms_device_setting = TMSDeviceSetting.objects.create(tms_setting=tms_setting,
+                                                             tms_device=tms_device,
+                                                             coil_model=coil_model)
+
+        # Manufacturer and Material are models with few simple fields as name and description, without an id.
+        # It makes sense not to create new entries if the database already has an identical one.
+        # For this test, we are testing the creation of new setups, so we must delete the manufacturer and the
+        # material, so we can test if they will be created. There is another test that tests the importation
+        # without creating new manufacturers and/or materials
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        Manufacturer.objects.last().delete()
+        Material.objects.last().delete()
+
+        # dictionary to test against new tmssettings created bellow
+        old_tms_setting_count = TMSSetting.objects.count()
+        old_manufacturer_count = Manufacturer.objects.count()
+        old_tms_device_count = TMSDevice.objects.count()
+        old_material_count = Material.objects.count()
+        old_coil_shape_count = CoilShape.objects.count()
+        old_coil_model_count = CoilModel.objects.count()
+        old_tms_device_setting_count = TMSDeviceSetting.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_tms_setting = TMSSetting.objects.exclude(id=tms_setting.id)
+        new_manufacturer = Manufacturer.objects.exclude(id=manufacturer.id)
+        new_tms_device = TMSDevice.objects.exclude(id=tms_device.id)
+        new_material = Material.objects.exclude(id=material.id)
+        new_coil_shape = CoilShape.objects.exclude(id=coil_shape.id)
+        new_coil_model = CoilModel.objects.exclude(id=coil_model.id)
+        new_tms_device_setting = TMSDeviceSetting.objects.exclude(tms_setting_id=tms_device_setting.tms_setting_id)
+
+        self.assertEqual(
+            TMSSetting.objects.count(),
+            old_tms_setting_count + len(new_tms_setting))
+        self.assertEqual(
+            Manufacturer.objects.count(),
+            old_manufacturer_count + len(new_manufacturer))
+        self.assertEqual(
+            TMSDevice.objects.count(),
+            old_tms_device_count + len(new_tms_device))
+        self.assertEqual(
+            Material.objects.count(),
+            old_material_count + len(new_material))
+        self.assertEqual(
+            CoilShape.objects.count(),
+            old_coil_shape_count + len(new_coil_shape))
+        self.assertEqual(
+            CoilModel.objects.count(),
+            old_coil_model_count + len(new_coil_model))
+        self.assertEqual(
+            TMSDeviceSetting.objects.count(),
+            old_tms_device_setting_count + len(new_tms_device_setting))
+
+        for item in new_tms_device_setting:
+            self.assertEqual(TMSSetting.objects.last().id, item.tms_setting_id)
+            self.assertEqual(CoilModel.objects.last().id, item.coil_model_id)
+            self.assertEqual(TMSDevice.objects.last().id, item.tms_device_id)
+
+        for item in new_coil_model:
+            self.assertEqual(CoilShape.objects.last().id, item.coil_shape_id)
+            self.assertEqual(Material.objects.last().id, item.material_id)
+
+        self.assertEqual(Equipment.objects.last().id, TMSDevice.objects.last().equipment_ptr_id)
+        self.assertEqual(Manufacturer.objects.last().id, Equipment.objects.last().manufacturer_id)
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_with_reuse_and_returns_successful_message(self):
+        # Create research project
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        # Create experiment
+        experiment = ObjectsFactory.create_experiment(research_project)
+        # Create tms setting
+        tms_setting = TMSSetting.objects.create(experiment=experiment,
+                                                name='TMS-Setting name',
+                                                description='TMS-Setting description')
+
+        # Create tms device setting; This is the set up of the equipment of TMS
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER1')
+        tms_device = TMSDevice.objects.create(manufacturer=manufacturer)
+        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
+        coil_shape = CoilShape.objects.create(name='TEST_COIL_SHAPE')
+        coil_model = CoilModel.objects.create(name='TEST_COIL_MODEL', coil_shape=coil_shape, material=material)
+
+        tms_device_setting = TMSDeviceSetting.objects.create(tms_setting=tms_setting,
+                                                             tms_device=tms_device,
+                                                             coil_model=coil_model)
+
+        # Manufacturer and Material are models with few simple fields as name and description, without an id.
+        # It makes sense not to create new entries if the database already has an identical one.
+        # For this test, we are testing the creation of new setups, but with the reuse of manufacturer and material.
+        # There is another test that tests the importation creating new manufacturers and/or materials
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # dictionary to test against new tmssettings created bellow
+        old_tms_setting_count = TMSSetting.objects.count()
+        old_manufacturer_count = Manufacturer.objects.count()
+        old_tms_device_count = TMSDevice.objects.count()
+        old_material_count = Material.objects.count()
+        old_coil_shape_count = CoilShape.objects.count()
+        old_coil_model_count = CoilModel.objects.count()
+        old_tms_device_setting_count = TMSDeviceSetting.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_tms_setting = TMSSetting.objects.exclude(id=tms_setting.id)
+        new_manufacturer = Manufacturer.objects.exclude(id=manufacturer.id)
+        new_tms_device = TMSDevice.objects.exclude(id=tms_device.id)
+        new_material = Material.objects.exclude(id=material.id)
+        new_coil_shape = CoilShape.objects.exclude(id=coil_shape.id)
+        new_coil_model = CoilModel.objects.exclude(id=coil_model.id)
+        new_tms_device_setting = TMSDeviceSetting.objects.exclude(tms_setting_id=tms_device_setting.tms_setting_id)
+
+        self.assertEqual(
+            TMSSetting.objects.count(),
+            old_tms_setting_count + len(new_tms_setting))
+        self.assertEqual(
+            Manufacturer.objects.count(),
+            old_manufacturer_count + len(new_manufacturer))
+        self.assertEqual(
+            TMSDevice.objects.count(),
+            old_tms_device_count + len(new_tms_device))
+        self.assertEqual(
+            Material.objects.count(),
+            old_material_count + len(new_material))
+        self.assertEqual(
+            CoilShape.objects.count(),
+            old_coil_shape_count + len(new_coil_shape))
+        self.assertEqual(
+            CoilModel.objects.count(),
+            old_coil_model_count + len(new_coil_model))
+        self.assertEqual(
+            TMSDeviceSetting.objects.count(),
+            old_tms_device_setting_count + len(new_tms_device_setting))
+
+        for item in new_tms_device_setting:
+            self.assertEqual(TMSSetting.objects.last().id, item.tms_setting_id)
+            self.assertEqual(CoilModel.objects.last().id, item.coil_model_id)
+            self.assertEqual(TMSDevice.objects.last().id, item.tms_device_id)
+
+        for item in new_coil_model:
+            self.assertEqual(CoilShape.objects.last().id, item.coil_shape_id)
+            self.assertEqual(Material.objects.last().id, item.material_id)
+
+        self.assertEqual(Equipment.objects.last().id, TMSDevice.objects.last().equipment_ptr_id)
+        self.assertEqual(Manufacturer.objects.last().id, Equipment.objects.last().manufacturer_id)
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+    # Participants tests
+
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
         # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
@@ -1155,70 +1403,7 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_reuse_keywords_already_in_database_and_returns_successful_message(self):
-        keyword1 = Keyword.objects.create(name='Test1')
-        keyword2 = Keyword.objects.create(name='Test2')
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-
-        research_project.keywords.add(keyword1)
-        research_project.keywords.add(keyword2)
-        research_project.save()
-
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # dictionary to test against new keywords created bellow
-        old_keywords_count = Keyword.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
-        self.assertEqual(
-            Keyword.objects.count(),
-            old_keywords_count + len(new_keywords))
-        for item in new_keywords:
-            self.assertIn(item, ResearchProject.objects.last().keywords.all())
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
-    def test_POST_experiment_import_file_creates_keywords_and_returns_successful_message(self):
-        keyword1 = Keyword.objects.create(name='Test1')
-        keyword2 = Keyword.objects.create(name='Test2')
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-
-        research_project.keywords.add(keyword1)
-        research_project.keywords.add(keyword2)
-        research_project.save()
-
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # Delete the keyword, so it is not reused, but created a new one
-        Keyword.objects.filter(id=keyword1.id).delete()
-        # dictionary to test against new keywords created bellow
-        old_keywords_count = Keyword.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
-        self.assertEqual(
-            Keyword.objects.count(),
-            old_keywords_count + len(new_keywords))
-        for item in new_keywords:
-            self.assertIn(item, ResearchProject.objects.last().keywords.all())
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
+    # LOG tests
     def test_POST_experiment_import_file_redirects_to_importing_log_page_1(self):
         # import ResearchProject/Experiment
         research_project = ObjectsFactory.create_research_project(owner=self.user)

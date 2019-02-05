@@ -13000,6 +13000,8 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
 
     coil_model_form = CoilModelForm(request.POST or None, instance=coil_model_selected)
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="tms_device").distinct()
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -13022,7 +13024,8 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
                "equipment_form": equipment_form,
-               "coil_model_form": coil_model_form
+               "coil_model_form": coil_model_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)

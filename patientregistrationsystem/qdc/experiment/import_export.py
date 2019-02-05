@@ -11,7 +11,8 @@ from django.db.models import Count
 
 from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection,\
-    Subject, SubjectOfGroup
+    Subject, SubjectOfGroup, Manufacturer, TMSSetting, TMSDevice, TMSDeviceSetting, CoilShape, CoilModel,\
+    Material, Equipment
 from patient.models import Patient, SocialHistoryData, SocialDemographicData, Telephone,\
     MedicalRecordData, QuestionnaireResponse, Diagnosis, ClassificationOfDiseases
 from survey.models import Survey
@@ -102,6 +103,7 @@ class ExportExperiment:
     def export_all(self):
         key_path = 'component_ptr_id__experiment_id__in'
 
+        # Experiment
         self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
         self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
                               'component_id__experiment_id__in')
@@ -119,6 +121,8 @@ class ExportExperiment:
         self.generate_fixture('digital_game_phase.json', 'digitalgamephase', key_path)
         self.generate_fixture('generic_data_collection.json', 'genericdatacollection', key_path)
         self.generate_fixture('participant.json', 'subjectofgroup', 'group_id__experiment_id__in')
+
+        # Patient
         self.generate_patient_fixture('telephone.json', 'telephone',
                                       'patient__subject__subjectofgroup__group__experiment_id__in')
         self.generate_patient_fixture('socialhistorydata.json', 'socialhistorydata',
@@ -127,6 +131,9 @@ class ExportExperiment:
                                       'patient__subject__subjectofgroup__group__experiment_id__in')
         self.generate_patient_fixture('diagnosis.json', 'diagnosis',
                                       'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
+
+        # Set up
+        self.generate_fixture('tms_device.json', 'tmsdevicesetting', 'tms_setting__experiment_id__in')
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -139,7 +146,7 @@ class ExportExperiment:
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
                          'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'socialhistorydata.json', 'socialdemographicdata.json', 'diagnosis.json']
+                         'socialhistorydata.json', 'socialdemographicdata.json', 'diagnosis.json', 'tms_device.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -367,6 +374,211 @@ class ImportExperiment:
                     indexes_of_dependent_models_already_updated.append(index_row)
             next_model_id += 1
 
+    # BRANCH FROM MANUFACTURER
+
+    @staticmethod
+    def _update_pk_manufacturer(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.manufacturer']
+        field = 'manufacturer'
+
+        next_manufacturer_id = Manufacturer.objects.last().id + 1 if Manufacturer.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new manufacturer model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_manufacturer_id = data[i]['pk']
+            manufacturer_already_in_database = Manufacturer.objects.filter(name=data[i]['fields']['name']).first()
+
+            if not manufacturer_already_in_database:
+                data[i]['pk'] = next_manufacturer_id
+            else:
+                data[i]['pk'] = manufacturer_already_in_database.id
+
+            # Update each item of the json file that have the corresponding field to
+            # the dependent model and point to the old_model_id and has not been
+            # already updated
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_manufacturer_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = data[i]['pk']
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_manufacturer_id += 1
+
+    @staticmethod
+    def _update_pk_equipment(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.equipment']
+        fields = ['equipment_ptr', 'equipment']
+
+        next_equipment_id = Equipment.objects.last().id + 1 if Equipment.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new manufacturer model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_equipment_id = data[i]['pk']
+            data[i]['pk'] = next_equipment_id
+
+            # Update each item of the json file that have the corresponding field to
+            # the dependent model and point to the old_model_id and has not been
+            # already updated
+            for (index_row, dict_) in enumerate(data):
+                for field in fields:
+                    if field in data[index_row]['fields'] \
+                            and data[index_row]['fields'][field] == old_equipment_id \
+                            and index_row not in indexes_of_dependent_models_already_updated:
+                        data[index_row]['fields'][field] = data[i]['pk']
+                        indexes_of_dependent_models_already_updated.append(index_row)
+            next_equipment_id += 1
+
+    @staticmethod
+    def _update_pk_material(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.material']
+        fields = ['material', 'insulation_material']
+
+        next_material_id = Material.objects.last().id + 1 if Material.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new manufacturer model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_material_id = data[i]['pk']
+            material_already_in_database = \
+                Material.objects.filter(name=data[i]['fields']['name'],
+                                        description=data[i]['fields']['description']).first()
+
+            if not material_already_in_database:
+                data[i]['pk'] = next_material_id
+            else:
+                data[i]['pk'] = material_already_in_database.id
+
+            # Update each item of the json file that have the corresponding field to
+            # the dependent model and point to the old_model_id and has not been
+            # already updated
+            for (index_row, dict_) in enumerate(data):
+                for field in fields:
+                    if field in data[index_row]['fields'] \
+                            and data[index_row]['fields'][field] == old_material_id \
+                            and index_row not in indexes_of_dependent_models_already_updated:
+                        data[index_row]['fields'][field] = data[i]['pk']
+                        indexes_of_dependent_models_already_updated.append(index_row)
+            next_material_id += 1
+
+    # BEGIN OF TMS
+    @staticmethod
+    def _update_pk_tms_setting(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.tmssetting']
+        field = 'tms_setting'
+
+        next_tmssetting_id = TMSSetting.objects.last().id + 1 if TMSSetting.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new tms_setting
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_tmssetting_id = data[i]['pk']
+            data[i]['pk'] = next_tmssetting_id
+
+            # Update each item of the json file that have the corresponding field to
+            # the dependent model and point to the old_model_id and has not been
+            # already updated
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_tmssetting_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = next_tmssetting_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.tmsdevicesetting' \
+                        and data[index_row]['pk'] == old_tmssetting_id:
+                    data[index_row]['pk'] = next_tmssetting_id
+            next_tmssetting_id += 1
+
+    @staticmethod
+    def _update_pk_tms_device(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.tmsdevice']
+        field = 'tms_device'
+
+        next_tms_device_id = TMSDevice.objects.last().id + 1 if TMSDevice.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new manufacturer model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_tms_device_id = data[i]['pk']
+
+            data[i]['pk'] = next_tms_device_id
+
+            # Update each item of the json file that have the corresponding field to
+            # the dependent model and point to the old_model_id and has not been
+            # already updated
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_tms_device_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = data[i]['pk']
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_tms_device_id += 1
+
+    @staticmethod
+    def _update_pk_coil_model(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.coilmodel']
+        field = 'coil_model'
+
+        next_coil_model_id = CoilModel.objects.last().id + 1 if CoilModel.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new manufacturer model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_coil_model_id = data[i]['pk']
+            data[i]['pk'] = next_coil_model_id
+
+            # Update each item of the json file that have the corresponding field to
+            # the dependent model and point to the old_model_id and has not been
+            # already updated
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_coil_model_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = data[i]['pk']
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_coil_model_id += 1
+
+    @staticmethod
+    def _update_pk_coil_shape(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.coilshape']
+        field = 'coil_shape'
+
+        next_coil_shape_id = CoilShape.objects.last().id + 1 if CoilShape.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new manufacturer model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_coil_shape_id = data[i]['pk']
+            # As this model is composed only by a simple name field, it makes sense to not create another one if
+            # the same name occours in the table of this model, so if there is one, we point the 'new id' to it
+            coil_shape_already_in_database = CoilShape.objects.filter(name_pt_br=data[i]['fields']['name_pt_br'],
+                                                                      name_en=data[i]['fields']['name_en'],).first()
+
+            if not coil_shape_already_in_database:
+                data[i]['pk'] = next_coil_shape_id
+            else:
+                data[i]['pk'] = coil_shape_already_in_database.id
+
+            # Update each item of the json file that have the corresponding field to
+            # the dependent model and point to the old_model_id and has not been
+            # already updated
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_coil_shape_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = data[i]['pk']
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_coil_shape_id += 1
+    # END OF TMS
+
     @staticmethod
     def _update_pk_survey(data):
         # Which elements of the json file ("data") represent this model
@@ -560,7 +772,16 @@ class ImportExperiment:
         self._update_pk_experiment(data)
         self._update_pk_dependent_model(data, 'experiment.eegsetting')
         self._update_pk_dependent_model(data, 'experiment.emgsetting')
-        self._update_pk_dependent_model(data, 'experiment.tmssetting')
+
+        # Update TMS
+        self._update_pk_tms_setting(data)
+        self._update_pk_tms_device(data)
+        self._update_pk_coil_model(data)
+        self._update_pk_coil_shape(data)
+
+        self._update_pk_equipment(data)
+        self._update_pk_material(data)
+        self._update_pk_manufacturer(data)
         self._update_pk_dependent_model(data, 'experiment.informationtype')
         self._update_pk_dependent_model(data, 'experiment.contexttree')
         self._update_pk_dependent_model(data, 'experiment.stimulustype')
