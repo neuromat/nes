@@ -363,7 +363,6 @@ class ObjectsFactory(object):
         manufacturer = Manufacturer.objects.create(
             name='Manufacturer name'
         )
-        # manufacturer.save()
         return manufacturer
 
     @staticmethod

@@ -8,14 +8,14 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.encoding import smart_str
-from django.utils.html import strip_tags
 
 from custom_user.tests_helper import create_user
 from experiment.import_export import ExportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
-    Block, TMS, ComponentConfiguration, Questionnaire, TMSSetting, EEG, EEGSetting
+    Block, TMS, ComponentConfiguration, Questionnaire, TMSSetting, EEG, EEGSetting, EMGSetting, EMG, SoftwareVersion, \
+    Manufacturer, Software, Instruction
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
@@ -74,7 +74,6 @@ class PermissionsresearchprojectupdateViewtest(TestCase):
         user_profile.save()
 
         for group in Group.objects.all():
-        # for group in Group.objects.filter(name='Attendant'):
             group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
@@ -453,6 +452,11 @@ class ImportExperimentTest(TestCase):
         self.assertContains(response, '1 passo de <em>Fase de jogo do goleiro</em> importado')
         self.assertContains(response, '1 passo de <em>Coleta genérica de dados</em> importado')
 
+    def _create_minimum_objects_to_test_components(self):
+        self.research_project = ObjectsFactory.create_research_project(owner=self.user)
+        self.experiment = ObjectsFactory.create_experiment(self.research_project)
+        self.rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+
     def test_GET_experiment_import_file_uses_correct_template(self):
         response = self.client.get(reverse('experiment_import'))
         self.assertEqual(response.status_code, 200)
@@ -572,16 +576,14 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(new_groups.count(), 1)
 
     def test_POST_experiment_import_file_creates_root_component_plus_instruction_and_returns_successful_message(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        self._create_minimum_objects_to_test_components()
         # Create another component, 'instruction', for this test, but every
         # type, apart from specific parameters, all depend on Component,
         # and only this relation needs to be updated
-        instruction_component = ObjectsFactory.create_component(experiment, 'instruction')
-        ObjectsFactory.create_component_configuration(rootcomponent, instruction_component)
+        instruction_component = ObjectsFactory.create_component(self.experiment, 'instruction')
+        ObjectsFactory.create_component_configuration(self.rootcomponent, instruction_component)
 
-        export = ExportExperiment(experiment)
+        export = ExportExperiment(self.experiment)
         export.export_all()
         file_path = export.get_file_path()
 
@@ -591,7 +593,7 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
-        new_components = Component.objects.exclude(id__in=[rootcomponent.id, instruction_component.id])
+        new_components = Component.objects.exclude(id__in=[self.rootcomponent.id, instruction_component.id])
         self.assertEqual(Component.objects.count(), components_before_count + len(new_components))
         for item in new_components:
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
@@ -607,16 +609,13 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        ObjectsFactory.create_research_project(owner=self.user)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component group 1')
-        ObjectsFactory.create_group(experiment, rootcomponent)
+        self._create_minimum_objects_to_test_components()
+        ObjectsFactory.create_group(self.experiment, self.rootcomponent)
         survey = create_survey(212121)
-        questionnaire = ObjectsFactory.create_component(experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
-        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire)
+        questionnaire = ObjectsFactory.create_component(self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
 
-        export = ExportExperiment(experiment)
+        export = ExportExperiment(self.experiment)
         export.export_all()
         file_path = export.get_file_path()
 
@@ -633,14 +632,12 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     def test_POST_experiment_import_file_creates_root_component_plus_tms_and_returns_successful_message(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        tms_setting = ObjectsFactory.create_tms_setting(experiment)
-        tms_component = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': tms_setting})
-        ObjectsFactory.create_component_configuration(rootcomponent, tms_component)
+        self._create_minimum_objects_to_test_components()
+        tms_setting = ObjectsFactory.create_tms_setting(self.experiment)
+        tms_component = ObjectsFactory.create_component(self.experiment, 'tms', kwargs={'tms_set': tms_setting})
+        ObjectsFactory.create_component_configuration(self.rootcomponent, tms_component)
 
-        export = ExportExperiment(experiment)
+        export = ExportExperiment(self.experiment)
         export.export_all()
         file_path = export.get_file_path()
 
@@ -651,7 +648,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
-        new_components = Component.objects.exclude(id__in=[rootcomponent.id, tms_component.id])
+        new_components = Component.objects.exclude(id__in=[self.rootcomponent.id, tms_component.id])
         self.assertEqual(Component.objects.count(), components_before_count + len(new_components))
         for item in new_components:
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
@@ -673,14 +670,12 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     def test_POST_experiment_import_file_creates_root_component_plus_eeg_and_returns_successful_message(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
-        eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
-        ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
+        self._create_minimum_objects_to_test_components()
+        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+        eeg_component = ObjectsFactory.create_component(self.experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+        ObjectsFactory.create_component_configuration(self.rootcomponent, eeg_component)
 
-        export = ExportExperiment(experiment)
+        export = ExportExperiment(self.experiment)
         export.export_all()
         file_path = export.get_file_path()
 
@@ -691,7 +686,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
-        new_components = Component.objects.exclude(id__in=[rootcomponent.id, eeg_component.id])
+        new_components = Component.objects.exclude(id__in=[self.rootcomponent.id, eeg_component.id])
         self.assertEqual(Component.objects.count(), components_before_count + len(new_components))
         for item in new_components:
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
@@ -708,6 +703,81 @@ class ImportExperimentTest(TestCase):
         eeg_setting = EEGSetting.objects.last()
         self.assertEqual(new_eeg.eeg_setting.id, eeg_setting.id)
         self.assertEqual(eeg_setting.experiment.id, new_experiment.id)
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_root_component_plus_emg_and_returns_successful_message1(self):
+        # Test until importing tms setting
+        self._create_minimum_objects_to_test_components()
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        new_emg_setting = ObjectsFactory.create_emg_setting(self.experiment, software_version)
+        emg_component = ObjectsFactory.create_component(self.experiment, 'emg', kwargs={'emg_set': new_emg_setting})
+        ObjectsFactory.create_component_configuration(self.rootcomponent, emg_component)
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # dictionary to test against new objects created bellow
+        components_before_count = Component.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_components = Component.objects.exclude(id__in=[self.rootcomponent.id, emg_component.id])
+        self.assertEqual(Component.objects.count(), components_before_count + len(new_components))
+        for item in new_components:
+            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+        new_rootcomponent = new_components.get(component_type='block')
+        new_component = new_components.get(component_type='emg')
+        new_emg = EMG.objects.last()
+        new_experiment = Experiment.objects.last()
+        self.assertEqual(new_component.experiment.id, new_experiment.id)
+        new_component_configuration = ComponentConfiguration.objects.last()
+        self.assertEqual(new_component_configuration.component.id, new_component.id)
+        self.assertEqual(new_component_configuration.parent.id, new_rootcomponent.id)
+        self.assertEqual(new_component.id, new_emg.id)
+        self.assertEqual(2, EMGSetting.objects.count())
+        new_emg_setting = EMGSetting.objects.last()
+        self.assertEqual(new_emg.emg_setting.id, new_emg_setting.id)
+        self.assertEqual(new_emg_setting.experiment.id, new_experiment.id)
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_root_component_plus_emg_and_returns_successful_message2(self):
+        # Test all models that tms setting depends on
+        self._create_minimum_objects_to_test_components()
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, software_version)
+        emg_component = ObjectsFactory.create_component(self.experiment, 'emg', kwargs={'emg_set': emg_setting})
+        ObjectsFactory.create_component_configuration(self.rootcomponent, emg_component)
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        self.assertEqual(2, SoftwareVersion.objects.count())
+        new_software_version = SoftwareVersion.objects.last()
+        self.assertEqual(2, Software.objects.count())
+        new_software = Software.objects.last()
+        self.assertEqual(2, Manufacturer.objects.count())
+        new_manufacturer = Manufacturer.objects.last()
+        new_emg_setting = EMGSetting.objects.last()
+        self.assertEqual(new_software_version.id, new_emg_setting.acquisition_software_version.id)
+        self.assertEqual(new_software.id, new_software_version.software.id)
+        self.assertEqual(new_manufacturer.id, new_software.manufacturer.id)
 
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
@@ -753,20 +823,25 @@ class ImportExperimentTest(TestCase):
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
             self.assertFalse(new_components.filter(id=item.experimental_protocol_id).exists())
 
+        new_instructions = Instruction.objects.all().order_by('-id')[:2]
+        self.assertEqual(2, new_instructions.count())
+        new_instruction_components = \
+            Component.objects.filter(component_type='instruction').order_by('-id')[:2]
+        for instruction in new_instructions:
+            self.assertIn(instruction.id, new_instruction_components.values_list('id', flat=True))
+
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     def test_POST_experiment_import_file_creates_experiment_in_existing_study_and_returns_successful_message(self):
-        # Create research project
+        # TODO: this test is only for testing new experiment pertains to existent research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
         experiment = ObjectsFactory.create_experiment(research_project)
         # Create root component (which is a 'block' type and it is the head of the experimental protocol)
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
         # Create another component ('instruction', for example)
         component = ObjectsFactory.create_component(experiment, 'instruction')
         ObjectsFactory.create_component_configuration(rootcomponent, component)
-        # Create groups
         group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent)
         group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent)
 
@@ -798,413 +873,415 @@ class ImportExperimentTest(TestCase):
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
             self.assertTrue(new_components.filter(id=item.experimental_protocol_id).exists())
 
+        self.assertEqual(research_project.id, Experiment.objects.last().research_project.id)
+
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso.')
 
-    def test_POST_experiment_import_file_creates_groups_with_experimental_protocol_and_returns_successful_message(self):
-        # Create research project
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
-        experiment = ObjectsFactory.create_experiment(research_project)
-        # Create root component (which is a 'block' type and it is the head of the experimental protocol)
-        rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
-        rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
-        # Create another component ('instruction', for example)
-        component1 = ObjectsFactory.create_component(experiment, 'instruction')
-        ObjectsFactory.create_component_configuration(rootcomponent1, component1)
-        # Create another component ('instruction', for example)
-        component2 = ObjectsFactory.create_component(experiment, 'instruction')
-        ObjectsFactory.create_component_configuration(rootcomponent2, component2)
-
-        # Create groups
-        group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
-        group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # dictionary to test against new objects created bellow
-        old_objects_count = Component.objects.count()
-        # dictionary to test against new groups created bellow
-        old_groups_count = ExperimentGroup.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-        new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
-                                                           component1.id, component2.id])
-        new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
-        self.assertEqual(
-            Component.objects.count(),
-            old_objects_count + len(new_components))
-        self.assertEqual(
-            ExperimentGroup.objects.count(),
-            old_groups_count + len(new_groups))
-
-        for item in new_components:
-            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
-        for item in new_groups:
-            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
-            self.assertTrue(new_components.filter(id=item.experimental_protocol_id).exists())
-
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
-    def test_POST_experiment_import_file_creates_experimental_protocol_with_reuse_and_returns_successful_message(self):
-        # Create research project
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
-        experiment = ObjectsFactory.create_experiment(research_project)
-        # Create root component (which is a 'block' type and it is the head of the experimental protocol)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        # Create another component ('instruction', for example)
-        component1 = ObjectsFactory.create_component(experiment, 'instruction')
-        ObjectsFactory.create_component_configuration(rootcomponent, component1)
-        # And finally the last one Component. ('tms', for example)
-        component2_tms_setting = ObjectsFactory.create_tms_setting(experiment)
-        component2 = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': component2_tms_setting})
-        ObjectsFactory.create_component_configuration(rootcomponent, component2)
-        # Create a reuse of the step 1
-        ObjectsFactory.create_component_configuration(rootcomponent, component1)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # dictionary to test against new objects created bellow
-        old_objects_count = Component.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-        new_components = Component.objects.exclude(id__in=[rootcomponent.id, component1.id, component2.id])
-        self.assertEqual(
-            Component.objects.count(),
-            old_objects_count + len(new_components))
-        for item in new_components:
-            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
-    def test_POST_experiment_import_file_creates_groups_with_reuses_of_their_experimental_protocol_and_returns_successful_message(self):
-        # Create research project
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
-        experiment = ObjectsFactory.create_experiment(research_project)
-        # Create roots components (which are 'block's types and they are the head of the experimental protocol)
-        rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
-        rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
-        # Create another component ('instruction', for example)
-        component1 = ObjectsFactory.create_component(experiment, 'instruction')
-        component1_config = ObjectsFactory.create_component_configuration(rootcomponent1, component1)
-        # And finally the last one Component. ('tms', for example)
-        component2_tms_setting = ObjectsFactory.create_tms_setting(experiment)
-        component2 = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': component2_tms_setting})
-        component2_config = ObjectsFactory.create_component_configuration(rootcomponent1, component2)
-        # Create a reuse of the step 1 on the same protocol
-        component3_config = ObjectsFactory.create_component_configuration(rootcomponent1, component1)
-        # Create a reuse of the step 1 of experimental protocol 1 in group 2
-        component4_config = ObjectsFactory.create_component_configuration(rootcomponent2, component1)
-
-        # Create groups
-        group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
-        group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # dictionary to test against new objects created bellow
-        old_objects_count = Component.objects.count()
-        # dictionary to test against new component configurations created bellow
-        old_components_configs_count = ComponentConfiguration.objects.count()
-        # dictionary to test against new groups created bellow
-        old_groups_count = ExperimentGroup.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
-                                                           component1.id, component2.id])
-        new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
-
-        new_components_configurations = ComponentConfiguration.objects.exclude(id__in=[component1_config.id,
-                                                                                       component2_config.id,
-                                                                                       component3_config.id,
-                                                                                       component4_config.id])
-        self.assertEqual(
-            Component.objects.count(),
-            old_objects_count + len(new_components))
-        self.assertEqual(
-            ExperimentGroup.objects.count(),
-            old_groups_count + len(new_groups))
-        self.assertEqual(
-            ComponentConfiguration.objects.count(),
-            old_components_configs_count + len(new_components_configurations))
-
-        for item in new_components:
-            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
-        for item in new_groups:
-            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
-            self.assertTrue(new_components.filter(id=item.experimental_protocol_id).exists())
-        for item in new_components_configurations:
-            self.assertTrue(Component.objects.filter(id=item.component_id).exists())
-            self.assertTrue(ExperimentGroup.objects.filter(experimental_protocol_id=item.parent_id).exists())
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
-    def test_POST_experiment_import_file_reuse_keywords_already_in_database_and_returns_successful_message(self):
-        keyword1 = Keyword.objects.create(name='Test1')
-        keyword2 = Keyword.objects.create(name='Test2')
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-
-        research_project.keywords.add(keyword1)
-        research_project.keywords.add(keyword2)
-        research_project.save()
-
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # dictionary to test against new keywords created bellow
-        old_keywords_count = Keyword.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
-        self.assertEqual(
-            Keyword.objects.count(),
-            old_keywords_count + len(new_keywords))
-        for item in new_keywords:
-            self.assertIn(item, ResearchProject.objects.last().keywords.all())
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
-    def test_POST_experiment_import_file_creates_keywords_and_returns_successful_message(self):
-        keyword1 = Keyword.objects.create(name='Test1')
-        keyword2 = Keyword.objects.create(name='Test2')
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-
-        research_project.keywords.add(keyword1)
-        research_project.keywords.add(keyword2)
-        research_project.save()
-
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # Delete the keyword, so it is not reused, but created a new one
-        Keyword.objects.filter(id=keyword1.id).delete()
-        # dictionary to test against new keywords created bellow
-        old_keywords_count = Keyword.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
-        self.assertEqual(
-            Keyword.objects.count(),
-            old_keywords_count + len(new_keywords))
-        for item in new_keywords:
-            self.assertIn(item, ResearchProject.objects.last().keywords.all())
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
-    def test_POST_experiment_import_file_redirects_to_importing_log_page_1(self):
-        # import ResearchProject/Experiment
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-    def test_POST_experiment_import_file_redirects_to_importing_log_page_2(self):
-        # import only Experiment
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(
-                reverse('experiment_import', args=(research_project.id,)),
-                {'file': file}, follow=True
-            )
-        self.assertRedirects(response, reverse('import_log'))
-
-    def test_POST_experiment_import_file_redirects_for_correct_template_1(self):
-        # import ResearchProject/Experiment
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertTemplateUsed(response, 'experiment/import_log.html')
-
-    def test_POST_experiment_import_file_redirects_for_correct_template_2(self):
-        # import only Experiment
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(
-                reverse('experiment_import', args=(research_project.id,)),
-                {'file': file}, follow=True
-            )
-        self.assertTemplateUsed(response, 'experiment/import_log.html')
-
-    def test_POST_experiment_import_file_returns_log_with_experiment_and_research_project_titles(self):
-        # import ResearchProject/Experiment
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertIn(
-            '1 Estudo importado: ' + ResearchProject.objects.last().title,
-            strip_tags(response.content.decode('utf-8'))
-        )
-        self.assertIn(
-            '1 Experimento importado: ' + Experiment.objects.last().title,
-            strip_tags(response.content.decode('utf-8'))
-        )
-
-    def test_POST_experiment_import_file_returns_log_with_experiment_title(self):
-        # import only Experiment
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(
-                reverse('experiment_import', args=(research_project.id,)),
-                {'file': file}, follow=True
-            )
-        self.assertNotIn(
-            '1 Estudo importado: ' + ResearchProject.objects.last().title,
-            strip_tags(response.content.decode('utf-8'))
-        )
-        self.assertIn(
-            '1 Experimento importado: ' + Experiment.objects.last().title,
-            strip_tags(response.content.decode('utf-8'))
-        )
-
-    def test_POST_experiment_import_file_returns_research_project_and_experiment_pages_links(self):
-        # import ResearchProject/Experiment
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertContains(
-            response,
-            reverse(
-                'research_project_view', kwargs={'research_project_id': ResearchProject.objects.last().id}
-            )
-        )
-        self.assertContains(
-            response,
-            reverse(
-                'experiment_view', kwargs={'experiment_id': Experiment.objects.last().id}
-            )
-        )
-
-    def test_POST_experiment_import_file_returns_experiment_page_link(self):
-        # import only Experiment
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(
-                reverse('experiment_import', args=(research_project.id,)),
-                {'file': file}, follow=True
-            )
-        self.assertNotContains(
-            response,
-            reverse(
-                'research_project_view', kwargs={'research_project_id': ResearchProject.objects.last().id}
-            )
-        )
-        self.assertContains(
-            response,
-            reverse(
-                'experiment_view', kwargs={'experiment_id': Experiment.objects.last().id}
-            )
-        )
-
-    def test_POST_experiment_import_file_returns_log_with_number_of_groups_imported(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        ObjectsFactory.create_group(experiment)
-        ObjectsFactory.create_group(experiment)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertContains(response, '2 Grupos importados')
-
-    def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        ObjectsFactory.create_research_project(owner=self.user)
-        rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component group 1')
-        rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component group 2')
-        ObjectsFactory.create_group(experiment, rootcomponent1)
-        ObjectsFactory.create_group(experiment, rootcomponent2)
-
-        # Create experimental protocol steps for the first group (rootcomponent1)
-        ObjectsFactory.create_complete_set_of_components(experiment, rootcomponent1)
-
-        # Create one more component to test pluralization
-        component = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
-        ObjectsFactory.create_component_configuration(rootcomponent2, component)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self._assert_steps_imported(response)
+    # def test_POST_experiment_import_file_creates_groups_with_experimental_protocol_and_returns_successful_message(self):
+    #     # Create research project
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     # Create experiment
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     # Create root component (which is a 'block' type and it is the head of the experimental protocol)
+    #     rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
+    #     rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
+    #     # Create another component ('instruction', for example)
+    #     component1 = ObjectsFactory.create_component(experiment, 'instruction')
+    #     ObjectsFactory.create_component_configuration(rootcomponent1, component1)
+    #     # Create another component ('instruction', for example)
+    #     component2 = ObjectsFactory.create_component(experiment, 'instruction')
+    #     ObjectsFactory.create_component_configuration(rootcomponent2, component2)
+    #
+    #     # Create groups
+    #     group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
+    #     group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     # dictionary to test against new objects created bellow
+    #     old_objects_count = Component.objects.count()
+    #     # dictionary to test against new groups created bellow
+    #     old_groups_count = ExperimentGroup.objects.count()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('import_log'))
+    #     new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
+    #                                                        component1.id, component2.id])
+    #     new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
+    #     self.assertEqual(
+    #         Component.objects.count(),
+    #         old_objects_count + len(new_components))
+    #     self.assertEqual(
+    #         ExperimentGroup.objects.count(),
+    #         old_groups_count + len(new_groups))
+    #
+    #     for item in new_components:
+    #         self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+    #     for item in new_groups:
+    #         self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+    #         self.assertTrue(new_components.filter(id=item.experimental_protocol_id).exists())
+    #
+    #     message = str(list(response.context['messages'])[0])
+    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+    #
+    # def test_POST_experiment_import_file_creates_experimental_protocol_with_reuse_and_returns_successful_message(self):
+    #     # Create research project
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     # Create experiment
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     # Create root component (which is a 'block' type and it is the head of the experimental protocol)
+    #     rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+    #     # Create another component ('instruction', for example)
+    #     component1 = ObjectsFactory.create_component(experiment, 'instruction')
+    #     ObjectsFactory.create_component_configuration(rootcomponent, component1)
+    #     # And finally the last one Component. ('tms', for example)
+    #     component2_tms_setting = ObjectsFactory.create_tms_setting(experiment)
+    #     component2 = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': component2_tms_setting})
+    #     ObjectsFactory.create_component_configuration(rootcomponent, component2)
+    #     # Create a reuse of the step 1
+    #     ObjectsFactory.create_component_configuration(rootcomponent, component1)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     # dictionary to test against new objects created bellow
+    #     old_objects_count = Component.objects.count()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('import_log'))
+    #     new_components = Component.objects.exclude(id__in=[rootcomponent.id, component1.id, component2.id])
+    #     self.assertEqual(
+    #         Component.objects.count(),
+    #         old_objects_count + len(new_components))
+    #     for item in new_components:
+    #         self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+    #     message = str(list(response.context['messages'])[0])
+    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+    #
+    # def test_POST_experiment_import_file_creates_groups_with_reuses_of_their_experimental_protocol_and_returns_successful_message(self):
+    #     # Create research project
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     # Create experiment
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     # Create roots components (which are 'block's types and they are the head of the experimental protocol)
+    #     rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
+    #     rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
+    #     # Create another component ('instruction', for example)
+    #     component1 = ObjectsFactory.create_component(experiment, 'instruction')
+    #     component1_config = ObjectsFactory.create_component_configuration(rootcomponent1, component1)
+    #     # And finally the last one Component. ('tms', for example)
+    #     component2_tms_setting = ObjectsFactory.create_tms_setting(experiment)
+    #     component2 = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': component2_tms_setting})
+    #     component2_config = ObjectsFactory.create_component_configuration(rootcomponent1, component2)
+    #     # Create a reuse of the step 1 on the same protocol
+    #     component3_config = ObjectsFactory.create_component_configuration(rootcomponent1, component1)
+    #     # Create a reuse of the step 1 of experimental protocol 1 in group 2
+    #     component4_config = ObjectsFactory.create_component_configuration(rootcomponent2, component1)
+    #
+    #     # Create groups
+    #     group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
+    #     group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     # dictionary to test against new objects created bellow
+    #     old_objects_count = Component.objects.count()
+    #     # dictionary to test against new component configurations created bellow
+    #     old_components_configs_count = ComponentConfiguration.objects.count()
+    #     # dictionary to test against new groups created bellow
+    #     old_groups_count = ExperimentGroup.objects.count()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('import_log'))
+    #
+    #     new_components = Component.objects.exclude(id__in=[rootcomponent1.id, rootcomponent2.id,
+    #                                                        component1.id, component2.id])
+    #     new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
+    #
+    #     new_components_configurations = ComponentConfiguration.objects.exclude(id__in=[component1_config.id,
+    #                                                                                    component2_config.id,
+    #                                                                                    component3_config.id,
+    #                                                                                    component4_config.id])
+    #     self.assertEqual(
+    #         Component.objects.count(),
+    #         old_objects_count + len(new_components))
+    #     self.assertEqual(
+    #         ExperimentGroup.objects.count(),
+    #         old_groups_count + len(new_groups))
+    #     self.assertEqual(
+    #         ComponentConfiguration.objects.count(),
+    #         old_components_configs_count + len(new_components_configurations))
+    #
+    #     for item in new_components:
+    #         self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+    #     for item in new_groups:
+    #         self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+    #         self.assertTrue(new_components.filter(id=item.experimental_protocol_id).exists())
+    #     for item in new_components_configurations:
+    #         self.assertTrue(Component.objects.filter(id=item.component_id).exists())
+    #         self.assertTrue(ExperimentGroup.objects.filter(experimental_protocol_id=item.parent_id).exists())
+    #     message = str(list(response.context['messages'])[0])
+    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+    #
+    # def test_POST_experiment_import_file_reuse_keywords_already_in_database_and_returns_successful_message(self):
+    #     keyword1 = Keyword.objects.create(name='Test1')
+    #     keyword2 = Keyword.objects.create(name='Test2')
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #
+    #     research_project.keywords.add(keyword1)
+    #     research_project.keywords.add(keyword2)
+    #     research_project.save()
+    #
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     # dictionary to test against new keywords created bellow
+    #     old_keywords_count = Keyword.objects.count()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('import_log'))
+    #
+    #     new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
+    #     self.assertEqual(
+    #         Keyword.objects.count(),
+    #         old_keywords_count + len(new_keywords))
+    #     for item in new_keywords:
+    #         self.assertIn(item, ResearchProject.objects.last().keywords.all())
+    #     message = str(list(response.context['messages'])[0])
+    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+    #
+    # def test_POST_experiment_import_file_creates_keywords_and_returns_successful_message(self):
+    #     keyword1 = Keyword.objects.create(name='Test1')
+    #     keyword2 = Keyword.objects.create(name='Test2')
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #
+    #     research_project.keywords.add(keyword1)
+    #     research_project.keywords.add(keyword2)
+    #     research_project.save()
+    #
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     # Delete the keyword, so it is not reused, but created a new one
+    #     Keyword.objects.filter(id=keyword1.id).delete()
+    #     # dictionary to test against new keywords created bellow
+    #     old_keywords_count = Keyword.objects.count()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('import_log'))
+    #
+    #     new_keywords = Keyword.objects.exclude(id__in=[keyword1.id, keyword2.id])
+    #     self.assertEqual(
+    #         Keyword.objects.count(),
+    #         old_keywords_count + len(new_keywords))
+    #     for item in new_keywords:
+    #         self.assertIn(item, ResearchProject.objects.last().keywords.all())
+    #     message = str(list(response.context['messages'])[0])
+    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+    #
+    # def test_POST_experiment_import_file_redirects_to_importing_log_page_1(self):
+    #     # import ResearchProject/Experiment
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('import_log'))
+    #
+    # def test_POST_experiment_import_file_redirects_to_importing_log_page_2(self):
+    #     # import only Experiment
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(
+    #             reverse('experiment_import', args=(research_project.id,)),
+    #             {'file': file}, follow=True
+    #         )
+    #     self.assertRedirects(response, reverse('import_log'))
+    #
+    # def test_POST_experiment_import_file_redirects_for_correct_template_1(self):
+    #     # import ResearchProject/Experiment
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertTemplateUsed(response, 'experiment/import_log.html')
+    #
+    # def test_POST_experiment_import_file_redirects_for_correct_template_2(self):
+    #     # import only Experiment
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(
+    #             reverse('experiment_import', args=(research_project.id,)),
+    #             {'file': file}, follow=True
+    #         )
+    #     self.assertTemplateUsed(response, 'experiment/import_log.html')
+    #
+    # def test_POST_experiment_import_file_returns_log_with_experiment_and_research_project_titles(self):
+    #     # import ResearchProject/Experiment
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertIn(
+    #         '1 Estudo importado: ' + ResearchProject.objects.last().title,
+    #         strip_tags(response.content.decode('utf-8'))
+    #     )
+    #     self.assertIn(
+    #         '1 Experimento importado: ' + Experiment.objects.last().title,
+    #         strip_tags(response.content.decode('utf-8'))
+    #     )
+    #
+    # def test_POST_experiment_import_file_returns_log_with_experiment_title(self):
+    #     # import only Experiment
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(
+    #             reverse('experiment_import', args=(research_project.id,)),
+    #             {'file': file}, follow=True
+    #         )
+    #     self.assertNotIn(
+    #         '1 Estudo importado: ' + ResearchProject.objects.last().title,
+    #         strip_tags(response.content.decode('utf-8'))
+    #     )
+    #     self.assertIn(
+    #         '1 Experimento importado: ' + Experiment.objects.last().title,
+    #         strip_tags(response.content.decode('utf-8'))
+    #     )
+    #
+    # def test_POST_experiment_import_file_returns_research_project_and_experiment_pages_links(self):
+    #     # import ResearchProject/Experiment
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertContains(
+    #         response,
+    #         reverse(
+    #             'research_project_view', kwargs={'research_project_id': ResearchProject.objects.last().id}
+    #         )
+    #     )
+    #     self.assertContains(
+    #         response,
+    #         reverse(
+    #             'experiment_view', kwargs={'experiment_id': Experiment.objects.last().id}
+    #         )
+    #     )
+    #
+    # def test_POST_experiment_import_file_returns_experiment_page_link(self):
+    #     # import only Experiment
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(
+    #             reverse('experiment_import', args=(research_project.id,)),
+    #             {'file': file}, follow=True
+    #         )
+    #     self.assertNotContains(
+    #         response,
+    #         reverse(
+    #             'research_project_view', kwargs={'research_project_id': ResearchProject.objects.last().id}
+    #         )
+    #     )
+    #     self.assertContains(
+    #         response,
+    #         reverse(
+    #             'experiment_view', kwargs={'experiment_id': Experiment.objects.last().id}
+    #         )
+    #     )
+    #
+    # def test_POST_experiment_import_file_returns_log_with_number_of_groups_imported(self):
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     ObjectsFactory.create_group(experiment)
+    #     ObjectsFactory.create_group(experiment)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertContains(response, '2 Grupos importados')
+    #
+    # def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self):
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     ObjectsFactory.create_research_project(owner=self.user)
+    #     rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component group 1')
+    #     rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component group 2')
+    #     ObjectsFactory.create_group(experiment, rootcomponent1)
+    #     ObjectsFactory.create_group(experiment, rootcomponent2)
+    #
+    #     # Create experimental protocol steps for the first group (rootcomponent1)
+    #     ObjectsFactory.create_complete_set_of_components(experiment, rootcomponent1)
+    #
+    #     # Create one more component to test pluralization
+    #     component = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
+    #     ObjectsFactory.create_component_configuration(rootcomponent2, component)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self._assert_steps_imported(response)
