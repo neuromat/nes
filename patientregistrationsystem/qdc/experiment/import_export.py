@@ -356,12 +356,16 @@ class ImportExperiment:
         data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
 
     def _manage_last_stuffs_before_importing(self, data, research_project_id):
+        #
         # Make dummy reference to limesurvey questionnaires
+        #
         survey_indexes = [index for index, dict_ in enumerate(data) if dict_['model'] == 'survey.survey']
         for survey_index in survey_indexes:
             self._solve_limey_survey_reference(data, survey_index)
 
+        #
         # If new experiment refers to existent research project updates data
+        #
         if research_project_id:
             research_project_index = next(
                 index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.researchproject'
@@ -372,7 +376,50 @@ class ImportExperiment:
             )
             data[experiment_index]['fields']['research_project'] = research_project_id
 
-    def _update_pks3(self, DG, data, successor, next_id):
+        #
+        # Fix ComponentConfiguration ids (TODO: fix update_pk3 to updating correctly)
+        #
+        cc_indexes = \
+            [index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.componentconfiguration']
+        if cc_indexes:
+            index_list = []
+            for i in cc_indexes:
+                index_list.append(data[i]['pk'])
+            new_index = max(index_list)
+            for i in cc_indexes:
+                data[i]['pk'] = new_index
+                new_index += 1
+
+        #
+        # Keep same research project keywords if they exist
+        #
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
+        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
+        indexes_of_keywords_already_updated = []
+        for i in indexes:
+            # Get the keyword and check on database if the keyword already exists
+            # If exists, update the pk of this keyword to the correspondent in the database
+            # otherwise, update the pk of this keyword to next_keyword_id
+            old_keyword_id = data[i]['pk']
+            old_keyword_string = data[i]['fields']['name']
+            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
+
+            if keyword_on_database.count() > 0:
+                data[i]['pk'] = keyword_on_database.first().id
+            else:
+                data[i]['pk'] = next_keyword_id
+                next_keyword_id += 1
+
+            # Update all the references to the old keyword to the new one
+            for (index_row, dict_) in enumerate(data):
+                if dict_['model'] == 'experiment.researchproject':
+                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
+                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
+                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
+                            indexes_of_keywords_already_updated.append(keyword_index)
+
+    def _update_pks(self, DG, data, successor, next_id):
         # TODO: see if it's worth to put this list in class level
         if data[successor]['model'] not in [
             'experiment.block', 'experiment.instruction', 'experiment.questionnaire',
@@ -386,7 +433,7 @@ class ImportExperiment:
             else:
                 data[predecessor]['pk'] = data[successor]['pk']
             next_id += 1
-            self._update_pks3(DG, data, predecessor, next_id)
+            self._update_pks(DG, data, predecessor, next_id)
 
     @staticmethod
     def _get_first_available_id():
@@ -477,7 +524,7 @@ class ImportExperiment:
                 (index for index, dict_ in enumerate(data) if dict_['model'] == model_root_node), None
             )
             if root_node is not None:
-                self._update_pks3(DG, data, root_node, next_id)
+                self._update_pks(DG, data, root_node, next_id)
 
         self._manage_last_stuffs_before_importing(data, research_project_id)
 
@@ -535,18 +582,17 @@ class ImportExperiment:
     def get_new_objects(self):
         return self.new_objects
 
-    def import_all(self, request, research_project_id=None):
+    def import_all(self, research_project_id=None):
         # TODO: maybe this try in constructor
         try:
             with open(self.file_path) as f:
                 data = json.load(f)
-                self._set_last_objects_before_import(data, research_project_id)  # to import log page
+                # To import log page
+                self._set_last_objects_before_import(data, research_project_id)
         except (ValueError, JSONDecodeError):
             return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
 
         self._build_graph(data, research_project_id)
-        # self._update_pks2(data, request, research_project_id)
-        # self._update_pks(data, request, research_project_id)
         with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
             file.write(json.dumps(data))
 
