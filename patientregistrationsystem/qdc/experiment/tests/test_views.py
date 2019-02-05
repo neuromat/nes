@@ -980,7 +980,7 @@ class ImportExperimentTest(TestCase):
                                                 description='TMS-Setting description')
 
         # Create tms device setting; This is the set up of the equipment of TMS
-        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER1')
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER')
         tms_device = TMSDevice.objects.create(manufacturer=manufacturer)
         material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
         coil_shape = CoilShape.objects.create(name='TEST_COIL_SHAPE')
@@ -990,18 +990,21 @@ class ImportExperimentTest(TestCase):
                                                              tms_device=tms_device,
                                                              coil_model=coil_model)
 
-        # Manufacturer and Material are models with few simple fields as name and description, without an id.
-        # It makes sense not to create new entries if the database already has an identical one.
-        # For this test, we are testing the creation of new setups, so we must delete the manufacturer and the
-        # material, so we can test if they will be created. There is another test that tests the importation
-        # without creating new manufacturers and/or materials
-
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
-        Manufacturer.objects.last().delete()
-        Material.objects.last().delete()
+        # Manufacturer and Material are models with few simple fields as name and description, without an id.
+        # It makes sense not to create new entries if the database already has an identical one.
+        # For this test, we are testing the creation of new setups, so we must change the manufacturer and the
+        # material entries of the exported experiment, so we can test if they will be created.
+        # There is another test that tests the importation without creating new manufacturers and/or materials
+
+        manufacturer.name = 'OLD_TEST_MANUFACTURER'
+        manufacturer.save()
+
+        material.name = 'OLD_TEST_MATERIAL'
+        material.save()
 
         # dictionary to test against new tmssettings created bellow
         old_tms_setting_count = TMSSetting.objects.count()
