@@ -16,10 +16,11 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
     Block, TMS, ComponentConfiguration, Questionnaire, Subject, SubjectOfGroup, \
-    Manufacturer, Material, TMSDevice, TMSDeviceSetting, CoilModel, CoilShape, TMSSetting, Equipment
+    DataConfigurationTree, Manufacturer, Material, TMSDevice, TMSDeviceSetting, \
+    CoilModel, CoilShape, TMSSetting, Equipment
 from experiment.models import Group as ExperimentGroup
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
-    AmountCigarettes, ClassificationOfDiseases, Diagnosis, Gender, AlcoholFrequency, AlcoholPeriod
+    AmountCigarettes, ClassificationOfDiseases, Diagnosis, AlcoholFrequency, AlcoholPeriod
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
@@ -1147,8 +1148,8 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-    # Participants tests
 
+    # Participants tests
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
         # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
@@ -1316,7 +1317,7 @@ class ImportExperimentTest(TestCase):
                                               classification_of_diseases=cid102)
 
         # Remove their cpfs, we are simulating a new base
-        patient1.cpf=None
+        patient1.cpf = None
         patient2.cpf = None
         patient1.save()
         patient2.save()
@@ -1593,3 +1594,25 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self._assert_steps_imported(response)
+
+    def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block')
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+        eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
+        ObjectsFactory.create_data_configuration_tree(component_config)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        self.assertEqual(2, DataConfigurationTree.objects.count())
+        self.assertEqual(
+            DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
+        )
