@@ -1268,8 +1268,6 @@ class EEGData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
     def __str__(self):
         return self.description
 
@@ -1350,8 +1348,6 @@ class EMGData(DataFile, DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
-
-    # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
         return self.description

@@ -8173,7 +8173,6 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type,
             return HttpResponseRedirect(redirect_url + '?per_steps_tab=active')
 
     context = {"group": group,
-               # "operation": operation,
                "data_type": data_type,
                "data_type_name": data_type_name[data_type],
                "path_of_configuration": path_of_configuration,
