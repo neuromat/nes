@@ -832,7 +832,7 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
 
         file_name = handle_uploaded_file(file)
         import_experiment = ImportExperiment(file_name)
-        err_code, err_message = import_experiment.import_all(request, research_project_id)
+        err_code, err_message = import_experiment.import_all(research_project_id)
         os.remove(file_name)
 
         if err_code:
