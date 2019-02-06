@@ -46,6 +46,7 @@ The environment variables can be organized in the following groups:
 | Parameter | Description |
 | --------- | ------------ |
 | NES_DIR | Directory where NES will be installed. |
+| NES_TAG | NES tag version to be installed. |
 | NES_PROJECT_PATH | Subdirectory where the NES project is located. |
 | NES_SETUP_PATH | Subdirectory where the NES settings are located. |
 
