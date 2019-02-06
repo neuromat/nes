@@ -36,6 +36,16 @@ class ExportExperiment:
 
         sys.stdout = sysout
 
+    def generate_patient_fixture(self, filename, element, key_path):
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
+
+        call_command('dump_object', 'patient.' + element, '--query',
+                     '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
+                     )
+
+        sys.stdout = sysout
+
     def _remove_auth_user_model_from_json(self, filename):
         with open(path.join(self.temp_dir, filename)) as f:
             data = f.read().replace('\n', '')
@@ -90,9 +100,12 @@ class ExportExperiment:
     def export_all(self):
         key_path = 'component_ptr_id__experiment_id__in'
 
+        # Experiment
         self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
         self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
                               'component_id__experiment_id__in')
+        self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
+                              'component_configuration__component__experiment_id__in')
         self.generate_fixture('group.json', 'group', 'experiment_id__in')
         self.generate_fixture('block.json', 'block', key_path)
         self.generate_fixture('instruction.json', 'instruction', key_path)
@@ -106,6 +119,20 @@ class ExportExperiment:
         self.generate_fixture('tms.json', 'tms', key_path)
         self.generate_fixture('digital_game_phase.json', 'digitalgamephase', key_path)
         self.generate_fixture('generic_data_collection.json', 'genericdatacollection', key_path)
+        self.generate_fixture('participant.json', 'subjectofgroup', 'group_id__experiment_id__in')
+
+        # Patient
+        self.generate_patient_fixture('telephone.json', 'telephone',
+                                      'patient__subject__subjectofgroup__group__experiment_id__in')
+        self.generate_patient_fixture('socialhistorydata.json', 'socialhistorydata',
+                                      'patient__subject__subjectofgroup__group__experiment_id__in')
+        self.generate_patient_fixture('socialdemographicdata.json', 'socialdemographicdata',
+                                      'patient__subject__subjectofgroup__group__experiment_id__in')
+        self.generate_patient_fixture('diagnosis.json', 'diagnosis',
+                                      'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
+
+        # Set up
+        self.generate_fixture('tms_device.json', 'tmsdevicesetting', 'tms_setting__experiment_id__in')
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -117,7 +144,9 @@ class ExportExperiment:
         list_of_files = ['experimentfixture.json', 'componentconfiguration.json', 'group.json', 'block.json',
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
-                         'generic_data_collection.json', 'keywords.json']
+                         'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
+                         'socialhistorydata.json', 'socialdemographicdata.json', 'diagnosis.json',
+                         'tms_device.json', 'dataconfigurationtree.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -423,7 +452,8 @@ class ImportExperiment:
         # TODO: see if it's worth to put this list in class level
         if data[successor]['model'] not in [
             'experiment.block', 'experiment.instruction', 'experiment.questionnaire',
-            'experiment.tms', 'experiment.eeg', 'experiment.emg'
+            'experiment.tms', 'experiment.eeg', 'experiment.emg', 'experiment.tmsdevicesetting',
+            'experiment.tmsdevice'
         ]:
             data[successor]['pk'] = next_id
         for predecessor in DG.predecessors(successor):
@@ -443,13 +473,16 @@ class ImportExperiment:
                 for model in app.get_models():
                     if 'Goalkeeper' not in model.__name__:  # TODO: ver modelo com referência a outro bd: dá pau
                         last_model = model.objects.last()
-                        if last_model:
-                            last_model_id = model.objects.last().id
+                        if last_model and hasattr(last_model, 'id'):
+                            last_model_id = last_model.id
                             last_id = last_model_id if last_id < last_model_id else last_id
         return last_id + 1
 
     def _build_graph(self, data, research_project_id):
-        model_root_nodes = ['experiment.researchproject', 'experiment.manufacturer', 'survey.survey']
+        model_root_nodes = [
+            'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
+            'experiment.material'
+        ]
         foreign_relations = {
             'experiment.researchproject': [['', '']],
             'experiment.experiment': [['experiment.researchproject', 'research_project']],
@@ -464,6 +497,12 @@ class ImportExperiment:
             'survey.survey': [['', '']],
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
+            'experiment.tmsdevicesetting': [
+                ['experiment.coilmodel', 'coil_model'], ['experiment.tmsdevice', 'tms_device']
+            ],
+            'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
+            'experiment.coilshape': [['', '']],
+            'experiment.material': [['', '']],
             'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
             'experiment.eegsetting': [['experiment.experiment', 'experiment']],
             'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
@@ -472,10 +511,12 @@ class ImportExperiment:
             ],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
-            'experiment.manufacturer': [['', '']]
+            'experiment.manufacturer': [['', '']],
+            'experiment.equipment': [['experiment.manufacturer', 'manufacturer']]
 
         }
-        multi_table_inheritance = {
+        one_to_one_relation = {
+            # multi table inheritance
             'experiment.block': 'experiment.component',
             'experiment.instruction': 'experiment.component',
             'experiment.pause': 'experiment.component',
@@ -488,6 +529,9 @@ class ImportExperiment:
             'experiment.emg': 'experiment.component',
             'experiment.digital_game_phase': 'experiment.component',
             'experiment.generic_data_collection': 'experiment.component',
+            'experiment.tmsdevice': 'experiment.equipment',
+            # OneToOneField
+            'experiment.tmsdevicesetting': 'experiment.tmssetting',
         }
 
         DG = nx.DiGraph()
@@ -504,9 +548,9 @@ class ImportExperiment:
                     if index_to is not None:
                         DG.add_edge(index_from, index_to)
                         DG[index_from][index_to]['relation'] = node_to[1]
-            if dict_['model'] in multi_table_inheritance:
+            if dict_['model'] in one_to_one_relation:
                 node_from = dict_['model']
-                node_to = multi_table_inheritance[node_from]
+                node_to = one_to_one_relation[node_from]
                 index_to = next(
                     (index_inheritade for index_inheritade, dict_inheritade in enumerate(data)
                      if dict_inheritade['model'] == node_to and dict_inheritade['pk'] == dict_['pk']),
