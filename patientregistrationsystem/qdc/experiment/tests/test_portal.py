@@ -104,7 +104,7 @@ class PortalAPITest(TestCase):
         survey = create_survey(212121)  # fake number
         questionnaire_step = ObjectsFactory.create_component(
             experiment, Component.QUESTIONNAIRE,
-            kwargs={'sid': survey.id}
+            kwargs={'survey': survey}
         )
         ObjectsFactory.create_component_configuration(
             experimental_protocol, questionnaire_step

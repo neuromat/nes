@@ -83,7 +83,7 @@
                             <select class="form-control" name="manufacturer" id="id_manufacturer" {% if not editing and not creating %}disabled{% endif %}>
                                 <option value>-------</option>
                                 {% for manufacturer in manufacturer_list %}
-                                    <option {% if manufacturer.id == equipment_selected.manufacturer.id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                                    <option {% if manufacturer.id == equipment_form.instance.manufacturer_id %}selected="selected"{% endif %} value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
                                 {% endfor %}
                             </select>
                             <div class="help-block with-errors"></div>

@@ -1,16 +1,13 @@
 from django.contrib import admin
+from import_export import resources
 from simple_history.admin import SimpleHistoryAdmin
 from modeltranslation.admin import TranslationAdmin
 
-from .models import Experiment, QuestionnaireResponse, StimulusType, FileFormat, Tag, \
-    Software, SoftwareVersion, ADConverter, \
-    StandardizationSystem, EMGIntramuscularPlacement, EMGSurfacePlacement, EMGNeedlePlacement, \
-    Muscle, MuscleSubdivision, MuscleSide, \
-    ElectrodeShape, MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, \
-    CoilShape, TMSDevice, CoilModel, CoilOrientation, DirectionOfTheInducedCurrent, BrainArea, BrainAreaSystem, \
-    InformationType, GoalkeeperGame, GoalkeeperPhase
+from .models import QuestionnaireResponse, StimulusType, Tag, ADConverter, StandardizationSystem, ElectrodeShape, \
+    MeasureSystem, MeasureUnit, TetheringSystem, AmplifierDetectionType, ElectrodeConfiguration, CoilOrientation, \
+    DirectionOfTheInducedCurrent, BrainArea, BrainAreaSystem, InformationType, GoalkeeperGame, GoalkeeperPhase, \
+    ResearchProject, Experiment, Group, Component, ComponentConfiguration, ComponentAdditionalFile
 
-# admin.site.register(Experiment, SimpleHistoryAdmin)
 admin.site.register(QuestionnaireResponse, SimpleHistoryAdmin)
 
 
@@ -36,3 +33,72 @@ admin.site.register(BrainAreaSystem)
 admin.site.register(InformationType)
 admin.site.register(GoalkeeperGame)
 admin.site.register(GoalkeeperPhase)
+
+
+class ResearchProjectResource(resources.ModelResource):
+
+    class Meta:
+        model = ResearchProject
+        exclude = ('id', 'owner')
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = ResearchProject.objects.filter(id=kwargs['id'])
+        return super(ResearchProjectResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False
+
+
+class ExperimentResource(resources.ModelResource):
+
+    class Meta:
+        model = Experiment
+        exclude = ('id', 'last_update', 'last_sending')
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = Experiment.objects.filter(id=kwargs['id'])
+        return super(ExperimentResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False
+
+
+class GroupResource(resources.ModelResource):
+
+    class Meta:
+        model = Group
+        exclude = ('experiment', 'id')
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = Group.objects.filter(experiment=kwargs['experiment'])
+        return super(GroupResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False
+
+
+class ComponentResource(resources.ModelResource):
+
+    class Meta:
+        model = Component
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = Component.objects.filter(id__in=kwargs['ids'])
+        return super(ComponentResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False
+
+
+class ComponentConfigResource(resources.ModelResource):
+
+    class Meta:
+        model = ComponentConfiguration
+        exclude = ('id', )
+
+    def export(self, queryset=None, *args, **kwargs):
+        queryset = ComponentConfiguration.objects.filter(parent_id__in=kwargs['ids'])
+        return super(ComponentConfigResource, self).export(queryset, *args, **kwargs)
+
+    def get_instance(self, instance_loader, row):
+        return False

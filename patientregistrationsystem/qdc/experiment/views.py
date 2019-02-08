@@ -3,6 +3,7 @@ import csv
 import re
 import json
 import random
+import tempfile
 
 import numpy as np
 
@@ -40,6 +41,7 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
+from experiment.import_export import ExportExperiment, ImportExperiment
 from qdc.settings import MEDIA_ROOT
 from survey.survey_utils import QuestionnaireUtils
 from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
@@ -795,6 +797,66 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
 
 
 @login_required
+# @permission_required('experiment.export_experiment')  # TODO: add permisson
+def experiment_export(request, experiment_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    export = ExportExperiment(experiment)
+    export.export_all()
+
+    file = open(path.join(export.temp_dir, export.FILE_NAME), 'rb')
+    response = HttpResponse(file, content_type='application/json')
+    response['Content-Length'] = path.getsize(file.name)
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('experiment.json')
+
+    return response
+
+
+def handle_uploaded_file(file):
+    with tempfile.NamedTemporaryFile('wb+', delete=False) as f:
+        for chunk in file.chunks():
+            f.write(chunk)
+        return f.name
+
+
+@login_required
+# @permission_required('experiment.import_experiment')  # TODO: add permissons
+def experiment_import(request, template_name='experiment/experiment_import.html', research_project_id=None):
+    if request.method == 'GET':
+        return render(request, template_name, context={'research_project_id': research_project_id})
+    if request.method == 'POST':
+        file = request.FILES.get('file')
+        if not file:
+            messages.warning(request, _('Please select a json file'))
+            return HttpResponseRedirect(reverse('experiment_import'))
+
+        file_name = handle_uploaded_file(file)
+        import_experiment = ImportExperiment(file_name)
+        err_code, err_message = import_experiment.import_all(request, research_project_id)
+        os.remove(file_name)
+
+        if err_code:
+            messages.error(request, _(err_message))
+            return HttpResponseRedirect(reverse('experiment_import'))
+
+        if research_project_id:
+            messages.success(request, _('Experiment successfully imported.'))
+        else:
+            messages.success(request, _('Experiment successfully imported. New study was created.'))
+
+        # Push new object in session to display log to users
+        request.session['objects_imported'] = import_experiment.get_new_objects()
+        return HttpResponseRedirect(reverse('import_log'))
+
+
+@login_required
+# @permission_required('experiment.import_experiment')  # TODO: add permissons
+def import_log(request):
+    context = request.session.get('objects_imported')
+    return render(request, 'experiment/import_log.html', context)
+
+
+@login_required
 @permission_required('experiment.change_experiment')
 def experiment_schedule_of_sending(request, experiment_id,
                                    template_name="experiment/experiment_schedule_of_sending.html"):
@@ -811,7 +873,7 @@ def experiment_schedule_of_sending(request, experiment_id,
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     experiment_questionnaires = {}
-    for group in experiment.group_set.all():
+    for group in experiment.groups.all():
 
         list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "questionnaire")
         for path_tree in list_of_eeg_configuration:
@@ -7423,17 +7485,17 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
 
 
 def create_csv_for_goalkeeper(complete_filename, config, results):
-    header = ['player alias','group code','institution','id',
-              'soccer team','game','phase','session time(s)',
-              'relax time(s)','game data','game time','game random',
-              'limit plays','total correct','success rate',
-              'game mode','status','plays to relax',
-              'scoreboard','final scoreboard','animation type',
-              'min hits','playermachine',
-              'move','time until any key(s)','time until show again(s)','waited result',
-              'eh random?','option chosen','movement time(s)','decision time(s)',
+    header = ['player alias', 'group code', 'institution', 'id',
+              'soccer team', 'game', 'phase', 'session time(s)',
+              'relax time(s)', 'game data', 'game time', 'game random',
+              'limit plays', 'total correct', 'success rate',
+              'game mode', 'status', 'plays to relax',
+              'scoreboard', 'final scoreboard', 'animation type',
+              'min hits', 'playermachine',
+              'move', 'time until any key(s)', 'time until show again(s)', 'waited result',
+              'eh random?', 'option chosen', 'movement time(s)', 'decision time(s)',
               'sequence executed']
-    rows_to_be_saved = []
+    rows_to_be_saved = list()
     rows_to_be_saved.append(header)
     for result in results:
         rows_to_be_saved.append([config.playeralias, config.groupcode, config.institution, config.idresult,
@@ -8111,7 +8173,6 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type,
             return HttpResponseRedirect(redirect_url + '?per_steps_tab=active')
 
     context = {"group": group,
-               # "operation": operation,
                "data_type": data_type,
                "data_type_name": data_type_name[data_type],
                "path_of_configuration": path_of_configuration,
@@ -12938,6 +12999,8 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
 
     coil_model_form = CoilModelForm(request.POST or None, instance=coil_model_selected)
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="tms_device").distinct()
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -12960,7 +13023,8 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
                "equipment_form": equipment_form,
-               "coil_model_form": coil_model_form
+               "coil_model_form": coil_model_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)

@@ -123,10 +123,9 @@ class ExperimentResearcher(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.pk and not self.channel_index:
-            top = \
-                ExperimentResearcher.objects.filter(
-                    experiment=self.experiment).order_by(
-                    '-channel_index').first()
+            top = ExperimentResearcher.objects.filter(
+                experiment=self.experiment
+            ).order_by('-channel_index').first()
             self.channel_index = top.channel_index + 1 if top else 1
         super(ExperimentResearcher, self).save()
 
@@ -879,7 +878,7 @@ class Component(models.Model):
     description = models.TextField(null=True, blank=True)
     duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    experiment = models.ForeignKey(Experiment)
+    experiment = models.ForeignKey(Experiment, related_name='components')
     component_type = models.CharField(max_length=30, choices=COMPONENT_TYPES)
 
     def save(self, *args, **kwargs):
@@ -1064,7 +1063,7 @@ class ComponentConfiguration(models.Model):
 
 
 class Group(models.Model):
-    experiment = models.ForeignKey(Experiment, null=False, blank=False)
+    experiment = models.ForeignKey(Experiment, null=False, blank=False, related_name='groups')
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
@@ -1269,8 +1268,6 @@ class EEGData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
     def __str__(self):
         return self.description
 
@@ -1351,8 +1348,6 @@ class EMGData(DataFile, DataCollection):
 
     # Audit trail - Simple History
     history = HistoricalRecords()
-
-    # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
         return self.description
