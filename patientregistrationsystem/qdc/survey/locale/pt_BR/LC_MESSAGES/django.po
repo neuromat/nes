@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 11:55-0200\n"
+"POT-Creation-Date: 2019-01-24 08:43-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,20 +38,20 @@ msgstr "Está ativo?"
 msgid "View"
 msgstr "Visualizar"
 
-#: survey/templates/survey/survey_list.html:66
+#: survey/templates/survey/survey_list.html:65
 #: survey/templates/survey/survey_register.html:97
 msgid ""
 "Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey."
 msgstr ""
-"Esteja ciente que o NES não importa arquivos carregados em questões no "
-"Limesurvey"
+"Esteja ciente que o NES não importa arquivos carregados pelo Limesurvey "
+"através de questões do tipo 'Envio de arquivo'"
 
-#: survey/templates/survey/survey_list.html:67
+#: survey/templates/survey/survey_list.html:66
 #: survey/templates/survey/survey_register.html:98
 msgid "See more details in"
 msgstr "Veja mais detalhes em"
 
-#: survey/templates/survey/survey_list.html:72
+#: survey/templates/survey/survey_list.html:70
 msgid "Insert new questionnaire"
 msgstr "Inserir novo questionário"
 
@@ -192,39 +192,46 @@ msgstr "Código"
 msgid "Description"
 msgstr "Descrição"
 
-#: survey/views.py:118
+#: survey/views.py:110
 msgid "No questionnaire found."
 msgstr "Questionário não encontrado"
 
-#: survey/views.py:140
-msgid "NES can't retrieve files from \"file upload\" questions from LimeSurvey."
-msgstr "NES não importa arquivos carregados em questões no LimeSurvey."
+#: survey/views.py:132
+msgid ""
+"NES can't retrieve files from \"file upload\" questions from LimeSurvey."
+msgstr ""
+"O NES não importa arquivos carregados pelo Limesurvey através de questões do "
+"tipo 'Envio de arquivo'."
 
-#: survey/views.py:142
-msgid "See \"Best Pratices and Recommendations\" at https://nes.rtfd.io for more details."
-msgstr "Veja \"Best Pratices and Recommendations\" em https://nes.rtfd.io para mais detalhes."
+#: survey/views.py:134
+msgid ""
+"See \"Best Pratices and Recommendations\" at https://nes.rtfd.io for more "
+"details."
+msgstr ""
+"Veja \"Best Pratices and Recommendations\" em https://nes.rtfd.io para mais "
+"detalhes."
 
-#: survey/views.py:144
+#: survey/views.py:136
 msgid "Questionnaire created successfully."
 msgstr "Questionário criado com sucesso."
 
-#: survey/views.py:181
+#: survey/views.py:173
 msgid "Questionnaire updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:183 survey/views.py:262
+#: survey/views.py:175 survey/views.py:254
 msgid "There are no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: survey/views.py:260
+#: survey/views.py:252
 msgid "Questionnaire was updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:572
+#: survey/views.py:564
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:575
+#: survey/views.py:567
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
@@ -232,24 +239,24 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:697
+#: survey/views.py:689
 msgid "Other"
 msgstr "Outros"
 
-#: survey/views.py:732
+#: survey/views.py:724
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:821 survey/views.py:844 survey/views.py:882
+#: survey/views.py:813 survey/views.py:836 survey/views.py:874
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:930
+#: survey/views.py:922
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:974
+#: survey/views.py:966
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
 

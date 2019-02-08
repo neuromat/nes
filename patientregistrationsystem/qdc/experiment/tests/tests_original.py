@@ -4,12 +4,12 @@ import random
 import tempfile
 
 import os
+import zipfile
 
-import shutil
 from django.core.files import File
 from django.db import IntegrityError
 from django.db.models.loading import get_model
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -34,14 +34,11 @@ from experiment.models import Experiment, Group, Subject, \
     ContextTree, ExperimentResearcher, InformationType, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
     GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
-    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, TMSData, HotSpot, \
-    DirectionOfTheInducedCurrent, BrainAreaSystem, BrainArea, \
-    TMSLocalizationSystem, CoilOrientation, TMSDeviceSetting
-from custom_user.models import UserProfile
+    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
-    publication_add_experiment, STIMULUS
+    publication_add_experiment
 
 from custom_user.views import User
 
@@ -50,7 +47,7 @@ from patient.tests import UtilTests
 
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
-
+from survey.tests.tests_helper import create_survey
 
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
@@ -244,17 +241,17 @@ class ObjectsFactory(object):
         faker = Factory.create()
 
         if component_type == Component.TASK_EXPERIMENT:
-            model = TaskForTheExperimenter.__name__  #TaskForTheExperimenter
+            model = TaskForTheExperimenter.__name__
         elif component_type == Component.DIGITAL_GAME_PHASE:
-            model = DigitalGamePhase.__name__  # DigitalGamePhase
+            model = DigitalGamePhase.__name__
         elif component_type == Component.GENERIC_DATA_COLLECTION:
-            model = GenericDataCollection.__name__  # GenericDataCollection
+            model = GenericDataCollection.__name__
         elif component_type == Component.EEG:
-            model = EEG.__name__  # EEG
+            model = EEG.__name__
         elif component_type == Component.EMG:
-            model = EMG.__name__  # EMG
+            model = EMG.__name__
         elif component_type == Component.TMS:
-            model = TMS.__name__  # TMS
+            model = TMS.__name__
         else:
             model = component_type
 
@@ -262,12 +259,12 @@ class ObjectsFactory(object):
             experiment=experiment,
             identification=identification or faker.ssn(),
             component_type=component_type,
-            description=faker.text(),
+            description=faker.text(max_nb_chars=15),
         )
 
         if component_type == Component.QUESTIONNAIRE:
             try:
-                component.survey_id = kwargs['sid']
+                component.survey = kwargs['survey']
             except KeyError:
                 print('You must specify \'sid\' key in kwargs dict')
         elif component_type == Component.GENERIC_DATA_COLLECTION:
@@ -294,7 +291,7 @@ class ObjectsFactory(object):
         elif component_type == Component.STIMULUS:
             try:
                 component.stimulus_type = kwargs['stimulus_type']
-                component.media_file = kwargs['media_file']
+                component.media_file = kwargs.get('media_file', None)
             except KeyError:
                 print('You must specify \'stimulus_type\' and \'media_file\' key in kwargs dict')
         elif component_type == Component.TMS:
@@ -322,7 +319,7 @@ class ObjectsFactory(object):
         group = Group.objects.create(
             experiment=experiment,
             title=faker.word(),
-            description=faker.text(),
+            description=faker.text(max_nb_chars=15),
             experimental_protocol=experimental_protocol
         )
         return group
@@ -571,13 +568,6 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_binary_file(path):
-        with open(os.path.join(path,'file.bin'), 'wb') as f:
-            f.write(b'carambola')
-            return f
-
-    @staticmethod
-
     def create_generic_data_collection_data(data_conf_tree,
                                             subj_of_group):
 
@@ -592,10 +582,25 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_binary_file(path):
-        with open(os.path.join(path, 'file.bin'), 'wb') as f:
+    def create_binary_file(path, name='file.bin'):
+        with open(os.path.join(path, name), 'wb') as f:
             f.write(b'carambola')
             return f
+
+    @staticmethod
+    def create_csv_file(dir_, name='file.csv'):
+        with open(os.path.join(dir_, name), 'w') as f:
+            f.write('h1,h2\n')
+            f.write('v1,v2\n')
+            return f
+
+    @staticmethod
+    def create_zipfile(zip_dir, file_list):
+        zip_file = zipfile.ZipFile(os.path.join(zip_dir, 'dummy_file.zip'), 'w')
+        for file in file_list:
+            zip_file.write(file.name, os.path.basename(file.name))
+        zip_file.close()
+        return zip_file
 
     @staticmethod
     def create_generic_data_colletion_file(gdc_data):
@@ -613,8 +618,7 @@ class ObjectsFactory(object):
         return gdcf
 
     @staticmethod
-    def create_eeg_data_collection_data(data_conf_tree,
-                                            subj_of_group, eeg_set):
+    def create_eeg_data_collection_data(data_conf_tree, subj_of_group, eeg_set):
 
         faker = Factory.create()
 
@@ -754,6 +758,48 @@ class ObjectsFactory(object):
             hotspot.save()
 
         return hotspot
+
+    @staticmethod
+    def create_complete_set_of_components(experiment, rootcomponent):
+        component1 = ObjectsFactory.create_component(experiment, Component.INSTRUCTION)
+        ObjectsFactory.create_component_configuration(rootcomponent, component1)
+        component2 = ObjectsFactory.create_component(experiment, Component.PAUSE)
+        ObjectsFactory.create_component_configuration(rootcomponent, component2)
+        survey = create_survey(123458)
+        component3 = ObjectsFactory.create_component(experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, component3)
+        stimulus_type = ObjectsFactory.create_stimulus_type()
+        component4 = ObjectsFactory.create_component(
+            experiment, Component.STIMULUS, kwargs={'stimulus_type': stimulus_type}
+        )
+        ObjectsFactory.create_component_configuration(rootcomponent, component4)
+        component5 = ObjectsFactory.create_component(experiment, Component.TASK)
+        ObjectsFactory.create_component_configuration(rootcomponent, component5)
+        component6 = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
+        ObjectsFactory.create_component_configuration(rootcomponent, component6)
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+        component9 = ObjectsFactory.create_component(experiment, Component.EEG, kwargs={'eeg_set': eeg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component9)
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        acquisition_software = ObjectsFactory.create_software_version(software)
+        emg_setting = ObjectsFactory.create_emg_setting(experiment, acquisition_software)
+        component10 = ObjectsFactory.create_component(experiment, Component.EMG, kwargs={'emg_set': emg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component10)
+        tms_setting = ObjectsFactory.create_tms_setting(experiment)
+        component11 = ObjectsFactory.create_component(experiment, Component.TMS, kwargs={'tms_set': tms_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component11)
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+        component12 = ObjectsFactory.create_component(
+            experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': acquisition_software, 'context_tree': context_tree}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component12)
+        information_type = ObjectsFactory.create_information_type()
+        component13 = ObjectsFactory.create_component(
+            experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component13)
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -1177,7 +1223,7 @@ class GroupTest(TestCase):
         # Inserting a group in the experiment
         response = self.client.post(reverse("group_new", args=(experiment.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(experiment.group_set.count(), 1)
+        self.assertEqual(experiment.groups.count(), 1)
 
     def test_group_update(self):
 
@@ -1199,7 +1245,7 @@ class GroupTest(TestCase):
         # Editing a group in the experiment
         response = self.client.post(reverse("group_edit", args=(group.id,)), self.data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(experiment.group_set.count(), 1)
+        self.assertEqual(experiment.groups.count(), 1)
         self.assertTrue(Group.objects.filter(title="Group-1", description="Description of Group-1").exists())
 
         # Trying to editing a group with no changes

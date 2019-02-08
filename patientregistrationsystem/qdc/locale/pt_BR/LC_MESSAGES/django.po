@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 11:55-0200\n"
+"POT-Creation-Date: 2019-01-24 08:43-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -672,8 +672,7 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
-#: templates/404.html:14
-#: templates/registration/change_password_custom.html:143
+#: templates/404.html:14 templates/registration/change_password_custom.html:143
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Home"
@@ -829,7 +828,7 @@ msgstr ""
 "foi usado anteriormente. <br/>\n"
 "                Por favor, faça uma nova requisição de redefinição de senha."
 
-#: templates/registration/password_reset_done.html:18
+#: templates/registration/password_reset_done.html:16
 msgid ""
 "We sent you a message with instructions to set up your password\n"
 "            for the e-mail provided. "
@@ -838,7 +837,7 @@ msgstr ""
 "endereço de\n"
 "            e-mail informado. "
 
-#: templates/registration/password_reset_done.html:20
+#: templates/registration/password_reset_done.html:18
 msgid "You should receive it soon."
 msgstr "Você deve recebê-lo em breve."
 
