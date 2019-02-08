@@ -11,13 +11,19 @@ from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 
 from custom_user.tests_helper import create_user
+from django.apps import apps
 from experiment.import_export import ExportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
     Block, TMS, ComponentConfiguration, Questionnaire, Subject, SubjectOfGroup, \
     DataConfigurationTree, Manufacturer, Material, TMSDevice, TMSDeviceSetting, \
-    CoilModel, CoilShape, TMSSetting, Equipment
+    CoilModel, CoilShape, TMSSetting, Equipment, EEGSetting, EEGElectrodeLayoutSetting, \
+    EEGElectrodeNetSystem, EEGElectrodeNet, ElectrodeModel, ElectrodeConfiguration, \
+    EEGElectrodeLocalizationSystem, EEGElectrodePositionSetting, EEGElectrodePosition, \
+    EEGFilterSetting, FilterType, Amplifier, EEGAmplifierSetting, EEGSolutionSetting, EEGSolution, \
+    EMGSetting, EMGElectrodeSetting, EMGADConverterSetting, ADConverter, EMGDigitalFilterSetting, \
+    FilterType, SoftwareVersion, Software, AmplifierDetectionType, TetheringSystem
 from experiment.models import Group as ExperimentGroup
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     AmountCigarettes, ClassificationOfDiseases, Diagnosis, AlcoholFrequency, AlcoholPeriod
@@ -41,7 +47,6 @@ class ScheduleOfSendingListViewTest(TestCase):
         self.assertEqual(logged, True)
 
     def test_Schedule_of_Sending_List_is_valid(self):
-
         # Check if list of research projects is empty before inserting any.
         response = self.client.get(reverse('research_project_list'))
         self.assertEqual(response.status_code, 200)
@@ -56,7 +61,7 @@ class ScheduleOfSendingListViewTest(TestCase):
 
         can_send_to_portal = False
         if settings.PORTAL_API['URL'] and settings.SHOW_SEND_TO_PORTAL_BUTTON:
-                can_send_to_portal = True
+            can_send_to_portal = True
 
         # Check if list of research projects returns one item after inserting one.
         response = self.client.get(reverse('schedule_of_sending_list'))
@@ -77,7 +82,7 @@ class PermissionsresearchprojectupdateViewtest(TestCase):
         user_profile.save()
 
         for group in Group.objects.all():
-        # for group in Group.objects.filter(name='Attendant'):
+            # for group in Group.objects.filter(name='Attendant'):
             group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
@@ -461,7 +466,7 @@ class ImportExperimentTest(TestCase):
         response = self.client.get(reverse('experiment_import'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'experiment/experiment_import.html')
-    
+
     def test_POST_experiment_import_file_has_not_file_redirects_with_warning_message(self):
         response = self.client.post(reverse('experiment_import'), {'file': ''}, follow=True)
         self.assertRedirects(response, reverse('experiment_import'))
@@ -836,7 +841,8 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_creates_groups_with_reuses_of_their_experimental_protocol_and_returns_successful_message(self):
+    def test_POST_experiment_import_file_creates_groups_with_reuses_of_their_experimental_protocol_and_returns_successful_message(
+            self):
         # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         # Create experiment
@@ -968,7 +974,103 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
+    def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name,
+                                                      linking_field, type_of_experiment):
+        """
+        This test is a general test for testing the sucessfull importation of two linked models
+        :param model_1_name: Name of the model inherited by the second model; The one that is being pointed at.
+        :param model_2_name: Name of the model that inherits the first model; The one that is pointing to.
+        :param linking_field: Name of the field that links both models
+        """
+        model_1 = apps.get_model(model_1_name)
+        model_2 = apps.get_model(model_2_name)
+
+        experiment = type_of_experiment
+        export = ExportExperiment(experiment)
+        export.export_all()
+
+        file_path = export.get_file_path()
+
+        old_model_1_objects_ids = list(model_1.objects.values_list('pk', flat=True))
+        old_model_2_objects_ids = list(model_2.objects.values_list('pk', flat=True))
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_model_1_objects = model_1.objects.exclude(
+            pk__in=old_model_1_objects_ids
+        )
+        new_model_2_objects = model_2.objects.exclude(
+            pk__in=old_model_2_objects_ids
+        )
+
+        self.assertEqual(model_1.objects.count(),
+                         len(old_model_1_objects_ids) + new_model_1_objects.count()
+                         )
+        self.assertEqual(model_2.objects.count(),
+                         len(old_model_2_objects_ids) + new_model_2_objects.count()
+                         )
+        for item in new_model_1_objects:
+            dinamic_filter = {linking_field: item.pk}
+            self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
+
     # TMS tests
+    def _create_experiment_with_tms_setting(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        tms_setting = TMSSetting.objects.create(experiment=experiment,
+                                                name='TMS-Setting name',
+                                                description='TMS-Setting description')
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER')
+        tms_device = TMSDevice.objects.create(identification='TEST_DEVICE_IDENTIFICATION',
+                                              manufacturer=manufacturer)
+        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
+        coil_shape = CoilShape.objects.create(name='TEST_COIL_SHAPE')
+        coil_model = CoilModel.objects.create(name='TEST_COIL_MODEL', coil_shape=coil_shape, material=material)
+
+        tms_device_setting = TMSDeviceSetting.objects.create(tms_setting=tms_setting,
+                                                             tms_device=tms_device,
+                                                             coil_model=coil_model)
+
+        return experiment
+
+    def test_tms_device_and_tms_device_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmsdevice',
+                                                           'experiment.tmsdevicesetting',
+                                                           'tms_device_id',
+                                                           self._create_experiment_with_tms_setting())
+
+    def test_material_and_coil_model(self):
+        self._test_creation_and_linking_between_two_models('experiment.material',
+                                                           'experiment.coilmodel',
+                                                           'material_id',
+                                                           self._create_experiment_with_tms_setting())
+
+    def test_coil_shape_and_coil_model(self):
+        self._test_creation_and_linking_between_two_models('experiment.coilshape',
+                                                           'experiment.coilmodel',
+                                                           'coil_shape_id',
+                                                           self._create_experiment_with_tms_setting())
+
+    def test_coil_model_and_tms_device_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.coilmodel',
+                                                           'experiment.tmsdevicesetting',
+                                                           'coil_model_id',
+                                                           self._create_experiment_with_tms_setting())
+
+    def test_tms_setting_and_tms_device_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmssetting',
+                                                           'experiment.tmsdevicesetting',
+                                                           'tms_setting_id',
+                                                           self._create_experiment_with_tms_setting())
+
+    def test_experiment_and_tms_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.experiment',
+                                                           'experiment.tmssetting',
+                                                           'experiment_id',
+                                                           self._create_experiment_with_tms_setting())
+
     def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_and_returns_successful_message(self):
         # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
@@ -1064,7 +1166,8 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_with_reuse_and_returns_successful_message(self):
+    def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_with_reuse_and_returns_successful_message(
+            self):
         # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         # Create experiment
@@ -1151,6 +1254,165 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    # EEG tests
+    def _create_experiment_with_eeg_setting(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        eeg_setting = EEGSetting.objects.create(experiment=experiment,
+                                                name='EEG-Setting name',
+                                                description='EEG-Setting description')
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER')
+        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
+        electrode_config = ElectrodeConfiguration.objects.create(name='Electrode config name')
+        electrode_loc_sys = EEGElectrodeLocalizationSystem.objects.create(name='TEST_EEGELocS')
+
+        electrode_model = ElectrodeModel.objects.create(name='TEST_ELECTRODE_MODEL',
+                                                        electrode_configuration=electrode_config,
+                                                        material=material)
+        electrode_net = EEGElectrodeNet.objects.create(identification='TEST_ELECTRODE_NET',
+                                                       electrode_model_default=electrode_model,
+                                                       manufacturer=manufacturer)
+        electrode_net_sys = EEGElectrodeNetSystem.objects.create(eeg_electrode_net=electrode_net,
+                                                                 eeg_electrode_localization_system=electrode_loc_sys)
+        electrode_pos = EEGElectrodePosition.objects.create(name='TEST_ELECTRODE_POSITION',
+                                                            eeg_electrode_localization_system=electrode_loc_sys)
+        electrode_layout_sys = EEGElectrodeLayoutSetting.objects.create(eeg_electrode_net_system=electrode_net_sys,
+                                                                        eeg_setting=eeg_setting)
+        electrode_position_system = EEGElectrodePositionSetting.objects.create(
+            eeg_electrode_layout_setting=electrode_layout_sys,
+            eeg_electrode_position=electrode_pos,
+            electrode_model=electrode_model,
+            used=True,
+            channel_index=1
+        )
+
+        filter_type = FilterType.objects.create(name='TEST_FILTER_TYPE')
+        eeg_filter_setting = EEGFilterSetting.objects.create(eeg_setting=eeg_setting,
+                                                             eeg_filter_type=filter_type)
+        amplifier_detection_type = AmplifierDetectionType.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
+        tethering_system = TetheringSystem.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
+        amplifier = Amplifier.objects.create(identification='AMPLIFIER',
+                                             amplifier_detection_type=amplifier_detection_type,
+                                             tethering_system=tethering_system,
+                                             manufacturer=manufacturer)
+        eeg_amplifier_setting = EEGAmplifierSetting.objects.create(eeg_amplifier=amplifier,
+                                                                   eeg_setting=eeg_setting)
+
+        eeg_solution = EEGSolution.objects.create(name='TEST_EEG_SOLUTION',
+                                                  manufacturer=manufacturer)
+        eeg_solution_setting = EEGSolutionSetting.objects.create(eeg_setting=eeg_setting,
+                                                                 eeg_solution=eeg_solution)
+
+        return experiment
+
+    def test_electrode_configuration_and_electrode_model(self):
+        self._test_creation_and_linking_between_two_models('experiment.electrodeconfiguration',
+                                                           'experiment.electrodemodel',
+                                                           'electrode_configuration_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_material_and_electrode_model(self):
+        self._test_creation_and_linking_between_two_models('experiment.material',
+                                                           'experiment.electrodemodel',
+                                                           'material_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_electrode_model_and_eeg_electrode_position_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.electrodemodel',
+                                                           'experiment.eegelectrodepositionsetting',
+                                                           'electrode_model_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_electrode_model_and_eeg_electrode_net(self):
+        self._test_creation_and_linking_between_two_models('experiment.electrodemodel',
+                                                           'experiment.eegelectrodenet',
+                                                           'electrode_model_default_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_electrode_localization_system_and_eeg_electrode_position(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegelectrodelocalizationsystem',
+                                                           'experiment.eegelectrodeposition',
+                                                           'eeg_electrode_localization_system_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_electrode_localization_system_and_eeg_electrode_net_system(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegelectrodelocalizationsystem',
+                                                           'experiment.eegelectrodenetsystem',
+                                                           'eeg_electrode_localization_system_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_electrode_net_and_eeg_electrode_net_system(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegelectrodenet',
+                                                           'experiment.eegelectrodenetsystem',
+                                                           'eeg_electrode_net_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_electrode_net_system_and_eeg_electrode_layout_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegelectrodenetsystem',
+                                                           'experiment.eegelectrodelayoutsetting',
+                                                           'eeg_electrode_net_system_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_electrode_layout_setting_and_eeg_electrode_position_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegelectrodelayoutsetting',
+                                                           'experiment.eegelectrodepositionsetting',
+                                                           'eeg_electrode_layout_setting_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_electrode_position_and_eeg_electrode_position_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegelectrodeposition',
+                                                           'experiment.eegelectrodepositionsetting',
+                                                           'eeg_electrode_position_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_setting_and_eeg_electrode_layout_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegsetting',
+                                                           'experiment.eegelectrodelayoutsetting',
+                                                           'eeg_setting_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_experiment_and_eeg_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.experiment',
+                                                           'experiment.eegsetting',
+                                                           'experiment_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_filter_type_and_eeg_filter_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.filtertype',
+                                                           'experiment.eegfiltersetting',
+                                                           'eeg_filter_type_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_amplifier_and_eeg_amplifier_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.amplifier',
+                                                           'experiment.eegamplifiersetting',
+                                                           'eeg_amplifier_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_solution_and_eeg_solution_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegsolution',
+                                                           'experiment.eegsolutionsetting',
+                                                           'eeg_solution_id',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_setting_and_eeg_filter_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegsetting',
+                                                           'experiment.eegfiltersetting',
+                                                           'eeg_setting',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_setting_and_eeg_amplifier_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegsetting',
+                                                           'experiment.eegamplifiersetting',
+                                                           'eeg_setting',
+                                                           self._create_experiment_with_eeg_setting())
+
+    def test_eeg_setting_and_eeg_solution_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.eegsetting',
+                                                           'experiment.eegsolutionsetting',
+                                                           'eeg_setting',
+                                                           self._create_experiment_with_eeg_setting())
 
     # Participants tests
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
