@@ -12,7 +12,10 @@ from django.db.models import Count
 from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection,\
     Subject, SubjectOfGroup, DataConfigurationTree, Manufacturer, TMSSetting, TMSDevice, CoilShape, \
-    CoilModel, Material, Equipment
+    CoilModel, Material, Equipment, EEGSetting, EEGElectrodeLayoutSetting, EEGElectrodePositionSetting, \
+    EEGAmplifierSetting, Amplifier, EEGSolution, EEGSolutionSetting, EEGFilterSetting, FilterType, \
+    EEGElectrodeNetSystem, EEGElectrodeNet, EEGElectrodePosition, EEGElectrodeLocalizationSystem, \
+    ElectrodeModel, ElectrodeConfiguration
 from patient.models import Patient, SocialHistoryData, SocialDemographicData, Telephone,\
     MedicalRecordData, Diagnosis, ClassificationOfDiseases
 from survey.models import Survey
@@ -134,8 +137,19 @@ class ExportExperiment:
         self.generate_patient_fixture('diagnosis.json', 'diagnosis',
                                       'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
 
-        # Set up
+        # TMS
         self.generate_fixture('tms_device.json', 'tmsdevicesetting', 'tms_setting__experiment_id__in')
+        self.generate_fixture('tms_setting.json', 'tmssetting', 'experiment_id__in')
+
+        # EEG
+        self.generate_fixture('eeg_amplifier_setting.json', 'eegamplifiersetting', 'eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_solution_setting.json', 'eegsolutionsetting', 'eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_filter_setting.json', 'eegfiltersetting', 'eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_electrode_layout_setting.json', 'eegelectrodelayoutsetting',
+                              'eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_electrode_position_setting.json', 'eegelectrodepositionsetting',
+                              'eeg_electrode_layout_setting__eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_setting.json', 'eegsetting', 'experiment_id__in')
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -148,8 +162,10 @@ class ExportExperiment:
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
                          'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'socialhistorydata.json', 'socialdemographicdata.json', 'diagnosis.json',
-                         'tms_device.json', 'dataconfigurationtree.json']
+                         'socialhistorydata.json', 'socialdemographicdata.json', 'dataconfigurationtree.json',
+                         'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
+                         'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
+                         'eeg_electrode_position_setting.json', 'eeg_setting.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -355,10 +371,9 @@ class ImportExperiment:
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
 
-        list_of_dependent_models = ['experiment.eegsetting', 'experiment.emgsetting', 'experiment.tmssetting',
-                                    'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype']
-        list_of_dependent_models_fields = ['eeg_setting', 'emg_setting', 'tms_setting',
-                                           'information_type', 'context_tree', 'stimulus_type']
+        list_of_dependent_models = ['experiment.emgsetting', 'experiment.informationtype',
+                                    'experiment.contexttree', 'experiment.stimulustype']
+        list_of_dependent_models_fields = ['emg_setting', 'information_type', 'context_tree', 'stimulus_type']
 
         model_ = apps.get_model(model)
         next_model_id = model_.objects.last().id + 1 if model_.objects.count() > 0 else 1
@@ -383,8 +398,7 @@ class ImportExperiment:
                     indexes_of_dependent_models_already_updated.append(index_row)
             next_model_id += 1
 
-    # BRANCH FROM MANUFACTURER
-
+    # COMMON MODELS INHERITED FOR TMS, EEG AND EMG MODELS
     @staticmethod
     def _update_pk_manufacturer(data):
         # Which elements of the json file ("data") represent this model
@@ -393,20 +407,20 @@ class ImportExperiment:
 
         next_manufacturer_id = Manufacturer.objects.last().id + 1 if Manufacturer.objects.count() > 0 else 1
 
-        # Update the pk of each dependent model to the id of new manufacturer model
+        # Update the json fields that point to the manufacturer(s) exported
         indexes_of_dependent_models_already_updated = []
         for i in indexes:
             old_manufacturer_id = data[i]['pk']
             manufacturer_already_in_database = Manufacturer.objects.filter(name=data[i]['fields']['name']).first()
 
+            # If the manufacturer already exists in the database, we don't create a new one, instead, we point to it.
+            # Otherwise, we create a new entry in the database
             if not manufacturer_already_in_database:
                 data[i]['pk'] = next_manufacturer_id
             else:
                 data[i]['pk'] = manufacturer_already_in_database.id
 
-            # Update each item of the json file that have the corresponding field to
-            # the dependent model and point to the old_model_id and has not been
-            # already updated
+            # Update each item of the json file that have a field pointing to the manufacturer
             for (index_row, dict_) in enumerate(data):
                 if field in data[index_row]['fields'] \
                         and data[index_row]['fields'][field] == old_manufacturer_id \
@@ -419,26 +433,64 @@ class ImportExperiment:
     def _update_pk_equipment(data):
         # Which elements of the json file ("data") represent this model
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.equipment']
-        fields = ['equipment_ptr', 'equipment']
+        # We have at least two models that point to this model, but with different field names
+        fields = ['equipment', 'equipment_ptr']
 
         next_equipment_id = Equipment.objects.last().id + 1 if Equipment.objects.count() > 0 else 1
 
-        # Update the pk of each dependent model to the id of new manufacturer model
+        # List of models that have the equipment id as their own id
+        list_of_dependent_models = ['experiment.amplifier', 'experiment.adconverter',
+                                    'experiment.tmsdevice', 'experiment.eegelectrodenet']
+
+        # Update the pk of each dependent model to the id of the new equipment
         indexes_of_dependent_models_already_updated = []
         for i in indexes:
             old_equipment_id = data[i]['pk']
             data[i]['pk'] = next_equipment_id
 
-            # Update each item of the json file that have the corresponding field to
-            # the dependent model and point to the old_model_id and has not been
-            # already updated
+            # Update each item of the json file that have a field pointing to the old equipment
             for (index_row, dict_) in enumerate(data):
+                # Most models that point to equipment do that by one of the fields declared above
+                # Some models have a OneToOne relation with the equipment model, and others name
+                # their fields differently. Those cases are treated separately below.
                 for field in fields:
                     if field in data[index_row]['fields'] \
                             and data[index_row]['fields'][field] == old_equipment_id \
                             and index_row not in indexes_of_dependent_models_already_updated:
                         data[index_row]['fields'][field] = data[i]['pk']
                         indexes_of_dependent_models_already_updated.append(index_row)
+                if dict_['model'] in list_of_dependent_models \
+                        and data[index_row]['pk'] == old_equipment_id:
+                    data[index_row]['pk'] = next_equipment_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.emgadconvertersetting' \
+                        and data[index_row]['fields']['ad_converter'] == old_equipment_id:
+                    data[index_row]['fields']['ad_converter'] = next_equipment_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.tmsdevicesetting' \
+                        and data[index_row]['fields']['tms_device'] == old_equipment_id:
+                    data[index_row]['fields']['tms_device'] = next_equipment_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.eegelectrodecap' \
+                        and data[index_row]['fields']['eegelectrodenet_ptr'] == old_equipment_id:
+                    data[index_row]['fields']['eegelectrodenet_ptr'] = next_equipment_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.emgpreamplifiersetting' \
+                        and data[index_row]['fields']['amplifier'] == old_equipment_id:
+                    data[index_row]['fields']['amplifier'] = next_equipment_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.eegamplifiersetting' \
+                        and data[index_row]['fields']['eeg_amplifier'] == old_equipment_id:
+                    data[index_row]['fields']['eeg_amplifier'] = next_equipment_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.emgamplifiersetting' \
+                        and data[index_row]['fields']['amplifier'] == old_equipment_id:
+                    data[index_row]['fields']['amplifier'] = next_equipment_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.eegelectrodenetsystem' \
+                        and data[index_row]['fields']['eeg_electrode_net'] == old_equipment_id:
+                    data[index_row]['fields']['eeg_electrode_net'] = next_equipment_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
             next_equipment_id += 1
 
     @staticmethod
@@ -457,14 +509,14 @@ class ImportExperiment:
                 Material.objects.filter(name=data[i]['fields']['name'],
                                         description=data[i]['fields']['description']).first()
 
+            # Like the manufacturer model, if the material already exists in the database, we don't create a new one,
+            # instead, we point the fields of dependent models to it. Otherwise, we create a new entry in the database.
             if not material_already_in_database:
                 data[i]['pk'] = next_material_id
             else:
                 data[i]['pk'] = material_already_in_database.id
 
-            # Update each item of the json file that have the corresponding field to
-            # the dependent model and point to the old_model_id and has not been
-            # already updated
+            # Update each item of the json file that have a field pointing to the material
             for (index_row, dict_) in enumerate(data):
                 for field in fields:
                     if field in data[index_row]['fields'] \
@@ -473,6 +525,105 @@ class ImportExperiment:
                         data[index_row]['fields'][field] = data[i]['pk']
                         indexes_of_dependent_models_already_updated.append(index_row)
             next_material_id += 1
+
+    @staticmethod
+    def _update_pk_amplifier(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.amplifier']
+        fields = ['amplifier', 'eeg_amplifier']
+
+        next_amplifier_id = Amplifier.objects.last().id + 1 if Amplifier.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new amplifier model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_amplifier_id = data[i]['pk']
+            data[i]['pk'] = next_amplifier_id
+
+            # Update each item of the json file that have a field pointing to the amplifier
+            for (index_row, dict_) in enumerate(data):
+                for field in fields:
+                    if field in data[index_row]['fields'] \
+                            and data[index_row]['fields'][field] == old_amplifier_id \
+                            and index_row not in indexes_of_dependent_models_already_updated:
+                        data[index_row]['fields'][field] = next_amplifier_id
+                        indexes_of_dependent_models_already_updated.append(index_row)
+            next_amplifier_id += 1
+
+    @staticmethod
+    def _update_pk_filtertype(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.filtertype']
+        fields = ['filtertype', 'filter_type', 'eeg_filter_type']
+
+        next_filter_type_id = FilterType.objects.last().id + 1 if FilterType.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new filtertype model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_filter_type_id = data[i]['pk']
+            data[i]['pk'] = next_filter_type_id
+
+            # Update each item of the json file that have a field pointing to the filtertype
+            for (index_row, dict_) in enumerate(data):
+                for field in fields:
+                    if field in data[index_row]['fields'] \
+                            and data[index_row]['fields'][field] == old_filter_type_id \
+                            and index_row not in indexes_of_dependent_models_already_updated:
+                        data[index_row]['fields'][field] = next_filter_type_id
+                        indexes_of_dependent_models_already_updated.append(index_row)
+            next_filter_type_id += 1
+
+    @staticmethod
+    def _update_pk_electrode_model(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.electrodemodel']
+        fields = ['electrodemodel_ptr', 'electrode_model_default', 'electrode_model', 'electrode', 'electrodemodel']
+
+        next_electrodemodel_id = ElectrodeModel.objects.last().id + 1 \
+            if ElectrodeModel.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new electrode_model model
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_electrodemodel_id = data[i]['pk']
+            data[i]['pk'] = next_electrodemodel_id
+
+            # Update each item of the json file that have a field pointing to the electrode model
+            for (index_row, dict_) in enumerate(data):
+                for field in fields:
+                    if field in data[index_row]['fields'] \
+                            and data[index_row]['fields'][field] == old_electrodemodel_id \
+                            and index_row not in indexes_of_dependent_models_already_updated:
+                        data[index_row]['fields'][field] = next_electrodemodel_id
+                        indexes_of_dependent_models_already_updated.append(index_row)
+            next_electrodemodel_id += 1
+
+    @staticmethod
+    def _update_pk_electrode_configuration(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data)
+                   if dict_['model'] == 'experiment.electrodeconfiguration']
+        field = 'electrode_configuration'
+
+        next_electrodeconfiguration_id = ElectrodeConfiguration.objects.last().id + 1 \
+            if ElectrodeConfiguration.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new electrode configuration
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_electrodeconfiguration_id = data[i]['pk']
+            data[i]['pk'] = next_electrodeconfiguration_id
+
+            # Update each item of the json file that have a field pointing to the electrode configuration
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_electrodeconfiguration_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = next_electrodeconfiguration_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_electrodeconfiguration_id += 1
+    # END OF COMMON MODELS INHERITED FOR TMS, EEG AND EMG MODELS
 
     # BEGIN OF TMS
     @staticmethod
@@ -489,9 +640,7 @@ class ImportExperiment:
             old_tmssetting_id = data[i]['pk']
             data[i]['pk'] = next_tmssetting_id
 
-            # Update each item of the json file that have the corresponding field to
-            # the dependent model and point to the old_model_id and has not been
-            # already updated
+            # Update each item of the json file that have a field pointing to the tms setting
             for (index_row, dict_) in enumerate(data):
                 if field in data[index_row]['fields'] \
                         and data[index_row]['fields'][field] == old_tmssetting_id \
@@ -501,33 +650,8 @@ class ImportExperiment:
                 elif dict_['model'] == 'experiment.tmsdevicesetting' \
                         and data[index_row]['pk'] == old_tmssetting_id:
                     data[index_row]['pk'] = next_tmssetting_id
-            next_tmssetting_id += 1
-
-    @staticmethod
-    def _update_pk_tms_device(data):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.tmsdevice']
-        field = 'tms_device'
-
-        next_tms_device_id = TMSDevice.objects.last().id + 1 if TMSDevice.objects.count() > 0 else 1
-
-        # Update the pk of each dependent model to the id of new manufacturer model
-        indexes_of_dependent_models_already_updated = []
-        for i in indexes:
-            old_tms_device_id = data[i]['pk']
-
-            data[i]['pk'] = next_tms_device_id
-
-            # Update each item of the json file that have the corresponding field to
-            # the dependent model and point to the old_model_id and has not been
-            # already updated
-            for (index_row, dict_) in enumerate(data):
-                if field in data[index_row]['fields'] \
-                        and data[index_row]['fields'][field] == old_tms_device_id \
-                        and index_row not in indexes_of_dependent_models_already_updated:
-                    data[index_row]['fields'][field] = data[i]['pk']
                     indexes_of_dependent_models_already_updated.append(index_row)
-            next_tms_device_id += 1
+            next_tmssetting_id += 1
 
     @staticmethod
     def _update_pk_coil_model(data):
@@ -543,9 +667,7 @@ class ImportExperiment:
             old_coil_model_id = data[i]['pk']
             data[i]['pk'] = next_coil_model_id
 
-            # Update each item of the json file that have the corresponding field to
-            # the dependent model and point to the old_model_id and has not been
-            # already updated
+            # Update each item of the json file that have a field pointing to the coil model
             for (index_row, dict_) in enumerate(data):
                 if field in data[index_row]['fields'] \
                         and data[index_row]['fields'][field] == old_coil_model_id \
@@ -576,9 +698,7 @@ class ImportExperiment:
             else:
                 data[i]['pk'] = coil_shape_already_in_database.id
 
-            # Update each item of the json file that have the corresponding field to
-            # the dependent model and point to the old_model_id and has not been
-            # already updated
+            # Update each item of the json file that have a field pointing to the coilshape
             for (index_row, dict_) in enumerate(data):
                 if field in data[index_row]['fields'] \
                         and data[index_row]['fields'][field] == old_coil_shape_id \
@@ -587,6 +707,161 @@ class ImportExperiment:
                     indexes_of_dependent_models_already_updated.append(index_row)
             next_coil_shape_id += 1
     # END OF TMS
+
+    # BEGIN OF EEG
+    @staticmethod
+    def _update_pk_eeg_setting(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.eegsetting']
+        fields = ['eeg_setting', 'eeg_electrode_layout_setting']
+
+        next_eegsetting_id = EEGSetting.objects.last().id + 1 if EEGSetting.objects.count() > 0 else 1
+
+        # List of models that have the eeg setting id as their own id
+        list_of_dependent_models = ['experiment.eegelectrodelayoutsetting', 'experiment.eegfiltersetting',
+                                    'experiment.eegsolutionsetting', 'experiment.eegamplifiersetting']
+
+        # Update the pk of each dependent model to the id of new eeg_setting
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_eegsetting_id = data[i]['pk']
+            data[i]['pk'] = next_eegsetting_id
+
+            # Update each item of the json file that have a field pointing to the eeg setting
+            for (index_row, dict_) in enumerate(data):
+                # Most models that point to the eeg setting do that by one of the fields declared above
+                # Some models have a OneToOne relation with the eeg setting model.
+                # Those cases are treated separately below.
+                for field in fields:
+                    if field in data[index_row]['fields'] \
+                            and data[index_row]['fields'][field] == old_eegsetting_id \
+                            and index_row not in indexes_of_dependent_models_already_updated:
+                        data[index_row]['fields'][field] = next_eegsetting_id
+                        indexes_of_dependent_models_already_updated.append(index_row)
+                if dict_['model'] in list_of_dependent_models\
+                        and data[index_row]['pk'] == old_eegsetting_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['pk'] = next_eegsetting_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_eegsetting_id += 1
+
+    @staticmethod
+    def _update_pk_eeg_solution(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.eegsolution']
+        field = 'eeg_solution'
+
+        next_eeg_solution_id = EEGSolution.objects.last().id + 1 if EEGSolution.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new eeg solution
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_eeg_solution_id = data[i]['pk']
+            data[i]['pk'] = next_eeg_solution_id
+
+            # Update each item of the json file that have a field pointing to the eeg solution
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_eeg_solution_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = next_eeg_solution_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_eeg_solution_id += 1
+
+    @staticmethod
+    def _update_pk_eeg_electrode_net_system(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data)
+                   if dict_['model'] == 'experiment.eegelectrodenetsystem']
+        field = 'eeg_electrode_net_system'
+
+        next_eegelectrodenetsystem_id = EEGElectrodeNetSystem.objects.last().id + 1 \
+            if EEGElectrodeNetSystem.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new eeg_electrodenetsystem
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_eegelectrodenetsystem_id = data[i]['pk']
+            data[i]['pk'] = next_eegelectrodenetsystem_id
+
+            # Update each item of the json file that have a field pointing to the eeg electrode net system
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_eegelectrodenetsystem_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = next_eegelectrodenetsystem_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_eegelectrodenetsystem_id += 1
+
+    @staticmethod
+    def _update_pk_eeg_electrode_position_setting(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data)
+                   if dict_['model'] == 'experiment.eegelectrodepositionsetting']
+
+        next_eegelectrodepositionsetting_id = EEGElectrodePositionSetting.objects.last().id + 1\
+            if EEGElectrodePositionSetting.objects.count() > 0 else 1
+
+        for i in indexes:
+            data[i]['pk'] = next_eegelectrodepositionsetting_id
+            next_eegelectrodepositionsetting_id += 1
+
+    @staticmethod
+    def _update_pk_eeg_electrode_position(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data)
+                   if dict_['model'] == 'experiment.eegelectrodeposition']
+        field = 'eeg_electrode_position'
+
+        next_eegelectrodeposition_id = EEGElectrodePosition.objects.last().id + 1 \
+            if EEGElectrodePosition.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new eeg electrode position
+        indexes_of_dependent_models_already_updated = []
+        indexes_of_dependent_models_with_position_reference_field_already_updated = []
+        for i in indexes:
+            old_eegelectrodeposition_id = data[i]['pk']
+            data[i]['pk'] = next_eegelectrodeposition_id
+
+            # Update each item of the json file that have a field pointing to the eeg electrode position
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_eegelectrodeposition_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = next_eegelectrodeposition_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+                elif dict_['model'] == 'experiment.eegelectrodeposition' \
+                        and data[index_row]['fields']['position_reference'] == old_eegelectrodeposition_id \
+                        and index_row not in indexes_of_dependent_models_with_position_reference_field_already_updated:
+                    data[index_row]['position_reference'] = next_eegelectrodeposition_id
+                    indexes_of_dependent_models_with_position_reference_field_already_updated.append(index_row)
+            next_eegelectrodeposition_id += 1
+
+    @staticmethod
+    def _update_pk_eeg_electrode_localization_system(data):
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data)
+                   if dict_['model'] == 'experiment.eegelectrodelocalizationsystem']
+        field = 'eeg_electrode_localization_system'
+
+        next_eegelectrodelocalizationsystem_id = EEGElectrodeLocalizationSystem.objects.last().id + 1 \
+            if EEGElectrodeLocalizationSystem.objects.count() > 0 else 1
+
+        # Update the pk of each dependent model to the id of new eeg electrode localization system
+        indexes_of_dependent_models_already_updated = []
+        for i in indexes:
+            old_eegelectrodelocalizationsystem_id = data[i]['pk']
+            data[i]['pk'] = next_eegelectrodelocalizationsystem_id
+
+            # Update each item of the json file that have a field pointing to the eeg electrode localization system
+            for (index_row, dict_) in enumerate(data):
+                if field in data[index_row]['fields'] \
+                        and data[index_row]['fields'][field] == old_eegelectrodelocalizationsystem_id \
+                        and index_row not in indexes_of_dependent_models_already_updated:
+                    data[index_row]['fields'][field] = next_eegelectrodelocalizationsystem_id
+                    indexes_of_dependent_models_already_updated.append(index_row)
+            next_eegelectrodelocalizationsystem_id += 1
+    # END OF EEG
 
     @staticmethod
     def _update_pk_survey(data):
@@ -788,18 +1063,33 @@ class ImportExperiment:
         self._update_pk_research_project(data, request, research_project_id)
         self._update_pk_keywords(data)
         self._update_pk_experiment(data)
-        self._update_pk_dependent_model(data, 'experiment.eegsetting')
         self._update_pk_dependent_model(data, 'experiment.emgsetting')
 
         # Update TMS
         self._update_pk_tms_setting(data)
-        self._update_pk_tms_device(data)
+        # self._update_pk_tms_device(data)
         self._update_pk_coil_model(data)
         self._update_pk_coil_shape(data)
+
+        # Update EEG
+        self._update_pk_eeg_setting(data)
+        # self._update_pk_eeg_electrode_layout_setting(data)
+        self._update_pk_electrode_model(data)
+        self._update_pk_electrode_configuration(data)
+        self._update_pk_eeg_electrode_localization_system(data)
+        self._update_pk_eeg_electrode_position(data)
+        self._update_pk_eeg_electrode_position_setting(data)
+        self._update_pk_eeg_electrode_net_system(data)
+        # self._update_pk_eeg_electrode_layout_setting(data)
+        # self._update_pk_eeg_filter_setting(data)
+        # self._update_pk_eeg_solution_setting(data)
+        # self._update_pk_eeg_amplifier_setting(data)
+        self._update_pk_eeg_solution(data)
 
         self._update_pk_equipment(data)
         self._update_pk_material(data)
         self._update_pk_manufacturer(data)
+        self._update_pk_filtertype(data)
         self._update_pk_dependent_model(data, 'experiment.informationtype')
         self._update_pk_dependent_model(data, 'experiment.contexttree')
         self._update_pk_dependent_model(data, 'experiment.stimulustype')
