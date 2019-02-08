@@ -17,11 +17,14 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
     Block, TMS, ComponentConfiguration, Questionnaire, TMSSetting, EEG, EEGSetting, EMGSetting, EMG, SoftwareVersion, \
-    Manufacturer, Software, Instruction, TMSDevice, Material, CoilShape, TMSDeviceSetting, Equipment, CoilModel
+    Manufacturer, Software, Instruction, TMSDevice, Material, CoilShape, TMSDeviceSetting, Equipment, CoilModel, \
+    Subject, SubjectOfGroup
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
+from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, \
+    SocialHistoryData, ClassificationOfDiseases, MedicalRecordData, Diagnosis
 
 from patient.tests import UtilTests
 from survey.models import Survey
@@ -1401,9 +1404,9 @@ class ImportExperimentTest(TestCase):
     #     self.assertRedirects(response, reverse('import_log'))
     #
     #     new_tms_setting = TMSSetting.objects.exclude(id=tms_setting.id)
-    #     new_manufacturer = Manufacturer.objects.exclude(id=manufacturer.id)
+    #     Manufacturer.objects.exclude(id=manufacturer.id)
     #     new_tms_device = TMSDevice.objects.exclude(id=tms_device.id)
-    #     new_material = Material.objects.exclude(id=material.id)
+    #     Material.objects.exclude(id=material.id)
     #     new_coil_shape = CoilShape.objects.exclude(id=coil_shape.id)
     #     new_coil_model = CoilModel.objects.exclude(id=coil_model.id)
     #     new_tms_device_setting = TMSDeviceSetting.objects.exclude(tms_setting_id=tms_device_setting.tms_setting_id)
@@ -1411,15 +1414,11 @@ class ImportExperimentTest(TestCase):
     #     self.assertEqual(
     #         TMSSetting.objects.count(),
     #         old_tms_setting_count + len(new_tms_setting))
-    #     self.assertEqual(
-    #         Manufacturer.objects.count(),
-    #         old_manufacturer_count + len(new_manufacturer))
+    #     self.assertEqual(Manufacturer.objects.count(), old_manufacturer_count)
     #     self.assertEqual(
     #         TMSDevice.objects.count(),
     #         old_tms_device_count + len(new_tms_device))
-    #     self.assertEqual(
-    #         Material.objects.count(),
-    #         old_material_count + len(new_material))
+    #     self.assertEqual(Material.objects.count(), old_material_count)
     #     self.assertEqual(
     #         CoilShape.objects.count(),
     #         old_coil_shape_count + len(new_coil_shape))
@@ -1444,262 +1443,271 @@ class ImportExperimentTest(TestCase):
     #
     #     message = str(list(response.context['messages'])[0])
     #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-    #
-    # # Participants tests
-    # def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
-    #     # Create research project
-    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
-    #     # Create experiment
-    #     experiment = ObjectsFactory.create_experiment(research_project)
-    #     # Create roots components (which are 'block's types and they are the head of the experimental protocol)
-    #     rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
-    #     rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
-    #     # Create another component ('instruction', for example)
-    #     component = ObjectsFactory.create_component(experiment, 'instruction')
-    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component)
-    #
-    #     # Create groups
-    #     group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
-    #     group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
-    #
-    #     # Create participants
-    #     util = UtilTests()
-    #     patient1_mock = util.create_patient_mock(changed_by=self.user)
-    #     patient2_mock = util.create_patient_mock(changed_by=self.user)
-    #
-    #     # Remove their CPF, we are simulating a new database
-    #     patient1_mock.cpf = None
-    #     patient2_mock.cpf = None
-    #
-    #     patient1_mock.save()
-    #     patient2_mock.save()
-    #
-    #     subject_mock1 = Subject(patient=patient1_mock)
-    #     subject_mock1.save()
-    #     subject_mock2 = Subject(patient=patient2_mock)
-    #     subject_mock2.save()
-    #
-    #     subject_group1 = SubjectOfGroup(subject=subject_mock1, group=group1)
-    #     subject_group1.save()
-    #     subject_group2 = SubjectOfGroup(subject=subject_mock1, group=group2)
-    #     subject_group2.save()
-    #     subject_group3 = SubjectOfGroup(subject=subject_mock2, group=group2)
-    #     subject_group3.save()
-    #
-    #     group1.subjectofgroup_set.add(subject_group1)
-    #     group2.subjectofgroup_set.add(subject_group2)
-    #     group2.subjectofgroup_set.add(subject_group3)
-    #
-    #     export = ExportExperiment(experiment)
-    #     export.export_all()
-    #     file_path = export.get_file_path()
-    #
-    #     # dictionary to test against new participants created bellow
-    #     old_patients_count = Patient.objects.count()
-    #     old_group1_patients_count = SubjectOfGroup.objects.filter(group=group1).count()
-    #     old_group2_patients_count = SubjectOfGroup.objects.filter(group=group2).count()
-    #     old_groups_count = ExperimentGroup.objects.count()
-    #
-    #     with open(file_path, 'rb') as file:
-    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-    #     self.assertRedirects(response, reverse('import_log'))
-    #
-    #     new_patients = Patient.objects.exclude(id__in=[patient1_mock.id, patient2_mock.id])
-    #     new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
-    #     new_subjectsofgroups = SubjectOfGroup.objects.exclude(id__in=[subject_group1.id,
-    #                                                                   subject_group2.id,
-    #                                                                   subject_group3.id])
-    #     self.assertEqual(
-    #         Patient.objects.count(),
-    #         old_patients_count + len(new_patients))
-    #     self.assertEqual(
-    #         ExperimentGroup.objects.count(),
-    #         old_groups_count + len(new_groups))
-    #     self.assertEqual(
-    #         SubjectOfGroup.objects.count(),
-    #         old_group1_patients_count + old_group2_patients_count + len(new_subjectsofgroups)
-    #     )
-    #
-    #     for item in new_groups:
-    #         self.assertEqual(Experiment.objects.last().id, item.experiment.id)
-    #     for item in new_subjectsofgroups:
-    #         self.assertTrue(SubjectOfGroup.objects.filter(id=item.id).exists())
-    #     message = str(list(response.context['messages'])[0])
-    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-    #
-    # def test_POST_experiment_import_file_creates_participants_with_personal_data_and_returns_successful_message(self):
-    #     # Create research project
-    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
-    #     # Create experiment
-    #     experiment = ObjectsFactory.create_experiment(research_project)
-    #     # Create roots components (which are 'block's types and they are the head of the experimental protocol)
-    #     rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
-    #     rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
-    #     # Create another component ('instruction', for example)
-    #     component = ObjectsFactory.create_component(experiment, 'instruction')
-    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component)
-    #
-    #     # Create groups
-    #     group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
-    #     group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
-    #
-    #     util = UtilTests()
-    #     patient1 = util.create_patient_mock(changed_by=self.user)
-    #     patient2 = util.create_patient_mock(changed_by=self.user)
-    #
-    #     # Create participants data
-    #     # Telephone
-    #     telephone1 = Telephone.objects.create(patient=patient1, number='987654321', changed_by=self.user)
-    #     telephone2 = Telephone.objects.create(patient=patient2, number='987654321', changed_by=self.user)
-    #
-    #     # Social demograph
-    #     sociodemograph1 = SocialDemographicData.objects.create(
-    #         patient=patient1,
-    #         natural_of='Testelândia',
-    #         citizenship='Testense',
-    #         profession='Testador',
-    #         occupation='Testador',
-    #         changed_by=self.user
-    #     )
-    #     sociodemograph2 = SocialDemographicData.objects.create(
-    #         patient=patient2,
-    #         natural_of='Testelândia',
-    #         citizenship='Testense',
-    #         profession='Testador',
-    #         occupation='Testador',
-    #         changed_by=self.user
-    #     )
-    #
-    #     # Social history
-    #     amount_cigarettes = AmountCigarettes.objects.create(name='Menos de 1 maço')
-    #     alcohol_frequency = AlcoholFrequency.objects.create(name='Esporadicamente')
-    #     alcohol_period = AlcoholPeriod.objects.create(name='5-10 anos')
-    #     socialhistory1 = SocialHistoryData.objects.create(
-    #         patient=patient1,
-    #         smoker=True,
-    #         amount_cigarettes=amount_cigarettes,
-    #         changed_by=self.user,
-    #         alcoholic=True,
-    #         alcohol_frequency=alcohol_frequency,
-    #         alcohol_period=alcohol_period
-    #     )
-    #     socialhistory2 = SocialHistoryData.objects.create(
-    #         patient=patient2,
-    #         smoker=False,
-    #         amount_cigarettes=None,
-    #         changed_by=self.user,
-    #         alcoholic=False,
-    #         alcohol_frequency=None,
-    #         alcohol_period=None
-    #     )
-    #
-    #     # Medical record
-    #     cid101 = ClassificationOfDiseases.objects.create(code='TESTE', description='Description',
-    #                                                      abbreviated_description='Desc')
-    #     cid102 = ClassificationOfDiseases.objects.create(code='TESTE2', description='Description2',
-    #                                                      abbreviated_description='Desc2')
-    #     medicalevaluation1 = MedicalRecordData.objects.create(
-    #         patient=patient1,
-    #         record_responsible=self.user
-    #     )
-    #     diagnosis1 = Diagnosis.objects.create(medical_record_data=medicalevaluation1,
-    #                                           classification_of_diseases=cid101)
-    #
-    #     medicalevaluation2 = MedicalRecordData.objects.create(
-    #         patient=patient2,
-    #         record_responsible=self.user
-    #     )
-    #     diagnosis2 = Diagnosis.objects.create(medical_record_data=medicalevaluation2,
-    #                                           classification_of_diseases=cid102)
-    #
-    #     # Remove their cpfs, we are simulating a new base
-    #     patient1.cpf = None
-    #     patient2.cpf = None
-    #     patient1.save()
-    #     patient2.save()
-    #
-    #     subject1 = Subject(patient=patient1)
-    #     subject1.save()
-    #     subject2 = Subject(patient=patient2)
-    #     subject2.save()
-    #
-    #     subject_group1 = SubjectOfGroup(subject=subject1, group=group1)
-    #     subject_group1.save()
-    #     subject_group2 = SubjectOfGroup(subject=subject1, group=group2)
-    #     subject_group2.save()
-    #     subject_group3 = SubjectOfGroup(subject=subject2, group=group2)
-    #     subject_group3.save()
-    #
-    #     group1.subjectofgroup_set.add(subject_group1)
-    #     group2.subjectofgroup_set.add(subject_group2)
-    #     group2.subjectofgroup_set.add(subject_group3)
-    #
-    #     export = ExportExperiment(experiment)
-    #     export.export_all()
-    #     file_path = export.get_file_path()
-    #
-    #     # Once exported, when importing, we want to test both cases when the CID10 is already at
-    #     # the database and when it's not, so we delete one of them from the database
-    #     ClassificationOfDiseases.objects.first().delete()
-    #
-    #     # dictionary to test against new participants created bellow
-    #     old_patients_count = Patient.objects.count()
-    #     old_telephones_count = Telephone.objects.count()
-    #     old_socialdemographic_count = SocialDemographicData.objects.count()
-    #     old_socialhistory_count = SocialHistoryData.objects.count()
-    #     old_diagnosis_records_count = Diagnosis.objects.count()
-    #     old_medical_record_count = MedicalRecordData.objects.count()
-    #     old_classsification_of_diseases_count = ClassificationOfDiseases.objects.count()
-    #
-    #     with open(file_path, 'rb') as file:
-    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-    #     self.assertRedirects(response, reverse('import_log'))
-    #
-    #     new_patients = Patient.objects.exclude(id__in=[patient1.id, patient2.id])
-    #     new_telephones = Telephone.objects.exclude(id__in=[telephone1.id, telephone2.id])
-    #     new_socialemographic = SocialDemographicData.objects.exclude(id__in=[sociodemograph1.id, sociodemograph2.id])
-    #     new_socialhistory = SocialHistoryData.objects.exclude(id__in=[socialhistory1.id, socialhistory2.id])
-    #     new_diagnosis = Diagnosis.objects.exclude(id__in=[diagnosis1.id, diagnosis2.id])
-    #     new_medical_record = MedicalRecordData.objects.exclude(id__in=[medicalevaluation1.id, medicalevaluation2.id])
-    #     new_classification_of_diseases = ClassificationOfDiseases.objects.exclude(id__in=[cid101.id, cid102.id])
-    #
-    #     self.assertEqual(
-    #         Patient.objects.count(),
-    #         old_patients_count + len(new_patients))
-    #     self.assertEqual(
-    #         Telephone.objects.count(),
-    #         old_telephones_count + len(new_telephones))
-    #     self.assertEqual(
-    #         SocialDemographicData.objects.count(),
-    #         old_socialdemographic_count + len(new_socialemographic))
-    #     self.assertEqual(
-    #         SocialHistoryData.objects.count(),
-    #         old_socialhistory_count + len(new_socialhistory))
-    #     self.assertEqual(
-    #         Diagnosis.objects.count(),
-    #         old_diagnosis_records_count + len(new_diagnosis))
-    #     self.assertEqual(
-    #         MedicalRecordData.objects.count(),
-    #         old_medical_record_count + len(new_medical_record))
-    #     self.assertEqual(
-    #         ClassificationOfDiseases.objects.count(),
-    #         old_classsification_of_diseases_count + len(new_classification_of_diseases))
-    #
-    #     for patient in new_patients:
-    #         for item in new_telephones:
-    #             self.assertTrue(Telephone.objects.filter(patient_id=patient.id).exists())
-    #         for item in new_socialemographic:
-    #             self.assertTrue(SocialDemographicData.objects.filter(patient_id=patient.id).exists())
-    #         for item in new_socialhistory:
-    #             self.assertTrue(SocialHistoryData.objects.filter(patient_id=patient.id).exists())
-    #         for item in new_diagnosis:
-    #             self.assertTrue(Diagnosis.objects.filter(medical_record_data__patient_id=patient.id).exists())
-    #         for item in new_medical_record:
-    #             self.assertTrue(MedicalRecordData.objects.filter(patient_id=patient.id).exists())
-    #
-    #     message = str(list(response.context['messages'])[0])
-    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-    #
+
+    # Participants tests
+    def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
+        # Create research project
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        # Create experiment
+        experiment = ObjectsFactory.create_experiment(research_project)
+        # Create roots components (which are 'block's types and they are the head of the experimental protocol)
+        rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
+        rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
+        # Create another component ('instruction', for example)
+        component = ObjectsFactory.create_component(experiment, 'instruction')
+        ObjectsFactory.create_component_configuration(rootcomponent1, component)
+
+        # Create groups
+        group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
+        group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
+
+        # Create participants
+        util = UtilTests()
+        patient1_mock = util.create_patient_mock(changed_by=self.user)
+        patient2_mock = util.create_patient_mock(changed_by=self.user)
+
+        # Remove their CPF, we are simulating a new database
+        patient1_mock.cpf = None
+        patient2_mock.cpf = None
+
+        patient1_mock.save()
+        patient2_mock.save()
+
+        subject_mock1 = Subject.objects.create(patient=patient1_mock)
+        subject_mock2 = Subject.objects.create(patient=patient2_mock)
+
+        subject_group1 = SubjectOfGroup(subject=subject_mock1, group=group1)
+        subject_group1.save()
+        subject_group2 = SubjectOfGroup(subject=subject_mock1, group=group2)
+        subject_group2.save()
+        subject_group3 = SubjectOfGroup(subject=subject_mock2, group=group2)
+        subject_group3.save()
+
+        group1.subjectofgroup_set.add(subject_group1)
+        group2.subjectofgroup_set.add(subject_group2)
+        group2.subjectofgroup_set.add(subject_group3)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_patients = Patient.objects.exclude(id__in=[patient1_mock.id, patient2_mock.id])
+        new_subjects = Subject.objects.exclude(id__in=[subject_mock1.id, subject_mock2.id])
+        new_subjectsofgroups = SubjectOfGroup.objects.exclude(id__in=[subject_group1.id,
+                                                                      subject_group2.id,
+                                                                      subject_group3.id])
+        self.assertEqual(2, new_patients.count())
+        self.assertEqual(2, new_subjects.count())
+        self.assertEqual(3, new_subjectsofgroups.count())
+
+        for item in new_subjectsofgroups:
+            self.assertTrue(SubjectOfGroup.objects.filter(id=item.id).exists())
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_patient_with_new_code_and_cpf_cleared(self):
+        research_project = ObjectsFactory.create_research_project(self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient_mock(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        ObjectsFactory.create_subject_of_group(group, subject)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        patient_last_code_before = Patient.objects.all().order_by('-code').first().code
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_patients = Patient.objects.exclude(id=patient.id)
+        self.assertEqual(1, new_patients.count())
+
+        new_patient_code = 'P' + str(int(patient_last_code_before.split('P')[1]) + 1)
+        self.assertEqual(new_patient_code, Patient.objects.last().code)
+        self.assertEqual(None, Patient.objects.last().cpf)
+
+    def test_POST_experiment_import_file_creates_participants_of_groups_associates_with_user_that_is_importing(self):
+        pass
+
+    def test_POST_experiment_import_file_creates_participants_with_personal_data_and_returns_successful_message(self):
+        # Create research project
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        # Create experiment
+        experiment = ObjectsFactory.create_experiment(research_project)
+        # Create roots components (which are 'block's types and they are the head of the experimental protocol)
+        rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
+        rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
+        # Create another component ('instruction', for example)
+        component = ObjectsFactory.create_component(experiment, 'instruction')
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component)
+
+        # Create groups
+        group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
+        group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
+
+        util = UtilTests()
+        patient1 = util.create_patient_mock(changed_by=self.user)
+        patient2 = util.create_patient_mock(changed_by=self.user)
+
+        # Create participants data
+        # Telephone
+        telephone1 = Telephone.objects.create(patient=patient1, number='987654321', changed_by=self.user)
+        telephone2 = Telephone.objects.create(patient=patient2, number='987654321', changed_by=self.user)
+
+        # Social demograph
+        sociodemograph1 = SocialDemographicData.objects.create(
+            patient=patient1,
+            natural_of='Testelândia',
+            citizenship='Testense',
+            profession='Testador',
+            occupation='Testador',
+            changed_by=self.user
+        )
+        sociodemograph2 = SocialDemographicData.objects.create(
+            patient=patient2,
+            natural_of='Testelândia',
+            citizenship='Testense',
+            profession='Testador',
+            occupation='Testador',
+            changed_by=self.user
+        )
+
+        # Social history
+        amount_cigarettes = AmountCigarettes.objects.create(name='Menos de 1 maço')
+        alcohol_frequency = AlcoholFrequency.objects.create(name='Esporadicamente')
+        alcohol_period = AlcoholPeriod.objects.create(name='5-10 anos')
+        socialhistory1 = SocialHistoryData.objects.create(
+            patient=patient1,
+            smoker=True,
+            amount_cigarettes=amount_cigarettes,
+            changed_by=self.user,
+            alcoholic=True,
+            alcohol_frequency=alcohol_frequency,
+            alcohol_period=alcohol_period
+        )
+        socialhistory2 = SocialHistoryData.objects.create(
+            patient=patient2,
+            smoker=False,
+            amount_cigarettes=None,
+            changed_by=self.user,
+            alcoholic=False,
+            alcohol_frequency=None,
+            alcohol_period=None
+        )
+
+        # Medical record
+        cid101 = ClassificationOfDiseases.objects.create(code='TESTE', description='Description',
+                                                         abbreviated_description='Desc')
+        cid102 = ClassificationOfDiseases.objects.create(code='TESTE2', description='Description2',
+                                                         abbreviated_description='Desc2')
+        medicalevaluation1 = MedicalRecordData.objects.create(
+            patient=patient1,
+            record_responsible=self.user
+        )
+        diagnosis1 = Diagnosis.objects.create(medical_record_data=medicalevaluation1,
+                                              classification_of_diseases=cid101)
+
+        medicalevaluation2 = MedicalRecordData.objects.create(
+            patient=patient2,
+            record_responsible=self.user
+        )
+        diagnosis2 = Diagnosis.objects.create(medical_record_data=medicalevaluation2,
+                                              classification_of_diseases=cid102)
+
+        # Remove their cpfs, we are simulating a new base
+        patient1.cpf = None
+        patient2.cpf = None
+        patient1.save()
+        patient2.save()
+
+        subject1 = Subject(patient=patient1)
+        subject1.save()
+        subject2 = Subject(patient=patient2)
+        subject2.save()
+
+        subject_group1 = SubjectOfGroup(subject=subject1, group=group1)
+        subject_group1.save()
+        subject_group2 = SubjectOfGroup(subject=subject1, group=group2)
+        subject_group2.save()
+        subject_group3 = SubjectOfGroup(subject=subject2, group=group2)
+        subject_group3.save()
+
+        group1.subjectofgroup_set.add(subject_group1)
+        group2.subjectofgroup_set.add(subject_group2)
+        group2.subjectofgroup_set.add(subject_group3)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Once exported, when importing, we want to test both cases when the CID10 is already at
+        # the database and when it's not, so we delete one of them from the database
+        ClassificationOfDiseases.objects.first().delete()
+
+        # dictionary to test against new participants created bellow
+        old_patients_count = Patient.objects.count()
+        old_telephones_count = Telephone.objects.count()
+        old_socialdemographic_count = SocialDemographicData.objects.count()
+        old_socialhistory_count = SocialHistoryData.objects.count()
+        old_diagnosis_records_count = Diagnosis.objects.count()
+        old_medical_record_count = MedicalRecordData.objects.count()
+        old_classsification_of_diseases_count = ClassificationOfDiseases.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_patients = Patient.objects.exclude(id__in=[patient1.id, patient2.id])
+        new_telephones = Telephone.objects.exclude(id__in=[telephone1.id, telephone2.id])
+        new_socialemographic = SocialDemographicData.objects.exclude(id__in=[sociodemograph1.id, sociodemograph2.id])
+        new_socialhistory = SocialHistoryData.objects.exclude(id__in=[socialhistory1.id, socialhistory2.id])
+        new_diagnosis = Diagnosis.objects.exclude(id__in=[diagnosis1.id, diagnosis2.id])
+        new_medical_record = MedicalRecordData.objects.exclude(id__in=[medicalevaluation1.id, medicalevaluation2.id])
+        new_classification_of_diseases = ClassificationOfDiseases.objects.exclude(id__in=[cid101.id, cid102.id])
+
+        self.assertEqual(2, Patient.objects.count())
+        self.assertEqual(
+            Telephone.objects.count(),
+            old_telephones_count + len(new_telephones))
+        self.assertEqual(
+            SocialDemographicData.objects.count(),
+            old_socialdemographic_count + len(new_socialemographic))
+        self.assertEqual(
+            SocialHistoryData.objects.count(),
+            old_socialhistory_count + len(new_socialhistory))
+        self.assertEqual(
+            Diagnosis.objects.count(),
+            old_diagnosis_records_count + len(new_diagnosis))
+        self.assertEqual(
+            MedicalRecordData.objects.count(),
+            old_medical_record_count + len(new_medical_record))
+        self.assertEqual(
+            ClassificationOfDiseases.objects.count(),
+            old_classsification_of_diseases_count + len(new_classification_of_diseases))
+
+        for patient in new_patients:
+            for item in new_telephones:
+                self.assertTrue(Telephone.objects.filter(patient_id=patient.id).exists())
+            for item in new_socialemographic:
+                self.assertTrue(SocialDemographicData.objects.filter(patient_id=patient.id).exists())
+            for item in new_socialhistory:
+                self.assertTrue(SocialHistoryData.objects.filter(patient_id=patient.id).exists())
+            for item in new_diagnosis:
+                self.assertTrue(Diagnosis.objects.filter(medical_record_data__patient_id=patient.id).exists())
+            for item in new_medical_record:
+                self.assertTrue(MedicalRecordData.objects.filter(patient_id=patient.id).exists())
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
     # def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
     #     research_project = ObjectsFactory.create_research_project(owner=self.user)
     #     experiment = ObjectsFactory.create_experiment(research_project)
