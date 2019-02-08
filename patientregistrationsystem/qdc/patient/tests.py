@@ -77,6 +77,7 @@ LIME_SURVEY_TOKEN_ID_1 = 1
 class UtilTests:
 
     @staticmethod
+    # TODO: changed_by can't be None, changed_by is required!
     def create_patient_mock(name_method='Pacient Test', changed_by=None):
         """ Cria um participante para ser utilizado durante os testes """
         faker = Factory.create()

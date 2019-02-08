@@ -10,8 +10,9 @@ from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count
 
-from experiment.models import Group, ComponentConfiguration, ResearchProject, Experiment,\
+from experiment.models import Group, ResearchProject, Experiment,\
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
+from patient.models import Patient
 from survey.models import Survey
 
 
@@ -198,380 +199,6 @@ class ImportExperiment:
 
         return model_name
 
-    @staticmethod
-    def _update_pk_research_project(data, request=None, research_project_id=None):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.researchproject']
-
-        # Update the pk of the research project either to research_project_id, if given, or
-        # the id of a new research project
-        if research_project_id:
-            data[indexes[0]]['pk'] = int(research_project_id)
-        else:
-            data[indexes[0]]['pk'] = ResearchProject.objects.last().id + 1\
-                if ResearchProject.objects.count() > 0 else 1
-            data[indexes[0]]['owner'] = request.user.id
-
-        # Update all the references to the old research project to the new one
-        for (index_row, dict_) in enumerate(data):
-            if dict_['model'] == 'experiment.experiment':
-                data[index_row]['fields']['research_project'] = data[indexes[0]]['pk']
-
-    @staticmethod
-    def _update_pk_keywords(data):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
-
-        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
-        indexes_of_keywords_already_updated = []
-        for i in indexes:
-            # Get the keyword and check on database if the keyword already exists
-            # If exists, update the pk of this keyword to the correspondent in the database
-            # otherwise, update the pk of this keyword to next_keyword_id
-            old_keyword_id = data[i]['pk']
-            old_keyword_string = data[i]['fields']['name']
-            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
-
-            if keyword_on_database.count() > 0:
-                data[i]['pk'] = keyword_on_database.first().id
-            else:
-                data[i]['pk'] = next_keyword_id
-                next_keyword_id += 1
-
-            # Update all the references to the old keyword to the new one
-            for (index_row, dict_) in enumerate(data):
-                if dict_['model'] == 'experiment.researchproject':
-                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
-                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
-                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
-                            indexes_of_keywords_already_updated.append(keyword_index)
-
-    @staticmethod
-    def _update_pk_experiment(data):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.experiment']
-
-        # Update the pk of the experiment to the id of a new experiment
-        data[indexes[0]]['pk'] = Experiment.objects.last().id + 1 if Experiment.objects.count() > 0 else 1
-
-        # Update all the references to the old experiment to the new one
-        for (index_row, dict_) in enumerate(data):
-            if "experiment" in data[index_row]['fields']:
-                data[index_row]['fields']['experiment'] = data[indexes[0]]['pk']
-
-    @staticmethod
-    def _update_pk_group(data):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.group']
-
-        # Update the pk of each group to a new one
-        next_group_id = Group.objects.last().id + 1 if Group.objects.count() > 0 else 1
-        for i in indexes:
-            data[i]['pk'] = next_group_id
-            next_group_id += 1
-
-    def _update_pk_component(self, data):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.component']
-
-        next_component_id = Component.objects.last().id + 1 if Component.objects.count() > 0 else 1
-
-        # It is needed to create a list of items in the json that were already updated, so we don't update twice the
-        # same item of the json
-        indexes_of_components_already_updated = []
-        indexes_of_componentconfigs_with_component_field_updated = []
-        indexes_of_componentconfigs_with_parent_field_updated = []
-        for i in indexes:
-            # Get the old component id and then update each reference to it in the json file
-            old_component_id = data[i]['pk']
-            data[i]['pk'] = next_component_id
-            component_type = self._get_model_name_by_component_type(data[i]['fields']['component_type'])
-
-            for (index_row, dict_) in enumerate(data):
-                # Update the component type item
-                if dict_['model'] == 'experiment.' + component_type.lower()\
-                        and dict_['pk'] == old_component_id\
-                        and index_row not in indexes_of_components_already_updated:
-                    data[index_row]['pk'] = next_component_id
-                    indexes_of_components_already_updated.append(index_row)
-
-                # Update the component configuration 'component' field for that component
-                if dict_['model'] == 'experiment.componentconfiguration'\
-                        and dict_['fields']['component'] == old_component_id\
-                        and index_row not in indexes_of_componentconfigs_with_component_field_updated:
-                    data[index_row]['fields']['component'] = next_component_id
-                    indexes_of_componentconfigs_with_component_field_updated.append(index_row)
-
-                # Update the component configuration 'parent' field for that component
-                if dict_['model'] == 'experiment.componentconfiguration'\
-                        and dict_['fields']['parent'] == old_component_id\
-                        and index_row not in indexes_of_componentconfigs_with_parent_field_updated:
-                    data[index_row]['fields']['parent'] = next_component_id
-                    indexes_of_componentconfigs_with_parent_field_updated.append(index_row)
-
-                # Update the pointer to the experimental protocol (which is a component) in group items of the json
-                if dict_['model'] == 'experiment.group'\
-                        and dict_['fields']['experimental_protocol'] == old_component_id\
-                        and index_row not in indexes_of_components_already_updated:
-                    data[index_row]['fields']['experimental_protocol'] = next_component_id
-                    indexes_of_components_already_updated.append(index_row)
-            next_component_id += 1
-
-    @staticmethod
-    def _update_pk_component_configuration(data):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data)
-                   if dict_['model'] == 'experiment.componentconfiguration']
-
-        # Update the pk of each component configuration to the id of new component configurations
-        next_component_config_id = ComponentConfiguration.objects.last().id + 1 \
-            if ComponentConfiguration.objects.count() > 0 else 1
-        for i in indexes:
-            data[i]['pk'] = next_component_config_id
-            next_component_config_id += 1
-
-    @staticmethod
-    def _update_pk_dependent_model(data, model):
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
-
-        list_of_dependent_models = ['experiment.eegsetting', 'experiment.emgsetting', 'experiment.tmssetting',
-                                    'experiment.informationtype', 'experiment.contexttree', 'experiment.stimulustype',
-                                    'survey.survey']
-        list_of_dependent_models_fields = ['eeg_setting', 'emg_setting', 'tms_setting',
-                                           'information_type', 'context_tree', 'stimulus_type',
-                                           'survey']
-
-        model_ = apps.get_model(model)
-        next_model_id = model_.objects.last().id + 1 if model_.objects.count() > 0 else 1
-
-        # Get field name based on the model name
-        field = list_of_dependent_models_fields[list_of_dependent_models.index(model)]
-
-        # Update the pk of each dependent model to the id of new dependent model
-        indexes_of_dependent_models_already_updated = []
-        for i in indexes:
-            old_model_id = data[i]['pk']
-            data[i]['pk'] = next_model_id
-
-            # Update each item of the json file that have the corresponding field to
-            # the dependent model and point to the old_model_id and has not been
-            # already updated
-            for (index_row, dict_) in enumerate(data):
-                if field in data[index_row]['fields']\
-                        and data[index_row]['fields'][field] == old_model_id\
-                        and index_row not in indexes_of_dependent_models_already_updated:
-                    data[index_row]['fields'][field] = next_model_id
-                    indexes_of_dependent_models_already_updated.append(index_row)
-            next_model_id += 1
-            # Update limesurvey references in survey.survey models
-            if model == 'survey.survey':
-                # If model is survey, create dummy limesurvey reference
-                min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-                if min_limesurvey_id >= 0:
-                    new_limesurvey_id = -99
-                else:
-                    min_limesurvey_id -= 1
-                    new_limesurvey_id = min_limesurvey_id
-                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
-
-    def _solve_limey_survey_reference(self, data, survey_index):
-        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-        if min_limesurvey_id >= 0:
-            new_limesurvey_id = -99
-        else:
-            min_limesurvey_id -= 1
-            new_limesurvey_id = min_limesurvey_id
-        data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
-
-    def _manage_last_stuffs_before_importing(self, data, research_project_id):
-        #
-        # Make dummy reference to limesurvey questionnaires
-        #
-        survey_indexes = [index for index, dict_ in enumerate(data) if dict_['model'] == 'survey.survey']
-        for survey_index in survey_indexes:
-            self._solve_limey_survey_reference(data, survey_index)
-
-        #
-        # If new experiment refers to existent research project updates data
-        #
-        if research_project_id:
-            research_project_index = next(
-                index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.researchproject'
-            )
-            del(data[research_project_index])
-            experiment_index = next(
-                index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.experiment'
-            )
-            data[experiment_index]['fields']['research_project'] = research_project_id
-
-        #
-        # Fix ComponentConfiguration ids (TODO: fix update_pk3 to updating correctly)
-        #
-        cc_indexes = \
-            [index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.componentconfiguration']
-        if cc_indexes:
-            index_list = []
-            for i in cc_indexes:
-                index_list.append(data[i]['pk'])
-            new_index = max(index_list)
-            for i in cc_indexes:
-                data[i]['pk'] = new_index
-                new_index += 1
-
-        #
-        # Keep same research project keywords if they exist
-        #
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
-        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
-        indexes_of_keywords_already_updated = []
-        for i in indexes:
-            # Get the keyword and check on database if the keyword already exists
-            # If exists, update the pk of this keyword to the correspondent in the database
-            # otherwise, update the pk of this keyword to next_keyword_id
-            old_keyword_id = data[i]['pk']
-            old_keyword_string = data[i]['fields']['name']
-            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
-
-            if keyword_on_database.count() > 0:
-                data[i]['pk'] = keyword_on_database.first().id
-            else:
-                data[i]['pk'] = next_keyword_id
-                next_keyword_id += 1
-
-            # Update all the references to the old keyword to the new one
-            for (index_row, dict_) in enumerate(data):
-                if dict_['model'] == 'experiment.researchproject':
-                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
-                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
-                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
-                            indexes_of_keywords_already_updated.append(keyword_index)
-
-    def _update_pks(self, DG, data, successor, next_id):
-        # TODO: see if it's worth to put this list in class level
-        if data[successor]['model'] not in [
-            'experiment.block', 'experiment.instruction', 'experiment.questionnaire',
-            'experiment.tms', 'experiment.eeg', 'experiment.emg', 'experiment.tmsdevicesetting',
-            'experiment.tmsdevice'
-        ]:
-            data[successor]['pk'] = next_id
-        for predecessor in DG.predecessors(successor):
-            if 'relation' in DG[predecessor][successor]:
-                relation = DG[predecessor][successor]['relation']
-                data[predecessor]['fields'][relation] = data[successor]['pk']
-            else:
-                data[predecessor]['pk'] = data[successor]['pk']
-            next_id += 1
-            self._update_pks(DG, data, predecessor, next_id)
-
-    @staticmethod
-    def _get_first_available_id():
-        last_id = 1
-        for app in apps.get_app_configs():
-            if app.verbose_name in ['Experiment', 'Patient', 'Quiz', 'Survey', 'Team']:
-                for model in app.get_models():
-                    if 'Goalkeeper' not in model.__name__:  # TODO: ver modelo com referência a outro bd: dá pau
-                        last_model = model.objects.last()
-                        if last_model and hasattr(last_model, 'id'):
-                            last_model_id = last_model.id
-                            last_id = last_model_id if last_id < last_model_id else last_id
-        return last_id + 1
-
-    def _build_graph(self, data, research_project_id):
-        model_root_nodes = [
-            'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
-            'experiment.material'
-        ]
-        foreign_relations = {
-            'experiment.researchproject': [['', '']],
-            'experiment.experiment': [['experiment.researchproject', 'research_project']],
-            'experiment.group': [
-                ['experiment.experiment', 'experiment'], ['experiment.component', 'experimental_protocol']
-            ],
-            'experiment.component': [['experiment.experiment', 'experiment']],
-            'experiment.componentconfiguration': [
-                ['experiment.component', 'component'], ['experiment.component', 'parent']
-            ],
-            'experiment.questionnaire': [['survey.survey', 'survey']],
-            'survey.survey': [['', '']],
-            'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
-            'experiment.tmssetting': [['experiment.experiment', 'experiment']],
-            'experiment.tmsdevicesetting': [
-                ['experiment.coilmodel', 'coil_model'], ['experiment.tmsdevice', 'tms_device']
-            ],
-            'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
-            'experiment.coilshape': [['', '']],
-            'experiment.material': [['', '']],
-            'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
-            'experiment.eegsetting': [['experiment.experiment', 'experiment']],
-            'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
-            'experiment.emgsetting': [
-                ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
-            ],
-            'experiment.softwareversion': [['experiment.software', 'software']],
-            'experiment.software': [['experiment.manufacturer', 'manufacturer']],
-            'experiment.manufacturer': [['', '']],
-            'experiment.equipment': [['experiment.manufacturer', 'manufacturer']]
-
-        }
-        one_to_one_relation = {
-            # multi table inheritance
-            'experiment.block': 'experiment.component',
-            'experiment.instruction': 'experiment.component',
-            'experiment.pause': 'experiment.component',
-            'experiment.questionnaire': 'experiment.component',
-            'experiment.stimulus': 'experiment.component',
-            'experiment.task': 'experiment.component',
-            'experiment.task_experiment': 'experiment.component',
-            'experiment.eeg': 'experiment.component',
-            'experiment.tms': 'experiment.component',
-            'experiment.emg': 'experiment.component',
-            'experiment.digital_game_phase': 'experiment.component',
-            'experiment.generic_data_collection': 'experiment.component',
-            'experiment.tmsdevice': 'experiment.equipment',
-            # OneToOneField
-            'experiment.tmsdevicesetting': 'experiment.tmssetting',
-        }
-
-        DG = nx.DiGraph()
-        for index_from, dict_ in enumerate(data):
-            if dict_['model'] in foreign_relations:
-                node_from = dict_['model']
-                nodes_to = foreign_relations[node_from]
-                for node_to in nodes_to:
-                    index_to = next(
-                        (index_foreign for index_foreign, dict_foreign in enumerate(data)
-                         if dict_foreign['model'] == node_to[0] and dict_foreign['pk'] == dict_['fields'][node_to[1]]),
-                        None
-                    )
-                    if index_to is not None:
-                        DG.add_edge(index_from, index_to)
-                        DG[index_from][index_to]['relation'] = node_to[1]
-            if dict_['model'] in one_to_one_relation:
-                node_from = dict_['model']
-                node_to = one_to_one_relation[node_from]
-                index_to = next(
-                    (index_inheritade for index_inheritade, dict_inheritade in enumerate(data)
-                     if dict_inheritade['model'] == node_to and dict_inheritade['pk'] == dict_['pk']),
-                    None
-                )
-                if index_to is not None:
-                    DG.add_edge(index_from, index_to)
-
-        for node in DG.nodes():
-            DG.node[node]['atributes'] = data[node]
-
-        next_id = self._get_first_available_id()
-        for model_root_node in model_root_nodes:
-            root_node = next(
-                (index for index, dict_ in enumerate(data) if dict_['model'] == model_root_node), None
-            )
-            if root_node is not None:
-                self._update_pks(DG, data, root_node, next_id)
-
-        self._manage_last_stuffs_before_importing(data, research_project_id)
-
     def _set_last_objects_before_import(self, data, research_project_id):
         """Identify last objects to deduct after import, so
         we can identify the new objects imported
@@ -623,8 +250,253 @@ class ImportExperiment:
         else:
             self.new_objects['components'] = None
 
-    def get_new_objects(self):
-        return self.new_objects
+    @staticmethod
+    def _update_pk_keywords(data):  # TODO: to be used when updating pks
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
+
+        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
+        indexes_of_keywords_already_updated = []
+        for i in indexes:
+            # Get the keyword and check on database if the keyword already exists
+            # If exists, update the pk of this keyword to the correspondent in the database
+            # otherwise, update the pk of this keyword to next_keyword_id
+            old_keyword_id = data[i]['pk']
+            old_keyword_string = data[i]['fields']['name']
+            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
+
+            if keyword_on_database.count() > 0:
+                data[i]['pk'] = keyword_on_database.first().id
+            else:
+                data[i]['pk'] = next_keyword_id
+                next_keyword_id += 1
+
+            # Update all the references to the old keyword to the new one
+            for (index_row, dict_) in enumerate(data):
+                if dict_['model'] == 'experiment.researchproject':
+                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
+                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
+                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
+                            indexes_of_keywords_already_updated.append(keyword_index)
+
+    @staticmethod
+    def _solve_limey_survey_reference(data, survey_index):
+        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+        if min_limesurvey_id >= 0:
+            new_limesurvey_id = -99
+        else:
+            min_limesurvey_id -= 1
+            new_limesurvey_id = min_limesurvey_id
+        data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
+
+    def _make_dummy_reference_to_limesurvey(self, data):
+        survey_indexes = [index for index, dict_ in enumerate(data) if dict_['model'] == 'survey.survey']
+        for survey_index in survey_indexes:
+            self._solve_limey_survey_reference(data, survey_index)
+
+    def _update_research_project_pk(self, data, id_):
+        if id_:
+            research_project_index = next(
+                index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.researchproject'
+            )
+            del(data[research_project_index])
+            experiment_index = next(
+                index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.experiment'
+            )
+            data[experiment_index]['fields']['research_project'] = id_
+
+    def _fix_component_configuration_ids(self, data):
+        cc_indexes = \
+            [index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.componentconfiguration']
+        if cc_indexes:
+            index_list = []
+            for i in cc_indexes:
+                index_list.append(data[i]['pk'])
+            new_index = max(index_list)
+            for i in cc_indexes:
+                data[i]['pk'] = new_index
+                new_index += 1
+
+    @staticmethod
+    def _verify_keywords(data):
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
+        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
+        indexes_of_keywords_already_updated = []
+        for i in indexes:
+            # Get the keyword and check on database if the keyword already exists
+            # If exists, update the pk of this keyword to the correspondent in the database
+            # otherwise, update the pk of this keyword to next_keyword_id
+            old_keyword_id = data[i]['pk']
+            old_keyword_string = data[i]['fields']['name']
+            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
+
+            if keyword_on_database.count() > 0:
+                data[i]['pk'] = keyword_on_database.first().id
+            else:
+                data[i]['pk'] = next_keyword_id
+                next_keyword_id += 1
+
+            # Update all the references to the old keyword to the new one
+            for (index_row, dict_) in enumerate(data):
+                if dict_['model'] == 'experiment.researchproject':
+                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
+                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
+                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
+                            indexes_of_keywords_already_updated.append(keyword_index)
+
+    @staticmethod
+    def _update_patients_stuff(data):
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
+
+        # Update patient codes
+        patients = Patient.objects.all()
+        if patients:
+            last_patient_code = patients.order_by('-code').first().code
+            if last_patient_code:
+                numerical_part_code = int(last_patient_code.split('P')[1])
+                next_numerical_part = numerical_part_code + 1
+                for i in indexes:
+                    data[i]['fields']['code'] = 'P' + str(next_numerical_part)
+                    next_numerical_part += 1
+
+        # Clear CPFs
+        for i in indexes:
+            data[i]['fields']['cpf'] = None
+
+    def _manage_last_stuffs_before_importing(self, data, research_project_id):
+        self._make_dummy_reference_to_limesurvey(data)
+        self._update_research_project_pk(data, research_project_id)
+        # self._fix_component_configuration_ids(data)
+        self._verify_keywords(data)
+        self._update_patients_stuff(data)
+
+    @staticmethod
+    def _get_first_available_id():
+        last_id = 1
+        for app in apps.get_app_configs():
+            if app.verbose_name in ['Experiment', 'Patient', 'Quiz', 'Survey', 'Team']:
+                for model in app.get_models():
+                    if 'Goalkeeper' not in model.__name__:  # TODO: ver modelo com referência a outro bd: dá pau
+                        last_model = model.objects.last()
+                        if last_model and hasattr(last_model, 'id'):
+                            last_model_id = last_model.id
+                            last_id = last_model_id if last_id < last_model_id else last_id
+        return last_id + 1
+
+    def _update_pks(self, DG, data, successor, next_id):
+        # TODO: see if it's worth to put this list in class level
+        if data[successor]['model'] not in [
+            'experiment.block', 'experiment.instruction', 'experiment.questionnaire',
+            'experiment.tms', 'experiment.eeg', 'experiment.emg', 'experiment.tmsdevicesetting',
+            'experiment.tmsdevice'
+        ]:
+            if not DG.node[successor]['updated']:
+                data[successor]['pk'] = next_id
+                DG.node[successor]['updated'] = True
+        for predecessor in DG.predecessors(successor):
+            if 'relation' in DG[predecessor][successor]:
+                relation = DG[predecessor][successor]['relation']
+                data[predecessor]['fields'][relation] = data[successor]['pk']
+            else:
+                data[predecessor]['pk'] = data[successor]['pk']
+            next_id += 1
+            self._update_pks(DG, data, predecessor, next_id)
+
+    def _build_graph(self, data, research_project_id):
+        model_root_nodes = [
+            'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
+            'experiment.material', 'patient.patient'
+        ]
+        foreign_relations = {
+            'experiment.researchproject': [['', '']],
+            'experiment.experiment': [['experiment.researchproject', 'research_project']],
+            'experiment.group': [
+                ['experiment.experiment', 'experiment'], ['experiment.component', 'experimental_protocol']
+            ],
+            'experiment.component': [['experiment.experiment', 'experiment']],
+            'experiment.componentconfiguration': [
+                ['experiment.component', 'component'], ['experiment.component', 'parent']
+            ],
+            'experiment.questionnaire': [['survey.survey', 'survey']],
+            'survey.survey': [['', '']],
+            'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
+            'experiment.tmssetting': [['experiment.experiment', 'experiment']],
+            'experiment.tmsdevicesetting': [
+                ['experiment.coilmodel', 'coil_model'], ['experiment.tmsdevice', 'tms_device']
+            ],
+            'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
+            'experiment.coilshape': [['', '']],
+            'experiment.material': [['', '']],
+            'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
+            'experiment.eegsetting': [['experiment.experiment', 'experiment']],
+            'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
+            'experiment.emgsetting': [
+                ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
+            ],
+            'experiment.softwareversion': [['experiment.software', 'software']],
+            'experiment.software': [['experiment.manufacturer', 'manufacturer']],
+            'experiment.manufacturer': [['', '']],
+            'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
+            'patient.patient': [['', '']],
+            'experiment.subject': [['patient.patient', 'patient']],
+            'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
+        }
+        one_to_one_relation = {
+            # Multi table inheritance
+            'experiment.block': 'experiment.component',
+            'experiment.instruction': 'experiment.component',
+            'experiment.pause': 'experiment.component',
+            'experiment.questionnaire': 'experiment.component',
+            'experiment.stimulus': 'experiment.component',
+            'experiment.task': 'experiment.component',
+            'experiment.task_experiment': 'experiment.component',
+            'experiment.eeg': 'experiment.component',
+            'experiment.tms': 'experiment.component',
+            'experiment.emg': 'experiment.component',
+            'experiment.digital_game_phase': 'experiment.component',
+            'experiment.generic_data_collection': 'experiment.component',
+            'experiment.tmsdevice': 'experiment.equipment',
+            # OneToOneField
+            'experiment.tmsdevicesetting': 'experiment.tmssetting',
+        }
+
+        DG = nx.DiGraph()
+        for index_from, dict_ in enumerate(data):
+            if dict_['model'] in foreign_relations:
+                node_from = dict_['model']
+                nodes_to = foreign_relations[node_from]
+                for node_to in nodes_to:
+                    index_to = next(
+                        (index_foreign for index_foreign, dict_foreign in enumerate(data)
+                         if dict_foreign['model'] == node_to[0] and dict_foreign['pk'] == dict_['fields'][node_to[1]]),
+                        None
+                    )
+                    if index_to is not None:
+                        DG.add_edge(index_from, index_to)
+                        DG[index_from][index_to]['relation'] = node_to[1]
+            if dict_['model'] in one_to_one_relation:
+                node_from = dict_['model']
+                node_to = one_to_one_relation[node_from]
+                index_to = next(
+                    (index_inheritade for index_inheritade, dict_inheritade in enumerate(data)
+                     if dict_inheritade['model'] == node_to and dict_inheritade['pk'] == dict_['pk']),
+                    None
+                )
+                if index_to is not None:
+                    DG.add_edge(index_from, index_to)
+
+        for node in DG.nodes():
+            DG.node[node]['atributes'] = data[node]
+            DG.node[node]['updated'] = False
+
+        next_id = self._get_first_available_id()
+        for model_root_node in model_root_nodes:
+            root_nodes = [index for index, dict_ in enumerate(data) if dict_['model'] == model_root_node]
+            for root_node in root_nodes:
+                self._update_pks(DG, data, root_node, next_id)
+                next_id += 1
+
+        self._manage_last_stuffs_before_importing(data, research_project_id)
 
     def import_all(self, research_project_id=None):
         # TODO: maybe this try in constructor
@@ -646,4 +518,5 @@ class ImportExperiment:
 
         return 0, ''
 
-
+    def get_new_objects(self):
+        return self.new_objects
