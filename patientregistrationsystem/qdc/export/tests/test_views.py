@@ -167,7 +167,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         # Create one more patient/subject/subject_of_group besides those of
         # setUp
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
         subject_of_group = \
             ObjectsFactory.create_subject_of_group(self.group, subject)
@@ -247,7 +247,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         # Create first patient/subject/subject_of_group besides those of
         # setUp
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
         subject_of_group = \
             ObjectsFactory.create_subject_of_group(self.group, subject)
@@ -264,7 +264,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         )
 
         # Create second patient/subject/subject_of_group
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
         subject_of_group2 = \
             ObjectsFactory.create_subject_of_group(self.group, subject)
@@ -343,7 +343,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         group2 = ObjectsFactory.create_group(self.experiment, root_component2)
 
         # create patient/subject/subject_of_group
-        patient = UtilTests().create_patient_mock(changed_by=self.user)
+        patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
         subject_of_group2 = \
             ObjectsFactory.create_subject_of_group(group2, subject)
@@ -544,7 +544,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         )
 
         # create patient/subject/subject_of_group
-        patient2 = UtilTests().create_patient_mock(changed_by=self.user)
+        patient2 = UtilTests().create_patient(changed_by=self.user)
         subject2 = ObjectsFactory.create_subject(patient2)
         subject_of_group2 = \
             ObjectsFactory.create_subject_of_group(group2, subject2)
@@ -1243,7 +1243,7 @@ class ExportDataCollectionTest(ExportTestCase):
         group1 = ObjectsFactory.create_group(
             self.experiment, root_component1
         )
-        patient1 = UtilTests().create_patient_mock(changed_by=self.user)
+        patient1 = UtilTests().create_patient(changed_by=self.user)
         subject1 = ObjectsFactory.create_subject(patient1)
         subject_of_group1 = \
             ObjectsFactory.create_subject_of_group(group1, subject1)
@@ -1350,7 +1350,7 @@ class ExportDataCollectionTest(ExportTestCase):
         group1 = ObjectsFactory.create_group(
             self.experiment, root_component1
         )
-        patient1 = UtilTests().create_patient_mock(changed_by=self.user)
+        patient1 = UtilTests().create_patient(changed_by=self.user)
         subject1 = ObjectsFactory.create_subject(patient1)
         subject_of_group1 = \
             ObjectsFactory.create_subject_of_group(group1, subject1)

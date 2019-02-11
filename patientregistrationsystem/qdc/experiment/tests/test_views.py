@@ -196,7 +196,7 @@ class LoadGameKeeperTest(TestCase):
         )
 
         # create patient/subject/subject_of_group
-        self.patient = UtilTests().create_patient_mock(changed_by=self.user)
+        self.patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(self.patient)
         self.subject_of_group = \
             ObjectsFactory.create_subject_of_group(self.group, subject)
@@ -359,7 +359,7 @@ class CollaboratorTest(TestCase):
         )
 
         # create patient/subject/subject_of_group
-        self.patient = UtilTests().create_patient_mock(changed_by=self.user)
+        self.patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(self.patient)
         self.subject_of_group = \
             ObjectsFactory.create_subject_of_group(self.group, subject)
@@ -426,7 +426,8 @@ class ImportExperimentTest(TestCase):
         exec(open('add_initial_data.py').read())
 
         self.user, passwd = create_user(Group.objects.all())
-        self.client.login(username=self.user.username, password=passwd)
+        self.user_importer, passwd = create_user(Group.objects.all())
+        self.client.login(username=self.user_importer.username, password=passwd)
 
         self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
 
@@ -832,6 +833,7 @@ class ImportExperimentTest(TestCase):
             self.assertEqual(Experiment.objects.last().id, item.experiment.id)
             self.assertFalse(new_components.filter(id=item.experimental_protocol_id).exists())
 
+        # TODO (NES-908): get by exclude not this way
         new_instructions = Instruction.objects.all().order_by('-id')[:2]
         self.assertEqual(2, new_instructions.count())
         new_instruction_components = \
@@ -1463,8 +1465,8 @@ class ImportExperimentTest(TestCase):
 
         # Create participants
         util = UtilTests()
-        patient1_mock = util.create_patient_mock(changed_by=self.user)
-        patient2_mock = util.create_patient_mock(changed_by=self.user)
+        patient1_mock = util.create_patient(changed_by=self.user)
+        patient2_mock = util.create_patient(changed_by=self.user)
 
         # Remove their CPF, we are simulating a new database
         patient1_mock.cpf = None
@@ -1513,7 +1515,7 @@ class ImportExperimentTest(TestCase):
         research_project = ObjectsFactory.create_research_project(self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         group = ObjectsFactory.create_group(experiment)
-        patient = UtilTests.create_patient_mock(changed_by=self.user)
+        patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
         ObjectsFactory.create_subject_of_group(group, subject)
 
@@ -1554,8 +1556,8 @@ class ImportExperimentTest(TestCase):
         group2 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent2)
 
         util = UtilTests()
-        patient1 = util.create_patient_mock(changed_by=self.user)
-        patient2 = util.create_patient_mock(changed_by=self.user)
+        patient1 = util.create_patient(changed_by=self.user)
+        patient2 = util.create_patient(changed_by=self.user)
 
         # Create participants data
         # Telephone
@@ -1604,23 +1606,25 @@ class ImportExperimentTest(TestCase):
         )
 
         # Medical record
-        cid101 = ClassificationOfDiseases.objects.create(code='TESTE', description='Description',
-                                                         abbreviated_description='Desc')
-        cid102 = ClassificationOfDiseases.objects.create(code='TESTE2', description='Description2',
-                                                         abbreviated_description='Desc2')
+        cid10_1 = UtilTests.create_cid10('1')  # TODO (NES-908): create with real code
+        cid10_2 = UtilTests.create_cid10('10')
         medicalevaluation1 = MedicalRecordData.objects.create(
             patient=patient1,
-            record_responsible=self.user
+            record_responsible=self.user  # TODO (NES-908): see if import with user or None
         )
-        diagnosis1 = Diagnosis.objects.create(medical_record_data=medicalevaluation1,
-                                              classification_of_diseases=cid101)
+        diagnosis1 = Diagnosis.objects.create(
+            medical_record_data=medicalevaluation1,
+            classification_of_diseases=cid10_1
+        )
 
         medicalevaluation2 = MedicalRecordData.objects.create(
             patient=patient2,
             record_responsible=self.user
         )
-        diagnosis2 = Diagnosis.objects.create(medical_record_data=medicalevaluation2,
-                                              classification_of_diseases=cid102)
+        diagnosis2 = Diagnosis.objects.create(
+            medical_record_data=medicalevaluation2,
+            classification_of_diseases=cid10_2
+        )
 
         # Remove their cpfs, we are simulating a new base
         patient1.cpf = None
@@ -1648,65 +1652,62 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        # Once exported, when importing, we want to test both cases when the CID10 is already at
-        # the database and when it's not, so we delete one of them from the database
-        ClassificationOfDiseases.objects.first().delete()
-
-        # dictionary to test against new participants created bellow
-        old_patients_count = Patient.objects.count()
-        old_telephones_count = Telephone.objects.count()
-        old_socialdemographic_count = SocialDemographicData.objects.count()
-        old_socialhistory_count = SocialHistoryData.objects.count()
-        old_diagnosis_records_count = Diagnosis.objects.count()
-        old_medical_record_count = MedicalRecordData.objects.count()
-        old_classsification_of_diseases_count = ClassificationOfDiseases.objects.count()
-
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
         new_patients = Patient.objects.exclude(id__in=[patient1.id, patient2.id])
         new_telephones = Telephone.objects.exclude(id__in=[telephone1.id, telephone2.id])
-        new_socialemographic = SocialDemographicData.objects.exclude(id__in=[sociodemograph1.id, sociodemograph2.id])
+        new_socialdemographic = SocialDemographicData.objects.exclude(id__in=[sociodemograph1.id, sociodemograph2.id])
         new_socialhistory = SocialHistoryData.objects.exclude(id__in=[socialhistory1.id, socialhistory2.id])
         new_diagnosis = Diagnosis.objects.exclude(id__in=[diagnosis1.id, diagnosis2.id])
-        new_medical_record = MedicalRecordData.objects.exclude(id__in=[medicalevaluation1.id, medicalevaluation2.id])
-        new_classification_of_diseases = ClassificationOfDiseases.objects.exclude(id__in=[cid101.id, cid102.id])
+        new_medical_records = MedicalRecordData.objects.exclude(id__in=[medicalevaluation1.id, medicalevaluation2.id])
 
-        self.assertEqual(2, Patient.objects.count())
-        self.assertEqual(
-            Telephone.objects.count(),
-            old_telephones_count + len(new_telephones))
-        self.assertEqual(
-            SocialDemographicData.objects.count(),
-            old_socialdemographic_count + len(new_socialemographic))
-        self.assertEqual(
-            SocialHistoryData.objects.count(),
-            old_socialhistory_count + len(new_socialhistory))
-        self.assertEqual(
-            Diagnosis.objects.count(),
-            old_diagnosis_records_count + len(new_diagnosis))
-        self.assertEqual(
-            MedicalRecordData.objects.count(),
-            old_medical_record_count + len(new_medical_record))
-        self.assertEqual(
-            ClassificationOfDiseases.objects.count(),
-            old_classsification_of_diseases_count + len(new_classification_of_diseases))
+        self.assertEqual(2, new_patients.count())
+        self.assertEqual(2, new_telephones.count())
+        self.assertEqual(2, new_socialdemographic.count())
+        self.assertEqual(2, new_socialhistory.count())
+        self.assertEqual(2, new_medical_records.count())
+        self.assertEqual(2, new_diagnosis.count())
 
         for patient in new_patients:
-            for item in new_telephones:
-                self.assertTrue(Telephone.objects.filter(patient_id=patient.id).exists())
-            for item in new_socialemographic:
-                self.assertTrue(SocialDemographicData.objects.filter(patient_id=patient.id).exists())
-            for item in new_socialhistory:
-                self.assertTrue(SocialHistoryData.objects.filter(patient_id=patient.id).exists())
-            for item in new_diagnosis:
-                self.assertTrue(Diagnosis.objects.filter(medical_record_data__patient_id=patient.id).exists())
-            for item in new_medical_record:
-                self.assertTrue(MedicalRecordData.objects.filter(patient_id=patient.id).exists())
+            self.assertTrue(Telephone.objects.filter(patient_id=patient.id).exists())
+            self.assertTrue(SocialDemographicData.objects.filter(patient_id=patient.id).exists())
+            self.assertTrue(SocialHistoryData.objects.filter(patient_id=patient.id).exists())
+            self.assertTrue(Diagnosis.objects.filter(medical_record_data__patient_id=patient.id).exists())
+            self.assertTrue(MedicalRecordData.objects.filter(patient_id=patient.id).exists())
+        
+        self.assertNotEqual(new_patients[0].id, new_patients[1].id)
+        self.assertNotEqual(new_telephones[0].id, new_telephones[1].id)
+        self.assertNotEqual(new_socialdemographic[0].id, new_socialdemographic[1].id)
+        self.assertNotEqual(new_socialhistory[0].id, new_socialhistory[1].id)
+        self.assertNotEqual(new_medical_records[0].id, new_medical_records[1].id)
+        self.assertNotEqual(new_diagnosis[0].id, new_diagnosis[1].id)
 
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_telephone_with_logged_user(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        group = ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_subject_of_group(group, subject)
+
+        telephone = UtilTests.create_telephone(patient, self.user)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_telephone = Telephone.objects.exclude(id=telephone.id)
+        self.assertEqual(1, new_telephone.count())
+        self.assertEqual(new_telephone[0].changed_by, self.user_importer)
 
     # def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
     #     research_project = ObjectsFactory.create_research_project(owner=self.user)
