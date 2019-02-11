@@ -51,19 +51,23 @@ NES_PROJECT_PATH="${NES_DIR}/patientregistrationsystem/qdc"
 NES_SETUP_PATH="${NES_PROJECT_PATH}/qdc"
 
 # INITIALIZE POSTGRESQL ##################################################
-if [ -z "$PGDATA" ]
+if [ -s "$PGDATA/PG_VERSION" ]
 then
-	su postgres -c "pg_ctl init -D $PGDATA"
+	echo "INFO: Database already initialized"
+else
+	echo "INFO: Initializing postgres database"
+	cd / && su postgres -c "pg_ctl init -D $PGDATA"
 	echo "host all all all md5" >> "${PGDATA}"/pg_hba.conf
 fi
 
 # LIMESURVEY SETUP ####################################################
-cd "$LIMESURVEY_DIR"
 
-if [ -f application/config/config.php ]
+if [ -f "${LIMESURVEY_DIR}"/application/config/config.php ]
 then
 	echo "INFO: LimeSurvey config.php already provisioned"
 else
+	cd "$LIMESURVEY_DIR"
+	echo "INFO: Creating LimeSurvey configuration"
 	cp application/config/config-sample-pgsql.php application/config/config.php
 	sed -i "s#\('connectionString' => \).*,\$#\\1'pgsql:host=${LIMESURVEY_DB_HOST};port=${LIMESURVEY_DB_PORT};dbname=${LIMESURVEY_DB};',#g" application/config/config.php
 	sed -i "s#\('username' => \).*,\$#\\1'${LIMESURVEY_DB_USER}',#g" application/config/config.php
@@ -74,12 +78,14 @@ else
 fi
 
 # Makes sure that JSON-RPC interface will be available
+cd "$LIMESURVEY_DIR"
 sed -i "s#\(\$config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
 
 if [ -f "${LIMESURVEY_CONF_DIR}"/httpd.conf ]
 then
 	echo "INFO: LimeSurvey-Apache configuration already provisioned"
 else
+	echo "INFO: Creating Apache2 configuration"
 	chown -R apache:apache "$LIMESURVEY_DIR"
 	chmod -R o-rwx "$LIMESURVEY_DIR"
 	chmod -R 770 "${LIMESURVEY_DIR}"/application/config/
@@ -184,6 +190,7 @@ if [ -f "${NES_SETUP_PATH}"/wsgi.py ]
 then
 	echo "INFO: NES wsgi.py file already provisioned"
 else
+	echo "INFO: Creating NES wsgi.py file"
 	cat <<-EOF > "${NES_SETUP_PATH}"/wsgi.py
 		import os
 		import sys
@@ -202,6 +209,7 @@ if [ -f "${NES_SETUP_PATH}"/settings_local.py ]
 then
 	echo "INFO: NES settings_local.py file already provisioned"
 else
+	echo "INFO: Creating NES settings_local.py file"
 	cat <<-EOF > "${NES_SETUP_PATH}"/settings_local.py
 		SECRET_KEY = "$NES_SECRET_KEY"
 		DEBUG = True
@@ -235,6 +243,8 @@ if [ -f "${PGDATA}"/.db_users.placeholder ]
 then
 	echo "INFO: DB users already provisioned"
 else
+	echo "INFO: Creating users in postgres"
+	cd /
 	su postgres -c "pg_ctl start -D $PGDATA"
 	cat <<-EOF | su postgres -c "psql"
 		CREATE USER $NES_DB_USER WITH PASSWORD '$NES_DB_PASSWORD' ;
@@ -253,14 +263,15 @@ if [ -f "${LIMESURVEY_DIR}"/.limesurvey_superuser.placeholder ]
 then
 	echo "INFO: LimeSurvey superuser already provisioned"
 else
-	cd "$LIMESURVEY_DIR"
+	echo "INFO: Creating superuser in LimeSurvey"
 	su postgres -c "pg_ctl start -D $PGDATA"
+	cd "$LIMESURVEY_DIR"
 	php7 application/commands/console.php install \
 		"$LIMESURVEY_ADMIN_USER" \
 		"$LIMESURVEY_ADMIN_PASSWORD" \
 		"$LIMESURVEY_ADMIN_NAME" \
 		"$LIMESURVEY_ADMIN_EMAIL"
-	su postgres -c "pg_ctl stop -D $PGDATA"
+	cd / && su postgres -c "pg_ctl stop -D $PGDATA"
 	touch "${LIMESURVEY_DIR}"/.limesurvey_superuser.placeholder
 fi
 
@@ -268,6 +279,7 @@ if [ -f "${NES_DIR}"/.nes_initialization.placeholder ]
 then
 	echo "INFO: NES data has already been initialized"
 else
+	echo "INFO: Initializing NES data (migrations, initial, superuser,ICD)"
 	cd "$NES_PROJECT_PATH"
 	cat <<-EOF > /tmp/create_superuser.py
 		from django.contrib.auth import get_user_model
@@ -296,6 +308,8 @@ if [ -f "${SUPERVISOR_CONF_DIR}"/supervisord.conf ]
 then
 	echo "INFO: Supervisord configuration file already provisioned"
 else
+	echo "INFO: Creating Supervisord configuration file"
+	mkdir -p "$SUPERVISOR_CONF_DIR"
 	cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 		[supervisord]
 		nodaemon=true
