@@ -1513,7 +1513,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
         # Insert subject in the group
         util = UtilTests()
-        patient_mock = util.create_patient_mock(changed_by=self.user)
+        patient_mock = util.create_patient(changed_by=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()
@@ -1579,7 +1579,7 @@ class ListOfQuestionnaireFromExperimentalProtocolOfAGroupTest(TestCase):
 
         # Create a subject to the experiment
         util = UtilTests()
-        patient_mock = util.create_patient_mock(changed_by=self.user)
+        patient_mock = util.create_patient(changed_by=self.user)
         subject_mock = Subject.objects.create(patient=patient_mock)
         subject_group = SubjectOfGroup.objects.create(
             subject=subject_mock, group=group
@@ -1630,7 +1630,7 @@ class SubjectTest(TestCase):
         # Criar um grupo mock para ser utilizado no teste
         group = ObjectsFactory.create_group(experiment)
 
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         patient_mock.cpf = '374.276.738-08'  # to test search for cpf
         patient_mock.save()
         self.data = {
@@ -1668,7 +1668,7 @@ class SubjectTest(TestCase):
         # Criar um grupo mock para ser utilizado no teste
         group = ObjectsFactory.create_group(experiment)
 
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         patient_mock.cpf = '374.276.738-08'  # to test search for cpf
         patient_mock.save()
 
@@ -1747,7 +1747,7 @@ class SubjectTest(TestCase):
 
         # Insert subject in the group
         util = UtilTests()
-        patient_mock = util.create_patient_mock(changed_by=self.user)
+        patient_mock = util.create_patient(changed_by=self.user)
 
         count_before_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         response = self.client.post(reverse('subject_insert', args=(group.pk, patient_mock.pk)))
@@ -1871,7 +1871,7 @@ class SubjectTest(TestCase):
         group = ObjectsFactory.create_group(experiment, block)
 
         util = UtilTests()
-        patient_mock = util.create_patient_mock(changed_by=self.user)
+        patient_mock = util.create_patient(changed_by=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()
@@ -1956,78 +1956,6 @@ class SubjectTest(TestCase):
         count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
-    # def test_questionaire_view(self):
-    #     """ Testa a visualizacao completa do questionario respondido no Lime Survey"""
-    #
-    #     # Create a research project
-    #     research_project = ResearchProject.objects.create(title="Research project title",
-    #                                                       start_date=datetime.date.today(),
-    #                                                       description="Research project description")
-    #     research_project.save()
-    #
-    #     # Criar um experimento mock para ser utilizado no teste
-    #     experiment = Experiment.objects.create(title="Experimento-Teste-View",
-    #                                            description="Descricao do Experimento-View",
-    #                                            research_project=research_project)
-    #     experiment.save()
-    #
-    #     # Criar um grupo mock para ser utilizado no teste
-    #     group = Group.objects.create(experiment=experiment,
-    #                                  title="Group-update",
-    #                                  description="Descricao do Group-update")
-    #     group.save()
-    #
-    #     # Criar um Subject para o experimento
-    #     patient_mock = self.util.create_patient_mock(user=self.user)
-    #
-    #     subject_mock = Subject(patient=patient_mock)
-    #     subject_mock.save()
-    #
-    #     subject_group = SubjectOfGroup(subject=subject_mock, group=group)
-    #     subject_group.save()
-    #
-    #     group.subjectofgroup_set.add(subject_group)
-    #     experiment.save()
-    #
-    #     # Cria um questionario
-    #     questionnaire_configuration = QuestionnaireConfiguration(lime_survey_id=LIME_SURVEY_CODE_ID_TEST,
-    #                                                              group=group,
-    #                                                              number_of_fills=2)
-    #     questionnaire_configuration.save()
-    #
-    #     questionnaire_response = QuestionnaireResponse()
-    #     questionnaire_response.questionnaire_configuration = questionnaire_configuration
-    #     questionnaire_response.subject_of_group = subject_group
-    #     questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
-    #     questionnaire_response.questionnaire_responsible = self.user
-    #     questionnaire_response.date = datetime.datetime.now()
-    #     questionnaire_response.save()
-    #
-    #     # Visualiza preenchimento da Survey
-    #     get_data = {'view': "experiment", 'status': "view"}
-    #
-    #     response = self.client.get(reverse('questionnaire_response_edit',
-    #                                        args=[questionnaire_response.pk, ]), data=get_data)
-    #     self.assertEqual(response.status_code, 200)
-    #
-    #     questionnaire_response = QuestionnaireResponse()
-    #     questionnaire_response.questionnaire_configuration = questionnaire_configuration
-    #     questionnaire_response.subject_of_group = subject_group
-    #     questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_2
-    #     questionnaire_response.questionnaire_responsible = self.user
-    #     questionnaire_response.date = datetime.datetime.now()
-    #     questionnaire_response.save()
-    #
-    #     # Visualiza preenchimento da Survey
-    #     response = self.client.get(reverse('questionnaire_response_edit',
-    #                                        args=[questionnaire_response.pk, ]), data=get_data)
-    #     self.assertEqual(response.status_code, 200)
-    #
-    #     # Abre tela de cadastro de participantes com nenhum participante cadastrado a priori
-    #     response = self.client.get(reverse('subjects', args=(group.pk,)))
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(len(response.context['subject_list']), 1)
-
     def test_eeg_data_file(self):
         """
         Test of a EEG data file upload
@@ -2056,7 +1984,7 @@ class SubjectTest(TestCase):
         group = ObjectsFactory.create_group(experiment, block)
 
         util = UtilTests()
-        patient_mock = util.create_patient_mock(changed_by=self.user)
+        patient_mock = util.create_patient(changed_by=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()
@@ -2169,7 +2097,7 @@ class SubjectTest(TestCase):
 
         group = ObjectsFactory.create_group(experiment)
 
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
 
         subject_mock = Subject.objects.all().first()
 

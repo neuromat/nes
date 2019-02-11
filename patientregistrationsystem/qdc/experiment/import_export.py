@@ -12,7 +12,7 @@ from django.db.models import Count
 
 from experiment.models import Group, ResearchProject, Experiment,\
     Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
-from patient.models import Patient
+from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
 
@@ -98,6 +98,32 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
 
+    def _update_classification_of_diseases_reference(self, filename):
+        """TODO (NES-908): put docstring"""
+        with open(path.join(self.temp_dir, filename)) as f:
+            data = f.read().replace('\n', '')
+
+        serialized = json.loads(data)
+        indexes = [index for (index, dict_) in enumerate(serialized) if dict_['model'] == 'patient.diagnosis']
+        for i in indexes:
+            pk = serialized[i]['fields']['classification_of_diseases']
+            code = ClassificationOfDiseases.objects.get(id=int(pk)).code
+            # make a list with one element as natural key in dumped data has to be a list
+            serialized[i]['fields']['classification_of_diseases'] = [code]
+
+        # Remove ClassificationOfDiseases items: these data are preloaded in database
+        i = True
+        while i:
+            i = next(
+                (index for (index, dict_) in enumerate(serialized) if dict_['model'] ==
+                 'patient.classificationofdiseases'), None)
+            if i is None:
+                break
+            del serialized[i]
+
+        with open(path.join(self.temp_dir, filename), 'w') as f:
+            f.write(json.dumps(serialized))
+
     def export_all(self):
         key_path = 'component_ptr_id__experiment_id__in'
 
@@ -162,6 +188,7 @@ class ExportExperiment:
         self._remove_researchproject_keywords_model_from_json(self.FILE_NAME)
         self._change_group_code_to_null_from_json(self.FILE_NAME)
         self._remove_survey_code(self.FILE_NAME)
+        self._update_classification_of_diseases_reference(self.FILE_NAME)
 
     def get_file_path(self):
         return path.join(self.temp_dir, self.FILE_NAME)
@@ -305,18 +332,6 @@ class ImportExperiment:
             )
             data[experiment_index]['fields']['research_project'] = id_
 
-    def _fix_component_configuration_ids(self, data):
-        cc_indexes = \
-            [index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.componentconfiguration']
-        if cc_indexes:
-            index_list = []
-            for i in cc_indexes:
-                index_list.append(data[i]['pk'])
-            new_index = max(index_list)
-            for i in cc_indexes:
-                data[i]['pk'] = new_index
-                new_index += 1
-
     @staticmethod
     def _verify_keywords(data):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
@@ -363,12 +378,18 @@ class ImportExperiment:
         for i in indexes:
             data[i]['fields']['cpf'] = None
 
-    def _manage_last_stuffs_before_importing(self, data, research_project_id):
+    @staticmethod
+    def _update_model_user(data, request):
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.telephone']
+        for i in indexes:
+            data[i]['fields']['changed_by'] = request.user.id
+
+    def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
         self._make_dummy_reference_to_limesurvey(data)
         self._update_research_project_pk(data, research_project_id)
-        # self._fix_component_configuration_ids(data)
         self._verify_keywords(data)
         self._update_patients_stuff(data)
+        self._update_model_user(data, request)
 
     @staticmethod
     def _get_first_available_id():
@@ -402,7 +423,7 @@ class ImportExperiment:
             next_id += 1
             self._update_pks(DG, data, predecessor, next_id)
 
-    def _build_graph(self, data, research_project_id):
+    def _build_graph(self, request, data, research_project_id):
         model_root_nodes = [
             'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
             'experiment.material', 'patient.patient'
@@ -437,9 +458,16 @@ class ImportExperiment:
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
             'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
-            'patient.patient': [['', '']],
             'experiment.subject': [['patient.patient', 'patient']],
             'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
+            'patient.patient': [['', '']],
+            'patient.telephone': [['patient.patient', 'patient']],
+            'patient.socialdemographicdata': [['patient.patient', 'patient']],
+            'patient.socialhistorydata': [['patient.patient', 'patient']],
+            'patient.medicalrecorddata': [['patient.patient', 'patient']],
+            'patient.diagnosis': [
+                ['patient.medicalrecorddata', 'medical_record_data'],
+            ],
         }
         one_to_one_relation = {
             # Multi table inheritance
@@ -496,9 +524,9 @@ class ImportExperiment:
                 self._update_pks(DG, data, root_node, next_id)
                 next_id += 1
 
-        self._manage_last_stuffs_before_importing(data, research_project_id)
+        self._manage_last_stuffs_before_importing(request, data, research_project_id)
 
-    def import_all(self, research_project_id=None):
+    def import_all(self, request, research_project_id=None):
         # TODO: maybe this try in constructor
         try:
             with open(self.file_path) as f:
@@ -508,7 +536,7 @@ class ImportExperiment:
         except (ValueError, JSONDecodeError):
             return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
 
-        self._build_graph(data, research_project_id)
+        self._build_graph(request, data, research_project_id)
         with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
             file.write(json.dumps(data))
 
