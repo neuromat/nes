@@ -55,7 +55,12 @@ RUN apk update && \
 		# python to run django \\
 		python3 \
 		# supervisord  \\
-		supervisor && \
+		supervisor \
+		# nes dependencies \\
+		openblas-dev && \
+		apk add --no-cache \
+			--repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+			hdf5-dev && \
 		rm -rf /var/cache/apk/*
 
 # SETUP POSTGRESQL ##################################################
@@ -104,8 +109,10 @@ RUN pip3 install -r /wheels/requirement/requirements.txt -f /wheels && \
 VOLUME $NES_DIR
 
 # RUN ###########################################################
+ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
+ARG SUPERVISOR_CONF_DIR=/etc/supervisor
 
 COPY ./entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD ["/usr/bin/supervisord","-c","/var/tmp/supervisord.conf"]
+CMD /usr/bin/supervisord -c "${SUPERVISOR_CONF_DIR}/supervisord.conf"
