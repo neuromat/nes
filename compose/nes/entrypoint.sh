@@ -1,6 +1,9 @@
 #!/bin/sh
 set -ex
 
+# SYSTEM OPTIONS (set on Docker build)
+NES_DIR=$NES_DIR
+
 # External database settings
 NES_DB_TYPE=${NES_DB_TYPE:-'pgsql'}
 NES_DB_HOST=${NES_DB_HOST:-'db'}
@@ -23,10 +26,67 @@ NES_ADMIN_USER=${NES_ADMIN_USER:-'nes_admin'}
 NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-'nes_admin@nesmail.com'}
 NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-'nes_admin_password'}
 
+# Entrypoint only variables
+NES_PROJECT_PATH="${NES_DIR}/patientregistrationsystem/qdc"
+NES_SETUP_PATH="${NES_PROJECT_PATH}/qdc"
+
 if [ "$NES_DB_TYPE" != 'pgsql' ]
 then
 	echo "Unfortunately, for the time being, NES only works with PostgreSQL."
 	exit 1
+fi
+
+if [ -f "${NES_SETUP_PATH}"/wsgi.py ]
+then
+	echo "INFO: NES wsgi.py file already provisioned"
+else
+	echo "INFO: Creating NES wsgi.py file"
+	cat <<-EOF > "${NES_SETUP_PATH}"/wsgi.py
+		import os
+		import sys
+		import site
+		paths = ["$NES_PROJECT_PATH", "$NES_DIR", "/usr/local", "/usr/bin", "/bin",]
+		for path in paths:
+		    if path not in sys.path:
+		        sys.path.append(path)
+		os.environ.setdefault("DJANGO_SETTINGS_MODULE", "qdc.settings")
+		from django.core.wsgi import get_wsgi_application
+		application = get_wsgi_application()
+	EOF
+	chown -R nobody "${NES_SETUP_PATH}"/wsgi.py
+fi
+
+if [ -f "${NES_SETUP_PATH}"/settings_local.py ]
+then
+	echo "INFO: NES settings_local.py file already provisioned"
+else
+	echo "INFO: Creating NES settings_local.py file"
+	cat <<-EOF > "${NES_SETUP_PATH}"/settings_local.py
+		SECRET_KEY = "$NES_SECRET_KEY"
+		DEBUG = True
+		DEBUG404 = True
+		TEMPLATE_DEBUG = DEBUG
+		IS_TESTING = False
+		ALLOWED_HOSTS = ["$NES_IP"]
+		DATABASES = {
+		    "default": {
+		        "ENGINE": "django.db.backends.postgresql_psycopg2",
+		        "NAME": "$NES_DB",
+		        "USER": "$NES_DB_USER",
+		        "PASSWORD": "$NES_DB_PASSWORD",
+		        "HOST": "$NES_DB_HOST",
+		        "PORT": "$NES_DB_PORT", # default port
+		    }
+		}
+		LIMESURVEY = {
+		    "URL_API": "http://$LIMESURVEY_HOST:$LIMESURVEY_PORT",
+		    "URL_WEB": "http://$LIMESURVEY_HOST:$LIMESURVEY_PORT",
+		    "USER": "$LIMESURVEY_ADMIN_USER",
+		    "PASSWORD": "$LIMESURVEY_ADMIN_PASSWORD"
+		}
+		LOGO_INSTITUTION = "logo-institution.png"
+	EOF
+	chown -R nobody "${NES_SETUP_PATH}"/settings_local.py
 fi
 
 while ! nc -z "$NES_DB_HOST" "$NES_DB_PORT"
@@ -34,77 +94,30 @@ do
 	sleep 0.2
 done
 
-if [ -f /var/tmp/nes_is_configured ]
+if [ -f "${NES_DIR}"/.nes_initialization.placeholder ]
 then
-
-	echo "NES settings are set"
-
+	echo "INFO: NES data has already been initialized"
 else
+	echo "INFO: Initializing NES data (migrations, initial, superuser, ICD)"
+	cd "$NES_PROJECT_PATH"
 
-	cat << EOF > /tmp/create_superuser.py
-from django.contrib.auth import get_user_model
-User = get_user_model()
-User.objects.create_superuser('$NES_ADMIN_USER', '$NES_ADMIN_EMAIL', '$NES_ADMIN_PASSWORD')
-EOF
-
-	cat << EOF > /nes/patientregistrationsystem/qdc/qdc/wsgi.py
-import os
-import sys
-import site
-paths = ['/nes/patientregistrationsystem/qdc', '/nes/patientregistrationsystem', '/nes', '/usr/local/bin', '/user/bin', '/bin',]
-for path in paths:
-    if path not in sys.path:
-        sys.path.append(path)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "qdc.settings")
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
-EOF
-
-	cat << EOF > /nes/patientregistrationsystem/qdc/qdc/settings_local.py
-SECRET_KEY = '$NES_SECRET_KEY'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-DEBUG404 = True
-
-TEMPLATE_DEBUG = DEBUG
-
-# SECURITY WARNING: don't run with "is testing" on in production
-IS_TESTING = False
-
-ALLOWED_HOSTS = ['$NES_IP']
-
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '$NES_DB',
-        'USER': '$NES_DB_USER',
-        'PASSWORD': '$NES_DB_PASSWORD',
-        'HOST': '$NES_DB_HOST',
-        'PORT': '$NES_DB_PORT', # default port
-    }
-}
-
-# LimeSurvey configuration
-LIMESURVEY = {
-    'URL_API': 'http://$LIMESURVEY_HOST:$LIMESURVEY_PORT',
-    'URL_WEB': 'http://$LIMESURVEY_HOST:$LIMESURVEY_PORT',
-    'USER': '$LIMESURVEY_ADMIN_USER',
-    'PASSWORD': '$LIMESURVEY_ADMIN_PASSWORD'
-}
-
-LOGO_INSTITUTION = 'logo-institution.png'
-
-EOF
+	cat <<-EOF > /tmp/create_superuser.py
+		from django.contrib.auth import get_user_model
+		User = get_user_model()
+		User.objects.create_superuser("$NES_ADMIN_USER", "$NES_ADMIN_EMAIL", "$NES_ADMIN_PASSWORD")
+	EOF
 
 	python3 manage.py migrate
 	python3 manage.py shell < add_initial_data.py
 	python3 manage.py loaddata load_initial_data.json
 	python3 manage.py shell < /tmp/create_superuser.py
 
-	touch /var/tmp/nes_is_configured
+	rm /tmp/create_superuser.py
+
+	chown -R nobody "${NES_DIR}"/.git
+	chown -R nobody "${NES_DIR}"/patientregistrationsystem
+
+	touch "${NES_DIR}"/.nes_initialization.placeholder
 fi
 
 exec "$@"

@@ -116,7 +116,6 @@ VOLUME $NES_DIR
 
 # RUN ###########################################################
 ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
-ARG SUPERVISOR_CONF_DIR=/etc/supervisor
 
 COPY ./entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]

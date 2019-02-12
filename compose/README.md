@@ -80,6 +80,13 @@ For further details on the settings see: <https://manual.limesurvey.org/Optional
 
 The entrypoint will set the required application settings and run the initial scripts to populate the database and to be sure to run those only at the first run, a placeholder is written at '/var/tmp/nes_is_configured'
 
+## Build Arguments
+
+| Parameter | Description                           |
+| --------- | ------------------------------------- |
+| NES_TAG   | NES release tag to be installed       |
+| NES_DIR   | Directory where NES will be installed |
+
 ## Environment Variables
 
 | Parameter                 | Description                                          |

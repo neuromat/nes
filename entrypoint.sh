@@ -26,8 +26,8 @@ LIMESURVEY_ADMIN_EMAIL=${LIMESURVEY_ADMIN_EMAIL:-"limesurvey@limemail.false"}
 LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-"limesurvey_admin_password"}
 
 # NES
-## SYSTEM OPTIONS
-NES_DIR=${NES_DIR:-"/nes"}
+## SYSTEM OPTIONS (set on Docker build)
+NES_DIR=$NES_DIR
 ## SETTINGS_LOCAL OPTIONS
 ### DB
 NES_DB_HOST=${NES_DB_HOST:-"localhost"}
