@@ -40,6 +40,8 @@ services:
             - POSTGRES_PASSWORD=nes_password
             - POSTGRES_DB=nes_db
             - POSTGRES_USER=nes_user
+        stdin_open: true
+        tty: true
 
 # Neuroscience Experiments System
     nes:
