@@ -214,15 +214,15 @@ class SocialDemographicData(models.Model):
                                           null=True, blank=True, related_name='patient_schooling_set')
     schooling = models.ForeignKey(Schooling, verbose_name=_('Schooling of the householder'),
                                   null=True, blank=True)
-    tv = models.IntegerField(null=True, blank=True, )
-    dvd = models.IntegerField(null=True, blank=True, )
-    radio = models.IntegerField(null=True, blank=True, )
-    bath = models.IntegerField(null=True, blank=True, )
-    automobile = models.IntegerField(null=True, blank=True, )
-    wash_machine = models.IntegerField(null=True, blank=True, )
-    refrigerator = models.IntegerField(null=True, blank=True, )
-    freezer = models.IntegerField(null=True, blank=True, )
-    house_maid = models.IntegerField(null=True, blank=True, )
+    tv = models.IntegerField(null=True, blank=True)
+    dvd = models.IntegerField(null=True, blank=True)
+    radio = models.IntegerField(null=True, blank=True)
+    bath = models.IntegerField(null=True, blank=True)
+    automobile = models.IntegerField(null=True, blank=True)
+    wash_machine = models.IntegerField(null=True, blank=True)
+    refrigerator = models.IntegerField(null=True, blank=True)
+    freezer = models.IntegerField(null=True, blank=True)
+    house_maid = models.IntegerField(null=True, blank=True)
     social_class = models.CharField(null=True, blank=True, max_length=10)
 
     # Changes to audit trail
@@ -327,14 +327,24 @@ class MedicalRecordData(models.Model):
             self.patient, self.record_date, self.record_responsible
 
 
+class ClassificationOfDiseasesManager(models.Manager):
+    def get_by_natural_key(self, code):
+        return self.get(code=code)
+
+
 class ClassificationOfDiseases(models.Model):
     code = models.CharField(max_length=10, null=False)
     description = models.CharField(max_length=300, null=False)
     abbreviated_description = models.CharField(max_length=190, null=False)
     parent = models.ForeignKey('self', null=True, related_name='children')
 
+    objects = ClassificationOfDiseasesManager()
+
     def __str__(self):
         return self.abbreviated_description
+
+    def natural_key(self):
+        return self.code
 
 
 class Diagnosis(models.Model):
