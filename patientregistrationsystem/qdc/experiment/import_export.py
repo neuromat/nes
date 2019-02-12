@@ -99,7 +99,10 @@ class ExportExperiment:
             f.write(json.dumps(serialized))
 
     def _update_classification_of_diseases_reference(self, filename):
-        """TODO (NES-908): put docstring"""
+        """Change json data exported to replace references to classification
+        of diseases so the reference is to code not to id. We consider that
+        NES instances all share the same classification of diseases data
+        """
         with open(path.join(self.temp_dir, filename)) as f:
             data = f.read().replace('\n', '')
 

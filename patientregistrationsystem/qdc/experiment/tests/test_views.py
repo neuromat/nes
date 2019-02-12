@@ -659,7 +659,7 @@ class ImportExperimentTest(TestCase):
     def test_POST_experiment_import_file_creates_new_components_and_returns_successful_message(self):
         # We create blocks but could create other type of component
         # TODO: Component can be created without type, but NES should only allow
-        #  create a component of a determined
+        #  create a component of a determined type
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         component1 = ObjectsFactory.create_block(experiment)
@@ -1833,10 +1833,6 @@ class ImportExperimentTest(TestCase):
         new_telephone = Telephone.objects.exclude(id=telephone.id)
         self.assertEqual(1, new_telephone.count())
         self.assertEqual(new_telephone[0].changed_by, self.user_importer)
-
-    def test_create_tests_that_uses_natural_keys_for_data_loaded_with_fixtures(self):
-        # TODO: implement that tests
-        pass
 
     def test_tms_device_and_tms_device_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.tmsdevice',
