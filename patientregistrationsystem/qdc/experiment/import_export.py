@@ -130,6 +130,8 @@ class ExportExperiment:
         self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
         self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
                               'component_id__experiment_id__in')
+        self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
+                              'component_configuration__component__experiment_id__in')
         self.generate_fixture('group.json', 'group', 'experiment_id__in')
         self.generate_fixture('block.json', 'block', key_path)
         self.generate_fixture('instruction.json', 'instruction', key_path)
