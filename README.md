@@ -2,6 +2,8 @@
 
 Dockerfile to build a monolithic container of [NES](https://github.com/neuromat/nes) with [PostgreSQL](https://www.postgresql.org) and [LimeSurvey](https://limesurvey.org).
 
+The integration and deployment of the services is handled by [Supervisor](http://supervisord.org/).
+
 # Build Arguments
 
 The build arguments can be organized in the following groups:
@@ -40,10 +42,10 @@ The environment variables can be organized in the following groups:
 
 ### SYSTEM OPTIONS
 
-| Parameter               | Description                                                |
-| ----------------------- | ---------------------------------------------------------- |
-| LIMESURVEY_HOST         | Host where LimeSurvey is installed. (default is localhost) |
-| LIMESURVEY_PORT         | LimeSurvey port to be used by Apache.                      |
+| Parameter       | Description                                                |
+| --------------- | ---------------------------------------------------------- |
+| LIMESURVEY_HOST | Host where LimeSurvey is installed. (default is localhost) |
+| LIMESURVEY_PORT | LimeSurvey port to be used by Apache.                      |
 
 ### CONFIG.PHP OPTIONS
 
@@ -84,13 +86,13 @@ The environment variables can be organized in the following groups:
 
 #### DB
 
-| Parameter       | Description                                           |
-| --------------- | ----------------------------------------------------- |
-| NES_DB_HOST     | Database server hostname. (default is localhost)      |
-| NES_DB          | Database name.                                        |
-| NES_DB_PORT     | Database server port.                                 |
-| NES_DB_USER     | Database user.                                        |
-| NES_DB_PASSWORD | Database user's password.                             |
+| Parameter       | Description                                      |
+| --------------- | ------------------------------------------------ |
+| NES_DB_HOST     | Database server hostname. (default is localhost) |
+| NES_DB          | Database name.                                   |
+| NES_DB_PORT     | Database server port.                            |
+| NES_DB_USER     | Database user.                                   |
+| NES_DB_PASSWORD | Database user's password.                        |
 
 #### LimeSurvey JSON-RPC interface
 
@@ -102,6 +104,12 @@ _these are the same variables set for LimeSurvey_
 | LIMESURVEY_PORT           | LimeSurvey port to be used by Apache.                      |
 | LIMESURVEY_ADMIN_USER     | LimeSurvey Admin User.                                     |
 | LIMESURVEY_ADMIN_PASSWORD | LimeSurvey Admin Password.                                 |
+
+## Supervisor
+
+| Parameter           | Description                                        |
+| ------------------- | -------------------------------------------------- |
+| SUPERVISOR_CONF_DIR | Directory where Supervisor configuration is stored |
 
 # References
 

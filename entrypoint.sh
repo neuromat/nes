@@ -29,12 +29,6 @@ LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-"limesurvey_admin_passwor
 ## SYSTEM OPTIONS (set on Docker build)
 NES_DIR=$NES_DIR
 ## SETTINGS_LOCAL OPTIONS
-### DB
-NES_DB_HOST=${NES_DB_HOST:-"localhost"}
-NES_DB=${NES_DB:-"nes_db"}
-NES_DB_PORT=${NES_DB_PORT:-"5432"}
-NES_DB_USER=${NES_DB_USER:-"nes_user"}
-NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
 ### DJANGO
 NES_SECRET_KEY=${NES_SECRET_KEY:-"your_secret_key"}
 NES_ADMIN_USER=${NES_ADMIN_USER:-"nes_admin"}
@@ -42,6 +36,12 @@ NES_ADMIN_EMAIL=${NES_ADMIN_EMAIL:-"nes_admin@nesmail.false"}
 NES_ADMIN_PASSWORD=${NES_ADMIN_PASSWORD:-"nes_admin_password"}
 NES_IP=${NES_IP:-0.0.0.0}
 NES_PORT=${NES_PORT:-8000}
+### DB
+NES_DB_HOST=${NES_DB_HOST:-"localhost"}
+NES_DB=${NES_DB:-"nes_db"}
+NES_DB_PORT=${NES_DB_PORT:-"5432"}
+NES_DB_USER=${NES_DB_USER:-"nes_user"}
+NES_DB_PASSWORD=${NES_DB_PASSWORD:-"nes_password"}
 
 # SUPERVISOR
 SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
