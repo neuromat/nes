@@ -505,6 +505,7 @@ class ImportExperiment:
             'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
             'experiment.electrodemodel': [
                 ['experiment.material', 'material'], ['experiment.electrodeconfiguration', 'electrode_configuration']],
+            # Participants
             'experiment.subject': [['patient.patient', 'patient']],
             'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
             'patient.patient': [['', '']],
@@ -515,6 +516,8 @@ class ImportExperiment:
             'patient.diagnosis': [
                 ['patient.medicalrecorddata', 'medical_record_data'],
             ],
+            # Data collections
+            'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
         }
         one_to_one_relation = {
             # Multi table inheritance

@@ -24,7 +24,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     EEGElectrodeLocalizationSystem, EEGElectrodePositionSetting, EEGElectrodePosition, \
     EEGFilterSetting, FilterType, Amplifier, EEGAmplifierSetting, EEGSolutionSetting, EEGSolution, \
     EMGSetting, EMGElectrodeSetting, EMGADConverterSetting, ADConverter, EMGDigitalFilterSetting, \
-    FilterType, SoftwareVersion, Software, AmplifierDetectionType, TetheringSystem, Muscle, MuscleSide, \
+    SoftwareVersion, Software, AmplifierDetectionType, TetheringSystem, Muscle, MuscleSide, \
     MuscleSubdivision, EMGElectrodePlacement, EMGElectrodePlacementSetting, StandardizationSystem, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction
@@ -33,8 +33,8 @@ from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
-from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, \
-    SocialHistoryData, ClassificationOfDiseases, MedicalRecordData, Diagnosis
+from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
+    AlcoholPeriod, SocialHistoryData, ClassificationOfDiseases, MedicalRecordData, Diagnosis
 
 from patient.tests import UtilTests
 from survey.models import Survey
@@ -53,7 +53,6 @@ class ScheduleOfSendingListViewTest(TestCase):
         self.assertEqual(logged, True)
 
     def test_Schedule_of_Sending_List_is_valid(self):
-
         # Check if list of research projects is empty before inserting any.
         response = self.client.get(reverse('research_project_list'))
         self.assertEqual(response.status_code, 200)
@@ -68,7 +67,7 @@ class ScheduleOfSendingListViewTest(TestCase):
 
         can_send_to_portal = False
         if settings.PORTAL_API['URL'] and settings.SHOW_SEND_TO_PORTAL_BUTTON:
-                can_send_to_portal = True
+            can_send_to_portal = True
 
         # Check if list of research projects returns one item after inserting one.
         response = self.client.get(reverse('schedule_of_sending_list'))
@@ -595,7 +594,7 @@ class ImportExperimentTest(TestCase):
         response = self.client.get(reverse('experiment_import'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'experiment/experiment_import.html')
-    
+
     def test_POST_experiment_import_file_has_not_file_redirects_with_warning_message(self):
         response = self.client.post(reverse('experiment_import'), {'file': ''}, follow=True)
         self.assertRedirects(response, reverse('experiment_import'))
@@ -746,7 +745,8 @@ class ImportExperimentTest(TestCase):
         self._create_minimum_objects_to_test_components()
         ObjectsFactory.create_group(self.experiment, self.rootcomponent)
         survey = create_survey(212121)
-        questionnaire = ObjectsFactory.create_component(self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        questionnaire = ObjectsFactory.create_component(self.experiment, Component.QUESTIONNAIRE,
+                                                        kwargs={'survey': survey})
         ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
 
         export = ExportExperiment(self.experiment)
@@ -1071,7 +1071,8 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_creates_groups_with_reuses_of_their_experimental_protocol_and_returns_successful_message(self):
+    def test_POST_experiment_import_file_creates_groups_with_reuses_of_their_experimental_protocol_and_returns_successful_message(
+            self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
@@ -1999,27 +2000,27 @@ class ImportExperimentTest(TestCase):
                                                            'eeg_setting',
                                                            self._create_experiment_with_eeg_setting())
 
-    # def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
-    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
-    #     experiment = ObjectsFactory.create_experiment(research_project)
-    #     rootcomponent = ObjectsFactory.create_component(experiment, 'block')
-    #     eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
-    #     eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
-    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
-    #     ObjectsFactory.create_data_configuration_tree(component_config)
-    #
-    #     export = ExportExperiment(experiment)
-    #     export.export_all()
-    #     file_path = export.get_file_path()
-    #
-    #     with open(file_path, 'rb') as file:
-    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-    #     self.assertRedirects(response, reverse('import_log'))
-    #
-    #     self.assertEqual(2, DataConfigurationTree.objects.count())
-    #     self.assertEqual(
-    #         DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
-    #     )
+    def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block')
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+        eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
+        ObjectsFactory.create_data_configuration_tree(component_config)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        self.assertEqual(2, DataConfigurationTree.objects.count())
+        self.assertEqual(
+            DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
+        )
 
     # EMG tests
     def _create_experiment_with_emg_setting(self):
@@ -2145,4 +2146,3 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.softwareversion',
                                                            'software',
                                                            self._create_experiment_with_emg_setting())
-        print("a")
