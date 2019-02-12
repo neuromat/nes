@@ -120,4 +120,4 @@ else
 	touch "${NES_DIR}"/.nes_initialization.placeholder
 fi
 
-exec "${@}"
+exec "$@"

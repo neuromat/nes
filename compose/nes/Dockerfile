@@ -66,4 +66,3 @@ ENV NES_PORT ${NES_PORT:-8000}
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 CMD [ "/bin/sh", "-c", "/usr/bin/python3 ${NES_DIR}/patientregistrationsystem/qdc/manage.py runserver -v3 $NES_IP:$NES_PORT" ]
-#CMD [ "sleep", "24h" ]
