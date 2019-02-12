@@ -23,7 +23,10 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     EEGElectrodeLocalizationSystem, EEGElectrodePositionSetting, EEGElectrodePosition, \
     EEGFilterSetting, FilterType, Amplifier, EEGAmplifierSetting, EEGSolutionSetting, EEGSolution, \
     EMGSetting, EMGElectrodeSetting, EMGADConverterSetting, ADConverter, EMGDigitalFilterSetting, \
-    FilterType, SoftwareVersion, Software, AmplifierDetectionType, TetheringSystem
+    FilterType, SoftwareVersion, Software, AmplifierDetectionType, TetheringSystem, Muscle, MuscleSide, \
+    MuscleSubdivision, EMGElectrodePlacement, EMGElectrodePlacementSetting, StandardizationSystem, \
+    EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
+    EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting
 from experiment.models import Group as ExperimentGroup
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     AmountCigarettes, ClassificationOfDiseases, Diagnosis, AlcoholFrequency, AlcoholPeriod
@@ -1413,6 +1416,131 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.eegsolutionsetting',
                                                            'eeg_setting',
                                                            self._create_experiment_with_eeg_setting())
+
+    # EMG tests
+    def _create_experiment_with_emg_setting(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        # EMG Setting
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER')
+        software = Software.objects.create(name='TEST_SOFTWARE',
+                                           manufacturer=manufacturer)
+        software_version = SoftwareVersion.objects.create(name='TEST_SOFTWARE_VERSION',
+                                                          software=software)
+        emg_setting = EMGSetting.objects.create(experiment=experiment,
+                                                name='EMG-Setting name',
+                                                description='EMG-Setting description',
+                                                acquisition_software_version=software_version)
+
+        # AD converter
+        ad_converter = ADConverter.objects.create(identification='TEST_AD_CONVERTER',
+                                                  manufacturer=manufacturer)
+        emg_ad_converter_setting = EMGADConverterSetting.objects.create(ad_converter=ad_converter,
+                                                                        emg_setting=emg_setting)
+
+        # Filter type
+        filter_type = FilterType.objects.create(name='TEST_FILTER_TYPE')
+        emg_digital_filter_setting = EMGDigitalFilterSetting.objects.create(emg_setting=emg_setting,
+                                                                            filter_type=filter_type)
+
+        # Electrodes
+        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
+        electrode_config = ElectrodeConfiguration.objects.create(name='Electrode config name')
+        electrode_model = ElectrodeModel.objects.create(name='TEST_ELECTRODE_MODEL',
+                                                        electrode_configuration=electrode_config,
+                                                        material=material)
+        emg_electrode_setting_surface = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
+                                                                           electrode=electrode_model)
+
+        emg_electrode_setting_intramuscular = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
+                                                                                 electrode=electrode_model)
+        emg_electrode_setting_needle = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
+                                                                          electrode=electrode_model)
+
+        # Muscle
+        muscle = Muscle.objects.create(name='TEST_MUSCLE')
+        muscle_side = MuscleSide.objects.create(name='TEST_MUSCLE_SIDE',
+                                                muscle=muscle)
+        muscle_subdivision = MuscleSubdivision.objects.create(name='TEST_MUSCLE_SUBDIVISION',
+                                                              muscle=muscle)
+        standardization_system = StandardizationSystem.objects.create(name='TEST_STANDARDIZATION_SYSTEM')
+
+        emg_surface_placement = EMGSurfacePlacement.objects.create(standardization_system=standardization_system,
+                                                                   muscle_subdivision=muscle_subdivision,
+                                                                   placement_type='surface')
+        emg_intramuscular_placement = EMGIntramuscularPlacement.objects.create(
+            standardization_system=standardization_system,
+            muscle_subdivision=muscle_subdivision,
+            placement_type='intramuscular')
+        emg_needle_placement = EMGNeedlePlacement.objects.create(standardization_system=standardization_system,
+                                                                 muscle_subdivision=muscle_subdivision,
+                                                                 placement_type='needle')
+        emg_electrode_placement_setting_surface = EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_surface,
+            emg_electrode_placement=emg_surface_placement.emgelectrodeplacement_ptr,
+            muscle_side=muscle_side)
+        emg_electrode_placement_setting_intramuscular = EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_intramuscular,
+            emg_electrode_placement=emg_intramuscular_placement.emgelectrodeplacement_ptr,
+            muscle_side=muscle_side)
+        emg_electrode_placement_setting_needle = EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_needle,
+            emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
+            muscle_side=muscle_side)
+
+        # Amplifier
+        amplifier_detection_type = AmplifierDetectionType.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
+        tethering_system = TetheringSystem.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
+        amplifier = Amplifier.objects.create(identification='AMPLIFIER',
+                                             amplifier_detection_type=amplifier_detection_type,
+                                             tethering_system=tethering_system,
+                                             manufacturer=manufacturer)
+        preamplifier = Amplifier.objects.create(identification='PRE_AMPLIFIER',
+                                                amplifier_detection_type=amplifier_detection_type,
+                                                tethering_system=tethering_system,
+                                                manufacturer=manufacturer)
+
+        emg_amplifier_setting_surface = EMGAmplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_surface,
+            amplifier=amplifier)
+        emg_amplifier_setting_intramuscular = EMGAmplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_intramuscular,
+            amplifier=amplifier)
+        emg_amplifier_setting_needle = EMGAmplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_needle,
+            amplifier=amplifier)
+
+        emg_analog_filter_setting_surface = EMGAnalogFilterSetting.objects.create(
+            emg_electrode_setting=emg_amplifier_setting_surface)
+        emg_analog_filter_setting_intramuscular = EMGAnalogFilterSetting.objects.create(
+            emg_electrode_setting=emg_amplifier_setting_intramuscular)
+        emg_analog_filter_setting_needle = EMGAnalogFilterSetting.objects.create(
+            emg_electrode_setting=emg_amplifier_setting_needle)
+
+        emg_pre_amplifier_setting_surface = EMGPreamplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_surface,
+            amplifier=preamplifier)
+        emg_pre_amplifier_setting_intramuscular = EMGPreamplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_intramuscular,
+            amplifier=preamplifier)
+        emg_pre_amplifier_setting_needle = EMGPreamplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_needle,
+            amplifier=preamplifier)
+
+        emg_pre_amplifier_filter_setting_surface = EMGPreamplifierFilterSetting.objects.create(
+            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_surface)
+        emg_pre_amplifier_filter_setting_intramuscular = EMGPreamplifierFilterSetting.objects.create(
+            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_intramuscular)
+        emg_pre_amplifier_filter_setting_needle = EMGPreamplifierFilterSetting.objects.create(
+            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_needle)
+
+        return experiment
+
+    def test_emg_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgsetting',
+                                                           'experiment.emgdigitalfiltersetting',
+                                                           'emg_setting',
+                                                           self._create_experiment_with_emg_setting())
 
     # Participants tests
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
