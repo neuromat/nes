@@ -35,7 +35,7 @@ def icd_english_translation(tree):
 
         long_description = category.find("Rubric[@kind='preferredLong']")
 
-        if long_description:
+        if long_description is not None:
             description = format_text_element(long_description.find("Label"))
         else:
             description = abbreviated_description
