@@ -158,8 +158,19 @@ class ExportExperiment:
         self.generate_patient_fixture('diagnosis.json', 'diagnosis',
                                       'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
 
-        # Set up
+        # TMS
         self.generate_fixture('tms_device.json', 'tmsdevicesetting', 'tms_setting__experiment_id__in')
+        self.generate_fixture('tms_setting.json', 'tmssetting', 'experiment_id__in')
+
+        # EEG
+        self.generate_fixture('eeg_amplifier_setting.json', 'eegamplifiersetting', 'eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_solution_setting.json', 'eegsolutionsetting', 'eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_filter_setting.json', 'eegfiltersetting', 'eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_electrode_layout_setting.json', 'eegelectrodelayoutsetting',
+                              'eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_electrode_position_setting.json', 'eegelectrodepositionsetting',
+                              'eeg_electrode_layout_setting__eeg_setting__experiment_id__in')
+        self.generate_fixture('eeg_setting.json', 'eegsetting', 'experiment_id__in')
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -172,8 +183,10 @@ class ExportExperiment:
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
                          'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'socialhistorydata.json', 'socialdemographicdata.json', 'diagnosis.json',
-                         'tms_device.json', 'dataconfigurationtree.json']
+                         'socialhistorydata.json', 'socialdemographicdata.json', 'dataconfigurationtree.json',
+                         'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
+                         'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
+                         'eeg_electrode_position_setting.json', 'eeg_setting.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -409,7 +422,9 @@ class ImportExperiment:
         if data[successor]['model'] not in [
             'experiment.block', 'experiment.instruction', 'experiment.questionnaire',
             'experiment.tms', 'experiment.eeg', 'experiment.emg', 'experiment.tmsdevicesetting',
-            'experiment.tmsdevice'
+            'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
+            'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
+            'experiment.eegsolutionsetting'
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -426,7 +441,9 @@ class ImportExperiment:
     def _build_graph(self, request, data, research_project_id):
         model_root_nodes = [
             'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
-            'experiment.material', 'patient.patient'
+            'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
+            'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
+            'patient.patient'
         ]
         foreign_relations = {
             'experiment.researchproject': [['', '']],
@@ -440,6 +457,7 @@ class ImportExperiment:
             ],
             'experiment.questionnaire': [['survey.survey', 'survey']],
             'survey.survey': [['', '']],
+
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
             'experiment.tmsdevicesetting': [
@@ -448,16 +466,43 @@ class ImportExperiment:
             'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
             'experiment.coilshape': [['', '']],
             'experiment.material': [['', '']],
+
             'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
             'experiment.eegsetting': [['experiment.experiment', 'experiment']],
+            'experiment.eegelectrodepositionsetting': [
+                ['experiment.electrodemodel', 'electrode_model'],
+                ['experiment.eegelectrodelayoutsetting', 'eeg_electrode_layout_setting'],
+                ['experiment.eegelectrodeposition', 'eeg_electrode_position']
+            ],
+            'experiment.eegelectrodelayoutsetting': [['experiment.eegelectrodenetsystem', 'eeg_electrode_net_system']],
+            'experiment.eegelectrodeposition': [
+                ['experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system']
+            ],
+            'experiment.eegelectrodenetsystem': [
+                ['experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system'],
+                ['experiment.eegelectrodenet', 'eeg_electrode_net']
+            ],
+            'experiment.eegelectrodenet': [['experiment.electrodemodel', 'electrode_model_default']],
+            'experiment.eegfiltersetting': [['experiment.filtertype', 'eeg_filter_type']],
+            'experiment.eegamplifiersetting': [['experiment.amplifier', 'eeg_amplifier']],
+            'experiment.amplifier': [
+                ['experiment.amplifierdetectiontype', 'amplifier_detection_type'],
+                ['experiment.tetheringsystem', 'tethering_system']
+            ],
+            'experiment.eegsolutionsetting': [['experiment.eegsolution', 'eeg_solution']],
+            'experiment.eegsolution': [['experiment.manufacturer', 'manufacturer']],
+
             'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
             'experiment.emgsetting': [
                 ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
             ],
+
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
             'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
+            'experiment.electrodemodel': [
+                ['experiment.material', 'material'], ['experiment.electrodeconfiguration', 'electrode_configuration']],
             'experiment.subject': [['patient.patient', 'patient']],
             'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
             'patient.patient': [['', '']],
@@ -484,8 +529,14 @@ class ImportExperiment:
             'experiment.digital_game_phase': 'experiment.component',
             'experiment.generic_data_collection': 'experiment.component',
             'experiment.tmsdevice': 'experiment.equipment',
+            'experiment.eegelectrodenet': 'experiment.equipment',
+            'experiment.amplifier': 'experiment.equipment',
             # OneToOneField
             'experiment.tmsdevicesetting': 'experiment.tmssetting',
+            'experiment.eegelectrodelayoutsetting': 'experiment.eegsetting',
+            'experiment.eegfiltersetting': 'experiment.eegsetting',
+            'experiment.eegamplifiersetting': 'experiment.eegsetting',
+            'experiment.eegsolutionsetting': 'experiment.eegsetting',
         }
 
         DG = nx.DiGraph()
