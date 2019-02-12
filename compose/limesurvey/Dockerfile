@@ -20,6 +20,7 @@ RUN apk update && \
 ARG LIMESURVEY_URL_DOWNLOAD=https://github.com/LimeSurvey/LimeSurvey/archive/2.73.0+171219.tar.gz
 ARG LIMESURVEY_DIR=/var/www/limesurvey
 ENV LIMESURVEY_DIR=$LIMESURVEY_DIR
+ENV APACHE2_CONF_DIR="${LIMESURVEY_DIR}/application/config"
 
 RUN mkdir -p "$LIMESURVEY_DIR" && \
 		wget "$LIMESURVEY_URL_DOWNLOAD" -qO - | \
@@ -39,4 +40,4 @@ COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD /usr/sbin/httpd -D FOREGROUND -f "$APACHE2_CONF"
+CMD /usr/sbin/httpd -D FOREGROUND -f "${APACHE2_CONF_DIR}/httpd.conf"
