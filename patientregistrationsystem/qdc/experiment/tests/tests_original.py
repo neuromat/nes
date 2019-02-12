@@ -1634,7 +1634,7 @@ class SubjectTest(TestCase):
         patient_mock.cpf = '374.276.738-08'  # to test search for cpf
         patient_mock.save()
         self.data = {
-            SEARCH_TEXT: 'Pacient', 'experiment_id': experiment.id,
+            SEARCH_TEXT: 'Patient', 'experiment_id': experiment.id,
             'group_id': group.id
         }
 

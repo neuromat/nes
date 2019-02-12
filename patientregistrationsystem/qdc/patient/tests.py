@@ -556,7 +556,7 @@ class PatientFormValidation(TestCase):
         response = patient_view(request, patient_id=patient_mock.pk)
         self.assertEqual(response.status_code, 200)
 
-        self.data[SEARCH_TEXT] = 'Pacient'
+        self.data[SEARCH_TEXT] = 'Patient'
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, patient_mock.name)

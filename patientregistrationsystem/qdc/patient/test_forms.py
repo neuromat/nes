@@ -286,6 +286,6 @@ class QuestionnaireResponseFormValidation(TestCase):
 
     # Test if the form with a future date is not valid
     def test_Questionnaires_Response_is_not_valid_with_future_date(self):
-        self.data['date'] = '01/02/2019'
+        self.data['date'] = str(datetime.date.today() + datetime.timedelta(1))
         questionnaireresponse = QuestionnaireResponseForm(data=self.data)
         self.assertFalse(questionnaireresponse.is_valid())
