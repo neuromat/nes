@@ -1,5 +1,5 @@
-# NES/Limesurvey Docker Compose
-Docker-compose to build a [NES](https://github.com/neuromat/nes) installation integrated with [PostgreSQL](https://www.postgresql.org) and [LimeSurvey](https://limesurvey.org).
+# Limesurvey Docker Compose
+Docker-compose to build a [LimeSurvey](https://limesurvey.org) installation integrated with [PostgreSQL](https://www.postgresql.org).
 
 <!---
 Parts of this README file are based on Markus Opolka work with the following license:
@@ -66,34 +66,6 @@ The entrypoint will create a new config.php if none is provided and run the Lime
 | LIMESURVEY_URL_FORMAT      | URL Format. path or get                   |
 
 For further details on the settings see: https://manual.limesurvey.org/Optional_settings#Advanced_Path_Settings
-
-
-# NES Configuration
-
-The entrypoint will set the required application settings and run the initial scripts to populate the database and to be sure to run those only at the first run, a placeholder is written at '/var/tmp/nes_is_configured'
-
-
-## Environment Variables
-
-| Parameter                  	| Description 				                            |
-| ---------                  	| ----------- 				                            |
-| NES_DB_TYPE 					| Database type to use. For now, only works with pgsql 	|
-| NES_DB_HOST 					| Database server hostname 								|
-| NES_DB_PORT 					| Database server port 									|
-| NES_DB 						| Database name 										|
-| NES_DB_USER 					| Database user 										|
-| NES_DB_PASSWORD 				| Database user's password 								|
-| LIMESURVEY_HOST 				| LimeSurvey server hostname 							|
-| LIMESURVEY_PORT 				| LimeSurvey server port 								|
-| LIMESURVEY_ADMIN_USER 		| LimeSurvey Admin User 								|
-| LIMESURVEY_ADMIN_PASSWORD 	| LimeSurvey Admin Password 							|
-| NES_SECRET_KEY 				| NES Secret Key for Django deployment				 	|
-| NES_IP 						| NES IP address to be user by Django 					|
-| NES_PORT 						| NES port to be used by Django 						|
-| NES_ADMIN_USER 				| NES Admin User 										|
-| NES_ADMIN_EMAIL 				| NES Admin Email 										|
-| NES_ADMIN_PASSWORD 			| NES Admin Password 									|
-
 
 # References
 
