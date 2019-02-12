@@ -844,7 +844,7 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
         else:
             messages.success(request, _('Experiment successfully imported. New study was created.'))
 
-        # Push new object in session to display log to users
+        # Push new object to session to display log to users
         request.session['objects_imported'] = import_experiment.get_new_objects()
         return HttpResponseRedirect(reverse('import_log'))
 
