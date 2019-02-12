@@ -100,10 +100,8 @@ class UtilTests:
 
     @staticmethod
     def create_telephone(patient, changed_by):
-        faker = Factory.create()
-
         return Telephone.objects.create(
-            patient=patient, number=faker.phone_number(), type=Telephone.MOBILE, changed_by=changed_by
+            patient=patient, number='9 9999 9999', type=Telephone.MOBILE, changed_by=changed_by
         )
 
     @staticmethod
