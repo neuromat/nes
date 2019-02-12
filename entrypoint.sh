@@ -8,8 +8,8 @@ PGDATA=${PGDATA:-"/var/lib/postgresql/data"}
 ## SYSTEM OPTIONS
 LIMESURVEY_HOST=${LIMESURVEY_HOST:-"localhost"}
 LIMESURVEY_PORT=${LIMESURVEY_PORT:-"8080"}
-LIMESURVEY_DIR=${LIMESURVEY_DIR:-"/var/www/limesurvey"}
-LIMESURVEY_CONF_DIR=${LIMESURVEY_CONF_DIR:-"/var/www/limesurvey/httpd_config"}
+LIMESURVEY_DIR="$LIMESURVEY_DIR"
+APACHE2_CONF_DIR="${LIMESURVEY_DIR}/application/config"
 ## CONFIG.PHP OPTIONS
 LIMESURVEY_DB_HOST=${LIMESURVEY_DB_HOST:-"localhost"}
 LIMESURVEY_DB_PORT=${LIMESURVEY_DB_PORT:-"5432"}
@@ -81,22 +81,14 @@ fi
 cd "$LIMESURVEY_DIR"
 sed -i "s#\(\$config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
 
-if [ -f "${LIMESURVEY_CONF_DIR}"/httpd.conf ]
+if [ -f "${APACHE2_CONF_DIR}"/httpd.conf ]
 then
 	echo "INFO: LimeSurvey-Apache configuration already provisioned"
 else
 	echo "INFO: Creating Apache2 configuration"
-	chown -R apache:apache "$LIMESURVEY_DIR"
-	chmod -R o-rwx "$LIMESURVEY_DIR"
-	chmod -R 770 "${LIMESURVEY_DIR}"/application/config/
-	chmod -R 770 "${LIMESURVEY_DIR}"/upload/
-	chmod -R 770 "${LIMESURVEY_DIR}"/tmp/
+	mkdir -p "$APACHE2_CONF_DIR"
 
-	mkdir -p /run/apache2
-	mkdir -p "$LIMESURVEY_CONF_DIR"
-	chown -R apache:apache "$LIMESURVEY_CONF_DIR"
-
-	cat <<-EOF > "${LIMESURVEY_CONF_DIR}"/httpd.conf
+	cat <<-EOF > "${APACHE2_CONF_DIR}"/httpd.conf
 		ServerTokens Prod
 		PidFile /tmp/httpd.pid
 		ServerRoot /var/www
@@ -183,6 +175,7 @@ else
 		MIMEMagicFile /etc/apache2/magic
 		</IfModule>
 	EOF
+	chown -R apache:apache "$APACHE2_CONF_DIR"
 fi
 
 # NES SETUP ###########################################################
@@ -328,7 +321,7 @@ else
 		stdout_logfile_maxbytes=0
 
 		[program:limesurvey]
-		command=/usr/sbin/httpd -D FOREGROUND -f $LIMESURVEY_CONF_DIR/httpd.conf
+		command=/usr/sbin/httpd -D FOREGROUND -f $APACHE2_CONF_DIR/httpd.conf
 		priority=1 ; must start after the database
 		autostart=true
 		autorestart=true

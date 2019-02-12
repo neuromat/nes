@@ -83,7 +83,13 @@ ENV LIMESURVEY_DIR=$LIMESURVEY_DIR
 
 RUN mkdir -p "$LIMESURVEY_DIR" && \
 		wget "$LIMESURVEY_URL_DOWNLOAD" -qO - | \
-			tar xzv --strip-components=1 -C "$LIMESURVEY_DIR"
+			tar xzv --strip-components=1 -C "$LIMESURVEY_DIR" && \
+		chown -R apache:apache "$LIMESURVEY_DIR" && \
+		chmod -R o-rwx "$LIMESURVEY_DIR" && \
+		chmod -R 770 "${LIMESURVEY_DIR}"/application/config/ && \
+		chmod -R 770 "${LIMESURVEY_DIR}"/upload/ && \
+		chmod -R 770 "${LIMESURVEY_DIR}"/tmp/ && \
+		mkdir -p /run/apache2
 
 VOLUME $LIMESURVEY_DIR
 

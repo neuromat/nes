@@ -40,18 +40,13 @@ LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-'password'}
 LIMESURVEY_URL_FORMAT=${LIMESURVEY_URL_FORMAT:-'path'}
 
 LIMESURVEY_DIR=$LIMESURVEY_DIR
-APACHE2_CONF="${LIMESURVEY_DIR}/application/config/httpd.conf"
+APACHE2_CONF_DIR="${LIMESURVEY_DIR}/application/config"
 
-while ! nc -z "$LIMESURVEY_DB_HOST" "$LIMESURVEY_DB_PORT"
-do
-	sleep 0.2
-done
-
-if [ -f "$APACHE2_CONF" ]; then
+if [ -f "${APACHE2_CONF_DIR}/httpd.conf" ]; then
 	echo 'Info: httpd.conf already provisioned'
 else
 	echo 'Info: Generating apache configuration file'
-	cat <<-EOF > "$APACHE2_CONF"
+	cat <<-EOF > "${APACHE2_CONF_DIR}/httpd.conf"
 		ServerTokens Prod
 		PidFile /tmp/httpd.pid
 		ServerRoot /var/www
@@ -142,10 +137,17 @@ else
 		    MIMEMagicFile /etc/apache2/magic
 		</IfModule>
 	EOF
-
+	chown -R apache:apache "$APACHE2_CONF_DIR"
 fi
 
-# Check if already provisioned
+while ! nc -z "$LIMESURVEY_DB_HOST" "$LIMESURVEY_DB_PORT"
+do
+	sleep 0.2
+done
+
+cd "$LIMESURVEY_DIR"
+
+# Check if configuration already provisioned
 if [ -f application/config/config.php ]; then
     echo 'Info: config.php already provisioned'
 else
@@ -174,9 +176,11 @@ else
 
     # Set URL config
     sed -i "s#\('urlFormat' => \).*,\$#\\1'${LIMESURVEY_URL_FORMAT}',#g" application/config/config.php
+
+		# Enable JSON-RPC Interface
     sed -i "s#\(\$config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
 
-        # Check if LIMESURVEY_DB_PASSWORD is set
+    # Check if LIMESURVEY_DB_PASSWORD is set
     if [ -z "$LIMESURVEY_DB_PASSWORD" ]; then
         echo >&2 'Error: Missing LIMESURVEY_DB_PASSWORD'
         exit 1
@@ -188,7 +192,6 @@ else
         exit 1
     fi
 
-    echo ''
     echo 'Running console.php install'
     php7 application/commands/console.php install $LIMESURVEY_ADMIN_USER $LIMESURVEY_ADMIN_PASSWORD $LIMESURVEY_ADMIN_NAME $LIMESURVEY_ADMIN_EMAIL
 
