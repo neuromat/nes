@@ -39,105 +39,109 @@ LIMESURVEY_ADMIN_PASSWORD=${LIMESURVEY_ADMIN_PASSWORD:-'password'}
 
 LIMESURVEY_URL_FORMAT=${LIMESURVEY_URL_FORMAT:-'path'}
 
+LIMESURVEY_DIR=$LIMESURVEY_DIR
+APACHE2_CONF="${LIMESURVEY_DIR}/application/config/httpd.conf"
+
 while ! nc -z "$LIMESURVEY_DB_HOST" "$LIMESURVEY_DB_PORT"
 do
 	sleep 0.2
 done
 
-if [ -f /httpd_config/httpd.conf ]; then
-    echo 'Info: httpd.conf already provisioned'
+if [ -f "$APACHE2_CONF" ]; then
+	echo 'Info: httpd.conf already provisioned'
 else
-	cat <<EOCONF > /httpd_config/httpd.conf
-ServerTokens Prod
-PidFile /tmp/httpd.pid
-ServerRoot /var/www
-Listen $LIMESURVEY_PORT
+	echo 'Info: Generating apache configuration file'
+	cat <<-EOF > "$APACHE2_CONF"
+		ServerTokens Prod
+		PidFile /tmp/httpd.pid
+		ServerRoot /var/www
+		Listen $LIMESURVEY_PORT
 
-ServerSignature Off
+		ServerSignature Off
 
-LoadModule authn_file_module modules/mod_authn_file.so
-LoadModule authn_core_module modules/mod_authn_core.so
-LoadModule authz_host_module modules/mod_authz_host.so
-LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
-LoadModule authz_user_module modules/mod_authz_user.so
-LoadModule authz_core_module modules/mod_authz_core.so
-LoadModule access_compat_module modules/mod_access_compat.so
-LoadModule auth_basic_module modules/mod_auth_basic.so
-LoadModule reqtimeout_module modules/mod_reqtimeout.so
-LoadModule filter_module modules/mod_filter.so
-LoadModule mime_module modules/mod_mime.so
-LoadModule log_config_module modules/mod_log_config.so
-LoadModule env_module modules/mod_env.so
-LoadModule headers_module modules/mod_headers.so
-LoadModule setenvif_module modules/mod_setenvif.so
-LoadModule version_module modules/mod_version.so
-LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
-LoadModule unixd_module modules/mod_unixd.so
-LoadModule status_module modules/mod_status.so
-LoadModule autoindex_module modules/mod_autoindex.so
-LoadModule dir_module modules/mod_dir.so
-LoadModule alias_module modules/mod_alias.so
-LoadModule rewrite_module modules/mod_rewrite.so
-LoadModule negotiation_module modules/mod_negotiation.so
-LoadModule expires_module modules/mod_expires.so
+		LoadModule authn_file_module modules/mod_authn_file.so
+		LoadModule authn_core_module modules/mod_authn_core.so
+		LoadModule authz_host_module modules/mod_authz_host.so
+		LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+		LoadModule authz_user_module modules/mod_authz_user.so
+		LoadModule authz_core_module modules/mod_authz_core.so
+		LoadModule access_compat_module modules/mod_access_compat.so
+		LoadModule auth_basic_module modules/mod_auth_basic.so
+		LoadModule reqtimeout_module modules/mod_reqtimeout.so
+		LoadModule filter_module modules/mod_filter.so
+		LoadModule mime_module modules/mod_mime.so
+		LoadModule log_config_module modules/mod_log_config.so
+		LoadModule env_module modules/mod_env.so
+		LoadModule headers_module modules/mod_headers.so
+		LoadModule setenvif_module modules/mod_setenvif.so
+		LoadModule version_module modules/mod_version.so
+		LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
+		LoadModule unixd_module modules/mod_unixd.so
+		LoadModule status_module modules/mod_status.so
+		LoadModule autoindex_module modules/mod_autoindex.so
+		LoadModule dir_module modules/mod_dir.so
+		LoadModule alias_module modules/mod_alias.so
+		LoadModule rewrite_module modules/mod_rewrite.so
+		LoadModule negotiation_module modules/mod_negotiation.so
+		LoadModule expires_module modules/mod_expires.so
 
-LoadModule php7_module modules/mod_php7.so
+		LoadModule php7_module modules/mod_php7.so
 
-<IfModule unixd_module>
-	User apache
-	Group apache
-</IfModule>
+		<IfModule unixd_module>
+		    User apache
+		    Group apache
+		</IfModule>
 
 
-<IfModule dir_module>
-	DirectoryIndex /index.php index.php index.html
-</IfModule>
+		<IfModule dir_module>
+		    DirectoryIndex /index.php index.php index.html
+		</IfModule>
 
-ServerName limesurvey.example.com
+		ServerName limesurvey.example.com
 
-DocumentRoot "/var/www/limesurvey"
+		DocumentRoot "$LIMESURVEY_DIR"
 
-<Directory />
-        AllowOverride None
-        Require all denied
-</Directory>
+		<Directory />
+		    AllowOverride None
+		    Require all denied
+		</Directory>
 
-<Directory "/var/www/limesurvey">
-        Options Indexes FollowSymLinks MultiViews
-        AllowOverride None
-        Require all granted
-        AcceptPathInfo On
-</Directory>
+		<Directory "$LIMESURVEY_DIR">
+		    Options Indexes FollowSymLinks MultiViews
+		    AllowOverride None
+		    Require all granted
+		    AcceptPathInfo On
+		</Directory>
 
-<Files ".ht*">
-    Require all denied
-</Files>
+		<Files ".ht*">
+		    Require all denied
+		</Files>
 
-ErrorLog /dev/stdout
-ErrorLogFormat "[%t] [%l] [pid %P] %F: %E: [client %a] %M"
+		ErrorLog /dev/stdout
+		ErrorLogFormat "[%t] [%l] [pid %P] %F: %E: [client %a] %M"
 
-LogLevel info
+		LogLevel info
 
-<IfDefine LOGDEBUG>
-	LogLevel debug
-</IfDefine>
+		<IfDefine LOGDEBUG>
+		    LogLevel debug
+		</IfDefine>
 
-<IfModule log_config_module>
-	LogFormat "[%{%a %b %d %H:%M:%S %Y}t] [access] [pid %P] %h %l %u %r %>s %b (%Ts)" access_log
-	CustomLog "/dev/stdout" access_log
-</IfModule>
+		<IfModule log_config_module>
+		    LogFormat "[%{%a %b %d %H:%M:%S %Y}t] [access] [pid %P] %h %l %u %r %>s %b (%Ts)" access_log
+		    CustomLog "/dev/stdout" access_log
+		</IfModule>
 
-TypesConfig /etc/apache2/mime.types
-AddType application/x-compress .Z
-AddType application/x-gzip .gz .tgz
+		TypesConfig /etc/apache2/mime.types
+		AddType application/x-compress .Z
+		AddType application/x-gzip .gz .tgz
 
-AddType application/x-httpd-php php
-AddType application/x-httpd-php-source phps
+		AddType application/x-httpd-php php
+		AddType application/x-httpd-php-source phps
 
-<IfModule mime_magic_module>
-    MIMEMagicFile /etc/apache2/magic
-</IfModule>
-EOCONF
+		<IfModule mime_magic_module>
+		    MIMEMagicFile /etc/apache2/magic
+		</IfModule>
+	EOF
 
 fi
 
@@ -170,7 +174,7 @@ else
 
     # Set URL config
     sed -i "s#\('urlFormat' => \).*,\$#\\1'${LIMESURVEY_URL_FORMAT}',#g" application/config/config.php
-    sed -i "s#\($config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
+    sed -i "s#\(\$config\['RPCInterface'\]\ =\ \).*;\$#\\1'json';#g" application/config/config-defaults.php
 
         # Check if LIMESURVEY_DB_PASSWORD is set
     if [ -z "$LIMESURVEY_DB_PASSWORD" ]; then
