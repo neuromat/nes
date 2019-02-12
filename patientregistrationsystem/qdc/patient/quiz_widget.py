@@ -1,6 +1,6 @@
 from django.forms import Widget
 from django.utils import formats
-from django.forms.util import flatatt
+from django.forms.utils import flatatt
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 

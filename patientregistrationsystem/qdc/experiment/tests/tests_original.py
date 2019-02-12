@@ -8,7 +8,7 @@ import zipfile
 
 from django.core.files import File
 from django.db import IntegrityError
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
@@ -255,7 +255,7 @@ class ObjectsFactory(object):
         else:
             model = component_type
 
-        component = get_model('experiment', model)(
+        component = apps.get_model('experiment', model)(
             experiment=experiment,
             identification=identification or faker.ssn(),
             component_type=component_type,

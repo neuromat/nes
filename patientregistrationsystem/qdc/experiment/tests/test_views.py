@@ -22,7 +22,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     Subject, SubjectOfGroup, ElectrodeConfiguration, EEGElectrodeLocalizationSystem, ElectrodeModel, EEGElectrodeNet, \
     EEGElectrodeNetSystem, EEGElectrodePosition, EEGElectrodeLayoutSetting, EEGElectrodePositionSetting, FilterType, \
     EEGFilterSetting, AmplifierDetectionType, TetheringSystem, Amplifier, EEGAmplifierSetting, EEGSolution, \
-    EEGSolutionSetting
+    EEGSolutionSetting, DataConfigurationTree
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
@@ -1993,24 +1993,24 @@ class ImportExperimentTest(TestCase):
                                                            'eeg_setting',
                                                            self._create_experiment_with_eeg_setting())
 
-    # def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
-    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
-    #     experiment = ObjectsFactory.create_experiment(research_project)
-    #     rootcomponent = ObjectsFactory.create_component(experiment, 'block')
-    #     eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
-    #     eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
-    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
-    #     ObjectsFactory.create_data_configuration_tree(component_config)
-    #
-    #     export = ExportExperiment(experiment)
-    #     export.export_all()
-    #     file_path = export.get_file_path()
-    #
-    #     with open(file_path, 'rb') as file:
-    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-    #     self.assertRedirects(response, reverse('import_log'))
-    #
-    #     self.assertEqual(2, DataConfigurationTree.objects.count())
-    #     self.assertEqual(
-    #         DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
-    #     )
+    def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block')
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+        eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
+        ObjectsFactory.create_data_configuration_tree(component_config)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        self.assertEqual(2, DataConfigurationTree.objects.count())
+        self.assertEqual(
+            DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
+        )

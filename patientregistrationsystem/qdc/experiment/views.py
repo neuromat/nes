@@ -34,7 +34,7 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Min
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
@@ -2648,7 +2648,7 @@ def get_tag_ids_from_post(data_post):
 
 def equipment_tags_update(equipment_id, set_tags, model_name_str):
 
-    model_name = get_model('experiment', model_name_str)
+    model_name = apps.get_model('experiment', model_name_str)
     changed = False
 
     if model_name.objects.filter(id=equipment_id).exists():
@@ -2675,7 +2675,7 @@ def get_tags(equipment_id, model_name_str):
 
     tags = None
 
-    model_name = get_model('experiment', model_name_str)
+    model_name = apps.get_model('experiment', model_name_str)
 
     if model_name.objects.filter(id=equipment_id).exists():
 
