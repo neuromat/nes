@@ -120,4 +120,4 @@ ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 COPY ./entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD /usr/bin/supervisord -c "${SUPERVISOR_CONF_DIR}/supervisord.conf"
+CMD [ "/bin/sh", "-c", "/usr/bin/supervisord -c ${SUPERVISOR_CONF_DIR}/supervisord.conf" ]

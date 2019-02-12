@@ -40,4 +40,4 @@ COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD /usr/sbin/httpd -D FOREGROUND -f "${APACHE2_CONF_DIR}/httpd.conf"
+CMD [ "/bin/sh", "-c", "/usr/sbin/httpd -D FOREGROUND -f ${APACHE2_CONF_DIR}/httpd.conf" ]
