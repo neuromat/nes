@@ -452,7 +452,7 @@ class ImportExperiment:
             'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
             'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
             'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
-            'experiment.muscle',
+            'experiment.muscle', 'experiment.standardizationsystem',
             'patient.patient'
         ]
         foreign_relations = {
@@ -507,9 +507,13 @@ class ImportExperiment:
                 ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
             ],
             'experiment.muscle': [['', '']],
+            'experiment.standardizationsystem': [['', '']],
             'experiment.muscleside': [['experiment.muscle', 'muscle']],
             'experiment.musclesubdivision': [['experiment.muscle', 'muscle']],
-            'experiment.emgelectrodeplacement': [['experiment.musclesubdivision', 'muscle_subdivision']],
+            'experiment.emgelectrodeplacement': [
+                ['experiment.musclesubdivision', 'muscle_subdivision'],
+                ['experiment.standardizationsystem', 'standardization_system']
+            ],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],

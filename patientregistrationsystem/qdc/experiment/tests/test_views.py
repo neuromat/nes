@@ -2162,3 +2162,9 @@ class ImportExperimentTest(TestCase):
             'experiment.musclesubdivision', 'experiment.emgelectrodeplacement', 'muscle_subdivision',
             self._create_experiment_with_emg_setting()
         )
+
+    def test_standardizationsystem_emgelectrodeplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.standardizationsystem', 'experiment.emgelectrodeplacement', 'standardization_system',
+            self._create_experiment_with_emg_setting()
+        )
