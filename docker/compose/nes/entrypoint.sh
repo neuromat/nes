@@ -1,5 +1,5 @@
 #!/bin/sh
-set -ex
+set -e
 
 # SYSTEM OPTIONS (set on Docker build)
 NES_DIR=$NES_DIR

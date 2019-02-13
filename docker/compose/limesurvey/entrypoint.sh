@@ -20,7 +20,7 @@
 
 # Entrypoint for Docker Container
 
-set -ex
+set -e
 
 LIMESURVEY_PORT=${LIMESURVEY_PORT:-'8080'}
 
