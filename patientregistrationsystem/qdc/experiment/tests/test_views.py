@@ -548,7 +548,7 @@ class ImportExperimentTest(TestCase):
         return experiment
 
     def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name,
-                                                      linking_field, type_of_experiment):
+                                                      linking_field, type_of_experiment, flag=False):
         """
         This test is a general test for testing the sucessfull importation of two linked models
         :param model_1_name: Name of the model inherited by the second model; The one that is being pointed at.
@@ -571,13 +571,9 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
-        new_model_1_objects = model_1.objects.exclude(
-            pk__in=old_model_1_objects_ids
-        )
+        new_model_1_objects = model_1.objects.exclude(pk__in=old_model_1_objects_ids)
         self.assertNotEqual(0, new_model_1_objects.count())
-        new_model_2_objects = model_2.objects.exclude(
-            pk__in=old_model_2_objects_ids
-        )
+        new_model_2_objects = model_2.objects.exclude(pk__in=old_model_2_objects_ids)
         self.assertNotEqual(0, new_model_2_objects.count())
 
         self.assertEqual(model_1.objects.count(),
@@ -586,9 +582,15 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(model_2.objects.count(),
                          len(old_model_2_objects_ids) + new_model_2_objects.count()
                          )
-        for item in new_model_1_objects:
-            dinamic_filter = {linking_field: item.pk}
-            self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
+
+        if not flag:
+            for item in new_model_1_objects:
+                dinamic_filter = {linking_field: item.pk}
+                self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
+        else:
+            new_model_1_ids = new_model_1_objects.values_list('id', flat=True)
+            for item in new_model_2_objects:
+                self.assertTrue(getattr(item, linking_field).id in new_model_1_ids)
 
     def test_GET_experiment_import_file_uses_correct_template(self):
         response = self.client.get(reverse('experiment_import'))
@@ -2181,8 +2183,14 @@ class ImportExperimentTest(TestCase):
             self._create_experiment_with_emg_setting()
         )
 
-    def test_emgelectrodeplacement_emgelectrodeplacementsetting(self):
+    def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.emgelectrodeplacement', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_placement',
             self._create_experiment_with_emg_setting()
+        )
+
+    def test_emgelectrodeplacement_and_emgintramuscularplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgintramuscularplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True  # TODO (NES-908): momentarily put this flag
         )
