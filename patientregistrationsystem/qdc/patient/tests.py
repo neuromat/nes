@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import csv
 
 from datetime import date, datetime
 
@@ -1556,6 +1557,11 @@ class TranslationValidation(TestCase):
 </ClaML>
         '''
 
+    csv_data ='''Código ICD-10-CM,Long_Descp ICD-10-CM (EN_2017),Descrição longa PT Uniformizada (250 carateres),Descrição longa PT Curta (90 carateres)
+A00,Cholera,Cólera,Cólera
+A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio cholerae 01 estirpe cholerae,Cólera C Vibrio cholerae 01 estirpe cholerae
+'''
+
     def setUp(self):
         # """
         # Configure authentication and variables to start each test
@@ -1586,6 +1592,10 @@ class TranslationValidation(TestCase):
         with open(filename, 'w') as f:
             f.write("incorrect data")
             f.close()
+
+    def create_csv_file(self, filename):
+        with open(filename, 'w') as f:
+            f.write(self.csv_data)
 
     def test_classification_of_diseases_translate_into_english(self):
         # """
@@ -1682,3 +1692,21 @@ class TranslationValidation(TestCase):
         # call_command("import_icd", en=filename)
         self.assertRaises(CommandError, call_command, "import_icd", en=filename)
         os.remove(filename)
+
+    def test_translate_icd_cid_with_command(self):
+        path = settings.BASE_DIR
+        os.chdir(path)
+        os.chdir(os.path.join('..', '..', 'resources', 'load-idc-table'))
+
+        filename="output.csv"
+        self.create_csv_file(filename)
+
+        # python manage.py import_icd --file filename
+        call_command("import_icd_cid", file=filename)
+
+        classification_of_disease = ClassificationOfDiseases.objects.all()
+        self.assertIsNotNone(classification_of_disease.first().description_en)
+
+        os.remove(filename)
+
+        self.assertEqual(2, ClassificationOfDiseases.objects.count())
