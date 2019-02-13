@@ -2152,3 +2152,13 @@ class ImportExperimentTest(TestCase):
         self._test_creation_and_linking_between_two_models(
             'experiment.muscle', 'experiment.musclesubdivision', 'muscle', self._create_experiment_with_emg_setting()
         )
+
+    def test_muscle_already_existent_doesnot_create_new_muscle(self):
+        # TODO: implement it
+        pass
+
+    def test_musclesubdivision_and_emgelectrodeplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.musclesubdivision', 'experiment.emgelectrodeplacement', 'muscle_subdivision',
+            self._create_experiment_with_emg_setting()
+        )

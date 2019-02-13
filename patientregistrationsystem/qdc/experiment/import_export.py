@@ -509,6 +509,7 @@ class ImportExperiment:
             'experiment.muscle': [['', '']],
             'experiment.muscleside': [['experiment.muscle', 'muscle']],
             'experiment.musclesubdivision': [['experiment.muscle', 'muscle']],
+            'experiment.emgelectrodeplacement': [['experiment.musclesubdivision', 'muscle_subdivision']],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
