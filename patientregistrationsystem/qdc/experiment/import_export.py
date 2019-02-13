@@ -40,11 +40,19 @@ class ExportExperiment:
     def generate_patient_fixture(self, filename, element, key_path):
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-
         call_command('dump_object', 'patient.' + element, '--query',
                      '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
                      )
+        sys.stdout = sysout
 
+    def generate_detached_fixture(self, filename, element, key_path, parent_model, filename_parent):
+        with open(path.join(self.temp_dir, filename_parent)) as file:
+            data = json.load(file)
+        parent_ids = [dict_['pk'] for index, dict_ in enumerate(data) if dict_['model'] == parent_model]
+
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
+        call_command('dump_object', 'experiment.' + element, '--query', '{"' + key_path + '": ' + str(parent_ids) + '}')
         sys.stdout = sysout
 
     def _remove_auth_user_model_from_json(self, filename):
@@ -178,6 +186,10 @@ class ExportExperiment:
         self.generate_fixture('emg_setting.json', 'emgsetting', 'experiment_id__in')
         self.generate_fixture('emg_electrodeplacementsetting.json', 'emgelectrodeplacementsetting',
                               'emg_electrode_setting__emg_setting__experiment_id__in')
+        self.generate_detached_fixture(
+            'emg_intramuscularplacement.json', 'emgintramuscularplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -195,7 +207,7 @@ class ExportExperiment:
                          'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
                          'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
                          'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
-                         'emg_electrodeplacementsetting.json']
+                         'emg_electrodeplacementsetting.json', 'emg_intramuscularplacement.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -434,6 +446,7 @@ class ImportExperiment:
             'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
             'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
             'experiment.eegsolutionsetting', 'experiment.emgelectrodeplacementsetting',
+            'experiment.emgintramuscularplacement'
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -556,6 +569,7 @@ class ImportExperiment:
             'experiment.tmsdevice': 'experiment.equipment',
             'experiment.eegelectrodenet': 'experiment.equipment',
             'experiment.amplifier': 'experiment.equipment',
+            'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
             # OneToOneField
             'experiment.tmsdevicesetting': 'experiment.tmssetting',
             'experiment.eegelectrodelayoutsetting': 'experiment.eegsetting',
