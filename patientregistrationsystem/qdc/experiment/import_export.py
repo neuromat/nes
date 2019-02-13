@@ -100,7 +100,10 @@ class ExportExperiment:
             f.write(json.dumps(serialized))
 
     def _update_classification_of_diseases_reference(self, filename):
-        """TODO (NES-908): put docstring"""
+        """Change json data exported to replace references to classification
+        of diseases so the reference is to code not to id. We consider that
+        NES instances all share the same classification of diseases data
+        """
         with open(path.join(self.temp_dir, filename)) as f:
             data = f.read().replace('\n', '')
 
@@ -182,6 +185,8 @@ class ExportExperiment:
                               'emg_preamplifier_filter_setting__emg_electrode_setting__emg_setting__experiment_id__in')
         self.generate_fixture('emg_amplifier_analog_filter_setting.json','emganalogfiltersetting',
                               'emg_electrode_setting__emg_electrode_setting__emg_setting__experiment_id__in')
+        self.generate_fixture('emg_electrodeplacementsetting.json', 'emgelectrodeplacementsetting',
+                              'emg_electrode_setting__emg_setting__experiment_id__in')
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -190,6 +195,7 @@ class ExportExperiment:
                      '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
         sys.stdout = sysout
 
+        # TODO: refactor to use this list with generate_fixture
         list_of_files = ['experimentfixture.json', 'componentconfiguration.json', 'group.json', 'block.json',
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
@@ -199,7 +205,8 @@ class ExportExperiment:
                          'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
                          'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
                          'emg_ad_converter_setting.json', 'emg_digital_filter_setting.json',
-                         'emg_pre_amplifier_filter_setting.json', 'emg_amplifier_analog_filter_setting.json']
+                         'emg_pre_amplifier_filter_setting.json', 'emg_amplifier_analog_filter_setting.json',
+                         'emg_electrodeplacementsetting.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -438,7 +445,9 @@ class ImportExperiment:
             'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
             'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
             'experiment.eegsolutionsetting', 'experiment.adconverter', 'experiment.emgadconvertersetting',
-            'experiment.emgdigitalfiltersetting'
+            'experiment.emgdigitalfiltersetting', 'experiment.emgelectrodeplacementsetting',
+            'experiment.emgamplifiersetting', 'experiment.emganalogfiltersetting',
+            'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -457,6 +466,7 @@ class ImportExperiment:
             'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
             'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
             'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
+            'experiment.muscle', 'experiment.standardizationsystem',
             'patient.patient'
         ]
         foreign_relations = {
@@ -471,7 +481,7 @@ class ImportExperiment:
             ],
             'experiment.questionnaire': [['survey.survey', 'survey']],
             'survey.survey': [['', '']],
-
+            # TMS
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
             'experiment.tmsdevicesetting': [
@@ -480,7 +490,7 @@ class ImportExperiment:
             'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
             'experiment.coilshape': [['', '']],
             'experiment.material': [['', '']],
-
+            # EEG
             'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
             'experiment.eegsetting': [['experiment.experiment', 'experiment']],
             'experiment.eegelectrodepositionsetting': [
@@ -505,12 +515,19 @@ class ImportExperiment:
             ],
             'experiment.eegsolutionsetting': [['experiment.eegsolution', 'eeg_solution']],
             'experiment.eegsolution': [['experiment.manufacturer', 'manufacturer']],
-
+            # EMG
             'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
             'experiment.emgsetting': [
                 ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
             ],
-
+            'experiment.muscle': [['', '']],
+            'experiment.standardizationsystem': [['', '']],
+            'experiment.muscleside': [['experiment.muscle', 'muscle']],
+            'experiment.musclesubdivision': [['experiment.muscle', 'muscle']],
+            'experiment.emgelectrodeplacement': [
+                ['experiment.musclesubdivision', 'muscle_subdivision'],
+                ['experiment.standardizationsystem', 'standardization_system']
+            ],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
@@ -573,6 +590,7 @@ class ImportExperiment:
             'experiment.emganalogfiltersetting': 'experiment.emgamplifiersetting',
             'experiment.emgpreamplifiersetting': 'experiment.emgelectrodesetting',
             'experiment.emgpreamplifierfiltersetting': 'experiment.emgpreamplifiersetting',
+            'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
         }
 
         DG = nx.DiGraph()
