@@ -13,9 +13,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--file', nargs='?', type=str, help='codes filename'
         )
-    # def handle(self, *args, **kwargs):
     def handle(self, *args, **options):
-
         # filename = 'icd10cid10v2017.csv'
         if options['file']:
             filename = options['file']
@@ -36,10 +34,6 @@ def import_classification_of_icd_cid(file_name):
     path = settings.BASE_DIR
     os.chdir(path)
     os.chdir(os.path.join('..', '..','resources', 'load-idc-table'))
-
-    # varify the path using getcwd()
-    # cwd = os.getcwd()
-    # print("Current working directory is:", cwd)
 
     with open(file_name, 'rt') as csvFile:
         reader = csv.reader(csvFile)

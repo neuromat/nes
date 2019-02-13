@@ -34,7 +34,7 @@ class ExportTestCase(TestCase):
         )
 
         # create patient/subject/subject_of_group
-        self.patient = UtilTests().create_patient_mock(changed_by=self.user)
+        self.patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(self.patient)
         self.subject_of_group = \
             ObjectsFactory.create_subject_of_group(self.group, subject)
