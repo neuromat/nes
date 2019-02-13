@@ -44,7 +44,7 @@ First NES Docker container loading
 ``````````````````````````````````
 After Docker (or Docker Toolbox) installation, open the terminal (or ``Docker Quickstart Terminal`` if you are using Docker Toolbox) and run the command below to download and run the NES container::
 
-    docker run -dit --name nes -p 8087:80 -p 8088:81 neuromat/nes
+    docker run -dit --name nes -p 8080:8080 -p 8000:8000 neuromat/nes
 
 .. _accessing-nes:
 
@@ -55,13 +55,13 @@ After load the container, you are able to access the NES system using the port 8
 
 if you are using Docker (and not Docker Toolbox), you can access NES using `localhost` or the IP of your machine, e.g.::
 
-    http://localhost:8087
+    http://localhost:8000
 
 However, if you are using Docker Toolbox, you will have to know the IP that the Docker Toolbox designated for this loading. To know this IP, run ``Docker Quickstart Terminal`` and get the IP shown in the first line. Now, you can call the URL::
 
-    http://<docker ip>:8087
+    http://<docker ip>:8000
 
-After access the login page, use the user `admin` (password `AdminNES`).
+After access the login page, use the user `nes_admin` (password `nes_admin_password`).
 
 .. _accessing-limesurvey:
 
@@ -70,13 +70,13 @@ Accessing LimeSurvey
 
 This container also contains a LimeSurvey installation. Its access is from the port 8088 and the URL depends if you are using Docker or Docker Toolbox (see the topic `Accessing NES`_)::
 
-    http://localhost:8088/admin
+    http://localhost:8080/admin
 
 or::
 
-    http://<docker ip>:8088/admin
+    http://<docker ip>:8080/admin
 
-After access the LimeSurvey login page, use the user `admin` (password `adminN35`).
+After access the LimeSurvey login page, use the user `limesurvey_admin` (password `limesurvey_admin_password`).
 
 .. _using-nes-docker-container-after-first-loading:
 
@@ -93,5 +93,5 @@ Useful information
 ``````````````````
 
 * NeuroMat repository on Docker Hub is located at https://hub.docker.com/r/neuromat/
-* Container NES database access: user `nes`, password `nes!@#`
-* Container LimeSurvey database access: user `limesurvey`, password `limeN35`
+* Container NES database access: user `nes_user`, password `nes_password`
+* Container LimeSurvey database access: user `limesurvey_user`, password `limesurvey_password`
