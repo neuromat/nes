@@ -11,8 +11,7 @@ from django.apps import apps
 from django.db.models import Count
 
 from experiment.models import Group, ResearchProject, Experiment,\
-    Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection, Amplifier,\
-    EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, Equipment
+    Keyword, Component
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -240,25 +239,6 @@ class ImportExperiment:
     def __del__(self):
         shutil.rmtree(self.temp_dir)
 
-    @staticmethod
-    def _get_model_name_by_component_type(component_type):
-        if component_type == Component.TASK_EXPERIMENT:
-            model_name = TaskForTheExperimenter.__name__
-        elif component_type == Component.DIGITAL_GAME_PHASE:
-            model_name = DigitalGamePhase.__name__
-        elif component_type == Component.GENERIC_DATA_COLLECTION:
-            model_name = GenericDataCollection.__name__
-        elif component_type == Component.EEG:
-            model_name = EEG.__name__
-        elif component_type == Component.EMG:
-            model_name = EMG.__name__
-        elif component_type == Component.TMS:
-            model_name = TMS.__name__
-        else:
-            model_name = component_type
-
-        return model_name
-
     def _set_last_objects_before_import(self, data, research_project_id):
         """Identify last objects to deduct after import, so
         we can identify the new objects imported
@@ -309,35 +289,6 @@ class ImportExperiment:
 
         else:
             self.new_objects['components'] = None
-
-    @staticmethod
-    def _update_pk_keywords(data):  # TODO: to be used when updating pks
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
-
-        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
-        indexes_of_keywords_already_updated = []
-        for i in indexes:
-            # Get the keyword and check on database if the keyword already exists
-            # If exists, update the pk of this keyword to the correspondent in the database
-            # otherwise, update the pk of this keyword to next_keyword_id
-            old_keyword_id = data[i]['pk']
-            old_keyword_string = data[i]['fields']['name']
-            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
-
-            if keyword_on_database.count() > 0:
-                data[i]['pk'] = keyword_on_database.first().id
-            else:
-                data[i]['pk'] = next_keyword_id
-                next_keyword_id += 1
-
-            # Update all the references to the old keyword to the new one
-            for (index_row, dict_) in enumerate(data):
-                if dict_['model'] == 'experiment.researchproject':
-                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
-                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
-                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
-                            indexes_of_keywords_already_updated.append(keyword_index)
 
     @staticmethod
     def _solve_limey_survey_reference(data, survey_index):
@@ -448,6 +399,7 @@ class ImportExperiment:
             'experiment.emgdigitalfiltersetting', 'experiment.emgelectrodeplacementsetting',
             'experiment.emgamplifiersetting', 'experiment.emganalogfiltersetting',
             'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
+            'experiment.digitalgamephase', 'experiment.pause',
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -481,6 +433,13 @@ class ImportExperiment:
             ],
             'experiment.questionnaire': [['survey.survey', 'survey']],
             'survey.survey': [['', '']],
+
+            'experiment.digitalgamephase': [
+                ['experiment.contexttree', 'context_tree'],
+                ['experiment.softwareversion', 'software_version']
+            ],
+            'experiment.contexttree': [['experiment.experiment', 'experiment']],
+            
             # TMS
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
@@ -572,8 +531,8 @@ class ImportExperiment:
             'experiment.eeg': 'experiment.component',
             'experiment.tms': 'experiment.component',
             'experiment.emg': 'experiment.component',
-            'experiment.digital_game_phase': 'experiment.component',
-            'experiment.generic_data_collection': 'experiment.component',
+            'experiment.digitalgamephase': 'experiment.component',
+            'experiment.genericdatacollection': 'experiment.component',
             'experiment.tmsdevice': 'experiment.equipment',
             'experiment.eegelectrodenet': 'experiment.equipment',
             'experiment.amplifier': 'experiment.equipment',
