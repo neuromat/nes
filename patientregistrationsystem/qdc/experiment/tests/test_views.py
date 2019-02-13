@@ -513,7 +513,8 @@ class ImportExperimentTest(TestCase):
                                                         material=material)
         electrode_net = EEGElectrodeNet.objects.create(identification='TEST_ELECTRODE_NET',
                                                        electrode_model_default=electrode_model,
-                                                       manufacturer=manufacturer)
+                                                       manufacturer=manufacturer,
+                                                       equipment_type='eeg_electrode_net')
         electrode_net_sys = EEGElectrodeNetSystem.objects.create(eeg_electrode_net=electrode_net,
                                                                  eeg_electrode_localization_system=electrode_loc_sys)
         electrode_pos = EEGElectrodePosition.objects.create(name='TEST_ELECTRODE_POSITION',
@@ -536,7 +537,8 @@ class ImportExperimentTest(TestCase):
         amplifier = Amplifier.objects.create(identification='AMPLIFIER',
                                              amplifier_detection_type=amplifier_detection_type,
                                              tethering_system=tethering_system,
-                                             manufacturer=manufacturer)
+                                             manufacturer=manufacturer,
+                                             equipment_type='amplifier')
         eeg_amplifier_setting = EEGAmplifierSetting.objects.create(eeg_amplifier=amplifier,
                                                                    eeg_setting=eeg_setting)
 
@@ -2039,7 +2041,8 @@ class ImportExperimentTest(TestCase):
 
         # AD converter
         ad_converter = ADConverter.objects.create(identification='TEST_AD_CONVERTER',
-                                                  manufacturer=manufacturer)
+                                                  manufacturer=manufacturer,
+                                                  equipment_type='ad_converter')
         emg_ad_converter_setting = EMGADConverterSetting.objects.create(ad_converter=ad_converter,
                                                                         emg_setting=emg_setting)
 
@@ -2095,15 +2098,12 @@ class ImportExperimentTest(TestCase):
 
         # Amplifier
         amplifier_detection_type = AmplifierDetectionType.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
-        tethering_system = TetheringSystem.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
-        amplifier = Amplifier.objects.create(identification='AMPLIFIER',
+        tethering_system = TetheringSystem.objects.create(name='TEST_THETHERING_SYSTEM')
+        amplifier = Amplifier.objects.create(identification='TEST_AMPLIFIER',
                                              amplifier_detection_type=amplifier_detection_type,
                                              tethering_system=tethering_system,
-                                             manufacturer=manufacturer)
-        preamplifier = Amplifier.objects.create(identification='PRE_AMPLIFIER',
-                                                amplifier_detection_type=amplifier_detection_type,
-                                                tethering_system=tethering_system,
-                                                manufacturer=manufacturer)
+                                             manufacturer=manufacturer,
+                                             equipment_type='amplifier')
 
         emg_amplifier_setting_surface = EMGAmplifierSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_surface,
@@ -2124,13 +2124,13 @@ class ImportExperimentTest(TestCase):
 
         emg_pre_amplifier_setting_surface = EMGPreamplifierSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_surface,
-            amplifier=preamplifier)
+            amplifier=amplifier)
         emg_pre_amplifier_setting_intramuscular = EMGPreamplifierSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_intramuscular,
-            amplifier=preamplifier)
+            amplifier=amplifier)
         emg_pre_amplifier_setting_needle = EMGPreamplifierSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_needle,
-            amplifier=preamplifier)
+            amplifier=amplifier)
 
         emg_pre_amplifier_filter_setting_surface = EMGPreamplifierFilterSetting.objects.create(
             emg_preamplifier_filter_setting=emg_pre_amplifier_setting_surface)
@@ -2141,8 +2141,151 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
+    def _test_creation_and_linking_between_equipment_and_other_model(self, model_name, linking_field, _experiment,
+                                                                     equipment_type):
+        experiment = _experiment
+        export = ExportExperiment(experiment)
+        export.export_all()
+
+        file_path = export.get_file_path()
+
+        model_ = apps.get_model(model_name)
+
+        old_equipment_objects_ids = list(Equipment.objects.filter(
+            equipment_type=equipment_type).values_list('pk', flat=True))
+        old_model_objects_ids = list(model_.objects.values_list('pk', flat=True))
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_equipment_objects = Equipment.objects.filter(equipment_type=equipment_type).exclude(
+            pk__in=old_equipment_objects_ids
+        )
+        self.assertNotEqual(0, new_equipment_objects.count())
+
+        new_model_objects = model_.objects.exclude(
+            pk__in=old_model_objects_ids
+        )
+        self.assertNotEqual(0, new_model_objects.count())
+
+        self.assertEqual(Equipment.objects.filter(equipment_type=equipment_type).count(),
+                         len(old_equipment_objects_ids) + new_equipment_objects.count()
+                         )
+        self.assertEqual(model_.objects.count(),
+                         len(old_model_objects_ids) + new_model_objects.count()
+                         )
+        for item in new_equipment_objects:
+            dinamic_filter = {linking_field: item.pk}
+            self.assertTrue(new_model_objects.filter(**dinamic_filter).exists())
+
+    def test_manufacturer_and_software(self):
+        self._test_creation_and_linking_between_two_models('experiment.manufacturer',
+                                                           'experiment.software',
+                                                           'manufacturer',
+                                                           self._create_experiment_with_emg_setting())
+
     def test_software_and_software_version(self):
         self._test_creation_and_linking_between_two_models('experiment.software',
                                                            'experiment.softwareversion',
                                                            'software',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_manufacturer_and_equipment(self):
+        self._test_creation_and_linking_between_two_models('experiment.manufacturer',
+                                                           'experiment.equipment',
+                                                           'manufacturer',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_equipment_and_adconverter(self):
+        self._test_creation_and_linking_between_equipment_and_other_model('experiment.adconverter',
+                                                                          'equipment_ptr',
+                                                                          self._create_experiment_with_emg_setting(),
+                                                                          'ad_converter'
+                                                                          )
+
+    def test_ad_converter_and_emg_ad_converter_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.adconverter',
+                                                           'experiment.emgadconvertersetting',
+                                                           'ad_converter',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_emg_setting_and_emg_ad_converter_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgsetting',
+                                                           'experiment.emgadconvertersetting',
+                                                           'emg_setting',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_emg_setting_and_emg_digital_filter_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgsetting',
+                                                           'experiment.emgdigitalfiltersetting',
+                                                           'emg_setting',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_filter_type_and_emg_digital_filter_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.filtertype',
+                                                           'experiment.emgdigitalfiltersetting',
+                                                           'filter_type',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_equipment_and_amplifier(self):
+        self._test_creation_and_linking_between_equipment_and_other_model('experiment.amplifier',
+                                                                          'equipment_ptr',
+                                                                          self._create_experiment_with_emg_setting(),
+                                                                          'amplifier'
+                                                                          )
+
+    def test_equipment_ad_converter(self):
+        self._test_creation_and_linking_between_equipment_and_other_model('experiment.adconverter',
+                                                                          'equipment_ptr',
+                                                                          self._create_experiment_with_emg_setting(),
+                                                                          'ad_converter'
+                                                                          )
+
+    def test_amplifier_and_emg_pre_amplifier_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.amplifier',
+                                                           'experiment.emgpreamplifiersetting',
+                                                           'amplifier',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_emg_pre_amplifier_setting_and_emg_pre_amplifier_filter_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgpreamplifiersetting',
+                                                           'experiment.emgpreamplifierfiltersetting',
+                                                           'emg_preamplifier_filter_setting',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_emg_electrode_setting_and_emg_pre_amplifier_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgelectrodesetting',
+                                                           'experiment.emgpreamplifiersetting',
+                                                           'emg_electrode_setting',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_amplifier_and_emg_amplifier_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.amplifier',
+                                                           'experiment.emgamplifiersetting',
+                                                           'amplifier',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_emg_amplifier_setting_and_emg_analog_filter_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgamplifiersetting',
+                                                           'experiment.emganalogfiltersetting',
+                                                           'emg_electrode_setting',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_emg_electrode_setting_and_emg_amplifier_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgelectrodesetting',
+                                                           'experiment.emgamplifiersetting',
+                                                           'emg_electrode_setting',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_emg_setting_and_emg_electrode_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgsetting',
+                                                           'experiment.emgelectrodesetting',
+                                                           'emg_setting',
+                                                           self._create_experiment_with_emg_setting())
+
+    def test_electrode_model_and_emg_electrode_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.electrodemodel',
+                                                           'experiment.emgelectrodesetting',
+                                                           'electrode',
                                                            self._create_experiment_with_emg_setting())

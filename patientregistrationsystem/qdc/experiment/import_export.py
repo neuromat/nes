@@ -11,7 +11,8 @@ from django.apps import apps
 from django.db.models import Count
 
 from experiment.models import Group, ResearchProject, Experiment,\
-    Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection
+    Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection, Amplifier,\
+    EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, Equipment
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -173,6 +174,14 @@ class ExportExperiment:
 
         # EMG
         self.generate_fixture('emg_setting.json', 'emgsetting', 'experiment_id__in')
+        self.generate_fixture('emg_ad_converter_setting.json', 'emgadconvertersetting',
+                              'emg_setting__experiment_id__in')
+        self.generate_fixture('emg_digital_filter_setting.json', 'emgdigitalfiltersetting',
+                              'emg_setting__experiment_id__in')
+        self.generate_fixture('emg_pre_amplifier_filter_setting.json', 'emgpreamplifierfiltersetting',
+                              'emg_preamplifier_filter_setting__emg_electrode_setting__emg_setting__experiment_id__in')
+        self.generate_fixture('emg_amplifier_analog_filter_setting.json','emganalogfiltersetting',
+                              'emg_electrode_setting__emg_electrode_setting__emg_setting__experiment_id__in')
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -188,7 +197,9 @@ class ExportExperiment:
                          'socialhistorydata.json', 'socialdemographicdata.json', 'dataconfigurationtree.json',
                          'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
                          'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
-                         'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json']
+                         'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
+                         'emg_ad_converter_setting.json', 'emg_digital_filter_setting.json',
+                         'emg_pre_amplifier_filter_setting.json', 'emg_amplifier_analog_filter_setting.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -426,7 +437,8 @@ class ImportExperiment:
             'experiment.tms', 'experiment.eeg', 'experiment.emg', 'experiment.tmsdevicesetting',
             'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
             'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
-            'experiment.eegsolutionsetting'
+            'experiment.eegsolutionsetting', 'experiment.adconverter', 'experiment.emgadconvertersetting',
+            'experiment.emgdigitalfiltersetting'
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -505,6 +517,18 @@ class ImportExperiment:
             'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
             'experiment.electrodemodel': [
                 ['experiment.material', 'material'], ['experiment.electrodeconfiguration', 'electrode_configuration']],
+
+            'experiment.emgadconvertersetting': [['experiment.adconverter', 'ad_converter']],
+            'experiment.emgdigitalfiltersetting': [['experiment.filtertype', 'filter_type']],
+            'experiment.filtertype': [['', '']],
+
+            'experiment.tetheringsystem': [['','']],
+            'experiment.amplifierdetectiontype': [['', '']],
+            'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
+            'experiment.emgelectrodesetting': [
+                ['experiment.emgsetting', 'emg_setting'], ['experiment.electrodemodel', 'electrode']],
+            'experiment.emgpreamplifiersetting': [['experiment.amplifier', 'amplifier']],
+
             # Participants
             'experiment.subject': [['patient.patient', 'patient']],
             'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
@@ -536,12 +560,19 @@ class ImportExperiment:
             'experiment.tmsdevice': 'experiment.equipment',
             'experiment.eegelectrodenet': 'experiment.equipment',
             'experiment.amplifier': 'experiment.equipment',
+            'experiment.adconverter': 'experiment.equipment',
             # OneToOneField
             'experiment.tmsdevicesetting': 'experiment.tmssetting',
             'experiment.eegelectrodelayoutsetting': 'experiment.eegsetting',
             'experiment.eegfiltersetting': 'experiment.eegsetting',
             'experiment.eegamplifiersetting': 'experiment.eegsetting',
             'experiment.eegsolutionsetting': 'experiment.eegsetting',
+            'experiment.emgadconvertersetting': 'experiment.emgsetting',
+            'experiment.emgdigitalfiltersetting': 'experiment.emgsetting',
+            'experiment.emgamplifiersetting': 'experiment.emgelectrodesetting',
+            'experiment.emganalogfiltersetting': 'experiment.emgamplifiersetting',
+            'experiment.emgpreamplifiersetting': 'experiment.emgelectrodesetting',
+            'experiment.emgpreamplifierfiltersetting': 'experiment.emgpreamplifiersetting',
         }
 
         DG = nx.DiGraph()

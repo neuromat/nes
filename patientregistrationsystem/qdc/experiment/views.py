@@ -4558,7 +4558,7 @@ def ad_converter_list(request, template_name="experiment/ad_converter_list.html"
 @permission_required('experiment.register_equipment')
 def ad_converter_create(request, template_name="experiment/ad_converter_register.html"):
 
-    ad_converter_form = ADConverterRegisterForm(request.POST or None)
+    ad_converter_form = ADConverterRegisterForm(request.POST or None, initial={'equipment_type': 'ad_converter'})
 
     if request.method == "POST":
 
@@ -4567,6 +4567,7 @@ def ad_converter_create(request, template_name="experiment/ad_converter_register
             if ad_converter_form.is_valid():
 
                 ad_converter_added = ad_converter_form.save(commit=False)
+                ad_converter_added.equipment_type = 'ad_converter'
                 ad_converter_added.save()
 
                 messages.success(request, _('A/D converter created successfully.'))
