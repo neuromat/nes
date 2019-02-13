@@ -1,1 +1,0 @@
-/home/pesquisador/Downloads/docker-nes/README.md
