@@ -92,7 +92,7 @@ else
 		    DirectoryIndex /index.php index.php index.html
 		</IfModule>
 
-		ServerName limesurvey.example.com
+		# ServerName limesurvey.example.com
 
 		DocumentRoot "$LIMESURVEY_DIR"
 

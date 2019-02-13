@@ -133,7 +133,7 @@ else
 		    DirectoryIndex /index.php index.php index.html
 		</IfModule>
 
-		ServerName limesurvey.example.com
+		# ServerName limesurvey.example.com
 
 		DocumentRoot $LIMESURVEY_DIR
 		<Directory />
@@ -306,8 +306,9 @@ else
 	cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 		[supervisord]
 		nodaemon=true
-		loglevel=info
+		loglevel=debug
 		logfile=/dev/null
+		nocleanup=true
 
 		[program:postgresql]
 		command=/usr/bin/postgres -D $PGDATA
@@ -317,7 +318,7 @@ else
 		autostart=true
 		autorestart=true
 		redirect_stderr=true
-		stdout_logfile=/dev/fd/1
+		stdout_logfile=/dev/pts/0
 		stdout_logfile_maxbytes=0
 
 		[program:limesurvey]
@@ -325,21 +326,27 @@ else
 		priority=1 ; must start after the database
 		autostart=true
 		autorestart=true
+		stopasgroup=true
 		redirect_stderr=true
-		stdout_logfile=/dev/fd/1
+		stdout_logfile=/dev/pts/0
 		stdout_logfile_maxbytes=0
 
 		[program:nes]
-		command=/usr/bin/python3 $NES_PROJECT_PATH/manage.py runserver $NES_IP:$NES_PORT
+		; This way we trick djangointo thinking its running on a tty
+		command=sh -c '/usr/bin/python3 $NES_PROJECT_PATH/manage.py runserver -v3 $NES_IP:$NES_PORT > /dev/pts/0'
 		user=nobody
 		priority=2 ; must start after limesurvey
 		autostart=true
 		autorestart=true
+		stopasgroup=true
 		redirect_stderr=true
-		stdout_logfile=/dev/fd/1
+		stdout_logfile=/dev/pts/0
 		stdout_logfile_maxbytes=0
 		environment=HOME="$NES_DIR"
 	EOF
 fi
+
+# Enables django runserver to write its logs to stdout
+chmod a+w /dev/pts/0
 
 exec "$@"
