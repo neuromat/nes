@@ -433,7 +433,7 @@ class ImportExperiment:
             'experiment.tms', 'experiment.eeg', 'experiment.emg', 'experiment.tmsdevicesetting',
             'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
             'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
-            'experiment.eegsolutionsetting'
+            'experiment.eegsolutionsetting', 'experiment.emgelectrodeplacementsetting',
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -514,6 +514,7 @@ class ImportExperiment:
                 ['experiment.musclesubdivision', 'muscle_subdivision'],
                 ['experiment.standardizationsystem', 'standardization_system']
             ],
+            'experiment.emgelectrodesetting': [['experiment.emgsetting', 'emg_setting']],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
@@ -557,6 +558,7 @@ class ImportExperiment:
             'experiment.eegfiltersetting': 'experiment.eegsetting',
             'experiment.eegamplifiersetting': 'experiment.eegsetting',
             'experiment.eegsolutionsetting': 'experiment.eegsetting',
+            'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
         }
 
         DG = nx.DiGraph()
