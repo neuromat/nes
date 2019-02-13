@@ -34,7 +34,7 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Min
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
@@ -844,7 +844,7 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
         else:
             messages.success(request, _('Experiment successfully imported. New study was created.'))
 
-        # Push new object in session to display log to users
+        # Push new object to session to display log to users
         request.session['objects_imported'] = import_experiment.get_new_objects()
         return HttpResponseRedirect(reverse('import_log'))
 
@@ -2495,46 +2495,6 @@ def eeg_electrode_position_setting_change_the_order(request, eeg_electrode_posit
     return HttpResponseRedirect(redirect_url)
 
 
-# TODO: check if this view is used
-# @login_required
-# @permission_required('experiment.change_experiment')
-# def equipment_view(request, eeg_setting_id, equipment_id,
-#                    template_name="experiment/add_equipment_to_eeg_setting.html"):
-#
-#     equipment = get_object_or_404(Equipment, pk=equipment_id)
-#     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
-#
-#     check_can_change(request.user, eeg_setting.experiment.research_project)
-#
-#     equipment_list = Equipment.objects.filter(id=equipment_id)
-#     list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment=equipment)
-#
-#     equipment_form = EquipmentForm(
-#         request.POST or None, initial={'description': equipment.description,
-#                                        'serial_number': equipment.serial_number})
-#
-#     for field in equipment_form.fields:
-#         equipment_form.fields[field].widget.attrs['disabled'] = True
-#
-#     equipment_type_name = equipment.equipment_type
-#
-#     for type_element, type_name in Equipment.EQUIPMENT_TYPES:
-#         if type_element == equipment.equipment_type:
-#             equipment_type_name = type_name
-#
-#     context = {"creating": False,
-#                "editing": False,
-#                "eeg_setting": eeg_setting,
-#                "manufacturer_list": list_of_manufacturers,
-#                "equipment_list": equipment_list,
-#                "equipment_form": equipment_form,
-#                "equipment_type": equipment.equipment_type,
-#                "equipment_selected": equipment,
-#                "equipment_type_name": equipment_type_name}
-#
-#     return render(request, template_name, context)
-
-
 @login_required
 @permission_required('experiment.register_equipment')
 def manufacturer_list(request, template_name="experiment/manufacturer_list.html"):
@@ -2648,7 +2608,7 @@ def get_tag_ids_from_post(data_post):
 
 def equipment_tags_update(equipment_id, set_tags, model_name_str):
 
-    model_name = get_model('experiment', model_name_str)
+    model_name = apps.get_model('experiment', model_name_str)
     changed = False
 
     if model_name.objects.filter(id=equipment_id).exists():
@@ -2675,7 +2635,7 @@ def get_tags(equipment_id, model_name_str):
 
     tags = None
 
-    model_name = get_model('experiment', model_name_str)
+    model_name = apps.get_model('experiment', model_name_str)
 
     if model_name.objects.filter(id=equipment_id).exists():
 
@@ -4558,7 +4518,7 @@ def ad_converter_list(request, template_name="experiment/ad_converter_list.html"
 @permission_required('experiment.register_equipment')
 def ad_converter_create(request, template_name="experiment/ad_converter_register.html"):
 
-    ad_converter_form = ADConverterRegisterForm(request.POST or None)
+    ad_converter_form = ADConverterRegisterForm(request.POST or None, initial={'equipment_type': 'ad_converter'})
 
     if request.method == "POST":
 
@@ -4567,6 +4527,7 @@ def ad_converter_create(request, template_name="experiment/ad_converter_register
             if ad_converter_form.is_valid():
 
                 ad_converter_added = ad_converter_form.save(commit=False)
+                ad_converter_added.equipment_type = 'ad_converter'
                 ad_converter_added.save()
 
                 messages.success(request, _('A/D converter created successfully.'))
@@ -10280,8 +10241,8 @@ def copy_experiment(experiment, copy_data_collection=False):
 
     if copy_data_collection:
         # TODO: 1) check if groups has data collection before trying to copy or
-        # TODO: check this in template so the option to copy with data
-        # TODO: doesn't appear;
+        #  check this in template so the option to copy with data
+        #  doesn't appear;
         # TODO: 2) explain that orig_and_clone is modified in method
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
