@@ -2180,3 +2180,9 @@ class ImportExperimentTest(TestCase):
             'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
             self._create_experiment_with_emg_setting()
         )
+
+    def test_emgelectrodeplacement_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_placement',
+            self._create_experiment_with_emg_setting()
+        )

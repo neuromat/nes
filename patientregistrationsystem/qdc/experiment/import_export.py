@@ -515,7 +515,10 @@ class ImportExperiment:
                 ['experiment.standardizationsystem', 'standardization_system']
             ],
             'experiment.emgelectrodesetting': [['experiment.emgsetting', 'emg_setting']],
-            'experiment.emgelectrodeplacementsetting': [['experiment.muscleside', 'muscle_side']],
+            'experiment.emgelectrodeplacementsetting': [
+                ['experiment.muscleside', 'muscle_side'],
+                ['experiment.emgelectrodeplacement', 'emg_electrode_placement']
+            ],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
