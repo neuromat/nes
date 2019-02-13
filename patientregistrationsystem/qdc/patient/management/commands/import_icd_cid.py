@@ -7,21 +7,28 @@ import csv
 import os
 
 class Command(BaseCommand):
-    help = 'Displays current time'
+    help = 'Import ICD for translation'
 
-    def handle(self, *args, **kwargs):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--file', nargs='?', type=str, help='codes filename'
+        )
+    # def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
 
-        filename = 'icd10cid10v2017.csv'
-        try:
-            import_classification_of_icd_cid(filename)
-        except IOError:
-            raise CommandError(
-            'Filename "%s" does not exist.' % filename
-            )
-        except UnicodeDecodeError:
-            raise CommandError(
-            'Filename "%s" has incorrect format.' % filename
-            )
+        # filename = 'icd10cid10v2017.csv'
+        if options['file']:
+            filename = options['file']
+            try:
+                import_classification_of_icd_cid(filename)
+            except IOError:
+                raise CommandError(
+                'Filename "%s" does not exist.' % filename
+                )
+            except UnicodeDecodeError:
+                raise CommandError(
+                'Filename "%s" has incorrect format.' % filename
+                )
 
 
 def import_classification_of_icd_cid(file_name):
@@ -34,14 +41,11 @@ def import_classification_of_icd_cid(file_name):
     # cwd = os.getcwd()
     # print("Current working directory is:", cwd)
 
-    with open(file_name, 'r') as csvFile:
+    with open(file_name, 'rt') as csvFile:
         reader = csv.reader(csvFile)
+        records_updated = 0
         next(reader, None)
         for row in reader:
-            # print(row[0]) # Codigo
-            # print(row[1]) # Ingles longo
-            # print(row[2]) # Portugues longo
-            # print(row[3]) # Portugues curto
 
             classifications_of_diseases = ClassificationOfDiseases.objects.create(
                 code=row[0], description=row[2], abbreviated_description=row[3]
@@ -52,7 +56,9 @@ def import_classification_of_icd_cid(file_name):
             classifications_of_diseases.description = row[1]
             classifications_of_diseases.abbreviated_description = row[1]
             classifications_of_diseases.save()
+            records_updated += 1
             deactivate()
 
+    return records_updated
 
 
