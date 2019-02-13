@@ -1,22 +1,22 @@
 .. _installation-using-a-docker-container:
 
-Installation using a Docker container
+Installation using Docker containers
 =====================================
 
 .. _tutorial-to-install-nes-using-a-docker-container:
 
-Tutorial to install NES using a Docker container
-------------------------------------------------
+Tutorial to run NES using a Docker container
+--------------------------------------------
 
 NeuroMat prepared a Docker container that includes all you need to use NES. This tutorial includes:
 
-* Docker installation
-* Docker Toolbox installation
-* First NES Docker container loading
-* Using NES Docker container after first loading
-* Accessing NES
-* Accessing LimeSurvey
-* Useful information
+* `Docker installation`_
+* `Docker Toolbox installation`_
+* `First NES Docker container loading`_
+* `Accessing NES`_
+* `Accessing LimeSurvey`_
+* `Using NES Docker container after first loading`_
+* `Useful information`_
 
 .. _docker-installation:
 
@@ -30,7 +30,7 @@ Using `this link <https://www.docker.com/community-edition>`_ you can download D
 
 Docker Toolbox installation
 ```````````````````````````
-If you are using Windows and do not have the requirements to install Docker for Windows (see the topic `Docker installation`), you can install Docker Toolbox using `this link <https://docs.docker.com/toolbox/overview/>`_
+If you are using Windows and do not have the requirements to install Docker for Windows (see `Docker installation`_), you can install Docker Toolbox using `this link <https://docs.docker.com/toolbox/overview/>`_
 
 .. note:: In the `Select Components` installation screen, select the option `Git for Windows`;
 
@@ -68,7 +68,7 @@ After access the login page, use the user `nes_admin` (password `nes_admin_passw
 Accessing LimeSurvey
 ````````````````````
 
-This container also contains a LimeSurvey installation. Its access is from the port 8088 and the URL depends if you are using Docker or Docker Toolbox (see the topic `Accessing NES`_)::
+This container also contains a LimeSurvey installation. Its access is from the port 8088 and the URL depends if you are using Docker or Docker Toolbox (see `Accessing NES`_)::
 
     http://localhost:8080/admin
 
