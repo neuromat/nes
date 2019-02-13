@@ -2495,46 +2495,6 @@ def eeg_electrode_position_setting_change_the_order(request, eeg_electrode_posit
     return HttpResponseRedirect(redirect_url)
 
 
-# TODO: check if this view is used
-# @login_required
-# @permission_required('experiment.change_experiment')
-# def equipment_view(request, eeg_setting_id, equipment_id,
-#                    template_name="experiment/add_equipment_to_eeg_setting.html"):
-#
-#     equipment = get_object_or_404(Equipment, pk=equipment_id)
-#     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
-#
-#     check_can_change(request.user, eeg_setting.experiment.research_project)
-#
-#     equipment_list = Equipment.objects.filter(id=equipment_id)
-#     list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment=equipment)
-#
-#     equipment_form = EquipmentForm(
-#         request.POST or None, initial={'description': equipment.description,
-#                                        'serial_number': equipment.serial_number})
-#
-#     for field in equipment_form.fields:
-#         equipment_form.fields[field].widget.attrs['disabled'] = True
-#
-#     equipment_type_name = equipment.equipment_type
-#
-#     for type_element, type_name in Equipment.EQUIPMENT_TYPES:
-#         if type_element == equipment.equipment_type:
-#             equipment_type_name = type_name
-#
-#     context = {"creating": False,
-#                "editing": False,
-#                "eeg_setting": eeg_setting,
-#                "manufacturer_list": list_of_manufacturers,
-#                "equipment_list": equipment_list,
-#                "equipment_form": equipment_form,
-#                "equipment_type": equipment.equipment_type,
-#                "equipment_selected": equipment,
-#                "equipment_type_name": equipment_type_name}
-#
-#     return render(request, template_name, context)
-
-
 @login_required
 @permission_required('experiment.register_equipment')
 def manufacturer_list(request, template_name="experiment/manufacturer_list.html"):
@@ -10281,8 +10241,8 @@ def copy_experiment(experiment, copy_data_collection=False):
 
     if copy_data_collection:
         # TODO: 1) check if groups has data collection before trying to copy or
-        # TODO: check this in template so the option to copy with data
-        # TODO: doesn't appear;
+        #  check this in template so the option to copy with data
+        #  doesn't appear;
         # TODO: 2) explain that orig_and_clone is modified in method
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
