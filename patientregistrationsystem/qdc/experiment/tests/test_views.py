@@ -2142,3 +2142,8 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.softwareversion',
                                                            'software',
                                                            self._create_experiment_with_emg_setting())
+
+    def test_muscle_and_muscle_side(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.muscle', 'experiment.muscleside', 'muscle', self._create_experiment_with_emg_setting()
+        )

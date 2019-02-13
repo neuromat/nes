@@ -176,6 +176,8 @@ class ExportExperiment:
 
         # EMG
         self.generate_fixture('emg_setting.json', 'emgsetting', 'experiment_id__in')
+        self.generate_fixture('emg_electrodeplacementsetting.json', 'emgelectrodeplacementsetting',
+                              'emg_electrode_setting__emg_setting__experiment_id__in')
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -184,6 +186,7 @@ class ExportExperiment:
                      '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
         sys.stdout = sysout
 
+        # TODO: refactor to use this list with generate_fixture
         list_of_files = ['experimentfixture.json', 'componentconfiguration.json', 'group.json', 'block.json',
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
@@ -191,7 +194,8 @@ class ExportExperiment:
                          'socialhistorydata.json', 'socialdemographicdata.json', 'dataconfigurationtree.json',
                          'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
                          'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
-                         'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json']
+                         'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
+                         'emg_electrodeplacementsetting.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -448,6 +452,7 @@ class ImportExperiment:
             'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
             'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
             'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
+            'experiment.muscle',
             'patient.patient'
         ]
         foreign_relations = {
@@ -462,7 +467,7 @@ class ImportExperiment:
             ],
             'experiment.questionnaire': [['survey.survey', 'survey']],
             'survey.survey': [['', '']],
-
+            # TMS
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
             'experiment.tmsdevicesetting': [
@@ -471,7 +476,7 @@ class ImportExperiment:
             'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
             'experiment.coilshape': [['', '']],
             'experiment.material': [['', '']],
-
+            # EEG
             'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
             'experiment.eegsetting': [['experiment.experiment', 'experiment']],
             'experiment.eegelectrodepositionsetting': [
@@ -496,12 +501,13 @@ class ImportExperiment:
             ],
             'experiment.eegsolutionsetting': [['experiment.eegsolution', 'eeg_solution']],
             'experiment.eegsolution': [['experiment.manufacturer', 'manufacturer']],
-
+            # EMG
             'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
             'experiment.emgsetting': [
                 ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
             ],
-
+            'experiment.muscle': [['', '']],
+            'experiment.muscleside': [['experiment.muscle', 'muscle']],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
