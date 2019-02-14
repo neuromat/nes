@@ -955,11 +955,7 @@ class ImportExperimentTest(TestCase):
 
     def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
-        ObjectsFactory.create_group(self.experiment, self.rootcomponent)
-        survey = create_survey(212121)
-        questionnaire = ObjectsFactory.create_component(self.experiment, Component.QUESTIONNAIRE,
-                                                        kwargs={'survey': survey})
-        ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
+        self._create_minimum_objects_to_test_questionnaire()
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -976,6 +972,44 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(Questionnaire.objects.last().survey.id, Survey.objects.last().id)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_random_code_in_surveys(self):
+        self._create_minimum_objects_to_test_components()
+        self._create_minimum_objects_to_test_questionnaire()
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        new_survey = Survey.objects.last()
+        self.assertTrue(1 <= int(new_survey.code.split('Q')[1]) <= 100000)
+
+    def _create_minimum_objects_to_test_questionnaire(self, survey_id=212121):
+        ObjectsFactory.create_group(self.experiment, self.rootcomponent)
+        survey = create_survey(survey_id)
+        questionnaire = ObjectsFactory.create_component(self.experiment, Component.QUESTIONNAIRE,
+                                                        kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
+
+    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self):
+        self._create_minimum_objects_to_test_components()
+        self._create_minimum_objects_to_test_questionnaire()
+        self._create_minimum_objects_to_test_questionnaire(survey_id=121212)
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        new_survey1 = Survey.objects.all().order_by('-id')[1]
+        new_survey2 = Survey.objects.all().order_by('-id')[0]
+        self.assertEqual(-99, new_survey1.lime_survey_id)
+        self.assertEqual(-100, new_survey2.lime_survey_id)
 
     def test_POST_experiment_import_file_creates_root_component_plus_tms_and_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
