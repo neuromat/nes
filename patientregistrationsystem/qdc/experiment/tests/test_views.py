@@ -27,7 +27,8 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     SoftwareVersion, Software, AmplifierDetectionType, TetheringSystem, Muscle, MuscleSide, \
     MuscleSubdivision, EMGElectrodePlacement, EMGElectrodePlacementSetting, StandardizationSystem, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
-    EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction
+    EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
+    DigitalGamePhase
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -476,7 +477,23 @@ class ImportExperimentTest(TestCase):
         self.experiment = ObjectsFactory.create_experiment(self.research_project)
         self.rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
 
-    # TMS tests
+    def _create_experiment_with_digital_game_phase(self):
+        self._create_minimum_objects_to_test_components()
+
+        context_tree = ObjectsFactory.create_context_tree(self.experiment)
+
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER')
+        software = Software.objects.create(name='TEST_SOFTWARE', manufacturer=manufacturer)
+        software_version = SoftwareVersion.objects.create(name='TEST_SOFTWARE_VERSION', software=software)
+
+        digital_game_phase = ObjectsFactory.create_component(self.experiment, 'digital_game_phase',
+                                                             kwargs={'context_tree': context_tree,
+                                                                     'software_version': software_version})
+
+        ObjectsFactory.create_component_configuration(self.rootcomponent, digital_game_phase)
+
+        return self.experiment
+
     def _create_experiment_with_tms_setting(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
@@ -549,8 +566,124 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
+    def _create_experiment_with_emg_setting(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        # EMG Setting
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER')
+        software = Software.objects.create(name='TEST_SOFTWARE',
+                                           manufacturer=manufacturer)
+        software_version = SoftwareVersion.objects.create(name='TEST_SOFTWARE_VERSION',
+                                                          software=software)
+        emg_setting = EMGSetting.objects.create(experiment=experiment,
+                                                name='EMG-Setting name',
+                                                description='EMG-Setting description',
+                                                acquisition_software_version=software_version)
+
+        # AD converter
+        ad_converter = ADConverter.objects.create(identification='TEST_AD_CONVERTER',
+                                                  manufacturer=manufacturer,
+                                                  equipment_type='ad_converter')
+        emg_ad_converter_setting = EMGADConverterSetting.objects.create(ad_converter=ad_converter,
+                                                                        emg_setting=emg_setting)
+
+        # Filter type
+        filter_type = FilterType.objects.create(name='TEST_FILTER_TYPE')
+        emg_digital_filter_setting = EMGDigitalFilterSetting.objects.create(emg_setting=emg_setting,
+                                                                            filter_type=filter_type)
+
+        # Electrodes
+        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
+        electrode_config = ElectrodeConfiguration.objects.create(name='Electrode config name')
+        electrode_model = ElectrodeModel.objects.create(name='TEST_ELECTRODE_MODEL',
+                                                        electrode_configuration=electrode_config,
+                                                        material=material)
+        emg_electrode_setting_surface = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
+                                                                           electrode=electrode_model)
+
+        emg_electrode_setting_intramuscular = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
+                                                                                 electrode=electrode_model)
+        emg_electrode_setting_needle = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
+                                                                          electrode=electrode_model)
+
+        # Muscle
+        muscle = Muscle.objects.create(name='TEST_MUSCLE')
+        muscle_side = MuscleSide.objects.create(name='TEST_MUSCLE_SIDE',
+                                                muscle=muscle)
+        muscle_subdivision = MuscleSubdivision.objects.create(name='TEST_MUSCLE_SUBDIVISION',
+                                                              muscle=muscle)
+        standardization_system = StandardizationSystem.objects.create(name='TEST_STANDARDIZATION_SYSTEM')
+
+        emg_surface_placement = EMGSurfacePlacement.objects.create(standardization_system=standardization_system,
+                                                                   muscle_subdivision=muscle_subdivision,
+                                                                   placement_type='surface')
+        emg_intramuscular_placement = EMGIntramuscularPlacement.objects.create(
+            standardization_system=standardization_system,
+            muscle_subdivision=muscle_subdivision,
+            placement_type='intramuscular')
+        emg_needle_placement = EMGNeedlePlacement.objects.create(standardization_system=standardization_system,
+                                                                 muscle_subdivision=muscle_subdivision,
+                                                                 placement_type='needle')
+        emg_electrode_placement_setting_surface = EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_surface,
+            emg_electrode_placement=emg_surface_placement.emgelectrodeplacement_ptr,
+            muscle_side=muscle_side)
+        emg_electrode_placement_setting_intramuscular = EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_intramuscular,
+            emg_electrode_placement=emg_intramuscular_placement.emgelectrodeplacement_ptr,
+            muscle_side=muscle_side)
+        emg_electrode_placement_setting_needle = EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_needle,
+            emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
+            muscle_side=muscle_side)
+
+        # Amplifier
+        amplifier_detection_type = AmplifierDetectionType.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
+        tethering_system = TetheringSystem.objects.create(name='TEST_THETHERING_SYSTEM')
+        amplifier = Amplifier.objects.create(identification='TEST_AMPLIFIER',
+                                             amplifier_detection_type=amplifier_detection_type,
+                                             tethering_system=tethering_system,
+                                             manufacturer=manufacturer,
+                                             equipment_type='amplifier')
+
+        emg_amplifier_setting_surface = EMGAmplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_surface,
+            amplifier=amplifier)
+        emg_amplifier_setting_intramuscular = EMGAmplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_intramuscular,
+            amplifier=amplifier)
+        emg_amplifier_setting_needle = EMGAmplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_needle,
+            amplifier=amplifier)
+
+        emg_analog_filter_setting_surface = EMGAnalogFilterSetting.objects.create(
+            emg_electrode_setting=emg_amplifier_setting_surface)
+        emg_analog_filter_setting_intramuscular = EMGAnalogFilterSetting.objects.create(
+            emg_electrode_setting=emg_amplifier_setting_intramuscular)
+        emg_analog_filter_setting_needle = EMGAnalogFilterSetting.objects.create(
+            emg_electrode_setting=emg_amplifier_setting_needle)
+
+        emg_pre_amplifier_setting_surface = EMGPreamplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_surface,
+            amplifier=amplifier)
+        emg_pre_amplifier_setting_intramuscular = EMGPreamplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_intramuscular,
+            amplifier=amplifier)
+        emg_pre_amplifier_setting_needle = EMGPreamplifierSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_needle,
+            amplifier=amplifier)
+
+        emg_pre_amplifier_filter_setting_surface = EMGPreamplifierFilterSetting.objects.create(
+            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_surface)
+        emg_pre_amplifier_filter_setting_intramuscular = EMGPreamplifierFilterSetting.objects.create(
+            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_intramuscular)
+        emg_pre_amplifier_filter_setting_needle = EMGPreamplifierFilterSetting.objects.create(
+            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_needle)
+
+        return experiment
+
     def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name,
-                                                      linking_field, type_of_experiment):
+                                                      linking_field, type_of_experiment, flag=False):
         """
         This test is a general test for testing the sucessfull importation of two linked models
         :param model_1_name: Name of the model inherited by the second model; The one that is being pointed at.
@@ -573,13 +706,9 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
-        new_model_1_objects = model_1.objects.exclude(
-            pk__in=old_model_1_objects_ids
-        )
+        new_model_1_objects = model_1.objects.exclude(pk__in=old_model_1_objects_ids)
         self.assertNotEqual(0, new_model_1_objects.count())
-        new_model_2_objects = model_2.objects.exclude(
-            pk__in=old_model_2_objects_ids
-        )
+        new_model_2_objects = model_2.objects.exclude(pk__in=old_model_2_objects_ids)
         self.assertNotEqual(0, new_model_2_objects.count())
 
         self.assertEqual(model_1.objects.count(),
@@ -588,9 +717,90 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(model_2.objects.count(),
                          len(old_model_2_objects_ids) + new_model_2_objects.count()
                          )
-        for item in new_model_1_objects:
+
+        if not flag:
+            for item in new_model_1_objects:
+                dinamic_filter = {linking_field: item.pk}
+                self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
+        else:
+            new_model_1_ids = new_model_1_objects.values_list('id', flat=True)
+            for item in new_model_2_objects:
+                self.assertTrue(getattr(item, linking_field).id in new_model_1_ids)
+
+    def _test_creation_and_linking_between_equipment_and_other_model(self, model_name, linking_field,
+                                                                     _experiment, equipment_type):
+        experiment = _experiment
+        export = ExportExperiment(experiment)
+        export.export_all()
+
+        file_path = export.get_file_path()
+
+        model_ = apps.get_model(model_name)
+
+        old_equipment_objects_ids = list(Equipment.objects.filter(
+            equipment_type=equipment_type).values_list('pk', flat=True))
+        old_model_objects_ids = list(model_.objects.values_list('pk', flat=True))
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_equipment_objects = Equipment.objects.filter(equipment_type=equipment_type).exclude(
+            pk__in=old_equipment_objects_ids
+        )
+        self.assertNotEqual(0, new_equipment_objects.count())
+
+        new_model_objects = model_.objects.exclude(
+            pk__in=old_model_objects_ids
+        )
+        self.assertNotEqual(0, new_model_objects.count())
+
+        self.assertEqual(Equipment.objects.filter(equipment_type=equipment_type).count(),
+                         len(old_equipment_objects_ids) + new_equipment_objects.count()
+                         )
+        self.assertEqual(model_.objects.count(),
+                         len(old_model_objects_ids) + new_model_objects.count()
+                         )
+        for item in new_equipment_objects:
             dinamic_filter = {linking_field: item.pk}
-            self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
+            self.assertTrue(new_model_objects.filter(**dinamic_filter).exists())
+    def _test_creation_and_linking_between_component_and_other_model(self, model_name, linking_field,
+                                                                     _experiment, component_type):
+        experiment = _experiment
+        export = ExportExperiment(experiment)
+        export.export_all()
+
+        file_path = export.get_file_path()
+
+        model_ = apps.get_model(model_name)
+
+        old_component_objects_ids = list(Component.objects.filter(
+            component_type=component_type).values_list('pk', flat=True))
+        old_model_objects_ids = list(model_.objects.values_list('pk', flat=True))
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_component_objects = Component.objects.filter(component_type=component_type).exclude(
+            pk__in=old_component_objects_ids
+        )
+        self.assertNotEqual(0, new_component_objects.count())
+
+        new_model_objects = model_.objects.exclude(
+            pk__in=old_model_objects_ids
+        )
+        self.assertNotEqual(0, new_model_objects.count())
+
+        self.assertEqual(Component.objects.filter(component_type=component_type).count(),
+                         len(old_component_objects_ids) + new_component_objects.count()
+                         )
+        self.assertEqual(model_.objects.count(),
+                         len(old_model_objects_ids) + new_model_objects.count()
+                         )
+        for item in new_component_objects:
+            dinamic_filter = {linking_field: item.pk}
+            self.assertTrue(new_model_objects.filter(**dinamic_filter).exists())
 
     def test_GET_experiment_import_file_uses_correct_template(self):
         response = self.client.get(reverse('experiment_import'))
@@ -1393,102 +1603,6 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self._assert_steps_imported(response)
 
-    # TMS tests
-    def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_and_returns_successful_message(self):
-        # Create research project
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
-        experiment = ObjectsFactory.create_experiment(research_project)
-        # Create tms setting
-        tms_setting = TMSSetting.objects.create(experiment=experiment,
-                                                name='TMS-Setting name',
-                                                description='TMS-Setting description')
-
-        # Create tms device setting; This is the set up of the equipment of TMS
-        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER')
-        tms_device = TMSDevice.objects.create(manufacturer=manufacturer)
-        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
-        coil_shape = CoilShape.objects.create(name='TEST_COIL_SHAPE')
-        coil_model = CoilModel.objects.create(name='TEST_COIL_MODEL', coil_shape=coil_shape, material=material)
-
-        tms_device_setting = TMSDeviceSetting.objects.create(tms_setting=tms_setting,
-                                                             tms_device=tms_device,
-                                                             coil_model=coil_model)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # Manufacturer and Material are models with few simple fields as name and description, without an id.
-        # It makes sense not to create new entries if the database already has an identical one.
-        # For this test, we are testing the creation of new setups, so we must change the manufacturer and the
-        # material entries of the exported experiment, so we can test if they will be created.
-        # There is another test that tests the importation without creating new manufacturers and/or materials
-
-        manufacturer.name = 'OLD_TEST_MANUFACTURER'
-        manufacturer.save()
-
-        material.name = 'OLD_TEST_MATERIAL'
-        material.save()
-
-        # dictionary to test against new tmssettings created bellow
-        old_tms_setting_count = TMSSetting.objects.count()
-        old_manufacturer_count = Manufacturer.objects.count()
-        old_tms_device_count = TMSDevice.objects.count()
-        old_material_count = Material.objects.count()
-        old_coil_shape_count = CoilShape.objects.count()
-        old_coil_model_count = CoilModel.objects.count()
-        old_tms_device_setting_count = TMSDeviceSetting.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        new_tms_setting = TMSSetting.objects.exclude(id=tms_setting.id)
-        new_manufacturer = Manufacturer.objects.exclude(id=manufacturer.id)
-        new_tms_device = TMSDevice.objects.exclude(id=tms_device.id)
-        new_material = Material.objects.exclude(id=material.id)
-        new_coil_shape = CoilShape.objects.exclude(id=coil_shape.id)
-        new_coil_model = CoilModel.objects.exclude(id=coil_model.id)
-        new_tms_device_setting = TMSDeviceSetting.objects.exclude(tms_setting_id=tms_device_setting.tms_setting_id)
-
-        self.assertEqual(
-            TMSSetting.objects.count(),
-            old_tms_setting_count + len(new_tms_setting))
-        self.assertEqual(
-            Manufacturer.objects.count(),
-            old_manufacturer_count + len(new_manufacturer))
-        self.assertEqual(
-            TMSDevice.objects.count(),
-            old_tms_device_count + len(new_tms_device))
-        self.assertEqual(
-            Material.objects.count(),
-            old_material_count + len(new_material))
-        self.assertEqual(
-            CoilShape.objects.count(),
-            old_coil_shape_count + len(new_coil_shape))
-        self.assertEqual(
-            CoilModel.objects.count(),
-            old_coil_model_count + len(new_coil_model))
-        self.assertEqual(
-            TMSDeviceSetting.objects.count(),
-            old_tms_device_setting_count + len(new_tms_device_setting))
-
-        for item in new_tms_device_setting:
-            self.assertEqual(TMSSetting.objects.last().id, item.tms_setting_id)
-            self.assertEqual(CoilModel.objects.last().id, item.coil_model_id)
-            self.assertEqual(TMSDevice.objects.last().id, item.tms_device_id)
-
-        for item in new_coil_model:
-            self.assertEqual(CoilShape.objects.last().id, item.coil_shape_id)
-            self.assertEqual(Material.objects.last().id, item.material_id)
-
-        self.assertEqual(Equipment.objects.last().id, TMSDevice.objects.last().equipment_ptr_id)
-        self.assertEqual(Manufacturer.objects.last().id, Equipment.objects.last().manufacturer_id)
-
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
     # def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_with_reuse_and_returns_successful_message(self):
     #     # Create research project
     #     research_project = ObjectsFactory.create_research_project(owner=self.user)
@@ -1836,12 +1950,47 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(1, new_telephone.count())
         self.assertEqual(new_telephone[0].changed_by, self.user_importer)
 
-    def test_tms_device_and_tms_device_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.tmsdevice',
-                                                           'experiment.tmsdevicesetting',
-                                                           'tms_device_id',
-                                                           self._create_experiment_with_tms_setting())
+    def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block')
+        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+        eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
+        ObjectsFactory.create_data_configuration_tree(component_config)
 
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        self.assertEqual(2, DataConfigurationTree.objects.count())
+        self.assertEqual(
+            DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
+        )
+
+    # Goalkeeper tests
+    def test_software_version_and_digital_game_phase(self):
+        self._test_creation_and_linking_between_two_models('experiment.softwareversion',
+                                                           'experiment.digitalgamephase',
+                                                           'software_version',
+                                                           self._create_experiment_with_digital_game_phase())
+
+    def test_context_tree_and_digital_game_phase(self):
+        self._test_creation_and_linking_between_two_models('experiment.contexttree',
+                                                           'experiment.digitalgamephase',
+                                                           'context_tree',
+                                                           self._create_experiment_with_digital_game_phase())
+
+    def test_component_and_digital_game_phase(self):
+        self._test_creation_and_linking_between_component_and_other_model(
+            'experiment.digitalgamephase', 'component_ptr',
+            self._create_experiment_with_digital_game_phase(), 'digital_game_phase')
+
+    # TMS tests
     def test_material_and_coil_model(self):
         self._test_creation_and_linking_between_two_models('experiment.material',
                                                            'experiment.coilmodel',
@@ -1860,6 +2009,12 @@ class ImportExperimentTest(TestCase):
                                                            'coil_model_id',
                                                            self._create_experiment_with_tms_setting())
 
+    def test_tms_device_and_tms_device_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmsdevice',
+                                                           'experiment.tmsdevicesetting',
+                                                           'tms_device_id',
+                                                           self._create_experiment_with_tms_setting())
+
     def test_tms_setting_and_tms_device_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.tmssetting',
                                                            'experiment.tmsdevicesetting',
@@ -1872,6 +2027,7 @@ class ImportExperimentTest(TestCase):
                                                            'experiment_id',
                                                            self._create_experiment_with_tms_setting())
 
+    # EEG tests
     def test_electrode_configuration_and_electrode_model(self):
         self._test_creation_and_linking_between_two_models('experiment.electrodeconfiguration',
                                                            'experiment.electrodemodel',
@@ -1938,12 +2094,6 @@ class ImportExperimentTest(TestCase):
                                                            'eeg_setting_id',
                                                            self._create_experiment_with_eeg_setting())
 
-    def test_experiment_and_eeg_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.experiment',
-                                                           'experiment.eegsetting',
-                                                           'experiment_id',
-                                                           self._create_experiment_with_eeg_setting())
-
     def test_filter_type_and_eeg_filter_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.filtertype',
                                                            'experiment.eegfiltersetting',
@@ -1998,183 +2148,13 @@ class ImportExperimentTest(TestCase):
                                                            'eeg_setting',
                                                            self._create_experiment_with_eeg_setting())
 
-    def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block')
-        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
-        eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
-        ObjectsFactory.create_data_configuration_tree(component_config)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        self.assertEqual(2, DataConfigurationTree.objects.count())
-        self.assertEqual(
-            DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
-        )
+    def test_experiment_and_eeg_setting(self):
+        self._test_creation_and_linking_between_two_models('experiment.experiment',
+                                                           'experiment.eegsetting',
+                                                           'experiment_id',
+                                                           self._create_experiment_with_eeg_setting())
 
     # EMG tests
-    def _create_experiment_with_emg_setting(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        # EMG Setting
-        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER')
-        software = Software.objects.create(name='TEST_SOFTWARE',
-                                           manufacturer=manufacturer)
-        software_version = SoftwareVersion.objects.create(name='TEST_SOFTWARE_VERSION',
-                                                          software=software)
-        emg_setting = EMGSetting.objects.create(experiment=experiment,
-                                                name='EMG-Setting name',
-                                                description='EMG-Setting description',
-                                                acquisition_software_version=software_version)
-
-        # AD converter
-        ad_converter = ADConverter.objects.create(identification='TEST_AD_CONVERTER',
-                                                  manufacturer=manufacturer,
-                                                  equipment_type='ad_converter')
-        emg_ad_converter_setting = EMGADConverterSetting.objects.create(ad_converter=ad_converter,
-                                                                        emg_setting=emg_setting)
-
-        # Filter type
-        filter_type = FilterType.objects.create(name='TEST_FILTER_TYPE')
-        emg_digital_filter_setting = EMGDigitalFilterSetting.objects.create(emg_setting=emg_setting,
-                                                                            filter_type=filter_type)
-
-        # Electrodes
-        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
-        electrode_config = ElectrodeConfiguration.objects.create(name='Electrode config name')
-        electrode_model = ElectrodeModel.objects.create(name='TEST_ELECTRODE_MODEL',
-                                                        electrode_configuration=electrode_config,
-                                                        material=material)
-        emg_electrode_setting_surface = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
-                                                                           electrode=electrode_model)
-
-        emg_electrode_setting_intramuscular = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
-                                                                                 electrode=electrode_model)
-        emg_electrode_setting_needle = EMGElectrodeSetting.objects.create(emg_setting=emg_setting,
-                                                                          electrode=electrode_model)
-
-        # Muscle
-        muscle = Muscle.objects.create(name='TEST_MUSCLE')
-        muscle_side = MuscleSide.objects.create(name='TEST_MUSCLE_SIDE',
-                                                muscle=muscle)
-        muscle_subdivision = MuscleSubdivision.objects.create(name='TEST_MUSCLE_SUBDIVISION',
-                                                              muscle=muscle)
-        standardization_system = StandardizationSystem.objects.create(name='TEST_STANDARDIZATION_SYSTEM')
-
-        emg_surface_placement = EMGSurfacePlacement.objects.create(standardization_system=standardization_system,
-                                                                   muscle_subdivision=muscle_subdivision,
-                                                                   placement_type='surface')
-        emg_intramuscular_placement = EMGIntramuscularPlacement.objects.create(
-            standardization_system=standardization_system,
-            muscle_subdivision=muscle_subdivision,
-            placement_type='intramuscular')
-        emg_needle_placement = EMGNeedlePlacement.objects.create(standardization_system=standardization_system,
-                                                                 muscle_subdivision=muscle_subdivision,
-                                                                 placement_type='needle')
-        emg_electrode_placement_setting_surface = EMGElectrodePlacementSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_surface,
-            emg_electrode_placement=emg_surface_placement.emgelectrodeplacement_ptr,
-            muscle_side=muscle_side)
-        emg_electrode_placement_setting_intramuscular = EMGElectrodePlacementSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_intramuscular,
-            emg_electrode_placement=emg_intramuscular_placement.emgelectrodeplacement_ptr,
-            muscle_side=muscle_side)
-        emg_electrode_placement_setting_needle = EMGElectrodePlacementSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_needle,
-            emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
-            muscle_side=muscle_side)
-
-        # Amplifier
-        amplifier_detection_type = AmplifierDetectionType.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
-        tethering_system = TetheringSystem.objects.create(name='TEST_THETHERING_SYSTEM')
-        amplifier = Amplifier.objects.create(identification='TEST_AMPLIFIER',
-                                             amplifier_detection_type=amplifier_detection_type,
-                                             tethering_system=tethering_system,
-                                             manufacturer=manufacturer,
-                                             equipment_type='amplifier')
-
-        emg_amplifier_setting_surface = EMGAmplifierSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_surface,
-            amplifier=amplifier)
-        emg_amplifier_setting_intramuscular = EMGAmplifierSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_intramuscular,
-            amplifier=amplifier)
-        emg_amplifier_setting_needle = EMGAmplifierSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_needle,
-            amplifier=amplifier)
-
-        emg_analog_filter_setting_surface = EMGAnalogFilterSetting.objects.create(
-            emg_electrode_setting=emg_amplifier_setting_surface)
-        emg_analog_filter_setting_intramuscular = EMGAnalogFilterSetting.objects.create(
-            emg_electrode_setting=emg_amplifier_setting_intramuscular)
-        emg_analog_filter_setting_needle = EMGAnalogFilterSetting.objects.create(
-            emg_electrode_setting=emg_amplifier_setting_needle)
-
-        emg_pre_amplifier_setting_surface = EMGPreamplifierSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_surface,
-            amplifier=amplifier)
-        emg_pre_amplifier_setting_intramuscular = EMGPreamplifierSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_intramuscular,
-            amplifier=amplifier)
-        emg_pre_amplifier_setting_needle = EMGPreamplifierSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_needle,
-            amplifier=amplifier)
-
-        emg_pre_amplifier_filter_setting_surface = EMGPreamplifierFilterSetting.objects.create(
-            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_surface)
-        emg_pre_amplifier_filter_setting_intramuscular = EMGPreamplifierFilterSetting.objects.create(
-            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_intramuscular)
-        emg_pre_amplifier_filter_setting_needle = EMGPreamplifierFilterSetting.objects.create(
-            emg_preamplifier_filter_setting=emg_pre_amplifier_setting_needle)
-
-        return experiment
-
-    def _test_creation_and_linking_between_equipment_and_other_model(self, model_name, linking_field, _experiment,
-                                                                     equipment_type):
-        experiment = _experiment
-        export = ExportExperiment(experiment)
-        export.export_all()
-
-        file_path = export.get_file_path()
-
-        model_ = apps.get_model(model_name)
-
-        old_equipment_objects_ids = list(Equipment.objects.filter(
-            equipment_type=equipment_type).values_list('pk', flat=True))
-        old_model_objects_ids = list(model_.objects.values_list('pk', flat=True))
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        new_equipment_objects = Equipment.objects.filter(equipment_type=equipment_type).exclude(
-            pk__in=old_equipment_objects_ids
-        )
-        self.assertNotEqual(0, new_equipment_objects.count())
-
-        new_model_objects = model_.objects.exclude(
-            pk__in=old_model_objects_ids
-        )
-        self.assertNotEqual(0, new_model_objects.count())
-
-        self.assertEqual(Equipment.objects.filter(equipment_type=equipment_type).count(),
-                         len(old_equipment_objects_ids) + new_equipment_objects.count()
-                         )
-        self.assertEqual(model_.objects.count(),
-                         len(old_model_objects_ids) + new_model_objects.count()
-                         )
-        for item in new_equipment_objects:
-            dinamic_filter = {linking_field: item.pk}
-            self.assertTrue(new_model_objects.filter(**dinamic_filter).exists())
-
     def test_manufacturer_and_software(self):
         self._test_creation_and_linking_between_two_models('experiment.manufacturer',
                                                            'experiment.software',
@@ -2316,4 +2296,34 @@ class ImportExperimentTest(TestCase):
         self._test_creation_and_linking_between_two_models(
             'experiment.emgelectrodesetting', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_setting',
             self._create_experiment_with_emg_setting()
+        )
+
+    def test_muscleside_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
+            self._create_experiment_with_emg_setting()
+        )
+
+    def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_placement',
+            self._create_experiment_with_emg_setting()
+        )
+
+    def test_emgelectrodeplacement_and_emgintramuscularplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgintramuscularplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True  # TODO (NES-908): momentarily put this flag
+        )
+
+    def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True
+        )
+
+    def test_emgelectrodeplacement_and_emgneedleplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgneedleplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True
         )
