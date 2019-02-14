@@ -190,6 +190,14 @@ class ExportExperiment:
             'emg_intramuscularplacement.json', 'emgintramuscularplacement', 'emgelectrodeplacement_ptr__in',
             'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
         )
+        self.generate_detached_fixture(
+            'emg_surfaceplacement.json', 'emgsurfaceplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
+        self.generate_detached_fixture(
+            'emg_needleplacement.json', 'emgneedleplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -207,7 +215,8 @@ class ExportExperiment:
                          'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
                          'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
                          'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
-                         'emg_electrodeplacementsetting.json', 'emg_intramuscularplacement.json']
+                         'emg_electrodeplacementsetting.json', 'emg_intramuscularplacement.json', 
+                         'emg_surfaceplacement.json', 'emg_needleplacement.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -446,7 +455,7 @@ class ImportExperiment:
             'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
             'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
             'experiment.eegsolutionsetting', 'experiment.emgelectrodeplacementsetting',
-            'experiment.emgintramuscularplacement'
+            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement'
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -570,6 +579,8 @@ class ImportExperiment:
             'experiment.eegelectrodenet': 'experiment.equipment',
             'experiment.amplifier': 'experiment.equipment',
             'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
+            'experiment.emgsurfaceplacement': 'experiment.emgelectrodeplacement',
+            'experiment.emgneedleplacement': 'experiment.emgelectrodeplacement',
             # OneToOneField
             'experiment.tmsdevicesetting': 'experiment.tmssetting',
             'experiment.eegelectrodelayoutsetting': 'experiment.eegsetting',

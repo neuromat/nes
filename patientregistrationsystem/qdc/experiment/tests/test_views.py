@@ -2194,3 +2194,15 @@ class ImportExperimentTest(TestCase):
             'experiment.emgelectrodeplacement', 'experiment.emgintramuscularplacement', 'emgelectrodeplacement_ptr',
             self._create_experiment_with_emg_setting(), True  # TODO (NES-908): momentarily put this flag
         )
+
+    def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True
+        )
+
+    def test_emgelectrodeplacement_and_emgneedleplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgneedleplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True
+        )
