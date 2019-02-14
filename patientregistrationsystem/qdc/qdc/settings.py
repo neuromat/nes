@@ -50,7 +50,6 @@ INSTALLED_APPS = (
     'simple_history',
     'jsonrpc_requests',
     'solo',
-    'import_export',
     'fixture_magic'
 )
 
