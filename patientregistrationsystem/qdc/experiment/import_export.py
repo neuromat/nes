@@ -10,8 +10,8 @@ from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count
 
-from experiment.models import Group, ResearchProject, Experiment,\
-    Keyword, Component
+from experiment.models import Group, ResearchProject, Experiment, \
+    Keyword, Component, Manufacturer, Material
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -441,6 +441,54 @@ class ImportExperiment:
                 data[i]['fields']['lime_survey_id'] = new_limesurvey_id
                 new_limesurvey_id -= 1
 
+    @staticmethod
+    def _keep_manufacturer(data):
+        dependent_models = [
+            ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
+            ('experiment.software', 'manufacturer')
+        ]
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in 'experiment.manufacturer']
+
+        for i in indexes:
+            # TODO: when and if change Manufacturer model name field to unique
+            #  change to 'objects.get'
+            instance = Manufacturer.objects.filter(name=data[i]['fields']['name']).first()
+            if instance:
+                data[i]['pk'], old_id = instance.id, data[i]['pk']
+                for model in dependent_models:
+                    dependent_indexes = [
+                        index for (index, dict_) in enumerate(data)
+                        if dict_['model'] == model[0] and dict_['fields'][model[1]] == old_id
+                    ]
+                    for dependent_index in dependent_indexes:
+                        data[dependent_index]['fields'][model[1]] = data[i]['pk']
+
+    @staticmethod
+    def _keep_material(data):
+        dependent_models = [
+            ('experiment.electrodemodel', 'material'), ('experiment.intramuscularelectrode', 'insulation_material'),
+            ('experiment.eegelectrodecap', 'material'), ('experiment.coilmodel', 'material')
+        ]
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in 'experiment.material']
+
+        for i in indexes:
+            instance = Material.objects.filter(
+                name=data[i]['fields']['name'], description=data[i]['fields']['description']
+            ).first()
+            if instance:
+                data[i]['pk'], old_id = instance.id, data[i]['pk']
+                for model in dependent_models:
+                    dependent_indexes = [
+                        index for (index, dict_) in enumerate(data)
+                        if dict_['model'] == model[0] and dict_['fields'][model[1]] == old_id
+                    ]
+                    for dependent_index in dependent_indexes:
+                        data[dependent_index]['fields'][model[1]] = data[i]['pk']
+
+    def _keep_objects_pre_loaded(self, data):
+        self._keep_manufacturer(data)
+        self._keep_material(data)
+
     def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
         self._make_dummy_reference_to_limesurvey(data)
         self._update_research_project_pk(data, research_project_id)
@@ -448,6 +496,7 @@ class ImportExperiment:
         self._update_patients_stuff(data)
         self._update_model_user(data, request)
         self._update_survey_stuff(data)
+        self._keep_objects_pre_loaded(data)
 
     @staticmethod
     def _get_first_available_id():
