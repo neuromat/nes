@@ -513,6 +513,7 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
+    # EEG tests
     def _create_experiment_with_eeg_setting(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
@@ -682,7 +683,7 @@ class ImportExperimentTest(TestCase):
         return experiment
 
     def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name,
-                                                      linking_field, type_of_experiment):
+                                                      linking_field, type_of_experiment, flag=False):
         """
         This test is a general test for testing the sucessfull importation of two linked models
         :param model_1_name: Name of the model inherited by the second model; The one that is being pointed at.
@@ -705,13 +706,9 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
-        new_model_1_objects = model_1.objects.exclude(
-            pk__in=old_model_1_objects_ids
-        )
+        new_model_1_objects = model_1.objects.exclude(pk__in=old_model_1_objects_ids)
         self.assertNotEqual(0, new_model_1_objects.count())
-        new_model_2_objects = model_2.objects.exclude(
-            pk__in=old_model_2_objects_ids
-        )
+        new_model_2_objects = model_2.objects.exclude(pk__in=old_model_2_objects_ids)
         self.assertNotEqual(0, new_model_2_objects.count())
 
         self.assertEqual(model_1.objects.count(),
@@ -720,9 +717,15 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(model_2.objects.count(),
                          len(old_model_2_objects_ids) + new_model_2_objects.count()
                          )
-        for item in new_model_1_objects:
-            dinamic_filter = {linking_field: item.pk}
-            self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
+
+        if not flag:
+            for item in new_model_1_objects:
+                dinamic_filter = {linking_field: item.pk}
+                self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
+        else:
+            new_model_1_ids = new_model_1_objects.values_list('id', flat=True)
+            for item in new_model_2_objects:
+                self.assertTrue(getattr(item, linking_field).id in new_model_1_ids)
 
     def _test_creation_and_linking_between_equipment_and_other_model(self, model_name, linking_field,
                                                                      _experiment, equipment_type):
@@ -888,6 +891,34 @@ class ImportExperimentTest(TestCase):
             self.assertEqual(Experiment.objects.last().id, component.experiment.id)
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_group_has_experimental_protocol_returns_successful_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        ep1 = ObjectsFactory.create_block(experiment)
+        ep2 = ObjectsFactory.create_block(experiment)
+        group1 = ObjectsFactory.create_group(experiment, ep1)
+        group2 = ObjectsFactory.create_group(experiment, ep2)
+        group3 = ObjectsFactory.create_group(experiment)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        old_blocks_count = Block.objects.count()
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+        new_blocks = Block.objects.exclude(id__in=[ep1.id, ep2.id])
+        new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id, group3.id])
+        self.assertEqual(Block.objects.count(), old_blocks_count + new_blocks.count())
+        # find each pair group.experimental_protocol/block that was created
+        for block in new_blocks:
+            group = next((group for group in new_groups if block.id == group.experimental_protocol.id), None)
+            self.assertIsNotNone(group)
+            new_groups = new_groups.exclude(id=group.id)
+        # now new_groups has only the group without experimental protocol
+        self.assertEqual(new_groups.count(), 1)
 
     def test_POST_experiment_import_file_creates_root_component_plus_instruction_and_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
@@ -2265,4 +2296,34 @@ class ImportExperimentTest(TestCase):
         self._test_creation_and_linking_between_two_models(
             'experiment.emgelectrodesetting', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_setting',
             self._create_experiment_with_emg_setting()
+        )
+
+    def test_muscleside_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
+            self._create_experiment_with_emg_setting()
+        )
+
+    def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_placement',
+            self._create_experiment_with_emg_setting()
+        )
+
+    def test_emgelectrodeplacement_and_emgintramuscularplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgintramuscularplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True  # TODO (NES-908): momentarily put this flag
+        )
+
+    def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True
+        )
+
+    def test_emgelectrodeplacement_and_emgneedleplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgneedleplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), True
         )

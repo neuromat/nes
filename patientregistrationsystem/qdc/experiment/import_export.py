@@ -40,11 +40,19 @@ class ExportExperiment:
     def generate_patient_fixture(self, filename, element, key_path):
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-
         call_command('dump_object', 'patient.' + element, '--query',
                      '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
                      )
+        sys.stdout = sysout
 
+    def generate_detached_fixture(self, filename, element, key_path, parent_model, filename_parent):
+        with open(path.join(self.temp_dir, filename_parent)) as file:
+            data = json.load(file)
+        parent_ids = [dict_['pk'] for index, dict_ in enumerate(data) if dict_['model'] == parent_model]
+
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
+        call_command('dump_object', 'experiment.' + element, '--query', '{"' + key_path + '": ' + str(parent_ids) + '}')
         sys.stdout = sysout
 
     def _remove_auth_user_model_from_json(self, filename):
@@ -186,6 +194,18 @@ class ExportExperiment:
                               'emg_electrode_setting__emg_electrode_setting__emg_setting__experiment_id__in')
         self.generate_fixture('emg_electrodeplacementsetting.json', 'emgelectrodeplacementsetting',
                               'emg_electrode_setting__emg_setting__experiment_id__in')
+        self.generate_detached_fixture(
+            'emg_intramuscularplacement.json', 'emgintramuscularplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
+        self.generate_detached_fixture(
+            'emg_surfaceplacement.json', 'emgsurfaceplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
+        self.generate_detached_fixture(
+            'emg_needleplacement.json', 'emgneedleplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -205,7 +225,8 @@ class ExportExperiment:
                          'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
                          'emg_ad_converter_setting.json', 'emg_digital_filter_setting.json',
                          'emg_pre_amplifier_filter_setting.json', 'emg_amplifier_analog_filter_setting.json',
-                         'emg_electrodeplacementsetting.json']
+                         'emg_electrodeplacementsetting.json', 'emg_intramuscularplacement.json',
+                         'emg_surfaceplacement.json', 'emg_needleplacement.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -289,6 +310,35 @@ class ImportExperiment:
 
         else:
             self.new_objects['components'] = None
+
+    @staticmethod
+    def _update_pk_keywords(data):  # TODO: to be used when updating pks
+        # Which elements of the json file ("data") represent this model
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
+
+        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
+        indexes_of_keywords_already_updated = []
+        for i in indexes:
+            # Get the keyword and check on database if the keyword already exists
+            # If exists, update the pk of this keyword to the correspondent in the database
+            # otherwise, update the pk of this keyword to next_keyword_id
+            old_keyword_id = data[i]['pk']
+            old_keyword_string = data[i]['fields']['name']
+            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
+
+            if keyword_on_database.count() > 0:
+                data[i]['pk'] = keyword_on_database.first().id
+            else:
+                data[i]['pk'] = next_keyword_id
+                next_keyword_id += 1
+
+            # Update all the references to the old keyword to the new one
+            for (index_row, dict_) in enumerate(data):
+                if dict_['model'] == 'experiment.researchproject':
+                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
+                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
+                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
+                            indexes_of_keywords_already_updated.append(keyword_index)
 
     @staticmethod
     def _solve_limey_survey_reference(data, survey_index):
@@ -400,6 +450,8 @@ class ImportExperiment:
             'experiment.emgamplifiersetting', 'experiment.emganalogfiltersetting',
             'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
             'experiment.digitalgamephase', 'experiment.pause',
+            'experiment.eegsolutionsetting', 'experiment.emgelectrodeplacementsetting',
+            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement'
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -439,7 +491,6 @@ class ImportExperiment:
                 ['experiment.softwareversion', 'software_version']
             ],
             'experiment.contexttree': [['experiment.experiment', 'experiment']],
-            
             # TMS
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
@@ -487,6 +538,14 @@ class ImportExperiment:
                 ['experiment.musclesubdivision', 'muscle_subdivision'],
                 ['experiment.standardizationsystem', 'standardization_system']
             ],
+            'experiment.emgelectrodesetting': [
+                ['experiment.emgsetting', 'emg_setting'], ['experiment.electrodemodel', 'electrode']
+            ],
+            'experiment.emgpreamplifiersetting': [['experiment.amplifier', 'amplifier']],
+            'experiment.emgelectrodeplacementsetting': [
+                ['experiment.muscleside', 'muscle_side'],
+                ['experiment.emgelectrodeplacement', 'emg_electrode_placement']
+            ],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
@@ -501,9 +560,6 @@ class ImportExperiment:
             'experiment.tetheringsystem': [['','']],
             'experiment.amplifierdetectiontype': [['', '']],
             'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
-            'experiment.emgelectrodesetting': [
-                ['experiment.emgsetting', 'emg_setting'], ['experiment.electrodemodel', 'electrode']],
-            'experiment.emgpreamplifiersetting': [['experiment.amplifier', 'amplifier']],
 
             # Participants
             'experiment.subject': [['patient.patient', 'patient']],
@@ -536,6 +592,9 @@ class ImportExperiment:
             'experiment.tmsdevice': 'experiment.equipment',
             'experiment.eegelectrodenet': 'experiment.equipment',
             'experiment.amplifier': 'experiment.equipment',
+            'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
+            'experiment.emgsurfaceplacement': 'experiment.emgelectrodeplacement',
+            'experiment.emgneedleplacement': 'experiment.emgelectrodeplacement',
             'experiment.adconverter': 'experiment.equipment',
             # OneToOneField
             'experiment.tmsdevicesetting': 'experiment.tmssetting',
