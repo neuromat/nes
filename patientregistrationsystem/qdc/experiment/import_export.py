@@ -11,8 +11,7 @@ from django.apps import apps
 from django.db.models import Count
 
 from experiment.models import Group, ResearchProject, Experiment,\
-    Keyword, Component, TaskForTheExperimenter, EEG, EMG, TMS, DigitalGamePhase, GenericDataCollection, Amplifier,\
-    EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, Equipment
+    Keyword, Component
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -41,11 +40,19 @@ class ExportExperiment:
     def generate_patient_fixture(self, filename, element, key_path):
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-
         call_command('dump_object', 'patient.' + element, '--query',
                      '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
                      )
+        sys.stdout = sysout
 
+    def generate_detached_fixture(self, filename, element, key_path, parent_model, filename_parent):
+        with open(path.join(self.temp_dir, filename_parent)) as file:
+            data = json.load(file)
+        parent_ids = [dict_['pk'] for index, dict_ in enumerate(data) if dict_['model'] == parent_model]
+
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
+        call_command('dump_object', 'experiment.' + element, '--query', '{"' + key_path + '": ' + str(parent_ids) + '}')
         sys.stdout = sysout
 
     def _remove_auth_user_model_from_json(self, filename):
@@ -187,6 +194,18 @@ class ExportExperiment:
                               'emg_electrode_setting__emg_electrode_setting__emg_setting__experiment_id__in')
         self.generate_fixture('emg_electrodeplacementsetting.json', 'emgelectrodeplacementsetting',
                               'emg_electrode_setting__emg_setting__experiment_id__in')
+        self.generate_detached_fixture(
+            'emg_intramuscularplacement.json', 'emgintramuscularplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
+        self.generate_detached_fixture(
+            'emg_surfaceplacement.json', 'emgsurfaceplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
+        self.generate_detached_fixture(
+            'emg_needleplacement.json', 'emgneedleplacement', 'emgelectrodeplacement_ptr__in',
+            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
+        )
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -206,7 +225,8 @@ class ExportExperiment:
                          'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
                          'emg_ad_converter_setting.json', 'emg_digital_filter_setting.json',
                          'emg_pre_amplifier_filter_setting.json', 'emg_amplifier_analog_filter_setting.json',
-                         'emg_electrodeplacementsetting.json']
+                         'emg_electrodeplacementsetting.json', 'emg_intramuscularplacement.json',
+                         'emg_surfaceplacement.json', 'emg_needleplacement.json']
 
         fixtures = []
         for filename in list_of_files:
@@ -239,25 +259,6 @@ class ImportExperiment:
 
     def __del__(self):
         shutil.rmtree(self.temp_dir)
-
-    @staticmethod
-    def _get_model_name_by_component_type(component_type):
-        if component_type == Component.TASK_EXPERIMENT:
-            model_name = TaskForTheExperimenter.__name__
-        elif component_type == Component.DIGITAL_GAME_PHASE:
-            model_name = DigitalGamePhase.__name__
-        elif component_type == Component.GENERIC_DATA_COLLECTION:
-            model_name = GenericDataCollection.__name__
-        elif component_type == Component.EEG:
-            model_name = EEG.__name__
-        elif component_type == Component.EMG:
-            model_name = EMG.__name__
-        elif component_type == Component.TMS:
-            model_name = TMS.__name__
-        else:
-            model_name = component_type
-
-        return model_name
 
     def _set_last_objects_before_import(self, data, research_project_id):
         """Identify last objects to deduct after import, so
@@ -448,6 +449,9 @@ class ImportExperiment:
             'experiment.emgdigitalfiltersetting', 'experiment.emgelectrodeplacementsetting',
             'experiment.emgamplifiersetting', 'experiment.emganalogfiltersetting',
             'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
+            'experiment.digitalgamephase', 'experiment.pause',
+            'experiment.eegsolutionsetting', 'experiment.emgelectrodeplacementsetting',
+            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement'
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -481,6 +485,12 @@ class ImportExperiment:
             ],
             'experiment.questionnaire': [['survey.survey', 'survey']],
             'survey.survey': [['', '']],
+
+            'experiment.digitalgamephase': [
+                ['experiment.contexttree', 'context_tree'],
+                ['experiment.softwareversion', 'software_version']
+            ],
+            'experiment.contexttree': [['experiment.experiment', 'experiment']],
             # TMS
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
@@ -528,6 +538,14 @@ class ImportExperiment:
                 ['experiment.musclesubdivision', 'muscle_subdivision'],
                 ['experiment.standardizationsystem', 'standardization_system']
             ],
+            'experiment.emgelectrodesetting': [
+                ['experiment.emgsetting', 'emg_setting'], ['experiment.electrodemodel', 'electrode']
+            ],
+            'experiment.emgpreamplifiersetting': [['experiment.amplifier', 'amplifier']],
+            'experiment.emgelectrodeplacementsetting': [
+                ['experiment.muscleside', 'muscle_side'],
+                ['experiment.emgelectrodeplacement', 'emg_electrode_placement']
+            ],
             'experiment.softwareversion': [['experiment.software', 'software']],
             'experiment.software': [['experiment.manufacturer', 'manufacturer']],
             'experiment.manufacturer': [['', '']],
@@ -542,9 +560,6 @@ class ImportExperiment:
             'experiment.tetheringsystem': [['','']],
             'experiment.amplifierdetectiontype': [['', '']],
             'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
-            'experiment.emgelectrodesetting': [
-                ['experiment.emgsetting', 'emg_setting'], ['experiment.electrodemodel', 'electrode']],
-            'experiment.emgpreamplifiersetting': [['experiment.amplifier', 'amplifier']],
 
             # Participants
             'experiment.subject': [['patient.patient', 'patient']],
@@ -572,11 +587,14 @@ class ImportExperiment:
             'experiment.eeg': 'experiment.component',
             'experiment.tms': 'experiment.component',
             'experiment.emg': 'experiment.component',
-            'experiment.digital_game_phase': 'experiment.component',
-            'experiment.generic_data_collection': 'experiment.component',
+            'experiment.digitalgamephase': 'experiment.component',
+            'experiment.genericdatacollection': 'experiment.component',
             'experiment.tmsdevice': 'experiment.equipment',
             'experiment.eegelectrodenet': 'experiment.equipment',
             'experiment.amplifier': 'experiment.equipment',
+            'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
+            'experiment.emgsurfaceplacement': 'experiment.emgelectrodeplacement',
+            'experiment.emgneedleplacement': 'experiment.emgelectrodeplacement',
             'experiment.adconverter': 'experiment.equipment',
             # OneToOneField
             'experiment.tmsdevicesetting': 'experiment.tmssetting',

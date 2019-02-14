@@ -778,27 +778,27 @@ class ObjectsFactory(object):
         ObjectsFactory.create_component_configuration(rootcomponent, component6)
         eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
         component9 = ObjectsFactory.create_component(experiment, Component.EEG, kwargs={'eeg_set': eeg_setting})
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component9)
+        ObjectsFactory.create_component_configuration(rootcomponent, component9)
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         acquisition_software = ObjectsFactory.create_software_version(software)
         emg_setting = ObjectsFactory.create_emg_setting(experiment, acquisition_software)
         component10 = ObjectsFactory.create_component(experiment, Component.EMG, kwargs={'emg_set': emg_setting})
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component10)
+        ObjectsFactory.create_component_configuration(rootcomponent, component10)
         tms_setting = ObjectsFactory.create_tms_setting(experiment)
         component11 = ObjectsFactory.create_component(experiment, Component.TMS, kwargs={'tms_set': tms_setting})
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component11)
+        ObjectsFactory.create_component_configuration(rootcomponent, component11)
         context_tree = ObjectsFactory.create_context_tree(experiment)
         component12 = ObjectsFactory.create_component(
             experiment, Component.DIGITAL_GAME_PHASE,
             kwargs={'software_version': acquisition_software, 'context_tree': context_tree}
         )
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component12)
+        ObjectsFactory.create_component_configuration(rootcomponent, component12)
         information_type = ObjectsFactory.create_information_type()
         component13 = ObjectsFactory.create_component(
             experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type}
         )
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent, component13)
+        ObjectsFactory.create_component_configuration(rootcomponent, component13)
 
 
 class ExperimentalProtocolTest(TestCase):
