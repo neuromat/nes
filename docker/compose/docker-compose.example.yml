@@ -13,9 +13,7 @@ services:
 
     # LimeSurvey
     limesurvey:
-        build:
-            context: limesurvey/
-            dockerfile: Dockerfile
+        image: neuromat/nes-compose:limesurvey
         volumes:
             - "limesurvey_data:/var/www/limesurvey"
         environment:
@@ -49,9 +47,7 @@ services:
 
     # Neuroscience Experiments System
     nes:
-        build:
-            context: nes/
-            dockerfile: Dockerfile
+        image: neuromat/nes-compose:nes
         volumes:
             - "nes_data:/nes"
         environment:
