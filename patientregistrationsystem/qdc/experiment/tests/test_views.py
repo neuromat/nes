@@ -25,17 +25,16 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     EEGFilterSetting, FilterType, Amplifier, EEGAmplifierSetting, EEGSolutionSetting, EEGSolution, \
     EMGSetting, EMGElectrodeSetting, EMGADConverterSetting, ADConverter, EMGDigitalFilterSetting, \
     SoftwareVersion, Software, AmplifierDetectionType, TetheringSystem, Muscle, MuscleSide, \
-    MuscleSubdivision, EMGElectrodePlacement, EMGElectrodePlacementSetting, StandardizationSystem, \
+    MuscleSubdivision, EMGElectrodePlacementSetting, StandardizationSystem, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
-    EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
-    DigitalGamePhase
+    EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
-    AlcoholPeriod, SocialHistoryData, ClassificationOfDiseases, MedicalRecordData, Diagnosis
+    AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis
 
 from patient.tests import UtilTests
 from survey.models import Survey
@@ -683,7 +682,7 @@ class ImportExperimentTest(TestCase):
         return experiment
 
     def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name,
-                                                      linking_field, type_of_experiment, flag=False):
+                                                      linking_field, type_of_experiment, flag1=False, flag2=False):
         """
         This test is a general test for testing the sucessfull importation of two linked models
         :param model_1_name: Name of the model inherited by the second model; The one that is being pointed at.
@@ -707,9 +706,10 @@ class ImportExperimentTest(TestCase):
         self.assertRedirects(response, reverse('import_log'))
 
         new_model_1_objects = model_1.objects.exclude(pk__in=old_model_1_objects_ids)
-        self.assertNotEqual(0, new_model_1_objects.count())
         new_model_2_objects = model_2.objects.exclude(pk__in=old_model_2_objects_ids)
-        self.assertNotEqual(0, new_model_2_objects.count())
+        if not flag2:  # TODO: refactor to not use flag2
+            self.assertNotEqual(0, new_model_1_objects.count())
+            self.assertNotEqual(0, new_model_2_objects.count())
 
         self.assertEqual(model_1.objects.count(),
                          len(old_model_1_objects_ids) + new_model_1_objects.count()
@@ -718,7 +718,7 @@ class ImportExperimentTest(TestCase):
                          len(old_model_2_objects_ids) + new_model_2_objects.count()
                          )
 
-        if not flag:
+        if not flag1: # TODO: refactor to not use flag1
             for item in new_model_1_objects:
                 dinamic_filter = {linking_field: item.pk}
                 self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
@@ -1152,7 +1152,9 @@ class ImportExperimentTest(TestCase):
         new_software_version = SoftwareVersion.objects.last()
         self.assertEqual(2, Software.objects.count())
         new_software = Software.objects.last()
-        self.assertEqual(2, Manufacturer.objects.count())
+        # Compare with 1 because the manufacturer is not updated if Manufacturer.name
+        # is the same
+        self.assertEqual(1, Manufacturer.objects.count())
         new_manufacturer = Manufacturer.objects.last()
         new_emg_setting = EMGSetting.objects.last()
         self.assertEqual(new_software_version.id, new_emg_setting.acquisition_software_version.id)
@@ -1637,89 +1639,89 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self._assert_steps_imported(response)
 
-    # def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_with_reuse_and_returns_successful_message(self):
-    #     # Create research project
-    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
-    #     # Create experiment
-    #     experiment = ObjectsFactory.create_experiment(research_project)
-    #     # Create tms setting
-    #     tms_setting = TMSSetting.objects.create(experiment=experiment,
-    #                                             name='TMS-Setting name',
-    #                                             description='TMS-Setting description')
-    #
-    #     # Create tms device setting; This is the set up of the equipment of TMS
-    #     manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER1')
-    #     tms_device = TMSDevice.objects.create(manufacturer=manufacturer)
-    #     material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
-    #     coil_shape = CoilShape.objects.create(name='TEST_COIL_SHAPE')
-    #     coil_model = CoilModel.objects.create(name='TEST_COIL_MODEL', coil_shape=coil_shape, material=material)
-    #
-    #     tms_device_setting = TMSDeviceSetting.objects.create(tms_setting=tms_setting,
-    #                                                          tms_device=tms_device,
-    #                                                          coil_model=coil_model)
-    #
-    #     # Manufacturer and Material are models with few simple fields as name and description, without an id.
-    #     # It makes sense not to create new entries if the database already has an identical one.
-    #     # For this test, we are testing the creation of new setups, but with the reuse of manufacturer and material.
-    #     # There is another test that tests the importation creating new manufacturers and/or materials
-    #
-    #     export = ExportExperiment(experiment)
-    #     export.export_all()
-    #     file_path = export.get_file_path()
-    #
-    #     # dictionary to test against new tmssettings created bellow
-    #     old_tms_setting_count = TMSSetting.objects.count()
-    #     old_manufacturer_count = Manufacturer.objects.count()
-    #     old_tms_device_count = TMSDevice.objects.count()
-    #     old_material_count = Material.objects.count()
-    #     old_coil_shape_count = CoilShape.objects.count()
-    #     old_coil_model_count = CoilModel.objects.count()
-    #     old_tms_device_setting_count = TMSDeviceSetting.objects.count()
-    #
-    #     with open(file_path, 'rb') as file:
-    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-    #     self.assertRedirects(response, reverse('import_log'))
-    #
-    #     new_tms_setting = TMSSetting.objects.exclude(id=tms_setting.id)
-    #     Manufacturer.objects.exclude(id=manufacturer.id)
-    #     new_tms_device = TMSDevice.objects.exclude(id=tms_device.id)
-    #     Material.objects.exclude(id=material.id)
-    #     new_coil_shape = CoilShape.objects.exclude(id=coil_shape.id)
-    #     new_coil_model = CoilModel.objects.exclude(id=coil_model.id)
-    #     new_tms_device_setting = TMSDeviceSetting.objects.exclude(tms_setting_id=tms_device_setting.tms_setting_id)
-    #
-    #     self.assertEqual(
-    #         TMSSetting.objects.count(),
-    #         old_tms_setting_count + len(new_tms_setting))
-    #     self.assertEqual(Manufacturer.objects.count(), old_manufacturer_count)
-    #     self.assertEqual(
-    #         TMSDevice.objects.count(),
-    #         old_tms_device_count + len(new_tms_device))
-    #     self.assertEqual(Material.objects.count(), old_material_count)
-    #     self.assertEqual(
-    #         CoilShape.objects.count(),
-    #         old_coil_shape_count + len(new_coil_shape))
-    #     self.assertEqual(
-    #         CoilModel.objects.count(),
-    #         old_coil_model_count + len(new_coil_model))
-    #     self.assertEqual(
-    #         TMSDeviceSetting.objects.count(),
-    #         old_tms_device_setting_count + len(new_tms_device_setting))
-    #
-    #     for item in new_tms_device_setting:
-    #         self.assertEqual(TMSSetting.objects.last().id, item.tms_setting_id)
-    #         self.assertEqual(CoilModel.objects.last().id, item.coil_model_id)
-    #         self.assertEqual(TMSDevice.objects.last().id, item.tms_device_id)
-    #
-    #     for item in new_coil_model:
-    #         self.assertEqual(CoilShape.objects.last().id, item.coil_shape_id)
-    #         self.assertEqual(Material.objects.last().id, item.material_id)
-    #
-    #     self.assertEqual(Equipment.objects.last().id, TMSDevice.objects.last().equipment_ptr_id)
-    #     self.assertEqual(Manufacturer.objects.last().id, Equipment.objects.last().manufacturer_id)
-    #
-    #     message = str(list(response.context['messages'])[0])
-    #     self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+    def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_with_reuse_and_returns_successful_message(self):
+        # Create research project
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        # Create experiment
+        experiment = ObjectsFactory.create_experiment(research_project)
+        # Create tms setting
+        tms_setting = TMSSetting.objects.create(experiment=experiment,
+                                                name='TMS-Setting name',
+                                                description='TMS-Setting description')
+
+        # Create tms device setting; This is the set up of the equipment of TMS
+        manufacturer = Manufacturer.objects.create(name='TEST_MANUFACTURER1')
+        tms_device = TMSDevice.objects.create(manufacturer=manufacturer)
+        material = Material.objects.create(name='TEST_MATERIAL', description='TEST_DESCRIPTION_MATERIAL')
+        coil_shape = CoilShape.objects.create(name='TEST_COIL_SHAPE')
+        coil_model = CoilModel.objects.create(name='TEST_COIL_MODEL', coil_shape=coil_shape, material=material)
+
+        tms_device_setting = TMSDeviceSetting.objects.create(tms_setting=tms_setting,
+                                                             tms_device=tms_device,
+                                                             coil_model=coil_model)
+
+        # Manufacturer and Material are models with few simple fields as name and description, without an id.
+        # It makes sense not to create new entries if the database already has an identical one.
+        # For this test, we are testing the creation of new setups, but with the reuse of manufacturer and material.
+        # There is another test that tests the importation creating new manufacturers and/or materials
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # dictionary to test against new tmssettings created bellow
+        old_tms_setting_count = TMSSetting.objects.count()
+        old_manufacturer_count = Manufacturer.objects.count()
+        old_tms_device_count = TMSDevice.objects.count()
+        old_material_count = Material.objects.count()
+        old_coil_shape_count = CoilShape.objects.count()
+        old_coil_model_count = CoilModel.objects.count()
+        old_tms_device_setting_count = TMSDeviceSetting.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_tms_setting = TMSSetting.objects.exclude(id=tms_setting.id)
+        Manufacturer.objects.exclude(id=manufacturer.id)
+        new_tms_device = TMSDevice.objects.exclude(id=tms_device.id)
+        Material.objects.exclude(id=material.id)
+        new_coil_shape = CoilShape.objects.exclude(id=coil_shape.id)
+        new_coil_model = CoilModel.objects.exclude(id=coil_model.id)
+        new_tms_device_setting = TMSDeviceSetting.objects.exclude(tms_setting_id=tms_device_setting.tms_setting_id)
+
+        self.assertEqual(
+            TMSSetting.objects.count(),
+            old_tms_setting_count + len(new_tms_setting))
+        self.assertEqual(Manufacturer.objects.count(), old_manufacturer_count)
+        self.assertEqual(
+            TMSDevice.objects.count(),
+            old_tms_device_count + len(new_tms_device))
+        self.assertEqual(Material.objects.count(), old_material_count)
+        self.assertEqual(
+            CoilShape.objects.count(),
+            old_coil_shape_count + len(new_coil_shape))
+        self.assertEqual(
+            CoilModel.objects.count(),
+            old_coil_model_count + len(new_coil_model))
+        self.assertEqual(
+            TMSDeviceSetting.objects.count(),
+            old_tms_device_setting_count + len(new_tms_device_setting))
+
+        for item in new_tms_device_setting:
+            self.assertEqual(TMSSetting.objects.last().id, item.tms_setting_id)
+            self.assertEqual(CoilModel.objects.last().id, item.coil_model_id)
+            self.assertEqual(TMSDevice.objects.last().id, item.tms_device_id)
+
+        for item in new_coil_model:
+            self.assertEqual(CoilShape.objects.last().id, item.coil_shape_id)
+            self.assertEqual(Material.objects.last().id, item.material_id)
+
+        self.assertEqual(Equipment.objects.last().id, TMSDevice.objects.last().equipment_ptr_id)
+        self.assertEqual(Manufacturer.objects.last().id, Equipment.objects.last().manufacturer_id)
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     # Participants tests
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
@@ -2029,7 +2031,8 @@ class ImportExperimentTest(TestCase):
         self._test_creation_and_linking_between_two_models('experiment.material',
                                                            'experiment.coilmodel',
                                                            'material_id',
-                                                           self._create_experiment_with_tms_setting())
+                                                           self._create_experiment_with_tms_setting(),
+                                                           flag2=True)
 
     def test_coil_shape_and_coil_model(self):
         self._test_creation_and_linking_between_two_models('experiment.coilshape',
@@ -2072,7 +2075,8 @@ class ImportExperimentTest(TestCase):
         self._test_creation_and_linking_between_two_models('experiment.material',
                                                            'experiment.electrodemodel',
                                                            'material_id',
-                                                           self._create_experiment_with_eeg_setting())
+                                                           self._create_experiment_with_eeg_setting(),
+                                                           flag2=True)
 
     def test_electrode_model_and_eeg_electrode_position_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.electrodemodel',
@@ -2161,7 +2165,7 @@ class ImportExperimentTest(TestCase):
     def test_manufacturer_and_eeg_solution(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.manufacturer', 'experiment.eegsolution', 'manufacturer',
-            self._create_experiment_with_eeg_setting()
+            self._create_experiment_with_eeg_setting(), flag2=True
         )
 
     def test_eeg_setting_and_eeg_filter_setting(self):
@@ -2193,7 +2197,8 @@ class ImportExperimentTest(TestCase):
         self._test_creation_and_linking_between_two_models('experiment.manufacturer',
                                                            'experiment.software',
                                                            'manufacturer',
-                                                           self._create_experiment_with_emg_setting())
+                                                           self._create_experiment_with_emg_setting(),
+                                                           flag2=True)
 
     def test_software_and_software_version(self):
         self._test_creation_and_linking_between_two_models('experiment.software',
@@ -2205,7 +2210,8 @@ class ImportExperimentTest(TestCase):
         self._test_creation_and_linking_between_two_models('experiment.manufacturer',
                                                            'experiment.equipment',
                                                            'manufacturer',
-                                                           self._create_experiment_with_emg_setting())
+                                                           self._create_experiment_with_emg_setting(),
+                                                           flag2=True)
 
     def test_equipment_and_adconverter(self):
         self._test_creation_and_linking_between_equipment_and_other_model('experiment.adconverter',
