@@ -341,21 +341,7 @@ class ImportExperiment:
                             indexes_of_keywords_already_updated.append(keyword_index)
 
     @staticmethod
-    def _solve_limey_survey_reference(data, survey_index):
-        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-        if min_limesurvey_id >= 0:
-            new_limesurvey_id = -99
-        else:
-            min_limesurvey_id -= 1
-            new_limesurvey_id = min_limesurvey_id
-        data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
-
-    def _make_dummy_reference_to_limesurvey(self, data):
-        survey_indexes = [index for index, dict_ in enumerate(data) if dict_['model'] == 'survey.survey']
-        for survey_index in survey_indexes:
-            self._solve_limey_survey_reference(data, survey_index)
-
-    def _update_research_project_pk(self, data, id_):
+    def _update_research_project_pk(data, id_):
         if id_:
             research_project_index = next(
                 index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.researchproject'
@@ -398,6 +384,7 @@ class ImportExperiment:
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
         # Update patient codes
+        # TODO (Refactor): Patient model has function to generate random patient code
         patients = Patient.objects.all()
         if patients:
             last_patient_code = patients.order_by('-code').first().code
@@ -418,12 +405,48 @@ class ImportExperiment:
         for i in indexes:
             data[i]['fields']['changed_by'] = request.user.id
 
+    @staticmethod
+    def _solve_limey_survey_reference(data, survey_index):
+        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+        if min_limesurvey_id >= 0:
+            new_limesurvey_id = -99
+        else:
+            min_limesurvey_id -= 1
+            new_limesurvey_id = min_limesurvey_id
+        data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
+
+    def _make_dummy_reference_to_limesurvey(self, data):
+        survey_indexes = [index for index, dict_ in enumerate(data) if dict_['model'] == 'survey.survey']
+        for survey_index in survey_indexes:
+            self._solve_limey_survey_reference(data, survey_index)
+
+    @staticmethod
+    def _update_survey_stuff(data):
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'survey.survey']
+
+        # Update survey codes
+        next_code = Survey.create_random_survey_code()
+
+        # Update lime survey ids
+        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+        if min_limesurvey_id >= 0:
+            new_limesurvey_id = -99
+        else:
+            new_limesurvey_id = 1
+
+        for i in indexes:
+            data[i]['fields']['code'] = next_code
+            next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
+            data[i]['fields']['lime_survey_id'] = new_limesurvey_id
+            new_limesurvey_id -= 1
+
     def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
         self._make_dummy_reference_to_limesurvey(data)
         self._update_research_project_pk(data, research_project_id)
         self._verify_keywords(data)
         self._update_patients_stuff(data)
         self._update_model_user(data, request)
+        self._update_survey_stuff(data)
 
     @staticmethod
     def _get_first_available_id():
