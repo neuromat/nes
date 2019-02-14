@@ -285,6 +285,7 @@ else
 	python3 manage.py shell < add_initial_data.py
 	python3 manage.py loaddata load_initial_data.json
 	python3 manage.py shell < /tmp/create_superuser.py
+        python3 manage.py import_icd_cid --file icd10cid10v2017.csv
 
 	rm /tmp/create_superuser.py
 
