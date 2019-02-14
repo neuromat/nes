@@ -1708,15 +1708,17 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         os.remove(filename)
 
     def test_translate_icd_cid_with_command(self):
-        path = settings.BASE_DIR
-        os.chdir(path)
-        os.chdir(os.path.join('..', '..', 'resources', 'load-idc-table'))
+        # path = settings.BASE_DIR
+        # os.chdir(path)
+        # os.chdir(os.path.join('..', '..', 'resources', 'load-idc-table'))
 
-        filename="output.csv"
+        filename = os.path.join(settings.BASE_DIR,
+                                os.path.join("..", "..", os.path.join("resources", "load-idc-table", "output.csv")))
+
         self.create_csv_file(filename)
-
-        # python manage.py import_icd --file filename
-        call_command("import_icd_cid", file=filename)
+        file_name = "output.csv"
+        # python manage.py import_icd --file file_name
+        call_command("import_icd_cid", file=file_name)
 
         classification_of_disease = ClassificationOfDiseases.objects.all()
         self.assertIsNotNone(classification_of_disease.first().description_en)

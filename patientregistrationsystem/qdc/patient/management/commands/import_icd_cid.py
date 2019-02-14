@@ -30,14 +30,12 @@ class Command(BaseCommand):
 
 
 def import_classification_of_icd_cid(file_name):
-
     path = settings.BASE_DIR
     os.chdir(path)
     os.chdir(os.path.join('..', '..','resources', 'load-idc-table'))
 
-    with open(file_name, 'rt') as csvFile:
+    with open(file_name, 'r') as csvFile:
         reader = csv.reader(csvFile)
-        records_updated = 0
         next(reader, None)
         for row in reader:
 
@@ -50,9 +48,7 @@ def import_classification_of_icd_cid(file_name):
             classifications_of_diseases.description = row[1]
             classifications_of_diseases.abbreviated_description = row[1]
             classifications_of_diseases.save()
-            records_updated += 1
             deactivate()
 
-    return records_updated
 
 
