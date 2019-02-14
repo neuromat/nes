@@ -30,11 +30,13 @@ class Command(BaseCommand):
 
 
 def import_classification_of_icd_cid(file_name):
-    path = settings.BASE_DIR
-    os.chdir(path)
-    os.chdir(os.path.join('..', '..','resources', 'load-idc-table'))
+    # path = settings.BASE_DIR
+    # os.chdir(path)
+    # os.chdir(os.path.join('..', '..','resources', 'load-idc-table'))
+    filename = os.path.join(settings.BASE_DIR,
+                            os.path.join("..", "..", os.path.join("resources", "load-idc-table", file_name)))
 
-    with open(file_name, 'r') as csvFile:
+    with open(filename, 'r') as csvFile:
         reader = csv.reader(csvFile)
         next(reader, None)
         for row in reader:
