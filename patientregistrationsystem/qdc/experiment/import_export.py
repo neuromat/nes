@@ -424,21 +424,22 @@ class ImportExperiment:
     def _update_survey_stuff(data):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'survey.survey']
 
-        # Update survey codes
-        next_code = Survey.create_random_survey_code()
+        if indexes:
+            # Update survey codes
+            next_code = Survey.create_random_survey_code()
 
-        # Update lime survey ids
-        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-        if min_limesurvey_id >= 0:
-            new_limesurvey_id = -99
-        else:
-            new_limesurvey_id = 1
+            # Update lime survey ids
+            min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+            if min_limesurvey_id >= 0:
+                new_limesurvey_id = -99
+            else:
+                new_limesurvey_id = 1
 
-        for i in indexes:
-            data[i]['fields']['code'] = next_code
-            next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
-            data[i]['fields']['lime_survey_id'] = new_limesurvey_id
-            new_limesurvey_id -= 1
+            for i in indexes:
+                data[i]['fields']['code'] = next_code
+                next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
+                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
+                new_limesurvey_id -= 1
 
     def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
         self._make_dummy_reference_to_limesurvey(data)
