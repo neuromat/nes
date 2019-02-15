@@ -237,11 +237,11 @@ class ExportExperiment:
         call_command('merge_fixtures', *fixtures)
         sys.stdout = sysout
 
-        self._remove_auth_user_model_from_json(self.FILE_NAME)
         self._remove_researchproject_keywords_model_from_json(self.FILE_NAME)
         self._change_group_code_to_null_from_json(self.FILE_NAME)
         self._remove_survey_code(self.FILE_NAME)
         self._update_classification_of_diseases_reference(self.FILE_NAME)
+        self._remove_auth_user_model_from_json(self.FILE_NAME)
 
     def get_file_path(self):
         return path.join(self.temp_dir, self.FILE_NAME)
@@ -525,7 +525,9 @@ class ImportExperiment:
             'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
             'experiment.digitalgamephase', 'experiment.pause',
             'experiment.eegsolutionsetting', 'experiment.emgelectrodeplacementsetting',
-            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement'
+            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement',
+            'experiment.genericdatacollection', 'experiment.stimulus', 'experiment.task',
+            'experiment.taskfortheexperimenter'
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -565,6 +567,13 @@ class ImportExperiment:
                 ['experiment.softwareversion', 'software_version']
             ],
             'experiment.contexttree': [['experiment.experiment', 'experiment']],
+
+            'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
+            'experiment.informationtype': [['', '']],
+
+            'experiment.stimulus': [['experiment.stimulus_type', 'stimulus_type']],
+            'experiment.stimulustype': [['', '']],
+
             # TMS
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
@@ -657,7 +666,7 @@ class ImportExperiment:
             'experiment.questionnaire': 'experiment.component',
             'experiment.stimulus': 'experiment.component',
             'experiment.task': 'experiment.component',
-            'experiment.task_experiment': 'experiment.component',
+            'experiment.taskfortheexperimenter': 'experiment.component',
             'experiment.eeg': 'experiment.component',
             'experiment.tms': 'experiment.component',
             'experiment.emg': 'experiment.component',
