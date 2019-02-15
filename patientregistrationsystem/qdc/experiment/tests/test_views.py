@@ -17,7 +17,7 @@ from experiment.import_export import ExportExperiment
 from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
-    Block, TMS, ComponentConfiguration, Questionnaire, Subject, SubjectOfGroup, \
+    TMS, ComponentConfiguration, Questionnaire, Subject, SubjectOfGroup, \
     DataConfigurationTree, Manufacturer, Material, TMSDevice, TMSDeviceSetting, \
     CoilModel, CoilShape, TMSSetting, Equipment, EEGSetting, EEGElectrodeLayoutSetting, \
     EEGElectrodeNetSystem, EEGElectrodeNet, ElectrodeModel, ElectrodeConfiguration, \
@@ -1638,11 +1638,8 @@ class ImportExperimentTest(TestCase):
         self._assert_steps_imported(response)
 
     def test_POST_experiment_import_file_creates_tms_settings_and_new_setups_with_reuse_and_returns_successful_message(self):
-        # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
         experiment = ObjectsFactory.create_experiment(research_project)
-        # Create tms setting
         tms_setting = TMSSetting.objects.create(experiment=experiment,
                                                 name='TMS-Setting name',
                                                 description='TMS-Setting description')
@@ -1723,14 +1720,10 @@ class ImportExperimentTest(TestCase):
 
     # Participants tests
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
-        # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
         experiment = ObjectsFactory.create_experiment(research_project)
-        # Create roots components (which are 'block's types and they are the head of the experimental protocol)
         rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
         rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
-        # Create another component ('instruction', for example)
         component = ObjectsFactory.create_component(experiment, 'instruction')
         ObjectsFactory.create_component_configuration(rootcomponent1, component)
 
@@ -1812,19 +1805,31 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(None, Patient.objects.last().cpf)
 
     def test_POST_experiment_import_file_creates_participants_of_groups_associates_with_user_that_is_importing(self):
-        pass
+        research_project = ObjectsFactory.create_research_project(self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        ObjectsFactory.create_subject_of_group(group, subject)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        new_patient = Patient.objects.last()
+        self.assertEqual(self.user_importer, new_patient.changed_by)
 
     def test_POST_experiment_import_file_creates_participants_with_personal_data_and_returns_successful_message(self):
-        # Create research project
         research_project = ObjectsFactory.create_research_project(owner=self.user)
-        # Create experiment
         experiment = ObjectsFactory.create_experiment(research_project)
-        # Create roots components (which are 'block's types and they are the head of the experimental protocol)
         rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component1')
         rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component2')
         # Create another component ('instruction', for example)
         component = ObjectsFactory.create_component(experiment, 'instruction')
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent1, component)
+        ObjectsFactory.create_component_configuration(rootcomponent1, component)
 
         # Create groups
         group1 = ObjectsFactory.create_group(experiment=experiment, experimental_protocol=rootcomponent1)
