@@ -631,7 +631,8 @@ class ImportExperimentTest(TestCase):
             emg_electrode_setting=emg_electrode_setting_intramuscular,
             emg_electrode_placement=emg_intramuscular_placement.emgelectrodeplacement_ptr,
             muscle_side=muscle_side)
-        emg_electrode_placement_setting_needle = EMGElectrodePlacementSetting.objects.create(
+        emg_electrode_placement_setting_needle = \
+            EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_needle,
             emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
             muscle_side=muscle_side)
@@ -655,11 +656,11 @@ class ImportExperimentTest(TestCase):
             emg_electrode_setting=emg_electrode_setting_needle,
             amplifier=amplifier)
 
-        emg_analog_filter_setting_surface = EMGAnalogFilterSetting.objects.create(
+        EMGAnalogFilterSetting.objects.create(
             emg_electrode_setting=emg_amplifier_setting_surface)
-        emg_analog_filter_setting_intramuscular = EMGAnalogFilterSetting.objects.create(
+        EMGAnalogFilterSetting.objects.create(
             emg_electrode_setting=emg_amplifier_setting_intramuscular)
-        emg_analog_filter_setting_needle = EMGAnalogFilterSetting.objects.create(
+        EMGAnalogFilterSetting.objects.create(
             emg_electrode_setting=emg_amplifier_setting_needle)
 
         emg_pre_amplifier_setting_surface = EMGPreamplifierSetting.objects.create(
@@ -672,11 +673,11 @@ class ImportExperimentTest(TestCase):
             emg_electrode_setting=emg_electrode_setting_needle,
             amplifier=amplifier)
 
-        emg_pre_amplifier_filter_setting_surface = EMGPreamplifierFilterSetting.objects.create(
+        EMGPreamplifierFilterSetting.objects.create(
             emg_preamplifier_filter_setting=emg_pre_amplifier_setting_surface)
-        emg_pre_amplifier_filter_setting_intramuscular = EMGPreamplifierFilterSetting.objects.create(
+        EMGPreamplifierFilterSetting.objects.create(
             emg_preamplifier_filter_setting=emg_pre_amplifier_setting_intramuscular)
-        emg_pre_amplifier_filter_setting_needle = EMGPreamplifierFilterSetting.objects.create(
+        EMGPreamplifierFilterSetting.objects.create(
             emg_preamplifier_filter_setting=emg_pre_amplifier_setting_needle)
 
         return experiment
@@ -1006,8 +1007,8 @@ class ImportExperimentTest(TestCase):
 
         new_survey1 = Survey.objects.all().order_by('-id')[1]
         new_survey2 = Survey.objects.all().order_by('-id')[0]
-        self.assertEqual(-99, new_survey1.lime_survey_id)
-        self.assertEqual(-100, new_survey2.lime_survey_id)
+        self.assertEqual(-100, new_survey1.lime_survey_id)
+        self.assertEqual(-101, new_survey2.lime_survey_id)
 
     def test_POST_experiment_import_file_creates_root_component_plus_tms_and_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
