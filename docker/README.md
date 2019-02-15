@@ -23,10 +23,11 @@ The build arguments can be organized in the following groups:
 
 ## NES
 
-| Parameter | Description                           |
-| --------- | ------------------------------------- |
-| NES_TAG   | NES release tag to be installed       |
-| NES_DIR   | Directory where NES will be installed |
+| Parameter  | Description                           |
+| ---------- | ------------------------------------- |
+| NES_TAG    | NES release tag to be installed       |
+| NES_BRANCH | NES git branch to be installed        |
+| NES_DIR    | Directory where NES will be installed |
 
 # Environment variables
 
