@@ -897,28 +897,26 @@ class ImportExperimentTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
         ep1 = ObjectsFactory.create_block(experiment)
         ep2 = ObjectsFactory.create_block(experiment)
-        group1 = ObjectsFactory.create_group(experiment, ep1)
-        group2 = ObjectsFactory.create_group(experiment, ep2)
-        group3 = ObjectsFactory.create_group(experiment)
+        group1 = ObjectsFactory.create_group(experiment)
+        group2 = ObjectsFactory.create_group(experiment, ep1)
+        group3 = ObjectsFactory.create_group(experiment, ep2)
 
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
-        old_blocks_count = Block.objects.count()
         with open(file_path, 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
-        new_blocks = Block.objects.exclude(id__in=[ep1.id, ep2.id])
+        new_block_components = Component.objects.exclude(id__in=[ep1.id, ep2.id])
+        self.assertEqual(2, new_block_components.count())
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id, group3.id])
-        self.assertEqual(Block.objects.count(), old_blocks_count + new_blocks.count())
-        # find each pair group.experimental_protocol/block that was created
-        for block in new_blocks:
-            group = next((group for group in new_groups if block.id == group.experimental_protocol.id), None)
-            self.assertIsNotNone(group)
-            new_groups = new_groups.exclude(id=group.id)
-        # now new_groups has only the group without experimental protocol
-        self.assertEqual(new_groups.count(), 1)
+        new_groups_with_exp_prot = [group for group in new_groups if group.experimental_protocol is not None]
+        for group in new_groups_with_exp_prot:
+            self.assertIn(group.experimental_protocol, new_block_components)
+        self.assertNotEqual(
+            new_groups_with_exp_prot[0].experimental_protocol, new_groups_with_exp_prot[1].experimental_protocol
+        )
 
     def test_POST_experiment_import_file_creates_root_component_plus_instruction_and_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
