@@ -27,7 +27,7 @@ DEBUG404 = True
 
 TEMPLATE_DEBUG = DEBUG
 
-# SECURITY WARNING: don't run with "is testing" on in production
+# SECURITY WARNING: don't run with "is testing" in production
 IS_TESTING = True
 
 ALLOWED_HOSTS = ['localhost']
@@ -47,10 +47,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_jenkins',
-
     'simple_history',
     'jsonrpc_requests',
-    'solo'
+    'solo',
+    'fixture_magic'
 )
 
 PROJECT_APPS = (
@@ -194,4 +194,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.49.3'
+VERSION = '1.54'
