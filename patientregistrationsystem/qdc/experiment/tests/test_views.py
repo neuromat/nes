@@ -631,7 +631,8 @@ class ImportExperimentTest(TestCase):
             emg_electrode_setting=emg_electrode_setting_intramuscular,
             emg_electrode_placement=emg_intramuscular_placement.emgelectrodeplacement_ptr,
             muscle_side=muscle_side)
-        emg_electrode_placement_setting_needle = EMGElectrodePlacementSetting.objects.create(
+        emg_electrode_placement_setting_needle = \
+            EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_needle,
             emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
             muscle_side=muscle_side)
@@ -655,11 +656,11 @@ class ImportExperimentTest(TestCase):
             emg_electrode_setting=emg_electrode_setting_needle,
             amplifier=amplifier)
 
-        emg_analog_filter_setting_surface = EMGAnalogFilterSetting.objects.create(
+        EMGAnalogFilterSetting.objects.create(
             emg_electrode_setting=emg_amplifier_setting_surface)
-        emg_analog_filter_setting_intramuscular = EMGAnalogFilterSetting.objects.create(
+        EMGAnalogFilterSetting.objects.create(
             emg_electrode_setting=emg_amplifier_setting_intramuscular)
-        emg_analog_filter_setting_needle = EMGAnalogFilterSetting.objects.create(
+        EMGAnalogFilterSetting.objects.create(
             emg_electrode_setting=emg_amplifier_setting_needle)
 
         emg_pre_amplifier_setting_surface = EMGPreamplifierSetting.objects.create(
@@ -672,11 +673,11 @@ class ImportExperimentTest(TestCase):
             emg_electrode_setting=emg_electrode_setting_needle,
             amplifier=amplifier)
 
-        emg_pre_amplifier_filter_setting_surface = EMGPreamplifierFilterSetting.objects.create(
+        EMGPreamplifierFilterSetting.objects.create(
             emg_preamplifier_filter_setting=emg_pre_amplifier_setting_surface)
-        emg_pre_amplifier_filter_setting_intramuscular = EMGPreamplifierFilterSetting.objects.create(
+        EMGPreamplifierFilterSetting.objects.create(
             emg_preamplifier_filter_setting=emg_pre_amplifier_setting_intramuscular)
-        emg_pre_amplifier_filter_setting_needle = EMGPreamplifierFilterSetting.objects.create(
+        EMGPreamplifierFilterSetting.objects.create(
             emg_preamplifier_filter_setting=emg_pre_amplifier_setting_needle)
 
         return experiment

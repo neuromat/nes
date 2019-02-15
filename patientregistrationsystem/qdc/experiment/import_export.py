@@ -434,13 +434,13 @@ class ImportExperiment:
             if min_limesurvey_id >= 0:
                 new_limesurvey_id = -99
             else:
-                new_limesurvey_id = 1
+                new_limesurvey_id = min_limesurvey_id
 
             for i in indexes:
                 data[i]['fields']['code'] = next_code
                 next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
-                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
                 new_limesurvey_id -= 1
+                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
 
     @staticmethod
     def _keep_manufacturer(data):
