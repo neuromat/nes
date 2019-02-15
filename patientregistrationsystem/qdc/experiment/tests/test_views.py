@@ -1007,8 +1007,8 @@ class ImportExperimentTest(TestCase):
 
         new_survey1 = Survey.objects.all().order_by('-id')[1]
         new_survey2 = Survey.objects.all().order_by('-id')[0]
-        self.assertEqual(-99, new_survey1.lime_survey_id)
-        self.assertEqual(-100, new_survey2.lime_survey_id)
+        self.assertEqual(-100, new_survey1.lime_survey_id)
+        self.assertEqual(-101, new_survey2.lime_survey_id)
 
     def test_POST_experiment_import_file_creates_root_component_plus_tms_and_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
