@@ -857,31 +857,31 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_group_has_experimental_protocol_returns_successful_message(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        ep1 = ObjectsFactory.create_block(experiment)
-        ep2 = ObjectsFactory.create_block(experiment)
-        group1 = ObjectsFactory.create_group(experiment)
-        group2 = ObjectsFactory.create_group(experiment, ep1)
-        group3 = ObjectsFactory.create_group(experiment, ep2)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-        new_block_components = Component.objects.exclude(id__in=[ep1.id, ep2.id])
-        self.assertEqual(2, new_block_components.count())
-        new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id, group3.id])
-        new_groups_with_exp_prot = [group for group in new_groups if group.experimental_protocol is not None]
-        for group in new_groups_with_exp_prot:
-            self.assertIn(group.experimental_protocol, new_block_components)
-        self.assertNotEqual(
-            new_groups_with_exp_prot[0].experimental_protocol, new_groups_with_exp_prot[1].experimental_protocol
-        )
+    # def test_POST_experiment_import_file_group_has_experimental_protocol_returns_successful_message(self):
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     ep1 = ObjectsFactory.create_block(experiment)
+    #     ep2 = ObjectsFactory.create_block(experiment)
+    #     group1 = ObjectsFactory.create_group(experiment)
+    #     group2 = ObjectsFactory.create_group(experiment, ep1)
+    #     group3 = ObjectsFactory.create_group(experiment, ep2)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('import_log'))
+    #     new_block_components = Component.objects.exclude(id__in=[ep1.id, ep2.id])
+    #     self.assertEqual(2, new_block_components.count())
+    #     new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id, group3.id])
+    #     new_groups_with_exp_prot = [group for group in new_groups if group.experimental_protocol is not None]
+    #     for group in new_groups_with_exp_prot:
+    #         self.assertIn(group.experimental_protocol, new_block_components)
+    #     self.assertNotEqual(
+    #         new_groups_with_exp_prot[0].experimental_protocol, new_groups_with_exp_prot[1].experimental_protocol
+    #     )
 
     def test_POST_experiment_import_file_creates_root_component_plus_instruction_and_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
@@ -2099,27 +2099,27 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(1, new_telephone.count())
         self.assertEqual(new_telephone[0].changed_by, self.user_importer)
 
-    def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block')
-        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
-        eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
-        component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
-        ObjectsFactory.create_data_configuration_tree(component_config)
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-
-        self.assertEqual(2, DataConfigurationTree.objects.count())
-        self.assertEqual(
-            DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
-        )
+    # def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
+    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
+    #     experiment = ObjectsFactory.create_experiment(research_project)
+    #     rootcomponent = ObjectsFactory.create_component(experiment, 'block')
+    #     eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
+    #     eeg_component = ObjectsFactory.create_component(experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+    #     component_config = ObjectsFactory.create_component_configuration(rootcomponent, eeg_component)
+    #     ObjectsFactory.create_data_configuration_tree(component_config)
+    #
+    #     export = ExportExperiment(experiment)
+    #     export.export_all()
+    #     file_path = export.get_file_path()
+    #
+    #     with open(file_path, 'rb') as file:
+    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+    #     self.assertRedirects(response, reverse('import_log'))
+    #
+    #     self.assertEqual(2, DataConfigurationTree.objects.count())
+    #     self.assertEqual(
+    #         DataConfigurationTree.objects.last().component_configuration.id, ComponentConfiguration.objects.last().id
+    #     )
 
     # Goalkeeper tests
     def test_software_version_and_digital_game_phase(self):
