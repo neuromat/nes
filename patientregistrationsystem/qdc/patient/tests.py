@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import sys
 
 from datetime import date, datetime
 
@@ -29,7 +30,7 @@ from experiment.models import Experiment, Group, Subject, \
 
 from patient.management.commands.import_icd import import_classification_of_diseases
 from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
-    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse
+    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse, Telephone
 from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
     patient_update, patient_view, restore_patient, reverse, check_limesurvey_access
@@ -77,8 +78,9 @@ LIME_SURVEY_TOKEN_ID_1 = 1
 class UtilTests:
 
     @staticmethod
-    def create_patient_mock(name_method='Pacient Test', changed_by=None):
-        """ Cria um participante para ser utilizado durante os testes """
+    # TODO: changed_by can't be None, changed_by is required!
+    def create_patient(name_method='Patient Test', changed_by=None):
+        """Cria um participante para ser utilizado durante os testes"""
         faker = Factory.create()
 
         # TODO:
@@ -91,11 +93,17 @@ class UtilTests:
         p_mock = Patient()
         p_mock.name = name_method
         p_mock.date_birth = '2001-01-15'
-        p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient
+        p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient cpf
         p_mock.gender = gender
         p_mock.changed_by = changed_by
         p_mock.save()
         return p_mock
+
+    @staticmethod
+    def create_telephone(patient, changed_by):
+        return Telephone.objects.create(
+            patient=patient, number='9 9999 9999', type=Telephone.MOBILE, changed_by=changed_by
+        )
 
     @staticmethod
     def create_cid10_to_search():
@@ -106,12 +114,15 @@ class UtilTests:
                                                         abbreviated_description='B01 Febres tifoide ')
         cid10.save()
 
-    def create_cid10_mock(self):
-        cid10 = ClassificationOfDiseases.objects.create(code='A01', description='Febres paratifoide',
-                                                        abbreviated_description='A01 Febres paratifoide')
-        cid10.save()
+    @staticmethod
+    def create_cid10(code=None):
+        """Create classification of desease"""
+        faker = Factory.create()
 
-        return cid10
+        code = code if code is not None else 'A01'
+        return ClassificationOfDiseases.objects.create(
+            code=code, description=faker.sentence(nb_words=10), abbreviated_description=faker.sentence(nb_words=6)
+        )
 
     def create_medical_record_mock(self, user, new_patient):
         medical_record = MedicalRecordData()
@@ -121,7 +132,7 @@ class UtilTests:
         return medical_record
 
     def create_diagnosis_mock(self, medical_record):
-        cid10_mock = self.create_cid10_mock()
+        cid10_mock = self.create_cid10()
         diagnosis = Diagnosis(medical_record_data=medical_record, classification_of_diseases=cid10_mock)
         diagnosis.save()
 
@@ -534,7 +545,7 @@ class PatientFormValidation(TestCase):
         Teste de visualizacao de participante apos cadastro na base de dados
         """
 
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         patient_mock.cpf = '374.276.738-08'  # to test search for cpf
         patient_mock.save()
 
@@ -546,7 +557,7 @@ class PatientFormValidation(TestCase):
         response = patient_view(request, patient_id=patient_mock.pk)
         self.assertEqual(response.status_code, 200)
 
-        self.data[SEARCH_TEXT] = 'Pacient'
+        self.data[SEARCH_TEXT] = 'Patient'
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, patient_mock.name)
@@ -567,7 +578,7 @@ class PatientFormValidation(TestCase):
         """
         Teste a visualizacao de participante
         """
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
         request.user = self.user
@@ -580,7 +591,7 @@ class PatientFormValidation(TestCase):
 
         nameMethod = self._testMethodName
         userMethod = self.user
-        patient_mock = self.util.create_patient_mock(nameMethod, userMethod)
+        patient_mock = self.util.create_patient(nameMethod, userMethod)
         # To test posting cpf patient attribute (patient_mock.cpf value
         # is due to what it was before creating this attribute value with
         # faker).
@@ -637,7 +648,7 @@ class PatientFormValidation(TestCase):
         self.assertNotContains(response, patient_mock.cpf)
 
     def test_remove_patient_get(self):
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
 
         count_patients = Patient.objects.count()
 
@@ -673,7 +684,7 @@ class PatientFormValidation(TestCase):
         Tests removed patient recovering
         """
         # Creates participant already removed
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         patient_mock.cpf = '374.276.738-08'  # to test search for cpf
         patient_mock.removed = True
         patient_mock.save()
@@ -714,7 +725,7 @@ class PatientFormValidation(TestCase):
 
     def test_patient_verify_homonym(self):
         """  Testar a busca por homonimo """
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
 
         # Busca valida
         self.data[SEARCH_TEXT] = patient_mock.name
@@ -814,7 +825,7 @@ class MedicalRecordFormValidation(TestCase):
         # Create mock objects to tests
         self.util.create_cid10_to_search()
         cid10_mock = ClassificationOfDiseases.objects.filter(code='B01').first()
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
 
         request = self.factory.get(
@@ -840,8 +851,8 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a criação, leitura, atualização e exclusão do Avaliação Medica (MedicalRecord)
         """
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
-        cid10_mock = self.util.create_cid10_mock()
+        patient_mock = self.util.create_patient(changed_by=self.user)
+        cid10_mock = self.util.create_cid10()
 
         # Create a new Medical Record and check if it created with successfully
         url = reverse('medical_record_new', args=(patient_mock.pk,))
@@ -880,8 +891,8 @@ class MedicalRecordFormValidation(TestCase):
 
     def test_medical_record_view(self):
 
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
-        self.util.create_cid10_mock()
+        patient_mock = self.util.create_patient(changed_by=self.user)
+        self.util.create_cid10()
         self.util.create_medical_record_mock(self.user, patient_mock)
 
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=3")
@@ -890,7 +901,7 @@ class MedicalRecordFormValidation(TestCase):
 
     def test_medical_record_update(self):
 
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         self.util.create_medical_record_mock(self.user, patient_mock)
 
         response = self.client.get(reverse(PATIENT_EDIT, args=[patient_mock.pk]) + "?currentTab=3")
@@ -911,7 +922,7 @@ class MedicalRecordFormValidation(TestCase):
         Testar a edição de avaliação medica
         """
 
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
         # Test a medical record edit method - no changes it will occurs - just pass by the method
         url = reverse("medical_record_edit", args=[patient_mock.pk, medical_record_mock.pk, ])
@@ -974,7 +985,7 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a criação de exames
         """
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
         diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
 
@@ -1041,7 +1052,7 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a atualização de um exame complementar
         """
-        patient_mock = self.util.create_patient_mock(changed_by=self.user)
+        patient_mock = self.util.create_patient(changed_by=self.user)
         medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
         diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
 
@@ -1077,7 +1088,7 @@ class MedicalRecordFormValidation(TestCase):
         Testar a adição de exame com arquivo anexo - inclusao e remoção
         """
         try:
-            patient_mock = self.util.create_patient_mock(changed_by=self.user)
+            patient_mock = self.util.create_patient(changed_by=self.user)
             medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
             diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
 
@@ -1191,7 +1202,7 @@ class QuestionnaireFormValidation(TestCase):
         """
         name_method = self._testMethodName
         user_method = self.user
-        patient_mock = self.util.create_patient_mock(name_method, user_method)
+        patient_mock = self.util.create_patient(name_method, user_method)
 
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
         self.assertEqual(response.status_code, 200)
@@ -1245,7 +1256,7 @@ class QuestionnaireFormValidation(TestCase):
         """
         namemethod = self._testMethodName
         usermethod = self.user
-        patient_mock = self.util.create_patient_mock(namemethod, usermethod)
+        patient_mock = self.util.create_patient(namemethod, usermethod)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
         request.user = self.user
@@ -1278,7 +1289,7 @@ class QuestionnaireFormValidation(TestCase):
 
         name_method = self._testMethodName
         user_method = self.user
-        patient_mock = self.util.create_patient_mock(name_method, user_method)
+        patient_mock = self.util.create_patient(name_method, user_method)
 
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
 
@@ -1297,7 +1308,7 @@ class QuestionnaireFormValidation(TestCase):
         """
         name_method = self._testMethodName
         user_method = self.user
-        patient_mock = self.util.create_patient_mock(name_method, user_method)
+        patient_mock = self.util.create_patient(name_method, user_method)
 
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
 
@@ -1323,8 +1334,7 @@ class QuestionnaireFormValidation(TestCase):
         """
         namemethod = self._testMethodName
         usermethod = self.user
-        patient_mock = self.util.create_patient_mock(namemethod, usermethod)
-        # patient_mock = self.util.create_patient_mock(name=self._testMethodName, user=self.user)
+        patient_mock = self.util.create_patient(namemethod, usermethod)
 
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
 
@@ -1363,7 +1373,7 @@ class QuestionnaireFormValidation(TestCase):
         """
         namemethod = self._testMethodName
         usermethod = self.user
-        patient_mock = self.util.create_patient_mock(namemethod, usermethod)
+        patient_mock = self.util.create_patient(namemethod, usermethod)
         survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
         response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 2)
 
@@ -1436,7 +1446,7 @@ class QuestionnaireFormValidation(TestCase):
             group.save()
 
             # Criar um Subject para o experimento
-            patient_mock = self.util.create_patient_mock(changed_by=self.user)
+            patient_mock = self.util.create_patient(changed_by=self.user)
 
             subject_mock = Subject(patient=patient_mock)
             subject_mock.save()
@@ -1556,6 +1566,11 @@ class TranslationValidation(TestCase):
 </ClaML>
         '''
 
+    csv_data ='''Código ICD-10-CM,Long_Descp ICD-10-CM (EN_2017),Descrição longa PT Uniformizada (250 carateres),Descrição longa PT Curta (90 carateres)
+A00,Cholera,Cólera,Cólera
+A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio cholerae 01 estirpe cholerae,Cólera C Vibrio cholerae 01 estirpe cholerae
+'''
+
     def setUp(self):
         # """
         # Configure authentication and variables to start each test
@@ -1587,13 +1602,17 @@ class TranslationValidation(TestCase):
             f.write("incorrect data")
             f.close()
 
+    def create_csv_file(self, filename):
+        with open(filename, 'w') as f:
+            f.write(self.csv_data)
+
     def test_classification_of_diseases_translate_into_english(self):
         # """
         # Test to initialize icd with English translation
         #
         # """
 
-        classification_of_disease = self.util.create_cid10_mock()
+        classification_of_disease = self.util.create_cid10()
         classification_of_disease.description_en = None
         classification_of_disease.save()
 
@@ -1636,8 +1655,13 @@ class TranslationValidation(TestCase):
         filename = os.path.join(settings.BASE_DIR,
                                 os.path.join("patient", os.path.join("data_migrations",
                                                                      "0006_translate_data_into_english.json")))
+        # Does not display "Installed fixtures message"
+        self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
 
         call_command('loaddata', "load_initial_data")
+        # Recover default sys.stdout
+        sys.stdout.close()
+        sys.stdout = self.stdout_bk
 
         first_alcohol_frequency = AlcoholFrequency.objects.first()
         self.assertIsNotNone(AlcoholFrequency.objects.first().name_en)
@@ -1658,7 +1682,7 @@ class TranslationValidation(TestCase):
         #
         # """
 
-        classification_of_disease = self.util.create_cid10_mock()
+        classification_of_disease = self.util.create_cid10()
         classification_of_disease.description_en = None
         classification_of_disease.save()
 
@@ -1682,3 +1706,23 @@ class TranslationValidation(TestCase):
         # call_command("import_icd", en=filename)
         self.assertRaises(CommandError, call_command, "import_icd", en=filename)
         os.remove(filename)
+
+    def test_translate_icd_cid_with_command(self):
+        # path = settings.BASE_DIR
+        # os.chdir(path)
+        # os.chdir(os.path.join('..', '..', 'resources', 'load-idc-table'))
+
+        filename = os.path.join(settings.BASE_DIR,
+                                os.path.join("..", "..", os.path.join("resources", "load-idc-table", "output.csv")))
+
+        self.create_csv_file(filename)
+        file_name = "output.csv"
+        # python manage.py import_icd --file file_name
+        call_command("import_icd_cid", file=file_name)
+
+        classification_of_disease = ClassificationOfDiseases.objects.all()
+        self.assertIsNotNone(classification_of_disease.first().description_en)
+
+        os.remove(filename)
+
+        self.assertEqual(2, ClassificationOfDiseases.objects.count())

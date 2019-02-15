@@ -45,7 +45,7 @@
     "pk": 9,
     "model": "experiment.muscle",
     "fields": {
-      "name": " Arm or hand - Abductor Policis Brevis"
+      "name": "Arm or hand - Abductor Policis Brevis"
     }
   },
   {

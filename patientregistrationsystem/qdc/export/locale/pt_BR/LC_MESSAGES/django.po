@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-07 16:50-0200\n"
+"POT-Creation-Date: 2019-01-24 08:43-0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -158,8 +158,7 @@ msgid "Information's organization for exportation of questionnaires data"
 msgstr "Organização da informação para exportação dos dados de questionários"
 
 #: export/templates/export/export_data.html:89
-#: export/templates/export/export_experiment_data.html:107
-#: export/views.py:1146
+#: export/templates/export/export_experiment_data.html:107 export/views.py:1146
 msgid "Per participant"
 msgstr "Por participante"
 

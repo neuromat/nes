@@ -396,7 +396,7 @@ class SurveyTest(TestCase):
 
         # Insert subject in the group
         util = UtilTests()
-        patient_mock = util.create_patient_mock(changed_by=self.user)
+        patient_mock = util.create_patient(changed_by=self.user)
 
         subject_mock = Subject(patient=patient_mock)
         subject_mock.save()

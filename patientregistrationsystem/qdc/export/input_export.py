@@ -81,7 +81,10 @@ class InputExport:
 
                 languages = questionnaire_lime_survey.get_survey_languages(sid)
                 language_list = [languages['language']]
-                additional_language = languages['additional_languages'].split(' ')
+                if languages['additional_languages']:
+                    additional_language = languages['additional_languages'].split(' ')
+                else:
+                    additional_language = ['']
                 for item in additional_language:
                     if item != '':
                         language_list.append(item)
@@ -109,7 +112,10 @@ class InputExport:
                 output_language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
                 languages = questionnaire_lime_survey.get_survey_languages(sid)
                 language_list = [languages['language']]
-                additional_language = languages['additional_languages'].split(' ')
+                if languages['additional_languages']:
+                    additional_language = languages['additional_languages'].split(' ')
+                else:
+                    additional_language = ['']
                 for item in additional_language:
                     if item != '':
                         language_list.append(item)
