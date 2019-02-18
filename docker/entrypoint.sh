@@ -282,13 +282,16 @@ else
 
 	su postgres -c "pg_ctl start -D $PGDATA"
 	python3 manage.py migrate
-	python3 manage.py shell < add_initial_data.py
-	python3 manage.py loaddata load_initial_data.json
-	python3 manage.py shell < /tmp/create_superuser.py
+	# Different versions may have different commannds
+	python3 manage.py shell < add_initial_data.py || true
+	python3 manage.py loaddata load_initial_data.json || true
+	python3 manage.py shell < /tmp/create_superuser.py || true
+	python3 manage.py import_icd_cid --file icd10cid10v2017.csv || true
 
 	rm /tmp/create_superuser.py
 
-	chown -R nobody "${NES_DIR}"/.git
+	# If NES was installed from a release it won't have a .git directory 
+	chown -R nobody "${NES_DIR}"/.git  || true
 	chown -R nobody "${NES_DIR}"/patientregistrationsystem
 
 	su postgres -c "pg_ctl stop -D $PGDATA"

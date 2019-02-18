@@ -50,7 +50,6 @@ INSTALLED_APPS = (
     'simple_history',
     'jsonrpc_requests',
     'solo',
-    'import_export',
     'fixture_magic'
 )
 
@@ -195,4 +194,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.49.3'
+VERSION = '1.54'

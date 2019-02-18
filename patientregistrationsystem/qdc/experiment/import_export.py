@@ -10,8 +10,8 @@ from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count
 
-from experiment.models import Group, ResearchProject, Experiment,\
-    Keyword, Component
+from experiment.models import Group, ResearchProject, Experiment, \
+    Keyword, Component, Manufacturer, Material
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -141,8 +141,8 @@ class ExportExperiment:
         self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
         self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
                               'component_id__experiment_id__in')
-        self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
-                              'component_configuration__component__experiment_id__in')
+        # self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
+        #                       'component_configuration__component__experiment_id__in')
         self.generate_fixture('group.json', 'group', 'experiment_id__in')
         self.generate_fixture('block.json', 'block', key_path)
         self.generate_fixture('instruction.json', 'instruction', key_path)
@@ -219,7 +219,8 @@ class ExportExperiment:
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
                          'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'socialhistorydata.json', 'socialdemographicdata.json', 'dataconfigurationtree.json',
+                         'socialhistorydata.json', 'socialdemographicdata.json',
+                         # 'dataconfigurationtree.json',
                          'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
                          'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
                          'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
@@ -237,11 +238,11 @@ class ExportExperiment:
         call_command('merge_fixtures', *fixtures)
         sys.stdout = sysout
 
-        self._remove_auth_user_model_from_json(self.FILE_NAME)
         self._remove_researchproject_keywords_model_from_json(self.FILE_NAME)
         self._change_group_code_to_null_from_json(self.FILE_NAME)
         self._remove_survey_code(self.FILE_NAME)
         self._update_classification_of_diseases_reference(self.FILE_NAME)
+        self._remove_auth_user_model_from_json(self.FILE_NAME)
 
     def get_file_path(self):
         return path.join(self.temp_dir, self.FILE_NAME)
@@ -380,7 +381,7 @@ class ImportExperiment:
                             indexes_of_keywords_already_updated.append(keyword_index)
 
     @staticmethod
-    def _update_patients_stuff(data):
+    def _update_patients_stuff(data, request):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
         # Update patient codes
@@ -395,9 +396,10 @@ class ImportExperiment:
                     data[i]['fields']['code'] = 'P' + str(next_numerical_part)
                     next_numerical_part += 1
 
-        # Clear CPFs
+        # Clear CPFs; update patient changed_by field to importer user
         for i in indexes:
             data[i]['fields']['cpf'] = None
+            data[i]['fields']['changed_by'] = request.user.id
 
     @staticmethod
     def _update_model_user(data, request):
@@ -433,21 +435,70 @@ class ImportExperiment:
             if min_limesurvey_id >= 0:
                 new_limesurvey_id = -99
             else:
-                new_limesurvey_id = 1
+                new_limesurvey_id = min_limesurvey_id
 
             for i in indexes:
                 data[i]['fields']['code'] = next_code
                 next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
-                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
                 new_limesurvey_id -= 1
+                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
+
+    @staticmethod
+    def _keep_manufacturer(data):
+        dependent_models = [
+            ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
+            ('experiment.software', 'manufacturer')
+        ]
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in 'experiment.manufacturer']
+
+        for i in indexes:
+            # TODO: when and if change Manufacturer model name field to unique
+            #  change to 'objects.get'
+            instance = Manufacturer.objects.filter(name=data[i]['fields']['name']).first()
+            if instance:
+                data[i]['pk'], old_id = instance.id, data[i]['pk']
+                for model in dependent_models:
+                    dependent_indexes = [
+                        index for (index, dict_) in enumerate(data)
+                        if dict_['model'] == model[0] and dict_['fields'][model[1]] == old_id
+                    ]
+                    for dependent_index in dependent_indexes:
+                        data[dependent_index]['fields'][model[1]] = data[i]['pk']
+
+    @staticmethod
+    def _keep_material(data):
+        dependent_models = [
+            ('experiment.electrodemodel', 'material'), ('experiment.intramuscularelectrode', 'insulation_material'),
+            ('experiment.eegelectrodecap', 'material'), ('experiment.coilmodel', 'material')
+        ]
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in 'experiment.material']
+
+        for i in indexes:
+            instance = Material.objects.filter(
+                name=data[i]['fields']['name'], description=data[i]['fields']['description']
+            ).first()
+            if instance:
+                data[i]['pk'], old_id = instance.id, data[i]['pk']
+                for model in dependent_models:
+                    dependent_indexes = [
+                        index for (index, dict_) in enumerate(data)
+                        if dict_['model'] == model[0] and dict_['fields'][model[1]] == old_id
+                    ]
+                    for dependent_index in dependent_indexes:
+                        data[dependent_index]['fields'][model[1]] = data[i]['pk']
+
+    def _keep_objects_pre_loaded(self, data):
+        self._keep_manufacturer(data)
+        self._keep_material(data)
 
     def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
         self._make_dummy_reference_to_limesurvey(data)
         self._update_research_project_pk(data, research_project_id)
         self._verify_keywords(data)
-        self._update_patients_stuff(data)
+        self._update_patients_stuff(data, request)
         self._update_model_user(data, request)
         self._update_survey_stuff(data)
+        self._keep_objects_pre_loaded(data)
 
     @staticmethod
     def _get_first_available_id():
@@ -465,8 +516,12 @@ class ImportExperiment:
     def _update_pks(self, DG, data, successor, next_id):
         # TODO: see if it's worth to put this list in class level
         if data[successor]['model'] not in [
-            'experiment.block', 'experiment.instruction', 'experiment.questionnaire',
-            'experiment.tms', 'experiment.eeg', 'experiment.emg', 'experiment.tmsdevicesetting',
+            # component types
+            'experiment.block', 'experiment.instruction', 'experiment.pause', 'experiment.questionnaire',
+            'experiment.stimulus', 'experiment.task', 'experiment.taskfortheexperimenter', 'experiment.eeg',
+            'experiment.emg', 'experiment.tms', 'experiment.digitalgamephase', 'experiment.genericdatacollection',
+
+            'experiment.tmsdevicesetting',
             'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
             'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
             'experiment.eegsolutionsetting', 'experiment.adconverter', 'experiment.emgadconvertersetting',
@@ -597,7 +652,7 @@ class ImportExperiment:
                 ['patient.medicalrecorddata', 'medical_record_data'],
             ],
             # Data collections
-            'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
+            # 'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
         }
         one_to_one_relation = {
             # Multi table inheritance
@@ -607,10 +662,10 @@ class ImportExperiment:
             'experiment.questionnaire': 'experiment.component',
             'experiment.stimulus': 'experiment.component',
             'experiment.task': 'experiment.component',
-            'experiment.task_experiment': 'experiment.component',
+            'experiment.taskfortheexperimenter': 'experiment.component',
             'experiment.eeg': 'experiment.component',
-            'experiment.tms': 'experiment.component',
             'experiment.emg': 'experiment.component',
+            'experiment.tms': 'experiment.component',
             'experiment.digitalgamephase': 'experiment.component',
             'experiment.genericdatacollection': 'experiment.component',
             'experiment.tmsdevice': 'experiment.equipment',

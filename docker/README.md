@@ -23,10 +23,11 @@ The build arguments can be organized in the following groups:
 
 ## NES
 
-| Parameter | Description                           |
-| --------- | ------------------------------------- |
-| NES_TAG   | NES release tag to be installed       |
-| NES_DIR   | Directory where NES will be installed |
+| Parameter  | Description                           |
+| ---------- | ------------------------------------- |
+| NES_TAG    | NES release tag to be installed       |
+| NES_BRANCH | NES git branch to be installed        |
+| NES_DIR    | Directory where NES will be installed |
 
 # Environment variables
 
@@ -122,8 +123,8 @@ _these are the same variables set for LimeSurvey_
 # TO-DO
 
 -   [x] Split the database in two, each serving a different system (nes/limesurvey);
--   [ ] :warning: Load ICD data :warning:;
--   [ ] Integrate this repo with the DockerHub for continuous integration;
+-   [x] :warning: Load ICD data :warning:;
+-   [x] Integrate this repo with the DockerHub for continuous integration;
 -   [ ] Make a deploy version with NES on Apache setup;
 -   [ ] Make the actual template a test version;
 -   [ ] Make NES deployable with different SQL databases and integrate it with docker;
