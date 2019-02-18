@@ -399,14 +399,11 @@ class ImportExperiment:
                     data[i]['fields']['code'] = 'P' + str(next_numerical_part)
                     next_numerical_part += 1
 
-        # Clear CPFs; update patient changed_by field to importer user
         for i in indexes:
             data[i]['fields']['cpf'] = None
-            data[i]['fields']['changed_by'] = request.user.id
 
     @staticmethod
     def _update_references_to_user(data, request):
-        # TODO (NES-908): make tests for updating models that references user
         models_with_user_reference = [
             ('patient.patient', 'changed_by'), ('patient.telephone', 'changed_by'),
             ('patient.medicalrecorddata', 'record_responsible')
@@ -500,7 +497,8 @@ class ImportExperiment:
         self._keep_manufacturer(data)
         self._keep_material(data)
 
-    def _verify_classification_of_diseases(self, data):
+    @staticmethod
+    def _verify_classification_of_diseases(data):
         # TODO (NES-908): make test for this
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.diagnosis']
         for index in indexes:
