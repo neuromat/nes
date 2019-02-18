@@ -60,8 +60,11 @@ class ExportExperiment:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
-        key = next((index for (index, d) in enumerate(deserialized) if d['model'] == 'auth.user'), None)
-        del (deserialized[key])
+        indexes = [index for (index, d) in enumerate(deserialized) if d['model'] == 'auth.user']
+        # TODO (NES-908): make test to remove all auth.user items and put
+        #  references for auth.user as request.user
+        for index in indexes:
+            del (deserialized[index])
 
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(deserialized))
@@ -402,10 +405,16 @@ class ImportExperiment:
             data[i]['fields']['changed_by'] = request.user.id
 
     @staticmethod
-    def _update_model_user(data, request):
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.telephone']
-        for i in indexes:
-            data[i]['fields']['changed_by'] = request.user.id
+    def _update_references_to_user(data, request):
+        # TODO (NES-908): make tests for updating models that references user
+        models_with_user_reference = [
+            ('patient.patient', 'changed_by'), ('patient.telephone', 'changed_by'),
+            ('patient.medicalrecorddata', 'record_responsible')
+        ]
+        for model in models_with_user_reference:
+            indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in model[0]]
+            for i in indexes:
+                data[i]['fields'][model[1]] = request.user.id
 
     @staticmethod
     def _solve_limey_survey_reference(data, survey_index):
@@ -491,14 +500,29 @@ class ImportExperiment:
         self._keep_manufacturer(data)
         self._keep_material(data)
 
+    def _verify_classification_of_diseases(self, data):
+        # TODO (NES-908): make test for this
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.diagnosis']
+        for index in indexes:
+            class_of_diseases = ClassificationOfDiseases.objects.filter(
+                code=data[index]['fields']['classification_of_diseases'][0]
+            ).first()
+            if not class_of_diseases:
+                ClassificationOfDiseases.objects.create(
+                    code=data[index]['fields']['classification_of_diseases'][0],
+                    description='(imported, not recognized)',
+                    abbreviated_description='(imported, not recognized)'
+                )
+
     def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
         self._make_dummy_reference_to_limesurvey(data)
         self._update_research_project_pk(data, research_project_id)
         self._verify_keywords(data)
         self._update_patients_stuff(data, request)
-        self._update_model_user(data, request)
+        self._update_references_to_user(data, request)
         self._update_survey_stuff(data)
         self._keep_objects_pre_loaded(data)
+        self._verify_classification_of_diseases(data)
 
     @staticmethod
     def _get_first_available_id():
@@ -534,6 +558,15 @@ class ImportExperiment:
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
+
+                # Patch for repeated next_id in same models
+                model = data[successor]['model']
+                updated_ids = [dict_['pk'] for (index, dict_) in enumerate(data) if dict_['model'] == model]
+                if next_id in updated_ids:
+                    # Prevent from duplicated pks in one model: this is done in the recursive path
+                    # TODO: verify better way to update nex_id
+                    next_id = max(updated_ids) + 1
+                    data[successor]['pk'] = next_id
                 DG.node[successor]['updated'] = True
         for predecessor in DG.predecessors(successor):
             if 'relation' in DG[predecessor][successor]:
@@ -636,7 +669,7 @@ class ImportExperiment:
             'experiment.emgdigitalfiltersetting': [['experiment.filtertype', 'filter_type']],
             'experiment.filtertype': [['', '']],
 
-            'experiment.tetheringsystem': [['','']],
+            'experiment.tetheringsystem': [['', '']],
             'experiment.amplifierdetectiontype': [['', '']],
             'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
 
