@@ -93,7 +93,7 @@ class UtilTests:
         p_mock = Patient()
         p_mock.name = name_method
         p_mock.date_birth = '2001-01-15'
-        p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient
+        p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient cpf
         p_mock.gender = gender
         p_mock.changed_by = changed_by
         p_mock.save()
