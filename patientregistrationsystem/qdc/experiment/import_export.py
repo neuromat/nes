@@ -488,7 +488,7 @@ class ImportExperiment:
         self._make_dummy_reference_to_limesurvey(data)
         self._update_research_project_pk(data, research_project_id)
         self._verify_keywords(data)
-        self._update_patients_stuff(data, request)
+        self._update_patients_stuff(data)
         self._update_references_to_user(data, request)
         self._update_survey_stuff(data)
         self._keep_objects_pre_loaded(data)
