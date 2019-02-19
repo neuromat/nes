@@ -2,6 +2,7 @@
 
 import os
 import sys
+import tempfile
 
 from datetime import date, datetime
 
@@ -79,7 +80,7 @@ class UtilTests:
 
     @staticmethod
     # TODO: changed_by can't be None, changed_by is required!
-    def create_patient(name_method='Patient Test', changed_by=None):
+    def create_patient(name='Patient Test', changed_by=None):
         """Cria um participante para ser utilizado durante os testes"""
         faker = Factory.create()
 
@@ -91,7 +92,7 @@ class UtilTests:
             gender = Gender.objects.create(name='Masculino')
 
         p_mock = Patient()
-        p_mock.name = name_method
+        p_mock.name = name
         p_mock.date_birth = '2001-01-15'
         p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient cpf
         p_mock.gender = gender
@@ -124,19 +125,17 @@ class UtilTests:
             code=code, description=faker.sentence(nb_words=10), abbreviated_description=faker.sentence(nb_words=6)
         )
 
-    def create_medical_record_mock(self, user, new_patient):
-        medical_record = MedicalRecordData()
-        medical_record.patient = new_patient
-        medical_record.record_responsible = user
-        medical_record.save()
-        return medical_record
+    @staticmethod
+    def create_medical_record(user, patient):
+        return MedicalRecordData.objects.create(patient=patient, record_responsible=user)
 
-    def create_diagnosis_mock(self, medical_record):
-        cid10_mock = self.create_cid10()
-        diagnosis = Diagnosis(medical_record_data=medical_record, classification_of_diseases=cid10_mock)
-        diagnosis.save()
-
-        return diagnosis
+    @staticmethod
+    def create_diagnosis(medical_record, cid10=None):
+        if cid10 is None:
+            cid10 = UtilTests.create_cid10()
+        return Diagnosis.objects.create(
+            medical_record_data=medical_record, classification_of_diseases=cid10
+        )
 
     @staticmethod
     def create_survey_mock(survey_id, is_initial_evaluation):
@@ -826,7 +825,7 @@ class MedicalRecordFormValidation(TestCase):
         self.util.create_cid10_to_search()
         cid10_mock = ClassificationOfDiseases.objects.filter(code='B01').first()
         patient_mock = self.util.create_patient(changed_by=self.user)
-        medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
+        medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
 
         request = self.factory.get(
             reverse('diagnosis_create', args=[patient_mock.pk, medical_record_mock.pk, cid10_mock.id, ]))
@@ -837,7 +836,7 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(Diagnosis.objects.filter(medical_record_data=MedicalRecordData.objects.filter(
             patient_id=Patient.objects.get(pk=patient_mock.pk)).first()).count(), 1)
 
-        diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
+        diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
 
         # Test for diagnosis delete
         count_diagnosis = Diagnosis.objects.all().count()
@@ -893,7 +892,7 @@ class MedicalRecordFormValidation(TestCase):
 
         patient_mock = self.util.create_patient(changed_by=self.user)
         self.util.create_cid10()
-        self.util.create_medical_record_mock(self.user, patient_mock)
+        self.util.create_medical_record(self.user, patient_mock)
 
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=3")
         self.assertEqual(response.status_code, 200)
@@ -902,7 +901,7 @@ class MedicalRecordFormValidation(TestCase):
     def test_medical_record_update(self):
 
         patient_mock = self.util.create_patient(changed_by=self.user)
-        self.util.create_medical_record_mock(self.user, patient_mock)
+        self.util.create_medical_record(self.user, patient_mock)
 
         response = self.client.get(reverse(PATIENT_EDIT, args=[patient_mock.pk]) + "?currentTab=3")
         self.assertEqual(response.status_code, 200)
@@ -923,7 +922,7 @@ class MedicalRecordFormValidation(TestCase):
         """
 
         patient_mock = self.util.create_patient(changed_by=self.user)
-        medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
+        medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
         # Test a medical record edit method - no changes it will occurs - just pass by the method
         url = reverse("medical_record_edit", args=[patient_mock.pk, medical_record_mock.pk, ])
         request = self.factory.get(url + "?status=edit")
@@ -954,7 +953,7 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(response.status_code, 302)
 
         # diagnosis update
-        diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
+        diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
         diagnosis_id = diagnosis_mock.pk  # classification_of_diseases_id
 
         count_diagnosis = Diagnosis.objects.all().count()
@@ -986,8 +985,8 @@ class MedicalRecordFormValidation(TestCase):
         Testar a criação de exames
         """
         patient_mock = self.util.create_patient(changed_by=self.user)
-        medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
-        diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
+        medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
+        diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
 
         count_exams = ComplementaryExam.objects.all().count()
 
@@ -1053,8 +1052,8 @@ class MedicalRecordFormValidation(TestCase):
         Testar a atualização de um exame complementar
         """
         patient_mock = self.util.create_patient(changed_by=self.user)
-        medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
-        diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
+        medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
+        diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
 
         self.create_complementary_exam(patient_mock, medical_record_mock, diagnosis_mock)
         count_exams = ComplementaryExam.objects.all().count()
@@ -1089,8 +1088,8 @@ class MedicalRecordFormValidation(TestCase):
         """
         try:
             patient_mock = self.util.create_patient(changed_by=self.user)
-            medical_record_mock = self.util.create_medical_record_mock(self.user, patient_mock)
-            diagnosis_mock = self.util.create_diagnosis_mock(medical_record_mock)
+            medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
+            diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
 
             # Tests for exam edit method
             self.create_complementary_exam(patient_mock, medical_record_mock, diagnosis_mock)
@@ -1572,12 +1571,6 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
 '''
 
     def setUp(self):
-        # """
-        # Configure authentication and variables to start each test
-        #
-        # """
-        # print('Set up for', self._testMethodName)
-
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
@@ -1588,6 +1581,13 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
+        self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
+
+    def tearDown(self):
+        self.client.logout()
+        sys.stdout.close()
+        sys.stdout = self.stdout_bk
+
     def fill_en_icd_file(self):
         tree = XML(self.xml_data)
 
@@ -1597,7 +1597,8 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         with open(filename, 'w') as f:
             f.write(self.xml_data)
 
-    def create_file_with_incorrect_data(self, filename):
+    @staticmethod
+    def create_file_with_incorrect_data(filename):
         with open(filename, 'w') as f:
             f.write("incorrect data")
             f.close()
@@ -1656,12 +1657,12 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
                                 os.path.join("patient", os.path.join("data_migrations",
                                                                      "0006_translate_data_into_english.json")))
         # Does not display "Installed fixtures message"
-        self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
+        stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
 
         call_command('loaddata', "load_initial_data")
         # Recover default sys.stdout
         sys.stdout.close()
-        sys.stdout = self.stdout_bk
+        sys.stdout = stdout_bk
 
         first_alcohol_frequency = AlcoholFrequency.objects.first()
         self.assertIsNotNone(AlcoholFrequency.objects.first().name_en)
@@ -1694,7 +1695,6 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
 
         self.create_xml_file(filename)
 
-        # python manage.py import_icd --en filename
         call_command("import_icd", en=filename)
 
         os.remove(filename)
@@ -1703,26 +1703,19 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         self.assertIsNotNone(classification_of_disease.first().description_en)
 
         self.create_file_with_incorrect_data(filename)
-        # call_command("import_icd", en=filename)
         self.assertRaises(CommandError, call_command, "import_icd", en=filename)
         os.remove(filename)
 
     def test_translate_icd_cid_with_command(self):
-        # path = settings.BASE_DIR
-        # os.chdir(path)
-        # os.chdir(os.path.join('..', '..', 'resources', 'load-idc-table'))
+        temp_dir = tempfile.mkdtemp()
 
-        filename = os.path.join(settings.BASE_DIR,
-                                os.path.join("..", "..", os.path.join("resources", "load-idc-table", "output.csv")))
-
-        self.create_csv_file(filename)
-        file_name = "output.csv"
-        # python manage.py import_icd --file file_name
-        call_command("import_icd_cid", file=file_name)
+        file_path = os.path.join(temp_dir, 'output.csv')
+        self.create_csv_file(file_path)
+        call_command("import_icd_cid", file=file_path)
 
         classification_of_disease = ClassificationOfDiseases.objects.all()
         self.assertIsNotNone(classification_of_disease.first().description_en)
 
-        os.remove(filename)
+        os.remove(file_path)
 
         self.assertEqual(2, ClassificationOfDiseases.objects.count())
