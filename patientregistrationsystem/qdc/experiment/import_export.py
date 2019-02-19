@@ -318,35 +318,6 @@ class ImportExperiment:
             self.new_objects['components'] = None
 
     @staticmethod
-    def _update_pk_keywords(data):  # TODO: to be used when updating pks
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
-
-        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
-        indexes_of_keywords_already_updated = []
-        for i in indexes:
-            # Get the keyword and check on database if the keyword already exists
-            # If exists, update the pk of this keyword to the correspondent in the database
-            # otherwise, update the pk of this keyword to next_keyword_id
-            old_keyword_id = data[i]['pk']
-            old_keyword_string = data[i]['fields']['name']
-            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
-
-            if keyword_on_database.count() > 0:
-                data[i]['pk'] = keyword_on_database.first().id
-            else:
-                data[i]['pk'] = next_keyword_id
-                next_keyword_id += 1
-
-            # Update all the references to the old keyword to the new one
-            for (index_row, dict_) in enumerate(data):
-                if dict_['model'] == 'experiment.researchproject':
-                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
-                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
-                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
-                            indexes_of_keywords_already_updated.append(keyword_index)
-
-    @staticmethod
     def _update_research_project_pk(data, id_):
         if id_:
             research_project_index = next(
@@ -386,7 +357,7 @@ class ImportExperiment:
                             indexes_of_keywords_already_updated.append(keyword_index)
 
     @staticmethod
-    def _update_patients_stuff(data, request):
+    def _update_patients_stuff(data):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
         # Update patient codes
@@ -551,11 +522,7 @@ class ImportExperiment:
             'experiment.emgdigitalfiltersetting', 'experiment.emgelectrodeplacementsetting',
             'experiment.emgamplifiersetting', 'experiment.emganalogfiltersetting',
             'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
-            'experiment.digitalgamephase', 'experiment.pause',
-            'experiment.eegsolutionsetting', 'experiment.emgelectrodeplacementsetting',
             'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement',
-            'experiment.genericdatacollection', 'experiment.stimulus', 'experiment.task',
-            'experiment.taskfortheexperimenter'
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
@@ -605,8 +572,8 @@ class ImportExperiment:
             ],
             'experiment.contexttree': [['experiment.experiment', 'experiment']],
 
-            'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
-            'experiment.informationtype': [['', '']],
+            # 'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
+            # 'experiment.informationtype': [['', '']],
 
             'experiment.stimulus': [['experiment.stimulus_type', 'stimulus_type']],
             'experiment.stimulustype': [['', '']],
