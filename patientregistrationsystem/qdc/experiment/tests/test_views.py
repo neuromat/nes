@@ -796,7 +796,6 @@ class ImportExperimentTest(TestCase):
 
         export = ExportExperiment(experiment)
         export.export_all()
-
         file_path = export.get_file_path()
 
         old_objects_count = {
@@ -2476,3 +2475,26 @@ class ImportExperimentTest(TestCase):
             'experiment.emgelectrodeplacement', 'experiment.emgneedleplacement', 'emgelectrodeplacement_ptr',
             self._create_experiment_with_emg_setting(), flag1=True
         )
+
+    def test_change_user_references_to_logged_user_before_import_experiment(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        UtilTests.create_telephone(patient, changed_by=self.user)
+        medical_record = UtilTests.create_medical_record(self.user, patient)
+        UtilTests.create_diagnosis(medical_record)
+
+        research_project = ObjectsFactory.create_research_project(self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        group = ObjectsFactory.create_group(experiment)
+        subject = ObjectsFactory.create_subject(patient)
+        ObjectsFactory.create_subject_of_group(group, subject)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        self.assertEqual(Patient.objects.last().changed_by, self.user_importer)
+        self.assertEqual(Telephone.objects.last().changed_by, self.user_importer)
+        self.assertEqual(MedicalRecordData.objects.last().record_responsible, self.user_importer)
