@@ -158,36 +158,6 @@ class ResearchProjectViewTest(TestCase):
                                     data={'action': 'remove'})
         self.assertEqual(response.status_code, 302)
 
-    # def test_research_project_view_remove_except(self):
-    #
-    #     self.research_project_1 = ObjectsFactory.create_research_project()
-    #     self.experiment1 = ObjectsFactory.create_experiment(
-    #         self.research_project_1)
-    #
-    #     # Insert keyword in research_project
-    #     self.assertEqual(Keyword.objects.all().count(), 0)
-    #     self.assertEqual(self.research_project.keywords.count(), 0)
-    #     response = self.client.get(reverse('keyword_new', args=(
-    #         self.research_project.pk, "first_test_keyword")), follow=True)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(Keyword.objects.all().count(), 1)
-    #     self.assertEqual(self.research_project.keywords.count(), 1)
-    #
-    #     # Insert then same keyword in research_project_1
-    #     # self.assertEqual(Keyword.objects.all().count(), 0)
-    #     self.assertEqual(self.research_project_1.keywords.count(), 0)
-    #     response = self.client.get(reverse('keyword_new', args=(
-    #         self.research_project_1.pk, "first_test_keyword")), follow=True)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(Keyword.objects.all().count(), 2)
-    #     self.assertEqual(self.research_project_1.keywords.count(), 1)
-    #
-    #     response = self.client.post(reverse('research_project_view',
-    #                kwargs={'research_project_id': self.research_project.pk}),
-    #                data={'action': 'remove'})
-    #
-    #     self.assertEqual(response.status_code, 403)
-
 
 class LoadGameKeeperTest(TestCase):
     def setUp(self):
@@ -274,6 +244,10 @@ class LoadGameKeeperTest(TestCase):
         self.group.code = GoalkeeperGameConfig.objects.using("goalkeeper").first().groupcode
         self.group.save()
 
+    def tearDown(self):
+        GoalkeeperGameConfig.objects.filter(idconfig=self.idconfig).using("goalkeeper").delete()
+        GoalkeeperGameResults.objects.filter(idgameresult=self.idgameresult).using("goalkeeper").delete()
+
     def test_load_goalkeeper_data(self):
         self.assertEqual(GoalkeeperGameConfig.objects.using("goalkeeper").count(), 1)
 
@@ -329,10 +303,6 @@ class LoadGameKeeperTest(TestCase):
         LocalInstitution.objects.filter(code='TESTLOCALINST').delete()
         GoalkeeperGame.objects.filter(code=self.goalkeepergameconfig.game).delete()
         GoalkeeperPhase.objects.filter(phase=0).delete()
-
-    def tearDown(self):
-        GoalkeeperGameConfig.objects.filter(idconfig=self.idconfig).using("goalkeeper").delete()
-        GoalkeeperGameResults.objects.filter(idgameresult=self.idgameresult).using("goalkeeper").delete()
 
 
 class CollaboratorTest(TestCase):
