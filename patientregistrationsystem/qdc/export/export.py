@@ -373,7 +373,7 @@ class ExportExecution:
             ]
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
-            subject_of_group = SubjectOfGroup.objects.filter(group=group)
+            subjects_of_group = SubjectOfGroup.objects.filter(group=group)
             title = '_'.join(slugify(group.title).split('-'))
 
             description = group.description  # TODO: code bloat
@@ -434,59 +434,60 @@ class ExportExecution:
                             )
 
                             for data_configuration_tree in configuration_tree_list:
-                                experiment_questionnaire_response_list = \
-                                    ExperimentQuestionnaireResponse.objects.filter(
-                                        data_configuration_tree_id=data_configuration_tree.id,
-                                        subject_of_group=subject_of_group
-                                    )
-                                for questionnaire_response in experiment_questionnaire_response_list:
-                                    token_id = questionnaire_response.token_id
-                                    completed = surveys.get_participant_properties(
-                                        questionnaire_id, token_id, "completed"
-                                    )
-                                    # load complete questionnaires data
-                                    if completed is not None and completed != 'N' and completed != '':
-                                        subject_code = questionnaire_response.subject_of_group.subject.patient.code
-                                        step_number = path_experiment[0][4]
-                                        step_identification = questionnaire_configuration.component.identification
-                                        protocol_step_list = \
-                                            [header_step_list,
-                                             [step_number, step_identification,
-                                              path_questionnaire, completed]
-                                             ]
-                                        questionnaire_response_dic = {
-                                            'token_id': token_id,
-                                            'questionnaire_id': questionnaire_id,
-                                            'questionnaire_code': questionnaire_code,
-                                            'data_configuration_tree_id': data_configuration_tree.id,
-                                            'subject_id': questionnaire_response.subject_of_group.subject.patient.id,
-                                            'subject_code': subject_code,
-                                            'directory_step_name': "Step_" + str(step_number) + "_" +
-                                                                   component_type.upper(),
-                                            'protocol_step_list': protocol_step_list,
-                                        }
-
-                                        if subject_code not in self.per_group_data[group_id]['data_per_participant']:
-                                            self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                            self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                                'token_list'] = []
-
-                                        self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                            'token_list'].append(questionnaire_response_dic)
-
-                                        if questionnaire_id not in self.per_group_data[group_id][
-                                            'questionnaires_per_group']:
-                                            self.per_group_data[group_id]['questionnaires_per_group'][
-                                                questionnaire_id] = {
+                                for subject_of_group in subjects_of_group:
+                                    experiment_questionnaire_response_list = \
+                                        ExperimentQuestionnaireResponse.objects.filter(
+                                            data_configuration_tree_id=data_configuration_tree.id,
+                                            subject_of_group=subject_of_group
+                                        )
+                                    for questionnaire_response in experiment_questionnaire_response_list:
+                                        token_id = questionnaire_response.token_id
+                                        completed = surveys.get_participant_properties(
+                                            questionnaire_id, token_id, "completed"
+                                        )
+                                        # load complete questionnaires data
+                                        if completed is not None and completed != 'N' and completed != '':
+                                            subject_code = questionnaire_response.subject_of_group.subject.patient.code
+                                            step_number = path_experiment[0][4]
+                                            step_identification = questionnaire_configuration.component.identification
+                                            protocol_step_list = \
+                                                [header_step_list,
+                                                 [step_number, step_identification,
+                                                  path_questionnaire, completed]
+                                                 ]
+                                            questionnaire_response_dic = {
+                                                'token_id': token_id,
+                                                'questionnaire_id': questionnaire_id,
                                                 'questionnaire_code': questionnaire_code,
-                                                'header_filtered_list': [],
-                                                'token_list': []
+                                                'data_configuration_tree_id': data_configuration_tree.id,
+                                                'subject_id': questionnaire_response.subject_of_group.subject.patient.id,
+                                                'subject_code': subject_code,
+                                                'directory_step_name': "Step_" + str(step_number) + "_" +
+                                                                       component_type.upper(),
+                                                'protocol_step_list': protocol_step_list,
                                             }
 
-                                        if token_id not in self.per_group_data[group_id]['questionnaires_per_group'][
-                                            questionnaire_id]['token_list']:
-                                            self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id][
+                                            if subject_code not in self.per_group_data[group_id]['data_per_participant']:
+                                                self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
+                                                self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                                    'token_list'] = []
+
+                                            self.per_group_data[group_id]['data_per_participant'][subject_code][
                                                 'token_list'].append(questionnaire_response_dic)
+
+                                            if questionnaire_id not in self.per_group_data[group_id][
+                                                'questionnaires_per_group']:
+                                                self.per_group_data[group_id]['questionnaires_per_group'][
+                                                    questionnaire_id] = {
+                                                    'questionnaire_code': questionnaire_code,
+                                                    'header_filtered_list': [],
+                                                    'token_list': []
+                                                }
+
+                                            if token_id not in self.per_group_data[group_id]['questionnaires_per_group'][
+                                                questionnaire_id]['token_list']:
+                                                self.per_group_data[group_id]['questionnaires_per_group'][questionnaire_id][
+                                                    'token_list'].append(questionnaire_response_dic)
 
             if group.experimental_protocol is not None:
                 if self.get_input_data('component_list')['per_additional_data']:

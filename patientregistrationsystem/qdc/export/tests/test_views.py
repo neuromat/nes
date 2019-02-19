@@ -857,6 +857,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             file.seek(0)
             self.assertEqual(dialect.delimiter, "\t")
 
+
 class ExportDataCollectionTest(ExportTestCase):
     TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
@@ -1752,7 +1753,7 @@ class ExportSelection(ExportTestCase):
 
         response = self.client.post(reverse('experiment_selection'), data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, 'http://testserver/export/view/')
+        self.assertEqual(response.url, '/export/view/')
 
     def test_experiment_selection_withou_select_group(self):
 
@@ -1802,7 +1803,7 @@ class ExportSelection(ExportTestCase):
         # TODO:
         # see if it's possible to get 'http://testserver' without hardcode
         self.assertEqual(
-            response3.url, 'http://testserver' + reverse('export_menu')
+            response3.url, reverse('export_menu')
         )
 
 # class UploadPaperTest(ExportTestCase):
