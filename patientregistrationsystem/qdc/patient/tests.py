@@ -1657,12 +1657,12 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
                                 os.path.join("patient", os.path.join("data_migrations",
                                                                      "0006_translate_data_into_english.json")))
         # Does not display "Installed fixtures message"
-        self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
+        stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
 
         call_command('loaddata', "load_initial_data")
         # Recover default sys.stdout
         sys.stdout.close()
-        sys.stdout = self.stdout_bk
+        sys.stdout = stdout_bk
 
         first_alcohol_frequency = AlcoholFrequency.objects.first()
         self.assertIsNotNone(AlcoholFrequency.objects.first().name_en)
