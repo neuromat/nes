@@ -2596,3 +2596,4 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(new_cid10.abbreviated_description, '(imported, not recognized)')
 
     def test_error_loading_fixture_display_error_message(self):
+        pass
