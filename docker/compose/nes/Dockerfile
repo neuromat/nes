@@ -1,4 +1,4 @@
-FROM alpine:3.8 as wheeler
+FROM alpine:3.9 as wheeler
 ENV PYTHONUNBUFFERED=1
 
 RUN apk add --no-cache \
@@ -45,7 +45,7 @@ RUN pip3 install -r requirement/requirements.txt && \
 		pip3 install -U wheel && \
 		pip3 wheel -r requirement/requirements.txt
 
-FROM alpine:3.8
+FROM alpine:3.9
 
 SHELL ["/bin/sh","-exc"]
 
