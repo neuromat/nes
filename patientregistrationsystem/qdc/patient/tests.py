@@ -2,6 +2,7 @@
 
 import os
 import sys
+import tempfile
 
 from datetime import date, datetime
 
@@ -129,10 +130,11 @@ class UtilTests:
         return MedicalRecordData.objects.create(patient=patient, record_responsible=user)
 
     @staticmethod
-    def create_diagnosis(medical_record):
-        cid10_mock = UtilTests.create_cid10()
+    def create_diagnosis(medical_record, cid10=None):
+        if cid10 is None:
+            cid10 = UtilTests.create_cid10()
         return Diagnosis.objects.create(
-            medical_record_data=medical_record, classification_of_diseases=cid10_mock
+            medical_record_data=medical_record, classification_of_diseases=cid10
         )
 
     @staticmethod
@@ -1569,12 +1571,6 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
 '''
 
     def setUp(self):
-        # """
-        # Configure authentication and variables to start each test
-        #
-        # """
-        # print('Set up for', self._testMethodName)
-
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
@@ -1585,6 +1581,13 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
+        self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
+
+    def tearDown(self):
+        self.client.logout()
+        sys.stdout.close()
+        sys.stdout = self.stdout_bk
+
     def fill_en_icd_file(self):
         tree = XML(self.xml_data)
 
@@ -1594,7 +1597,8 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         with open(filename, 'w') as f:
             f.write(self.xml_data)
 
-    def create_file_with_incorrect_data(self, filename):
+    @staticmethod
+    def create_file_with_incorrect_data(filename):
         with open(filename, 'w') as f:
             f.write("incorrect data")
             f.close()
@@ -1691,7 +1695,6 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
 
         self.create_xml_file(filename)
 
-        # python manage.py import_icd --en filename
         call_command("import_icd", en=filename)
 
         os.remove(filename)
@@ -1700,26 +1703,19 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         self.assertIsNotNone(classification_of_disease.first().description_en)
 
         self.create_file_with_incorrect_data(filename)
-        # call_command("import_icd", en=filename)
         self.assertRaises(CommandError, call_command, "import_icd", en=filename)
         os.remove(filename)
 
     def test_translate_icd_cid_with_command(self):
-        # path = settings.BASE_DIR
-        # os.chdir(path)
-        # os.chdir(os.path.join('..', '..', 'resources', 'load-idc-table'))
+        temp_dir = tempfile.mkdtemp()
 
-        filename = os.path.join(settings.BASE_DIR,
-                                os.path.join("..", "..", os.path.join("resources", "load-idc-table", "output.csv")))
-
-        self.create_csv_file(filename)
-        file_name = "output.csv"
-        # python manage.py import_icd --file file_name
-        call_command("import_icd_cid", file=file_name)
+        file_path = os.path.join(temp_dir, 'output.csv')
+        self.create_csv_file(file_path)
+        call_command("import_icd_cid", file=file_path)
 
         classification_of_disease = ClassificationOfDiseases.objects.all()
         self.assertIsNotNone(classification_of_disease.first().description_en)
 
-        os.remove(filename)
+        os.remove(file_path)
 
         self.assertEqual(2, ClassificationOfDiseases.objects.count())
