@@ -60,11 +60,14 @@ class ExportExperiment:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
-        indexes = [index for (index, d) in enumerate(deserialized) if d['model'] == 'auth.user']
-        # TODO (NES-908): make test to remove all auth.user items and put
-        #  references for auth.user as request.user
-        for index in indexes:
-            del (deserialized[index])
+        while True:
+            index = next(
+                (index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'),
+                None
+            )
+            if index is None:
+                break
+            del deserialized[index]
 
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(deserialized))
@@ -119,21 +122,20 @@ class ExportExperiment:
 
         serialized = json.loads(data)
         indexes = [index for (index, dict_) in enumerate(serialized) if dict_['model'] == 'patient.diagnosis']
-        for i in indexes:
-            pk = serialized[i]['fields']['classification_of_diseases']
+        for index in indexes:
+            pk = serialized[index]['fields']['classification_of_diseases']
             code = ClassificationOfDiseases.objects.get(id=int(pk)).code
             # make a list with one element as natural key in dumped data has to be a list
-            serialized[i]['fields']['classification_of_diseases'] = [code]
+            serialized[index]['fields']['classification_of_diseases'] = [code]
 
         # Remove ClassificationOfDiseases items: these data are preloaded in database
-        i = True
-        while i:
-            i = next(
+        while True:
+            index = next(
                 (index for (index, dict_) in enumerate(serialized) if dict_['model'] ==
                  'patient.classificationofdiseases'), None)
-            if i is None:
+            if index is None:
                 break
-            del serialized[i]
+            del serialized[index]
 
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
@@ -499,7 +501,6 @@ class ImportExperiment:
 
     @staticmethod
     def _verify_classification_of_diseases(data):
-        # TODO (NES-908): make test for this
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.diagnosis']
         for index in indexes:
             class_of_diseases = ClassificationOfDiseases.objects.filter(
