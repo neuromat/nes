@@ -1,7 +1,7 @@
 pip>=18.1
 setuptools>=40.6.3
 
-Django==1.8.5
+Django==1.8.5˚
 django-jenkins==0.18.1
 django-modeltranslation==0.10.1
 django-simple-history==1.6.3

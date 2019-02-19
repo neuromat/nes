@@ -25,12 +25,10 @@ SECRET_KEY = ''
 DEBUG = True
 DEBUG404 = True
 
-TEMPLATE_DEBUG = DEBUG
-
 # SECURITY WARNING: don't run with "is testing" in production
 IS_TESTING = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '127.0.0.1']
 
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -63,14 +61,7 @@ PROJECT_APPS = (
     'configuration'
 )
 
-PROJECT_TAGS_APPS = (
-    'quiz.templatetags.qdc_tags',
-    'experiment.templatetags.subjects_tags',
-    'survey.templatetags.subjects_tags_survey',
-)
-
 INSTALLED_APPS += PROJECT_APPS
-INSTALLED_APPS += PROJECT_TAGS_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -84,18 +75,29 @@ MIDDLEWARE_CLASSES = (
     'simple_history.middleware.HistoryRequestMiddleware',
 )
 
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.template.context_processors.debug",
-    "django.template.context_processors.i18n",
-    "django.template.context_processors.media",
-    "django.template.context_processors.static",
-    "django.template.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
-    "django.template.context_processors.request",
-)
-
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.i18n',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+            ],
+            'debug': DEBUG,
+        },
+    },
+]
 
 ROOT_URLCONF = 'qdc.urls'
 
@@ -122,9 +124,6 @@ SHOW_SEND_TO_PORTAL_BUTTON = False
 
 # AUTH_USER_MODEL = 'quiz.UserProfile'
 # AUTH_PROFILE_MODULE = 'quiz.UserProfile'
-
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -171,7 +170,6 @@ MODELTRANSLATION_CUSTOM_FIELDS = ('name', 'description', 'abbreviated_descriptio
 MODELTRANSLATION_AUTO_POPULATE = 'all'
 
 MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'en'
-
 
 FIXTURE_DIRS = (
     'patient.fixtures',
