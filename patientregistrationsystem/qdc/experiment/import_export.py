@@ -12,6 +12,8 @@ from django.db.models import Count
 
 from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component, Manufacturer, Material
+from experiment.import_export_model_relations import one_to_one_relation, foreign_relations, model_root_nodes, \
+    experiment_json_files, patient_json_files, json_files_detached_models
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -27,32 +29,24 @@ class ExportExperiment:
     def __del__(self):
         shutil.rmtree(self.temp_dir)
 
-    def generate_fixture(self, filename, element, key_path):
+    def _generate_fixture(self, filename, elements, app='experiment.'):
         sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-
-        call_command('dump_object', 'experiment.' + element, '--query',
-                     '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
-                     )
-
+        sys.stdout = open(path.join(self.temp_dir, filename + '.json'), 'w')
+        call_command(
+            'dump_object', app + elements[0], '--query',
+            '{"' + elements[1] + '": ' + str([self.experiment.id]) + '}'
+        )
         sys.stdout = sysout
 
-    def generate_patient_fixture(self, filename, element, key_path):
-        sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-        call_command('dump_object', 'patient.' + element, '--query',
-                     '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
-                     )
-        sys.stdout = sysout
-
-    def generate_detached_fixture(self, filename, element, key_path, parent_model, filename_parent):
-        with open(path.join(self.temp_dir, filename_parent)) as file:
+    def _generate_detached_fixture(self, filename, elements):
+        with open(path.join(self.temp_dir, elements[3] + '.json')) as file:
             data = json.load(file)
-        parent_ids = [dict_['pk'] for index, dict_ in enumerate(data) if dict_['model'] == parent_model]
+        parent_ids = [dict_['pk'] for index, dict_ in enumerate(data) if dict_['model'] == elements[2]]
 
         sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-        call_command('dump_object', 'experiment.' + element, '--query', '{"' + key_path + '": ' + str(parent_ids) + '}')
+        sys.stdout = open(path.join(self.temp_dir, filename + '.json'), 'w')
+        call_command(
+            'dump_object', 'experiment.' + elements[0], '--query', '{"' + elements[1] + '": ' + str(parent_ids) + '}')
         sys.stdout = sysout
 
     def _remove_auth_user_model_from_json(self, filename):
@@ -141,76 +135,12 @@ class ExportExperiment:
             f.write(json.dumps(serialized))
 
     def export_all(self):
-        key_path = 'component_ptr_id__experiment_id__in'
-
-        self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
-        self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
-                              'component_id__experiment_id__in')
-        # self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
-        #                       'component_configuration__component__experiment_id__in')
-        self.generate_fixture('group.json', 'group', 'experiment_id__in')
-        self.generate_fixture('block.json', 'block', key_path)
-        self.generate_fixture('instruction.json', 'instruction', key_path)
-        self.generate_fixture('pause.json', 'pause', key_path)
-        self.generate_fixture('questionnaire.json', 'questionnaire', key_path)
-        self.generate_fixture('stimulus.json', 'stimulus', key_path)
-        self.generate_fixture('task.json', 'task', key_path)
-        self.generate_fixture('task_experiment.json', 'taskfortheexperimenter', key_path)
-        self.generate_fixture('eeg.json', 'eeg', key_path)
-        self.generate_fixture('emg.json', 'emg', key_path)
-        self.generate_fixture('tms.json', 'tms', key_path)
-        self.generate_fixture('digital_game_phase.json', 'digitalgamephase', key_path)
-        self.generate_fixture('generic_data_collection.json', 'genericdatacollection', key_path)
-        self.generate_fixture('participant.json', 'subjectofgroup', 'group_id__experiment_id__in')
-
-        # Patient
-        self.generate_patient_fixture('telephone.json', 'telephone',
-                                      'patient__subject__subjectofgroup__group__experiment_id__in')
-        self.generate_patient_fixture('socialhistorydata.json', 'socialhistorydata',
-                                      'patient__subject__subjectofgroup__group__experiment_id__in')
-        self.generate_patient_fixture('socialdemographicdata.json', 'socialdemographicdata',
-                                      'patient__subject__subjectofgroup__group__experiment_id__in')
-        self.generate_patient_fixture('diagnosis.json', 'diagnosis',
-                                      'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
-
-        # TMS
-        self.generate_fixture('tms_device.json', 'tmsdevicesetting', 'tms_setting__experiment_id__in')
-        self.generate_fixture('tms_setting.json', 'tmssetting', 'experiment_id__in')
-
-        # EEG
-        self.generate_fixture('eeg_amplifier_setting.json', 'eegamplifiersetting', 'eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_solution_setting.json', 'eegsolutionsetting', 'eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_filter_setting.json', 'eegfiltersetting', 'eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_electrode_layout_setting.json', 'eegelectrodelayoutsetting',
-                              'eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_electrode_position_setting.json', 'eegelectrodepositionsetting',
-                              'eeg_electrode_layout_setting__eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_setting.json', 'eegsetting', 'experiment_id__in')
-
-        # EMG
-        self.generate_fixture('emg_setting.json', 'emgsetting', 'experiment_id__in')
-        self.generate_fixture('emg_ad_converter_setting.json', 'emgadconvertersetting',
-                              'emg_setting__experiment_id__in')
-        self.generate_fixture('emg_digital_filter_setting.json', 'emgdigitalfiltersetting',
-                              'emg_setting__experiment_id__in')
-        self.generate_fixture('emg_pre_amplifier_filter_setting.json', 'emgpreamplifierfiltersetting',
-                              'emg_preamplifier_filter_setting__emg_electrode_setting__emg_setting__experiment_id__in')
-        self.generate_fixture('emg_amplifier_analog_filter_setting.json','emganalogfiltersetting',
-                              'emg_electrode_setting__emg_electrode_setting__emg_setting__experiment_id__in')
-        self.generate_fixture('emg_electrodeplacementsetting.json', 'emgelectrodeplacementsetting',
-                              'emg_electrode_setting__emg_setting__experiment_id__in')
-        self.generate_detached_fixture(
-            'emg_intramuscularplacement.json', 'emgintramuscularplacement', 'emgelectrodeplacement_ptr__in',
-            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
-        )
-        self.generate_detached_fixture(
-            'emg_surfaceplacement.json', 'emgsurfaceplacement', 'emgelectrodeplacement_ptr__in',
-            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
-        )
-        self.generate_detached_fixture(
-            'emg_needleplacement.json', 'emgneedleplacement', 'emgelectrodeplacement_ptr__in',
-            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
-        )
+        for key, value in experiment_json_files.items():
+            self._generate_fixture(key, value)
+        for key, value in patient_json_files.items():
+            self._generate_fixture(key, value, 'patient.')
+        for key, value in json_files_detached_models.items():
+            self._generate_detached_fixture(key, value)
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -219,24 +149,9 @@ class ExportExperiment:
                      '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
         sys.stdout = sysout
 
-        # TODO: refactor to use this list with generate_fixture
-        list_of_files = ['experimentfixture.json', 'componentconfiguration.json', 'group.json', 'block.json',
-                         'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
-                         'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
-                         'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'socialhistorydata.json', 'socialdemographicdata.json',
-                         # 'dataconfigurationtree.json',
-                         'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
-                         'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
-                         'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
-                         'emg_ad_converter_setting.json', 'emg_digital_filter_setting.json',
-                         'emg_pre_amplifier_filter_setting.json', 'emg_amplifier_analog_filter_setting.json',
-                         'emg_electrodeplacementsetting.json', 'emg_intramuscularplacement.json',
-                         'emg_surfaceplacement.json', 'emg_needleplacement.json']
-
         fixtures = []
-        for filename in list_of_files:
-            fixtures.append(path.join(self.temp_dir, filename))
+        for filename in {**experiment_json_files, **patient_json_files, **json_files_detached_models}:
+            fixtures.append(path.join(self.temp_dir, filename + '.json'))
 
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
@@ -509,21 +424,7 @@ class ImportExperiment:
 
     def _update_pks(self, DG, data, successor, next_id):
         # TODO: see if it's worth to put this list in class level
-        if data[successor]['model'] not in [
-            # component types
-            'experiment.block', 'experiment.instruction', 'experiment.pause', 'experiment.questionnaire',
-            'experiment.stimulus', 'experiment.task', 'experiment.taskfortheexperimenter', 'experiment.eeg',
-            'experiment.emg', 'experiment.tms', 'experiment.digitalgamephase', 'experiment.genericdatacollection',
-
-            'experiment.tmsdevicesetting',
-            'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
-            'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
-            'experiment.eegsolutionsetting', 'experiment.adconverter', 'experiment.emgadconvertersetting',
-            'experiment.emgdigitalfiltersetting', 'experiment.emgelectrodeplacementsetting',
-            'experiment.emgamplifiersetting', 'experiment.emganalogfiltersetting',
-            'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
-            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement',
-        ]:
+        if data[successor]['model'] not in one_to_one_relation:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
 
@@ -531,7 +432,7 @@ class ImportExperiment:
                 model = data[successor]['model']
                 updated_ids = [dict_['pk'] for (index, dict_) in enumerate(data) if dict_['model'] == model]
                 if next_id in updated_ids:
-                    # Prevent from duplicated pks in one model: this is done in the recursive path
+                    # Prevent from duplicated pks in same model: this is done in the recursive path
                     # TODO: verify better way to update nex_id
                     next_id = max(updated_ids) + 1
                     data[successor]['pk'] = next_id
@@ -545,160 +446,9 @@ class ImportExperiment:
             next_id += 1
             self._update_pks(DG, data, predecessor, next_id)
 
-    def _build_graph(self, request, data, research_project_id):
-        model_root_nodes = [
-            'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
-            'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
-            'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
-            'experiment.muscle', 'experiment.standardizationsystem',
-            'patient.patient'
-        ]
-        foreign_relations = {
-            'experiment.researchproject': [['', '']],
-            'experiment.experiment': [['experiment.researchproject', 'research_project']],
-            'experiment.group': [
-                ['experiment.experiment', 'experiment'], ['experiment.component', 'experimental_protocol']
-            ],
-            'experiment.component': [['experiment.experiment', 'experiment']],
-            'experiment.componentconfiguration': [
-                ['experiment.component', 'component'], ['experiment.component', 'parent']
-            ],
-            'experiment.questionnaire': [['survey.survey', 'survey']],
-            'survey.survey': [['', '']],
-
-            'experiment.digitalgamephase': [
-                ['experiment.contexttree', 'context_tree'],
-                ['experiment.softwareversion', 'software_version']
-            ],
-            'experiment.contexttree': [['experiment.experiment', 'experiment']],
-
-            # 'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
-            # 'experiment.informationtype': [['', '']],
-
-            'experiment.stimulus': [['experiment.stimulus_type', 'stimulus_type']],
-            'experiment.stimulustype': [['', '']],
-
-            # TMS
-            'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
-            'experiment.tmssetting': [['experiment.experiment', 'experiment']],
-            'experiment.tmsdevicesetting': [
-                ['experiment.coilmodel', 'coil_model'], ['experiment.tmsdevice', 'tms_device']
-            ],
-            'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
-            'experiment.coilshape': [['', '']],
-            'experiment.material': [['', '']],
-            # EEG
-            'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
-            'experiment.eegsetting': [['experiment.experiment', 'experiment']],
-            'experiment.eegelectrodepositionsetting': [
-                ['experiment.electrodemodel', 'electrode_model'],
-                ['experiment.eegelectrodelayoutsetting', 'eeg_electrode_layout_setting'],
-                ['experiment.eegelectrodeposition', 'eeg_electrode_position']
-            ],
-            'experiment.eegelectrodelayoutsetting': [['experiment.eegelectrodenetsystem', 'eeg_electrode_net_system']],
-            'experiment.eegelectrodeposition': [
-                ['experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system']
-            ],
-            'experiment.eegelectrodenetsystem': [
-                ['experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system'],
-                ['experiment.eegelectrodenet', 'eeg_electrode_net']
-            ],
-            'experiment.eegelectrodenet': [['experiment.electrodemodel', 'electrode_model_default']],
-            'experiment.eegfiltersetting': [['experiment.filtertype', 'eeg_filter_type']],
-            'experiment.eegamplifiersetting': [['experiment.amplifier', 'eeg_amplifier']],
-            'experiment.amplifier': [
-                ['experiment.amplifierdetectiontype', 'amplifier_detection_type'],
-                ['experiment.tetheringsystem', 'tethering_system']
-            ],
-            'experiment.eegsolutionsetting': [['experiment.eegsolution', 'eeg_solution']],
-            'experiment.eegsolution': [['experiment.manufacturer', 'manufacturer']],
-            # EMG
-            'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
-            'experiment.emgsetting': [
-                ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
-            ],
-            'experiment.muscle': [['', '']],
-            'experiment.standardizationsystem': [['', '']],
-            'experiment.muscleside': [['experiment.muscle', 'muscle']],
-            'experiment.musclesubdivision': [['experiment.muscle', 'muscle']],
-            'experiment.emgelectrodeplacement': [
-                ['experiment.musclesubdivision', 'muscle_subdivision'],
-                ['experiment.standardizationsystem', 'standardization_system']
-            ],
-            'experiment.emgelectrodesetting': [
-                ['experiment.emgsetting', 'emg_setting'], ['experiment.electrodemodel', 'electrode']
-            ],
-            'experiment.emgpreamplifiersetting': [['experiment.amplifier', 'amplifier']],
-            'experiment.emgelectrodeplacementsetting': [
-                ['experiment.muscleside', 'muscle_side'],
-                ['experiment.emgelectrodeplacement', 'emg_electrode_placement']
-            ],
-            'experiment.softwareversion': [['experiment.software', 'software']],
-            'experiment.software': [['experiment.manufacturer', 'manufacturer']],
-            'experiment.manufacturer': [['', '']],
-            'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
-            'experiment.electrodemodel': [
-                ['experiment.material', 'material'], ['experiment.electrodeconfiguration', 'electrode_configuration']],
-
-            'experiment.emgadconvertersetting': [['experiment.adconverter', 'ad_converter']],
-            'experiment.emgdigitalfiltersetting': [['experiment.filtertype', 'filter_type']],
-            'experiment.filtertype': [['', '']],
-
-            'experiment.tetheringsystem': [['', '']],
-            'experiment.amplifierdetectiontype': [['', '']],
-            'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
-
-            # Participants
-            'experiment.subject': [['patient.patient', 'patient']],
-            'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
-            'patient.patient': [['', '']],
-            'patient.telephone': [['patient.patient', 'patient']],
-            'patient.socialdemographicdata': [['patient.patient', 'patient']],
-            'patient.socialhistorydata': [['patient.patient', 'patient']],
-            'patient.medicalrecorddata': [['patient.patient', 'patient']],
-            'patient.diagnosis': [
-                ['patient.medicalrecorddata', 'medical_record_data'],
-            ],
-            # Data collections
-            # 'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
-        }
-        one_to_one_relation = {
-            # Multi table inheritance
-            'experiment.block': 'experiment.component',
-            'experiment.instruction': 'experiment.component',
-            'experiment.pause': 'experiment.component',
-            'experiment.questionnaire': 'experiment.component',
-            'experiment.stimulus': 'experiment.component',
-            'experiment.task': 'experiment.component',
-            'experiment.taskfortheexperimenter': 'experiment.component',
-            'experiment.eeg': 'experiment.component',
-            'experiment.emg': 'experiment.component',
-            'experiment.tms': 'experiment.component',
-            'experiment.digitalgamephase': 'experiment.component',
-            'experiment.genericdatacollection': 'experiment.component',
-            'experiment.tmsdevice': 'experiment.equipment',
-            'experiment.eegelectrodenet': 'experiment.equipment',
-            'experiment.amplifier': 'experiment.equipment',
-            'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
-            'experiment.emgsurfaceplacement': 'experiment.emgelectrodeplacement',
-            'experiment.emgneedleplacement': 'experiment.emgelectrodeplacement',
-            'experiment.adconverter': 'experiment.equipment',
-            # OneToOneField
-            'experiment.tmsdevicesetting': 'experiment.tmssetting',
-            'experiment.eegelectrodelayoutsetting': 'experiment.eegsetting',
-            'experiment.eegfiltersetting': 'experiment.eegsetting',
-            'experiment.eegamplifiersetting': 'experiment.eegsetting',
-            'experiment.eegsolutionsetting': 'experiment.eegsetting',
-            'experiment.emgadconvertersetting': 'experiment.emgsetting',
-            'experiment.emgdigitalfiltersetting': 'experiment.emgsetting',
-            'experiment.emgamplifiersetting': 'experiment.emgelectrodesetting',
-            'experiment.emganalogfiltersetting': 'experiment.emgamplifiersetting',
-            'experiment.emgpreamplifiersetting': 'experiment.emgelectrodesetting',
-            'experiment.emgpreamplifierfiltersetting': 'experiment.emgpreamplifiersetting',
-            'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
-        }
-
-        DG = nx.DiGraph()
+    @staticmethod
+    def _build_digraph(data):
+        dg = nx.DiGraph()
         for index_from, dict_ in enumerate(data):
             if dict_['model'] in foreign_relations:
                 node_from = dict_['model']
@@ -710,8 +460,8 @@ class ImportExperiment:
                         None
                     )
                     if index_to is not None:
-                        DG.add_edge(index_from, index_to)
-                        DG[index_from][index_to]['relation'] = node_to[1]
+                        dg.add_edge(index_from, index_to)
+                        dg[index_from][index_to]['relation'] = node_to[1]
             if dict_['model'] in one_to_one_relation:
                 node_from = dict_['model']
                 node_to = one_to_one_relation[node_from]
@@ -721,20 +471,21 @@ class ImportExperiment:
                     None
                 )
                 if index_to is not None:
-                    DG.add_edge(index_from, index_to)
+                    dg.add_edge(index_from, index_to)
 
-        for node in DG.nodes():
-            DG.node[node]['atributes'] = data[node]
-            DG.node[node]['updated'] = False
+        for node in dg.nodes():
+            dg.node[node]['atributes'] = data[node]
+            dg.node[node]['updated'] = False
 
+        return dg
+
+    def _manage_pks(self, dg, data):
         next_id = self._get_first_available_id()
         for model_root_node in model_root_nodes:
             root_nodes = [index for index, dict_ in enumerate(data) if dict_['model'] == model_root_node]
             for root_node in root_nodes:
-                self._update_pks(DG, data, root_node, next_id)
+                self._update_pks(dg, data, root_node, next_id)
                 next_id += 1
-
-        self._manage_last_stuffs_before_importing(request, data, research_project_id)
 
     def import_all(self, request, research_project_id=None):
         # TODO: maybe this try in constructor
@@ -746,7 +497,10 @@ class ImportExperiment:
         except (ValueError, JSONDecodeError):
             return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
 
-        self._build_graph(request, data, research_project_id)
+        dg = self._build_digraph(data)
+        self._manage_pks(dg, data)
+        self._manage_last_stuffs_before_importing(request, data, research_project_id)
+
         with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
             file.write(json.dumps(data))
 
