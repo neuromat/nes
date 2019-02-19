@@ -44,7 +44,7 @@ Commands to execute steps defined above are::
     cd /var/www/nes-system/nes/resources/load-idc-table/
 
 
-verify that the file exists :
+Verify that the file exists :
 
     icd10cid10v2017.csv
 
