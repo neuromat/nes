@@ -5,6 +5,7 @@ from django.utils.translation.trans_real import activate, deactivate
 
 import csv
 import os
+import sys
 
 class Command(BaseCommand):
     help = 'Import ICD for translation'
@@ -30,11 +31,17 @@ class Command(BaseCommand):
 
 
 def import_classification_of_icd_cid(file_name):
-    # path = settings.BASE_DIR
-    # os.chdir(path)
-    # os.chdir(os.path.join('..', '..','resources', 'load-idc-table'))
     filename = os.path.join(settings.BASE_DIR,
                             os.path.join("..", "..", os.path.join("resources", "load-idc-table", file_name)))
+
+    increment = 2  #start of second line, without header
+
+    with open(filename) as csvfile:
+        total_lines = sum(1 for row in csvfile)
+    if total_lines:
+        pass
+    else:
+        return print('File Empty')
 
     with open(filename, 'r') as csvFile:
         reader = csv.reader(csvFile)
@@ -51,6 +58,18 @@ def import_classification_of_icd_cid(file_name):
             classifications_of_diseases.abbreviated_description = row[1]
             classifications_of_diseases.save()
             deactivate()
+            progress_bar(increment, total_lines, status='Updating database')
+            increment += 1
+    print('\n')
 
 
+def progress_bar(count, tot_lines, status=''):
+   bar_len = 100
 
+   filled_len = int(round(bar_len * count / float(tot_lines)))
+
+   percents = round(100.0 * count / float(tot_lines), 1)
+   bar = '=' * filled_len + '-' * (bar_len - filled_len)
+
+   sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+   sys.stdout.flush()

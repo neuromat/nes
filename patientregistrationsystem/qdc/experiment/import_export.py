@@ -60,8 +60,14 @@ class ExportExperiment:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
-        key = next((index for (index, d) in enumerate(deserialized) if d['model'] == 'auth.user'), None)
-        del (deserialized[key])
+        while True:
+            index = next(
+                (index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'),
+                None
+            )
+            if index is None:
+                break
+            del deserialized[index]
 
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(deserialized))
@@ -116,21 +122,20 @@ class ExportExperiment:
 
         serialized = json.loads(data)
         indexes = [index for (index, dict_) in enumerate(serialized) if dict_['model'] == 'patient.diagnosis']
-        for i in indexes:
-            pk = serialized[i]['fields']['classification_of_diseases']
+        for index in indexes:
+            pk = serialized[index]['fields']['classification_of_diseases']
             code = ClassificationOfDiseases.objects.get(id=int(pk)).code
             # make a list with one element as natural key in dumped data has to be a list
-            serialized[i]['fields']['classification_of_diseases'] = [code]
+            serialized[index]['fields']['classification_of_diseases'] = [code]
 
         # Remove ClassificationOfDiseases items: these data are preloaded in database
-        i = True
-        while i:
-            i = next(
+        while True:
+            index = next(
                 (index for (index, dict_) in enumerate(serialized) if dict_['model'] ==
                  'patient.classificationofdiseases'), None)
-            if i is None:
+            if index is None:
                 break
-            del serialized[i]
+            del serialized[index]
 
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
@@ -141,8 +146,8 @@ class ExportExperiment:
         self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
         self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
                               'component_id__experiment_id__in')
-        self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
-                              'component_configuration__component__experiment_id__in')
+        # self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
+        #                       'component_configuration__component__experiment_id__in')
         self.generate_fixture('group.json', 'group', 'experiment_id__in')
         self.generate_fixture('block.json', 'block', key_path)
         self.generate_fixture('instruction.json', 'instruction', key_path)
@@ -219,7 +224,8 @@ class ExportExperiment:
                          'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
                          'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
                          'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'socialhistorydata.json', 'socialdemographicdata.json', 'dataconfigurationtree.json',
+                         'socialhistorydata.json', 'socialdemographicdata.json',
+                         # 'dataconfigurationtree.json',
                          'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
                          'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
                          'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
@@ -237,11 +243,11 @@ class ExportExperiment:
         call_command('merge_fixtures', *fixtures)
         sys.stdout = sysout
 
-        self._remove_auth_user_model_from_json(self.FILE_NAME)
         self._remove_researchproject_keywords_model_from_json(self.FILE_NAME)
         self._change_group_code_to_null_from_json(self.FILE_NAME)
         self._remove_survey_code(self.FILE_NAME)
         self._update_classification_of_diseases_reference(self.FILE_NAME)
+        self._remove_auth_user_model_from_json(self.FILE_NAME)
 
     def get_file_path(self):
         return path.join(self.temp_dir, self.FILE_NAME)
@@ -312,35 +318,6 @@ class ImportExperiment:
             self.new_objects['components'] = None
 
     @staticmethod
-    def _update_pk_keywords(data):  # TODO: to be used when updating pks
-        # Which elements of the json file ("data") represent this model
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
-
-        next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
-        indexes_of_keywords_already_updated = []
-        for i in indexes:
-            # Get the keyword and check on database if the keyword already exists
-            # If exists, update the pk of this keyword to the correspondent in the database
-            # otherwise, update the pk of this keyword to next_keyword_id
-            old_keyword_id = data[i]['pk']
-            old_keyword_string = data[i]['fields']['name']
-            keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
-
-            if keyword_on_database.count() > 0:
-                data[i]['pk'] = keyword_on_database.first().id
-            else:
-                data[i]['pk'] = next_keyword_id
-                next_keyword_id += 1
-
-            # Update all the references to the old keyword to the new one
-            for (index_row, dict_) in enumerate(data):
-                if dict_['model'] == 'experiment.researchproject':
-                    for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
-                        if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
-                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
-                            indexes_of_keywords_already_updated.append(keyword_index)
-
-    @staticmethod
     def _update_research_project_pk(data, id_):
         if id_:
             research_project_index = next(
@@ -380,7 +357,7 @@ class ImportExperiment:
                             indexes_of_keywords_already_updated.append(keyword_index)
 
     @staticmethod
-    def _update_patients_stuff(data, request):
+    def _update_patients_stuff(data):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
         # Update patient codes
@@ -395,16 +372,19 @@ class ImportExperiment:
                     data[i]['fields']['code'] = 'P' + str(next_numerical_part)
                     next_numerical_part += 1
 
-        # Clear CPFs; update patient changed_by field to importer user
         for i in indexes:
             data[i]['fields']['cpf'] = None
-            data[i]['fields']['changed_by'] = request.user.id
 
     @staticmethod
-    def _update_model_user(data, request):
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.telephone']
-        for i in indexes:
-            data[i]['fields']['changed_by'] = request.user.id
+    def _update_references_to_user(data, request):
+        models_with_user_reference = [
+            ('patient.patient', 'changed_by'), ('patient.telephone', 'changed_by'),
+            ('patient.medicalrecorddata', 'record_responsible')
+        ]
+        for model in models_with_user_reference:
+            indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in model[0]]
+            for i in indexes:
+                data[i]['fields'][model[1]] = request.user.id
 
     @staticmethod
     def _solve_limey_survey_reference(data, survey_index):
@@ -490,14 +470,29 @@ class ImportExperiment:
         self._keep_manufacturer(data)
         self._keep_material(data)
 
+    @staticmethod
+    def _verify_classification_of_diseases(data):
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.diagnosis']
+        for index in indexes:
+            class_of_diseases = ClassificationOfDiseases.objects.filter(
+                code=data[index]['fields']['classification_of_diseases'][0]
+            ).first()
+            if not class_of_diseases:
+                ClassificationOfDiseases.objects.create(
+                    code=data[index]['fields']['classification_of_diseases'][0],
+                    description='(imported, not recognized)',
+                    abbreviated_description='(imported, not recognized)'
+                )
+
     def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
         self._make_dummy_reference_to_limesurvey(data)
         self._update_research_project_pk(data, research_project_id)
         self._verify_keywords(data)
-        self._update_patients_stuff(data, request)
-        self._update_model_user(data, request)
+        self._update_patients_stuff(data)
+        self._update_references_to_user(data, request)
         self._update_survey_stuff(data)
         self._keep_objects_pre_loaded(data)
+        self._verify_classification_of_diseases(data)
 
     @staticmethod
     def _get_first_available_id():
@@ -515,20 +510,31 @@ class ImportExperiment:
     def _update_pks(self, DG, data, successor, next_id):
         # TODO: see if it's worth to put this list in class level
         if data[successor]['model'] not in [
-            'experiment.block', 'experiment.instruction', 'experiment.questionnaire',
-            'experiment.tms', 'experiment.eeg', 'experiment.emg', 'experiment.tmsdevicesetting',
+            # component types
+            'experiment.block', 'experiment.instruction', 'experiment.pause', 'experiment.questionnaire',
+            'experiment.stimulus', 'experiment.task', 'experiment.taskfortheexperimenter', 'experiment.eeg',
+            'experiment.emg', 'experiment.tms', 'experiment.digitalgamephase', 'experiment.genericdatacollection',
+
+            'experiment.tmsdevicesetting',
             'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
             'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
             'experiment.eegsolutionsetting', 'experiment.adconverter', 'experiment.emgadconvertersetting',
             'experiment.emgdigitalfiltersetting', 'experiment.emgelectrodeplacementsetting',
             'experiment.emgamplifiersetting', 'experiment.emganalogfiltersetting',
             'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
-            'experiment.digitalgamephase', 'experiment.pause',
-            'experiment.eegsolutionsetting', 'experiment.emgelectrodeplacementsetting',
-            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement'
+            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement',
         ]:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
+
+                # Patch for repeated next_id in same models
+                model = data[successor]['model']
+                updated_ids = [dict_['pk'] for (index, dict_) in enumerate(data) if dict_['model'] == model]
+                if next_id in updated_ids:
+                    # Prevent from duplicated pks in one model: this is done in the recursive path
+                    # TODO: verify better way to update nex_id
+                    next_id = max(updated_ids) + 1
+                    data[successor]['pk'] = next_id
                 DG.node[successor]['updated'] = True
         for predecessor in DG.predecessors(successor):
             if 'relation' in DG[predecessor][successor]:
@@ -565,6 +571,13 @@ class ImportExperiment:
                 ['experiment.softwareversion', 'software_version']
             ],
             'experiment.contexttree': [['experiment.experiment', 'experiment']],
+
+            # 'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
+            # 'experiment.informationtype': [['', '']],
+
+            'experiment.stimulus': [['experiment.stimulus_type', 'stimulus_type']],
+            'experiment.stimulustype': [['', '']],
+
             # TMS
             'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
             'experiment.tmssetting': [['experiment.experiment', 'experiment']],
@@ -631,7 +644,7 @@ class ImportExperiment:
             'experiment.emgdigitalfiltersetting': [['experiment.filtertype', 'filter_type']],
             'experiment.filtertype': [['', '']],
 
-            'experiment.tetheringsystem': [['','']],
+            'experiment.tetheringsystem': [['', '']],
             'experiment.amplifierdetectiontype': [['', '']],
             'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
 
@@ -647,7 +660,7 @@ class ImportExperiment:
                 ['patient.medicalrecorddata', 'medical_record_data'],
             ],
             # Data collections
-            'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
+            # 'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
         }
         one_to_one_relation = {
             # Multi table inheritance
@@ -657,10 +670,10 @@ class ImportExperiment:
             'experiment.questionnaire': 'experiment.component',
             'experiment.stimulus': 'experiment.component',
             'experiment.task': 'experiment.component',
-            'experiment.task_experiment': 'experiment.component',
+            'experiment.taskfortheexperimenter': 'experiment.component',
             'experiment.eeg': 'experiment.component',
-            'experiment.tms': 'experiment.component',
             'experiment.emg': 'experiment.component',
+            'experiment.tms': 'experiment.component',
             'experiment.digitalgamephase': 'experiment.component',
             'experiment.genericdatacollection': 'experiment.component',
             'experiment.tmsdevice': 'experiment.equipment',
