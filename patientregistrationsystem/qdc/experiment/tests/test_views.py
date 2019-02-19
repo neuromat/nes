@@ -18,7 +18,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     Component, GoalkeeperGame, GoalkeeperPhase, GoalkeeperGameResults, \
     FileFormat, ExperimentResearcher, Experiment, ResearchProject, \
     TMS, ComponentConfiguration, Questionnaire, Subject, SubjectOfGroup, \
-    DataConfigurationTree, Manufacturer, Material, TMSDevice, TMSDeviceSetting, \
+    Manufacturer, Material, TMSDevice, TMSDeviceSetting, \
     CoilModel, CoilShape, TMSSetting, Equipment, EEGSetting, EEGElectrodeLayoutSetting, \
     EEGElectrodeNetSystem, EEGElectrodeNet, ElectrodeModel, ElectrodeConfiguration, \
     EEGElectrodeLocalizationSystem, EEGElectrodePositionSetting, EEGElectrodePosition, \
@@ -35,7 +35,7 @@ from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
-    AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis
+    AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases
 
 from patient.tests import UtilTests
 from survey.models import Survey
@@ -405,12 +405,12 @@ class ExportExperimentTest(TestCase):
         # create the groups of users and their permissions
         exec(open('add_initial_data.py').read())
 
-        user, passwd = create_user(Group.objects.all())
-        self.research_project = ObjectsFactory.create_research_project(owner=user)
+        self.user, passwd = create_user(Group.objects.all())
+        self.research_project = ObjectsFactory.create_research_project(owner=self.user)
         self.experiment = ObjectsFactory.create_experiment(self.research_project)
         self.group = ObjectsFactory.create_group(self.experiment)
 
-        self.client.login(username=user.username, password=passwd)
+        self.client.login(username=self.user.username, password=passwd)
 
     def tearDown(self):
         self.client.logout()
@@ -427,6 +427,32 @@ class ExportExperimentTest(TestCase):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         data = json.loads(response.content.decode('utf-8'))
         self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
+
+    def test_remove_all_auth_user_items_before_export(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        user2, passwd2 = create_user(Group.objects.all())
+        UtilTests.create_telephone(patient, changed_by=user2)
+        user3, passwd3 = create_user(Group.objects.all())
+        medical_record = UtilTests.create_medical_record(user3, patient)
+        UtilTests.create_diagnosis(medical_record)
+
+        research_project = ObjectsFactory.create_research_project(self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        group = ObjectsFactory.create_group(experiment)
+        subject = ObjectsFactory.create_subject(patient)
+        ObjectsFactory.create_subject_of_group(group, subject)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path) as file:
+            data = file.read().replace('\n', '')
+
+        deserialized = json.loads(data)
+        self.assertIsNone(
+            next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'), None)
+        )
 
 
 class ImportExperimentTest(TestCase):
@@ -633,9 +659,9 @@ class ImportExperimentTest(TestCase):
             muscle_side=muscle_side)
         emg_electrode_placement_setting_needle = \
             EMGElectrodePlacementSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_needle,
-            emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
-            muscle_side=muscle_side)
+                emg_electrode_setting=emg_electrode_setting_needle,
+                emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
+                muscle_side=muscle_side)
 
         # Amplifier
         amplifier_detection_type = AmplifierDetectionType.objects.create(name='TEST_AMPLIFIER_DETECTION_TYPE')
@@ -689,6 +715,15 @@ class ImportExperimentTest(TestCase):
                                                         kwargs={'survey': survey})
         ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
 
+    def _create_minimum_objects_to_test_patient(self, patient):
+        research_project = ObjectsFactory.create_research_project(self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        group = ObjectsFactory.create_group(experiment)
+        subject = ObjectsFactory.create_subject(patient)
+        ObjectsFactory.create_subject_of_group(group, subject)
+
+        return experiment
+
     def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name, linking_field,
                                                       _experiment, filter_model_1={},
                                                       flag1=False, flag2=False):
@@ -727,7 +762,7 @@ class ImportExperimentTest(TestCase):
                          len(old_model_2_objects_ids) + new_model_2_objects.count()
                          )
 
-        if not flag1: # TODO: refactor to not use flag1
+        if not flag1:  # TODO: refactor to not use flag1
             for item in new_model_1_objects:
                 dinamic_filter = {linking_field: item.pk}
                 self.assertTrue(new_model_2_objects.filter(**dinamic_filter).exists())
@@ -856,31 +891,31 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    # def test_POST_experiment_import_file_group_has_experimental_protocol_returns_successful_message(self):
-    #     research_project = ObjectsFactory.create_research_project(owner=self.user)
-    #     experiment = ObjectsFactory.create_experiment(research_project)
-    #     ep1 = ObjectsFactory.create_block(experiment)
-    #     ep2 = ObjectsFactory.create_block(experiment)
-    #     group1 = ObjectsFactory.create_group(experiment)
-    #     group2 = ObjectsFactory.create_group(experiment, ep1)
-    #     group3 = ObjectsFactory.create_group(experiment, ep2)
-    #
-    #     export = ExportExperiment(experiment)
-    #     export.export_all()
-    #     file_path = export.get_file_path()
-    #
-    #     with open(file_path, 'rb') as file:
-    #         response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-    #     self.assertRedirects(response, reverse('import_log'))
-    #     new_block_components = Component.objects.exclude(id__in=[ep1.id, ep2.id])
-    #     self.assertEqual(2, new_block_components.count())
-    #     new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id, group3.id])
-    #     new_groups_with_exp_prot = [group for group in new_groups if group.experimental_protocol is not None]
-    #     for group in new_groups_with_exp_prot:
-    #         self.assertIn(group.experimental_protocol, new_block_components)
-    #     self.assertNotEqual(
-    #         new_groups_with_exp_prot[0].experimental_protocol, new_groups_with_exp_prot[1].experimental_protocol
-    #     )
+    def test_POST_experiment_import_file_group_has_experimental_protocol_returns_successful_message(self):
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        ep1 = ObjectsFactory.create_block(experiment)
+        ep2 = ObjectsFactory.create_block(experiment)
+        group1 = ObjectsFactory.create_group(experiment)
+        group2 = ObjectsFactory.create_group(experiment, ep1)
+        group3 = ObjectsFactory.create_group(experiment, ep2)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+        new_block_components = Component.objects.exclude(id__in=[ep1.id, ep2.id])
+        self.assertEqual(2, new_block_components.count())
+        new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id, group3.id])
+        new_groups_with_exp_prot = [group for group in new_groups if group.experimental_protocol is not None]
+        for group in new_groups_with_exp_prot:
+            self.assertIn(group.experimental_protocol, new_block_components)
+        self.assertNotEqual(
+            new_groups_with_exp_prot[0].experimental_protocol, new_groups_with_exp_prot[1].experimental_protocol
+        )
 
     def test_POST_experiment_import_file_creates_root_component_plus_instruction_and_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
@@ -914,58 +949,6 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
-    # Questionnaire tests
-    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self):
-        self._create_minimum_objects_to_test_components()
-        self._create_minimum_objects_to_test_questionnaire()
-
-        export = ExportExperiment(self.experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        survey_before_count = Survey.objects.count()
-        questionnaire_before_count = Questionnaire.objects.count()
-
-        with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-        self.assertRedirects(response, reverse('import_log'))
-        self.assertEqual(Survey.objects.count(), survey_before_count + 1)
-        self.assertEqual(Questionnaire.objects.count(), questionnaire_before_count + 1)
-        self.assertEqual(Questionnaire.objects.last().survey.id, Survey.objects.last().id)
-        message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
-
-    def test_POST_experiment_import_file_creates_random_code_in_surveys(self):
-        self._create_minimum_objects_to_test_components()
-        self._create_minimum_objects_to_test_questionnaire()
-
-        export = ExportExperiment(self.experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-
-        new_survey = Survey.objects.last()
-        self.assertTrue(1 <= int(new_survey.code.split('Q')[1]) <= 100000)
-
-    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self):
-        self._create_minimum_objects_to_test_components()
-        self._create_minimum_objects_to_test_questionnaire()
-        self._create_minimum_objects_to_test_questionnaire(survey_id=121212)
-
-        export = ExportExperiment(self.experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-
-        new_survey1 = Survey.objects.all().order_by('-id')[1]
-        new_survey2 = Survey.objects.all().order_by('-id')[0]
-        self.assertEqual(-100, new_survey1.lime_survey_id)
-        self.assertEqual(-101, new_survey2.lime_survey_id)
 
     def test_POST_experiment_import_file_creates_root_component_plus_tms_and_returns_successful_message(self):
         self._create_minimum_objects_to_test_components()
@@ -1665,6 +1648,58 @@ class ImportExperimentTest(TestCase):
             self.assertIn(item, ResearchProject.objects.last().keywords.all())
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    # Questionnaire tests
+    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self):
+        self._create_minimum_objects_to_test_components()
+        self._create_minimum_objects_to_test_questionnaire()
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        survey_before_count = Survey.objects.count()
+        questionnaire_before_count = Questionnaire.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+        self.assertEqual(Survey.objects.count(), survey_before_count + 1)
+        self.assertEqual(Questionnaire.objects.count(), questionnaire_before_count + 1)
+        self.assertEqual(Questionnaire.objects.last().survey.id, Survey.objects.last().id)
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
+    def test_POST_experiment_import_file_creates_random_code_in_surveys(self):
+        self._create_minimum_objects_to_test_components()
+        self._create_minimum_objects_to_test_questionnaire()
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        new_survey = Survey.objects.last()
+        self.assertTrue(1 <= int(new_survey.code.split('Q')[1]) <= 100000)
+
+    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self):
+        self._create_minimum_objects_to_test_components()
+        self._create_minimum_objects_to_test_questionnaire()
+        self._create_minimum_objects_to_test_questionnaire(survey_id=121212)
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        new_survey1 = Survey.objects.all().order_by('-id')[1]
+        new_survey2 = Survey.objects.all().order_by('-id')[0]
+        self.assertEqual(-100, new_survey1.lime_survey_id)
+        self.assertEqual(-101, new_survey2.lime_survey_id)
 
     # Components tests
     def test_component_and_block(self):
@@ -2482,11 +2517,7 @@ class ImportExperimentTest(TestCase):
         medical_record = UtilTests.create_medical_record(self.user, patient)
         UtilTests.create_diagnosis(medical_record)
 
-        research_project = ObjectsFactory.create_research_project(self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        group = ObjectsFactory.create_group(experiment)
-        subject = ObjectsFactory.create_subject(patient)
-        ObjectsFactory.create_subject_of_group(group, subject)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2498,3 +2529,68 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(Patient.objects.last().changed_by, self.user_importer)
         self.assertEqual(Telephone.objects.last().changed_by, self.user_importer)
         self.assertEqual(MedicalRecordData.objects.last().record_responsible, self.user_importer)
+
+    def test_diagnosis_classification_of_diseases_references_points_to_natural_key_code(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        medical_record = UtilTests.create_medical_record(self.user, patient)
+        diagnosis = UtilTests.create_diagnosis(medical_record)
+
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path) as file:
+            data = file.read().replace('\n', '')
+
+        serialized = json.loads(data)
+        index = next((index for (index, dict_) in enumerate(serialized) if dict_['model'] == 'patient.diagnosis'), None)
+        code = serialized[index]['fields']['classification_of_diseases'][0]
+        self.assertEqual(diagnosis.classification_of_diseases.code, code)
+
+    def test_diagnosis_classification_of_diseases_references_points_to_code_already_existent_imports_successfully(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        medical_record = UtilTests.create_medical_record(self.user, patient)
+        cid10 = UtilTests.create_cid10('A01')
+        UtilTests.create_diagnosis(medical_record, cid10)
+
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+
+        cid10_count = ClassificationOfDiseases.objects.count()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        self.assertEqual(ClassificationOfDiseases.objects.count(), cid10_count)
+
+    def test_classification_of_diseases_references_creates_new_entries_if_code_not_exists(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        medical_record = UtilTests.create_medical_record(self.user, patient)
+        cid10 = UtilTests.create_cid10('A01')
+        UtilTests.create_diagnosis(medical_record, cid10)
+
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Changes created classification of diseases code to test below
+        cid10.code = 'A21'
+        cid10.save()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        self.assertEqual(2, ClassificationOfDiseases.objects.count())
+        new_cid10 = ClassificationOfDiseases.objects.last()
+        self.assertEqual(new_cid10.code, 'A01')
+        self.assertEqual(new_cid10.description, '(imported, not recognized)')
+        self.assertEqual(new_cid10.abbreviated_description, '(imported, not recognized)')
