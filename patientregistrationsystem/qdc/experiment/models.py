@@ -1298,8 +1298,6 @@ class TMSData(DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
     def __str__(self):
         return self.description
 
@@ -1327,8 +1325,6 @@ class HotSpot(models.Model):
 class AdditionalData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
-
-    # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
         return self.description
