@@ -221,3 +221,15 @@ json_files_detached_models = {
         'emg_electrodeplacementsetting'
     )
 }
+
+pre_loaded_models = {
+    'experiment.manufacturer': [
+        ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
+        ('experiment.software', 'manufacturer')
+    ],
+    # 'experiment.material': [
+    #         ('experiment.electrodemodel', 'material'), ('experiment.intramuscularelectrode', 'insulation_material'),
+    #         ('experiment.eegelectrodecap', 'material'), ('experiment.coilmodel', 'material')
+    # ],
+    'experiment.muscle': [('experiment.muscleside', 'muscle'), ('experiment.musclesubdivision', 'muscle')]
+}
