@@ -160,10 +160,17 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_tms_setting(experiment):
-        tms_setting = TMSSetting.objects.create(experiment=experiment,
-                                                name='TMS-Setting name',
-                                                description='TMS-Setting description')
-        return tms_setting
+        return TMSSetting.objects.create(experiment=experiment,
+                                         name='TMS-Setting name',
+                                         description='TMS-Setting description')
+
+    @staticmethod
+    def create_tms_device(manufacturer):
+        faker = Factory.create()
+        tms_device = TMSDevice.objects.create(
+            manufacturer=manufacturer, equipment_type=TMSDevice.EQUIPMENT_TYPES[0][0], identification=faker.word(),
+            description=faker.text(), serial_number=faker.ssn()
+        )
 
     @staticmethod
     def create_emg_electrode_setting(emg_setting, electrode_model):
@@ -194,23 +201,17 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_muscle():
-        muscle = Muscle.objects.create(
-            name='Muscle identification'
-        )
-        muscle.save()
-        return muscle
+        return Muscle.objects.create(name='Muscle identification')
 
     @staticmethod
     def create_muscle_subdivision(muscle):
-        muscle_subdivision = MuscleSubdivision.objects.create(
+        return MuscleSubdivision.objects.create(
             name='Muscle subdivision identification',
             anatomy_origin='Anatomy origin description',
             anatomy_insertion='Anatomy insertion description',
             anatomy_function='Anatomy function description',
             muscle=muscle
         )
-        muscle_subdivision.save()
-        return muscle_subdivision
 
     @staticmethod
     def create_muscle_side(muscle):
@@ -646,7 +647,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_emg_data_collection_data(data_conf_tree,
-                                            subj_of_group, emg_set):
+                                        subj_of_group, emg_set):
 
         faker = Factory.create()
 
