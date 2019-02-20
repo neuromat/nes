@@ -9,11 +9,12 @@ import networkx as nx
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count
+from django.db.models.loading import get_model
 
 from experiment.models import Group, ResearchProject, Experiment, \
-    Keyword, Component, Manufacturer, Material
+    Keyword, Component
 from experiment.import_export_model_relations import one_to_one_relation, foreign_relations, model_root_nodes, \
-    experiment_json_files, patient_json_files, json_files_detached_models
+    experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -171,6 +172,7 @@ class ExportExperiment:
 class ImportExperiment:
     BAD_JSON_FILE_ERROR = 1
     FIXTURE_FILE_NAME = 'experiment.json'
+    PRE_LOADED_MODELS = pre_loaded_models
 
     def __init__(self, file_path):
         self.file_path = file_path
@@ -337,53 +339,22 @@ class ImportExperiment:
                 new_limesurvey_id -= 1
                 data[i]['fields']['lime_survey_id'] = new_limesurvey_id
 
-    @staticmethod
-    def _keep_manufacturer(data):
-        dependent_models = [
-            ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
-            ('experiment.software', 'manufacturer')
-        ]
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in 'experiment.manufacturer']
-
-        for i in indexes:
-            # TODO: when and if change Manufacturer model name field to unique
-            #  change to 'objects.get'
-            instance = Manufacturer.objects.filter(name=data[i]['fields']['name']).first()
-            if instance:
-                data[i]['pk'], old_id = instance.id, data[i]['pk']
-                for model in dependent_models:
-                    dependent_indexes = [
-                        index for (index, dict_) in enumerate(data)
-                        if dict_['model'] == model[0] and dict_['fields'][model[1]] == old_id
-                    ]
-                    for dependent_index in dependent_indexes:
-                        data[dependent_index]['fields'][model[1]] = data[i]['pk']
-
-    @staticmethod
-    def _keep_material(data):
-        dependent_models = [
-            ('experiment.electrodemodel', 'material'), ('experiment.intramuscularelectrode', 'insulation_material'),
-            ('experiment.eegelectrodecap', 'material'), ('experiment.coilmodel', 'material')
-        ]
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in 'experiment.material']
-
-        for i in indexes:
-            instance = Material.objects.filter(
-                name=data[i]['fields']['name'], description=data[i]['fields']['description']
-            ).first()
-            if instance:
-                data[i]['pk'], old_id = instance.id, data[i]['pk']
-                for model in dependent_models:
-                    dependent_indexes = [
-                        index for (index, dict_) in enumerate(data)
-                        if dict_['model'] == model[0] and dict_['fields'][model[1]] == old_id
-                    ]
-                    for dependent_index in dependent_indexes:
-                        data[dependent_index]['fields'][model[1]] = data[i]['pk']
-
     def _keep_objects_pre_loaded(self, data):
-        self._keep_manufacturer(data)
-        self._keep_material(data)
+        for model, dependent_models in self.PRE_LOADED_MODELS.items():
+            indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
+            app_model = model.split('.')
+            for i in indexes:
+                model_class = get_model(app_model[0], app_model[1])
+                instance = model_class.objects.filter(name=data[i]['fields']['name']).first()
+                if instance:
+                    data[i]['pk'], old_id = instance.id, data[i]['pk']
+                    for dependent_model in dependent_models:
+                        dependent_indexes = [
+                            index for (index, dict_) in enumerate(data)
+                            if dict_['model'] == dependent_model[0] and dict_['fields'][dependent_model[1]] == old_id
+                        ]
+                        for dependent_index in dependent_indexes:
+                            data[dependent_index]['fields'][dependent_model[1]] = data[i]['pk']
 
     @staticmethod
     def _verify_classification_of_diseases(data):
