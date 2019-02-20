@@ -2,8 +2,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from qdc import views as qdcviews
 from django.contrib.auth import views as authviews
-from django import views as djangoviews
-
+from django.views.i18n import javascript_catalog
 from django.conf.urls.static import static
 from .forms import PasswordChangeFormCustomized
 from django.contrib import admin
@@ -22,7 +21,7 @@ urlpatterns = [
     url(r'^survey/', include('survey.urls')),
     url(r'^export/', include('export.urls')),
     url(r'^home/$', qdcviews.contact, name='contact'),
-    url(r'^accounts/login/$', authviews.login),
+    url(r'^accounts/login/$', authviews.login, name='login'),
     url(r'^account/', include('django.contrib.auth.urls')),
     url(r'^logout/$', authviews.logout_then_login, {'login_url': '/home'}, name='logout'),
     url(r'^password_change/$', authviews.password_change,
@@ -55,7 +54,7 @@ js_info_dict = {
 }
 
 urlpatterns += [
-    url(r'^jsi18n/$', djangoviews.i18n.javascript_catalog, js_info_dict),
+    url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript_catalog'),
 ]
 
 if settings.DEBUG404:

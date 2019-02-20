@@ -3,6 +3,7 @@ from patient.models import Gender, Payment, FleshTone, Religion, Schooling, Amou
     AlcoholPeriod
 from patient.views import *
 from django.contrib.auth.models import User
+from patient.tests import UtilTests
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -72,7 +73,11 @@ class TelephoneFormValidation(TestCase):
         self.user.is_superuser = True
         self.user.save()
 
-        phone_type = Telephone.objects.create(type='HO', changed_by_id=self.user.id, patient_id=1)
+        util = UtilTests()
+
+        self.patient = util.create_patient(changed_by=self.user)
+
+        phone_type = Telephone.objects.create(type='HO', changed_by_id=self.user.id, patient_id=self.patient.id)
         self.data = {
             'number': '123456789',
             'type': phone_type.type,
