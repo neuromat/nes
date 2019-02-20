@@ -12,7 +12,7 @@ from django.db.models import Count
 from django.db.models.loading import get_model
 
 from experiment.models import Group, ResearchProject, Experiment, \
-    Keyword, Component,
+    Keyword, Component
 from experiment.import_export_model_relations import one_to_one_relation, foreign_relations, model_root_nodes, \
     experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models
 from patient.models import Patient, ClassificationOfDiseases
