@@ -7,6 +7,7 @@ django-modeltranslation==0.12.2
 django-simple-history==1.9.0
 jsonrpc-requests==0.2
 psycopg2==2.7.5
+psycopg2-binary>=2.7.7
 pyflakes==0.9.2
 pylint==1.5.4
 pep8==1.7.0
