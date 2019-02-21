@@ -1752,8 +1752,8 @@ class ExportSelection(ExportTestCase):
         self.append_session_variable('group_selected', [str(self.group.id)])
 
         response = self.client.post(reverse('experiment_selection'), data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/export/view/')
+
+        self.assertRedirects(response, '/export/view/', status_code=302, target_status_code=200)
 
     def test_experiment_selection_withou_select_group(self):
 
@@ -1799,12 +1799,7 @@ class ExportSelection(ExportTestCase):
 
         # when session expires the request is made with get
         response3 = self.client.get(response2.url)
-
-        # TODO:
-        # see if it's possible to get 'http://testserver' without hardcode
-        self.assertEqual(
-            response3.url, reverse('export_menu')
-        )
+        self.assertRedirects(response3, reverse('export_menu'), status_code=302, target_status_code=200)
 
 # class UploadPaperTest(ExportTestCase):
 #
