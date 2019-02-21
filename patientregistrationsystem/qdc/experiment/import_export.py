@@ -341,11 +341,15 @@ class ImportExperiment:
 
     def _keep_objects_pre_loaded(self, data):
         for model, dependent_models in self.PRE_LOADED_MODELS.items():
-            indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model]
-            app_model = model.split('.')
+            indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model[0]]
+            app_model = model[0].split('.')
             for i in indexes:
                 model_class = get_model(app_model[0], app_model[1])
-                instance = model_class.objects.filter(name=data[i]['fields']['name']).first()
+                instance = model_class
+                filter_ = {}
+                for field in model[1]:
+                    filter_[field] = data[i]['fields'][field]
+                instance = instance.objects.filter(**filter_).first()
                 if instance:
                     data[i]['pk'], old_id = instance.id, data[i]['pk']
                     for dependent_model in dependent_models:

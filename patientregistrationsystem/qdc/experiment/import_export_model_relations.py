@@ -117,40 +117,40 @@ foreign_relations = {
 }
 
 one_to_one_relation = {
-            # Multi table inheritance
-            'experiment.block': 'experiment.component',
-            'experiment.instruction': 'experiment.component',
-            'experiment.pause': 'experiment.component',
-            'experiment.questionnaire': 'experiment.component',
-            'experiment.stimulus': 'experiment.component',
-            'experiment.task': 'experiment.component',
-            'experiment.taskfortheexperimenter': 'experiment.component',
-            'experiment.eeg': 'experiment.component',
-            'experiment.emg': 'experiment.component',
-            'experiment.tms': 'experiment.component',
-            'experiment.digitalgamephase': 'experiment.component',
-            'experiment.genericdatacollection': 'experiment.component',
-            'experiment.tmsdevice': 'experiment.equipment',
-            'experiment.eegelectrodenet': 'experiment.equipment',
-            'experiment.amplifier': 'experiment.equipment',
-            'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
-            'experiment.emgsurfaceplacement': 'experiment.emgelectrodeplacement',
-            'experiment.emgneedleplacement': 'experiment.emgelectrodeplacement',
-            'experiment.adconverter': 'experiment.equipment',
-            # OneToOneField
-            'experiment.tmsdevicesetting': 'experiment.tmssetting',
-            'experiment.eegelectrodelayoutsetting': 'experiment.eegsetting',
-            'experiment.eegfiltersetting': 'experiment.eegsetting',
-            'experiment.eegamplifiersetting': 'experiment.eegsetting',
-            'experiment.eegsolutionsetting': 'experiment.eegsetting',
-            'experiment.emgadconvertersetting': 'experiment.emgsetting',
-            'experiment.emgdigitalfiltersetting': 'experiment.emgsetting',
-            'experiment.emgamplifiersetting': 'experiment.emgelectrodesetting',
-            'experiment.emganalogfiltersetting': 'experiment.emgamplifiersetting',
-            'experiment.emgpreamplifiersetting': 'experiment.emgelectrodesetting',
-            'experiment.emgpreamplifierfiltersetting': 'experiment.emgpreamplifiersetting',
-            'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
-        }
+    # Multi table inheritance
+    'experiment.block': 'experiment.component',
+    'experiment.instruction': 'experiment.component',
+    'experiment.pause': 'experiment.component',
+    'experiment.questionnaire': 'experiment.component',
+    'experiment.stimulus': 'experiment.component',
+    'experiment.task': 'experiment.component',
+    'experiment.taskfortheexperimenter': 'experiment.component',
+    'experiment.eeg': 'experiment.component',
+    'experiment.emg': 'experiment.component',
+    'experiment.tms': 'experiment.component',
+    'experiment.digitalgamephase': 'experiment.component',
+    'experiment.genericdatacollection': 'experiment.component',
+    'experiment.tmsdevice': 'experiment.equipment',
+    'experiment.eegelectrodenet': 'experiment.equipment',
+    'experiment.amplifier': 'experiment.equipment',
+    'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
+    'experiment.emgsurfaceplacement': 'experiment.emgelectrodeplacement',
+    'experiment.emgneedleplacement': 'experiment.emgelectrodeplacement',
+    'experiment.adconverter': 'experiment.equipment',
+    # OneToOneField
+    'experiment.tmsdevicesetting': 'experiment.tmssetting',
+    'experiment.eegelectrodelayoutsetting': 'experiment.eegsetting',
+    'experiment.eegfiltersetting': 'experiment.eegsetting',
+    'experiment.eegamplifiersetting': 'experiment.eegsetting',
+    'experiment.eegsolutionsetting': 'experiment.eegsetting',
+    'experiment.emgadconvertersetting': 'experiment.emgsetting',
+    'experiment.emgdigitalfiltersetting': 'experiment.emgsetting',
+    'experiment.emgamplifiersetting': 'experiment.emgelectrodesetting',
+    'experiment.emganalogfiltersetting': 'experiment.emgamplifiersetting',
+    'experiment.emgpreamplifiersetting': 'experiment.emgelectrodesetting',
+    'experiment.emgpreamplifierfiltersetting': 'experiment.emgpreamplifiersetting',
+    'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
+}
 
 experiment_json_files = {
     'experimentfixture': ('experiment', 'id__in'),
@@ -223,13 +223,18 @@ json_files_detached_models = {
 }
 
 pre_loaded_models = {
-    'experiment.manufacturer': [
+    ('experiment.manufacturer', ('name',)): [
         ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
         ('experiment.software', 'manufacturer')
     ],
-    # 'experiment.material': [
-    #         ('experiment.electrodemodel', 'material'), ('experiment.intramuscularelectrode', 'insulation_material'),
-    #         ('experiment.eegelectrodecap', 'material'), ('experiment.coilmodel', 'material')
-    # ],
-    'experiment.muscle': [('experiment.muscleside', 'muscle'), ('experiment.musclesubdivision', 'muscle')]
+    ('experiment.material', ('name', 'description')): [
+            ('experiment.electrodemodel', 'material'),
+            # Not used by the system (uncomment when it be)
+            # ('experiment.intramuscularelectrode', 'insulation_material'),
+            # TODO: map when exporting/importing data collections
+            # ('experiment.eegelectrodecap', 'material'),
+
+            ('experiment.coilmodel', 'material')
+    ],
+    ('experiment.muscle', ('name',)): [('experiment.muscleside', 'muscle'), ('experiment.musclesubdivision', 'muscle')]
 }
