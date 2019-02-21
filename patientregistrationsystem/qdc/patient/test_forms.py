@@ -162,7 +162,7 @@ class SocialDemographicDataFormValidation(TestCase):
         socialdemodata = SocialDemographicDataForm(data=self.data)
         self.assertTrue(socialdemodata.is_valid())
 
-        self.assertEqual(socialdemodata.cleaned_data['social_class'], None)
+        self.assertEqual(socialdemodata.cleaned_data['social_class'], "")
 
     # Test if the form is invalid if one field is passed with a different format defined by the form to it
     def test_SocialDemographicData_is_not_valid(self):
