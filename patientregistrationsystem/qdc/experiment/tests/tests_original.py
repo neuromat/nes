@@ -498,14 +498,13 @@ class ObjectsFactory(object):
         return material
 
     @staticmethod
-    def create_eeg_electrode_cap(manufacturer, electrode_model_default):
-        eeg_electrode_cap = EEGElectrodeCap.objects.create(
+    def create_eeg_electrode_cap(manufacturer, electrode_model, material=None):
+        return EEGElectrodeCap.objects.create(
             manufacturer=manufacturer,
             identification="EEG electrode cap identification",
-            electrode_model_default=electrode_model_default
+            electrode_model_default=electrode_model,
+            material=material
         )
-        eeg_electrode_cap.save()
-        return eeg_electrode_cap
 
     @staticmethod
     def create_coil_model(coil_shape):
