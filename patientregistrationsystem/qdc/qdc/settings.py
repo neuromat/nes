@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'simple_history',
     'jsonrpc_requests',
     'solo',
+    'fixture_magic'
 )
 
 PROJECT_APPS = (
