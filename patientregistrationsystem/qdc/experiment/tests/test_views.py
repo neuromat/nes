@@ -2508,10 +2508,11 @@ class ImportExperimentTest(TestCase):
     def _get_pre_loaded_models():
         # For the dict keys we select one to change for the tests
         return {
-            (Manufacturer, 'name'): [(Equipment, 'manufacturer'), (Software, 'manufacturer')],
-            (Material, 'description'): [(ElectrodeModel, 'material')],
-            (Muscle, 'name'): [(MuscleSide, 'muscle'), (MuscleSubdivision, 'muscle')],
-            (MuscleSubdivision, 'anatomy_origin'): [(EMGElectrodePlacement, 'muscle_subdivision')]
+            (Manufacturer, 'name'): [(Equipment, 'manufacturer', 1), (Software, 'manufacturer', 1)],
+            (Material, 'description'): [(ElectrodeModel, 'material', 1)],
+            (Muscle, 'name'): [(MuscleSide, 'muscle', 1), (MuscleSubdivision, 'muscle', 1)],
+            (MuscleSide, 'name'): [(EMGElectrodePlacementSetting, 'muscle_side', 3)],
+            (MuscleSubdivision, 'anatomy_origin'): [(EMGElectrodePlacement, 'muscle_subdivision', 3)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
@@ -2527,11 +2528,13 @@ class ImportExperimentTest(TestCase):
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         for model in pre_loaded_models:
-            self.assertEqual(1, model[0].objects.count())
+            self.assertEqual(1, model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
             for dependent_model in pre_loaded_models[model]:
-                reference = getattr(dependent_model[0].objects.last(), dependent_model[1])
-                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+                dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
+                for dependent_model_instance in dependent_model_instances:
+                    reference = getattr(dependent_model_instance, dependent_model[1])
+                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
     def test_object_imported_does_not_exist_create_new_emg(self):
         experiment = self._create_experiment_with_emg_setting()
@@ -2553,11 +2556,13 @@ class ImportExperimentTest(TestCase):
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         for model in pre_loaded_models:
-            self.assertEqual(2, model[0].objects.count())
+            self.assertEqual(2, model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
             for dependent_model in pre_loaded_models[model]:
-                reference = getattr(dependent_model[0].objects.last(), dependent_model[1])
-                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+                dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
+                for dependent_model_instance in dependent_model_instances:
+                    reference = getattr(dependent_model_instance, dependent_model[1])
+                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
     def test_preloaded_material_is_equal_to_the_one_imported_keeps_object_and_references2(self):
         # Second test uses things creates for TMS setting
@@ -2619,7 +2624,7 @@ class ImportExperimentTest(TestCase):
     def test_muscleside_and_emgelectrodeplacementsetting(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
-            self._create_experiment_with_emg_setting()
+            self._create_experiment_with_emg_setting(), to_create=False
         )
 
     def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
