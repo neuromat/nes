@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
+from faker import Factory
 
 from custom_user.tests_helper import create_user
 from experiment.import_export import ExportExperiment
@@ -2456,27 +2457,6 @@ class ImportExperimentTest(TestCase):
             to_create=False
         )
 
-    def test_muscle_imported_does_not_exist_create_new(self):
-        experiment = self._create_experiment_with_emg_setting()
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # Changes muscle name simulating importing muscle without his existence
-        muscle = Muscle.objects.last()
-        muscle.name = 'new name'
-        muscle.save()
-
-        with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-
-        # One muscle was created in _create_experiment_with_emg_setting
-        self.assertEqual(2, Muscle.objects.count())
-        muscle = Muscle.objects.last()
-        self.assertEqual(MuscleSide.objects.last().muscle, muscle)
-        self.assertEqual(MuscleSubdivision.objects.last().muscle, muscle)
-
     def test_manufacturer_imported_does_not_exist_create_new1(self):
         # First test uses things creates for EEG setting
         # manufacturer was created related with EEGSolution and EEGElectrodeNet(Equipment)
@@ -2501,29 +2481,6 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(EEGElectrodeNet.objects.last().manufacturer, manufacturer)
         self.assertEqual(EEGSolution.objects.last().manufacturer, manufacturer)
 
-    def test_manufacturer_imported_does_not_exist_create_new2(self):
-        # Second test uses things created for EMG setting:
-        # manufacturer was created related with Software
-        # (see import_export_model_relations.py)
-        experiment = self._create_experiment_with_emg_setting()
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        # Changes name simulating importing without his existence
-        manufacturer = Manufacturer.objects.last()
-        manufacturer.name = 'new manufacturer'
-        manufacturer.save()
-
-        with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-
-        # One manufacturer was created in _create_experiment_with_emg_setting method
-        self.assertEqual(2, Manufacturer.objects.count())
-        manufacturer = Manufacturer.objects.last()
-        self.assertEqual(Software.objects.last().manufacturer, manufacturer)
-
     def test_material_imported_does_not_exist_create_new1(self):
         # First test uses things creates for EEG setting:
         # material was created related with ElectrodeModel
@@ -2547,16 +2504,20 @@ class ImportExperimentTest(TestCase):
         # TODO: test when importing/exporting data collections
         # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
 
-    def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references1(self):
-        # Variation 1 tests objects related to EMG settings
-        pre_loaded_models = {
-            Manufacturer: [(Equipment, 'manufacturer'), (Software, 'manufacturer')],
-            Material: [(ElectrodeModel, 'material')],
-            Muscle: [(MuscleSide, 'muscle'), (MuscleSubdivision, 'muscle')],
-            MuscleSubdivision: [(EMGElectrodePlacement, 'muscle_subdivision')]
+    @staticmethod
+    def _get_pre_loaded_models():
+        # For the dict keys we select one to change for the tests
+        return {
+            (Manufacturer, 'name'): [(Equipment, 'manufacturer'), (Software, 'manufacturer')],
+            (Material, 'description'): [(ElectrodeModel, 'material')],
+            (Muscle, 'name'): [(MuscleSide, 'muscle'), (MuscleSubdivision, 'muscle')],
+            (MuscleSubdivision, 'anatomy_origin'): [(EMGElectrodePlacement, 'muscle_subdivision')]
         }
 
+    def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
         experiment = self._create_experiment_with_emg_setting()
+
+        pre_loaded_models = self._get_pre_loaded_models()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2566,8 +2527,34 @@ class ImportExperimentTest(TestCase):
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         for model in pre_loaded_models:
-            self.assertEqual(1, model.objects.count())
-            model_instance = model.objects.last()
+            self.assertEqual(1, model[0].objects.count())
+            model_instance = model[0].objects.last()
+            for dependent_model in pre_loaded_models[model]:
+                reference = getattr(dependent_model[0].objects.last(), dependent_model[1])
+                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
+    def test_object_imported_does_not_exist_create_new_emg(self):
+        experiment = self._create_experiment_with_emg_setting()
+
+        pre_loaded_models = self._get_pre_loaded_models()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        faker = Factory.create()
+        for model in pre_loaded_models:
+            # Changes field value to test for newly created instances
+            instance = model[0].objects.last()
+            instance.__dict__[model[1]] = faker.word()
+            instance.save()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in pre_loaded_models:
+            self.assertEqual(2, model[0].objects.count())
+            model_instance = model[0].objects.last()
             for dependent_model in pre_loaded_models[model]:
                 reference = getattr(dependent_model[0].objects.last(), dependent_model[1])
                 self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
