@@ -229,12 +229,14 @@ pre_loaded_models = {
     ],
     ('experiment.material', ('name', 'description')): [
             ('experiment.electrodemodel', 'material'),
-            # Not used by the system (uncomment when it be)
+            # Not used by the system (uncomment if it is)
             # ('experiment.intramuscularelectrode', 'insulation_material'),
-            # TODO: map when exporting/importing data collections
+            # TODO: uncomment when exporting/importing data collections
             # ('experiment.eegelectrodecap', 'material'),
-
             ('experiment.coilmodel', 'material')
     ],
-    ('experiment.muscle', ('name',)): [('experiment.muscleside', 'muscle'), ('experiment.musclesubdivision', 'muscle')]
+    ('experiment.muscle', ('name',)): [('experiment.muscleside', 'muscle'), ('experiment.musclesubdivision', 'muscle')],
+    ('experiment.musclesubdivision', ('name', 'anatomy_origin', 'anatomy_insertion', 'anatomy_function')): [
+        ('experiment.emgelectrodeplacement', 'muscle_subdivision'),
+    ]
 }
