@@ -28,7 +28,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     MuscleSubdivision, EMGElectrodePlacementSetting, StandardizationSystem, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
-    StimulusType, ContextTree
+    StimulusType, ContextTree, EMGElectrodePlacement, Equipment
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -2456,22 +2456,6 @@ class ImportExperimentTest(TestCase):
             to_create=False
         )
 
-    def test_preloaded_muscle_is_equal_to_the_one_imported_keeps_object_and_references(self):
-        experiment = self._create_experiment_with_emg_setting()
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-
-        # One muscle was created in _create_experiment_with_emg_setting
-        self.assertEqual(1, Muscle.objects.count())
-        muscle = Muscle.objects.first()
-        self.assertEqual(MuscleSide.objects.last().muscle, muscle)
-        self.assertEqual(MuscleSubdivision.objects.last().muscle, muscle)
-
     def test_muscle_imported_does_not_exist_create_new(self):
         experiment = self._create_experiment_with_emg_setting()
 
@@ -2492,25 +2476,6 @@ class ImportExperimentTest(TestCase):
         muscle = Muscle.objects.last()
         self.assertEqual(MuscleSide.objects.last().muscle, muscle)
         self.assertEqual(MuscleSubdivision.objects.last().muscle, muscle)
-
-    def test_preloaded_manufacturer_is_equal_to_the_one_imported_keeps_object_and_references1(self):
-        # First test uses things creates for EEG setting
-        # manufacturer was created related with EEGSolution and EEGElectrodeNet(Equipment)
-        # (see import_export_model_relations.py)
-        experiment = self._create_experiment_with_eeg_setting()
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-
-        # One manufacturer was created in _create_experiment_with_eeg_setting method
-        self.assertEqual(1, Manufacturer.objects.count())
-        manufacturer = Manufacturer.objects.last()
-        self.assertEqual(EEGElectrodeNet.objects.last().manufacturer, manufacturer)
-        self.assertEqual(EEGSolution.objects.last().manufacturer, manufacturer)
 
     def test_manufacturer_imported_does_not_exist_create_new1(self):
         # First test uses things creates for EEG setting
@@ -2536,24 +2501,6 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(EEGElectrodeNet.objects.last().manufacturer, manufacturer)
         self.assertEqual(EEGSolution.objects.last().manufacturer, manufacturer)
 
-    def test_preloaded_manufacturer_is_equal_to_the_one_imported_keeps_object_and_references2(self):
-        # Second test uses things creates for EMG setting
-        # manufacturer was created related with Software
-        # (see import_export_model_relations.py)
-        experiment = self._create_experiment_with_emg_setting()
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-
-        # One manufacturer was created in _create_experiment_with_emg_setting method
-        self.assertEqual(1, Manufacturer.objects.count())
-        manufacturer = Manufacturer.objects.last()
-        self.assertEqual(Software.objects.last().manufacturer, manufacturer)
-
     def test_manufacturer_imported_does_not_exist_create_new2(self):
         # Second test uses things created for EMG setting:
         # manufacturer was created related with Software
@@ -2576,24 +2523,6 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(2, Manufacturer.objects.count())
         manufacturer = Manufacturer.objects.last()
         self.assertEqual(Software.objects.last().manufacturer, manufacturer)
-
-    def test_preloaded_material_is_equal_to_the_one_imported_keeps_object_and_references1(self):
-        # First test uses things creates for EEG setting:
-        # material was created related with ElectrodeModel
-        experiment = self._create_experiment_with_eeg_setting()
-
-        export = ExportExperiment(experiment)
-        export.export_all()
-        file_path = export.get_file_path()
-
-        with open(file_path, 'rb') as file:
-            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
-
-        self.assertEqual(1, Material.objects.count())
-        material = Material.objects.last()
-        self.assertEqual(ElectrodeModel.objects.last().material, material)
-        # TODO: test when importing/exporting data collections
-        # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
 
     def test_material_imported_does_not_exist_create_new1(self):
         # First test uses things creates for EEG setting:
@@ -2618,10 +2547,30 @@ class ImportExperimentTest(TestCase):
         # TODO: test when importing/exporting data collections
         # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
 
-    # def test_preloaded_musclesubdivision_is_equal_to_the_one_imported_keeps_object_and_references(self):
-    #     # First test uses things creates for EMG setting:
-    #     # musclesubdivision was created related with ElectrodeModel
-    #     experiment = self._create_experiment_with_emg_setting()
+    def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references1(self):
+        # Variation 1 tests objects related to EMG settings
+        pre_loaded_models = {
+            Manufacturer: [(Equipment, 'manufacturer'), (Software, 'manufacturer')],
+            Material: [(ElectrodeModel, 'material')],
+            Muscle: [(MuscleSide, 'muscle'), (MuscleSubdivision, 'muscle')],
+            MuscleSubdivision: [(EMGElectrodePlacement, 'muscle_subdivision')]
+        }
+
+        experiment = self._create_experiment_with_emg_setting()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in pre_loaded_models:
+            self.assertEqual(1, model.objects.count())
+            model_instance = model.objects.last()
+            for dependent_model in pre_loaded_models[model]:
+                reference = getattr(dependent_model[0].objects.last(), dependent_model[1])
+                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
     def test_preloaded_material_is_equal_to_the_one_imported_keeps_object_and_references2(self):
         # Second test uses things creates for TMS setting
@@ -2665,7 +2614,7 @@ class ImportExperimentTest(TestCase):
     def test_musclesubdivision_and_emgelectrodeplacement(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.musclesubdivision', 'experiment.emgelectrodeplacement', 'muscle_subdivision',
-            self._create_experiment_with_emg_setting()
+            self._create_experiment_with_emg_setting(), to_create=False
         )
 
     def test_standardizationsystem_and_emgelectrodeplacement(self):
