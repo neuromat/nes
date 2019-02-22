@@ -28,7 +28,7 @@ DEBUG404 = True
 # SECURITY WARNING: don't run with "is testing" in production
 IS_TESTING = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -48,7 +48,6 @@ INSTALLED_APPS = (
     'simple_history',
     'jsonrpc_requests',
     'solo',
-    'fixture_magic'
 )
 
 PROJECT_APPS = (
