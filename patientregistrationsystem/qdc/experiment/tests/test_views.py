@@ -638,16 +638,28 @@ class ImportExperimentTest(TestCase):
                                                               muscle=muscle)
         standardization_system = StandardizationSystem.objects.create(name='TEST_STANDARDIZATION_SYSTEM')
 
-        emg_surface_placement = EMGSurfacePlacement.objects.create(standardization_system=standardization_system,
-                                                                   muscle_subdivision=muscle_subdivision,
-                                                                   placement_type='surface')
+        emg_surface_placement = EMGSurfacePlacement.objects.create(
+            standardization_system=standardization_system,
+            muscle_subdivision=muscle_subdivision,
+            placement_type='surface'
+        )
         emg_intramuscular_placement = EMGIntramuscularPlacement.objects.create(
             standardization_system=standardization_system,
             muscle_subdivision=muscle_subdivision,
-            placement_type='intramuscular')
-        emg_needle_placement = EMGNeedlePlacement.objects.create(standardization_system=standardization_system,
-                                                                 muscle_subdivision=muscle_subdivision,
-                                                                 placement_type='needle')
+            placement_type='intramuscular'
+        )
+        emg_needle_placement = EMGNeedlePlacement.objects.create(
+            standardization_system=standardization_system,
+            muscle_subdivision=muscle_subdivision,
+            placement_type='needle'
+        )
+        # Create one EMGElectrodePlacement without create inheritade model
+        # (EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement).
+        # That is to replicate how EMGElectrodePlacement intances are created
+        # in fixtures when preloading data
+        ObjectsFactory.create_emg_electrode_placement(
+            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
+        )
         EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_surface,
             emg_electrode_placement=emg_surface_placement.emgelectrodeplacement_ptr,
@@ -2508,11 +2520,12 @@ class ImportExperimentTest(TestCase):
     def _get_pre_loaded_models():
         # For the dict keys we select one to change for the tests
         return {
-            (Manufacturer, 'name'): [(Equipment, 'manufacturer', 1), (Software, 'manufacturer', 1)],
-            (Material, 'description'): [(ElectrodeModel, 'material', 1)],
-            (Muscle, 'name'): [(MuscleSide, 'muscle', 1), (MuscleSubdivision, 'muscle', 1)],
-            (MuscleSide, 'name'): [(EMGElectrodePlacementSetting, 'muscle_side', 3)],
-            (MuscleSubdivision, 'anatomy_origin'): [(EMGElectrodePlacement, 'muscle_subdivision', 3)]
+            (Manufacturer, 'name', 1): [(Equipment, 'manufacturer', 1), (Software, 'manufacturer', 1)],
+            (Material, 'description', 1): [(ElectrodeModel, 'material', 1)],
+            (Muscle, 'name', 1): [(MuscleSide, 'muscle', 1), (MuscleSubdivision, 'muscle', 1)],
+            (MuscleSide, 'name', 1): [(EMGElectrodePlacementSetting, 'muscle_side', 3)],
+            (MuscleSubdivision, 'anatomy_origin', 1): [(EMGElectrodePlacement, 'muscle_subdivision', 3)],
+            (EMGElectrodePlacement, 'location', 7): []
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
@@ -2528,7 +2541,7 @@ class ImportExperimentTest(TestCase):
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         for model in pre_loaded_models:
-            self.assertEqual(1, model[0].objects.count(), model[0])
+            self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
             for dependent_model in pre_loaded_models[model]:
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
@@ -2555,6 +2568,9 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
+        # Exclude (EMGElectrodePlacement, 'location', 7) entry, as EMGElectrodePlacement
+        # never is created
+        del pre_loaded_models[(EMGElectrodePlacement, 'location', 7)]
         for model in pre_loaded_models:
             self.assertEqual(2, model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
