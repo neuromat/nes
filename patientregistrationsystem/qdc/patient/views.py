@@ -226,7 +226,7 @@ def patient_update_social_demographic_data(request, patient, context):
                         schooling=request.POST['schooling'])
 
                 else:
-                    new_social_demographic_data.social_class = None
+                    new_social_demographic_data.social_class = ""
 
                     # Show message only if any of the fields were filled. Nothing is shown or calculated if none of the
                     # fields were filled.
@@ -249,6 +249,8 @@ def patient_update_social_demographic_data(request, patient, context):
                 messages.success(request, _('Social demographic data successfully written.'))
 
             return finish_handling_post(request, patient.id, 1)
+        else:
+            social_demographic_form.social_class = ""
 
     context.update({
         'social_demographic_form': social_demographic_form,

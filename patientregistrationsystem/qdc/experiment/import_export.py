@@ -9,7 +9,6 @@ import networkx as nx
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count
-from django.db.models.loading import get_model
 
 from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component
@@ -344,7 +343,7 @@ class ImportExperiment:
             indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model[0]]
             app_model = model[0].split('.')
             for i in indexes:
-                model_class = get_model(app_model[0], app_model[1])
+                model_class = apps.get_model(app_model[0], app_model[1])
                 instance = model_class
                 filter_ = {}
                 for field in model[1]:

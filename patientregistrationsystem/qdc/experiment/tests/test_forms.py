@@ -7,7 +7,6 @@ from survey.abc_search_engine import Questionnaires
 from experiment.forms import *
 from experiment.forms import NumberOfUsesToInsertForm
 
-
 from experiment.models import *
 # from .models import Questionnaire, ABCSearchEngine, Survey, ABC
 
@@ -488,11 +487,11 @@ class ResearchProjectFormTest(TestCase):
         self.research_projects = ResearchProject.objects.all()
         # self.research_projects.save()
         self.data = {
-           'start_date': '13/07/2018',
-           'end_date': '30/07/2018',
-           'title': 'Experimento TOC',
-           'description': 'Experimento TOC',
-           'owner': 'gady'}
+            'start_date': '13/07/2018',
+            'end_date': '30/07/2018',
+            'title': 'Experimento TOC',
+            'description': 'Experimento TOC',
+            'owner': 'gady'}
 
     def test_ResearchProjectForm_is_valid(self):
         start_date = self.data["start_date"]
@@ -609,8 +608,8 @@ class Experiment_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
     def test_ExperimentForm_is_valid(self):
         experimentForm = ExperimentForm(
@@ -767,9 +766,8 @@ class GroupAdd_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
-
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
     def test_GroupForm_is_valid(self):
         title = self.data["title"]
@@ -779,14 +777,14 @@ class GroupAdd_FormTest(TestCase):
         self.assertTrue(groupAdd_form.is_valid())
 
     def test_GroupForm_is_not_valid_title(self):
-       groupAdd_form = GroupForm(data={'title': "", 'description': self.data["description"]})
-       self.assertFalse(groupAdd_form.is_valid())
-       self.assertEqual(groupAdd_form.errors["title"], ["Este campo é obrigatório."])
+        groupAdd_form = GroupForm(data={'title': "", 'description': self.data["description"]})
+        self.assertFalse(groupAdd_form.is_valid())
+        self.assertEqual(groupAdd_form.errors["title"], ["Este campo é obrigatório."])
 
     def test_GroupForm_is_not_valid_description(self):
-       groupAdd_form = GroupForm(data={'title': self.data["title"], 'description': ""})
-       self.assertFalse(groupAdd_form.is_valid())
-       self.assertEqual(groupAdd_form.errors["description"], ["Este campo é obrigatório."])
+        groupAdd_form = GroupForm(data={'title': self.data["title"], 'description': ""})
+        self.assertFalse(groupAdd_form.is_valid())
+        self.assertEqual(groupAdd_form.errors["description"], ["Este campo é obrigatório."])
 
 
 # class InclusaoCriteria_FormTest(TestCase):
@@ -810,8 +808,8 @@ class GroupAdd_FormTest(TestCase):
 #             source_code_url="http://www.if.usp.br",
 #             ethics_committee_project_url="http://www.fm.usp.br",
 #             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-#             is_public=" ",
-#             data_acquisition_is_concluded=" ")
+#             is_public=True,
+#             data_acquisition_is_concluded=True)
 #
 #
 #     def test_InclusaoCriteria_is_valid(self):
@@ -845,8 +843,8 @@ class GroupAdd_FormTest(TestCase):
 #             source_code_url="http://www.if.usp.br",
 #             ethics_committee_project_url="http://www.fm.usp.br",
 #             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-#             is_public=" ",
-#             data_acquisition_is_concluded=" ")
+#             is_public=True,
+#             data_acquisition_is_concluded=True)
 #
 #         cls.collaborators_added = ExperimentResearcher.objects.filter(experiment_id=cls.experiment.id)
 #
@@ -876,13 +874,15 @@ class GroupAdd_FormTest(TestCase):
 #             source_code_url="http://www.if.usp.br",
 #             ethics_committee_project_url="http://www.fm.usp.br",
 #             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-#             is_public=" ",
-#             data_acquisition_is_concluded=" ")
+#             is_public=True,
+#             data_acquisition_is_concluded=True)
 #
 #
 #     def test_SubjectFormPorPart_is_valid(self):
 #         pass
 #
+
+
 class EEGsettings_FormTest(TestCase):
 
     @classmethod
@@ -904,9 +904,8 @@ class EEGsettings_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
-
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
     def test_EEGsettings_is_valid(self):
         name = self.data["name"]
@@ -950,19 +949,17 @@ class EEGAmplifierSettings_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
-
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
         cls.eeg_setting = EEGSetting.objects.create(experiment=cls.experiment,
-                                                name='EEG-Setting name',
-                                                description='EEG-Setting description')
+                                                    name='EEG-Setting name',
+                                                    description='EEG-Setting description')
         cls.manufacturer = Manufacturer.objects.create(name='Manufacturer name')
 
         cls.amplifier = Amplifier.objects.create(manufacturer=cls.manufacturer,
-                                                equipment_type="amplifier",
-                                                identification="Amplifier identification")
-
+                                                 equipment_type="amplifier",
+                                                 identification="Amplifier identification")
 
     def test_EEGAmplifierSettings_is_valid(self):
         name = self.data["name"]
@@ -971,28 +968,44 @@ class EEGAmplifierSettings_FormTest(TestCase):
         sampling_rate = self.data["sampling_rate"]
         number_of_channels_used = self.data["number_of_channels_used"]
 
-
         settingsEEGAmplifier_form = EEGAmplifierSettingForm(data={'name': name, 'description': description,
-                                                            'gain': gain, 'sampling_rate': sampling_rate,
-                                                            'number_of_channels_used': number_of_channels_used})
+                                                                  'gain': gain, 'sampling_rate': sampling_rate,
+                                                                  'number_of_channels_used': number_of_channels_used})
         self.assertTrue(settingsEEGAmplifier_form.is_valid())
 
     def test_EEGAmplifierSettings_is_not_valid_gain(self):
-        settingsEEGAmplifier_form = EEGAmplifierSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-                                                            'gain': "", 'sampling_rate': self.data["sampling_rate"],
-                                                            'number_of_channels_used': self.data["number_of_channels_used"]})
+        settingsEEGAmplifier_form = EEGAmplifierSettingForm(
+            data={
+                'name': self.data["name"],
+                'description': self.data["description"],
+                'gain': "",
+                'sampling_rate': self.data["sampling_rate"],
+                'number_of_channels_used': self.data["number_of_channels_used"]
+            }
+        )
         self.assertTrue(settingsEEGAmplifier_form.is_valid())
 
     def test_EEGAmplifierSettings_is_not_valid_sampling_rate(self):
-        settingsEEGAmplifier_form = EEGAmplifierSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-                                                            'gain': self.data["gain"], 'sampling_rate': "",
-                                                            'number_of_channels_used': self.data["number_of_channels_used"]})
+        settingsEEGAmplifier_form = EEGAmplifierSettingForm(
+            data={
+                'name': self.data["name"],
+                'description': self.data["description"],
+                'gain': self.data["gain"], 'sampling_rate': "",
+                'number_of_channels_used': self.data["number_of_channels_used"]
+            }
+        )
         self.assertTrue(settingsEEGAmplifier_form.is_valid())
 
     def test_EEGAmplifierSettings_is_not_valid_number_of_channels_used(self):
-        settingsEEGAmplifier_form = EEGAmplifierSettingForm(data={'name': self.data["name"], 'description': self.data["description"],
-                                                            'gain': self.data["gain"], 'sampling_rate': self.data["sampling_rate"],
-                                                            'number_of_channels_used': ""})
+        settingsEEGAmplifier_form = EEGAmplifierSettingForm(
+            data={
+                'name': self.data["name"],
+                'description': self.data["description"],
+                'gain': self.data["gain"],
+                'sampling_rate': self.data["sampling_rate"],
+                'number_of_channels_used': ""
+            }
+        )
         self.assertFalse(settingsEEGAmplifier_form.is_valid())
         self.assertEqual(settingsEEGAmplifier_form.errors["number_of_channels_used"], ["Este campo é obrigatório."])
 
@@ -1025,9 +1038,8 @@ class EEGFilterSettings_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
-
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
         cls.electrode_model = ElectrodeModel.objects.create(
             name="Electrode Model name"
@@ -1053,20 +1065,19 @@ class EEGFilterSettings_FormTest(TestCase):
         )
 
         cls.eeg_setting = EEGSetting.objects.create(experiment=cls.experiment,
-                                                name='EEG-Setting name',
-                                                description='EEG-Setting description')
+                                                    name='EEG-Setting name',
+                                                    description='EEG-Setting description')
 
         cls.eeg_filter_setting = EEGFilterSetting.objects.create(eeg_setting=cls.eeg_setting,
-                                                            eeg_filter_type=cls.filter_type,
-                                                            high_pass = cls.data["high_pass"],
-                                                            low_pass = cls.data["low_pass"],
-                                                            low_band_pass = cls.data["low_band_pass"],
-                                                            high_band_pass = cls.data["high_band_pass"],
-                                                            low_notch = cls.data["low_notch"],
-                                                            high_notch = cls.data["high_notch"],
-                                                            order = cls.data["order"]
-        )
-
+                                                                 eeg_filter_type=cls.filter_type,
+                                                                 high_pass=cls.data["high_pass"],
+                                                                 low_pass=cls.data["low_pass"],
+                                                                 low_band_pass=cls.data["low_band_pass"],
+                                                                 high_band_pass=cls.data["high_band_pass"],
+                                                                 low_notch=cls.data["low_notch"],
+                                                                 high_notch=cls.data["high_notch"],
+                                                                 order=cls.data["order"]
+                                                                 )
 
     def test_EEGFilterSettings_is_valid(self):
         name = self.data["name"]
@@ -1088,7 +1099,7 @@ class EEGFilterSettings_FormTest(TestCase):
                                                             'low_notch': low_notch,
                                                             'high_notch': high_notch,
                                                             'order': order}
-        )
+                                                      )
         self.assertTrue(settingsEEGFilter_form.is_valid())
 
 
@@ -1112,8 +1123,8 @@ class EMGsettings_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
         cls.electrode_model = ElectrodeModel.objects.create(
             name="Electrode Model name"
@@ -1135,16 +1146,21 @@ class EMGsettings_FormTest(TestCase):
         )
 
         cls.emg_setting = EMGSetting.objects.create(experiment=cls.experiment,
-                                                name='EMG-Setting name',
-                                                description='EMG-Setting description',
-                                                acquisition_software_version=cls.software_version)
+                                                    name='EMG-Setting name',
+                                                    description='EMG-Setting description',
+                                                    acquisition_software_version=cls.software_version)
 
     def test_EMGSettings_is_valid(self):
         name = self.data["name"]
         description = self.data["description"]
         acquisition_software_version = self.software_version.id
 
-        settingsEMG_form = EMGSettingForm(data={'name': name, 'description': description, 'acquisition_software_version': acquisition_software_version})
+        settingsEMG_form = EMGSettingForm(data={
+            'name': name,
+            'description': description,
+            'acquisition_software_version': acquisition_software_version
+        }
+        )
         self.assertTrue(settingsEMG_form.is_valid())
 
     def test_EMGSettings_is_not_valid_name(self):
@@ -1152,7 +1168,13 @@ class EMGsettings_FormTest(TestCase):
         description = self.data["description"]
         acquisition_software_version = self.software_version.id
 
-        settingsEMG_form = EMGSettingForm(data={'name': "", 'description': description, 'acquisition_software_version': acquisition_software_version})
+        settingsEMG_form = EMGSettingForm(
+            data={
+                'name': "",
+                'description': description,
+                'acquisition_software_version': acquisition_software_version
+            }
+        )
         self.assertFalse(settingsEMG_form.is_valid())
         self.assertEqual(settingsEMG_form.errors["name"], ["Este campo é obrigatório."])
 
@@ -1161,7 +1183,13 @@ class EMGsettings_FormTest(TestCase):
         description = self.data["description"]
         acquisition_software_version = self.software_version.id
 
-        settingsEMG_form = EMGSettingForm(data={'name': name, 'description': "", 'acquisition_software_version': acquisition_software_version})
+        settingsEMG_form = EMGSettingForm(
+            data={
+                'name': name,
+                'description': "",
+                'acquisition_software_version': acquisition_software_version
+            }
+        )
         self.assertFalse(settingsEMG_form.is_valid())
         self.assertEqual(settingsEMG_form.errors["description"], ["Este campo é obrigatório."])
 
@@ -1170,15 +1198,20 @@ class EMGsettings_FormTest(TestCase):
         description = self.data["description"]
         acquisition_software_version = self.software_version.id
 
-        settingsEMG_form = EMGSettingForm(data={'name': name, 'description': description, 'acquisition_software_version': ""})
-        self.assertTrue(settingsEMG_form.is_valid()) #pelo forms.py, esse campo não é obrigatorio.
+        settingsEMG_form = EMGSettingForm(
+            data={
+                'name': name,
+                'description': description,
+                'acquisition_software_version': ""
+            }
+        )
+        self.assertTrue(settingsEMG_form.is_valid())  # pelo forms.py, esse campo não é obrigatorio.
 
 
 class EMGsettingsElectrodeAdd_FormTest(TestCase):
 
     @classmethod
     def setUp(cls):
-
         cls.research_project = ResearchProject.objects.create(
             title="Research project title", start_date=datetime.date.today(),
             description="Research project description"
@@ -1191,8 +1224,8 @@ class EMGsettingsElectrodeAdd_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
         cls.manufacturer = Manufacturer.objects.create(name='Brain Vision')
 
@@ -1243,7 +1276,9 @@ class EMGsettingsElectrodeAdd_FormTest(TestCase):
         description = self.data["description"]
         electrode = self.data["electrode"]
 
-        settingEMG_electrode_add_form = EMGElectrodeSettingForm(data={'name': name, 'description': description, 'electrode': electrode})
+        settingEMG_electrode_add_form = EMGElectrodeSettingForm(
+            data={'name': name, 'description': description, 'electrode': electrode}
+        )
         self.assertTrue(settingEMG_electrode_add_form.is_valid())
 
     def test_EMGsettingsElectrodeAdd_is_valid_eletrode(self):
@@ -1251,7 +1286,8 @@ class EMGsettingsElectrodeAdd_FormTest(TestCase):
         description = self.data["description"]
         electrode = self.data["electrode"]
 
-        settingEMG_electrode_add_form = EMGElectrodeSettingForm(data={'name': name, 'description': description, 'electrode': ""})
+        settingEMG_electrode_add_form = EMGElectrodeSettingForm(
+            data={'name': name, 'description': description, 'electrode': ""})
         self.assertFalse(settingEMG_electrode_add_form.is_valid())
         self.assertEqual(settingEMG_electrode_add_form.errors["electrode"], ["Este campo é obrigatório."])
 
@@ -1284,8 +1320,8 @@ class EMGDigitalFilterSettings_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
         cls.electrode_model = ElectrodeModel.objects.create(
             name="Electrode Model name"
@@ -1307,24 +1343,24 @@ class EMGDigitalFilterSettings_FormTest(TestCase):
         )
 
         cls.emg_setting = EMGSetting.objects.create(experiment=cls.experiment,
-                                                name='EMG-Setting name',
-                                                description='EMG-Setting description',
-                                                acquisition_software_version=cls.software_version)
-
+                                                    name='EMG-Setting name',
+                                                    description='EMG-Setting description',
+                                                    acquisition_software_version=cls.software_version)
 
         cls.filter_type = FilterType.objects.create(
             name="Filter type name"
         )
 
-        cls.emg_digital_filter_setting = EMGDigitalFilterSetting.objects.create(emg_setting=cls.emg_setting,
-                                                                             filter_type=cls.filter_type,
-                                                                             high_pass = cls.data["high_pass"],
-                                                                             low_pass = cls.data["low_pass"],
-                                                                             low_band_pass = cls.data["low_band_pass"],
-                                                                             high_band_pass = cls.data["high_band_pass"],
-                                                                             low_notch = cls.data["low_notch"],
-                                                                             high_notch = cls.data["high_notch"],
-                                                                             order = cls.data["order"]
+        cls.emg_digital_filter_setting = EMGDigitalFilterSetting.objects.create(
+            emg_setting=cls.emg_setting,
+            filter_type=cls.filter_type,
+            high_pass=cls.data["high_pass"],
+            low_pass=cls.data["low_pass"],
+            low_band_pass=cls.data["low_band_pass"],
+            high_band_pass=cls.data["high_band_pass"],
+            low_notch=cls.data["low_notch"],
+            high_notch=cls.data["high_notch"],
+            order=cls.data["order"]
         )
 
     def test_EMGDigitalFilterSettings_is_valid(self):
@@ -1340,14 +1376,14 @@ class EMGDigitalFilterSettings_FormTest(TestCase):
         order = self.emg_digital_filter_setting.order
 
         settingsEMGDigitalFilter_form = EMGDigitalFilterSettingForm(data={'name': name, 'description': description,
-                                                            'filter_type': filter_type,
-                                                            'high_pass': high_pass,
-                                                            'low_pass': low_pass,
-                                                            'low_band_pass': low_band_pass,
-                                                            'high_band_pass': high_band_pass,
-                                                            'low_notch': low_notch,
-                                                            'high_notch': high_notch,
-                                                            'order': order})
+                                                                          'filter_type': filter_type,
+                                                                          'high_pass': high_pass,
+                                                                          'low_pass': low_pass,
+                                                                          'low_band_pass': low_band_pass,
+                                                                          'high_band_pass': high_band_pass,
+                                                                          'low_notch': low_notch,
+                                                                          'high_notch': high_notch,
+                                                                          'order': order})
         self.assertTrue(settingsEMGDigitalFilter_form.is_valid())
 
     def test_EMGDigitalFilterSettings_is_valid_filter_type(self):
@@ -1363,14 +1399,14 @@ class EMGDigitalFilterSettings_FormTest(TestCase):
         order = self.emg_digital_filter_setting.order
 
         settingsEMGDigitalFilter_form = EMGDigitalFilterSettingForm(data={'name': name, 'description': description,
-                                                            'filter_type': "",
-                                                            'high_pass': high_pass,
-                                                            'low_pass': low_pass,
-                                                            'low_band_pass': low_band_pass,
-                                                            'high_band_pass': high_band_pass,
-                                                            'low_notch': low_notch,
-                                                            'high_notch': high_notch,
-                                                            'order': order})
+                                                                          'filter_type': "",
+                                                                          'high_pass': high_pass,
+                                                                          'low_pass': low_pass,
+                                                                          'low_band_pass': low_band_pass,
+                                                                          'high_band_pass': high_band_pass,
+                                                                          'low_notch': low_notch,
+                                                                          'high_notch': high_notch,
+                                                                          'order': order})
         self.assertFalse(settingsEMGDigitalFilter_form.is_valid())
         self.assertEqual(settingsEMGDigitalFilter_form.errors["filter_type"], ["Este campo é obrigatório."])
 
@@ -1397,8 +1433,8 @@ class EMG_ADConverterSettings_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
         cls.electrode_model = ElectrodeModel.objects.create(
             name="Electrode Model name"
@@ -1420,27 +1456,26 @@ class EMG_ADConverterSettings_FormTest(TestCase):
         )
 
         cls.emg_setting = EMGSetting.objects.create(experiment=cls.experiment,
-                                                name='EMG-Setting name',
-                                                description='EMG-Setting description',
-                                                acquisition_software_version=cls.software_version)
+                                                    name='EMG-Setting name',
+                                                    description='EMG-Setting description',
+                                                    acquisition_software_version=cls.software_version)
 
         cls.filter_type = FilterType.objects.create(
             name="Filter type name"
         )
 
         cls.ad_converter = ADConverter.objects.create(manufacturer=cls.manufacturer,
-                                                  equipment_type="ad_converter",
-                                                  identification="AD Converter identification",
-                                                  signal_to_noise_rate=20,
-                                                  sampling_rate=cls.data["sampling_rate"],
-                                                  resolution=7
-        )
+                                                      equipment_type="ad_converter",
+                                                      identification="AD Converter identification",
+                                                      signal_to_noise_rate=20,
+                                                      sampling_rate=cls.data["sampling_rate"],
+                                                      resolution=7
+                                                      )
 
         cls.emg_ad_converter_setting = EMGADConverterSetting.objects.create(emg_setting=cls.emg_setting,
                                                                             ad_converter=cls.ad_converter,
                                                                             sampling_rate=cls.data["sampling_rate"]
-        )
-
+                                                                            )
 
     def test_EMG_ADConverterSettings_is_valid(self):
         name = self.data["name"]
@@ -1449,11 +1484,10 @@ class EMG_ADConverterSettings_FormTest(TestCase):
         ad_converter = self.emg_ad_converter_setting.ad_converter
         sampling_rate = self.emg_ad_converter_setting.sampling_rate
 
-
         settingsEMG_ADConverter_form = EMGADConverterSettingForm(data={'name': name, 'description': description,
-                                                            'ad_converter': ad_converter,
-                                                            'sampling_rate': sampling_rate}
-        )
+                                                                       'ad_converter': ad_converter,
+                                                                       'sampling_rate': sampling_rate}
+                                                                 )
         self.assertTrue(settingsEMG_ADConverter_form.is_valid())
 
     def test_EMG_ADConverterSettings_is_valid_ad_converter(self):
@@ -1464,9 +1498,9 @@ class EMG_ADConverterSettings_FormTest(TestCase):
         sampling_rate = self.emg_ad_converter_setting.sampling_rate
 
         settingsEMG_ADConverter_form = EMGADConverterSettingForm(data={'name': name, 'description': description,
-                                                            'ad_converter': "",
-                                                            'sampling_rate': sampling_rate}
-        )
+                                                                       'ad_converter': "",
+                                                                       'sampling_rate': sampling_rate}
+                                                                 )
 
         self.assertFalse(settingsEMG_ADConverter_form.is_valid())
         self.assertEqual(settingsEMG_ADConverter_form.errors["ad_converter"], ["Este campo é obrigatório."])
@@ -1493,9 +1527,8 @@ class TMSSetting_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
-
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
     def test_TMSSetting_is_valid(self):
         name = self.data["name"]
@@ -1537,10 +1570,8 @@ class TMSDevice_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
-
-
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
         cls.manufacturer = Manufacturer.objects.create(name='Manufacturer name')
 
@@ -1553,20 +1584,20 @@ class TMSDevice_FormTest(TestCase):
         cls.electrode_model.save()
 
         cls.coil_shape = CoilShape.objects.create(name="Electrode Shape name")
-        cls.coil_model = CoilModel.objects.create(name="Electrode Model name",
-                                            coil_shape=cls.coil_shape
-        )
+        cls.coil_model = CoilModel.objects.create(name="Electrode Model name", coil_shape=cls.coil_shape)
 
         cls.tms_setting = TMSSetting.objects.create(experiment=cls.experiment)
 
-        cls.tms_device = TMSDevice.objects.create(pulse_type="monophase", manufacturer=cls.manufacturer,
-                                                  equipment_type="tms_device", identification='identification')
+        cls.tms_device = TMSDevice.objects.create(pulse_type="monophase",
+                                                  manufacturer=cls.manufacturer,
+                                                  equipment_type="tms_device",
+                                                  identification='identification')
 
         cls.tms_device_setting = TMSDeviceSetting.objects.create(tms_setting=cls.tms_setting,
-                                                    tms_device=cls.tms_device,
-                                                    pulse_stimulus_type=cls.data["pulse_stimulus_type"],
-                                                    coil_model=cls.coil_model
-        )
+                                                                 tms_device=cls.tms_device,
+                                                                 pulse_stimulus_type=cls.data["pulse_stimulus_type"],
+                                                                 coil_model=cls.coil_model
+                                                                 )
 
     def test_TMSDevice_is_valid(self):
         tms_device = self.tms_device
@@ -1579,7 +1610,6 @@ class TMSDevice_FormTest(TestCase):
                                                     })
         self.assertTrue(deviceTMS_form.is_valid())
 
-
     def test_TMSDevice_is_not_valid_tms_device(self):
         tms_device = self.tms_device
         pulse_stimulus_type = self.data["pulse_stimulus_type"]
@@ -1591,7 +1621,6 @@ class TMSDevice_FormTest(TestCase):
                                                     })
         self.assertFalse(deviceTMS_form.is_valid())
         self.assertEqual(deviceTMS_form.errors["tms_device"], ["Este campo é obrigatório."])
-
 
     def test_TMSDevice_is_not_valid_coil_model(self):
         tms_device = self.tms_device
@@ -1627,11 +1656,12 @@ class ContextTrees_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.context_tree=ContextTree.objects.create(experiment=cls.experiment, name='Context name', description='Context description')
+        cls.context_tree = ContextTree.objects.create(
+            experiment=cls.experiment, name='Context name', description='Context description'
+        )
 
     def test_ContextTrees_is_valid(self):
         name = self.context_tree.name
@@ -1678,30 +1708,32 @@ class SEP_Block_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
-                                               duration_unit=" ", description=" ", component_type="Set of steps")
+        cls.component = Component.objects.create(experiment=cls.experiment,
+                                                 identification="Identification",
+                                                 duration_unit=" ",
+                                                 description=" ",
+                                                 component_type="Set of steps"
+                                                 )
 
         cls.block = Block.objects.create(experiment=cls.experiment,
                                          identification="Identification",
                                          component_type="Set of steps",
                                          type="sequence",
                                          number_of_mandatory_components=None
-        )
+                                         )
 
     def test_SEP_Block_is_valid(self):
         experiment = self.experiment
         number_of_mandatory_components = self.block.number_of_mandatory_components
         type = self.block.type
 
-
         sep_SEP_Block_form = BlockForm(data={'number_of_mandatory_components': number_of_mandatory_components,
                                              'type': type,
                                              'experiment': experiment
-        })
+                                             })
         self.assertTrue(sep_SEP_Block_form.is_valid())
 
     def test_SEP_Block_is_not_valid_number_of_mandatory_components(self):
@@ -1712,7 +1744,7 @@ class SEP_Block_FormTest(TestCase):
         sep_SEP_Block_form = BlockForm(data={'number_of_mandatory_components': number_of_mandatory_components,
                                              'type': type,
                                              'experiment': experiment
-        })
+                                             })
         self.assertFalse(sep_SEP_Block_form.is_valid())
         self.assertEqual(sep_SEP_Block_form.errors["number_of_mandatory_components"], ["Informe um número inteiro."])
 
@@ -1724,9 +1756,10 @@ class SEP_Block_FormTest(TestCase):
         sep_SEP_Block_form = BlockForm(data={'number_of_mandatory_components': number_of_mandatory_components,
                                              'type': type,
                                              'experiment': experiment
-        })
+                                             })
         self.assertFalse(sep_SEP_Block_form.is_valid())
-        self.assertEqual(sep_SEP_Block_form.errors["type"], ["Faça uma escolha válida.   não é uma das escolhas disponíveis."])
+        self.assertEqual(sep_SEP_Block_form.errors["type"],
+                         ["Faça uma escolha válida.   não é uma das escolhas disponíveis."])
 
 
 class SEP_Block_Block_Fix_Random_FormTest(TestCase):
@@ -1750,33 +1783,40 @@ class SEP_Block_Block_Fix_Random_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
-                                               duration_unit=" ", description=" ", component_type="Set of steps")
+        cls.component = Component.objects.create(experiment=cls.experiment,
+                                                 identification="Identification",
+                                                 duration_unit=" ",
+                                                 description=" ",
+                                                 component_type="Set of steps"
+                                                 )
 
         cls.block = Block.objects.create(experiment=cls.experiment,
                                          identification="Identification",
                                          component_type="Set of steps",
                                          type="sequence",
                                          number_of_mandatory_components=None
-        )
-
-
+                                         )
 
     def test_SEP_Block_Block_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_Block_Block_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Block_Block_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_Block_Block_Fix_Random_form.is_valid())
 
     def test_SEP_Block_Block_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_Block_Block_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Block_Block_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_Block_Block_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_Block_Block_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_Block_Block_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
 
 
 class SEP_Instruction_FormTest(TestCase):
@@ -1800,19 +1840,22 @@ class SEP_Instruction_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification", duration_unit="ms",
-                                               duration_value="5", description=" ", component_type="instruction")
+        cls.component = Component.objects.create(
+            experiment=cls.experiment,
+            identification="Identification",
+            duration_unit="ms",
+            duration_value="5",
+            description=" ",
+            component_type="instruction")
 
         cls.instruction = Instruction.objects.create(experiment=cls.experiment,
-                                         identification="Identification",
-                                         component_type="instruction",
-                                         text="texto"
-        )
-
+                                                     identification="Identification",
+                                                     component_type="instruction",
+                                                     text="texto"
+                                                     )
 
     def test_SEP_Instruction_is_valid(self):
         text = self.instruction.text
@@ -1820,7 +1863,7 @@ class SEP_Instruction_FormTest(TestCase):
 
         sep_Instruction_form = InstructionForm(data={'text': text,
                                                      'experiment': experiment
-        })
+                                                     })
         self.assertTrue(sep_Instruction_form.is_valid())
 
     def test_SEP_Instruction_is_not_valid_text(self):
@@ -1829,22 +1872,27 @@ class SEP_Instruction_FormTest(TestCase):
 
         sep_Instruction_form = InstructionForm(data={'text': text,
                                                      'experiment': experiment
-        })
+                                                     })
         self.assertFalse(sep_Instruction_form.is_valid())
         self.assertEqual(sep_Instruction_form.errors["text"], ["Este campo é obrigatório."])
 
     def test_SEP_Instruction_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_Instruction_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Instruction_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_Instruction_Fix_Random_form.is_valid())
 
     def test_SEP_Instruction_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_Instruction_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Instruction_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_Instruction_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_Instruction_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_Instruction_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
 
 
 class SEP_Pause_FormTest(TestCase):
@@ -1868,15 +1916,13 @@ class SEP_Pause_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment,
-                                               identification="Identification",
-                                               component_type="pause"
-        )
-
+        cls.component = Component.objects.create(experiment=cls.experiment,
+                                                 identification="Identification",
+                                                 component_type="pause"
+                                                 )
 
     def test_SEP_Pause_is_valid(self):
         # duration_value = self.component.duration_value
@@ -1891,8 +1937,8 @@ class SEP_Pause_FormTest(TestCase):
                                              'duration_value': duration_value,
                                              'duration_unit': duration_unit,
                                              'experiment': experiment
-        })
-        sep_pause_form.component_type = self.component.component_type #jury-rig
+                                             })
+        sep_pause_form.component_type = self.component.component_type  # jury-rig
         self.assertTrue(sep_pause_form.is_valid())
 
     def test_SEP_Pause_is_not_valid_identification(self):
@@ -1903,8 +1949,8 @@ class SEP_Pause_FormTest(TestCase):
         sep_pause_form = ComponentForm(data={'identification': identification,
                                              'duration_value': duration_value,
                                              'experiment': experiment
-        })
-        sep_pause_form.component_type = self.component.component_type #jury-rig
+                                             })
+        sep_pause_form.component_type = self.component.component_type  # jury-rig
 
         self.assertFalse(sep_pause_form.is_valid())
         self.assertEqual(sep_pause_form.errors["identification"],
@@ -1918,26 +1964,30 @@ class SEP_Pause_FormTest(TestCase):
         sep_pause_form = ComponentForm(data={'identification': identification,
                                              'duration_value': duration_value,
                                              'experiment': experiment
-        })
-        sep_pause_form.component_type = self.component.component_type #jury-rig
+                                             })
+        sep_pause_form.component_type = self.component.component_type  # jury-rig
 
         self.assertFalse(sep_pause_form.is_valid())
         self.assertEqual(sep_pause_form.errors["duration_value"],
                          ["Tempo da duração deve ser preenchido"])
 
     def test_SEP_Pause_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_Pause_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Pause_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_Pause_Fix_Random_form.is_valid())
 
     def test_SEP_Pause_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_Pause_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Pause_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_Pause_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_Pause_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
-
+        self.assertEqual(number_of_uses_SEP_Pause_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
 
 
 class SEP_Questionnaire_FormTest(TestCase):
@@ -1961,30 +2011,28 @@ class SEP_Questionnaire_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment,
-                                               identification="Identification",
-                                               component_type="questionnaire"
-        )
+        cls.component = Component.objects.create(experiment=cls.experiment,
+                                                 identification="Identification",
+                                                 component_type="questionnaire"
+                                                 )
 
         # Conecta no Lime Survey
         cls.lime_survey = Questionnaires()
 
         # Checa se conseguiu conectar no limeSurvey com as credenciais fornecidas no settings.py
         cls.assertIsNotNone(cls.lime_survey.session_key,
-                             'Failed to connect LimeSurvey')
+                            'Failed to connect LimeSurvey')
 
         # Cria uma survey no Lime Survey
         cls.survey_id = cls.lime_survey.add_survey(9999,
-                                           'Questionario de teste - DjangoTests',
-                                           'en', 'G')
+                                                   'Questionario de teste - DjangoTests',
+                                                   'en', 'G')
         # Deleta a survey gerada no Lime Survey
         status = cls.lime_survey.delete_survey(cls.survey_id)
         # cls.assertEqual(status, 'OK', ['Erro na deleção'])
-
 
     def test_SEP_Questionnaire_is_valid(self):
         duration_value = "5"
@@ -1993,14 +2041,12 @@ class SEP_Questionnaire_FormTest(TestCase):
 
         # new_specific_component = Questionnaire()
 
-        sep_questionnaire_form = ComponentForm(data={'identification':
-                                                         identification,
-                                             'duration_value': duration_value,
-                                             'experiment': experiment
-        })
-        sep_questionnaire_form.component_type = self.component.component_type #jury-rig
+        sep_questionnaire_form = ComponentForm(data={'identification': identification,
+                                                     'duration_value': duration_value,
+                                                     'experiment': experiment
+                                                     })
+        sep_questionnaire_form.component_type = self.component.component_type  # jury-rig
         self.assertTrue(sep_questionnaire_form.is_valid())
-
 
     def test_SEP_Questionnaire_is_not_valid_identification(self):
         duration_value = "5"
@@ -2008,27 +2054,33 @@ class SEP_Questionnaire_FormTest(TestCase):
         experiment = self.experiment
 
         sep_questionnaire_form = ComponentForm(data={'identification': identification,
-                                             'duration_value': duration_value,
-                                             'experiment': experiment
-        })
-        sep_questionnaire_form.component_type = self.component.component_type #jury-rig
+                                                     'duration_value': duration_value,
+                                                     'experiment': experiment
+                                                     })
+        sep_questionnaire_form.component_type = self.component.component_type  # jury-rig
 
         self.assertFalse(sep_questionnaire_form.is_valid())
         self.assertEqual(sep_questionnaire_form.errors["identification"],
                          ["Este campo é obrigatório."])
 
     def test_SEP_Questionnaire_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_Questionnaire_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Questionnaire_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_Questionnaire_Fix_Random_form.is_valid())
 
     def test_SEP_Questionnaire_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_Questionnaire_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Questionnaire_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_Questionnaire_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_Questionnaire_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_Questionnaire_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
+
 
 class SEP_Stimulus_FormTest(TestCase):
 
@@ -2051,33 +2103,43 @@ class SEP_Stimulus_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
-                                               duration_unit="ms", duration_value="5", description=" ", component_type="stimulus")
+        cls.component = Component.objects.create(
+            experiment=cls.experiment,
+            identification="Identification",
+            duration_unit="ms",
+            duration_value="5",
+            description=" ",
+            component_type="stimulus"
+        )
 
         cls.stimulus_type = StimulusType.objects.create(name="Visual")
 
         cls.stimulus = Stimulus.objects.create(experiment=cls.experiment,
-                                         identification="Identification",
-                                         component_type="stimulus",
-                                         stimulus_type=cls.stimulus_type
-         )
+                                               identification="Identification",
+                                               component_type="stimulus",
+                                               stimulus_type=cls.stimulus_type
+                                               )
 
     def test_SEP_Stimulus_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_Stimulus_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Stimulus_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_Stimulus_Fix_Random_form.is_valid())
 
     def test_SEP_Stimulus_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_Stimulus_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Stimulus_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_Stimulus_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_Stimulus_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_Stimulus_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
 
     def test_SEP_Stimulus_is_valid(self):
         stimulus_type = self.stimulus.stimulus_type.id
@@ -2085,7 +2147,7 @@ class SEP_Stimulus_FormTest(TestCase):
 
         sep_stimulus_form = StimulusForm(data={'stimulus_type': stimulus_type,
                                                'experiment': experiment
-        })
+                                               })
         self.assertTrue(sep_stimulus_form.is_valid())
 
     def test_SEP_Stimulus_is_not_valid_stimulus_type(self):
@@ -2094,7 +2156,7 @@ class SEP_Stimulus_FormTest(TestCase):
 
         sep_stimulus_form = StimulusForm(data={'stimulus_type': stimulus_type,
                                                'experiment': experiment
-        })
+                                               })
         self.assertFalse(sep_stimulus_form.is_valid())
         self.assertEqual(sep_stimulus_form.errors["stimulus_type"],
                          ["Este campo é obrigatório."])
@@ -2121,24 +2183,22 @@ class SEP_Task_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment,
-                                               identification="Identification",
-                                               component_type="task"
-        )
-
+        cls.component = Component.objects.create(experiment=cls.experiment,
+                                                 identification="Identification",
+                                                 component_type="task"
+                                                 )
 
     def test_SEP_Task_is_valid(self):
         identification = "Identification"
         experiment = self.experiment
 
         sep_task_form = ComponentForm(data={'identification': identification,
-                                             'experiment': experiment
-        })
-        sep_task_form.component_type = self.component.component_type #jury-rig
+                                            'experiment': experiment
+                                            })
+        sep_task_form.component_type = self.component.component_type  # jury-rig
         self.assertTrue(sep_task_form.is_valid())
 
     def test_SEP_Task_is_not_valid_identification(self):
@@ -2146,26 +2206,32 @@ class SEP_Task_FormTest(TestCase):
         experiment = self.experiment
 
         sep_task_form = ComponentForm(data={'identification': identification,
-                                             'experiment': experiment
-        })
-        sep_task_form.component_type = self.component.component_type #jury-rig
+                                            'experiment': experiment
+                                            })
+        sep_task_form.component_type = self.component.component_type  # jury-rig
 
         self.assertFalse(sep_task_form.is_valid())
         self.assertEqual(sep_task_form.errors["identification"],
                          ["Este campo é obrigatório."])
 
     def test_SEP_Task_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_Task_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Task_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_Task_Fix_Random_form.is_valid())
 
     def test_SEP_Task_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_Task_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_Task_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_Task_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_Task_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_Task_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
+
 
 class SEP_Task_Experiment_FormTest(TestCase):
 
@@ -2188,15 +2254,13 @@ class SEP_Task_Experiment_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment,
-                                               identification="Identification",
-                                               component_type="task_experiment"
-        )
-
+        cls.component = Component.objects.create(experiment=cls.experiment,
+                                                 identification="Identification",
+                                                 component_type="task_experiment"
+                                                 )
 
     def test_SEP_Task_Experiment_is_valid(self):
         identification = "Identification"
@@ -2204,8 +2268,8 @@ class SEP_Task_Experiment_FormTest(TestCase):
 
         sep_task_experiment_form = ComponentForm(data={'identification': identification,
                                                        'experiment': experiment
-        })
-        sep_task_experiment_form.component_type = self.component.component_type #jury-rig
+                                                       })
+        sep_task_experiment_form.component_type = self.component.component_type  # jury-rig
         self.assertTrue(sep_task_experiment_form.is_valid())
 
     def test_SEP_Task_Experiment_is_not_valid_identification(self):
@@ -2214,8 +2278,8 @@ class SEP_Task_Experiment_FormTest(TestCase):
 
         sep_task_experiment_form = ComponentForm(data={'identification': identification,
                                                        'experiment': experiment
-        })
-        sep_task_experiment_form.component_type = self.component.component_type #jury-rig
+                                                       })
+        sep_task_experiment_form.component_type = self.component.component_type  # jury-rig
 
         self.assertFalse(sep_task_experiment_form.is_valid())
         self.assertEqual(sep_task_experiment_form.errors["identification"],
@@ -2243,32 +2307,37 @@ class SEP_EEG_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
-                                               duration_unit="ms", duration_value="5", description=" ", component_type="eeg")
+        cls.component = Component.objects.create(
+            experiment=cls.experiment,
+            identification="Identification",
+            duration_unit="ms",
+            duration_value="5",
+            description=" ",
+            component_type="eeg"
+        )
 
         cls.eeg_setting = EEGSetting.objects.create(experiment=cls.experiment,
-                                         name="EEG Setting",
-                                         description="description"
-        )
+                                                    name="EEG Setting",
+                                                    description="description"
+                                                    )
 
         cls.eeg = EEG.objects.create(experiment=cls.experiment,
-                                         component_type="eeg",
-                                         identification="Identification",
-                                         eeg_setting=cls.eeg_setting
-        )
+                                     component_type="eeg",
+                                     identification="Identification",
+                                     eeg_setting=cls.eeg_setting
+                                     )
 
     def test_SEP_EEG_is_valid(self):
         experiment = self.experiment
-        eeg_setting= self.eeg_setting.id
+        eeg_setting = self.eeg_setting.id
 
         sep_eeg_form = EEGForm(data={'eeg_setting': eeg_setting,
                                      'identification': 'identification',
                                      'experiment': experiment
-        })
+                                     })
         self.assertTrue(sep_eeg_form.is_valid())
 
     def test_SEP_EEG_is_not_valid_eeg_setting(self):
@@ -2278,23 +2347,29 @@ class SEP_EEG_FormTest(TestCase):
         sep_eeg_form = EEGForm(data={'eeg_setting': eeg_setting,
                                      'identification': 'identification',
                                      'experiment': experiment
-        })
+                                     })
         self.assertFalse(sep_eeg_form.is_valid())
         self.assertEqual(sep_eeg_form.errors["eeg_setting"],
                          ["Este campo é obrigatório."])
 
     def test_SEP_EEG_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_EEG_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_EEG_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_EEG_Fix_Random_form.is_valid())
 
     def test_SEP_EEG_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_EEG_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_EEG_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_EEG_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_EEG_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_EEG_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
+
 
 class SEP_EMG_FormTest(TestCase):
 
@@ -2317,8 +2392,8 @@ class SEP_EMG_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
         cls.manufacturer = Manufacturer.objects.create(name='Manufacturer name')
 
@@ -2332,32 +2407,32 @@ class SEP_EMG_FormTest(TestCase):
             name="Software Version name"
         )
 
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
-                                               duration_unit="ms",
-                                               duration_value="5",
-                                               description=" ",
-                                               component_type="emg")
+        cls.component = Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                                 duration_unit="ms",
+                                                 duration_value="5",
+                                                 description=" ",
+                                                 component_type="emg")
 
         cls.emg_setting = EMGSetting.objects.create(experiment=cls.experiment,
-                                         name="EMG Setting",
-                                         description="description",
-                                         acquisition_software_version=cls.software_version
-        )
+                                                    name="EMG Setting",
+                                                    description="description",
+                                                    acquisition_software_version=cls.software_version
+                                                    )
 
         cls.emg = EMG.objects.create(experiment=cls.experiment,
-                                         component_type="emg",
-                                         identification="Identification",
-                                         emg_setting=cls.emg_setting
-        )
+                                     component_type="emg",
+                                     identification="Identification",
+                                     emg_setting=cls.emg_setting
+                                     )
 
     def test_SEP_EMG_is_valid(self):
         experiment = self.experiment
-        emg_setting= self.emg_setting.id
+        emg_setting = self.emg_setting.id
 
         sep_emg_form = EMGForm(data={'emg_setting': emg_setting,
                                      'identification': 'identification',
                                      'experiment': experiment
-        })
+                                     })
         self.assertTrue(sep_emg_form.is_valid())
 
     def test_SEP_EMG_is_not_valid_emg_setting(self):
@@ -2367,23 +2442,28 @@ class SEP_EMG_FormTest(TestCase):
         sep_emg_form = EMGForm(data={'emg_setting': emg_setting,
                                      'identification': 'identification',
                                      'experiment': experiment
-        })
+                                     })
         self.assertFalse(sep_emg_form.is_valid())
         self.assertEqual(sep_emg_form.errors["emg_setting"],
                          ["Este campo é obrigatório."])
 
     def test_SEP_EMG_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_EMG_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_EMG_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_EMG_Fix_Random_form.is_valid())
 
     def test_SEP_EMG_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_EMG_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_EMG_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_EMG_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_EMG_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_EMG_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
 
 
 class SEP_TMS_FormTest(TestCase):
@@ -2407,35 +2487,34 @@ class SEP_TMS_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
-                                               duration_unit="ms",
-                                               duration_value="5",
-                                               description=" ",
-                                               component_type="tms")
+        cls.component = Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                                 duration_unit="ms",
+                                                 duration_value="5",
+                                                 description=" ",
+                                                 component_type="tms")
 
         cls.tms_setting = TMSSetting.objects.create(experiment=cls.experiment,
-                                         name="TMS Setting",
-                                         description="description"
-        )
+                                                    name="TMS Setting",
+                                                    description="description"
+                                                    )
 
         cls.tms = TMS.objects.create(experiment=cls.experiment,
-                                         component_type="tms",
-                                         identification="Identification",
-                                         tms_setting=cls.tms_setting
-        )
+                                     component_type="tms",
+                                     identification="Identification",
+                                     tms_setting=cls.tms_setting
+                                     )
 
     def test_SEP_TMS_is_valid(self):
         experiment = self.experiment
-        tms_setting= self.tms_setting.id
+        tms_setting = self.tms_setting.id
 
         sep_tms_form = TMSForm(data={'tms_setting': tms_setting,
                                      'identification': 'identification',
                                      'experiment': experiment
-        })
+                                     })
         self.assertTrue(sep_tms_form.is_valid())
 
     def test_SEP_TMS_is_not_valid_tms_setting(self):
@@ -2445,23 +2524,29 @@ class SEP_TMS_FormTest(TestCase):
         sep_tms_form = TMSForm(data={'tms_setting': tms_setting,
                                      'identification': 'identification',
                                      'experiment': experiment
-        })
+                                     })
         self.assertFalse(sep_tms_form.is_valid())
         self.assertEqual(sep_tms_form.errors["tms_setting"],
                          ["Este campo é obrigatório."])
 
     def test_SEP_TMS_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_TMS_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_TMS_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_TMS_Fix_Random_form.is_valid())
 
     def test_SEP_TMS_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_TMS_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_TMS_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_TMS_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_TMS_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_TMS_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
+
 
 class SEP_GenericDataCollection_FormTest(TestCase):
 
@@ -2484,36 +2569,34 @@ class SEP_GenericDataCollection_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" ")
+            is_public=True,
+            data_acquisition_is_concluded=True)
 
-
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
-                                               duration_unit="ms",
-                                               duration_value="5",
-                                               description=" ",
-                                               component_type="generic_data_collection")
+        cls.component = Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                                 duration_unit="ms",
+                                                 duration_value="5",
+                                                 description=" ",
+                                                 component_type="generic_data_collection")
 
         cls.information_type = InformationType.objects.create(
-                                         name="Generic Data Collection",
-                                         description="description"
+            name="Generic Data Collection",
+            description="description"
         )
 
         cls.gdc = GenericDataCollection.objects.create(experiment=cls.experiment,
-                                         component_type="generic_data_collection",
-                                         identification="Identification",
-                                         information_type=cls.information_type
-        )
+                                                       component_type="generic_data_collection",
+                                                       identification="Identification",
+                                                       information_type=cls.information_type
+                                                       )
 
     def test_SEP_GenericDataCollection_is_valid(self):
         experiment = self.experiment
-        information_type= self.information_type.id
+        information_type = self.information_type.id
 
-        sep_gdc_form = GenericDataCollectionForm(data={'information_type':
-                                                           information_type,
-                                     'identification': 'identification',
-                                     'experiment': experiment
-        })
+        sep_gdc_form = GenericDataCollectionForm(data={'information_type': information_type,
+                                                       'identification': 'identification',
+                                                       'experiment': experiment
+                                                       })
         self.assertTrue(sep_gdc_form.is_valid())
 
     def test_SEP_GenericDataCollection_is_not_valid_gdc_setting(self):
@@ -2521,27 +2604,32 @@ class SEP_GenericDataCollection_FormTest(TestCase):
         experiment = self.experiment
 
         sep_gdc_form = GenericDataCollectionForm(data={
-                                     'information_type': information_type,
-                                     'identification': 'identification',
-                                     'experiment': experiment
+            'information_type': information_type,
+            'identification': 'identification',
+            'experiment': experiment
         })
         self.assertFalse(sep_gdc_form.is_valid())
         self.assertEqual(sep_gdc_form.errors["information_type"],
                          ["Este campo é obrigatório."]
-        )
+                         )
 
     def test_SEP_GenericDataCollection_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_GenericDataCollection_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_GenericDataCollection_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_GenericDataCollection_Fix_Random_form.is_valid())
 
     def test_SEP_GenericDataCollection_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_GenericDataCollection_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_GenericDataCollection_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_GenericDataCollection_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_GenericDataCollection_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
+        self.assertEqual(number_of_uses_SEP_GenericDataCollection_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
 
 
 class SEP_DigitalGamePhase_FormTest(TestCase):
@@ -2565,12 +2653,12 @@ class SEP_DigitalGamePhase_FormTest(TestCase):
             source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=" ",
-            data_acquisition_is_concluded=" "
+            is_public=True,
+            data_acquisition_is_concluded=True
         )
 
         cls.manufacturer = Manufacturer.objects.create(name='Manufacturer name'
-        )
+                                                       )
 
         cls.software = Software.objects.create(
             manufacturer=cls.manufacturer,
@@ -2587,73 +2675,74 @@ class SEP_DigitalGamePhase_FormTest(TestCase):
             description='Context description'
         )
 
-        cls.component=Component.objects.create(experiment=cls.experiment, identification="Identification",
-                                               duration_unit="ms",
-                                               duration_value="5",
-                                               description=" ",
-                                               component_type="digital_game_phase"
-        )
+        cls.component = Component.objects.create(experiment=cls.experiment, identification="Identification",
+                                                 duration_unit="ms",
+                                                 duration_value="5",
+                                                 description=" ",
+                                                 component_type="digital_game_phase"
+                                                 )
 
         cls.dgp = DigitalGamePhase.objects.create(experiment=cls.experiment,
-                                         software_version=cls.software_version,
-                                         context_tree=cls.context_tree
-        )
-
-
+                                                  software_version=cls.software_version,
+                                                  context_tree=cls.context_tree
+                                                  )
 
     def test_SEP_DigitalGamePhase_is_valid(self):
         experiment = self.experiment
         context_tree = self.context_tree.id
-        software_version=self.software_version.id
+        software_version = self.software_version.id
 
         sep_dgp_form = DigitalGamePhaseForm(data={
-                                     'software_version': software_version,
-                                     'context_tree':context_tree,
-                                     'experiment': experiment
+            'software_version': software_version,
+            'context_tree': context_tree,
+            'experiment': experiment
         })
         self.assertTrue(sep_dgp_form.is_valid())
-
 
     def test_SEP_DigitalGamePhase_is_not_valid_software_version(self):
         experiment = self.experiment
         context_tree = self.context_tree.id
-        software_version=""
+        software_version = ""
 
         sep_dgp_form = DigitalGamePhaseForm(data={
-                                     'software_version': software_version,
-                                     'context_tree':context_tree,
-                                     'experiment': experiment
+            'software_version': software_version,
+            'context_tree': context_tree,
+            'experiment': experiment
         })
         self.assertFalse(sep_dgp_form.is_valid())
         self.assertEqual(sep_dgp_form.errors["software_version"],
                          ["Este campo é obrigatório."]
-        )
+                         )
 
     def test_SEP_DigitalGamePhase_is_not_valid_context_tree(self):
         experiment = self.experiment
         context_tree = ""
-        software_version=self.software_version
+        software_version = self.software_version
 
         sep_dgp_form = DigitalGamePhaseForm(data={
-                                     'software_version': software_version,
-                                     'context_tree':context_tree,
-                                     'experiment': experiment
+            'software_version': software_version,
+            'context_tree': context_tree,
+            'experiment': experiment
         })
         self.assertFalse(sep_dgp_form.is_valid())
         self.assertEqual(sep_dgp_form.errors["context_tree"],
                          ["Este campo é obrigatório."]
-        )
+                         )
 
     def test_SEP_DigitalGamePhase_Fix_Random_is_valid(self):
-        number_of_uses_to_insert = 1  #valor inicial >=1
+        number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_DigitalGamePhase_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_DigitalGamePhase_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertTrue(number_of_uses_SEP_DigitalGamePhase_Fix_Random_form.is_valid())
 
     def test_SEP_DigitalGamePhase_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
-        number_of_uses_to_insert = 0  #valor inicial >=1
+        number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_DigitalGamePhase_Fix_Random_form = NumberOfUsesToInsertForm(data={'number_of_uses_to_insert': number_of_uses_to_insert})
+        number_of_uses_SEP_DigitalGamePhase_Fix_Random_form = NumberOfUsesToInsertForm(
+            data={'number_of_uses_to_insert': number_of_uses_to_insert}
+        )
         self.assertFalse(number_of_uses_SEP_DigitalGamePhase_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_DigitalGamePhase_Fix_Random_form.errors["number_of_uses_to_insert"], ["Certifique-se que este valor seja maior ou igual a 1."])
-
+        self.assertEqual(number_of_uses_SEP_DigitalGamePhase_Fix_Random_form.errors["number_of_uses_to_insert"],
+                         ["Certifique-se que este valor seja maior ou igual a 1."])
