@@ -13,7 +13,7 @@
     <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
     <script src="{% static 'quiz/js/quiz.js' %}"></script>
 
-    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    <script type="text/javascript" src="{% url 'javascript_catalog' %}"></script>
 
 {% endblock %}
 {% block extrastyle %}
@@ -75,7 +75,7 @@
 
     <div class="container">
 
-        <form method="post" class="form-signin" action="{% url 'django.contrib.auth.views.login' %}">
+        <form method="post" class="form-signin" action="{% url 'login' %}">
             {% csrf_token %}
 
             <h2 class="form-signin-heading">NES</h2>
