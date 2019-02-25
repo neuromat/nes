@@ -223,7 +223,7 @@ class SocialDemographicData(models.Model):
     refrigerator = models.IntegerField(null=True, blank=True)
     freezer = models.IntegerField(null=True, blank=True)
     house_maid = models.IntegerField(null=True, blank=True)
-    social_class = models.CharField(null=True, blank=True, max_length=10)
+    social_class = models.CharField(blank=True, max_length=10, default="")
 
     # Changes to audit trail
     history = HistoricalRecords()
