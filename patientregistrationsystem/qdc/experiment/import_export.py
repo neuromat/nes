@@ -344,11 +344,10 @@ class ImportExperiment:
             app_model = model[0].split('.')
             for i in indexes:
                 model_class = apps.get_model(app_model[0], app_model[1])
-                instance = model_class
                 filter_ = {}
                 for field in model[1]:
                     filter_[field] = data[i]['fields'][field]
-                instance = instance.objects.filter(**filter_).first()
+                instance = model_class.objects.filter(**filter_).first()
                 if instance:
                     data[i]['pk'], old_id = instance.id, data[i]['pk']
                     for dependent_model in dependent_models:
@@ -358,6 +357,27 @@ class ImportExperiment:
                         ]
                         for dependent_index in dependent_indexes:
                             data[dependent_index]['fields'][dependent_model[1]] = data[i]['pk']
+
+    # @staticmethod
+    # def _keep_pre_loaded_emgelectrodeplacement(data):
+    #     indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.emgelectrodeplacement']
+    #     for i in indexes:
+    #         instance = EMGElectrodePlacement.objects.filter(
+    #             location=data[i]['fields']['location'], placement_type=data[i]['fields']['placement_type']
+    #         ).first()
+    #         if instance:
+    #             indexes_inheritade = [
+    #                 index for (index, dict_) in enumerate(data)
+    #                 if dict_['model'] in ('experiment.emgsurfaceplacement', 'experiment.emgintramuscularplacement',
+    #                                       'experiment.emgneedleplacement')
+    #             ]
+    #             pre_loaded = True
+    #             for index_inheritade in indexes_inheritade:
+    #                 if data[i]['pk'] == data[index_inheritade]['pk']:
+    #                     pre_loaded = False
+    #                     break
+    #             if pre_loaded:
+    #                 data[i]['pk'] = instance.id
 
     @staticmethod
     def _verify_classification_of_diseases(data):
@@ -381,6 +401,8 @@ class ImportExperiment:
         self._update_references_to_user(data, request)
         self._update_survey_stuff(data)
         self._keep_objects_pre_loaded(data)
+        # TODO: not needed
+        # self._keep_pre_loaded_emgelectrodeplacement(data)
         self._verify_classification_of_diseases(data)
 
     @staticmethod
