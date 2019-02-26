@@ -566,8 +566,8 @@ class Muscle(models.Model):
 
 
 class MuscleSubdivision(models.Model):
-    muscle = models.ForeignKey(Muscle)
     name = models.CharField(max_length=150)
+    muscle = models.ForeignKey(Muscle)
     anatomy_origin = models.TextField(null=True, blank=True)
     anatomy_insertion = models.TextField(null=True, blank=True)
     anatomy_function = models.TextField(null=True, blank=True)
@@ -577,8 +577,8 @@ class MuscleSubdivision(models.Model):
 
 
 class MuscleSide(models.Model):
-    muscle = models.ForeignKey(Muscle)
     name = models.CharField(max_length=150)
+    muscle = models.ForeignKey(Muscle)
 
     def __str__(self):
         return self.name
@@ -734,8 +734,9 @@ class EMGAnalogFilterSetting(models.Model):
 
 
 class EMGElectrodePlacementSetting(models.Model):
-    emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
-                                                 primary_key=True, related_name='emg_electrode_placement_setting')
+    emg_electrode_setting = models.OneToOneField(
+        EMGElectrodeSetting, primary_key=True, related_name='emg_electrode_placement_setting'
+    )
     emg_electrode_placement = models.ForeignKey(EMGElectrodePlacement)
     remarks = models.TextField(null=True, blank=True)
     muscle_side = models.ForeignKey(MuscleSide, null=True, blank=True)

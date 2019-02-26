@@ -238,5 +238,6 @@ pre_loaded_models = {
     ('experiment.muscle', ('name',)): [('experiment.muscleside', 'muscle'), ('experiment.musclesubdivision', 'muscle')],
     ('experiment.musclesubdivision', ('name', 'anatomy_origin', 'anatomy_insertion', 'anatomy_function')): [
         ('experiment.emgelectrodeplacement', 'muscle_subdivision'),
-    ]
+    ],
+    ('experiment.muscleside', ('name',)): [('experiment.emgelectrodeplacementsetting', 'muscle_side')]
 }
