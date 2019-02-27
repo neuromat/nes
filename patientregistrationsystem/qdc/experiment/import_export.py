@@ -348,7 +348,10 @@ class ImportExperiment:
                 filter_ = {}
                 for field in model[1]:
                     filter_[field] = data[i]['fields'][field]
-                instance = model_class.objects.filter(**filter_).first()
+                if not filter_:  # if not filter_ instance have only relation fields
+                    instance = model_class.objects.first()
+                else:
+                    instance = model_class.objects.filter(**filter_).first()
                 if instance:
                     if data[i]['model'] in pre_loaded_models_inheritance:
                         app_model_inheritade = pre_loaded_models_inheritance[data[i]['model']][0].split('.')
