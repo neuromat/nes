@@ -25,9 +25,12 @@ To create an experiment, NES allows to register relevant information about it. A
 
 * **A title:** title of the experiment (obligatory);
 * **A description:** brief description about the experiment (obligatory);
-* **Project info URL:** Url of the project to which the experiment belongs, if the exists;
+* **Project info URL:** Url of the project to which the experiment belongs, if it exists;
 * **URL of the project approved by the ethics committee:** Url that refers the ethics committee.
 * **Project file approved by the ethics committee:** Upload of the file of the approval by the ethics committé.
+
+If the :ref:`NeuroMat Open Database <neuromat-open-database>` is :ref:`configured <how-to-send-experiment-data-from-nes>`, the following fields will be displayed:
+
 * **Is public:** Checkbox to indicate if the experiment will be published.
 * **Data acquisition is concluded:** Checkbox to indicate if the data acquisition of all participants in the experiment is completed.
 
