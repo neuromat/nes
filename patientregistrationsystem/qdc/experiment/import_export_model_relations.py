@@ -222,7 +222,7 @@ json_files_detached_models = {
     )
 }
 
-pre_loaded_models = {
+pre_loaded_models_foreign_keys = {
     ('experiment.manufacturer', ('name',)): [
         ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
         ('experiment.software', 'manufacturer')
@@ -239,5 +239,18 @@ pre_loaded_models = {
     ('experiment.musclesubdivision', ('name', 'anatomy_origin', 'anatomy_insertion', 'anatomy_function')): [
         ('experiment.emgelectrodeplacement', 'muscle_subdivision'),
     ],
-    ('experiment.muscleside', ('name',)): [('experiment.emgelectrodeplacementsetting', 'muscle_side')]
+    ('experiment.muscleside', ('name',)): [('experiment.emgelectrodeplacementsetting', 'muscle_side')],
+    ('experiment.filtertype', ('name', 'description')): [('experiment.emgdigitalfiltersetting', 'filter_type')],
+    ('experiment.electrodemodel',
+     ('name', 'description', 'usability', 'impedance', 'impedance_unit', 'inter_electrode_distance',
+      'inter_electrode_distance_unit', 'electrode_type')):
+        [('experiment.emgelectrodesetting', 'electrode')],
+    ('experiment.amplifier',
+     ('gain', 'number_of_channels', 'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit')):
+        [('experiment.emgamplifiersetting', 'amplifier'), ('experiment.emgpreamplifiersetting', 'amplifier')]
+}
+
+pre_loaded_models_inheritance = {
+    'experiment.amplifier':
+        ['experiment.equipment', ('equipment_type', 'identification', 'description', 'serial_number')]
 }
