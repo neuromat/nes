@@ -13,7 +13,8 @@ from django.db.models import Count
 from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component
 from experiment.import_export_model_relations import one_to_one_relation, foreign_relations, model_root_nodes, \
-    experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models
+    experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models_foreign_keys, \
+    pre_loaded_models_inheritance
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -171,7 +172,7 @@ class ExportExperiment:
 class ImportExperiment:
     BAD_JSON_FILE_ERROR = 1
     FIXTURE_FILE_NAME = 'experiment.json'
-    PRE_LOADED_MODELS = pre_loaded_models
+    PRE_LOADED_MODELS = pre_loaded_models_foreign_keys
 
     def __init__(self, file_path):
         self.file_path = file_path
@@ -349,6 +350,20 @@ class ImportExperiment:
                     filter_[field] = data[i]['fields'][field]
                 instance = model_class.objects.filter(**filter_).first()
                 if instance:
+                    if data[i]['model'] in pre_loaded_models_inheritance:
+                        app_model_inheritade = pre_loaded_models_inheritance[data[i]['model']][0].split('.')
+                        model_class_inheritade = apps.get_model(app_model_inheritade[0], app_model_inheritade[1])
+                        index_inheritade = [index for (index, dict_inheritance) in enumerate(data) if
+                                            dict_inheritance['model'] == pre_loaded_models_inheritance[data[i][
+                                                'model']][0] and dict_inheritance['pk'] == data[i]['pk']][0]
+                        filter_inheritade = {}
+                        for field in pre_loaded_models_inheritance[data[i]['model']][1]:
+                            filter_inheritade[field] = data[index_inheritade]['fields'][field]
+                        instance_inheritade = model_class_inheritade.objects.filter(**filter_inheritade).first()
+                        if instance_inheritade:
+                            data[index_inheritade]['pk'] = instance.id
+                        else:
+                            break
                     data[i]['pk'], old_id = instance.id, data[i]['pk']
                     for dependent_model in dependent_models:
                         dependent_indexes = [

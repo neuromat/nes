@@ -2517,7 +2517,7 @@ class ImportExperimentTest(TestCase):
         # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
 
     @staticmethod
-    def _get_pre_loaded_models():
+    def _get_pre_loaded_models_emg():
         # For the dict keys we select one to change for the tests
         return {
             (Manufacturer, 'name', 1): [(Equipment, 'manufacturer', 1), (Software, 'manufacturer', 1)],
@@ -2525,13 +2525,18 @@ class ImportExperimentTest(TestCase):
             (Muscle, 'name', 1): [(MuscleSide, 'muscle', 1), (MuscleSubdivision, 'muscle', 1)],
             (MuscleSide, 'name', 1): [(EMGElectrodePlacementSetting, 'muscle_side', 3)],
             (MuscleSubdivision, 'anatomy_origin', 1): [(EMGElectrodePlacement, 'muscle_subdivision', 3)],
-            (EMGElectrodePlacement, 'location', 7): []
+            (EMGElectrodePlacement, 'location', 7): [],
+            (FilterType, 'description', 1): [(EMGDigitalFilterSetting, 'filter_type', 1)],
+            (ElectrodeModel, 'description', 1): [(EMGElectrodeSetting, 'electrode', 3)],
+            (Amplifier, 'input_impedance_unit', 1): [
+                (EMGAmplifierSetting, 'amplifier', 3), (EMGPreamplifierSetting, 'amplifier', 3)
+            ]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
         experiment = self._create_experiment_with_emg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models()
+        pre_loaded_models = self._get_pre_loaded_models_emg()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2552,7 +2557,7 @@ class ImportExperimentTest(TestCase):
     def test_object_imported_does_not_exist_create_new_emg(self):
         experiment = self._create_experiment_with_emg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models()
+        pre_loaded_models = self._get_pre_loaded_models_emg()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2562,7 +2567,7 @@ class ImportExperimentTest(TestCase):
         for model in pre_loaded_models:
             # Changes field value to test for newly created instances
             instance = model[0].objects.last()
-            instance.__dict__[model[1]] = faker.word()
+            instance.__dict__[model[1]] = faker.word()  # TODO: change faker.word() to accepts other field types
             instance.save()
 
         with open(file_path, 'rb') as file:
@@ -2573,6 +2578,32 @@ class ImportExperimentTest(TestCase):
         del pre_loaded_models[(EMGElectrodePlacement, 'location', 7)]
         for model in pre_loaded_models:
             self.assertEqual(2, model[0].objects.count(), model[0])
+            model_instance = model[0].objects.last()
+            for dependent_model in pre_loaded_models[model]:
+                dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
+                for dependent_model_instance in dependent_model_instances:
+                    reference = getattr(dependent_model_instance, dependent_model[1])
+                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
+    @staticmethod
+    def _get_pre_loaded_models_eeg():
+        # For the dict keys we select one to change for the tests
+        return {(EEGSolution, 'components', ): [(EEGSolutionSetting, 'eeg_solution', ), ()]}
+
+    def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_eeg(self):
+        experiment = self._create_experiment_with_eeg_setting()
+
+        pre_loaded_models = self._get_pre_loaded_models_eeg()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in pre_loaded_models:
+            self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
             for dependent_model in pre_loaded_models[model]:
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
