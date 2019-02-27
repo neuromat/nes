@@ -736,7 +736,7 @@ class ImportExperimentTest(TestCase):
 
     def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name, linking_field,
                                                       _experiment, filter_model_1={},
-                                                      flag1=False, to_create=True):
+                                                      flag1=False, to_create1=True, to_create2=True):
         """
         This test is a general test for testing the sucessfull importation of two linked models
         :param model_1_name: Name of the model inherited by the second model; The one that is being pointed at.
@@ -761,16 +761,19 @@ class ImportExperimentTest(TestCase):
 
         new_model_1_objects = model_1.objects.filter(**filter_model_1).exclude(pk__in=old_model_1_objects_ids)
         new_model_2_objects = model_2.objects.exclude(pk__in=old_model_2_objects_ids)
-        if to_create:  # TODO: refactor to not use to_create
+        if to_create1:  # TODO: refactor to not use to_create1
             self.assertNotEqual(0, new_model_1_objects.count())
+        if to_create2:
             self.assertNotEqual(0, new_model_2_objects.count())
 
-        self.assertEqual(model_1.objects.filter(**filter_model_1).count(),
-                         len(old_model_1_objects_ids) + new_model_1_objects.count()
-                         )
-        self.assertEqual(model_2.objects.count(),
-                         len(old_model_2_objects_ids) + new_model_2_objects.count()
-                         )
+        self.assertEqual(
+            model_1.objects.filter(**filter_model_1).count(),
+            len(old_model_1_objects_ids) + new_model_1_objects.count()
+        )
+        self.assertEqual(
+            model_2.objects.count(),
+            len(old_model_2_objects_ids) + new_model_2_objects.count()
+        )
 
         if not flag1:  # TODO: refactor to not use flag1
             for item in new_model_1_objects:
@@ -2183,7 +2186,7 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.coilmodel',
                                                            'material_id',
                                                            self._create_experiment_with_tms_setting(),
-                                                           to_create=False)
+                                                           to_create1=False)
 
     def test_coil_shape_and_coil_model(self):
         self._test_creation_and_linking_between_two_models('experiment.coilshape',
@@ -2217,47 +2220,49 @@ class ImportExperimentTest(TestCase):
 
     # EEG tests
     def test_electrode_configuration_and_electrode_model(self):
-        self._test_creation_and_linking_between_two_models('experiment.electrodeconfiguration',
-                                                           'experiment.electrodemodel',
-                                                           'electrode_configuration_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.electrodeconfiguration', 'experiment.electrodemodel', 'electrode_configuration_id',
+            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
+        )
 
     def test_material_and_electrode_model(self):
         self._test_creation_and_linking_between_two_models('experiment.material',
                                                            'experiment.electrodemodel',
                                                            'material_id',
                                                            self._create_experiment_with_eeg_setting(),
-                                                           to_create=False)
+                                                           to_create1=False, to_create2=False)
 
     def test_electrode_model_and_eeg_electrode_position_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.electrodemodel',
-                                                           'experiment.eegelectrodepositionsetting',
-                                                           'electrode_model_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.electrodemodel', 'experiment.eegelectrodepositionsetting', 'electrode_model_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False
+        )
 
     def test_electrode_model_and_eeg_electrode_net(self):
-        self._test_creation_and_linking_between_two_models('experiment.electrodemodel',
-                                                           'experiment.eegelectrodenet',
-                                                           'electrode_model_default_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.electrodemodel', 'experiment.eegelectrodenet', 'electrode_model_default_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False
+        )
 
     def test_eeg_electrode_localization_system_and_eeg_electrode_position(self):
-        self._test_creation_and_linking_between_two_models('experiment.eegelectrodelocalizationsystem',
-                                                           'experiment.eegelectrodeposition',
-                                                           'eeg_electrode_localization_system_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.eegelectrodelocalizationsystem', 'experiment.eegelectrodeposition',
+            'eeg_electrode_localization_system_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False
+        )
 
     def test_eeg_electrode_localization_system_and_eeg_electrode_net_system(self):
-        self._test_creation_and_linking_between_two_models('experiment.eegelectrodelocalizationsystem',
-                                                           'experiment.eegelectrodenetsystem',
-                                                           'eeg_electrode_localization_system_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.eegelectrodelocalizationsystem', 'experiment.eegelectrodenetsystem',
+            'eeg_electrode_localization_system_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False
+        )
 
     def test_eeg_electrode_net_and_eeg_electrode_net_system(self):
-        self._test_creation_and_linking_between_two_models('experiment.eegelectrodenet',
-                                                           'experiment.eegelectrodenetsystem',
-                                                           'eeg_electrode_net_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.eegelectrodenet', 'experiment.eegelectrodenetsystem', 'eeg_electrode_net_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False
+        )
 
     @skip  # TODO: test when implementing exporting/importing data collections
     def test_eeg_electrode_net_and_eeg_electrode_cap(self):
@@ -2279,10 +2284,10 @@ class ImportExperimentTest(TestCase):
                                                            self._create_experiment_with_eeg_setting())
 
     def test_eeg_electrode_position_and_eeg_electrode_position_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.eegelectrodeposition',
-                                                           'experiment.eegelectrodepositionsetting',
-                                                           'eeg_electrode_position_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.eegelectrodeposition', 'experiment.eegelectrodepositionsetting', 'eeg_electrode_position_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False
+        )
 
     def test_eeg_setting_and_eeg_electrode_layout_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.eegsetting',
@@ -2291,39 +2296,39 @@ class ImportExperimentTest(TestCase):
                                                            self._create_experiment_with_eeg_setting())
 
     def test_filter_type_and_eeg_filter_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.filtertype',
-                                                           'experiment.eegfiltersetting',
-                                                           'eeg_filter_type_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.filtertype', 'experiment.eegfiltersetting', 'eeg_filter_type_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False
+        )
 
     def test_amplifier_and_eeg_amplifier_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.amplifier',
-                                                           'experiment.eegamplifiersetting',
-                                                           'eeg_amplifier_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.amplifier', 'experiment.eegamplifiersetting', 'eeg_amplifier_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False
+        )
 
     def test_amplifierdetectiontype_and_amplifier(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.amplifierdetectiontype', 'experiment.amplifier', 'amplifier_detection_type_id',
-            self._create_experiment_with_eeg_setting()
+            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
         )
 
     def test_tetheringsystem_and_amplifier(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.tetheringsystem', 'experiment.amplifier', 'tethering_system',
-            self._create_experiment_with_eeg_setting()
+            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
         )
 
     def test_eeg_solution_and_eeg_solution_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.eegsolution',
-                                                           'experiment.eegsolutionsetting',
-                                                           'eeg_solution_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.eegsolution', 'experiment.eegsolutionsetting', 'eeg_solution_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False
+        )
 
     def test_manufacturer_and_eeg_solution(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.manufacturer', 'experiment.eegsolution', 'manufacturer',
-            self._create_experiment_with_eeg_setting(), to_create=False
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False
         )
 
     def test_eeg_setting_and_eeg_filter_setting(self):
@@ -2356,7 +2361,7 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.software',
                                                            'manufacturer',
                                                            self._create_experiment_with_emg_setting(),
-                                                           to_create=False)
+                                                           to_create1=False)
 
     def test_software_and_software_version(self):
         self._test_creation_and_linking_between_two_models('experiment.software',
@@ -2369,7 +2374,7 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.equipment',
                                                            'manufacturer',
                                                            self._create_experiment_with_emg_setting(),
-                                                           to_create=False)
+                                                           to_create1=False)
 
     def test_equipment_and_adconverter(self):
         self._test_creation_and_linking_between_two_models('experiment.equipment',
@@ -2397,23 +2402,23 @@ class ImportExperimentTest(TestCase):
                                                            self._create_experiment_with_emg_setting())
 
     def test_filter_type_and_emg_digital_filter_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.filtertype',
-                                                           'experiment.emgdigitalfiltersetting',
-                                                           'filter_type',
-                                                           self._create_experiment_with_emg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.filtertype', 'experiment.emgdigitalfiltersetting', 'filter_type',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
 
     def test_equipment_and_amplifier(self):
-        self._test_creation_and_linking_between_two_models('experiment.equipment',
-                                                           'experiment.amplifier',
-                                                           'equipment_ptr',
-                                                           self._create_experiment_with_emg_setting(),
-                                                           {'equipment_type': 'amplifier'})
+        self._test_creation_and_linking_between_two_models(
+            'experiment.equipment', 'experiment.amplifier', 'equipment_ptr',
+            self._create_experiment_with_emg_setting(),
+            {'equipment_type': 'amplifier'}, to_create1=False, to_create2=False
+        )
 
     def test_amplifier_and_emg_pre_amplifier_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.amplifier',
-                                                           'experiment.emgpreamplifiersetting',
-                                                           'amplifier',
-                                                           self._create_experiment_with_emg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.amplifier', 'experiment.emgpreamplifiersetting', 'amplifier',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
 
     def test_emg_pre_amplifier_setting_and_emg_pre_amplifier_filter_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.emgpreamplifiersetting',
@@ -2428,10 +2433,10 @@ class ImportExperimentTest(TestCase):
                                                            self._create_experiment_with_emg_setting())
 
     def test_amplifier_and_emg_amplifier_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.amplifier',
-                                                           'experiment.emgamplifiersetting',
-                                                           'amplifier',
-                                                           self._create_experiment_with_emg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.amplifier', 'experiment.emgamplifiersetting', 'amplifier',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
 
     def test_emg_amplifier_setting_and_emg_analog_filter_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.emgamplifiersetting',
@@ -2452,21 +2457,21 @@ class ImportExperimentTest(TestCase):
                                                            self._create_experiment_with_emg_setting())
 
     def test_electrode_model_and_emg_electrode_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.electrodemodel',
-                                                           'experiment.emgelectrodesetting',
-                                                           'electrode',
-                                                           self._create_experiment_with_emg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.electrodemodel', 'experiment.emgelectrodesetting', 'electrode',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
 
     def test_muscle_and_muscleside(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.muscle', 'experiment.muscleside', 'muscle', self._create_experiment_with_emg_setting(),
-            to_create=False
+            to_create1=False, to_create2=False
         )
 
     def test_muscle_and_musclesubdivision(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.muscle', 'experiment.musclesubdivision', 'muscle', self._create_experiment_with_emg_setting(),
-            to_create=False
+            to_create1=False, to_create2=False
         )
 
     def test_manufacturer_imported_does_not_exist_create_new1(self):
@@ -2557,17 +2562,18 @@ class ImportExperimentTest(TestCase):
     def test_object_imported_does_not_exist_create_new_emg(self):
         experiment = self._create_experiment_with_emg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_emg()
+        pre_loaded_models_emg = self._get_pre_loaded_models_emg()
 
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
         faker = Factory.create()
-        for model in pre_loaded_models:
+        for model in pre_loaded_models_emg:
             # Changes field value to test for newly created instances
             instance = model[0].objects.last()
-            instance.__dict__[model[1]] = faker.word()  # TODO: change faker.word() to accepts other field types
+            # If a new model included in pre_loaded_models_emg does not have text field, attribute another faker
+            instance.__dict__[model[1]] = faker.word()
             instance.save()
 
         with open(file_path, 'rb') as file:
@@ -2575,11 +2581,11 @@ class ImportExperimentTest(TestCase):
 
         # Exclude (EMGElectrodePlacement, 'location', 7) entry, as EMGElectrodePlacement
         # never is created
-        del pre_loaded_models[(EMGElectrodePlacement, 'location', 7)]
-        for model in pre_loaded_models:
+        del pre_loaded_models_emg[(EMGElectrodePlacement, 'location', 7)]
+        for model in pre_loaded_models_emg:
             self.assertEqual(2, model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
-            for dependent_model in pre_loaded_models[model]:
+            for dependent_model in pre_loaded_models_emg[model]:
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
@@ -2588,7 +2594,24 @@ class ImportExperimentTest(TestCase):
     @staticmethod
     def _get_pre_loaded_models_eeg():
         # For the dict keys we select one to change for the tests
-        return {(EEGSolution, 'components', ): [(EEGSolutionSetting, 'eeg_solution', ), ()]}
+        return {
+            (Manufacturer, 'name', 1): [
+                (EEGElectrodeNet, 'manufacturer', 1), (Amplifier, 'manufacturer', 1), (EEGSolution, 'manufacturer', 1)
+            ],
+            (Material, 'description', 1): [(ElectrodeModel, 'material', 1)],
+            (FilterType, 'description', 1): [(EEGFilterSetting, 'eeg_filter_type', 1)],
+            (ElectrodeModel, 'description', 1): [
+                (EEGElectrodeNet, 'electrode_model_default', 1), (EEGElectrodePositionSetting, 'electrode_model', 1)
+            ],
+            (EEGSolution, 'components', 1): [(EEGSolutionSetting, 'eeg_solution', 1)],
+            (EEGElectrodeLocalizationSystem, 'description', 1): [
+                (EEGElectrodeNetSystem, 'eeg_electrode_localization_system', 1),
+                (EEGElectrodePosition, 'eeg_electrode_localization_system', 1)
+            ],
+            (EEGElectrodePosition, 'name', 1): [(EEGElectrodePositionSetting, 'eeg_electrode_position', 1)],
+            (Amplifier, 'input_impedance_unit', 1): [(EEGAmplifierSetting, 'eeg_amplifier', 1)],
+            (EEGElectrodeNet, '', 1): [(EEGElectrodeNetSystem, 'eeg_electrode_net', 1)]
+        }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_eeg(self):
         experiment = self._create_experiment_with_eeg_setting()
@@ -2606,6 +2629,39 @@ class ImportExperimentTest(TestCase):
             self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
             for dependent_model in pre_loaded_models[model]:
+                dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
+                for dependent_model_instance in dependent_model_instances:
+                    reference = getattr(dependent_model_instance, dependent_model[1])
+                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
+    def test_object_imported_does_not_exist_create_new_eeg(self):
+        experiment = self._create_experiment_with_emg_setting()
+
+        pre_loaded_models_emg = self._get_pre_loaded_models_emg()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        faker = Factory.create()
+        for model in pre_loaded_models_emg:
+            if model[1]:  # if not model only have relation fields
+                # Changes field value to test for newly created instances
+                instance = model[0].objects.last()
+                # If a new model included in pre_loaded_models_eeg does not have text field, attribute another faker
+                instance.__dict__[model[1]] = faker.word()
+                instance.save()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Exclude (EMGElectrodePlacement, 'location', 7) entry, as EMGElectrodePlacement
+        # never is created
+        del pre_loaded_models_emg[(EMGElectrodePlacement, 'location', 7)]
+        for model in pre_loaded_models_emg:
+            self.assertEqual(2, model[0].objects.count(), model[0])
+            model_instance = model[0].objects.last()
+            for dependent_model in pre_loaded_models_emg[model]:
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
@@ -2653,7 +2709,7 @@ class ImportExperimentTest(TestCase):
     def test_musclesubdivision_and_emgelectrodeplacement(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.musclesubdivision', 'experiment.emgelectrodeplacement', 'muscle_subdivision',
-            self._create_experiment_with_emg_setting(), to_create=False
+            self._create_experiment_with_emg_setting(), to_create1=False
         )
 
     def test_standardizationsystem_and_emgelectrodeplacement(self):
@@ -2671,7 +2727,7 @@ class ImportExperimentTest(TestCase):
     def test_muscleside_and_emgelectrodeplacementsetting(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
-            self._create_experiment_with_emg_setting(), to_create=False
+            self._create_experiment_with_emg_setting(), to_create1=False
         )
 
     def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
