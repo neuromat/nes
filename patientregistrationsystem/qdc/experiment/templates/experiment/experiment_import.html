@@ -44,7 +44,14 @@
         <div class="col-md-10">
             <ol class="breadcrumb">
                 <li><a href="/home">{% trans "Home" %}</a></li>
-                <li class="active">{% trans "Studies" %}</li>
+                <li><a href="{% url 'research_project_list' %}">{% trans "Studies" %}</a></li>
+                <li class="active">
+                    {% if research_project_id %}
+                        {% trans "Import Experiment" %}
+                    {% else %}
+                        {% trans "Import Study/Experiment" %}
+                    {% endif %}
+                </li>
             </ol>
         </div>
     </div>
