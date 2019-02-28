@@ -376,27 +376,6 @@ class ImportExperiment:
                         for dependent_index in dependent_indexes:
                             data[dependent_index]['fields'][dependent_model[1]] = data[i]['pk']
 
-    # @staticmethod
-    # def _keep_pre_loaded_emgelectrodeplacement(data):
-    #     indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.emgelectrodeplacement']
-    #     for i in indexes:
-    #         instance = EMGElectrodePlacement.objects.filter(
-    #             location=data[i]['fields']['location'], placement_type=data[i]['fields']['placement_type']
-    #         ).first()
-    #         if instance:
-    #             indexes_inheritade = [
-    #                 index for (index, dict_) in enumerate(data)
-    #                 if dict_['model'] in ('experiment.emgsurfaceplacement', 'experiment.emgintramuscularplacement',
-    #                                       'experiment.emgneedleplacement')
-    #             ]
-    #             pre_loaded = True
-    #             for index_inheritade in indexes_inheritade:
-    #                 if data[i]['pk'] == data[index_inheritade]['pk']:
-    #                     pre_loaded = False
-    #                     break
-    #             if pre_loaded:
-    #                 data[i]['pk'] = instance.id
-
     @staticmethod
     def _verify_classification_of_diseases(data):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.diagnosis']
