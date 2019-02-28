@@ -529,9 +529,9 @@ class ImportExperimentTest(TestCase):
         coil_shape = CoilShape.objects.create(name='TEST_COIL_SHAPE')
         coil_model = CoilModel.objects.create(name='TEST_COIL_MODEL', coil_shape=coil_shape, material=material)
 
-        TMSDeviceSetting.objects.create(tms_setting=tms_setting,
-                                        tms_device=tms_device,
-                                        coil_model=coil_model)
+        TMSDeviceSetting.objects.create(
+            tms_setting=tms_setting, tms_device=tms_device, coil_model=coil_model
+        )
 
         return experiment
 
@@ -2201,10 +2201,10 @@ class ImportExperimentTest(TestCase):
                                                            self._create_experiment_with_tms_setting())
 
     def test_tms_device_and_tms_device_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.tmsdevice',
-                                                           'experiment.tmsdevicesetting',
-                                                           'tms_device_id',
-                                                           self._create_experiment_with_tms_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.tmsdevice', 'experiment.tmsdevicesetting', 'tms_device_id',
+            self._create_experiment_with_tms_setting()
+        )
 
     def test_tms_setting_and_tms_device_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.tmssetting',
@@ -2562,17 +2562,18 @@ class ImportExperimentTest(TestCase):
     def test_object_imported_does_not_exist_create_new_emg(self):
         experiment = self._create_experiment_with_emg_setting()
 
-        pre_loaded_models_emg = self._get_pre_loaded_models_emg()
+        pre_loaded_models = self._get_pre_loaded_models_emg()
 
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
         faker = Factory.create()
-        for model in pre_loaded_models_emg:
+        for model in pre_loaded_models:
             # Changes field value to test for newly created instances
             instance = model[0].objects.last()
-            # If a new model included in pre_loaded_models_emg does not have text field, attribute another faker
+            # TODO (future):If a new model included in pre_loaded_models does
+            #  not have text field, assign another faker
             instance.__dict__[model[1]] = faker.word()
             instance.save()
 
@@ -2581,11 +2582,11 @@ class ImportExperimentTest(TestCase):
 
         # Exclude (EMGElectrodePlacement, 'location', 7) entry, as EMGElectrodePlacement
         # never is created
-        del pre_loaded_models_emg[(EMGElectrodePlacement, 'location', 7)]
-        for model in pre_loaded_models_emg:
+        del pre_loaded_models[(EMGElectrodePlacement, 'location', 7)]
+        for model in pre_loaded_models:
             self.assertEqual(2, model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
-            for dependent_model in pre_loaded_models_emg[model]:
+            for dependent_model in pre_loaded_models[model]:
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
@@ -2610,7 +2611,7 @@ class ImportExperimentTest(TestCase):
             ],
             (EEGElectrodePosition, 'name', 1): [(EEGElectrodePositionSetting, 'eeg_electrode_position', 1)],
             (Amplifier, 'input_impedance_unit', 1): [(EEGAmplifierSetting, 'eeg_amplifier', 1)],
-            (EEGElectrodeNet, '', 1): [(EEGElectrodeNetSystem, 'eeg_electrode_net', 1)]
+            (EEGElectrodeNet, 'identification', 1): [(EEGElectrodeNetSystem, 'eeg_electrode_net', 1)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_eeg(self):
@@ -2635,33 +2636,91 @@ class ImportExperimentTest(TestCase):
                     self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
     def test_object_imported_does_not_exist_create_new_eeg(self):
-        experiment = self._create_experiment_with_emg_setting()
+        experiment = self._create_experiment_with_eeg_setting()
 
-        pre_loaded_models_emg = self._get_pre_loaded_models_emg()
+        pre_loaded_models = self._get_pre_loaded_models_eeg()
 
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
         faker = Factory.create()
-        for model in pre_loaded_models_emg:
-            if model[1]:  # if not model only have relation fields
-                # Changes field value to test for newly created instances
-                instance = model[0].objects.last()
-                # If a new model included in pre_loaded_models_eeg does not have text field, attribute another faker
-                instance.__dict__[model[1]] = faker.word()
-                instance.save()
+        for model in pre_loaded_models:
+            # Changes field value to test for newly created instances
+            instance = model[0].objects.last()
+            # TODO (future):If a new model included in pre_loaded_models does
+            #  not have text field, assign another faker
+            instance.__dict__[model[1]] = faker.word()
+            instance.save()
 
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
-        # Exclude (EMGElectrodePlacement, 'location', 7) entry, as EMGElectrodePlacement
-        # never is created
-        del pre_loaded_models_emg[(EMGElectrodePlacement, 'location', 7)]
-        for model in pre_loaded_models_emg:
+        for model in pre_loaded_models:
             self.assertEqual(2, model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
-            for dependent_model in pre_loaded_models_emg[model]:
+            for dependent_model in pre_loaded_models[model]:
+                dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
+                for dependent_model_instance in dependent_model_instances:
+                    reference = getattr(dependent_model_instance, dependent_model[1])
+                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
+    @staticmethod
+    def _get_pre_loaded_models_tms():
+        return {
+            # TMSDevice related model is refered as experiment.equipment in
+            # pre_loaded_models_foreign_keys as in json experiment.equipment is
+            # a model separated from experiment.tmsdevice
+            (Manufacturer, 'name', 1): [(TMSDevice, 'manufacturer', 1)],
+            (Material, 'description', 1): [(CoilModel, 'material', 1)]
+        }
+
+    def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_tms(self):
+        experiment = self._create_experiment_with_tms_setting()
+
+        pre_loaded_models = self._get_pre_loaded_models_tms()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in pre_loaded_models:
+            self.assertEqual(model[2], model[0].objects.count(), model[0])
+            model_instance = model[0].objects.last()
+            for dependent_model in pre_loaded_models[model]:
+                dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
+                for dependent_model_instance in dependent_model_instances:
+                    reference = getattr(dependent_model_instance, dependent_model[1])
+                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
+    def test_object_imported_does_not_exist_create_new_tms(self):
+        experiment = self._create_experiment_with_tms_setting()
+
+        pre_loaded_models = self._get_pre_loaded_models_tms()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        faker = Factory.create()
+        for model in pre_loaded_models:
+            # Changes field value to test for newly created instances
+            instance = model[0].objects.last()
+            # TODO (future):If a new model included in pre_loaded_models does
+            #  not have text field, assign another faker
+            instance.__dict__[model[1]] = faker.word()
+            instance.save()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in pre_loaded_models:
+            self.assertEqual(2, model[0].objects.count(), model[0])
+            model_instance = model[0].objects.last()
+            for dependent_model in pre_loaded_models[model]:
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
