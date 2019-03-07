@@ -638,11 +638,6 @@ class ImportExperimentTest(TestCase):
                                                               muscle=muscle)
         standardization_system = StandardizationSystem.objects.create(name='TEST_STANDARDIZATION_SYSTEM')
 
-        emg_surface_placement = EMGSurfacePlacement.objects.create(
-            standardization_system=standardization_system,
-            muscle_subdivision=muscle_subdivision,
-            placement_type='surface'
-        )
         emg_intramuscular_placement = EMGIntramuscularPlacement.objects.create(
             standardization_system=standardization_system,
             muscle_subdivision=muscle_subdivision,
@@ -653,17 +648,11 @@ class ImportExperimentTest(TestCase):
             muscle_subdivision=muscle_subdivision,
             placement_type='needle'
         )
-        # Create one EMGElectrodePlacement without create inheritade model
-        # (EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement).
-        # That is to replicate how EMGElectrodePlacement intances are created
-        # in fixtures when preloading data
-        ObjectsFactory.create_emg_electrode_placement(
-            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
+        emg_surface_placement = EMGSurfacePlacement.objects.create(
+            standardization_system=standardization_system,
+            muscle_subdivision=muscle_subdivision,
+            placement_type='surface'
         )
-        EMGElectrodePlacementSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_surface,
-            emg_electrode_placement=emg_surface_placement.emgelectrodeplacement_ptr,
-            muscle_side=muscle_side)
         EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_intramuscular,
             emg_electrode_placement=emg_intramuscular_placement.emgelectrodeplacement_ptr,
@@ -671,6 +660,11 @@ class ImportExperimentTest(TestCase):
         EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_needle,
             emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
+            muscle_side=muscle_side)
+        # Keep this created lastly for tests below
+        EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_surface,
+            emg_electrode_placement=emg_surface_placement.emgelectrodeplacement_ptr,
             muscle_side=muscle_side)
 
         # Amplifier
@@ -2530,12 +2524,13 @@ class ImportExperimentTest(TestCase):
             (Muscle, 'name', 1): [(MuscleSide, 'muscle', 1), (MuscleSubdivision, 'muscle', 1)],
             (MuscleSide, 'name', 1): [(EMGElectrodePlacementSetting, 'muscle_side', 3)],
             (MuscleSubdivision, 'anatomy_origin', 1): [(EMGElectrodePlacement, 'muscle_subdivision', 3)],
-            (EMGElectrodePlacement, 'location', 7): [],
+            (EMGSurfacePlacement, 'location', 1): [(EMGElectrodePlacementSetting, 'emg_electrode_placement', 1)],
             (FilterType, 'description', 1): [(EMGDigitalFilterSetting, 'filter_type', 1)],
             (ElectrodeModel, 'description', 1): [(EMGElectrodeSetting, 'electrode', 3)],
             (Amplifier, 'input_impedance_unit', 1): [
                 (EMGAmplifierSetting, 'amplifier', 3), (EMGPreamplifierSetting, 'amplifier', 3)
-            ]
+            ],
+            (StandardizationSystem, 'description', 1): [(EMGElectrodePlacement, 'standardization_system', 3)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
@@ -2557,7 +2552,10 @@ class ImportExperimentTest(TestCase):
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
-                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+                    # for EMGElectrodePlacement we need to take the EMGSurfacePlacement inherited
+                    if isinstance(reference, EMGElectrodePlacement):
+                        reference = EMGSurfacePlacement.objects.last()
+                    self.assertEqual(reference.pk, model_instance.pk, '%s not equal %s' % (reference, model_instance))
 
     def test_object_imported_does_not_exist_create_new_emg(self):
         experiment = self._create_experiment_with_emg_setting()
@@ -2580,9 +2578,6 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
-        # Exclude (EMGElectrodePlacement, 'location', 7) entry, as EMGElectrodePlacement
-        # never is created
-        del pre_loaded_models[(EMGElectrodePlacement, 'location', 7)]
         for model in pre_loaded_models:
             self.assertEqual(2, model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
@@ -2590,7 +2585,10 @@ class ImportExperimentTest(TestCase):
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
-                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+                    # for EMGElectrodePlacement we need to take the EMGSurfacePlacement inherited
+                    if isinstance(reference, EMGElectrodePlacement):
+                        reference = EMGSurfacePlacement.objects.last()
+                    self.assertEqual(reference.pk, model_instance.pk, '%s not equal %s' % (reference, model_instance))
 
     @staticmethod
     def _get_pre_loaded_models_eeg():
@@ -2774,7 +2772,7 @@ class ImportExperimentTest(TestCase):
     def test_standardizationsystem_and_emgelectrodeplacement(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.standardizationsystem', 'experiment.emgelectrodeplacement', 'standardization_system',
-            self._create_experiment_with_emg_setting()
+            self._create_experiment_with_emg_setting(), to_create1=False
         )
 
     def test_emgelectrodesetting_and_emgelectrodeplacementsetting(self):
@@ -2804,7 +2802,7 @@ class ImportExperimentTest(TestCase):
     def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
-            self._create_experiment_with_emg_setting(), flag1=True
+            self._create_experiment_with_emg_setting(), flag1=True, to_create2=False
         )
 
     def test_emgelectrodeplacement_and_emgneedleplacement(self):
