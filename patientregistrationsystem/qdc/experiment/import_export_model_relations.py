@@ -263,6 +263,9 @@ pre_loaded_models_foreign_keys = {
     ('experiment.emgsurfaceplacement',
      ('start_posture', 'orientation', 'fixation_on_the_skin', 'reference_electrode', 'clinical_test')): [
         ('experiment.emgelectrodeplacementsetting', 'emg_electrode_placement')
+    ],
+    ('experiment.standardizationsystem', ('name', 'description')): [
+        ('experiment.emgelectrodeplacement', 'standardization_system')
     ]
 }
 
