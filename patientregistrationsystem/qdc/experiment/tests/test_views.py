@@ -2529,7 +2529,8 @@ class ImportExperimentTest(TestCase):
             (ElectrodeModel, 'description', 1): [(EMGElectrodeSetting, 'electrode', 3)],
             (Amplifier, 'input_impedance_unit', 1): [
                 (EMGAmplifierSetting, 'amplifier', 3), (EMGPreamplifierSetting, 'amplifier', 3)
-            ]
+            ],
+            (StandardizationSystem, 'description', 1): [(EMGElectrodePlacement, 'standardization_system', 3)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
@@ -2771,7 +2772,7 @@ class ImportExperimentTest(TestCase):
     def test_standardizationsystem_and_emgelectrodeplacement(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.standardizationsystem', 'experiment.emgelectrodeplacement', 'standardization_system',
-            self._create_experiment_with_emg_setting()
+            self._create_experiment_with_emg_setting(), to_create1=False
         )
 
     def test_emgelectrodesetting_and_emgelectrodeplacementsetting(self):
