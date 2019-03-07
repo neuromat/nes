@@ -398,8 +398,6 @@ class ImportExperiment:
         self._update_references_to_user(data, request)
         self._update_survey_stuff(data)
         self._keep_objects_pre_loaded(data)
-        # TODO: not needed
-        # self._keep_pre_loaded_emgelectrodeplacement(data)
         self._verify_classification_of_diseases(data)
 
     @staticmethod
