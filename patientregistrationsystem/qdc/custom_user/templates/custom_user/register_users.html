@@ -162,7 +162,7 @@
                         <label>{%  trans "Can this researcher access the system?" %}</label><br>
                         <ul id="optradio">
                             {% for radio in profile_form.login_enabled %}
-                                <li><label for="{{radio.id_for_label}}"><input id="{{radio.id_for_label}}" {% if profile_form.login_enabled.value|stringformat:"s" == radio.choice_value %}checked="checked"{% endif %} name="login_enabled" type="radio" value="{{radio.choice_value}}" {% if viewing %}disabled{% endif %} {% if profile_form.login_enabled.value == True and radio.choice_value == 'False' %}onchange="$('#modalDeactivate').modal('show')"{% endif %}> {{radio.choice_label}}</label></li>
+                                <li><label for="optradio_{{radio.id_for_label|last}}"><input id="optradio_{{radio.id_for_label|last}}" {% if radio.data.selected %}checked="checked"{% endif %} name="login_enabled" type="radio" value="{{radio.data.value}}" {% if viewing %}disabled{% endif %} {% if profile_form.login_enabled.value == True and radio.data.value == False %}onchange="$('#modalDeactivate').modal('show')"{% endif %}> {{radio.data.label}}</label></li>
                             {% endfor %}
                         </ul>
                     </div>
