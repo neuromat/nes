@@ -36,9 +36,10 @@ from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
-    AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases
+    AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases, FleshTone, Payment, \
+    Religion, Schooling
 
-from patient.tests import UtilTests
+from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
 from survey.tests.tests_helper import create_survey
 
@@ -638,11 +639,6 @@ class ImportExperimentTest(TestCase):
                                                               muscle=muscle)
         standardization_system = StandardizationSystem.objects.create(name='TEST_STANDARDIZATION_SYSTEM')
 
-        emg_surface_placement = EMGSurfacePlacement.objects.create(
-            standardization_system=standardization_system,
-            muscle_subdivision=muscle_subdivision,
-            placement_type='surface'
-        )
         emg_intramuscular_placement = EMGIntramuscularPlacement.objects.create(
             standardization_system=standardization_system,
             muscle_subdivision=muscle_subdivision,
@@ -653,17 +649,11 @@ class ImportExperimentTest(TestCase):
             muscle_subdivision=muscle_subdivision,
             placement_type='needle'
         )
-        # Create one EMGElectrodePlacement without create inheritade model
-        # (EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement).
-        # That is to replicate how EMGElectrodePlacement intances are created
-        # in fixtures when preloading data
-        ObjectsFactory.create_emg_electrode_placement(
-            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
+        emg_surface_placement = EMGSurfacePlacement.objects.create(
+            standardization_system=standardization_system,
+            muscle_subdivision=muscle_subdivision,
+            placement_type='surface'
         )
-        EMGElectrodePlacementSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting_surface,
-            emg_electrode_placement=emg_surface_placement.emgelectrodeplacement_ptr,
-            muscle_side=muscle_side)
         EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_intramuscular,
             emg_electrode_placement=emg_intramuscular_placement.emgelectrodeplacement_ptr,
@@ -671,6 +661,11 @@ class ImportExperimentTest(TestCase):
         EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting_needle,
             emg_electrode_placement=emg_needle_placement.emgelectrodeplacement_ptr,
+            muscle_side=muscle_side)
+        # Keep this created lastly for tests below
+        EMGElectrodePlacementSetting.objects.create(
+            emg_electrode_setting=emg_electrode_setting_surface,
+            emg_electrode_placement=emg_surface_placement.emgelectrodeplacement_ptr,
             muscle_side=muscle_side)
 
         # Amplifier
@@ -763,8 +758,12 @@ class ImportExperimentTest(TestCase):
         new_model_2_objects = model_2.objects.exclude(pk__in=old_model_2_objects_ids)
         if to_create1:  # TODO: refactor to not use to_create1
             self.assertNotEqual(0, new_model_1_objects.count())
+        else:
+            self.assertEqual(0, new_model_1_objects.count())
         if to_create2:
             self.assertNotEqual(0, new_model_2_objects.count())
+        else:
+            self.assertEqual(0, new_model_2_objects.count())
 
         self.assertEqual(
             model_1.objects.filter(**filter_model_1).count(),
@@ -1758,9 +1757,9 @@ class ImportExperimentTest(TestCase):
                                                            self.experiment,
                                                            {'component_type': 'task'})
 
-    def test_component_and_stimulus(self):
+    def test_component_and_stimulus_creating_stimulus_type(self):
         self._create_minimum_objects_to_test_components()
-        stimulus_type = StimulusType.objects.create(name='TEST_STIMULUS_TYPE')
+        stimulus_type = ObjectsFactory.create_stimulus_type()
         new_component = ObjectsFactory.create_component(self.experiment, 'stimulus',
                                                         kwargs={'stimulus_type': stimulus_type})
         ObjectsFactory.create_component_configuration(self.rootcomponent, new_component)
@@ -1770,6 +1769,23 @@ class ImportExperimentTest(TestCase):
                                                            'component_ptr_id',
                                                            self.experiment,
                                                            {'component_type': 'stimulus'})
+
+    def test_component_and_stimulus_not_creating_stimulus_type(self):
+        self._create_minimum_objects_to_test_components()
+        # In fixtures this is the stimulus types id pre_loaded
+        for i in StimulusType.objects.values_list('id', flat=True):
+            stimulus_type = ObjectsFactory.create_stimulus_type()
+            stimulus_type.id = i
+            stimulus_type.save()
+            new_component = ObjectsFactory.create_component(
+                self.experiment, 'stimulus', kwargs={'stimulus_type': stimulus_type}
+            )
+            ObjectsFactory.create_component_configuration(self.rootcomponent, new_component)
+
+            self._test_creation_and_linking_between_two_models(
+                'experiment.component', 'experiment.stimulus', 'component_ptr_id',
+                self.experiment, {'component_type': 'stimulus'}, to_create2=False
+            )
 
     def test_component_and_task_experiment(self):
         self._create_minimum_objects_to_test_components()
@@ -1918,7 +1934,14 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
         self.assertRedirects(response, reverse('import_log'))
 
         new_patients = Patient.objects.exclude(id__in=[patient1_mock.id, patient2_mock.id])
@@ -1950,6 +1973,11 @@ class ImportExperimentTest(TestCase):
         patient_last_code_before = Patient.objects.all().order_by('-code').first().code
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
@@ -1973,6 +2001,11 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         new_patient = Patient.objects.last()
@@ -2001,12 +2034,20 @@ class ImportExperimentTest(TestCase):
         telephone2 = Telephone.objects.create(patient=patient2, number='987654321', changed_by=self.user)
 
         # Social demograph
+        flesh_tone = FleshTone.objects.create(name='Yellow')
+        payment = Payment.objects.create(name='SUS')
+        religion = Religion.objects.create(name='No religion')
+        schooling = Schooling.objects.create(name='Superior Completo')
         sociodemograph1 = SocialDemographicData.objects.create(
             patient=patient1,
             natural_of='Testelândia',
             citizenship='Testense',
             profession='Testador',
             occupation='Testador',
+            flesh_tone=flesh_tone,
+            payment=payment,
+            religion=religion,
+            schooling=schooling,
             changed_by=self.user
         )
         sociodemograph2 = SocialDemographicData.objects.create(
@@ -2015,6 +2056,10 @@ class ImportExperimentTest(TestCase):
             citizenship='Testense',
             profession='Testador',
             occupation='Testador',
+            flesh_tone=flesh_tone,
+            payment=payment,
+            religion=religion,
+            schooling=schooling,
             changed_by=self.user
         )
 
@@ -2089,6 +2134,12 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
@@ -2138,12 +2189,58 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
         new_telephone = Telephone.objects.exclude(id=telephone.id)
         self.assertEqual(1, new_telephone.count())
         self.assertEqual(new_telephone[0].changed_by, self.user_importer)
+
+    def test_POST_experiment_import_file_updates_overwriting_database_participant(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': [patient.id]}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_participant = Patient.objects.exclude(id=patient.id)
+        self.assertEqual(0, new_participant.count())
+
+    def test_POST_experiment_import_file_duplicates_database_participant(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': []}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_participant = Patient.objects.exclude(id=patient.id)
+        self.assertEqual(1, new_participant.count())
+
 
     # def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
     #     research_project = ObjectsFactory.create_research_project(owner=self.user)
@@ -2189,10 +2286,10 @@ class ImportExperimentTest(TestCase):
                                                            to_create1=False)
 
     def test_coil_shape_and_coil_model(self):
-        self._test_creation_and_linking_between_two_models('experiment.coilshape',
-                                                           'experiment.coilmodel',
-                                                           'coil_shape_id',
-                                                           self._create_experiment_with_tms_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.coilshape', 'experiment.coilmodel', 'coil_shape_id',
+            self._create_experiment_with_tms_setting(), to_create1=False
+        )
 
     def test_coil_model_and_tms_device_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.coilmodel',
@@ -2222,7 +2319,7 @@ class ImportExperimentTest(TestCase):
     def test_electrode_configuration_and_electrode_model(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.electrodeconfiguration', 'experiment.electrodemodel', 'electrode_configuration_id',
-            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False, flag1=True
         )
 
     def test_material_and_electrode_model(self):
@@ -2261,7 +2358,7 @@ class ImportExperimentTest(TestCase):
     def test_eeg_electrode_net_and_eeg_electrode_net_system(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.eegelectrodenet', 'experiment.eegelectrodenetsystem', 'eeg_electrode_net_id',
-            self._create_experiment_with_eeg_setting(), to_create1=False
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False
         )
 
     @skip  # TODO: test when implementing exporting/importing data collections
@@ -2272,10 +2369,10 @@ class ImportExperimentTest(TestCase):
         )
 
     def test_eeg_electrode_net_system_and_eeg_electrode_layout_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.eegelectrodenetsystem',
-                                                           'experiment.eegelectrodelayoutsetting',
-                                                           'eeg_electrode_net_system_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.eegelectrodenetsystem', 'experiment.eegelectrodelayoutsetting', 'eeg_electrode_net_system_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False
+        )
 
     def test_eeg_electrode_layout_setting_and_eeg_electrode_position_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.eegelectrodelayoutsetting',
@@ -2310,13 +2407,13 @@ class ImportExperimentTest(TestCase):
     def test_amplifierdetectiontype_and_amplifier(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.amplifierdetectiontype', 'experiment.amplifier', 'amplifier_detection_type_id',
-            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False, flag1=True
         )
 
     def test_tetheringsystem_and_amplifier(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.tetheringsystem', 'experiment.amplifier', 'tethering_system',
-            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False, flag1=True
         )
 
     def test_eeg_solution_and_eeg_solution_setting(self):
@@ -2522,7 +2619,7 @@ class ImportExperimentTest(TestCase):
         # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
 
     @staticmethod
-    def _get_pre_loaded_models_emg():
+    def _get_pre_loaded_models_emg_editable():
         # For the dict keys we select one to change for the tests
         return {
             (Manufacturer, 'name', 1): [(Equipment, 'manufacturer', 1), (Software, 'manufacturer', 1)],
@@ -2530,18 +2627,30 @@ class ImportExperimentTest(TestCase):
             (Muscle, 'name', 1): [(MuscleSide, 'muscle', 1), (MuscleSubdivision, 'muscle', 1)],
             (MuscleSide, 'name', 1): [(EMGElectrodePlacementSetting, 'muscle_side', 3)],
             (MuscleSubdivision, 'anatomy_origin', 1): [(EMGElectrodePlacement, 'muscle_subdivision', 3)],
-            (EMGElectrodePlacement, 'location', 7): [],
+            (EMGSurfacePlacement, 'location', 1): [(EMGElectrodePlacementSetting, 'emg_electrode_placement', 1)],
             (FilterType, 'description', 1): [(EMGDigitalFilterSetting, 'filter_type', 1)],
             (ElectrodeModel, 'description', 1): [(EMGElectrodeSetting, 'electrode', 3)],
             (Amplifier, 'input_impedance_unit', 1): [
                 (EMGAmplifierSetting, 'amplifier', 3), (EMGPreamplifierSetting, 'amplifier', 3)
-            ]
+            ],
+            (StandardizationSystem, 'description', 1): [(EMGElectrodePlacement, 'standardization_system', 3)]
+        }
+
+    @staticmethod
+    def _get_pre_loaded_models_emg_not_editable():
+        # Not editable models does not need the second element of the tupple, as in editable ones
+        # because they are not tested against creating new models.
+        return {
+            (TetheringSystem, '', 1): [(Amplifier, 'tethering_system', 1)],
+            (AmplifierDetectionType, '', 1): [(Amplifier, 'amplifier_detection_type', 1)],
+            (ElectrodeConfiguration, '', 1): [(ElectrodeModel, 'electrode_configuration', 1)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
         experiment = self._create_experiment_with_emg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_emg()
+        pre_loaded_models_editable = self._get_pre_loaded_models_emg_editable()
+        pre_loaded_models_not_editable = self._get_pre_loaded_models_emg_not_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2550,6 +2659,7 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
+        pre_loaded_models = {**pre_loaded_models_editable, **pre_loaded_models_not_editable}
         for model in pre_loaded_models:
             self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
@@ -2557,12 +2667,16 @@ class ImportExperimentTest(TestCase):
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
-                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+                    # for EMGElectrodePlacement we need to take the EMGSurfacePlacement inherited
+                    if isinstance(reference, EMGElectrodePlacement):
+                        reference = EMGSurfacePlacement.objects.last()
+                    # TODO: explain why pks
+                    self.assertEqual(reference.pk, model_instance.pk, '%s not equal %s' % (reference, model_instance))
 
     def test_object_imported_does_not_exist_create_new_emg(self):
         experiment = self._create_experiment_with_emg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_emg()
+        pre_loaded_models = self._get_pre_loaded_models_emg_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2580,9 +2694,6 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
-        # Exclude (EMGElectrodePlacement, 'location', 7) entry, as EMGElectrodePlacement
-        # never is created
-        del pre_loaded_models[(EMGElectrodePlacement, 'location', 7)]
         for model in pre_loaded_models:
             self.assertEqual(2, model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
@@ -2590,10 +2701,13 @@ class ImportExperimentTest(TestCase):
                 dependent_model_instances = dependent_model[0].objects.order_by('-pk')[:dependent_model[2]]
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
-                    self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+                    # for EMGElectrodePlacement we need to take the EMGSurfacePlacement inherited
+                    if isinstance(reference, EMGElectrodePlacement):
+                        reference = EMGSurfacePlacement.objects.last()
+                    self.assertEqual(reference.pk, model_instance.pk, '%s not equal %s' % (reference, model_instance))
 
     @staticmethod
-    def _get_pre_loaded_models_eeg():
+    def _get_pre_loaded_models_eeg_editable():
         # For the dict keys we select one to change for the tests
         return {
             (Manufacturer, 'name', 1): [
@@ -2611,13 +2725,25 @@ class ImportExperimentTest(TestCase):
             ],
             (EEGElectrodePosition, 'name', 1): [(EEGElectrodePositionSetting, 'eeg_electrode_position', 1)],
             (Amplifier, 'input_impedance_unit', 1): [(EEGAmplifierSetting, 'eeg_amplifier', 1)],
-            (EEGElectrodeNet, 'identification', 1): [(EEGElectrodeNetSystem, 'eeg_electrode_net', 1)]
+            (EEGElectrodeNet, 'identification', 1): [(EEGElectrodeNetSystem, 'eeg_electrode_net', 1)],
+        }
+
+    @staticmethod
+    def _get_pre_loaded_models_eeg_not_editable():
+        # Not editable models does not need the second element of the tupple, as in editable ones
+        # because they are not tested against create new models.
+        return {
+            (EEGElectrodeNetSystem, '', 1): [(EEGElectrodeLayoutSetting, 'eeg_electrode_net_system', 1)],
+            (TetheringSystem, '', 1): [(Amplifier, 'tethering_system', 1)],
+            (AmplifierDetectionType, '', 1): [(Amplifier, 'amplifier_detection_type', 1)],
+            (ElectrodeConfiguration, '', 1): [(ElectrodeModel, 'electrode_configuration', 1)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_eeg(self):
         experiment = self._create_experiment_with_eeg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_eeg()
+        pre_loaded_models_editable = self._get_pre_loaded_models_eeg_editable()
+        pre_loaded_models_not_editable = self._get_pre_loaded_models_eeg_not_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2626,6 +2752,7 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
+        pre_loaded_models = {**pre_loaded_models_editable, **pre_loaded_models_not_editable}
         for model in pre_loaded_models:
             self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
@@ -2638,7 +2765,7 @@ class ImportExperimentTest(TestCase):
     def test_object_imported_does_not_exist_create_new_eeg(self):
         experiment = self._create_experiment_with_eeg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_eeg()
+        pre_loaded_models = self._get_pre_loaded_models_eeg_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2666,19 +2793,25 @@ class ImportExperimentTest(TestCase):
                     self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
     @staticmethod
-    def _get_pre_loaded_models_tms():
+    def _get_pre_loaded_models_tms_editable():
         return {
             # TMSDevice related model is refered as experiment.equipment in
             # pre_loaded_models_foreign_keys as in json experiment.equipment is
             # a model separated from experiment.tmsdevice
             (Manufacturer, 'name', 1): [(TMSDevice, 'manufacturer', 1)],
-            (Material, 'description', 1): [(CoilModel, 'material', 1)]
+            (Material, 'description', 1): [(CoilModel, 'material', 1)],
+        }
+
+    def _get_pre_loaded_models_tms_not_editable(self):
+        return {
+            (CoilShape, '', 1): [(CoilModel, 'coil_shape', 1)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_tms(self):
         experiment = self._create_experiment_with_tms_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_tms()
+        pre_loaded_models_editable = self._get_pre_loaded_models_tms_editable()
+        pre_loaded_models_not_editable = self._get_pre_loaded_models_tms_not_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2687,6 +2820,7 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
+        pre_loaded_models = {**pre_loaded_models_editable, **pre_loaded_models_not_editable}
         for model in pre_loaded_models:
             self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
@@ -2699,7 +2833,7 @@ class ImportExperimentTest(TestCase):
     def test_object_imported_does_not_exist_create_new_tms(self):
         experiment = self._create_experiment_with_tms_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_tms()
+        pre_loaded_models = self._get_pre_loaded_models_tms_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2774,7 +2908,7 @@ class ImportExperimentTest(TestCase):
     def test_standardizationsystem_and_emgelectrodeplacement(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.standardizationsystem', 'experiment.emgelectrodeplacement', 'standardization_system',
-            self._create_experiment_with_emg_setting()
+            self._create_experiment_with_emg_setting(), to_create1=False
         )
 
     def test_emgelectrodesetting_and_emgelectrodeplacementsetting(self):
@@ -2804,7 +2938,7 @@ class ImportExperimentTest(TestCase):
     def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
-            self._create_experiment_with_emg_setting(), flag1=True
+            self._create_experiment_with_emg_setting(), flag1=True, to_create2=False
         )
 
     def test_emgelectrodeplacement_and_emgneedleplacement(self):
@@ -2826,6 +2960,11 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         self.assertEqual(Patient.objects.last().changed_by, self.user_importer)
@@ -2847,6 +2986,11 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
@@ -2869,6 +3013,11 @@ class ImportExperimentTest(TestCase):
         cid10.save()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
