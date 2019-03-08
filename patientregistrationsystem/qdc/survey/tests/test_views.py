@@ -7,7 +7,7 @@ from django.test.client import RequestFactory
 
 from jsonrpc_requests import Server, TransportError
 
-from patient.tests import UtilTests
+from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
 from survey.views import survey_update
 from survey.abc_search_engine import Questionnaires
