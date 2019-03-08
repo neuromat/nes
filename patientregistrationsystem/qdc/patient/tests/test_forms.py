@@ -3,7 +3,7 @@ from patient.models import Gender, Payment, FleshTone, Religion, Schooling, Amou
     AlcoholPeriod
 from patient.views import *
 from django.contrib.auth.models import User
-from patient.tests import UtilTests
+from patient.tests.tests_orig import UtilTests
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'

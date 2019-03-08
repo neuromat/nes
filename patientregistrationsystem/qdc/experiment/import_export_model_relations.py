@@ -279,5 +279,6 @@ pre_loaded_models_inheritance = {
 }
 
 pre_loaded_models_not_editable = [
-    'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem'
+    'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem',
+    'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape'
 ]
