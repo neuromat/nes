@@ -14,7 +14,7 @@ from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component
 from experiment.import_export_model_relations import one_to_one_relation, foreign_relations, model_root_nodes, \
     experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models_foreign_keys, \
-    pre_loaded_models_inheritance
+    pre_loaded_models_inheritance, pre_loaded_models_not_editable
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -348,7 +348,7 @@ class ImportExperiment:
                 filter_ = {}
                 for field in model[1]:
                     filter_[field] = data[i]['fields'][field]
-                if not filter_:  # if not filter_ instance have only relation fields
+                if not filter_:  # if not filter_, instance have only relation fields
                     instance = model_class.objects.first()
                 else:
                     instance = model_class.objects.filter(**filter_).first()
@@ -415,7 +415,7 @@ class ImportExperiment:
 
     def _update_pks(self, DG, data, successor, next_id):
         # TODO: see if it's worth to put this list in class level
-        if data[successor]['model'] not in one_to_one_relation:
+        if data[successor]['model'] not in one_to_one_relation and not DG.node[successor]['pre_loaded']:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
 
@@ -424,7 +424,7 @@ class ImportExperiment:
                 updated_ids = [dict_['pk'] for (index, dict_) in enumerate(data) if dict_['model'] == model]
                 if next_id in updated_ids:
                     # Prevent from duplicated pks in same model: this is done in the recursive path
-                    # TODO: verify better way to update nex_id
+                    # TODO: verify better way to update next_id
                     next_id = max(updated_ids) + 1
                     data[successor]['pk'] = next_id
                 DG.node[successor]['updated'] = True
@@ -467,6 +467,10 @@ class ImportExperiment:
         for node in dg.nodes():
             dg.node[node]['atributes'] = data[node]
             dg.node[node]['updated'] = False
+            if data[node]['model'] not in pre_loaded_models_not_editable:
+                dg.node[node]['pre_loaded'] = False
+            else:
+                dg.node[node]['pre_loaded'] = True
 
         return dg
 

@@ -277,3 +277,7 @@ pre_loaded_models_inheritance = {
     'experiment.emgsurfaceplacement':
         ['experiment.emgelectrodeplacement', ('location', 'placement_type')]
 }
+
+pre_loaded_models_not_editable = [
+    'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem'
+]

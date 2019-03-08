@@ -726,10 +726,7 @@ class ObjectsFactory(object):
     @staticmethod
     def create_stimulus_type():
         faker = Factory.create()
-
-        return StimulusType.objects.create(
-            name=faker.word()
-        )
+        return StimulusType.objects.create(name=faker.word())
 
     @staticmethod
     def create_stimulus_step(stimulus_type,mediafile):
