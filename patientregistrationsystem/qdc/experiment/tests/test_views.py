@@ -36,9 +36,10 @@ from configuration.models import LocalInstitution
 from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
-    AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases
+    AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases, FleshTone, Payment, \
+    Religion, Schooling
 
-from patient.tests import UtilTests
+from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
 from survey.tests.tests_helper import create_survey
 
@@ -2016,12 +2017,20 @@ class ImportExperimentTest(TestCase):
         telephone2 = Telephone.objects.create(patient=patient2, number='987654321', changed_by=self.user)
 
         # Social demograph
+        flesh_tone = FleshTone.objects.create(name='Yellow')
+        payment = Payment.objects.create(name='SUS')
+        religion = Religion.objects.create(name='No religion')
+        schooling = Schooling.objects.create(name='Superior Completo')
         sociodemograph1 = SocialDemographicData.objects.create(
             patient=patient1,
             natural_of='Testelândia',
             citizenship='Testense',
             profession='Testador',
             occupation='Testador',
+            flesh_tone=flesh_tone,
+            payment=payment,
+            religion=religion,
+            schooling=schooling,
             changed_by=self.user
         )
         sociodemograph2 = SocialDemographicData.objects.create(
@@ -2030,6 +2039,10 @@ class ImportExperimentTest(TestCase):
             citizenship='Testense',
             profession='Testador',
             occupation='Testador',
+            flesh_tone=flesh_tone,
+            payment=payment,
+            religion=religion,
+            schooling=schooling,
             changed_by=self.user
         )
 
@@ -2204,10 +2217,10 @@ class ImportExperimentTest(TestCase):
                                                            to_create1=False)
 
     def test_coil_shape_and_coil_model(self):
-        self._test_creation_and_linking_between_two_models('experiment.coilshape',
-                                                           'experiment.coilmodel',
-                                                           'coil_shape_id',
-                                                           self._create_experiment_with_tms_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.coilshape', 'experiment.coilmodel', 'coil_shape_id',
+            self._create_experiment_with_tms_setting(), to_create1=False
+        )
 
     def test_coil_model_and_tms_device_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.coilmodel',
@@ -2237,7 +2250,7 @@ class ImportExperimentTest(TestCase):
     def test_electrode_configuration_and_electrode_model(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.electrodeconfiguration', 'experiment.electrodemodel', 'electrode_configuration_id',
-            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False, flag1=True
         )
 
     def test_material_and_electrode_model(self):
@@ -2325,7 +2338,7 @@ class ImportExperimentTest(TestCase):
     def test_amplifierdetectiontype_and_amplifier(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.amplifierdetectiontype', 'experiment.amplifier', 'amplifier_detection_type_id',
-            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False, flag1=True
         )
 
     def test_tetheringsystem_and_amplifier(self):
@@ -2560,6 +2573,8 @@ class ImportExperimentTest(TestCase):
         # because they are not tested against creating new models.
         return {
             (TetheringSystem, '', 1): [(Amplifier, 'tethering_system', 1)],
+            (AmplifierDetectionType, '', 1): [(Amplifier, 'amplifier_detection_type', 1)],
+            (ElectrodeConfiguration, '', 1): [(ElectrodeModel, 'electrode_configuration', 1)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
@@ -2650,6 +2665,9 @@ class ImportExperimentTest(TestCase):
         # because they are not tested against create new models.
         return {
             (EEGElectrodeNetSystem, '', 1): [(EEGElectrodeLayoutSetting, 'eeg_electrode_net_system', 1)],
+            (TetheringSystem, '', 1): [(Amplifier, 'tethering_system', 1)],
+            (AmplifierDetectionType, '', 1): [(Amplifier, 'amplifier_detection_type', 1)],
+            (ElectrodeConfiguration, '', 1): [(ElectrodeModel, 'electrode_configuration', 1)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_eeg(self):
@@ -2706,19 +2724,25 @@ class ImportExperimentTest(TestCase):
                     self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
     @staticmethod
-    def _get_pre_loaded_models_tms():
+    def _get_pre_loaded_models_tms_editable():
         return {
             # TMSDevice related model is refered as experiment.equipment in
             # pre_loaded_models_foreign_keys as in json experiment.equipment is
             # a model separated from experiment.tmsdevice
             (Manufacturer, 'name', 1): [(TMSDevice, 'manufacturer', 1)],
-            (Material, 'description', 1): [(CoilModel, 'material', 1)]
+            (Material, 'description', 1): [(CoilModel, 'material', 1)],
+        }
+
+    def _get_pre_loaded_models_tms_not_editable(self):
+        return {
+            (CoilShape, '', 1): [(CoilModel, 'coil_shape', 1)]
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_tms(self):
         experiment = self._create_experiment_with_tms_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_tms()
+        pre_loaded_models_editable = self._get_pre_loaded_models_tms_editable()
+        pre_loaded_models_not_editable = self._get_pre_loaded_models_tms_not_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2727,6 +2751,7 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
+        pre_loaded_models = {**pre_loaded_models_editable, **pre_loaded_models_not_editable}
         for model in pre_loaded_models:
             self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
@@ -2739,7 +2764,7 @@ class ImportExperimentTest(TestCase):
     def test_object_imported_does_not_exist_create_new_tms(self):
         experiment = self._create_experiment_with_tms_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_tms()
+        pre_loaded_models = self._get_pre_loaded_models_tms_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
