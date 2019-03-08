@@ -757,8 +757,12 @@ class ImportExperimentTest(TestCase):
         new_model_2_objects = model_2.objects.exclude(pk__in=old_model_2_objects_ids)
         if to_create1:  # TODO: refactor to not use to_create1
             self.assertNotEqual(0, new_model_1_objects.count())
+        else:
+            self.assertEqual(0, new_model_1_objects.count())
         if to_create2:
             self.assertNotEqual(0, new_model_2_objects.count())
+        else:
+            self.assertEqual(0, new_model_2_objects.count())
 
         self.assertEqual(
             model_1.objects.filter(**filter_model_1).count(),
@@ -1752,9 +1756,9 @@ class ImportExperimentTest(TestCase):
                                                            self.experiment,
                                                            {'component_type': 'task'})
 
-    def test_component_and_stimulus(self):
+    def test_component_and_stimulus_creating_stimulus_type(self):
         self._create_minimum_objects_to_test_components()
-        stimulus_type = StimulusType.objects.create(name='TEST_STIMULUS_TYPE')
+        stimulus_type = ObjectsFactory.create_stimulus_type()
         new_component = ObjectsFactory.create_component(self.experiment, 'stimulus',
                                                         kwargs={'stimulus_type': stimulus_type})
         ObjectsFactory.create_component_configuration(self.rootcomponent, new_component)
@@ -1764,6 +1768,23 @@ class ImportExperimentTest(TestCase):
                                                            'component_ptr_id',
                                                            self.experiment,
                                                            {'component_type': 'stimulus'})
+
+    def test_component_and_stimulus_not_creating_stimulus_type(self):
+        self._create_minimum_objects_to_test_components()
+        # In fixtures this is the stimulus types id pre_loaded
+        for i in StimulusType.objects.values_list('id', flat=True):
+            stimulus_type = ObjectsFactory.create_stimulus_type()
+            stimulus_type.id = i
+            stimulus_type.save()
+            new_component = ObjectsFactory.create_component(
+                self.experiment, 'stimulus', kwargs={'stimulus_type': stimulus_type}
+            )
+            ObjectsFactory.create_component_configuration(self.rootcomponent, new_component)
+
+            self._test_creation_and_linking_between_two_models(
+                'experiment.component', 'experiment.stimulus', 'component_ptr_id',
+                self.experiment, {'component_type': 'stimulus'}, to_create2=False
+            )
 
     def test_component_and_task_experiment(self):
         self._create_minimum_objects_to_test_components()
@@ -2255,7 +2276,7 @@ class ImportExperimentTest(TestCase):
     def test_eeg_electrode_net_and_eeg_electrode_net_system(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.eegelectrodenet', 'experiment.eegelectrodenetsystem', 'eeg_electrode_net_id',
-            self._create_experiment_with_eeg_setting(), to_create1=False
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False
         )
 
     @skip  # TODO: test when implementing exporting/importing data collections
@@ -2266,10 +2287,10 @@ class ImportExperimentTest(TestCase):
         )
 
     def test_eeg_electrode_net_system_and_eeg_electrode_layout_setting(self):
-        self._test_creation_and_linking_between_two_models('experiment.eegelectrodenetsystem',
-                                                           'experiment.eegelectrodelayoutsetting',
-                                                           'eeg_electrode_net_system_id',
-                                                           self._create_experiment_with_eeg_setting())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.eegelectrodenetsystem', 'experiment.eegelectrodelayoutsetting', 'eeg_electrode_net_system_id',
+            self._create_experiment_with_eeg_setting(), to_create1=False
+        )
 
     def test_eeg_electrode_layout_setting_and_eeg_electrode_position_setting(self):
         self._test_creation_and_linking_between_two_models('experiment.eegelectrodelayoutsetting',
@@ -2310,7 +2331,7 @@ class ImportExperimentTest(TestCase):
     def test_tetheringsystem_and_amplifier(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.tetheringsystem', 'experiment.amplifier', 'tethering_system',
-            self._create_experiment_with_eeg_setting(), to_create2=False, flag1=True
+            self._create_experiment_with_eeg_setting(), to_create1=False, to_create2=False, flag1=True
         )
 
     def test_eeg_solution_and_eeg_solution_setting(self):
@@ -2516,7 +2537,7 @@ class ImportExperimentTest(TestCase):
         # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
 
     @staticmethod
-    def _get_pre_loaded_models_emg():
+    def _get_pre_loaded_models_emg_editable():
         # For the dict keys we select one to change for the tests
         return {
             (Manufacturer, 'name', 1): [(Equipment, 'manufacturer', 1), (Software, 'manufacturer', 1)],
@@ -2533,10 +2554,19 @@ class ImportExperimentTest(TestCase):
             (StandardizationSystem, 'description', 1): [(EMGElectrodePlacement, 'standardization_system', 3)]
         }
 
+    @staticmethod
+    def _get_pre_loaded_models_emg_not_editable():
+        # Not editable models does not need the second element of the tupple, as in editable ones
+        # because they are not tested against creating new models.
+        return {
+            (TetheringSystem, '', 1): [(Amplifier, 'tethering_system', 1)],
+        }
+
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_emg(self):
         experiment = self._create_experiment_with_emg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_emg()
+        pre_loaded_models_editable = self._get_pre_loaded_models_emg_editable()
+        pre_loaded_models_not_editable = self._get_pre_loaded_models_emg_not_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2545,6 +2575,7 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
+        pre_loaded_models = {**pre_loaded_models_editable, **pre_loaded_models_not_editable}
         for model in pre_loaded_models:
             self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
@@ -2555,12 +2586,13 @@ class ImportExperimentTest(TestCase):
                     # for EMGElectrodePlacement we need to take the EMGSurfacePlacement inherited
                     if isinstance(reference, EMGElectrodePlacement):
                         reference = EMGSurfacePlacement.objects.last()
+                    # TODO: explain why pks
                     self.assertEqual(reference.pk, model_instance.pk, '%s not equal %s' % (reference, model_instance))
 
     def test_object_imported_does_not_exist_create_new_emg(self):
         experiment = self._create_experiment_with_emg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_emg()
+        pre_loaded_models = self._get_pre_loaded_models_emg_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2591,7 +2623,7 @@ class ImportExperimentTest(TestCase):
                     self.assertEqual(reference.pk, model_instance.pk, '%s not equal %s' % (reference, model_instance))
 
     @staticmethod
-    def _get_pre_loaded_models_eeg():
+    def _get_pre_loaded_models_eeg_editable():
         # For the dict keys we select one to change for the tests
         return {
             (Manufacturer, 'name', 1): [
@@ -2609,13 +2641,22 @@ class ImportExperimentTest(TestCase):
             ],
             (EEGElectrodePosition, 'name', 1): [(EEGElectrodePositionSetting, 'eeg_electrode_position', 1)],
             (Amplifier, 'input_impedance_unit', 1): [(EEGAmplifierSetting, 'eeg_amplifier', 1)],
-            (EEGElectrodeNet, 'identification', 1): [(EEGElectrodeNetSystem, 'eeg_electrode_net', 1)]
+            (EEGElectrodeNet, 'identification', 1): [(EEGElectrodeNetSystem, 'eeg_electrode_net', 1)],
+        }
+
+    @staticmethod
+    def _get_pre_loaded_models_eeg_not_editable():
+        # Not editable models does not need the second element of the tupple, as in editable ones
+        # because they are not tested against create new models.
+        return {
+            (EEGElectrodeNetSystem, '', 1): [(EEGElectrodeLayoutSetting, 'eeg_electrode_net_system', 1)],
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_eeg(self):
         experiment = self._create_experiment_with_eeg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_eeg()
+        pre_loaded_models_editable = self._get_pre_loaded_models_eeg_editable()
+        pre_loaded_models_not_editable = self._get_pre_loaded_models_eeg_not_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2624,6 +2665,7 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
+        pre_loaded_models = {**pre_loaded_models_editable, **pre_loaded_models_not_editable}
         for model in pre_loaded_models:
             self.assertEqual(model[2], model[0].objects.count(), model[0])
             model_instance = model[0].objects.last()
@@ -2636,7 +2678,7 @@ class ImportExperimentTest(TestCase):
     def test_object_imported_does_not_exist_create_new_eeg(self):
         experiment = self._create_experiment_with_eeg_setting()
 
-        pre_loaded_models = self._get_pre_loaded_models_eeg()
+        pre_loaded_models = self._get_pre_loaded_models_eeg_editable()
 
         export = ExportExperiment(experiment)
         export.export_all()
