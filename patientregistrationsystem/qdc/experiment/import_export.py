@@ -5,15 +5,20 @@ import json
 from json import JSONDecodeError
 from os import path
 
+from functools import reduce
+from operator import or_
+
 import networkx as nx
 from django.core.management import call_command
 from django.apps import apps
-from django.db.models import Count
+from django.db.models import Count, Q
+from django.shortcuts import render
+from django.http import HttpRequest
 
 from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component
 from experiment.import_export_model_relations import one_to_one_relation, foreign_relations, model_root_nodes, \
-    experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models
+    experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models, pre_loaded_patient_model
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -172,6 +177,7 @@ class ImportExperiment:
     BAD_JSON_FILE_ERROR = 1
     FIXTURE_FILE_NAME = 'experiment.json'
     PRE_LOADED_MODELS = pre_loaded_models
+    PRE_LOADED_PATIENT_MODEL = pre_loaded_patient_model
 
     def __init__(self, file_path):
         self.file_path = file_path
@@ -273,7 +279,7 @@ class ImportExperiment:
                             indexes_of_keywords_already_updated.append(keyword_index)
 
     @staticmethod
-    def _update_patients_stuff(data):
+    def _update_patients_stuff(data, patients_to_update):
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
         # Update patient codes
@@ -285,11 +291,14 @@ class ImportExperiment:
                 numerical_part_code = int(last_patient_code.split('P')[1])
                 next_numerical_part = numerical_part_code + 1
                 for i in indexes:
-                    data[i]['fields']['code'] = 'P' + str(next_numerical_part)
-                    next_numerical_part += 1
+                    if str(data[i]['pk']) not in patients_to_update:
+                        data[i]['fields']['code'] = 'P' + str(next_numerical_part)
+                        next_numerical_part += 1
 
         for i in indexes:
-            data[i]['fields']['cpf'] = None
+            if str(data[i]['pk']) not in patients_to_update:
+                if Patient.objects.filter(cpf=data[i]['fields']['cpf']):
+                    data[i]['fields']['cpf'] = None
 
     @staticmethod
     def _update_references_to_user(data, request):
@@ -358,6 +367,53 @@ class ImportExperiment:
                         for dependent_index in dependent_indexes:
                             data[dependent_index]['fields'][dependent_model[1]] = data[i]['pk']
 
+    def _keep_patients_pre_loaded(self, data, patients_to_update):
+        for model, dependent_models in self.PRE_LOADED_PATIENT_MODEL.items():
+            indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == model[0]]
+            for i in indexes:
+                list_of_filters = [Q(**{key: val}) for key, val in [('cpf', data[i]['fields']['cpf']),
+                                                                    ('name', data[i]['fields']['name'])]]
+
+                instance = Patient.objects.filter(reduce(or_, list_of_filters)).first()
+                if instance and str(instance.id) in patients_to_update:
+                    data[i]['pk'], old_id = instance.id, data[i]['pk']
+                    for dependent_model in dependent_models:
+                        dependent_indexes = [
+                            index for (index, dict_) in enumerate(data)
+                            if dict_['model'] == dependent_model[0] and dict_['fields'][dependent_model[1]] == old_id
+                        ]
+                        for dependent_index in dependent_indexes:
+                            data[dependent_index]['fields'][dependent_model[1]] = data[i]['pk']
+
+    def _check_for_duplicates_of_participants(self):
+        try:
+            with open(self.file_path) as f:
+                data = json.load(f)
+        except (ValueError, JSONDecodeError):
+            return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.', None
+
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
+
+        list_of_participants_with_conflict = []
+        for i in indexes:
+            list_of_filters = [Q(**{key: val}) for key, val in [('cpf', data[i]['fields']['cpf']),
+                                                                ('name', data[i]['fields']['name'])]]
+
+            patient_already_in_database = Patient.objects.filter(reduce(or_, list_of_filters)).first()
+
+            if patient_already_in_database:
+                list_of_participants_with_conflict.append({'id_db': patient_already_in_database.pk,
+                                                           'name_db': patient_already_in_database.name,
+                                                           'code_db': patient_already_in_database.code,
+                                                           'cpf_db': patient_already_in_database.cpf,
+                                                           'id_new': data[i]['pk'],
+                                                           'name_new': data[i]['fields']['name'],
+                                                           'code_new': data[i]['fields']['code'],
+                                                           'cpf_new': data[i]['fields']['cpf'],
+                                                           'selected': None})
+
+        return 0, '', list_of_participants_with_conflict
+
     # @staticmethod
     # def _keep_pre_loaded_emgelectrodeplacement(data):
     #     indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.emgelectrodeplacement']
@@ -393,14 +449,15 @@ class ImportExperiment:
                     abbreviated_description='(imported, not recognized)'
                 )
 
-    def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
+    def _manage_last_stuffs_before_importing(self, request, data, research_project_id, patients_to_update):
         self._make_dummy_reference_to_limesurvey(data)
         self._update_research_project_pk(data, research_project_id)
         self._verify_keywords(data)
-        self._update_patients_stuff(data)
         self._update_references_to_user(data, request)
         self._update_survey_stuff(data)
         self._keep_objects_pre_loaded(data)
+        self._keep_patients_pre_loaded(data, patients_to_update)
+        self._update_patients_stuff(data, patients_to_update)
         # TODO: not needed
         # self._keep_pre_loaded_emgelectrodeplacement(data)
         self._verify_classification_of_diseases(data)
@@ -483,7 +540,7 @@ class ImportExperiment:
                 self._update_pks(dg, data, root_node, next_id)
                 next_id += 1
 
-    def import_all(self, request, research_project_id=None):
+    def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
         try:
             with open(self.file_path) as f:
@@ -495,7 +552,7 @@ class ImportExperiment:
 
         dg = self._build_digraph(data)
         self._manage_pks(dg, data)
-        self._manage_last_stuffs_before_importing(request, data, research_project_id)
+        self._manage_last_stuffs_before_importing(request, data, research_project_id, patients_to_update)
 
         with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
             file.write(json.dumps(data))

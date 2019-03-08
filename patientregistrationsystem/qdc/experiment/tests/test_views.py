@@ -1915,7 +1915,14 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
         self.assertRedirects(response, reverse('import_log'))
 
         new_patients = Patient.objects.exclude(id__in=[patient1_mock.id, patient2_mock.id])
@@ -1947,6 +1954,11 @@ class ImportExperimentTest(TestCase):
         patient_last_code_before = Patient.objects.all().order_by('-code').first().code
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
@@ -1970,6 +1982,11 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         new_patient = Patient.objects.last()
@@ -2086,6 +2103,12 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
@@ -2135,12 +2158,58 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
         new_telephone = Telephone.objects.exclude(id=telephone.id)
         self.assertEqual(1, new_telephone.count())
         self.assertEqual(new_telephone[0].changed_by, self.user_importer)
+
+    def test_POST_experiment_import_file_updates_overwriting_database_participant(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': [patient.id]}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_participant = Patient.objects.exclude(id=patient.id)
+        self.assertEqual(0, new_participant.count())
+
+    def test_POST_experiment_import_file_duplicates_database_participant(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': []}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_participant = Patient.objects.exclude(id=patient.id)
+        self.assertEqual(1, new_participant.count())
+
 
     # def test_POST_experiment_import_file_creates_data_configuration_tree_and_returns_success_message(self):
     #     research_project = ObjectsFactory.create_research_project(owner=self.user)
@@ -2680,6 +2749,11 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         self.assertEqual(Patient.objects.last().changed_by, self.user_importer)
@@ -2701,6 +2775,11 @@ class ImportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
@@ -2723,6 +2802,11 @@ class ImportExperimentTest(TestCase):
         cid10.save()
 
         with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients'] = []
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
