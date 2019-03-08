@@ -105,9 +105,7 @@ foreign_relations = {
     'patient.socialdemographicdata': [['patient.patient', 'patient']],
     'patient.socialhistorydata': [['patient.patient', 'patient']],
     'patient.medicalrecorddata': [['patient.patient', 'patient']],
-    'patient.diagnosis': [
-        ['patient.medicalrecorddata', 'medical_record_data'],
-    ],
+    'patient.diagnosis': [['patient.medicalrecorddata', 'medical_record_data']],
     # Data collections
     # 'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
 }
@@ -235,6 +233,7 @@ pre_loaded_models_foreign_keys = {
     ('experiment.musclesubdivision', ('name', 'anatomy_origin', 'anatomy_insertion', 'anatomy_function')): [
         ('experiment.emgelectrodeplacement', 'muscle_subdivision'),
     ],
+    # TODO: experiment.standardiationsystem: see ~/Temporário/models.txt
     ('experiment.muscleside', ('name',)): [('experiment.emgelectrodeplacementsetting', 'muscle_side')],
     ('experiment.filtertype', ('name', 'description')): [
         ('experiment.emgdigitalfiltersetting', 'filter_type'), ('experiment.eegfiltersetting', 'eeg_filter_type')
@@ -260,12 +259,36 @@ pre_loaded_models_foreign_keys = {
     ('experiment.eegelectrodenet', ''): [
         ('experiment.eegelectrodenetsystem', 'eeg_electrode_net')
     ],
-    ('experiment.eegsolution', ('name', 'components')): [('experiment.eegsolutionsetting', 'eeg_solution')]
+    ('experiment.eegsolution', ('name', 'components')): [('experiment.eegsolutionsetting', 'eeg_solution')],
+    ('experiment.emgsurfaceplacement',
+     ('start_posture', 'orientation', 'fixation_on_the_skin', 'reference_electrode', 'clinical_test')): [
+        ('experiment.emgelectrodeplacementsetting', 'emg_electrode_placement')
+    ],
+    ('experiment.standardizationsystem', ('name', 'description')): [
+        ('experiment.emgelectrodeplacement', 'standardization_system')
+    ]
 }
 
 pre_loaded_models_inheritance = {
     'experiment.amplifier':
         ['experiment.equipment', ('equipment_type', 'identification', 'description', 'serial_number')],
     'experiment.eegelectrodenet':
-        ['experiment.equipment', ('equipment_type', 'identification', 'description', 'serial_number')]
+        ['experiment.equipment', ('equipment_type', 'identification', 'description', 'serial_number')],
+    'experiment.emgsurfaceplacement':
+        ['experiment.emgelectrodeplacement', ('location', 'placement_type')]
+}
+
+pre_loaded_models_not_editable = [
+    'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem',
+    'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape'
+]
+
+pre_loaded_patient_model = {
+('patient.patient', ('cpf', 'name',)): [
+    ('patient.socialhistorydata', 'patient'),
+    ('patient.medicalrecorddata', 'patient'),
+    ('patient.socialdemographicdata', 'patient'),
+    ('patient.telephone', 'patient'),
+    ('patient.questionnaireresponse', 'patient'),
+    ('experiment.subject', 'patient'),],
 }
