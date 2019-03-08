@@ -24,13 +24,10 @@ foreign_relations = {
         ['experiment.softwareversion', 'software_version']
     ],
     'experiment.contexttree': [['experiment.experiment', 'experiment']],
-
     # 'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
     # 'experiment.informationtype': [['', '']],
-
     'experiment.stimulus': [['experiment.stimulus_type', 'stimulus_type']],
     'experiment.stimulustype': [['', '']],
-
     # TMS
     'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
     'experiment.tmssetting': [['experiment.experiment', 'experiment']],
@@ -43,6 +40,8 @@ foreign_relations = {
     # EEG
     'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
     'experiment.eegsetting': [['experiment.experiment', 'experiment']],
+    'experiment.electrodemodel': [
+        ['experiment.material', 'material'], ['experiment.electrodeconfiguration', 'electrode_configuration']],
     'experiment.eegelectrodepositionsetting': [
         ['experiment.electrodemodel', 'electrode_model'],
         ['experiment.eegelectrodelayoutsetting', 'eeg_electrode_layout_setting'],
@@ -90,9 +89,6 @@ foreign_relations = {
     'experiment.software': [['experiment.manufacturer', 'manufacturer']],
     'experiment.manufacturer': [['', '']],
     'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
-    'experiment.electrodemodel': [
-        ['experiment.material', 'material'], ['experiment.electrodeconfiguration', 'electrode_configuration']],
-
     'experiment.emgadconvertersetting': [['experiment.adconverter', 'ad_converter']],
     'experiment.emgdigitalfiltersetting': [['experiment.filtertype', 'filter_type']],
     'experiment.filtertype': [['', '']],
@@ -109,9 +105,7 @@ foreign_relations = {
     'patient.socialdemographicdata': [['patient.patient', 'patient']],
     'patient.socialhistorydata': [['patient.patient', 'patient']],
     'patient.medicalrecorddata': [['patient.patient', 'patient']],
-    'patient.diagnosis': [
-        ['patient.medicalrecorddata', 'medical_record_data'],
-    ],
+    'patient.diagnosis': [['patient.medicalrecorddata', 'medical_record_data']],
     # Data collections
     # 'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
 }
@@ -222,7 +216,7 @@ json_files_detached_models = {
     )
 }
 
-pre_loaded_models = {
+pre_loaded_models_foreign_keys = {
     ('experiment.manufacturer', ('name',)): [
         ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
         ('experiment.software', 'manufacturer')
@@ -239,8 +233,55 @@ pre_loaded_models = {
     ('experiment.musclesubdivision', ('name', 'anatomy_origin', 'anatomy_insertion', 'anatomy_function')): [
         ('experiment.emgelectrodeplacement', 'muscle_subdivision'),
     ],
+    # TODO: experiment.standardiationsystem: see ~/Temporário/models.txt
     ('experiment.muscleside', ('name',)): [('experiment.emgelectrodeplacementsetting', 'muscle_side')],
+    ('experiment.filtertype', ('name', 'description')): [
+        ('experiment.emgdigitalfiltersetting', 'filter_type'), ('experiment.eegfiltersetting', 'eeg_filter_type')
+    ],
+    ('experiment.electrodemodel',
+     ('name', 'description', 'usability', 'impedance', 'impedance_unit', 'inter_electrode_distance',
+      'inter_electrode_distance_unit', 'electrode_type')):
+        [('experiment.emgelectrodesetting', 'electrode'), ('experiment.eegelectrodenet', 'electrode_model_default'),
+         ('experiment.eegelectrodepositionsetting', 'electrode_model')],
+    ('experiment.amplifier',
+     ('gain', 'number_of_channels', 'common_mode_rejection_ratio', 'input_impedance', 'input_impedance_unit')):
+        [
+            ('experiment.emgamplifiersetting', 'amplifier'), ('experiment.emgpreamplifiersetting', 'amplifier'),
+            ('experiment.eegamplifiersetting', 'eeg_amplifier')
+        ],
+    ('experiment.eegelectrodeposition', ('name', 'coordinate_x', 'coordinate_y', 'channel_default_index')):
+    [('experiment.eegelectrodepositionsetting', 'eeg_electrode_position')],
+    ('experiment.eegelectrodelocalizationsystem', ('name', 'description')):
+        [
+            ('experiment.eegelectrodenetsystem', 'eeg_electrode_localization_system'),
+            ('experiment.eegelectrodeposition', 'eeg_electrode_localization_system')
+        ],
+    ('experiment.eegelectrodenet', ''): [
+        ('experiment.eegelectrodenetsystem', 'eeg_electrode_net')
+    ],
+    ('experiment.eegsolution', ('name', 'components')): [('experiment.eegsolutionsetting', 'eeg_solution')],
+    ('experiment.emgsurfaceplacement',
+     ('start_posture', 'orientation', 'fixation_on_the_skin', 'reference_electrode', 'clinical_test')): [
+        ('experiment.emgelectrodeplacementsetting', 'emg_electrode_placement')
+    ],
+    ('experiment.standardizationsystem', ('name', 'description')): [
+        ('experiment.emgelectrodeplacement', 'standardization_system')
+    ]
 }
+
+pre_loaded_models_inheritance = {
+    'experiment.amplifier':
+        ['experiment.equipment', ('equipment_type', 'identification', 'description', 'serial_number')],
+    'experiment.eegelectrodenet':
+        ['experiment.equipment', ('equipment_type', 'identification', 'description', 'serial_number')],
+    'experiment.emgsurfaceplacement':
+        ['experiment.emgelectrodeplacement', ('location', 'placement_type')]
+}
+
+pre_loaded_models_not_editable = [
+    'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem',
+    'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape'
+]
 
 pre_loaded_patient_model = {
 ('patient.patient', ('cpf', 'name',)): [

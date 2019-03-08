@@ -19,7 +19,7 @@ from experiment.models import Component, ComponentConfiguration, \
 from experiment.tests.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
 from export.tests.tests_helper import ExportTestCase
-from patient.tests import UtilTests
+from patient.tests.tests_orig import UtilTests
 from qdc import settings
 from survey.abc_search_engine import Questionnaires
 from survey.tests.tests_helper import create_survey

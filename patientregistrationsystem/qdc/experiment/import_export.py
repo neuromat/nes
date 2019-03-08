@@ -18,7 +18,8 @@ from django.http import HttpRequest
 from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component
 from experiment.import_export_model_relations import one_to_one_relation, foreign_relations, model_root_nodes, \
-    experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models, pre_loaded_patient_model
+    experiment_json_files, patient_json_files, json_files_detached_models, pre_loaded_models_foreign_keys, \
+    pre_loaded_models_inheritance, pre_loaded_models_not_editable, pre_loaded_patient_model
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -176,7 +177,7 @@ class ExportExperiment:
 class ImportExperiment:
     BAD_JSON_FILE_ERROR = 1
     FIXTURE_FILE_NAME = 'experiment.json'
-    PRE_LOADED_MODELS = pre_loaded_models
+    PRE_LOADED_MODELS = pre_loaded_models_foreign_keys
     PRE_LOADED_PATIENT_MODEL = pre_loaded_patient_model
 
     def __init__(self, file_path):
@@ -356,8 +357,25 @@ class ImportExperiment:
                 filter_ = {}
                 for field in model[1]:
                     filter_[field] = data[i]['fields'][field]
-                instance = model_class.objects.filter(**filter_).first()
+                if not filter_:  # if not filter_, instance have only relation fields
+                    instance = model_class.objects.first()
+                else:
+                    instance = model_class.objects.filter(**filter_).first()
                 if instance:
+                    if data[i]['model'] in pre_loaded_models_inheritance:
+                        app_model_inheritade = pre_loaded_models_inheritance[data[i]['model']][0].split('.')
+                        model_class_inheritade = apps.get_model(app_model_inheritade[0], app_model_inheritade[1])
+                        index_inheritade = [index for (index, dict_inheritance) in enumerate(data) if
+                                            dict_inheritance['model'] == pre_loaded_models_inheritance[data[i][
+                                                'model']][0] and dict_inheritance['pk'] == data[i]['pk']][0]
+                        filter_inheritade = {}
+                        for field in pre_loaded_models_inheritance[data[i]['model']][1]:
+                            filter_inheritade[field] = data[index_inheritade]['fields'][field]
+                        instance_inheritade = model_class_inheritade.objects.filter(**filter_inheritade).first()
+                        if instance_inheritade:
+                            data[index_inheritade]['pk'] = instance.id
+                        else:
+                            break
                     data[i]['pk'], old_id = instance.id, data[i]['pk']
                     for dependent_model in dependent_models:
                         dependent_indexes = [
@@ -477,7 +495,7 @@ class ImportExperiment:
 
     def _update_pks(self, DG, data, successor, next_id):
         # TODO: see if it's worth to put this list in class level
-        if data[successor]['model'] not in one_to_one_relation:
+        if data[successor]['model'] not in one_to_one_relation and not DG.node[successor]['pre_loaded']:
             if not DG.node[successor]['updated']:
                 data[successor]['pk'] = next_id
 
@@ -486,7 +504,7 @@ class ImportExperiment:
                 updated_ids = [dict_['pk'] for (index, dict_) in enumerate(data) if dict_['model'] == model]
                 if next_id in updated_ids:
                     # Prevent from duplicated pks in same model: this is done in the recursive path
-                    # TODO: verify better way to update nex_id
+                    # TODO: verify better way to update next_id
                     next_id = max(updated_ids) + 1
                     data[successor]['pk'] = next_id
                 DG.node[successor]['updated'] = True
@@ -529,6 +547,10 @@ class ImportExperiment:
         for node in dg.nodes():
             dg.node[node]['atributes'] = data[node]
             dg.node[node]['updated'] = False
+            if data[node]['model'] not in pre_loaded_models_not_editable:
+                dg.node[node]['pre_loaded'] = False
+            else:
+                dg.node[node]['pre_loaded'] = True
 
         return dg
 
