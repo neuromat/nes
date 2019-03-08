@@ -1442,6 +1442,303 @@
     }
   },
   {
+    "pk": 6,
+    "fields": {
+      "orientation": "In the direction of the line between the acromion and the fossa cubit.",
+      "start_posture": "Sitting on a chair with the elbow flexed at a right angle and the dorsal side of the forearm in a horizontal downwards position.",
+      "reference_electrode": "On / around the wrist.",
+      "clinical_test": "Place one hand under the elbow to cushion it from table pressure and flex the elbow slightly below or at a right angle, with the forearm in supination. Press against the forearm in the direction of extension.",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band."
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 8,
+    "fields": {
+      "orientation": "In the direction of the line between the posterior crista of the acromion and the olecranon process.\r\n",
+      "start_posture": "Sitting with the shoulder at approximately 90 degrees abduction with the arm 90 degrees flexed and the palm of the hand pointing downwards.\r\n",
+      "reference_electrode": "On / around the wrist.\r\n",
+      "clinical_test": "Extend the elbow while applying pressure to the forearm in the direction of flexion.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 9,
+    "fields": {
+      "orientation": "Parallel to the 1st ossa metacarpalia.\r\n",
+      "start_posture": "Sitting or supine with the back of the hand stabilised on a table.\r\n",
+      "reference_electrode": "On / around the wrist.\r\n",
+      "clinical_test": "Abduct the thumb ventralward from the palm while applying pressure against the proximal phalanx in the direction of adduction toward the palm.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 10,
+    "fields": {
+      "orientation": "In the direction of the line between the acromion and the spine on vertebra C7.\r\n",
+      "start_posture": "Erect sitting, with the arms hanging vertically.\r\n",
+      "reference_electrode": "On the proc. spin. of C7 or on / around the wrist.\r\n",
+      "clinical_test": "Elevate the acromial end of the clavicule and scapula; extend and rotate the head and neck toward the elevated shoulder with the face rotated in the opposite direction. Apply pressure against the shoulder in the direction of depression and against the head in the direction of flexion anterolaterally.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 11,
+    "fields": {
+      "orientation": "In the direction of the line between T5 and the acromion.\r\n",
+      "start_posture": "Erect sitting, with the arms hanging vertically.\r\n",
+      "reference_electrode": "On the proc. Spin. of C7 or on / around the wrist.\r\n",
+      "clinical_test": "The elbow extensors and the posterior shoulder muscles must give necessary fixation in order to use the arm as a lever. Adduction of the scapula from a position of rotation in which the inferior angle is rotated laterally. To obtain this position of the scapula and to obtain leverage for the test, the elbow needs to be extended and the shoulder placed in 90 degrees abduction and lateral rotation. This rotation of the shoulder is denoted by the position of the hand with the palm facing cranially (without elevating the shoulder girdle).\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 12,
+    "fields": {
+      "orientation": "In the direction of the line between T8 and the acromion.\r\n",
+      "start_posture": "Erect sitting, with the arms hanging vertically.\r\n",
+      "reference_electrode": "On the proc. spin. of C7 or on / around the wrist.\r\n",
+      "clinical_test": "Take care that the elbow extensors and shoulder muscles give necessary fixation to use the arm as a lever in this test. Depression, lateral rotation of the inferior angle, and adduction of the scapula. To obtain this position of the scapula in order to place emphasis on the action of the ascending fibres and to obtain leverage for the test, the arm is placed diagonally overhead with the shoulder laterally rotated. Apply pressure against the forearm in downward direction.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 13,
+    "fields": {
+      "orientation": "In the direction of the line between the acromion and the thumb.\r\n",
+      "start_posture": "Sitting with the arms hanging vertically and the palm pointing inwards.\r\n",
+      "reference_electrode": "On the proc. spin. of C7 or on / around the wrist.\r\n",
+      "clinical_test": "Shoulder abduction in slight flexion, with the humerus in slight rotation. In the erect sitting position it is necessary to place the humerus in slight lateral rotation to increase the effect of gravity on the anterior fibres. The anatomical action of the anterior deltoideus entails slight medial rotation while pressure is applied against the antero medial surface of the arm in the direction of adduction and slight extension.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 14,
+    "fields": {
+      "orientation": "In the direction of the line between the acromion and the hand.\r\n",
+      "start_posture": "Sitting with the position of the trunk in relation to the arm such that a stable trunk will need no further stabilization. If the scapula fixation muscles are weak the scapula must be stabilized.\r\n",
+      "reference_electrode": "On the proc. spin. of C7 or on / around the wrist.\r\n",
+      "clinical_test": "The arm should be abducted without rotation. When placing the shoulder in test position, the elbow should be flexed to indicate the neutral position of rotation but may be extended after the shoulder position is established in order to use the extended extremity for a longer lever. Pressure needs to be applied against the dorsal surface of the distal end of the humerus if the elbow is flexed or against the forearm if the elbow is extended.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 15,
+    "fields": {
+      "orientation": "In the direction of the line between the acromion and the little finger.\r\n",
+      "start_posture": "Erect sitting with the arms hanging vertically and the palm of the hand pointing inwards.\r\n",
+      "reference_electrode": "On the proc. spin. of C7 or on / round the wrist.\r\n",
+      "clinical_test": "Abduct the shoulder in slight extension, with the humerus in slight medial rotation. The humerus is placed in slight medial rotation in order to have the posterior fibres in an anti-gravity position. The anatomical action entails slight lateral rotation while pressure is applied against the posterolateral surface of the arm, above the elbow in the direction of adduction and slight flexion.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 16,
+    "fields": {
+      "orientation": "In the direction of the line from the posterior superior iliac spine to the middle of the posterior aspect of the thigh\r\n",
+      "start_posture": "Prone position, lying down on a table.\r\n",
+      "reference_electrode": "On the proc. spin. of C7 or on / around the wrist or on / around the ankle.\r\n",
+      "clinical_test": "Lifting the complete leg against manual resistance.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 18,
+    "fields": {
+      "orientation": "In the direction of the line from the anterior spina iliaca superior to the lateral femoral condyle.\r\n",
+      "start_posture": "Lying on the side on a table.\r\n",
+      "reference_electrode": "On / around the wrist.\r\n",
+      "clinical_test": "Lift and abduct the leg against manual resistance.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 19,
+    "fields": {
+      "orientation": "In the direction of the line from the anterior spina iliaca superior to the superior part of the patella.\r\n",
+      "start_posture": "Sitting on a table with the knees in slight flexion and the upper body slightly bend backward.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Extend the knee without rotating the thigh while applying pressure against the leg above the ankle in the direction of flexion.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 22,
+    "fields": {
+      "orientation": "In the direction of the line between the ischial tuberosity and the lateral epicondyle of the tibia.\r\n",
+      "start_posture": "Lying on the belly with the face down with the thigh down on the table and the knees flexed (to less than 90 degrees) with the thigh in slight lateral rotation and the leg in slight lateral rotation with respect to the thigh.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Press against the leg proximal to the ankle in the direction of knee extension.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 23,
+    "fields": {
+      "orientation": "In the direction of the line between the ischial tuberosity and the medial epycondyle of the tibia.\r\n",
+      "start_posture": "Lying on the belly with the face down and the thigh held down on the table, in medial rotation, and the leg medially rotated with respect to the thigh. The knee needs to be flexed to less than 90 degrees.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Press against the leg proximal to the ankle in the direction of knee extension.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 24,
+    "fields": {
+      "orientation": "In the direction of the line between the tip of the fibula and the tip of the medial malleolus.\r\n",
+      "start_posture": "Supine or sitting.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Support the leg just above the ankle joint with the ankle joint in dorsiflexion and the foot in inversion without extension of the great toe. Apply pressure against the medial side, dorsal surface of the foot in the direction of plantar flexion of the ankle joint and eversion of the foot.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 25,
+    "fields": {
+      "orientation": "In the direction of the line between the tip of the head of the fibula to the tip of the lateral malleolus.\r\n",
+      "start_posture": "Sitting with extremity medially rotated.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Support the leg above the ankle joint. Everse the foot with plantar flexion of the ankle joint while applying pressure against the lateral border and sole of the foot, in the direction of inversion of the foot and dorsiflexion of the ankle joint.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 26,
+    "fields": {
+      "orientation": "In the direction of the line from the tip of the lateral malleolus to the fibula-head.\r\n",
+      "start_posture": "Sitting with extremity medially rotated.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Support the leg above the ankle joint. Everse the foot with plantar flexion of the ankle joint while applying pressure against the lateral border and sole of the foot, in the direction of inversion of the foot and dorsiflexion of the ankle joint.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 27,
+    "fields": {
+      "orientation": "In the direction of the line between the medial condylis to the medial malleolus.\r\n",
+      "start_posture": "Sitting with the knee approximately 90 degrees flexed and the heel / foot of the investigated leg on the floor.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Put a hand on the knee and keep / push the knee downward while asking the subject / patient to lift the heel from the floor.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 29,
+    "fields": {
+      "orientation": "In the direction of the line between the head of the fibula and the heel.\r\n",
+      "start_posture": "Lying on the belly with the face down, the knee extended and the foot projecting over the end of the table.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Plantar flexion of the foot with emphasis on pulling the heel upward more than pushing the forefoot downward. For maximum pressure in this position it is necessary to apply pressure against the forefoot as well as against the calcaneus.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 30,
+    "fields": {
+      "orientation": "In the direction of the muscle fibres\r\n",
+      "start_posture": "Sitting on a table with the knees in slight flexion and the upper body slightly bend backward.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Extend the knee without rotating the thigh while applying pressure against the leg above the ankle in the direction of flexion.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 31,
+    "fields": {
+      "orientation": "Almost perpendicular to the line between the anterior spina iliaca superior and the joint space in front of the anterior border of the medial ligament.\r\n",
+      "start_posture": "Sitting on a table with the knees in slight flexion and the upper body slightly bend backward.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Extend the knee without rotating the thigh while applying pressure against the leg above the ankle in the direction of flexion.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 32,
+    "fields": {
+      "orientation": "In the direction of the leg (see picture).\r\n",
+      "start_posture": "Lying on the belly with the face down, the knee extended and the foot projecting over the end of the table.\r\n",
+      "reference_electrode": "On / around the ankle or the proc. spin. of C7.\r\n",
+      "clinical_test": "Plantar flexion of the foot with emphasis on pulling the heel upward more than pushing the forefoot downward. For maximum pressure in this position it is necessary to apply pressure against the forefoot as well as against the calcaneus.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 33,
+    "fields": {
+      "orientation": "Vertical",
+      "start_posture": "Prone with the lumbar vertebral columns slightly flexed.\r\n",
+      "reference_electrode": "On the proc. spin. of C7.\r\n",
+      "clinical_test": "Lifting the trunk from a prone position.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 34,
+    "fields": {
+      "orientation": "In the direction of the line between the posterior spina iliaca superior and lowest point of the lower rib.\r\n",
+      "start_posture": "Prone with the lumbar vertebral columns slightly flexed.\r\n",
+      "reference_electrode": "On the proc. spin. of C7.\r\n",
+      "clinical_test": "Lifting the trunk from a prone position.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 35,
+    "fields": {
+      "orientation": "In the direction of the line described above.\r\n",
+      "start_posture": "Prone with the lumbar vertebral columns slightly flexed.\r\n",
+      "reference_electrode": "On the proc. spin. of C7.\r\n",
+      "clinical_test": "Lifting the trunk from a prone position.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 36,
+    "fields": {
+      "orientation": "In the direction of the line between the posterior crista of the acromion and the olecranon.\r\n",
+      "start_posture": "Sitting with the shoulder at approximately 90 degrees abduction with the arm 90 degrees flexed and the palm of the hand pointing downwards.\r\n",
+      "reference_electrode": "On / around the wrist.\r\n",
+      "clinical_test": "Extend the elbow while applying pressure to the forearm in the direction of flexion.\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
+    "pk": 37,
+    "fields": {
+      "orientation": "In the direction of the line from the crista iliaca to the trochanter.\r\n",
+      "start_posture": "Lying on the side on a table.\r\n",
+      "reference_electrode": "On the proc. spin. of C7 or on / around the wrist or on / around the ankle.\r\n",
+      "clinical_test": "Lying on the side with the legs spread against manual resistance (holding the ankles)\r\n",
+      "fixation_on_the_skin": "(Double sided) tape / rings or elastic band.\r\n"
+    },
+    "model": "experiment.emgsurfaceplacement"
+  },
+  {
     "model": "experiment.informationtype",
     "fields": {
       "name": "Medidas cinem\u00e1ticas",

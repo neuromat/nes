@@ -8,7 +8,7 @@ from django.test import TestCase
 
 from custom_user.tests_helper import create_user
 from experiment.tests.tests_original import ObjectsFactory
-from patient.tests import UtilTests
+from patient.tests.tests_orig import UtilTests
 
 
 class ExportTestCase(TestCase):
