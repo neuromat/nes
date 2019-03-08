@@ -43,7 +43,7 @@ from experiment.views import experiment_update, upload_file, research_project_up
 from custom_user.views import User
 
 from patient.models import ClassificationOfDiseases
-from patient.tests import UtilTests
+from patient.tests.tests_orig import UtilTests
 
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
@@ -726,10 +726,7 @@ class ObjectsFactory(object):
     @staticmethod
     def create_stimulus_type():
         faker = Factory.create()
-
-        return StimulusType.objects.create(
-            name=faker.word()
-        )
+        return StimulusType.objects.create(name=faker.word())
 
     @staticmethod
     def create_stimulus_step(stimulus_type,mediafile):
