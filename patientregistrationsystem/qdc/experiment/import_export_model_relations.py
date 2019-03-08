@@ -239,5 +239,15 @@ pre_loaded_models = {
     ('experiment.musclesubdivision', ('name', 'anatomy_origin', 'anatomy_insertion', 'anatomy_function')): [
         ('experiment.emgelectrodeplacement', 'muscle_subdivision'),
     ],
-    ('experiment.muscleside', ('name',)): [('experiment.emgelectrodeplacementsetting', 'muscle_side')]
+    ('experiment.muscleside', ('name',)): [('experiment.emgelectrodeplacementsetting', 'muscle_side')],
+}
+
+pre_loaded_patient_model = {
+('patient.patient', ('cpf', 'name',)): [
+    ('patient.socialhistorydata', 'patient'),
+    ('patient.medicalrecorddata', 'patient'),
+    ('patient.socialdemographicdata', 'patient'),
+    ('patient.telephone', 'patient'),
+    ('patient.questionnaireresponse', 'patient'),
+    ('experiment.subject', 'patient'),],
 }
