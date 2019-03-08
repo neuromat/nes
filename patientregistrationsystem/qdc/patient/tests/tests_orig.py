@@ -31,7 +31,8 @@ from experiment.models import Experiment, Group, Subject, \
 
 from patient.management.commands.import_icd import import_classification_of_diseases
 from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
-    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse, Telephone
+    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse, Telephone, \
+    MaritalStatus
 from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
     patient_update, patient_view, restore_patient, reverse, check_limesurvey_access
@@ -91,14 +92,11 @@ class UtilTests:
         except ObjectDoesNotExist:
             gender = Gender.objects.create(name='Masculino')
 
-        p_mock = Patient()
-        p_mock.name = name
-        p_mock.date_birth = '2001-01-15'
-        p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient cpf
-        p_mock.gender = gender
-        p_mock.changed_by = changed_by
-        p_mock.save()
-        return p_mock
+        # TODO: make loop to guarantee unique patient cpf
+        return Patient.objects.create(
+            name=name, date_birth=faker.date(), cpf=faker.ssn(), gender=gender, changed_by=changed_by,
+            marital_status=MaritalStatus.objects.create(name=faker.word())
+        )
 
     @staticmethod
     def create_telephone(patient, changed_by):
@@ -1653,9 +1651,10 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         os.remove(filename)
 
     def test_translate_data_from_fixtures(self):
-        filename = os.path.join(settings.BASE_DIR,
-                                os.path.join("patient", os.path.join("data_migrations",
-                                                                     "0006_translate_data_into_english.json")))
+        filename = os.path.join(
+            settings.BASE_DIR,
+            os.path.join("patient", os.path.join("data_migrations", "0006_translate_data_into_english.json"))
+        )
         # Does not display "Installed fixtures message"
         stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
 
