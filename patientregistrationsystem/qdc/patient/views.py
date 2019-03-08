@@ -383,10 +383,10 @@ def patient_view_personal_data(request, patient, context):
         for field in form.fields:
             form.fields[field].widget.attrs['disabled'] = True
 
-    patient_form.fields['country'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
-    patient_form.fields['state'].widget = SelectBoxStateDisabled(
-        attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
+    # patient_form.fields['country'].widget = SelectBoxCountriesDisabled(
+    #     attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
+    # patient_form.fields['state'].widget = SelectBoxStateDisabled(
+    #     attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
 
     context.update({
         'code': patient.code,
