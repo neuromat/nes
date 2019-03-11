@@ -282,3 +282,13 @@ pre_loaded_models_not_editable = [
     'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem',
     'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape'
 ]
+
+pre_loaded_patient_model = {
+('patient.patient', ('cpf', 'name',)): [
+    ('patient.socialhistorydata', 'patient'),
+    ('patient.medicalrecorddata', 'patient'),
+    ('patient.socialdemographicdata', 'patient'),
+    ('patient.telephone', 'patient'),
+    ('patient.questionnaireresponse', 'patient'),
+    ('experiment.subject', 'patient'),],
+}

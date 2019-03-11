@@ -40,28 +40,24 @@ permission_required = partial(permission_required, raise_exception=True)
 @permission_required('patient.add_patient')
 def patient_create(request, template_name="patient/register_personal_data.html"):
     patient_form = PatientForm(request.POST or None)
-
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
     if request.method == "POST":
         patient_form.city = request.POST['city'] if 'city' in request.POST else ""
-        patient_form_is_valid = patient_form.is_valid()
-
         telephone_formset = telephone_inlineformset(request.POST, request.FILES)
-        telephone_formset_is_valid = telephone_formset.is_valid()
 
-        if patient_form_is_valid and telephone_formset_is_valid:
+        if patient_form.is_valid() and telephone_formset.is_valid():
             new_patient = patient_form.save(commit=False)
 
             # Remove leading and trailing white spaces to avoid problems with homonym search.
-            new_patient.name = new_patient.name.strip()
+            if new_patient.name:
+                new_patient.name = new_patient.name.strip()
 
             if not new_patient.cpf:
                 new_patient.cpf = None
 
             new_patient.changed_by = request.user
             new_patient.save()
-
             new_phone_list = telephone_formset.save(commit=False)
 
             for phone in new_phone_list:
@@ -71,6 +67,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
             messages.success(request, _('Personal data successfully written.'))
             return finish_handling_post(request, new_patient.id, 0)
+
         else:
             if request.POST['cpf']:
                 patient_found = Patient.objects.filter(cpf=request.POST['cpf'])
@@ -80,6 +77,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
                         patient_form.errors['cpf'][0] = _("Participant with this CPF has already removed.")
                     else:
                         patient_form.errors['cpf'][0] = _("There is already registered participant with this CPF.")
+
     else:
         telephone_formset = telephone_inlineformset()
 
@@ -88,7 +86,8 @@ def patient_create(request, template_name="patient/register_personal_data.html")
         'telephone_formset': telephone_formset,
         'editing': True,
         'inserting': True,
-        'currentTab': '0'}
+        'currentTab': '0'
+    }
 
     return render(request, template_name, context)
 
@@ -277,10 +276,9 @@ def patient_update_social_history(request, patient, context):
                     new_social_history_data.changed_by = request.user
                     new_social_history_data.save()
                     messages.success(request, _('Social history successfully recorded.'))
-                except:
+                except ValueError:
                     messages.error(request, _('The combination is not allowed.'))
             return finish_handling_post(request, patient.id, 2)
-
 
     context.update({
         'social_history_form': social_history_form,
