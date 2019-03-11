@@ -220,13 +220,19 @@ class ImportExperiment:
         else:
             self.new_objects['research_id'] = None
         if 'group' in self.last_objects_before_import:
-            last_group_before_import = self.last_objects_before_import['group'].id
-            self.new_objects['groups_count'] = Group.objects.filter(id__gt=last_group_before_import).count()
+            if self.last_objects_before_import['group'] is not None:
+                last_group_before_import = self.last_objects_before_import['group'].id
+                self.new_objects['groups_count'] = Group.objects.filter(id__gt=last_group_before_import).count()
+            else:
+                self.new_objects['groups_count'] = Group.objects.count()
         else:
             self.new_objects['groups_count'] = None
         if 'component' in self.last_objects_before_import:
-            last_component_before_import = self.last_objects_before_import['component'].id
-            component_queryset = Component.objects.filter(id__gt=last_component_before_import)
+            if self.last_objects_before_import['component'] is not None:
+                last_component_before_import = self.last_objects_before_import['component'].id
+                component_queryset = Component.objects.filter(id__gt=last_component_before_import)
+            else:
+                component_queryset = Component.objects.all()
             components = component_queryset.values('component_type').annotate(count=Count('component_type'))
             self._include_human_readables(components)
             self.new_objects['components'] = list(components)
