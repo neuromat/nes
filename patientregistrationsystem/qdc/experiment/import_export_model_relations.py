@@ -26,7 +26,7 @@ foreign_relations = {
     'experiment.contexttree': [['experiment.experiment', 'experiment']],
     # 'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
     # 'experiment.informationtype': [['', '']],
-    'experiment.stimulus': [['experiment.stimulus_type', 'stimulus_type']],
+    'experiment.stimulus': [['experiment.stimulustype', 'stimulus_type']],
     'experiment.stimulustype': [['', '']],
     # TMS
     'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
