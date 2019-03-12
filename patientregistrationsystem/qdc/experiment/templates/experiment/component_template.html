@@ -192,8 +192,6 @@
                     </div>
                 </div>
 
-                </tbody></table>
-
                 {# If component_configuration, buttom is shown further bellow #}
                 {% if not component_configuration and not creating and not updating and can_change %}
                     <div class="row" style="padding-bottom: 1em">
@@ -224,7 +222,6 @@
                             </div>
                             <div class="col-xs-6 col-sm-2">
                                 <div class="form-group">
-{#                                    <label class="control-label" for="number_of_uses_to_insert">Quantidade de usos a inserir <b style="color: red;">*</b></label>#}
                                     {{ number_of_uses_form.number_of_uses_to_insert }}
                                     <div class="help-block with-errors"></div>
                                 </div>
@@ -273,7 +270,6 @@
                             <div class="radio" style="margin-top: 0px">
                                 <input {% if not can_change %}disabled{% endif %} id="id_repetitions_0" name="unlimited_number_of_repetitions" type="radio" value="unlimited">
                                     {% trans "Unlimited" %}
-                                </input>
                             </div>
                             <label class="radio">
                                 <input {% if not can_change %}disabled{% endif %} id="id_repetitions_1" name="unlimited_number_of_repetitions" type="radio" value="limited">
@@ -283,7 +279,6 @@
                                             <div class="help-block with-errors" id="div_for_errors_in_number_of_repetitions"></div>
                                         </div>
                                     </div>
-                                </input>
                             </label>
                         </div>
                         <div id="interval_div">
@@ -292,7 +287,6 @@
                                 <div class="radio" style="margin-top: 0px">
                                     <input {% if not can_change %}disabled{% endif %} id="id_interval_0" name="undefined_interval" type="radio" value="undefined">
                                         {% trans "Undefined" %}
-                                    </input>
                                 </div>
                                 <label class="radio">
                                     <input {% if not can_change %}disabled{% endif %} id="id_interval_1" name="undefined_interval" type="radio" value="limited">
@@ -308,7 +302,6 @@
                                                 <div class="help-block with-errors" id="div_for_errors_in_interval_between_repetitions_unit"></div>
                                             </div>
                                         </div>
-                                    </input>
                                 </label>
                             </div>
                         </div>
@@ -332,7 +325,6 @@
                             <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
                         </div>
                     {% endif %}
-                    </div>
                 {% else %}
                     <div class="btn-group pull-left">
                     </div>

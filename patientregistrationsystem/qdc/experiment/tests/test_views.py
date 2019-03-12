@@ -2825,7 +2825,7 @@ class ImportExperimentTest(TestCase):
     def _get_pre_loaded_models_tms_editable():
         return {
             # TMSDevice related model is refered as experiment.equipment in
-            # pre_loaded_models_foreign_keys as in json experiment.equipment is
+            # PRE_LOADED_MODELS_FOREIGN_KEYS as in json experiment.equipment is
             # a model separated from experiment.tmsdevice
             (Manufacturer, 'name', 1): [(TMSDevice, 'manufacturer', 1)],
             (Material, 'description', 1): [(CoilModel, 'material', 1)],
