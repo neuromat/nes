@@ -123,7 +123,7 @@ class InstitutionForm(ModelForm):
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'required': "", 'autofocus': ''}),
             'acronym': TextInput(attrs={'class': 'form-control'}),
-            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'country': Select(attrs={'class': 'form-control', 'data-flags': 'true'}),
             'parent': Select(attrs={'class': 'form-control'}),
         }
 
