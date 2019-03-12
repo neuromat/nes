@@ -3,6 +3,8 @@ from django.db.models import signals
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+from patient.models import COUNTRIES
+
 
 LOGIN = (
     (False, _('No')),
@@ -13,7 +15,7 @@ LOGIN = (
 class Institution(models.Model):
     name = models.CharField(max_length=150)
     acronym = models.CharField(max_length=30, unique=True)
-    country = models.CharField(max_length=30)
+    country = models.CharField(max_length=30, choices=COUNTRIES)
     parent = models.ForeignKey('self', null=True, blank=True, related_name='children')
 
     def __str__(self):

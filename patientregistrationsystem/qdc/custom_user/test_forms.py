@@ -18,12 +18,13 @@ class InstitutionFormValidation(TestCase):
         self.data = {
             'name': 'Institution',
             'acronym': 'for Test',
-            'country': 'Brazil'
+            'country': 'BR'
         }
 
     # Test if the form with only the required fields filled is valid
     def test_InstitutionForm_is_valid(self):
-        institution = InstitutionForm(data=self.data)
+        institution = InstitutionForm(data={'name': self.data['name'], 'acronym': self.data['acronym'],
+                                            'country': self.data['country']})
         self.assertTrue(institution.is_valid())
 
     # Test if the form without the name is not valid
