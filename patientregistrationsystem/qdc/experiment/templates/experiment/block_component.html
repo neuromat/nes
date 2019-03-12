@@ -62,7 +62,6 @@
                     <input id="id_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="all"
                             {% if not updating and not creating or reusing or component_configuration %} disabled="True" {% endif %}>
                         {% trans "All" %}
-                    </input>
                 </div>
                 <div class="radio-inline">
                     <input id="id_not_all_mandatory" name="radio_number_of_mandatory_components" type="radio" value="not_all"
@@ -73,7 +72,6 @@
                                 <div class="help-block with-errors" id="div_for_errors_in_number_of_mandatory_components"></div>
                             </div>
                         </div>
-                    </input>
                 </div>
             </div>
         </div>
