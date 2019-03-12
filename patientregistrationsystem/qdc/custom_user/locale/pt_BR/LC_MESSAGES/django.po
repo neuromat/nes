@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-08 16:26-0300\n"
+"POT-Creation-Date: 2019-03-12 13:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,11 +49,11 @@ msgstr "E-mail não cadastrado"
 msgid "Type citation name"
 msgstr "Entrar nome para citação"
 
-#: custom_user/models.py:8
+#: custom_user/models.py:10
 msgid "No"
 msgstr "Não"
 
-#: custom_user/models.py:9
+#: custom_user/models.py:11
 msgid "Yes, a username and password must be configured"
 msgstr "Sim, um nome de usuário e uma senha devem ser configurados"
 
@@ -265,7 +265,7 @@ msgstr "Pesquisador removido com sucesso."
 msgid "Researcher updated successfully."
 msgstr "Pesquisador atualizado com sucesso."
 
-#: custom_user/views.py:180 custom_user/views.py:293
+#: custom_user/views.py:180 custom_user/views.py:290
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
@@ -289,7 +289,7 @@ msgstr "Informação não salva."
 msgid "Action not available."
 msgstr "Ação não disponível."
 
-#: custom_user/views.py:254
+#: custom_user/views.py:251
 msgid ""
 "This institution cannot be removed because there are researchers associated "
 "with it."
@@ -297,7 +297,7 @@ msgstr ""
 "Esta instituição não pode ser removida porque existem pesquisadores "
 "associados a ela."
 
-#: custom_user/views.py:261
+#: custom_user/views.py:258
 msgid ""
 "This institution cannot be removed because there is (are) other "
 "institution(s) associated with it."
@@ -305,10 +305,10 @@ msgstr ""
 "Esta instituição não pode ser removida porque há outra instituição associada "
 "a ela."
 
-#: custom_user/views.py:268
+#: custom_user/views.py:265
 msgid "Institution removed successfully."
 msgstr "Instituição removida com sucesso."
 
-#: custom_user/views.py:291
+#: custom_user/views.py:288
 msgid "Institution updated successfully."
 msgstr "Instituição atualizada com sucesso."

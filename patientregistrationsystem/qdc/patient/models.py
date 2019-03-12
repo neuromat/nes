@@ -13,93 +13,7 @@ from survey.models import Survey
 
 from .validation import CPF
 
-
-def validate_date_questionnaire_response(value):
-    if value > datetime.date.today():
-        raise ValidationError(_("Fill date can not be bigger than today's date."))
-
-
-# Valida CPF
-def validate_cpf(value):
-    validation = CPF(value)
-    if not validation.isValid():
-        # raise ValidationError(u'CPF %s não é válido' % value)
-        raise ValidationError(_('CPF %(CPF)s invalid') % {"CPF": value})
-
-
-# Valida data de nascimento:
-# data de nascimento maior que a data atual
-def validate_date_birth(value):
-    if value > datetime.date.today():
-        raise ValidationError(_("Date of birth can't be greater than today date."))
-
-
-class Payment(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class Gender(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class FleshTone(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class MaritalStatus(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class Religion(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class Schooling(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class AmountCigarettes(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class AlcoholFrequency(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-
-class AlcoholPeriod(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
-class Patient(models.Model):
-
-    COUNTRIES = (
+COUNTRIES = (
         ('AD', _('Andorra')),
         ('AE', _('United Arab Emirates')),
         ('AF', _('Afghanistan')),
@@ -141,7 +55,7 @@ class Patient(models.Model):
         ('CG', _('Congo')),
         ('CH', _('Switzerland')),
         ('CI', _('Ivory Coast')),
-        ('CK', _('Cook Iislands')),
+        ('CK', _('Cook Islands')),
         ('CL', _('Chile')),
         ('CM', _('Cameroon')),
         ('CN', _('China')),
@@ -171,7 +85,7 @@ class Patient(models.Model):
         ('FM', _('Micronesia')),
         ('FO', _('Faroe Islands')),
         ('FR', _('France')),
-        ('FX', _('France, Metropolitan')),
+        ('FX', _('France Metropolitan')),
         ('GA', _('Gabon')),
         ('GB', _('United Kingdom (Great Britain)')),
         ('GD', _('Grenada')),
@@ -213,7 +127,7 @@ class Patient(models.Model):
         ('KH', _('Cambodia')),
         ('KI', _('Kiribati')),
         ('KM', _('Comoros')),
-        ('KN', _('St. Kitts and Nevis')),
+        ('KN', _('Saint Kitts and Nevis')),
         ('KP', _('Korea, Democratic People\'s Republic of')),
         ('KR', _('Korea, Republic of')),
         ('KW', _('Kuwait')),
@@ -341,6 +255,91 @@ class Patient(models.Model):
         ('ZZ', _('Unknown or unspecified country')),
     )
 
+
+def validate_date_questionnaire_response(value):
+    if value > datetime.date.today():
+        raise ValidationError(_("Fill date can not be bigger than today's date."))
+
+
+# Valida CPF
+def validate_cpf(value):
+    validation = CPF(value)
+    if not validation.isValid():
+        # raise ValidationError(u'CPF %s não é válido' % value)
+        raise ValidationError(_('CPF %(CPF)s invalid') % {"CPF": value})
+
+
+# Valida data de nascimento:
+# data de nascimento maior que a data atual
+def validate_date_birth(value):
+    if value > datetime.date.today():
+        raise ValidationError(_("Date of birth can't be greater than today date."))
+
+
+class Payment(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class Gender(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class FleshTone(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class MaritalStatus(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class Religion(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class Schooling(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class AmountCigarettes(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class AlcoholFrequency(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class AlcoholPeriod(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class Patient(models.Model):
     code = models.CharField(max_length=10, null=False, unique=True)
 
     name = models.CharField(null=True, blank=True, max_length=50)
