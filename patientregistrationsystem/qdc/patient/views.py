@@ -138,7 +138,7 @@ def patient_update_personal_data(request, patient, context):
 
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
-    if patient.name == '':
+    if not patient.name:
         patient_form.fields['anonymous'].widget.attrs['checked'] = True
 
     if request.method == "POST":
@@ -371,7 +371,7 @@ def patient_view_personal_data(request, patient, context):
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
     telephone_formset = telephone_inlineformset(instance=patient)
 
-    if patient.name == '':
+    if not patient.name:
         patient_form.fields['anonymous'].widget.attrs['checked'] = True
 
     for field in patient_form.fields:
