@@ -397,6 +397,25 @@ class PatientFormValidation(TestCase):
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
+    def test_anonymous_patient_create(self):
+        """
+        Testa inclusao de participante com campos obrigatórios quando este paciente é anônimo
+        """
+
+        data = {'anonymous': True,
+                'date_birth': '01/02/1995',
+                'gender': self.data["gender"],
+                'telephone_set-TOTAL_FORMS': '3',
+                'telephone_set-INITIAL_FORMS':'0',
+                'telephone_set-MAX_NUM_FORMS': ''}
+
+        self.client.post(reverse(PATIENT_NEW), data, follow=True)
+        self.assertEqual(Patient.objects.filter(
+            date_birth='1995-02-01',
+            gender=self.data["gender"],
+            name=None,
+            cpf=None).count(), 1)
+
     def fill_social_demographic_data(self):
         """ Criar uma opcao de Schooling """
         school = Schooling.objects.create(name='Fundamental Completo')
