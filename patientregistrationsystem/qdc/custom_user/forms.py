@@ -85,7 +85,7 @@ class UserProfileForm(ModelForm):
 
         widgets = {
             'institution': Select(attrs={'class': 'form-control'}),
-            'login_enabled': RadioSelect(attrs={'id': 'optradio'}),
+            'login_enabled': RadioSelect(),
             'citation_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Type citation name')}),
         }
 
