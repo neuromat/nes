@@ -1,4 +1,4 @@
-model_root_nodes = [
+MODEL_ROOT_NODES = [
             'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
             'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
             'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
@@ -6,7 +6,7 @@ model_root_nodes = [
             'patient.patient'
         ]
 
-foreign_relations = {
+FOREIGN_RELATIONS = {
     'experiment.researchproject': [['', '']],
     'experiment.experiment': [['experiment.researchproject', 'research_project']],
     'experiment.group': [
@@ -26,7 +26,7 @@ foreign_relations = {
     'experiment.contexttree': [['experiment.experiment', 'experiment']],
     # 'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
     # 'experiment.informationtype': [['', '']],
-    'experiment.stimulus': [['experiment.stimulus_type', 'stimulus_type']],
+    'experiment.stimulus': [['experiment.stimulustype', 'stimulus_type']],
     'experiment.stimulustype': [['', '']],
     # TMS
     'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
@@ -110,7 +110,7 @@ foreign_relations = {
     # 'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
 }
 
-one_to_one_relation = {
+ONE_TO_ONE_RELATION = {
     # Multi table inheritance
     'experiment.block': 'experiment.component',
     'experiment.instruction': 'experiment.component',
@@ -146,7 +146,7 @@ one_to_one_relation = {
     'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
 }
 
-experiment_json_files = {
+EXPERIMENT_JSON_FILES = {
     'experimentfixture': ('experiment', 'id__in'),
     'componentconfiguration': ('componentconfiguration', 'component_id__experiment_id__in'),
     # 'dataconfigurationtree': ('dataconfigurationtree', 'component_configuration__component__experiment_id__in'),
@@ -192,7 +192,7 @@ experiment_json_files = {
 
 }
 
-patient_json_files = {
+PATIENT_JSON_FILES = {
     'telephone': ('telephone', 'patient__subject__subjectofgroup__group__experiment_id__in'),
     'socialhistorydata': ('socialhistorydata', 'patient__subject__subjectofgroup__group__experiment_id__in'),
     'socialdemographicdata':
@@ -201,7 +201,7 @@ patient_json_files = {
         ('diagnosis', 'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in'),
 }
 
-json_files_detached_models = {
+JSON_FILES_DETACHED_MODELS = {
     'emg_intramuscularplacement': (
         'emgintramuscularplacement', 'emgelectrodeplacement_ptr__in', 'experiment.emgelectrodeplacement',
         'emg_electrodeplacementsetting'
@@ -216,7 +216,7 @@ json_files_detached_models = {
     )
 }
 
-pre_loaded_models_foreign_keys = {
+PRE_LOADED_MODELS_FOREIGN_KEYS = {
     ('experiment.manufacturer', ('name',)): [
         ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
         ('experiment.software', 'manufacturer')
@@ -269,7 +269,7 @@ pre_loaded_models_foreign_keys = {
     ]
 }
 
-pre_loaded_models_inheritance = {
+PRE_LOADED_MODELS_INHERITANCE = {
     'experiment.amplifier':
         ['experiment.equipment', ('equipment_type', 'identification', 'description', 'serial_number')],
     'experiment.eegelectrodenet':
@@ -278,12 +278,12 @@ pre_loaded_models_inheritance = {
         ['experiment.emgelectrodeplacement', ('location', 'placement_type')]
 }
 
-pre_loaded_models_not_editable = [
+PRE_LOADED_MODELS_NOT_EDITABLE = [
     'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem',
     'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape'
 ]
 
-pre_loaded_patient_model = {
+PRE_LOADED_PATIENT_MODEL = {
 ('patient.patient', ('cpf', 'name',)): [
     ('patient.socialhistorydata', 'patient'),
     ('patient.medicalrecorddata', 'patient'),

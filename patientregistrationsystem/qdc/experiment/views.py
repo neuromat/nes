@@ -861,6 +861,7 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
             request.session['file_name'] = file_name
 
             if patients_with_conflict:
+                request.session['patients_conflicts_resolved'] = True
                 if research_project_id:
                     return render(request, 'experiment/decide_about_patients.html',
                                   context={'patients': patients_with_conflict})
