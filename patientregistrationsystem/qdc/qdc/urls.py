@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^password_change/$', authviews.password_change,
         {'template_name': 'registration/change_password_custom.html',
          'post_change_redirect': 'password_changed',
-         'password_change_form': PasswordChangeFormCustomized}),
+         'password_change_form': PasswordChangeFormCustomized}, name='password_change'),
     url(r'^password_changed_redirected/$', qdcviews.password_changed, name='password_changed'),
     url(r'^password_change/done/$', authviews.password_change_done, name='password_change_done'),
     url(r'^user/password/reset/$', authviews.password_reset,

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-08 16:26-0300\n"
+"POT-Creation-Date: 2019-03-12 13:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,47 +20,47 @@ msgstr ""
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
 
-#: quiz/templates/quiz/template.html:124
+#: quiz/templates/quiz/template.html:136
 msgid "NES"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:169
+#: quiz/templates/quiz/template.html:181
 msgid "Change password"
 msgstr "Alterar senha"
 
-#: quiz/templates/quiz/template.html:170
+#: quiz/templates/quiz/template.html:182
 msgid "Logout"
 msgstr "Sair"
 
-#: quiz/templates/quiz/template.html:190
+#: quiz/templates/quiz/template.html:202
 msgid "Home"
 msgstr "Inicio"
 
-#: quiz/templates/quiz/template.html:198
+#: quiz/templates/quiz/template.html:210
 msgid "Participants"
 msgstr "Participantes"
 
-#: quiz/templates/quiz/template.html:207
+#: quiz/templates/quiz/template.html:219
 msgid "Studies"
 msgstr "Estudos"
 
-#: quiz/templates/quiz/template.html:216
+#: quiz/templates/quiz/template.html:228
 msgid "Publications"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:225
+#: quiz/templates/quiz/template.html:237
 msgid "Questionnaires"
 msgstr "Questionários"
 
-#: quiz/templates/quiz/template.html:234
+#: quiz/templates/quiz/template.html:246
 msgid "Researchers"
 msgstr ""
 
-#: quiz/templates/quiz/template.html:243
+#: quiz/templates/quiz/template.html:255
 msgid "Export"
 msgstr "Exportar"
 
-#: quiz/templates/quiz/template.html:252
+#: quiz/templates/quiz/template.html:264
 msgid "Set up"
 msgstr ""
 

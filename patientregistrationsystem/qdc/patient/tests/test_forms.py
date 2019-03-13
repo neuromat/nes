@@ -131,7 +131,7 @@ class SocialDemographicDataFormValidation(TestCase):
 
         self.data = {
             'natural_of': 'São Paulo',
-            'citizenship': 'Brasil',
+            'citizenship': 'BR',
             'profession': 'Estudante',
             'occupation': 'Study',
             'religion': religion.id,
@@ -210,12 +210,15 @@ class SocialHistoryFormValidation(TestCase):
     # Test if the form of a non-smoker patient is valid and the dependent field doesn't have any value
     def test_SocialHistory_is_valid_with_non_smoker_patient(self):
         self.data["smoker"] = False
+        self.data["amount_cigarettes"] = None
         socialhistory = SocialHistoryDataForm(data=self.data)
         self.assertTrue(socialhistory.is_valid())
 
     # Test if the form of a non-alcoholic patient is valid and the dependent fields don't have any value
     def test_SocialHistory_is_valid_with_non_alcoholic_patient(self):
         self.data["alcoholic"] = False
+        self.data["alcohol_frequency"] = None
+        self.data["alcohol_period"] = None
         socialhistory = SocialHistoryDataForm(data=self.data)
         self.assertTrue(socialhistory.is_valid())
 

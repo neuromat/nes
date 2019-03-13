@@ -24,7 +24,7 @@ from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm,
     ComplementaryExamForm, ExamFileForm
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam, QuestionnaireResponse
-from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
+from patient.quiz_widget import SelectBoxCountriesDisabled
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -382,11 +382,6 @@ def patient_view_personal_data(request, patient, context):
         for field in form.fields:
             form.fields[field].widget.attrs['disabled'] = True
 
-    patient_form.fields['country'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
-    patient_form.fields['state'].widget = SelectBoxStateDisabled(
-        attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
-
     context.update({
         'code': patient.code,
         'patient_form': patient_form,
@@ -406,8 +401,8 @@ def patient_view_social_demographic_data(request, patient, context):
     for field in social_demographic_form.fields:
         social_demographic_form.fields[field].widget.attrs['disabled'] = True
 
-    social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
+    # social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
+    #     attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
     context.update({
         'social_demographic_form': social_demographic_form,
