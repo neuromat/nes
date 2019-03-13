@@ -287,11 +287,11 @@ class SocialDemographicData(models.Model):
 class SocialHistoryData(models.Model):
     patient = models.ForeignKey(Patient)
     smoker = models.NullBooleanField(blank=True)
-    amount_cigarettes = models.ForeignKey(AmountCigarettes, null=True, blank=True, default=0)
+    amount_cigarettes = models.ForeignKey(AmountCigarettes, null=True, blank=True)
     ex_smoker = models.NullBooleanField(blank=True)
     alcoholic = models.NullBooleanField(blank=True)
-    alcohol_frequency = models.ForeignKey(AlcoholFrequency, null=True, blank=True, default=0)
-    alcohol_period = models.ForeignKey(AlcoholPeriod, null=True, blank=True, default=0)
+    alcohol_frequency = models.ForeignKey(AlcoholFrequency, null=True, blank=True)
+    alcohol_period = models.ForeignKey(AlcoholPeriod, null=True, blank=True)
     drugs = models.CharField(max_length=25, null=True, blank=True)
 
     # Audit trail
@@ -309,6 +309,12 @@ class SocialHistoryData(models.Model):
     def __str__(self):
         return \
             str(self.patient)
+
+    def clean(self):
+        if self.smoker and self.ex_smoker:
+            raise ValidationError(_('The combination is not allowed.'))
+        if not self.alcoholic and (self.alcohol_frequency or self.alcohol_period):
+            raise ValidationError(_('The combination is not allowed.'))
 
 
 class MedicalRecordData(models.Model):

@@ -229,6 +229,31 @@ class SocialHistoryFormValidation(TestCase):
         socialhistory = SocialHistoryDataForm()
         self.assertFalse(socialhistory.is_valid())
 
+    def test_SocialHistory_with_only_smoker_yes_field_selected_is_valid(self):
+        data = {'smoker': True}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_smoker_no_field_selected_is_valid(self):
+        data = {'smoker': False}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_alcoholic_yes_field_selected_is_valid(self):
+        data = {'alcoholic': True}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_alcoholic_no_field_selected_is_valid(self):
+        data = {'alcoholic': False}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_drugs_choice_selected_is_valid(self):
+        data = {'drugs': 'faz'}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
 
 # Tests about the form of medical record
 # Briefly, this class tests the form of the tab 3 of app Patient
