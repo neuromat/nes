@@ -1,8 +1,8 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from faker import Factory
 
 
-def create_user(groups, username=None, force_password_change=False):
+def create_user(groups=Group.objects.none(), username=None, force_password_change=False):
     """
     Create user to login in NES
     :param groups: QuerySet with groups of permissions to add to the user
