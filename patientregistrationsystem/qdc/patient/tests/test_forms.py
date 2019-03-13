@@ -131,7 +131,7 @@ class SocialDemographicDataFormValidation(TestCase):
 
         self.data = {
             'natural_of': 'São Paulo',
-            'citizenship': 'Brasil',
+            'citizenship': 'BR',
             'profession': 'Estudante',
             'occupation': 'Study',
             'religion': religion.id,
