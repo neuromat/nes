@@ -445,7 +445,7 @@ class Telephone(models.Model):
 class SocialDemographicData(models.Model):
     patient = models.ForeignKey(Patient)
     natural_of = models.CharField(max_length=50, null=True, blank=True)
-    citizenship = models.CharField(max_length=50, null=True, blank=True)
+    citizenship = models.CharField(max_length=50, choices=COUNTRIES, null=True, blank=True)
     religion = models.ForeignKey(Religion, null=True, blank=True)
     profession = models.CharField(null=True, blank=True, max_length=50)
     occupation = models.CharField(null=True, blank=True, max_length=50)
