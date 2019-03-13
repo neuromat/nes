@@ -4,18 +4,17 @@ function limpa_formulário_cep() {
         //Limpa valores do formulário de cep.
         document.getElementById('id_street').value=("");
         document.getElementById('id_district').value=("");
-        document.getElementById('get_location').value=("");
-        // document.getElementById('state').value=("");
+        document.getElementById('id_city').value=("");
+        document.getElementById('id_state').value=("");
 }
 
 function meu_callback(conteudo) {
-    // TODO: Add value to the state field
     if (!("erro" in conteudo)) {
         //Atualiza os campos com os valores.
         document.getElementById('id_street').value=(conteudo.logradouro);
         document.getElementById('id_district').value=(conteudo.bairro);
-        document.getElementById('get_location').value=(conteudo.localidade);
-        // document.getElementById('state').value=(conteudo.uf);
+        document.getElementById('id_city').value=(conteudo.localidade);
+        document.getElementById('id_state').value=(conteudo.uf);
     } //end if.
     else {
         //CEP não Encontrado.
@@ -41,8 +40,8 @@ function pesquisacep(valor) {
             //Preenche os campos com "..." enquanto consulta webservice.
             document.getElementById('id_street').value="...";
             document.getElementById('id_district').value="...";
-            document.getElementById('get_location').value="...";
-            // document.getElementById('id_state').value="...";
+            document.getElementById('id_city').value="...";
+            document.getElementById('id_state').value="...";
 
             //Cria um elemento javascript.
             var script = document.createElement('script');

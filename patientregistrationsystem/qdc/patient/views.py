@@ -24,7 +24,7 @@ from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm,
     ComplementaryExamForm, ExamFileForm
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam, QuestionnaireResponse
-from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
+from patient.quiz_widget import SelectBoxCountriesDisabled
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey

@@ -9,7 +9,6 @@ from django.utils.translation import ugettext as _
 
 from custom_user.forms import InstitutionForm, UserForm, UserFormUpdate, UserProfileForm, ResearcherForm
 from custom_user.models import Institution, UserProfile
-from patient.quiz_widget import SelectBoxCountriesDisabled
 
 
 def get_group_permissions(user):
