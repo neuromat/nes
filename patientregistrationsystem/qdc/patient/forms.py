@@ -7,8 +7,7 @@ from django.forms.widgets import Textarea
 
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile, \
     QuestionnaireResponse
-from patient.quiz_widget import SelectBoxCountries, SelectBoxState
-from configuration.models import LocalInstitution
+from patient.quiz_widget import SelectBoxCountries
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -18,7 +17,6 @@ class PatientForm(ModelForm):
     def __init__(self, data=None, *args, **kwargs):
         super(PatientForm, self).__init__(data, *args, **kwargs)
         self.fields['zipcode'].widget.attrs['onBlur'] = 'pesquisacep(this.value);'
-        # The default country will be the one defined in LocalInstitution
         self.fields['country'].initial = 'BR'
 
     anonymous = forms.BooleanField(required=False,
@@ -34,20 +32,17 @@ class PatientForm(ModelForm):
         ]
 
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
+            'name': TextInput(attrs={'class': 'form-control', 'autofocus': 'true', 'required': '',
                                      'data-error': _('Name must be included')}),
-            'cpf': TextInput(attrs={'class': 'form-control',
-                                    'placeholder': 'xxx.xxx.xxx-xx'}),
+            'cpf': TextInput(attrs={'class': 'form-control', 'placeholder': 'xxx.xxx.xxx-xx'}),
             'origin': TextInput(attrs={'class': 'form-control'}),
             'medical_record': TextInput(attrs={'class': 'form-control'}),
             'date_birth': DateInput(format=_("%m/%d/%Y"), attrs={'class': 'form-control datepicker', 'required': "",
                                                                  'placeholder': _('mm/dd/yyyy'),
                                                                  'data-error': _('Date of birth must be completed')}),
-            'gender': Select(attrs={'class': 'form-control', 'required': "",
-                                    'data-error': _('Gender must be filled')}),
+            'gender': Select(attrs={'class': 'form-control', 'required': '', 'data-error': _('Gender must be filled')}),
             'rg': TextInput(attrs={'class': 'form-control'}),
             'marital_status': Select(attrs={'class': 'form-control'}),
-
             'country': Select(attrs={'class': 'form-control'}),
             'zipcode': TextInput(attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
             'street': TextInput(attrs={'class': 'form-control'}),
