@@ -14,6 +14,7 @@ from django.utils.http import int_to_base36
 from django.utils.translation import ugettext as _
 
 from custom_user.models import User, UserProfile, Institution
+from custom_user.tests_helper import create_user
 from custom_user.views import user_update, institution_view, institution_create, institution_update
 
 USER_USERNAME = 'myadmin'
@@ -22,7 +23,6 @@ USER_NEW = 'user_new'
 USER_VIEW = 'user_view'
 USER_EDIT = 'user_edit'
 PATTERN = '((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})'
-
 
 
 class FormUserValidation(TestCase):
@@ -56,7 +56,8 @@ class FormUserValidation(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def reset(self, user_added=None, request=None, domain_override=None,
+    @staticmethod
+    def reset(user_added=None, request=None, domain_override=None,
               email_template_name='registration/password_reset_email.html',
               use_https=False, token_generator=default_token_generator):
 
@@ -524,3 +525,9 @@ class PasswordResetTests(TestCase):
 
     def test_csrf(self):
         self.assertContains(self.response, 'csrfmiddlewaretoken')
+
+    def test_first_time_user_login_redirects_to_change_password_page(self):
+        user, passwd = create_user(force_password_change=True)
+        response = self.client.post(
+            reverse('login'), data={'username': user.username, 'password': passwd}, follow=True)
+        self.assertRedirects(response, reverse('password_change'))

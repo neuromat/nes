@@ -865,8 +865,6 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
                 if research_project_id:
                     return render(request, 'experiment/decide_about_patients.html',
                                   context={'patients': patients_with_conflict})
-                    # return HttpResponseRedirect(reverse('decide_about_patients',
-                    #                                     kwargs={'research_project_id': research_project_id}))
                 else:
                     return render(request, 'experiment/decide_about_patients.html',
                                   context={'patients': patients_with_conflict})
