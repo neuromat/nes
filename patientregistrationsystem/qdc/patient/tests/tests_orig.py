@@ -826,7 +826,7 @@ class MedicalRecordFormValidation(TestCase):
         self.data['doctor'] = 'Dr Medico'
         self.data['exam_site'] = 'Hospital'
         self.data['doctor_register'] = '1111'
-        self.data['action'] = 'upload'
+        self.data['action'] = 'save'
         self.data['date'] = '10/05/2005'
 
         if test_file:

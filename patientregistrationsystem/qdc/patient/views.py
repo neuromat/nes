@@ -900,19 +900,15 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                     new_file_data.save()
                     messages.success(request, _('Exam successfully saved.'))
 
-                if request.POST['action'] == "upload":
-                    redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
-
-                    return HttpResponseRedirect(redirect_url + "?status=" + status +
-                                                ("&mr=new" if new_medical_record else ""))
-
-                elif request.POST['action'] == "save":
+                if request.POST['action'] == "save":
                     if new_medical_record:
                         redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                     else:
                         redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
 
                     return HttpResponseRedirect(redirect_url + "?status=" + status)
+                else:
+                    messages.error(request, _('It is not possible to save exam without files.'))
         else:
             messages.error(request, _('It is not possible to save exam without files.'))
 
