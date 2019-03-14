@@ -279,7 +279,8 @@ def patient_update_social_history(request, patient, context):
                 except ValueError:
                     messages.error(request, _('The combination is not allowed.'))
             return finish_handling_post(request, patient.id, 2)
-
+        else:
+            messages.error(request, _('The combination is not allowed.'))
     context.update({
         'social_history_form': social_history_form,
         'code': patient.code

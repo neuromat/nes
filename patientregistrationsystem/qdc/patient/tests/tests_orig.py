@@ -501,6 +501,94 @@ class PatientFormValidation(TestCase):
         self.data['alcohol_period'] = alcohol_period.pk
         self.data['drugs'] = 'ja_fez'
 
+    def test_smoker_patient_can_not_be_ex_smoker(self):
+        name = 'smoker_patient_ES'
+        self.data['name'] = name
+
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+        self.data['smoker'] = True
+        self.data['ex_smoker'] = True
+        self.data['currentTab'] = 2
+
+        response = self.client.post(reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertNotContains(response, _('Social history successfully recorded.'))
+
+    def test_non_smoker_patient_can_not_fill_amount_of_cigarettes(self):
+        name = 'non_smoker_AC'
+        self.data['name'] = name
+
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+
+        amount_cigarettes = AmountCigarettes.objects.create(name=_('Less than 1 pack'))
+        amount_cigarettes.save()
+
+        self.data['smoker'] = False
+        self.data['amount_cigarettes'] = amount_cigarettes.pk
+        self.data['currentTab'] = 2
+
+        response = self.client.post(reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertNotContains(response, _('Social history successfully recorded.'))
+
+    def test_non_alcoholic_patient_can_not_fill_alcohol_frequency(self):
+        name = 'non_alcoholic_AF'
+        self.data['name'] = name
+
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+
+        alcohol_frequency = AlcoholFrequency.objects.create(name=_('Sporadically'))
+        alcohol_frequency.save()
+
+        self.data['alcoholic'] = False
+        self.data['alcohol_frequency'] = alcohol_frequency.pk
+        self.data['currentTab'] = 2
+
+        response = self.client.post(reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertNotContains(response, _('Social history successfully recorded.'))
+
+    def test_non_alcoholic_patient_can_not_fill_alcohol_period(self):
+        name = 'non_alcoholic_AP'
+        self.data['name'] = name
+
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+
+        alcohol_period= AlcoholPeriod.objects.create(name=_('Less than 1 year'))
+        alcohol_period.save()
+
+        self.data['smoker'] = False
+        self.data['alcohol_period'] = alcohol_period.pk
+        self.data['currentTab'] = 2
+
+        response = self.client.post(reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertNotContains(response, _('Social history successfully recorded.'))
+
     def test_patient_social_history_data(self):
         """
         Test the inclusion of a patient with required fields and update of social history data

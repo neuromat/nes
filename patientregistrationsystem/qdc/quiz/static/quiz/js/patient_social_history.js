@@ -14,11 +14,13 @@ $(document).ready(function () {
 
     $("#id_smoker_0").click(function () {
         amount_cigarettes.prop('disabled', false);
+        $("input[name=ex_smoker]").attr('disabled', true);
     });
 
     $("#id_smoker_1").click(function () {
         amount_cigarettes.value = "";
         amount_cigarettes.prop('disabled', true);
+        $("input[name=ex_smoker]").attr('disabled', false);
     });
 
     $("#id_alcoholic_0").click(function () {

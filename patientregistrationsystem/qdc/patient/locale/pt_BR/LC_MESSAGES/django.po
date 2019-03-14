@@ -1767,7 +1767,7 @@ msgstr ""
 
 #: patient/views.py:281
 msgid "The combination is not allowed."
-msgstr ""
+msgstr "Esta combinação é inválida."
 
 #: patient/views.py:778
 msgid "Diagnosis details successfully changed."
