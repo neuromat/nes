@@ -100,7 +100,7 @@ class SocialDemographicDataForm(ModelForm):
                   'social_class']
         widgets = {
             'natural_of': TextInput(attrs={'class': 'form-control'}),
-            'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'citizenship': Select(attrs={'class': 'form-control'}),
             'patient_schooling': Select(attrs={'class': 'form-control'}),
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),
