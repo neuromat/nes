@@ -97,6 +97,9 @@ FOREIGN_RELATIONS = {
     'experiment.amplifierdetectiontype': [['', '']],
     'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
 
+    # Data collections
+    'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']],
+
     # Participants
     'experiment.subject': [['patient.patient', 'patient']],
     'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
@@ -106,8 +109,6 @@ FOREIGN_RELATIONS = {
     'patient.socialhistorydata': [['patient.patient', 'patient']],
     'patient.medicalrecorddata': [['patient.patient', 'patient']],
     'patient.diagnosis': [['patient.medicalrecorddata', 'medical_record_data']],
-    # Data collections
-    # 'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
 }
 
 ONE_TO_ONE_RELATION = {
@@ -149,7 +150,7 @@ ONE_TO_ONE_RELATION = {
 EXPERIMENT_JSON_FILES = {
     'experimentfixture': ('experiment', 'id__in'),
     'componentconfiguration': ('componentconfiguration', 'component_id__experiment_id__in'),
-    # 'dataconfigurationtree': ('dataconfigurationtree', 'component_configuration__component__experiment_id__in'),
+    'dataconfigurationtree': ('dataconfigurationtree', 'component_configuration__component__experiment_id__in'),
     'group': ('group', 'experiment_id__in'),
     'block': ('block', 'component_ptr_id__experiment_id__in'),
     'instruction': ('instruction', 'component_ptr_id__experiment_id__in'),
