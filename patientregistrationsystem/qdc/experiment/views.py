@@ -4332,7 +4332,7 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
 
                     localization_system_id = item.split("_")[-1]
 
-                    if localization_system_id not in current_localization_systems:
+                    if int(localization_system_id) not in current_localization_systems:
 
                         # create a new net_system
                         eeg_electrode_net_system = EEGElectrodeNetSystem()
