@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 08:43-0200\n"
+"POT-Creation-Date: 2019-03-12 13:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: patient/forms.py:26 patient/templates/patient/register_personal_data.html:52
+#: patient/forms.py:26
+#: patient/templates/patient/register_personal_data.html:52
 msgid "Anonymous participant?"
 msgstr "Participante anônimo?"
 
-#: patient/forms.py:38 patient/forms.py:71 patient/tests.py:530
+#: patient/forms.py:38 patient/forms.py:71 patient/tests/tests_orig.py:538
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
-#: patient/forms.py:43 patient/forms.py:155 patient/views.py:776
-#: patient/views.py:1309
+#: patient/forms.py:43 patient/forms.py:155 patient/views.py:773
+#: patient/views.py:1306
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
@@ -42,7 +43,7 @@ msgstr "Data de nascimento deve ser preenchida"
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:60 patient/tests.py:515
+#: patient/forms.py:60 patient/tests/tests_orig.py:523
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
@@ -114,60 +115,1020 @@ msgstr "%d/%m/%Y"
 msgid "Fill date must be filled."
 msgstr "Data de preenchimento deve ser preenchida."
 
+#: patient/models.py:17
+msgid "Andorra"
+msgstr "Andorra"
+
+#: patient/models.py:18
+msgid "United Arab Emirates"
+msgstr "Emirados Árabes Unidos"
+
 #: patient/models.py:19
+msgid "Afghanistan"
+msgstr "Afeganistão"
+
+#: patient/models.py:20
+msgid "Antigua & Barbuda"
+msgstr "Antígua e Barbuda"
+
+#: patient/models.py:21
+msgid "Anguilla"
+msgstr "Anguilla"
+
+#: patient/models.py:22
+msgid "Albania"
+msgstr "Albânia"
+
+#: patient/models.py:23
+msgid "Armenia"
+msgstr "Armenia"
+
+#: patient/models.py:24
+msgid "Netherlands Antilles"
+msgstr "Antilhas Holandesas"
+
+#: patient/models.py:25
+msgid "Angola"
+msgstr "Angola"
+
+#: patient/models.py:26
+msgid "Antarctica"
+msgstr "Antártida"
+
+#: patient/models.py:27
+msgid "Argentina"
+msgstr "Argentina"
+
+#: patient/models.py:28
+msgid "American Samoa"
+msgstr "Samoa Americana"
+
+#: patient/models.py:29
+msgid "Austria"
+msgstr " Áustria"
+
+#: patient/models.py:30
+msgid "Australia"
+msgstr "Austrália"
+
+#: patient/models.py:31
+msgid "Aruba"
+msgstr "Aruba"
+
+#: patient/models.py:32
+msgid "Azerbaijan"
+msgstr "Azerbaijão"
+
+#: patient/models.py:33
+msgid "Bosnia and Herzegovina"
+msgstr "Bósnia e Herzegovina"
+
+#: patient/models.py:34
+msgid "Barbados"
+msgstr "Barbados"
+
+#: patient/models.py:35
+msgid "Bangladesh"
+msgstr "Bangladesh"
+
+#: patient/models.py:36
+msgid "Belgium"
+msgstr "Bélgica"
+
+#: patient/models.py:37
+msgid "Burkina Faso"
+msgstr "Burkina Faso"
+
+#: patient/models.py:38
+msgid "Bulgaria"
+msgstr "Bulgária"
+
+#: patient/models.py:39
+msgid "Bahrain"
+msgstr "Bahrein"
+
+#: patient/models.py:40
+msgid "Burundi"
+msgstr "Burundi"
+
+#: patient/models.py:41
+msgid "Benin"
+msgstr "Benim"
+
+#: patient/models.py:42
+msgid "Bermuda"
+msgstr "Bermudas"
+
+#: patient/models.py:43
+msgid "Brunei Darussalam"
+msgstr ""
+
+#: patient/models.py:44
+msgid "Bolivia"
+msgstr "Bolívia"
+
+#: patient/models.py:45
+msgid "Brazil"
+msgstr "Brasil"
+
+#: patient/models.py:46
+msgid "Bahama"
+msgstr "Bahamas"
+
+#: patient/models.py:47
+msgid "Bhutan"
+msgstr "Butão"
+
+#: patient/models.py:48
+msgid "Bouvet Island"
+msgstr "Ilha Bouvet"
+
+#: patient/models.py:49
+msgid "Botswana"
+msgstr "Botswana"
+
+#: patient/models.py:50
+msgid "Belarus"
+msgstr "Bielorrússia"
+
+#: patient/models.py:51
+msgid "Belize"
+msgstr "Belize"
+
+#: patient/models.py:52
+msgid "Canada"
+msgstr "Canadá"
+
+#: patient/models.py:53
+msgid "Cocos (Keeling) Islands"
+msgstr "Ilhas Cocos (Keeling)"
+
+#: patient/models.py:54
+msgid "Central African Republic"
+msgstr "República Centro-Africana"
+
+#: patient/models.py:55
+msgid "Congo"
+msgstr "Congo"
+
+#: patient/models.py:56
+msgid "Switzerland"
+msgstr "Suíça"
+
+#: patient/models.py:57
+msgid "Ivory Coast"
+msgstr "Costa do Marfim"
+
+#: patient/models.py:58
+msgid "Cook Islands"
+msgstr "Ilhas Cook"
+
+#: patient/models.py:59
+msgid "Chile"
+msgstr "Chile"
+
+#: patient/models.py:60
+msgid "Cameroon"
+msgstr "Camarões"
+
+#: patient/models.py:61
+msgid "China"
+msgstr "China"
+
+#: patient/models.py:62
+msgid "Colombia"
+msgstr "Colômbia"
+
+#: patient/models.py:63
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+#: patient/models.py:64
+msgid "Cuba"
+msgstr "Cuba"
+
+#: patient/models.py:65
+msgid "Cape Verde"
+msgstr "Cabo Verde"
+
+#: patient/models.py:66
+msgid "Christmas Island"
+msgstr "Ilha Christmas"
+
+#: patient/models.py:67
+msgid "Cyprus"
+msgstr "Chipre"
+
+#: patient/models.py:68
+msgid "Czech Republic"
+msgstr "República Checa"
+
+#: patient/models.py:69
+msgid "Germany"
+msgstr "Alemanha"
+
+#: patient/models.py:70
+msgid "Djibouti"
+msgstr "Djibouti"
+
+#: patient/models.py:71
+msgid "Denmark"
+msgstr "Dinamarca"
+
+#: patient/models.py:72
+msgid "Dominica"
+msgstr "Dominica"
+
+#: patient/models.py:73
+msgid "Dominican Republic"
+msgstr "República Dominicana"
+
+#: patient/models.py:74
+msgid "Algeria"
+msgstr "Argélia"
+
+#: patient/models.py:75
+msgid "Ecuador"
+msgstr "Equador"
+
+#: patient/models.py:76
+msgid "Estonia"
+msgstr "Estónia"
+
+#: patient/models.py:77
+msgid "Egypt"
+msgstr "Egito"
+
+#: patient/models.py:78
+msgid "Western Sahara"
+msgstr "Saara Ocidental"
+
+#: patient/models.py:79
+msgid "Eritrea"
+msgstr "Eritreia"
+
+#: patient/models.py:80
+msgid "Spain"
+msgstr "Espanha"
+
+#: patient/models.py:81
+msgid "Ethiopia"
+msgstr "Etiópia"
+
+#: patient/models.py:82
+msgid "Finland"
+msgstr "Finlândia"
+
+#: patient/models.py:83
+msgid "Fiji"
+msgstr "Fiji"
+
+#: patient/models.py:84
+msgid "Falkland Islands (Malvinas)"
+msgstr "Ilhas Falkland (Malvinas)"
+
+#: patient/models.py:85
+msgid "Micronesia"
+msgstr "Micronésia"
+
+#: patient/models.py:86
+msgid "Faroe Islands"
+msgstr "Ilhas Faroé"
+
+#: patient/models.py:87
+#, fuzzy
+#| msgid "Cancel"
+msgid "France"
+msgstr "França"
+
+#: patient/models.py:88
+msgid "France Metropolitan"
+msgstr "França Metropolitana"
+
+#: patient/models.py:89
+msgid "Gabon"
+msgstr "Gabão"
+
+#: patient/models.py:90
+msgid "United Kingdom (Great Britain)"
+msgstr "Reino Unido (Grã-Bretanha)"
+
+#: patient/models.py:91
+msgid "Grenada"
+msgstr "Granada"
+
+#: patient/models.py:92
+msgid "Georgia"
+msgstr "Geórgia"
+
+#: patient/models.py:93
+msgid "French Guiana"
+msgstr "Guiana Francesa"
+
+#: patient/models.py:94
+msgid "Ghana"
+msgstr "Gana"
+
+#: patient/models.py:95
+msgid "Gibraltar"
+msgstr "Gibraltar"
+
+#: patient/models.py:96
+msgid "Greenland"
+msgstr "Gronelândia"
+
+#: patient/models.py:97
+msgid "Gambia"
+msgstr "Gâmbia"
+
+#: patient/models.py:98
+msgid "Guinea"
+msgstr "Guiné"
+
+#: patient/models.py:99
+msgid "Guadeloupe"
+msgstr "Guadalupe"
+
+#: patient/models.py:100
+msgid "Equatorial Guinea"
+msgstr "Guiné Equatorial"
+
+#: patient/models.py:101
+msgid "Greece"
+msgstr "Grécia"
+
+#: patient/models.py:102
+msgid "South Georgia and the South Sandwich Islands"
+msgstr "Ilhas Geórgia do Sul e Sandwich do Sul"
+
+#: patient/models.py:103
+msgid "Guatemala"
+msgstr "Guatemala"
+
+#: patient/models.py:104
+msgid "Guam"
+msgstr "Guam"
+
+#: patient/models.py:105
+msgid "Guinea-Bissau"
+msgstr "Guiné-Bissau"
+
+#: patient/models.py:106
+msgid "Guyana"
+msgstr "Guiana"
+
+#: patient/models.py:107
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+#: patient/models.py:108
+msgid "Heard & McDonald Islands"
+msgstr "Ilha Heard e as Ilhas McDonald"
+
+#: patient/models.py:109
+msgid "Honduras"
+msgstr "Honduras"
+
+#: patient/models.py:110
+msgid "Croatia"
+msgstr "Croácia"
+
+#: patient/models.py:111
+msgid "Haiti"
+msgstr "Haiti"
+
+#: patient/models.py:112
+msgid "Hungary"
+msgstr "Hungria"
+
+#: patient/models.py:113
+msgid "Indonesia"
+msgstr "Indonésia"
+
+#: patient/models.py:114
+msgid "Ireland"
+msgstr "Irlanda"
+
+#: patient/models.py:115
+msgid "Israel"
+msgstr "Israel"
+
+#: patient/models.py:116
+msgid "India"
+msgstr "Índia"
+
+#: patient/models.py:117
+msgid "British Indian Ocean Territory"
+msgstr "Território Britânico do Oceano Índico"
+
+#: patient/models.py:118
+msgid "Iraq"
+msgstr "Iraque"
+
+#: patient/models.py:119
+msgid "Islamic Republic of Iran"
+msgstr "República Islâmica do Irão"
+
+#: patient/models.py:120
+msgid "Iceland"
+msgstr "Islândia"
+
+#: patient/models.py:121
+msgid "Italy"
+msgstr "Itália"
+
+#: patient/models.py:122
+msgid "Jamaica"
+msgstr "Jamaica"
+
+#: patient/models.py:123
+msgid "Jordan"
+msgstr "Jordânia"
+
+#: patient/models.py:124
+msgid "Japan"
+msgstr "Japão"
+
+#: patient/models.py:125
+msgid "Kenya"
+msgstr "Quénia"
+
+#: patient/models.py:126
+msgid "Kyrgyzstan"
+msgstr "Quirguistão"
+
+#: patient/models.py:127
+msgid "Cambodia"
+msgstr "Camboja"
+
+#: patient/models.py:128
+msgid "Kiribati"
+msgstr "Kiribati"
+
+#: patient/models.py:129
+msgid "Comoros"
+msgstr "Comores"
+
+#: patient/models.py:130
+msgid "Saint Kitts and Nevis"
+msgstr "Saint Kitts e Nevis"
+
+#: patient/models.py:131
+msgid "Korea, Democratic People's Republic of"
+msgstr "Coreia, República Popular Democrática da"
+
+#: patient/models.py:132
+msgid "Korea, Republic of"
+msgstr "Coreia, República da"
+
+#: patient/models.py:133
+msgid "Kuwait"
+msgstr "Kuwait"
+
+#: patient/models.py:134
+msgid "Cayman Islands"
+msgstr "Ilhas Cayman"
+
+#: patient/models.py:135
+msgid "Kazakhstan"
+msgstr "Cazaquistão"
+
+#: patient/models.py:136
+msgid "Lao People's Democratic Republic"
+msgstr "Laos, República Democrática Popular do"
+
+#: patient/models.py:137
+msgid "Lebanon"
+msgstr "Líbano"
+
+#: patient/models.py:138
+msgid "Saint Lucia"
+msgstr "Santa Lúcia"
+
+#: patient/models.py:139
+msgid "Liechtenstein"
+msgstr "Liechtenstein"
+
+#: patient/models.py:140
+msgid "Sri Lanka"
+msgstr "Sri Lanka"
+
+#: patient/models.py:141
+msgid "Liberia"
+msgstr "Libéria"
+
+#: patient/models.py:142
+msgid "Lesotho"
+msgstr "Lesoto"
+
+#: patient/models.py:143
+msgid "Lithuania"
+msgstr "Lituânia"
+
+#: patient/models.py:144
+msgid "Luxembourg"
+msgstr "Luxemburgo"
+
+#: patient/models.py:145
+msgid "Latvia"
+msgstr "Letónia"
+
+#: patient/models.py:146
+msgid "Libyan Arab Jamahiriya"
+msgstr "Jamahiriya Árabe Líbia"
+
+#: patient/models.py:147
+msgid "Morocco"
+msgstr "Marrocos"
+
+#: patient/models.py:148
+msgid "Monaco"
+msgstr "Monaco"
+
+#: patient/models.py:149
+msgid "Moldova, Republic of"
+msgstr "Moldávia, República de"
+
+#: patient/models.py:150
+msgid "Madagascar"
+msgstr "Madagascar"
+
+#: patient/models.py:151
+msgid "Marshall Islands"
+msgstr "Ilhas Marshall"
+
+#: patient/models.py:152
+msgid "Mali"
+msgstr "Mali"
+
+#: patient/models.py:153
+msgid "Mongolia"
+msgstr "Mongólia"
+
+#: patient/models.py:154
+msgid "Myanmar"
+msgstr "Myanmar"
+
+#: patient/models.py:155
+msgid "Macau"
+msgstr "Macau"
+
+#: patient/models.py:156
+msgid "Northern Mariana Islands"
+msgstr "Ilhas Marianas do Norte"
+
+#: patient/models.py:157
+msgid "Martinique"
+msgstr "Martinica"
+
+#: patient/models.py:158
+msgid "Mauritania"
+msgstr "Mauritânia"
+
+#: patient/models.py:159
+#, fuzzy
+#| msgid "Montserrat"
+msgid "Monserrat"
+msgstr "Montserrat"
+
+#: patient/models.py:160
+msgid "Malta"
+msgstr "Malta"
+
+#: patient/models.py:161
+msgid "Mauritius"
+msgstr "Maurícia"
+
+#: patient/models.py:162
+msgid "Maldives"
+msgstr "Maldivas"
+
+#: patient/models.py:163
+msgid "Malawi"
+msgstr "Malawi"
+
+#: patient/models.py:164
+msgid "Mexico"
+msgstr "México"
+
+#: patient/models.py:165
+msgid "Malaysia"
+msgstr "Malásia"
+
+#: patient/models.py:166
+msgid "Mozambique"
+msgstr "Moçambique"
+
+#: patient/models.py:167
+msgid "Namibia"
+msgstr "Namíbia"
+
+#: patient/models.py:168
+msgid "New Caledonia"
+msgstr "Nova Caledónia"
+
+#: patient/models.py:169
+msgid "Niger"
+msgstr "Níger"
+
+#: patient/models.py:170
+msgid "Norfolk Island"
+msgstr "Ilha Norfolk"
+
+#: patient/models.py:171
+msgid "Nigeria"
+msgstr "Nigéria"
+
+#: patient/models.py:172
+msgid "Nicaragua"
+msgstr "Nicarágua"
+
+#: patient/models.py:173
+msgid "Netherlands"
+msgstr "Países Baixos"
+
+#: patient/models.py:174
+msgid "Norway"
+msgstr "Noruega"
+
+#: patient/models.py:175
+msgid "Nepal"
+msgstr "Nepal"
+
+#: patient/models.py:176
+msgid "Nauru"
+msgstr "Nauru"
+
+#: patient/models.py:177
+msgid "Niue"
+msgstr "Niue"
+
+#: patient/models.py:178
+msgid "New Zealand"
+msgstr "Nova Zelândia"
+
+#: patient/models.py:179
+msgid "Oman"
+msgstr "Omã"
+
+#: patient/models.py:180
+msgid "Panama"
+msgstr "Panamá"
+
+#: patient/models.py:181
+msgid "Peru"
+msgstr "Peru"
+
+#: patient/models.py:182
+msgid "French Polynesia"
+msgstr "Polinésia Francesa"
+
+#: patient/models.py:183
+msgid "Papua New Guinea"
+msgstr "Papua Nova Guiné"
+
+#: patient/models.py:184
+msgid "Philippines"
+msgstr "Filipinas"
+
+#: patient/models.py:185
+msgid "Pakistan"
+msgstr "Paquistão"
+
+#: patient/models.py:186
+msgid "Poland"
+msgstr "Polônia"
+
+#: patient/models.py:187
+msgid "St. Pierre & Miquelon"
+msgstr "Saint Pierre e Miquelon"
+
+#: patient/models.py:188
+msgid "Pitcairn"
+msgstr "Pitcairn"
+
+#: patient/models.py:189
+msgid "Puerto Rico"
+msgstr "Porto Rico"
+
+#: patient/models.py:190
+msgid "Portugal"
+msgstr "Portugal"
+
+#: patient/models.py:191
+msgid "Palau"
+msgstr "Palau"
+
+#: patient/models.py:192
+msgid "Paraguay"
+msgstr "Paraguai"
+
+#: patient/models.py:193
+msgid "Qatar"
+msgstr "Qatar"
+
+#: patient/models.py:194
+msgid "Reunion"
+msgstr "Reunião"
+
+#: patient/models.py:195
+msgid "Romania"
+msgstr "Romênia"
+
+#: patient/models.py:196
+msgid "Russian Federation"
+msgstr "Federação Russa"
+
+#: patient/models.py:197
+msgid "Rwanda"
+msgstr "Rwanda"
+
+#: patient/models.py:198
+msgid "Saudi Arabia"
+msgstr "Arábia Saudita"
+
+#: patient/models.py:199
+msgid "Solomon Islands"
+msgstr "Ilhas Salomão"
+
+#: patient/models.py:200
+msgid "Seychelles"
+msgstr "Seychelles"
+
+#: patient/models.py:201
+msgid "Sudan"
+msgstr "Sudão"
+
+#: patient/models.py:202
+msgid "Sweden"
+msgstr "Suécia"
+
+#: patient/models.py:203
+msgid "Singapore"
+msgstr "Singapura"
+
+#: patient/models.py:204
+msgid "St. Helena"
+msgstr "Santa Helena (território)"
+
+#: patient/models.py:205
+msgid "Slovenia"
+msgstr "Eslovénia"
+
+#: patient/models.py:206
+msgid "Svalbard & Jan Mayen Islands"
+msgstr "Ilhas Svalbard e Jan Mayen"
+
+#: patient/models.py:207
+msgid "Slovakia"
+msgstr "Eslováquia"
+
+#: patient/models.py:208
+msgid "Sierra Leone"
+msgstr "Serra Leoa"
+
+#: patient/models.py:209
+msgid "San Marino"
+msgstr "San Marino"
+
+#: patient/models.py:210
+msgid "Senegal"
+msgstr "Senegal"
+
+#: patient/models.py:211
+msgid "Somalia"
+msgstr "Somália"
+
+#: patient/models.py:212
+msgid "Suriname"
+msgstr "Suriname"
+
+#: patient/models.py:213
+msgid "Sao Tome & Principe"
+msgstr "São Tomé e Príncipe"
+
+#: patient/models.py:214
+msgid "El Salvador"
+msgstr "El Salvador"
+
+#: patient/models.py:215
+msgid "Syrian Arab Republic"
+msgstr "República Árabe Síria"
+
+#: patient/models.py:216
+msgid "Swaziland"
+msgstr "Suazilândia"
+
+#: patient/models.py:217
+msgid "Turks & Caicos Islands"
+msgstr "Ilhas Turks e Caicos"
+
+#: patient/models.py:218
+msgid "Chad"
+msgstr "Chade"
+
+#: patient/models.py:219
+msgid "French Southern Territories"
+msgstr "Territórios Franceses do Sul"
+
+#: patient/models.py:220
+msgid "Togo"
+msgstr "Togo"
+
+#: patient/models.py:221
+msgid "Thailand"
+msgstr "Tailândia"
+
+#: patient/models.py:222
+msgid "Tajikistan"
+msgstr "Tadjiquistão"
+
+#: patient/models.py:223
+msgid "Tokelau"
+msgstr "Tokelau"
+
+#: patient/models.py:224
+msgid "Turkmenistan"
+msgstr "Turquemenistão"
+
+#: patient/models.py:225
+msgid "Tunisia"
+msgstr "Tunísia"
+
+#: patient/models.py:226
+msgid "Tonga"
+msgstr "Tonga"
+
+#: patient/models.py:227
+msgid "East Timor"
+msgstr "Timor Leste"
+
+#: patient/models.py:228
+msgid "Turkey"
+msgstr "Turquia"
+
+#: patient/models.py:229
+msgid "Trinidad & Tobago"
+msgstr "Trinidad e Tobago"
+
+#: patient/models.py:230
+msgid "Tuvalu"
+msgstr "Tuvalu"
+
+#: patient/models.py:231
+msgid "Taiwan, Province of China"
+msgstr "Taiwan, Província da China"
+
+#: patient/models.py:232
+msgid "Tanzania, United Republic of"
+msgstr "Tanzânia, República Unida da"
+
+#: patient/models.py:233
+msgid "Ukraine"
+msgstr "Ucrânia"
+
+#: patient/models.py:234
+msgid "Uganda"
+msgstr "Uganda"
+
+#: patient/models.py:235
+msgid "United States Minor Outlying Islands"
+msgstr "Ilhas Menores Distantes dos Estados Unidos"
+
+#: patient/models.py:236
+msgid "United States of America"
+msgstr "Estados Unidos da América"
+
+#: patient/models.py:237
+msgid "Uruguay"
+msgstr "Uruguai"
+
+#: patient/models.py:238
+msgid "Uzbekistan"
+msgstr "Uzbequistão"
+
+#: patient/models.py:239
+msgid "Vatican City State (Holy See)"
+msgstr "Estado da Cidade do Vaticano (Santa Sé)"
+
+#: patient/models.py:240
+msgid "St. Vincent & the Grenadines"
+msgstr "São Vicente e Granadinas"
+
+#: patient/models.py:241
+msgid "Venezuela"
+msgstr "Venezuela"
+
+#: patient/models.py:242
+msgid "British Virgin Islands"
+msgstr "Ilhas Virgens Britânicas"
+
+#: patient/models.py:243
+msgid "United States Virgin Islands"
+msgstr "Ilhas Virgens Americanas"
+
+#: patient/models.py:244
+msgid "Viet Nam"
+msgstr "Vietname"
+
+#: patient/models.py:245
+msgid "Vanuatu"
+msgstr "Vanuatu"
+
+#: patient/models.py:246
+msgid "Wallis & Futuna Islands"
+msgstr "Ilhas Wallis e Futuna"
+
+#: patient/models.py:247
+msgid "Samoa"
+msgstr "Samoa"
+
+#: patient/models.py:248
+msgid "Yemen"
+msgstr "Iémen"
+
+#: patient/models.py:249
+msgid "Mayotte"
+msgstr "Mayotte"
+
+#: patient/models.py:250
+msgid "Yugoslavia"
+msgstr "Iugoslávia"
+
+#: patient/models.py:251
+msgid "South Africa"
+msgstr "África do Sul"
+
+#: patient/models.py:252
+msgid "Zambia"
+msgstr "Zâmbia"
+
+#: patient/models.py:253
+msgid "Zaire"
+msgstr "Zaire"
+
+#: patient/models.py:254
+msgid "Zimbabwe"
+msgstr "Zimbabwe"
+
+#: patient/models.py:255
+msgid "Unknown or unspecified country"
+msgstr "País desconhecido ou não especificado"
+
+#: patient/models.py:261
 msgid "Fill date can not be bigger than today's date."
 msgstr "Data de preenchimento não pode ser maior que a data de hoje."
 
-#: patient/models.py:27
+#: patient/models.py:269
 #, python-format
 msgid "CPF %(CPF)s invalid"
 msgstr "CPF %(CPF)s não é válido"
 
-#: patient/models.py:34
+#: patient/models.py:276
 msgid "Date of birth can't be greater than today date."
 msgstr "Data de nascimento não pode ser maior que a data de hoje."
 
-#: patient/models.py:175
+#: patient/models.py:417
 msgid "Cell phone"
 msgstr "Celular"
 
-#: patient/models.py:176
+#: patient/models.py:418
 msgid "Home phone"
 msgstr "Residencial"
 
-#: patient/models.py:177
+#: patient/models.py:419
 msgid "Business"
 msgstr "Comercial"
 
-#: patient/models.py:178
+#: patient/models.py:420
 msgid "Main"
 msgstr "Principal"
 
-#: patient/models.py:179
+#: patient/models.py:421
 msgid "Business fax"
 msgstr "Fax comercial"
 
-#: patient/models.py:180
+#: patient/models.py:422
 msgid "Home fax"
 msgstr "Fax residencial"
 
-#: patient/models.py:181
+#: patient/models.py:423
 msgid "Pager"
 msgstr ""
 
-#: patient/models.py:182
+#: patient/models.py:424
 msgid "Other"
 msgstr "Outros"
 
-#: patient/models.py:213
+#: patient/models.py:455
 msgid "Schooling of the patient"
 msgstr "Escolaridade do participante"
 
-#: patient/models.py:215
+#: patient/models.py:457
 msgid "Schooling of the householder"
 msgstr "Escolaridade do chefe de família"
 
-#: patient/models.py:402
+#: patient/models.py:654
 msgid "token id: "
 msgstr ""
 
@@ -755,31 +1716,32 @@ msgstr "*Aparelho independente ou parte da geladeira duplex."
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: patient/tests.py:309
+#: patient/tests/tests_orig.py:317
 msgid " is not valid"
 msgstr " não é válido"
 
-#: patient/tests.py:430 patient/tests.py:449 patient/tests.py:457
+#: patient/tests/tests_orig.py:438 patient/tests/tests_orig.py:457
+#: patient/tests/tests_orig.py:465
 msgid "Social class was not calculated"
 msgstr "Classe Social não calculada"
 
-#: patient/tests.py:447 patient/views.py:249
+#: patient/tests/tests_orig.py:455 patient/views.py:249
 msgid "Social demographic data successfully written."
 msgstr "Dados sociodemográficos gravados com sucesso."
 
-#: patient/tests.py:460
+#: patient/tests/tests_orig.py:468
 msgid "Less than 1 pack"
 msgstr "Menos de 1 maço"
 
-#: patient/tests.py:463
+#: patient/tests/tests_orig.py:471
 msgid "Sporadically"
 msgstr "Esporadicamente"
 
-#: patient/tests.py:466
+#: patient/tests/tests_orig.py:474
 msgid "Less than 1 year"
 msgstr "Menos de 1 ano"
 
-#: patient/tests.py:500 patient/views.py:277
+#: patient/tests/tests_orig.py:508 patient/views.py:279
 msgid "Social history successfully recorded."
 msgstr "História social gravada com sucesso."
 
@@ -803,72 +1765,72 @@ msgstr ""
 "Classe Social não calculada, pois nem todos oscampos necessários para o "
 "cálculo foram preenchidos."
 
-#: patient/views.py:279
+#: patient/views.py:281
 msgid "The combination is not allowed."
-msgstr ""
+msgstr "Esta combinação é inválida."
 
-#: patient/views.py:781
+#: patient/views.py:778
 msgid "Diagnosis details successfully changed."
 msgstr "Detalhes do diagnóstico alterados com sucesso."
 
-#: patient/views.py:787
+#: patient/views.py:784
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr "Data incorreta. Utilize o formato dd/mm/yyyy."
 
-#: patient/views.py:808
+#: patient/views.py:805
 msgid "Medical evaluation successfully deleted."
 msgstr "Avaliação médica removida com sucesso."
 
-#: patient/views.py:821
+#: patient/views.py:818
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr "Diagnóstico já existente nesta avaliação médica."
 
-#: patient/views.py:854
+#: patient/views.py:851
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr "Diagnóstico não pode ser removido. Remova os exames antes."
 
-#: patient/views.py:859
+#: patient/views.py:856
 msgid "Diagnosis successfully deleted."
 msgstr "Diagnóstico removido com sucesso."
 
-#: patient/views.py:906 patient/views.py:977
+#: patient/views.py:903 patient/views.py:974
 msgid "Exam successfully saved."
 msgstr "Exame salvo com sucesso."
 
-#: patient/views.py:922 patient/views.py:987
+#: patient/views.py:919 patient/views.py:984
 msgid "It is not possible to save exam without files."
 msgstr "Não é possível salvar exame sem arquivos."
 
-#: patient/views.py:1057
+#: patient/views.py:1054
 msgid "Exam successfully deleted."
 msgstr "Exame removido com sucesso."
 
-#: patient/views.py:1081
+#: patient/views.py:1078
 msgid "Attachment successfully deleted."
 msgstr "Anexo removido com sucesso."
 
-#: patient/views.py:1227 patient/views.py:1415
+#: patient/views.py:1224 patient/views.py:1412
 msgid "Fill deleted successfully"
 msgstr "Preenchimento removido com sucesso"
 
-#: patient/views.py:1229 patient/views.py:1417
+#: patient/views.py:1226 patient/views.py:1414
 msgid "Error trying to delete"
 msgstr "Erro ao deletar o preenchimento"
 
-#: patient/views.py:1283
+#: patient/views.py:1280
 msgid "Not available filling - tokens table not started"
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: patient/views.py:1288
+#: patient/views.py:1285
 msgid "Not available filling - questionnaire not active"
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: patient/views.py:1293
+#: patient/views.py:1290
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: patient/views.py:1302
+#: patient/views.py:1299
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"

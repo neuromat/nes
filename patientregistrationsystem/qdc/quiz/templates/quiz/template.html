@@ -40,6 +40,18 @@
             }).
             mask("99/99/9999");
         });
+
+        jQuery(document).ready(function($) {
+           if (window.history && window.history.pushState) {
+
+            window.history.pushState('forward', null, null);
+
+            $(window).on('popstate', function() {
+               window.history.go(-3);
+            });
+          }
+        });
+
     </script>
 
     <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -59,7 +71,7 @@
 
     <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.6.3/css/font-awesome.min.css' %}">
 
-    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    <script type="text/javascript" src="{% url 'javascript_catalog' %}"></script>
 
     <style type="text/css">
 

@@ -1,3 +1,5 @@
+from django.urls import reverse
+
 from custom_user.models import UserProfile
 import re
 from django.shortcuts import redirect
@@ -14,4 +16,4 @@ class PasswordChangeMiddleware:
 
             zm, created = UserProfile.objects.get_or_create(user=request.user)
             if zm.force_password_change:
-                return redirect('django.contrib.auth.views.password_change')
+                return redirect(reverse('password_change'))

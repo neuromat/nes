@@ -3,6 +3,7 @@ from patient.models import Gender, Payment, FleshTone, Religion, Schooling, Amou
     AlcoholPeriod
 from patient.views import *
 from django.contrib.auth.models import User
+from patient.tests.tests_orig import UtilTests
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -72,7 +73,11 @@ class TelephoneFormValidation(TestCase):
         self.user.is_superuser = True
         self.user.save()
 
-        phone_type = Telephone.objects.create(type='HO', changed_by_id=self.user.id, patient_id=1)
+        util = UtilTests()
+
+        self.patient = util.create_patient(changed_by=self.user)
+
+        phone_type = Telephone.objects.create(type='HO', changed_by_id=self.user.id, patient_id=self.patient.id)
         self.data = {
             'number': '123456789',
             'type': phone_type.type,
@@ -126,7 +131,7 @@ class SocialDemographicDataFormValidation(TestCase):
 
         self.data = {
             'natural_of': 'São Paulo',
-            'citizenship': 'Brasil',
+            'citizenship': 'BR',
             'profession': 'Estudante',
             'occupation': 'Study',
             'religion': religion.id,
@@ -157,7 +162,7 @@ class SocialDemographicDataFormValidation(TestCase):
         socialdemodata = SocialDemographicDataForm(data=self.data)
         self.assertTrue(socialdemodata.is_valid())
 
-        self.assertEqual(socialdemodata.cleaned_data['social_class'], '')
+        self.assertEqual(socialdemodata.cleaned_data['social_class'], "")
 
     # Test if the form is invalid if one field is passed with a different format defined by the form to it
     def test_SocialDemographicData_is_not_valid(self):
@@ -205,12 +210,15 @@ class SocialHistoryFormValidation(TestCase):
     # Test if the form of a non-smoker patient is valid and the dependent field doesn't have any value
     def test_SocialHistory_is_valid_with_non_smoker_patient(self):
         self.data["smoker"] = False
+        self.data["amount_cigarettes"] = None
         socialhistory = SocialHistoryDataForm(data=self.data)
         self.assertTrue(socialhistory.is_valid())
 
     # Test if the form of a non-alcoholic patient is valid and the dependent fields don't have any value
     def test_SocialHistory_is_valid_with_non_alcoholic_patient(self):
         self.data["alcoholic"] = False
+        self.data["alcohol_frequency"] = None
+        self.data["alcohol_period"] = None
         socialhistory = SocialHistoryDataForm(data=self.data)
         self.assertTrue(socialhistory.is_valid())
 
@@ -223,6 +231,31 @@ class SocialHistoryFormValidation(TestCase):
     def test_SocialHistory_is_not_valid(self):
         socialhistory = SocialHistoryDataForm()
         self.assertFalse(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_smoker_yes_field_selected_is_valid(self):
+        data = {'smoker': True}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_smoker_no_field_selected_is_valid(self):
+        data = {'smoker': False}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_alcoholic_yes_field_selected_is_valid(self):
+        data = {'alcoholic': True}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_alcoholic_no_field_selected_is_valid(self):
+        data = {'alcoholic': False}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
+
+    def test_SocialHistory_with_only_drugs_choice_selected_is_valid(self):
+        data = {'drugs': 'faz'}
+        socialhistory = SocialHistoryDataForm(data=data)
+        self.assertTrue(socialhistory.is_valid())
 
 
 # Tests about the form of medical record

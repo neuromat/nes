@@ -31,7 +31,8 @@ from experiment.models import Experiment, Group, Subject, \
 
 from patient.management.commands.import_icd import import_classification_of_diseases
 from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
-    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse, Telephone
+    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse, Telephone, \
+    MaritalStatus
 from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
     patient_update, patient_view, restore_patient, reverse, check_limesurvey_access
@@ -91,14 +92,11 @@ class UtilTests:
         except ObjectDoesNotExist:
             gender = Gender.objects.create(name='Masculino')
 
-        p_mock = Patient()
-        p_mock.name = name
-        p_mock.date_birth = '2001-01-15'
-        p_mock.cpf = faker.ssn()  # TODO: make loop to guarantee unique patient cpf
-        p_mock.gender = gender
-        p_mock.changed_by = changed_by
-        p_mock.save()
-        return p_mock
+        # TODO: make loop to guarantee unique patient cpf
+        return Patient.objects.create(
+            name=name, date_birth=faker.date(), cpf=faker.ssn(), gender=gender, changed_by=changed_by,
+            marital_status=MaritalStatus.objects.create(name=faker.word())
+        )
 
     @staticmethod
     def create_telephone(patient, changed_by):
@@ -399,6 +397,25 @@ class PatientFormValidation(TestCase):
         self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
+    def test_anonymous_patient_create(self):
+        """
+        Testa inclusao de participante com campos obrigatórios quando este paciente é anônimo
+        """
+
+        data = {'anonymous': True,
+                'date_birth': '01/02/1995',
+                'gender': self.data["gender"],
+                'telephone_set-TOTAL_FORMS': '3',
+                'telephone_set-INITIAL_FORMS':'0',
+                'telephone_set-MAX_NUM_FORMS': ''}
+
+        self.client.post(reverse(PATIENT_NEW), data, follow=True)
+        self.assertEqual(Patient.objects.filter(
+            date_birth='1995-02-01',
+            gender=self.data["gender"],
+            name=None,
+            cpf=None).count(), 1)
+
     def fill_social_demographic_data(self):
         """ Criar uma opcao de Schooling """
         school = Schooling.objects.create(name='Fundamental Completo')
@@ -483,6 +500,94 @@ class PatientFormValidation(TestCase):
         self.data['alcohol_frequency'] = alcohol_frequency.pk
         self.data['alcohol_period'] = alcohol_period.pk
         self.data['drugs'] = 'ja_fez'
+
+    def test_smoker_patient_can_not_be_ex_smoker(self):
+        name = 'smoker_patient_ES'
+        self.data['name'] = name
+
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+        self.data['smoker'] = True
+        self.data['ex_smoker'] = True
+        self.data['currentTab'] = 2
+
+        response = self.client.post(reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertNotContains(response, _('Social history successfully recorded.'))
+
+    def test_non_smoker_patient_can_not_fill_amount_of_cigarettes(self):
+        name = 'non_smoker_AC'
+        self.data['name'] = name
+
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+
+        amount_cigarettes = AmountCigarettes.objects.create(name=_('Less than 1 pack'))
+        amount_cigarettes.save()
+
+        self.data['smoker'] = False
+        self.data['amount_cigarettes'] = amount_cigarettes.pk
+        self.data['currentTab'] = 2
+
+        response = self.client.post(reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertNotContains(response, _('Social history successfully recorded.'))
+
+    def test_non_alcoholic_patient_can_not_fill_alcohol_frequency(self):
+        name = 'non_alcoholic_AF'
+        self.data['name'] = name
+
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+
+        alcohol_frequency = AlcoholFrequency.objects.create(name=_('Sporadically'))
+        alcohol_frequency.save()
+
+        self.data['alcoholic'] = False
+        self.data['alcohol_frequency'] = alcohol_frequency.pk
+        self.data['currentTab'] = 2
+
+        response = self.client.post(reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertNotContains(response, _('Social history successfully recorded.'))
+
+    def test_non_alcoholic_patient_can_not_fill_alcohol_period(self):
+        name = 'non_alcoholic_AP'
+        self.data['name'] = name
+
+        self.fill_management_form()
+
+        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+
+        # Prepare to test social history data tab
+        patient_to_update = Patient.objects.filter(name=name).first()
+
+        alcohol_period= AlcoholPeriod.objects.create(name=_('Less than 1 year'))
+        alcohol_period.save()
+
+        self.data['smoker'] = False
+        self.data['alcohol_period'] = alcohol_period.pk
+        self.data['currentTab'] = 2
+
+        response = self.client.post(reverse('patient_edit', args=(patient_to_update.pk,)), self.data, follow=True)
+        self.assertEqual(Patient.objects.filter(name=name).count(), 1)
+        self.assertNotContains(response, _('Social history successfully recorded.'))
 
     def test_patient_social_history_data(self):
         """
@@ -809,7 +914,7 @@ class MedicalRecordFormValidation(TestCase):
         self.data['doctor'] = 'Dr Medico'
         self.data['exam_site'] = 'Hospital'
         self.data['doctor_register'] = '1111'
-        self.data['action'] = 'upload'
+        self.data['action'] = 'save'
         self.data['date'] = '10/05/2005'
 
         if test_file:
@@ -1022,17 +1127,11 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 3)
 
-        self.data['action'] = ''
         response = self.client.post(
             reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 4)
-
-        response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         self.assertGreaterEqual(ComplementaryExam.objects.all().count(), 1)
-        self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 5)
+        self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 4)
 
     def create_complementary_exam(self, patient_mock, medical_record_mock, diagnosis_mock):
         """
@@ -1060,13 +1159,6 @@ class MedicalRecordFormValidation(TestCase):
 
         # Tests for exam edit method
         complementary_exam = ComplementaryExam.objects.all().first()
-
-        self.fill_exam_record(test_file=False)
-        self.data['action'] = ''
-        response = self.client.post(
-            reverse('exam_edit', args=(patient_mock.pk, medical_record_mock.pk, complementary_exam.pk,)), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(ComplementaryExam.objects.all().count(), count_exams)
 
         self.fill_exam_record()
         self.data['action'] = 'save'
@@ -1653,9 +1745,10 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         os.remove(filename)
 
     def test_translate_data_from_fixtures(self):
-        filename = os.path.join(settings.BASE_DIR,
-                                os.path.join("patient", os.path.join("data_migrations",
-                                                                     "0006_translate_data_into_english.json")))
+        filename = os.path.join(
+            settings.BASE_DIR,
+            os.path.join("patient", os.path.join("data_migrations", "0006_translate_data_into_english.json"))
+        )
         # Does not display "Installed fixtures message"
         stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
 

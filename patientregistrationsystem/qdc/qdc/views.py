@@ -141,7 +141,6 @@ def upgrade_nes(request):
         new_version_tag = \
             sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
 
-
         repo.remotes.origin.fetch()
 
         git.checkout(new_version_tag)

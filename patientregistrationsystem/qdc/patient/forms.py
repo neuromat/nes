@@ -7,8 +7,6 @@ from django.forms.widgets import Textarea
 
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile, \
     QuestionnaireResponse
-from patient.quiz_widget import SelectBoxCountries, SelectBoxState
-from configuration.models import LocalInstitution
 
 # pylint: disable=E1101
 # pylint: disable=E1103
@@ -18,7 +16,6 @@ class PatientForm(ModelForm):
     def __init__(self, data=None, *args, **kwargs):
         super(PatientForm, self).__init__(data, *args, **kwargs)
         self.fields['zipcode'].widget.attrs['onBlur'] = 'pesquisacep(this.value);'
-        # The default country will be the one defined in LocalInstitution
         self.fields['country'].initial = 'BR'
 
     anonymous = forms.BooleanField(required=False,
@@ -48,14 +45,14 @@ class PatientForm(ModelForm):
             'rg': TextInput(attrs={'class': 'form-control'}),
             'marital_status': Select(attrs={'class': 'form-control'}),
 
-            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'country': Select(attrs={'class': 'form-control'}),
             'zipcode': TextInput(attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
             'street': TextInput(attrs={'class': 'form-control'}),
             'address_number': TextInput(attrs={'class': 'form-control'}),
             'address_complement': TextInput(attrs={'class': 'form-control'}),
             'district': TextInput(attrs={'class': 'form-control'}),
             'city': TextInput(attrs={'class': 'form-control'}),
-            'state': SelectBoxState(attrs={'data-country': 'id_country'}),
+            'state': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={
                 'class': 'form-control', 'type': 'email', 'data-error': _('Incorrect e-mail'),
                 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
@@ -99,7 +96,7 @@ class SocialDemographicDataForm(ModelForm):
                   'social_class']
         widgets = {
             'natural_of': TextInput(attrs={'class': 'form-control'}),
-            'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'citizenship': Select(attrs={'class': 'form-control'}),
             'patient_schooling': Select(attrs={'class': 'form-control'}),
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),

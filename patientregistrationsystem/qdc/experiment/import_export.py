@@ -5,13 +5,19 @@ import json
 from json import JSONDecodeError
 from os import path
 
+from functools import reduce
+from operator import or_
+
 import networkx as nx
 from django.core.management import call_command
 from django.apps import apps
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from experiment.models import Group, ResearchProject, Experiment, \
-    Keyword, Component, Manufacturer, Material
+    Keyword, Component
+from experiment.import_export_model_relations import ONE_TO_ONE_RELATION, FOREIGN_RELATIONS, MODEL_ROOT_NODES, \
+    EXPERIMENT_JSON_FILES, PATIENT_JSON_FILES, JSON_FILES_DETACHED_MODELS, PRE_LOADED_MODELS_FOREIGN_KEYS, \
+    PRE_LOADED_MODELS_INHERITANCE, PRE_LOADED_MODELS_NOT_EDITABLE, PRE_LOADED_PATIENT_MODEL
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -27,32 +33,24 @@ class ExportExperiment:
     def __del__(self):
         shutil.rmtree(self.temp_dir)
 
-    def generate_fixture(self, filename, element, key_path):
+    def _generate_fixture(self, filename, elements, app='experiment.'):
         sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-
-        call_command('dump_object', 'experiment.' + element, '--query',
-                     '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
-                     )
-
+        sys.stdout = open(path.join(self.temp_dir, filename + '.json'), 'w')
+        call_command(
+            'dump_object', app + elements[0], '--query',
+            '{"' + elements[1] + '": ' + str([self.experiment.id]) + '}'
+        )
         sys.stdout = sysout
 
-    def generate_patient_fixture(self, filename, element, key_path):
-        sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-        call_command('dump_object', 'patient.' + element, '--query',
-                     '{"' + key_path + '": ' + str([self.experiment.id]) + '}'
-                     )
-        sys.stdout = sysout
-
-    def generate_detached_fixture(self, filename, element, key_path, parent_model, filename_parent):
-        with open(path.join(self.temp_dir, filename_parent)) as file:
+    def _generate_detached_fixture(self, filename, elements):
+        with open(path.join(self.temp_dir, elements[3] + '.json')) as file:
             data = json.load(file)
-        parent_ids = [dict_['pk'] for index, dict_ in enumerate(data) if dict_['model'] == parent_model]
+        parent_ids = [dict_['pk'] for index, dict_ in enumerate(data) if dict_['model'] == elements[2]]
 
         sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, filename), 'w')
-        call_command('dump_object', 'experiment.' + element, '--query', '{"' + key_path + '": ' + str(parent_ids) + '}')
+        sys.stdout = open(path.join(self.temp_dir, filename + '.json'), 'w')
+        call_command(
+            'dump_object', 'experiment.' + elements[0], '--query', '{"' + elements[1] + '": ' + str(parent_ids) + '}')
         sys.stdout = sysout
 
     def _remove_auth_user_model_from_json(self, filename):
@@ -141,76 +139,12 @@ class ExportExperiment:
             f.write(json.dumps(serialized))
 
     def export_all(self):
-        key_path = 'component_ptr_id__experiment_id__in'
-
-        self.generate_fixture('experimentfixture.json', 'experiment', 'id__in')
-        self.generate_fixture('componentconfiguration.json', 'componentconfiguration',
-                              'component_id__experiment_id__in')
-        # self.generate_fixture('dataconfigurationtree.json', 'dataconfigurationtree',
-        #                       'component_configuration__component__experiment_id__in')
-        self.generate_fixture('group.json', 'group', 'experiment_id__in')
-        self.generate_fixture('block.json', 'block', key_path)
-        self.generate_fixture('instruction.json', 'instruction', key_path)
-        self.generate_fixture('pause.json', 'pause', key_path)
-        self.generate_fixture('questionnaire.json', 'questionnaire', key_path)
-        self.generate_fixture('stimulus.json', 'stimulus', key_path)
-        self.generate_fixture('task.json', 'task', key_path)
-        self.generate_fixture('task_experiment.json', 'taskfortheexperimenter', key_path)
-        self.generate_fixture('eeg.json', 'eeg', key_path)
-        self.generate_fixture('emg.json', 'emg', key_path)
-        self.generate_fixture('tms.json', 'tms', key_path)
-        self.generate_fixture('digital_game_phase.json', 'digitalgamephase', key_path)
-        self.generate_fixture('generic_data_collection.json', 'genericdatacollection', key_path)
-        self.generate_fixture('participant.json', 'subjectofgroup', 'group_id__experiment_id__in')
-
-        # Patient
-        self.generate_patient_fixture('telephone.json', 'telephone',
-                                      'patient__subject__subjectofgroup__group__experiment_id__in')
-        self.generate_patient_fixture('socialhistorydata.json', 'socialhistorydata',
-                                      'patient__subject__subjectofgroup__group__experiment_id__in')
-        self.generate_patient_fixture('socialdemographicdata.json', 'socialdemographicdata',
-                                      'patient__subject__subjectofgroup__group__experiment_id__in')
-        self.generate_patient_fixture('diagnosis.json', 'diagnosis',
-                                      'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
-
-        # TMS
-        self.generate_fixture('tms_device.json', 'tmsdevicesetting', 'tms_setting__experiment_id__in')
-        self.generate_fixture('tms_setting.json', 'tmssetting', 'experiment_id__in')
-
-        # EEG
-        self.generate_fixture('eeg_amplifier_setting.json', 'eegamplifiersetting', 'eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_solution_setting.json', 'eegsolutionsetting', 'eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_filter_setting.json', 'eegfiltersetting', 'eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_electrode_layout_setting.json', 'eegelectrodelayoutsetting',
-                              'eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_electrode_position_setting.json', 'eegelectrodepositionsetting',
-                              'eeg_electrode_layout_setting__eeg_setting__experiment_id__in')
-        self.generate_fixture('eeg_setting.json', 'eegsetting', 'experiment_id__in')
-
-        # EMG
-        self.generate_fixture('emg_setting.json', 'emgsetting', 'experiment_id__in')
-        self.generate_fixture('emg_ad_converter_setting.json', 'emgadconvertersetting',
-                              'emg_setting__experiment_id__in')
-        self.generate_fixture('emg_digital_filter_setting.json', 'emgdigitalfiltersetting',
-                              'emg_setting__experiment_id__in')
-        self.generate_fixture('emg_pre_amplifier_filter_setting.json', 'emgpreamplifierfiltersetting',
-                              'emg_preamplifier_filter_setting__emg_electrode_setting__emg_setting__experiment_id__in')
-        self.generate_fixture('emg_amplifier_analog_filter_setting.json','emganalogfiltersetting',
-                              'emg_electrode_setting__emg_electrode_setting__emg_setting__experiment_id__in')
-        self.generate_fixture('emg_electrodeplacementsetting.json', 'emgelectrodeplacementsetting',
-                              'emg_electrode_setting__emg_setting__experiment_id__in')
-        self.generate_detached_fixture(
-            'emg_intramuscularplacement.json', 'emgintramuscularplacement', 'emgelectrodeplacement_ptr__in',
-            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
-        )
-        self.generate_detached_fixture(
-            'emg_surfaceplacement.json', 'emgsurfaceplacement', 'emgelectrodeplacement_ptr__in',
-            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
-        )
-        self.generate_detached_fixture(
-            'emg_needleplacement.json', 'emgneedleplacement', 'emgelectrodeplacement_ptr__in',
-            'experiment.emgelectrodeplacement', 'emg_electrodeplacementsetting.json'
-        )
+        for key, value in EXPERIMENT_JSON_FILES.items():
+            self._generate_fixture(key, value)
+        for key, value in PATIENT_JSON_FILES.items():
+            self._generate_fixture(key, value, 'patient.')
+        for key, value in JSON_FILES_DETACHED_MODELS.items():
+            self._generate_detached_fixture(key, value)
 
         # Generate fixture to keywords of the research project
         sysout = sys.stdout
@@ -219,24 +153,9 @@ class ExportExperiment:
                      '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
         sys.stdout = sysout
 
-        # TODO: refactor to use this list with generate_fixture
-        list_of_files = ['experimentfixture.json', 'componentconfiguration.json', 'group.json', 'block.json',
-                         'instruction.json', 'pause.json', 'questionnaire.json', 'stimulus.json', 'task.json',
-                         'task_experiment.json', 'eeg.json', 'emg.json', 'tms.json', 'digital_game_phase.json',
-                         'generic_data_collection.json', 'keywords.json', 'participant.json', 'telephone.json',
-                         'socialhistorydata.json', 'socialdemographicdata.json',
-                         # 'dataconfigurationtree.json',
-                         'diagnosis.json', 'tms_device.json', 'tms_setting.json', 'eeg_amplifier_setting.json',
-                         'eeg_solution_setting.json', 'eeg_filter_setting.json', 'eeg_electrode_layout_setting.json',
-                         'eeg_electrode_position_setting.json', 'eeg_setting.json', 'emg_setting.json',
-                         'emg_ad_converter_setting.json', 'emg_digital_filter_setting.json',
-                         'emg_pre_amplifier_filter_setting.json', 'emg_amplifier_analog_filter_setting.json',
-                         'emg_electrodeplacementsetting.json', 'emg_intramuscularplacement.json',
-                         'emg_surfaceplacement.json', 'emg_needleplacement.json']
-
         fixtures = []
-        for filename in list_of_files:
-            fixtures.append(path.join(self.temp_dir, filename))
+        for filename in {**EXPERIMENT_JSON_FILES, **PATIENT_JSON_FILES, **JSON_FILES_DETACHED_MODELS}:
+            fixtures.append(path.join(self.temp_dir, filename + '.json'))
 
         sysout = sys.stdout
         sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
@@ -254,19 +173,20 @@ class ExportExperiment:
 
 
 class ImportExperiment:
-    BAD_JSON_FILE_ERROR = 1
+    BAD_JSON_FILE_ERROR_CODE = 1
     FIXTURE_FILE_NAME = 'experiment.json'
 
     def __init__(self, file_path):
         self.file_path = file_path
         self.temp_dir = tempfile.mkdtemp()
+        self.data = []
         self.last_objects_before_import = dict()
         self.new_objects = dict()
 
     def __del__(self):
         shutil.rmtree(self.temp_dir)
 
-    def _set_last_objects_before_import(self, data, research_project_id):
+    def _set_last_objects_before_import(self, research_project_id):
         """Identify last objects to deduct after import, so
         we can identify the new objects imported
         :param data: list created with json.loads from json file with
@@ -276,10 +196,10 @@ class ImportExperiment:
         if not research_project_id:
             self.last_objects_before_import['research_project'] = ResearchProject.objects.last()
         has_groups = next(
-            (index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.group'), None
+            (index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'experiment.group'), None
         )
         has_components = next(
-            (index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.component'), None
+            (index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'experiment.component'), None
         )
         if has_groups:
             self.last_objects_before_import['group'] = Group.objects.last()
@@ -288,11 +208,17 @@ class ImportExperiment:
 
     @staticmethod
     def _include_human_readables(components):
+        """Add the titles of steps (components) of experimental protocol to display
+        in import log page
+        """
         human_readables = dict(Component.COMPONENT_TYPES)
         for i, component in enumerate(components):
             components[i]['human_readable'] = str(human_readables[component['component_type']])
 
     def _collect_new_objects(self):
+        """Collect new objects to display to user some main objects that was
+        imported
+        """
         last_experiment = Experiment.objects.last()
         self.new_objects['experiment_id'] = last_experiment.id
         self.new_objects['experiment_title'] = last_experiment.title
@@ -303,13 +229,19 @@ class ImportExperiment:
         else:
             self.new_objects['research_id'] = None
         if 'group' in self.last_objects_before_import:
-            last_group_before_import = self.last_objects_before_import['group'].id
-            self.new_objects['groups_count'] = Group.objects.filter(id__gt=last_group_before_import).count()
+            if self.last_objects_before_import['group'] is not None:
+                last_group_before_import = self.last_objects_before_import['group'].id
+                self.new_objects['groups_count'] = Group.objects.filter(id__gt=last_group_before_import).count()
+            else:
+                self.new_objects['groups_count'] = Group.objects.count()
         else:
             self.new_objects['groups_count'] = None
         if 'component' in self.last_objects_before_import:
-            last_component_before_import = self.last_objects_before_import['component'].id
-            component_queryset = Component.objects.filter(id__gt=last_component_before_import)
+            if self.last_objects_before_import['component'] is not None:
+                last_component_before_import = self.last_objects_before_import['component'].id
+                component_queryset = Component.objects.filter(id__gt=last_component_before_import)
+            else:
+                component_queryset = Component.objects.all()
             components = component_queryset.values('component_type').annotate(count=Count('component_type'))
             self._include_human_readables(components)
             self.new_objects['components'] = list(components)
@@ -317,48 +249,45 @@ class ImportExperiment:
         else:
             self.new_objects['components'] = None
 
-    @staticmethod
-    def _update_research_project_pk(data, id_):
+    def _update_research_project_pk(self, id_):
         if id_:
             research_project_index = next(
-                index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.researchproject'
+                index for index, dict_ in enumerate(self.data) if dict_['model'] == 'experiment.researchproject'
             )
-            del(data[research_project_index])
+            del(self.data[research_project_index])
             experiment_index = next(
-                index for index, dict_ in enumerate(data) if dict_['model'] == 'experiment.experiment'
+                index for index, dict_ in enumerate(self.data) if dict_['model'] == 'experiment.experiment'
             )
-            data[experiment_index]['fields']['research_project'] = id_
+            self.data[experiment_index]['fields']['research_project'] = id_
 
-    @staticmethod
-    def _verify_keywords(data):
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'experiment.keyword']
+    def _verify_keywords(self):
+        indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'experiment.keyword']
         next_keyword_id = Keyword.objects.last().id + 1 if Keyword.objects.count() > 0 else 1
         indexes_of_keywords_already_updated = []
         for i in indexes:
-            # Get the keyword and check on database if the keyword already exists
+            # Get the keyword and check on database if the keyword already exists.
             # If exists, update the pk of this keyword to the correspondent in the database
             # otherwise, update the pk of this keyword to next_keyword_id
-            old_keyword_id = data[i]['pk']
-            old_keyword_string = data[i]['fields']['name']
+            old_keyword_id = self.data[i]['pk']
+            old_keyword_string = self.data[i]['fields']['name']
             keyword_on_database = Keyword.objects.filter(name=old_keyword_string)
 
             if keyword_on_database.count() > 0:
-                data[i]['pk'] = keyword_on_database.first().id
+                self.data[i]['pk'] = keyword_on_database.first().id
             else:
-                data[i]['pk'] = next_keyword_id
+                self.data[i]['pk'] = next_keyword_id
                 next_keyword_id += 1
 
             # Update all the references to the old keyword to the new one
-            for (index_row, dict_) in enumerate(data):
+            for (index_row, dict_) in enumerate(self.data):
                 if dict_['model'] == 'experiment.researchproject':
                     for (keyword_index, keyword) in enumerate(dict_['fields']['keywords']):
                         if keyword == old_keyword_id and keyword_index not in indexes_of_keywords_already_updated:
-                            data[index_row]['fields']['keywords'][keyword_index] = data[i]['pk']
+                            self.data[index_row]['fields']['keywords'][keyword_index] = self.data[i]['pk']
                             indexes_of_keywords_already_updated.append(keyword_index)
 
-    @staticmethod
-    def _update_patients_stuff(data):
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
+    def _update_patients_stuff(self, patients_to_update):
+        indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'patient.patient']
 
         # Update patient codes
         # TODO (Refactor): Patient model has function to generate random patient code
@@ -369,41 +298,41 @@ class ImportExperiment:
                 numerical_part_code = int(last_patient_code.split('P')[1])
                 next_numerical_part = numerical_part_code + 1
                 for i in indexes:
-                    data[i]['fields']['code'] = 'P' + str(next_numerical_part)
-                    next_numerical_part += 1
+                    if str(self.data[i]['pk']) not in patients_to_update:
+                        self.data[i]['fields']['code'] = 'P' + str(next_numerical_part)
+                        next_numerical_part += 1
 
         for i in indexes:
-            data[i]['fields']['cpf'] = None
+            if str(self.data[i]['pk']) not in patients_to_update:
+                if Patient.objects.filter(cpf=self.data[i]['fields']['cpf']):
+                    self.data[i]['fields']['cpf'] = None
 
-    @staticmethod
-    def _update_references_to_user(data, request):
+    def _update_references_to_user(self, request):
         models_with_user_reference = [
             ('patient.patient', 'changed_by'), ('patient.telephone', 'changed_by'),
             ('patient.medicalrecorddata', 'record_responsible')
         ]
         for model in models_with_user_reference:
-            indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in model[0]]
+            indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] in model[0]]
             for i in indexes:
-                data[i]['fields'][model[1]] = request.user.id
+                self.data[i]['fields'][model[1]] = request.user.id
 
-    @staticmethod
-    def _solve_limey_survey_reference(data, survey_index):
+    def _solve_limey_survey_reference(self, survey_index):
         min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
         if min_limesurvey_id >= 0:
             new_limesurvey_id = -99
         else:
             min_limesurvey_id -= 1
             new_limesurvey_id = min_limesurvey_id
-        data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
+        self.data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
 
-    def _make_dummy_reference_to_limesurvey(self, data):
-        survey_indexes = [index for index, dict_ in enumerate(data) if dict_['model'] == 'survey.survey']
+    def _make_dummy_reference_to_limesurvey(self):
+        survey_indexes = [index for index, dict_ in enumerate(self.data) if dict_['model'] == 'survey.survey']
         for survey_index in survey_indexes:
-            self._solve_limey_survey_reference(data, survey_index)
+            self._solve_limey_survey_reference(survey_index)
 
-    @staticmethod
-    def _update_survey_stuff(data):
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'survey.survey']
+    def _update_survey_stuff(self):
+        indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'survey.survey']
 
         if indexes:
             # Update survey codes
@@ -417,82 +346,126 @@ class ImportExperiment:
                 new_limesurvey_id = min_limesurvey_id
 
             for i in indexes:
-                data[i]['fields']['code'] = next_code
+                self.data[i]['fields']['code'] = next_code
                 next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
                 new_limesurvey_id -= 1
-                data[i]['fields']['lime_survey_id'] = new_limesurvey_id
+                self.data[i]['fields']['lime_survey_id'] = new_limesurvey_id
 
-    @staticmethod
-    def _keep_manufacturer(data):
-        dependent_models = [
-            ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
-            ('experiment.software', 'manufacturer')
-        ]
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in 'experiment.manufacturer']
+    def _keep_objects_pre_loaded(self):
+        """For objects in fixtures initially loaded, check if the objects
+        that are to be are already there. This is to avoid duplication of that objects.
+        The objects checked here are the ones that can be edited. Objects that are not
+        editable are simply ignored when updating indexes in _update_pks method.
+        """
+        for model, dependent_models in PRE_LOADED_MODELS_FOREIGN_KEYS.items():
+            indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == model[0]]
+            app_model = model[0].split('.')
+            for i in indexes:
+                model_class = apps.get_model(app_model[0], app_model[1])
+                filter_ = {}
+                for field in model[1]:
+                    filter_[field] = self.data[i]['fields'][field]
+                if not filter_:  # If not filter_, instance have only relational fields
+                    instance = model_class.objects.first()
+                else:
+                    instance = model_class.objects.filter(**filter_).first()
+                if instance:
+                    # Deal with models that inherit from Multi-table inheritance mode
+                    if self.data[i]['model'] in PRE_LOADED_MODELS_INHERITANCE:
+                        app_model_inheritade = PRE_LOADED_MODELS_INHERITANCE[self.data[i]['model']][0].split('.')
+                        model_class_inheritade = apps.get_model(app_model_inheritade[0], app_model_inheritade[1])
+                        index_inheritade = [index for (index, dict_inheritance) in enumerate(self.data) if
+                                            dict_inheritance['model'] == PRE_LOADED_MODELS_INHERITANCE[self.data[i][
+                                                'model']][0] and dict_inheritance['pk'] == self.data[i]['pk']][0]
+                        filter_inheritade = {}
+                        for field in PRE_LOADED_MODELS_INHERITANCE[self.data[i]['model']][1]:
+                            filter_inheritade[field] = self.data[index_inheritade]['fields'][field]
+                        instance_inheritade = model_class_inheritade.objects.filter(**filter_inheritade).first()
+                        if instance_inheritade:
+                            self.data[index_inheritade]['pk'] = instance.id
+                        else:
+                            break
+                    self.data[i]['pk'], old_id = instance.id, self.data[i]['pk']
+                    # Finally, assign the old id to the relation
+                    for dependent_model in dependent_models:
+                        dependent_indexes = [
+                            index for (index, dict_) in enumerate(self.data)
+                            if dict_['model'] == dependent_model[0] and dict_['fields'][dependent_model[1]] == old_id
+                        ]
+                        for dependent_index in dependent_indexes:
+                            self.data[dependent_index]['fields'][dependent_model[1]] = self.data[i]['pk']
 
+    def _keep_patients_pre_loaded(self, patients_to_update):
+        for model, dependent_models in PRE_LOADED_PATIENT_MODEL.items():
+            indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == model[0]]
+            for i in indexes:
+                list_of_filters = [Q(**{key: val}) for key, val in [('cpf', self.data[i]['fields']['cpf']),
+                                                                    ('name', self.data[i]['fields']['name'])]]
+
+                instance = Patient.objects.filter(reduce(or_, list_of_filters)).first()
+                if instance and str(instance.id) in patients_to_update:
+                    self.data[i]['pk'], old_id = instance.id, self.data[i]['pk']
+                    for dependent_model in dependent_models:
+                        dependent_indexes = [
+                            index for (index, dict_) in enumerate(self.data)
+                            if dict_['model'] == dependent_model[0] and dict_['fields'][dependent_model[1]] == old_id
+                        ]
+                        for dependent_index in dependent_indexes:
+                            self.data[dependent_index]['fields'][dependent_model[1]] = self.data[i]['pk']
+
+    def _check_for_duplicates_of_participants(self):
+        try:
+            with open(self.file_path) as f:
+                data = json.load(f)
+        except (ValueError, JSONDecodeError):
+            return self.BAD_JSON_FILE_ERROR_CODE, 'Bad json file. Aborting import experiment.', None
+
+        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
+
+        list_of_participants_with_conflict = []
         for i in indexes:
-            # TODO: when and if change Manufacturer model name field to unique
-            #  change to 'objects.get'
-            instance = Manufacturer.objects.filter(name=data[i]['fields']['name']).first()
-            if instance:
-                data[i]['pk'], old_id = instance.id, data[i]['pk']
-                for model in dependent_models:
-                    dependent_indexes = [
-                        index for (index, dict_) in enumerate(data)
-                        if dict_['model'] == model[0] and dict_['fields'][model[1]] == old_id
-                    ]
-                    for dependent_index in dependent_indexes:
-                        data[dependent_index]['fields'][model[1]] = data[i]['pk']
+            list_of_filters = [Q(**{key: val}) for key, val in [('cpf', data[i]['fields']['cpf']),
+                                                                ('name', data[i]['fields']['name'])]]
 
-    @staticmethod
-    def _keep_material(data):
-        dependent_models = [
-            ('experiment.electrodemodel', 'material'), ('experiment.intramuscularelectrode', 'insulation_material'),
-            ('experiment.eegelectrodecap', 'material'), ('experiment.coilmodel', 'material')
-        ]
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] in 'experiment.material']
+            patient_already_in_database = Patient.objects.filter(reduce(or_, list_of_filters)).first()
 
-        for i in indexes:
-            instance = Material.objects.filter(
-                name=data[i]['fields']['name'], description=data[i]['fields']['description']
-            ).first()
-            if instance:
-                data[i]['pk'], old_id = instance.id, data[i]['pk']
-                for model in dependent_models:
-                    dependent_indexes = [
-                        index for (index, dict_) in enumerate(data)
-                        if dict_['model'] == model[0] and dict_['fields'][model[1]] == old_id
-                    ]
-                    for dependent_index in dependent_indexes:
-                        data[dependent_index]['fields'][model[1]] = data[i]['pk']
+            if patient_already_in_database:
+                list_of_participants_with_conflict.append(
+                    {'id_db': patient_already_in_database.pk,
+                     'name_db': patient_already_in_database.name,
+                     'code_db': patient_already_in_database.code,
+                     'cpf_db': patient_already_in_database.cpf,
+                     'id_new': data[i]['pk'],
+                     'name_new': data[i]['fields']['name'],
+                     'code_new': data[i]['fields']['code'],
+                     'cpf_new': data[i]['fields']['cpf'],
+                     'selected': None})
 
-    def _keep_objects_pre_loaded(self, data):
-        self._keep_manufacturer(data)
-        self._keep_material(data)
+        return 0, '', list_of_participants_with_conflict
 
-    @staticmethod
-    def _verify_classification_of_diseases(data):
-        indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.diagnosis']
+    def _verify_classification_of_diseases(self):
+        indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'patient.diagnosis']
         for index in indexes:
             class_of_diseases = ClassificationOfDiseases.objects.filter(
-                code=data[index]['fields']['classification_of_diseases'][0]
+                code=self.data[index]['fields']['classification_of_diseases'][0]
             ).first()
             if not class_of_diseases:
                 ClassificationOfDiseases.objects.create(
-                    code=data[index]['fields']['classification_of_diseases'][0],
+                    code=self.data[index]['fields']['classification_of_diseases'][0],
                     description='(imported, not recognized)',
                     abbreviated_description='(imported, not recognized)'
                 )
 
-    def _manage_last_stuffs_before_importing(self, request, data, research_project_id):
-        self._make_dummy_reference_to_limesurvey(data)
-        self._update_research_project_pk(data, research_project_id)
-        self._verify_keywords(data)
-        self._update_patients_stuff(data)
-        self._update_references_to_user(data, request)
-        self._update_survey_stuff(data)
-        self._keep_objects_pre_loaded(data)
-        self._verify_classification_of_diseases(data)
+    def _manage_last_stuffs_before_importing(self, request, research_project_id, patients_to_update):
+        self._make_dummy_reference_to_limesurvey()
+        self._update_research_project_pk(research_project_id)
+        self._verify_keywords()
+        self._update_references_to_user(request)
+        self._update_survey_stuff()
+        self._keep_objects_pre_loaded()
+        self._keep_patients_pre_loaded(patients_to_update)
+        self._update_patients_stuff(patients_to_update)
+        self._verify_classification_of_diseases()
 
     @staticmethod
     def _get_first_available_id():
@@ -507,248 +480,92 @@ class ImportExperiment:
                             last_id = last_model_id if last_id < last_model_id else last_id
         return last_id + 1
 
-    def _update_pks(self, DG, data, successor, next_id):
-        # TODO: see if it's worth to put this list in class level
-        if data[successor]['model'] not in [
-            # component types
-            'experiment.block', 'experiment.instruction', 'experiment.pause', 'experiment.questionnaire',
-            'experiment.stimulus', 'experiment.task', 'experiment.taskfortheexperimenter', 'experiment.eeg',
-            'experiment.emg', 'experiment.tms', 'experiment.digitalgamephase', 'experiment.genericdatacollection',
-
-            'experiment.tmsdevicesetting',
-            'experiment.tmsdevice', 'experiment.eegelectrodelayoutsetting', 'experiment.eegelectrodenet',
-            'experiment.eegfiltersetting', 'experiment.eegamplifiersetting', 'experiment.amplifier',
-            'experiment.eegsolutionsetting', 'experiment.adconverter', 'experiment.emgadconvertersetting',
-            'experiment.emgdigitalfiltersetting', 'experiment.emgelectrodeplacementsetting',
-            'experiment.emgamplifiersetting', 'experiment.emganalogfiltersetting',
-            'experiment.emgpreamplifiersetting', 'experiment.emgpreamplifierfiltersetting',
-            'experiment.emgintramuscularplacement', 'experiment.emgsurfaceplacement', 'experiment.emgneedleplacement',
-        ]:
-            if not DG.node[successor]['updated']:
-                data[successor]['pk'] = next_id
+    def _update_pks(self, digraph, successor, next_id):
+        """Recursive function to update models pks based on a directed graph representing
+        model relations
+        """
+        if self.data[successor]['model'] not in ONE_TO_ONE_RELATION and not digraph.node[successor]['pre_loaded']:
+            if not digraph.node[successor]['updated']:
+                self.data[successor]['pk'] = next_id
 
                 # Patch for repeated next_id in same models
-                model = data[successor]['model']
-                updated_ids = [dict_['pk'] for (index, dict_) in enumerate(data) if dict_['model'] == model]
+                model = self.data[successor]['model']
+                updated_ids = [dict_['pk'] for (index, dict_) in enumerate(self.data) if dict_['model'] == model]
                 if next_id in updated_ids:
-                    # Prevent from duplicated pks in one model: this is done in the recursive path
-                    # TODO: verify better way to update nex_id
+                    # Prevent from duplicated pks in same model: this is done in the recursive path
+                    # TODO: verify better way to update next_id
                     next_id = max(updated_ids) + 1
-                    data[successor]['pk'] = next_id
-                DG.node[successor]['updated'] = True
-        for predecessor in DG.predecessors(successor):
-            if 'relation' in DG[predecessor][successor]:
-                relation = DG[predecessor][successor]['relation']
-                data[predecessor]['fields'][relation] = data[successor]['pk']
+                    self.data[successor]['pk'] = next_id
+                digraph.node[successor]['updated'] = True
+        for predecessor in digraph.predecessors(successor):
+            if 'relation' in digraph[predecessor][successor]:
+                relation = digraph[predecessor][successor]['relation']
+                self.data[predecessor]['fields'][relation] = self.data[successor]['pk']
             else:
-                data[predecessor]['pk'] = data[successor]['pk']
+                self.data[predecessor]['pk'] = self.data[successor]['pk']
             next_id += 1
-            self._update_pks(DG, data, predecessor, next_id)
+            self._update_pks(digraph, predecessor, next_id)
 
-    def _build_graph(self, request, data, research_project_id):
-        model_root_nodes = [
-            'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
-            'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
-            'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
-            'experiment.muscle', 'experiment.standardizationsystem',
-            'patient.patient'
-        ]
-        foreign_relations = {
-            'experiment.researchproject': [['', '']],
-            'experiment.experiment': [['experiment.researchproject', 'research_project']],
-            'experiment.group': [
-                ['experiment.experiment', 'experiment'], ['experiment.component', 'experimental_protocol']
-            ],
-            'experiment.component': [['experiment.experiment', 'experiment']],
-            'experiment.componentconfiguration': [
-                ['experiment.component', 'component'], ['experiment.component', 'parent']
-            ],
-            'experiment.questionnaire': [['survey.survey', 'survey']],
-            'survey.survey': [['', '']],
-
-            'experiment.digitalgamephase': [
-                ['experiment.contexttree', 'context_tree'],
-                ['experiment.softwareversion', 'software_version']
-            ],
-            'experiment.contexttree': [['experiment.experiment', 'experiment']],
-
-            # 'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
-            # 'experiment.informationtype': [['', '']],
-
-            'experiment.stimulus': [['experiment.stimulus_type', 'stimulus_type']],
-            'experiment.stimulustype': [['', '']],
-
-            # TMS
-            'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
-            'experiment.tmssetting': [['experiment.experiment', 'experiment']],
-            'experiment.tmsdevicesetting': [
-                ['experiment.coilmodel', 'coil_model'], ['experiment.tmsdevice', 'tms_device']
-            ],
-            'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
-            'experiment.coilshape': [['', '']],
-            'experiment.material': [['', '']],
-            # EEG
-            'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
-            'experiment.eegsetting': [['experiment.experiment', 'experiment']],
-            'experiment.eegelectrodepositionsetting': [
-                ['experiment.electrodemodel', 'electrode_model'],
-                ['experiment.eegelectrodelayoutsetting', 'eeg_electrode_layout_setting'],
-                ['experiment.eegelectrodeposition', 'eeg_electrode_position']
-            ],
-            'experiment.eegelectrodelayoutsetting': [['experiment.eegelectrodenetsystem', 'eeg_electrode_net_system']],
-            'experiment.eegelectrodeposition': [
-                ['experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system']
-            ],
-            'experiment.eegelectrodenetsystem': [
-                ['experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system'],
-                ['experiment.eegelectrodenet', 'eeg_electrode_net']
-            ],
-            'experiment.eegelectrodenet': [['experiment.electrodemodel', 'electrode_model_default']],
-            'experiment.eegfiltersetting': [['experiment.filtertype', 'eeg_filter_type']],
-            'experiment.eegamplifiersetting': [['experiment.amplifier', 'eeg_amplifier']],
-            'experiment.amplifier': [
-                ['experiment.amplifierdetectiontype', 'amplifier_detection_type'],
-                ['experiment.tetheringsystem', 'tethering_system']
-            ],
-            'experiment.eegsolutionsetting': [['experiment.eegsolution', 'eeg_solution']],
-            'experiment.eegsolution': [['experiment.manufacturer', 'manufacturer']],
-            # EMG
-            'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
-            'experiment.emgsetting': [
-                ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
-            ],
-            'experiment.muscle': [['', '']],
-            'experiment.standardizationsystem': [['', '']],
-            'experiment.muscleside': [['experiment.muscle', 'muscle']],
-            'experiment.musclesubdivision': [['experiment.muscle', 'muscle']],
-            'experiment.emgelectrodeplacement': [
-                ['experiment.musclesubdivision', 'muscle_subdivision'],
-                ['experiment.standardizationsystem', 'standardization_system']
-            ],
-            'experiment.emgelectrodesetting': [
-                ['experiment.emgsetting', 'emg_setting'], ['experiment.electrodemodel', 'electrode']
-            ],
-            'experiment.emgpreamplifiersetting': [['experiment.amplifier', 'amplifier']],
-            'experiment.emgelectrodeplacementsetting': [
-                ['experiment.muscleside', 'muscle_side'],
-                ['experiment.emgelectrodeplacement', 'emg_electrode_placement']
-            ],
-            'experiment.softwareversion': [['experiment.software', 'software']],
-            'experiment.software': [['experiment.manufacturer', 'manufacturer']],
-            'experiment.manufacturer': [['', '']],
-            'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
-            'experiment.electrodemodel': [
-                ['experiment.material', 'material'], ['experiment.electrodeconfiguration', 'electrode_configuration']],
-
-            'experiment.emgadconvertersetting': [['experiment.adconverter', 'ad_converter']],
-            'experiment.emgdigitalfiltersetting': [['experiment.filtertype', 'filter_type']],
-            'experiment.filtertype': [['', '']],
-
-            'experiment.tetheringsystem': [['', '']],
-            'experiment.amplifierdetectiontype': [['', '']],
-            'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
-
-            # Participants
-            'experiment.subject': [['patient.patient', 'patient']],
-            'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
-            'patient.patient': [['', '']],
-            'patient.telephone': [['patient.patient', 'patient']],
-            'patient.socialdemographicdata': [['patient.patient', 'patient']],
-            'patient.socialhistorydata': [['patient.patient', 'patient']],
-            'patient.medicalrecorddata': [['patient.patient', 'patient']],
-            'patient.diagnosis': [
-                ['patient.medicalrecorddata', 'medical_record_data'],
-            ],
-            # Data collections
-            # 'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']]
-        }
-        one_to_one_relation = {
-            # Multi table inheritance
-            'experiment.block': 'experiment.component',
-            'experiment.instruction': 'experiment.component',
-            'experiment.pause': 'experiment.component',
-            'experiment.questionnaire': 'experiment.component',
-            'experiment.stimulus': 'experiment.component',
-            'experiment.task': 'experiment.component',
-            'experiment.taskfortheexperimenter': 'experiment.component',
-            'experiment.eeg': 'experiment.component',
-            'experiment.emg': 'experiment.component',
-            'experiment.tms': 'experiment.component',
-            'experiment.digitalgamephase': 'experiment.component',
-            'experiment.genericdatacollection': 'experiment.component',
-            'experiment.tmsdevice': 'experiment.equipment',
-            'experiment.eegelectrodenet': 'experiment.equipment',
-            'experiment.amplifier': 'experiment.equipment',
-            'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
-            'experiment.emgsurfaceplacement': 'experiment.emgelectrodeplacement',
-            'experiment.emgneedleplacement': 'experiment.emgelectrodeplacement',
-            'experiment.adconverter': 'experiment.equipment',
-            # OneToOneField
-            'experiment.tmsdevicesetting': 'experiment.tmssetting',
-            'experiment.eegelectrodelayoutsetting': 'experiment.eegsetting',
-            'experiment.eegfiltersetting': 'experiment.eegsetting',
-            'experiment.eegamplifiersetting': 'experiment.eegsetting',
-            'experiment.eegsolutionsetting': 'experiment.eegsetting',
-            'experiment.emgadconvertersetting': 'experiment.emgsetting',
-            'experiment.emgdigitalfiltersetting': 'experiment.emgsetting',
-            'experiment.emgamplifiersetting': 'experiment.emgelectrodesetting',
-            'experiment.emganalogfiltersetting': 'experiment.emgamplifiersetting',
-            'experiment.emgpreamplifiersetting': 'experiment.emgelectrodesetting',
-            'experiment.emgpreamplifierfiltersetting': 'experiment.emgpreamplifiersetting',
-            'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
-        }
-
-        DG = nx.DiGraph()
-        for index_from, dict_ in enumerate(data):
-            if dict_['model'] in foreign_relations:
+    def _build_digraph(self):
+        digraph = nx.DiGraph()
+        for index_from, dict_ in enumerate(self.data):
+            if dict_['model'] in FOREIGN_RELATIONS:
                 node_from = dict_['model']
-                nodes_to = foreign_relations[node_from]
+                nodes_to = FOREIGN_RELATIONS[node_from]
                 for node_to in nodes_to:
                     index_to = next(
-                        (index_foreign for index_foreign, dict_foreign in enumerate(data)
+                        (index_foreign for index_foreign, dict_foreign in enumerate(self.data)
                          if dict_foreign['model'] == node_to[0] and dict_foreign['pk'] == dict_['fields'][node_to[1]]),
                         None
                     )
                     if index_to is not None:
-                        DG.add_edge(index_from, index_to)
-                        DG[index_from][index_to]['relation'] = node_to[1]
-            if dict_['model'] in one_to_one_relation:
+                        digraph.add_edge(index_from, index_to)
+                        digraph[index_from][index_to]['relation'] = node_to[1]
+            if dict_['model'] in ONE_TO_ONE_RELATION:
                 node_from = dict_['model']
-                node_to = one_to_one_relation[node_from]
+                node_to = ONE_TO_ONE_RELATION[node_from]
                 index_to = next(
-                    (index_inheritade for index_inheritade, dict_inheritade in enumerate(data)
+                    (index_inheritade for index_inheritade, dict_inheritade in enumerate(self.data)
                      if dict_inheritade['model'] == node_to and dict_inheritade['pk'] == dict_['pk']),
                     None
                 )
                 if index_to is not None:
-                    DG.add_edge(index_from, index_to)
+                    digraph.add_edge(index_from, index_to)
 
-        for node in DG.nodes():
-            DG.node[node]['atributes'] = data[node]
-            DG.node[node]['updated'] = False
+        for node in digraph.nodes():
+            digraph.node[node]['atributes'] = self.data[node]
+            digraph.node[node]['updated'] = False
+            if self.data[node]['model'] not in PRE_LOADED_MODELS_NOT_EDITABLE:
+                digraph.node[node]['pre_loaded'] = False
+            else:
+                digraph.node[node]['pre_loaded'] = True
 
+        return digraph
+
+    def _manage_pks(self, digraph):
         next_id = self._get_first_available_id()
-        for model_root_node in model_root_nodes:
-            root_nodes = [index for index, dict_ in enumerate(data) if dict_['model'] == model_root_node]
+        for model_root_node in MODEL_ROOT_NODES:
+            root_nodes = [index for index, dict_ in enumerate(self.data) if dict_['model'] == model_root_node]
             for root_node in root_nodes:
-                self._update_pks(DG, data, root_node, next_id)
+                self._update_pks(digraph, root_node, next_id)
                 next_id += 1
 
-        self._manage_last_stuffs_before_importing(request, data, research_project_id)
-
-    def import_all(self, request, research_project_id=None):
+    def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
         try:
             with open(self.file_path) as f:
-                data = json.load(f)
-                # To import log page
-                self._set_last_objects_before_import(data, research_project_id)
+                self.data = json.load(f)
+                # To Import Log page
+                self._set_last_objects_before_import(research_project_id)
         except (ValueError, JSONDecodeError):
-            return self.BAD_JSON_FILE_ERROR, 'Bad json file. Aborting import experiment.'
+            return self.BAD_JSON_FILE_ERROR_CODE, 'Bad json file. Aborting import experiment.'
 
-        self._build_graph(request, data, research_project_id)
+        digraph = self._build_digraph()
+        self._manage_pks(digraph)
+        self._manage_last_stuffs_before_importing(request, research_project_id, patients_to_update)
+
         with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
-            file.write(json.dumps(data))
+            file.write(json.dumps(self.data))
 
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
 

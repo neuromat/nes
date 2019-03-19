@@ -43,7 +43,7 @@ from experiment.views import experiment_update, upload_file, research_project_up
 from custom_user.views import User
 
 from patient.models import ClassificationOfDiseases
-from patient.tests import UtilTests
+from patient.tests.tests_orig import UtilTests
 
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
@@ -160,10 +160,17 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_tms_setting(experiment):
-        tms_setting = TMSSetting.objects.create(experiment=experiment,
-                                                name='TMS-Setting name',
-                                                description='TMS-Setting description')
-        return tms_setting
+        return TMSSetting.objects.create(experiment=experiment,
+                                         name='TMS-Setting name',
+                                         description='TMS-Setting description')
+
+    @staticmethod
+    def create_tms_device(manufacturer):
+        faker = Factory.create()
+        tms_device = TMSDevice.objects.create(
+            manufacturer=manufacturer, equipment_type=TMSDevice.EQUIPMENT_TYPES[0][0], identification=faker.word(),
+            description=faker.text(), serial_number=faker.ssn()
+        )
 
     @staticmethod
     def create_emg_electrode_setting(emg_setting, electrode_model):
@@ -194,23 +201,17 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_muscle():
-        muscle = Muscle.objects.create(
-            name='Muscle identification'
-        )
-        muscle.save()
-        return muscle
+        return Muscle.objects.create(name='Muscle identification')
 
     @staticmethod
     def create_muscle_subdivision(muscle):
-        muscle_subdivision = MuscleSubdivision.objects.create(
+        return MuscleSubdivision.objects.create(
             name='Muscle subdivision identification',
             anatomy_origin='Anatomy origin description',
             anatomy_insertion='Anatomy insertion description',
             anatomy_function='Anatomy function description',
             muscle=muscle
         )
-        muscle_subdivision.save()
-        return muscle_subdivision
 
     @staticmethod
     def create_muscle_side(muscle):
@@ -222,18 +223,12 @@ class ObjectsFactory(object):
         return muscle_side
 
     @staticmethod
-    def create_emg_electrode_placement():
-
-        standardization_system = ObjectsFactory.create_standardization_system()
-        muscle = ObjectsFactory.create_muscle()
-        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
-        emg_electrode_placement = EMGElectrodePlacement.objects.create(
+    def create_emg_electrode_placement(standardization_system, muscle_subdivision, placement_type):
+        return EMGElectrodePlacement.objects.create(
             standardization_system=standardization_system,
-            muscle_subdivision=muscle_subdivision
+            muscle_subdivision=muscle_subdivision,
+            placement_type=placement_type
         )
-
-        emg_electrode_placement.save()
-        return emg_electrode_placement
 
     @staticmethod
     def create_component(experiment, component_type, identification=None,
@@ -497,14 +492,13 @@ class ObjectsFactory(object):
         return material
 
     @staticmethod
-    def create_eeg_electrode_cap(manufacturer, electrode_model_default):
-        eeg_electrode_cap = EEGElectrodeCap.objects.create(
+    def create_eeg_electrode_cap(manufacturer, electrode_model, material=None):
+        return EEGElectrodeCap.objects.create(
             manufacturer=manufacturer,
             identification="EEG electrode cap identification",
-            electrode_model_default=electrode_model_default
+            electrode_model_default=electrode_model,
+            material=material
         )
-        eeg_electrode_cap.save()
-        return eeg_electrode_cap
 
     @staticmethod
     def create_coil_model(coil_shape):
@@ -646,7 +640,7 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_emg_data_collection_data(data_conf_tree,
-                                            subj_of_group, emg_set):
+                                        subj_of_group, emg_set):
 
         faker = Factory.create()
 
@@ -732,10 +726,7 @@ class ObjectsFactory(object):
     @staticmethod
     def create_stimulus_type():
         faker = Factory.create()
-
-        return StimulusType.objects.create(
-            name=faker.word()
-        )
+        return StimulusType.objects.create(name=faker.word())
 
     @staticmethod
     def create_stimulus_step(stimulus_type,mediafile):
@@ -4331,7 +4322,12 @@ class EMGSettingTest(TestCase):
         tag_emg = Tag.objects.get(name="EMG")
         electrode_model.tags.add(tag_emg)
 
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement()
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
+            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
+        )
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
 
         self.data = {'action': 'save', 'electrode': electrode_model.id,
@@ -4376,7 +4372,12 @@ class EMGSettingTest(TestCase):
 
         emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
 
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement()
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
+            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
+        )
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side)
 
@@ -4441,7 +4442,12 @@ class EMGSettingTest(TestCase):
 
         # remove an emg  amplifier setting
 
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement()
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
+            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
+        )
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side)
         self.data = {'action': 'remove-amplifier'}
