@@ -29,7 +29,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     MuscleSubdivision, EMGElectrodePlacementSetting, StandardizationSystem, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
-    StimulusType, ContextTree, EMGElectrodePlacement, Equipment
+    StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, DataCollection
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -401,7 +401,7 @@ class ExportExperimentTest(TestCase):
             'attachment; filename=%s' % smart_str('experiment.json')
         )
 
-    def test_GET_experiment_export_returns_json_file_wo_user_object(self):
+    def test_GET_experiment_export_returns_json_file_without_user_object(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         data = json.loads(response.content.decode('utf-8'))
         self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
@@ -1505,8 +1505,8 @@ class ImportExperimentTest(TestCase):
     def test_experiment_and_group(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
-        group1 = ObjectsFactory.create_group(experiment)
-        group2 = ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_group(experiment)
 
         self._test_creation_and_linking_between_two_models('experiment.experiment',
                                                            'experiment.group',
@@ -1518,9 +1518,9 @@ class ImportExperimentTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
         root1 = ObjectsFactory.create_block(experiment)
         root2 = ObjectsFactory.create_block(experiment)
-        group1 = ObjectsFactory.create_group(experiment, root1)
-        group2 = ObjectsFactory.create_group(experiment, root2)
-        group3 = ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_group(experiment, root1)
+        ObjectsFactory.create_group(experiment, root2)
+        ObjectsFactory.create_group(experiment)
 
         self._test_creation_and_linking_between_two_models('experiment.group',
                                                            'experiment.block',
@@ -2588,6 +2588,54 @@ class ImportExperimentTest(TestCase):
             self._create_experiment_with_emg_setting(), to_create1=False
         )
 
+    def test_musclesubdivision_and_emgelectrodeplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.musclesubdivision', 'experiment.emgelectrodeplacement', 'muscle_subdivision',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
+
+    def test_standardizationsystem_and_emgelectrodeplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.standardizationsystem', 'experiment.emgelectrodeplacement', 'standardization_system',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
+
+    def test_emgelectrodesetting_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodesetting', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_setting',
+            self._create_experiment_with_emg_setting()
+        )
+
+    def test_muscleside_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
+
+    def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_placement',
+            self._create_experiment_with_emg_setting()
+        )
+
+    def test_emgelectrodeplacement_and_emgintramuscularplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgintramuscularplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), flag1=True  # TODO (NES-908): momentarily put this flag
+        )
+
+    def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), flag1=True, to_create2=False
+        )
+
+    def test_emgelectrodeplacement_and_emgneedleplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgneedleplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), flag1=True
+        )
+
     def test_muscle_and_muscleside(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.muscle', 'experiment.muscleside', 'muscle', self._create_experiment_with_emg_setting(),
@@ -2831,7 +2879,8 @@ class ImportExperimentTest(TestCase):
             (Material, 'description', 1): [(CoilModel, 'material', 1)],
         }
 
-    def _get_pre_loaded_models_tms_not_editable(self):
+    @staticmethod
+    def _get_pre_loaded_models_tms_not_editable():
         return {
             (CoilShape, '', 1): [(CoilModel, 'coil_shape', 1)]
         }
@@ -2928,54 +2977,6 @@ class ImportExperimentTest(TestCase):
         # TODO: test when importing/exporting data collections
         # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
 
-    def test_musclesubdivision_and_emgelectrodeplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.musclesubdivision', 'experiment.emgelectrodeplacement', 'muscle_subdivision',
-            self._create_experiment_with_emg_setting(), to_create1=False
-        )
-
-    def test_standardizationsystem_and_emgelectrodeplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.standardizationsystem', 'experiment.emgelectrodeplacement', 'standardization_system',
-            self._create_experiment_with_emg_setting(), to_create1=False
-        )
-
-    def test_emgelectrodesetting_and_emgelectrodeplacementsetting(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodesetting', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_setting',
-            self._create_experiment_with_emg_setting()
-        )
-
-    def test_muscleside_and_emgelectrodeplacementsetting(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
-            self._create_experiment_with_emg_setting(), to_create1=False
-        )
-
-    def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodeplacement', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_placement',
-            self._create_experiment_with_emg_setting()
-        )
-
-    def test_emgelectrodeplacement_and_emgintramuscularplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodeplacement', 'experiment.emgintramuscularplacement', 'emgelectrodeplacement_ptr',
-            self._create_experiment_with_emg_setting(), flag1=True  # TODO (NES-908): momentarily put this flag
-        )
-
-    def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
-            self._create_experiment_with_emg_setting(), flag1=True, to_create2=False
-        )
-
-    def test_emgelectrodeplacement_and_emgneedleplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodeplacement', 'experiment.emgneedleplacement', 'emgelectrodeplacement_ptr',
-            self._create_experiment_with_emg_setting(), flag1=True
-        )
-
     def test_change_user_references_to_logged_user_before_import_experiment(self):
         patient = UtilTests.create_patient(changed_by=self.user)
         UtilTests.create_telephone(patient, changed_by=self.user)
@@ -3058,3 +3059,53 @@ class ImportExperimentTest(TestCase):
 
     def test_error_loading_fixture_display_error_message(self):
         pass
+
+    def _create_eeg_data_collection_objects(self):
+        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+        eeg_step = ObjectsFactory.create_component(self.experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+        component_configuration = ObjectsFactory.create_component_configuration(self.rootcomponent, eeg_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+        eeg_data = ObjectsFactory.create_eeg_data_collection_data(dct, self.subject_of_group, eeg_setting)
+        ObjectsFactory.create_eeg_data_collection_file(eeg_data)
+
+    def _get_relations(self):
+        return {
+            ComponentConfiguration: [(DataConfigurationTree, 'component_configuration')],
+            # DataConfigurationTree: [(DataConfigurationTree, 'parent')],
+            # DataConfigurationTree: [(EEGData, 'data_configuration_tree')],
+        }
+
+    # Tests for EEG data collections
+    def test_import_eeg_data_collection(self):
+        self._create_minimum_objects_to_test_components()
+        group = ObjectsFactory.create_group(self.experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        self.subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        self._create_eeg_data_collection_objects()
+
+        relations = self._get_relations()
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in relations:
+            self.assertEqual(2, model.objects.count(), model)
+            model_instance = model.objects.last()
+            for dependent_model in relations[model]:
+                self.assertEqual(2, dependent_model[0].objects.count(), dependent_model)
+                dependent_model_instance = dependent_model[0].objects.last()
+                reference = getattr(dependent_model_instance, dependent_model[1])
+                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
+        # TODO: remove file created
