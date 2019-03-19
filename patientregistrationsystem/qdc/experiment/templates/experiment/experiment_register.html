@@ -138,24 +138,26 @@
                     </div>
                 {% endif %}
 
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            {{ experiment_form.is_public }}
-                            <span class="fa fa-share-alt"></span> <label class="control-label">{% trans "Is public" %}</label>
-                            <div class="help-block with-errors"></div>
+                {% if portal != '' %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                {{ experiment_form.is_public }}
+                                <span class="fa fa-share-alt"></span> <label class="control-label">{% trans "Is public" %}</label>
+                                <div class="help-block with-errors"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            {{ experiment_form.data_acquisition_is_concluded }}
-                            <span class="fa fa-upload"></span> <label class="control-label">{% trans "Data acquisition is concluded" %}</label>
-                            <div class="help-block with-errors"></div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                {{ experiment_form.data_acquisition_is_concluded }}
+                                <span class="fa fa-upload"></span> <label class="control-label">{% trans "Data acquisition is concluded" %}</label>
+                                <div class="help-block with-errors"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
@@ -166,7 +168,7 @@
 
             {% if not editing %}
 
-                {% if experiment.is_public or experiment.last_sending %}
+                {% if experiment.is_public and portal != '' or experiment.last_sending and portal != '' %}
 
                     <div class="container span6 offset3 well ">
 

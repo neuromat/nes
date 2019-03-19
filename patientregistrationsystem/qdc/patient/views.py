@@ -24,7 +24,6 @@ from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm,
     ComplementaryExamForm, ExamFileForm
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam, QuestionnaireResponse
-from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -40,28 +39,24 @@ permission_required = partial(permission_required, raise_exception=True)
 @permission_required('patient.add_patient')
 def patient_create(request, template_name="patient/register_personal_data.html"):
     patient_form = PatientForm(request.POST or None)
-
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
     if request.method == "POST":
         patient_form.city = request.POST['city'] if 'city' in request.POST else ""
-        patient_form_is_valid = patient_form.is_valid()
-
         telephone_formset = telephone_inlineformset(request.POST, request.FILES)
-        telephone_formset_is_valid = telephone_formset.is_valid()
 
-        if patient_form_is_valid and telephone_formset_is_valid:
+        if patient_form.is_valid() and telephone_formset.is_valid():
             new_patient = patient_form.save(commit=False)
 
             # Remove leading and trailing white spaces to avoid problems with homonym search.
-            new_patient.name = new_patient.name.strip()
+            if new_patient.name:
+                new_patient.name = new_patient.name.strip()
 
             if not new_patient.cpf:
                 new_patient.cpf = None
 
             new_patient.changed_by = request.user
             new_patient.save()
-
             new_phone_list = telephone_formset.save(commit=False)
 
             for phone in new_phone_list:
@@ -71,6 +66,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
             messages.success(request, _('Personal data successfully written.'))
             return finish_handling_post(request, new_patient.id, 0)
+
         else:
             if request.POST['cpf']:
                 patient_found = Patient.objects.filter(cpf=request.POST['cpf'])
@@ -80,6 +76,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
                         patient_form.errors['cpf'][0] = _("Participant with this CPF has already removed.")
                     else:
                         patient_form.errors['cpf'][0] = _("There is already registered participant with this CPF.")
+
     else:
         telephone_formset = telephone_inlineformset()
 
@@ -88,7 +85,8 @@ def patient_create(request, template_name="patient/register_personal_data.html")
         'telephone_formset': telephone_formset,
         'editing': True,
         'inserting': True,
-        'currentTab': '0'}
+        'currentTab': '0'
+    }
 
     return render(request, template_name, context)
 
@@ -139,7 +137,7 @@ def patient_update_personal_data(request, patient, context):
 
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
-    if patient.name == '':
+    if not patient.name:
         patient_form.fields['anonymous'].widget.attrs['checked'] = True
 
     if request.method == "POST":
@@ -226,7 +224,7 @@ def patient_update_social_demographic_data(request, patient, context):
                         schooling=request.POST['schooling'])
 
                 else:
-                    new_social_demographic_data.social_class = None
+                    new_social_demographic_data.social_class = ""
 
                     # Show message only if any of the fields were filled. Nothing is shown or calculated if none of the
                     # fields were filled.
@@ -249,6 +247,8 @@ def patient_update_social_demographic_data(request, patient, context):
                 messages.success(request, _('Social demographic data successfully written.'))
 
             return finish_handling_post(request, patient.id, 1)
+        else:
+            social_demographic_form.social_class = ""
 
     context.update({
         'social_demographic_form': social_demographic_form,
@@ -275,11 +275,11 @@ def patient_update_social_history(request, patient, context):
                     new_social_history_data.changed_by = request.user
                     new_social_history_data.save()
                     messages.success(request, _('Social history successfully recorded.'))
-                except:
+                except ValueError:
                     messages.error(request, _('The combination is not allowed.'))
             return finish_handling_post(request, patient.id, 2)
-
-
+        else:
+            messages.error(request, _('The combination is not allowed.'))
     context.update({
         'social_history_form': social_history_form,
         'code': patient.code
@@ -371,7 +371,7 @@ def patient_view_personal_data(request, patient, context):
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
     telephone_formset = telephone_inlineformset(instance=patient)
 
-    if patient.name == '':
+    if not patient.name:
         patient_form.fields['anonymous'].widget.attrs['checked'] = True
 
     for field in patient_form.fields:
@@ -380,11 +380,6 @@ def patient_view_personal_data(request, patient, context):
     for form in telephone_formset:
         for field in form.fields:
             form.fields[field].widget.attrs['disabled'] = True
-
-    patient_form.fields['country'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
-    patient_form.fields['state'].widget = SelectBoxStateDisabled(
-        attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
 
     context.update({
         'code': patient.code,
@@ -405,8 +400,8 @@ def patient_view_social_demographic_data(request, patient, context):
     for field in social_demographic_form.fields:
         social_demographic_form.fields[field].widget.attrs['disabled'] = True
 
-    social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
+    # social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
+    #     attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
     context.update({
         'social_demographic_form': social_demographic_form,
@@ -905,19 +900,13 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                     new_file_data.save()
                     messages.success(request, _('Exam successfully saved.'))
 
-                if request.POST['action'] == "upload":
-                    redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
+                if new_medical_record:
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                else:
+                    redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
 
-                    return HttpResponseRedirect(redirect_url + "?status=" + status +
-                                                ("&mr=new" if new_medical_record else ""))
+                return HttpResponseRedirect(redirect_url + "?status=" + status)
 
-                elif request.POST['action'] == "save":
-                    if new_medical_record:
-                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                    else:
-                        redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
-
-                    return HttpResponseRedirect(redirect_url + "?status=" + status)
         else:
             messages.error(request, _('It is not possible to save exam without files.'))
 
@@ -973,16 +962,10 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                         new_file_data.exam = complementary_exam
                         new_file_data.save()
 
-                    if request.POST['action'] == "save":
-                        messages.success(request, _('Exam successfully saved.'))
+                    messages.success(request, _('Exam successfully saved.'))
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                    return HttpResponseRedirect(redirect_url + "?status=" + status)
 
-                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                        return HttpResponseRedirect(redirect_url + "?status=" + status)
-
-                    else:
-                        if request.POST['action'] == 'upload':
-                            exam_file_list = ExamFile.objects.filter(exam=exam_id)
-                            length = exam_file_list.__len__()
             else:
                 messages.error(request, _('It is not possible to save exam without files.'))
 

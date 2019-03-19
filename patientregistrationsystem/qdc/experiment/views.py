@@ -36,7 +36,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q, Min
 from django.apps import apps
 from django.db.models.deletion import ProtectedError
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
@@ -646,6 +646,7 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
     collaborators = ExperimentResearcher.objects.filter(experiment=experiment).order_by('channel_index')
+    portal = settings.PORTAL_API.get("URL")
 
     for field in experiment_form.fields:
         experiment_form.fields[field].widget.attrs['disabled'] = True
@@ -702,20 +703,22 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {"can_change": get_can_change(request.user, experiment.research_project),
-               "experiment": experiment,
-               "last_schedule_of_sending":
-                   ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last(),
-               "experiment_form": experiment_form,
-               "group_list": group_list,
-               "eeg_setting_list": eeg_setting_list,
-               "emg_setting_list": emg_setting_list,
-               "tms_setting_list": tms_setting_list,
-               "context_tree_list": context_tree_list,
-               "research_project": experiment.research_project,
-               "experiment_status_portal": experiment_status_portal,
-               "collaborators": collaborators,
-               }
+    context = {
+        "can_change": get_can_change(request.user, experiment.research_project),
+        "experiment": experiment,
+        "last_schedule_of_sending":
+            ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last(),
+        "experiment_form": experiment_form,
+        "group_list": group_list,
+        "eeg_setting_list": eeg_setting_list,
+        "emg_setting_list": emg_setting_list,
+        "tms_setting_list": tms_setting_list,
+        "context_tree_list": context_tree_list,
+        "research_project": experiment.research_project,
+        "experiment_status_portal": experiment_status_portal,
+        "collaborators": collaborators,
+        "portal": portal
+    }
 
     return render(request, template_name, context)
 
@@ -724,10 +727,9 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 @permission_required('experiment.change_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-
     check_can_change(request.user, experiment.research_project)
-
     group_list = Group.objects.filter(experiment=experiment)
+    portal = settings.PORTAL_API.get("URL")
 
     if request.method == "POST":
         experiment_form = ExperimentForm(request.POST or None, request.FILES, instance=experiment)
@@ -744,11 +746,14 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     else:
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
-    context = {"research_project": experiment.research_project,
-               "experiment_form": experiment_form,
-               "editing": True,
-               "group_list": group_list,
-               "experiment": experiment}
+    context = {
+        "research_project": experiment.research_project,
+        "experiment_form": experiment_form,
+        "editing": True,
+        "group_list": group_list,
+        "experiment": experiment,
+        "portal": portal
+    }
 
     return render(request, template_name, context)
 
@@ -822,9 +827,15 @@ def handle_uploaded_file(file):
 @login_required
 # @permission_required('experiment.import_experiment')  # TODO: add permissons
 def experiment_import(request, template_name='experiment/experiment_import.html', research_project_id=None):
-    if request.method == 'GET':
+    patients_conflicts_resolved = request.session.get('patients_conflicts_resolved') or False
+    patients_to_update = request.POST.getlist('from[]')
+    if patients_to_update:
+        patients_conflicts_resolved = True
+
+    if request.method == 'GET' and not patients_conflicts_resolved:
         return render(request, template_name, context={'research_project_id': research_project_id})
-    if request.method == 'POST':
+
+    if not patients_conflicts_resolved:
         file = request.FILES.get('file')
         if not file:
             messages.warning(request, _('Please select a json file'))
@@ -832,12 +843,50 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
 
         file_name = handle_uploaded_file(file)
         import_experiment = ImportExperiment(file_name)
-        err_code, err_message = import_experiment.import_all(request, research_project_id)
+
+        if not patients_conflicts_resolved:
+            # Deal with patients before trying to import the experiment
+            err_code_patients, err_message_patients, patients_with_conflict = \
+                import_experiment._check_for_duplicates_of_participants()
+
+            if err_code_patients:
+                messages.error(request, _(err_message_patients))
+                if research_project_id:
+                    return HttpResponseRedirect(reverse('experiment_import',
+                                                        kwargs={'research_project_id': research_project_id}))
+                else:
+                    return HttpResponseRedirect(reverse('experiment_import'))
+
+            request.session['patients'] = patients_with_conflict
+            request.session['file_name'] = file_name
+
+            if patients_with_conflict:
+                request.session['patients_conflicts_resolved'] = True
+                if research_project_id:
+                    return render(request, 'experiment/decide_about_patients.html',
+                                  context={'patients': patients_with_conflict})
+                else:
+                    return render(request, 'experiment/decide_about_patients.html',
+                                  context={'patients': patients_with_conflict})
+
+            patients_conflicts_resolved = True
+
+    if patients_conflicts_resolved:
+        file_name = request.session.get('file_name')
+        import_experiment = ImportExperiment(file_name)
+
+        request.session['patients_conflicts_resolved'] = False
+        err_code_experiment, err_message_experiment = \
+            import_experiment.import_all(request, research_project_id, patients_to_update)
         os.remove(file_name)
 
-        if err_code:
-            messages.error(request, _(err_message))
-            return HttpResponseRedirect(reverse('experiment_import'))
+        if err_code_experiment:
+            messages.error(request, _(err_message_experiment))
+            if research_project_id:
+                return HttpResponseRedirect(reverse('experiment_import',
+                                                    kwargs={'research_project_id': research_project_id}))
+            else:
+                return HttpResponseRedirect(reverse('experiment_import'))
 
         if research_project_id:
             messages.success(request, _('Experiment successfully imported.'))
@@ -1413,8 +1462,7 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
     ):
 
         if questionnaire_configuration.number_of_repetitions is not None:
-            fills_per_participant = \
-                questionnaire_configuration.number_of_repetitions
+            fills_per_participant = questionnaire_configuration.number_of_repetitions
             total_fills_needed = num_participants * fills_per_participant
         else:
             fills_per_participant = "Ilimitado"
@@ -1422,9 +1470,7 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 
         amount_of_completed_questionnaires = 0
 
-        questionnaire = Questionnaire.objects.get(
-            id=questionnaire_configuration.component.id
-        )
+        questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
         for subject_response in QuestionnaireResponse.objects.filter(
                 data_configuration_tree__component_configuration=questionnaire_configuration):
@@ -4286,7 +4332,7 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
 
                     localization_system_id = item.split("_")[-1]
 
-                    if localization_system_id not in current_localization_systems:
+                    if int(localization_system_id) not in current_localization_systems:
 
                         # create a new net_system
                         eeg_electrode_net_system = EEGElectrodeNetSystem()
@@ -5043,18 +5089,21 @@ def get_data_collections_from_group(group, data_type=None):
              'icon_class': icon_class['experimental_protocol']}
         )
 
-    list_of_paths = create_list_of_trees(group.experimental_protocol,
-                                         data_type if data_type and data_type != "additional_data" else None)
+    list_of_paths = create_list_of_trees(
+        group.experimental_protocol,
+        data_type if data_type and data_type != "additional_data" else None
+    )
     for path in list_of_paths:
         component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
-        data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
-                                                                  [item[0] for item in path])
-        participant_quantity = \
-            AdditionalData.objects.filter(
-                subject_of_group__group=group,
-                data_configuration_tree_id=data_configuration_tree_id).values(
-                'subject_of_group__subject').distinct().count() if data_type is None or data_type ==\
-                                                                   "additional_data" else None
+        data_configuration_tree_id = list_data_configuration_tree(
+            component_configuration.id,
+            [item[0] for item in path]
+        )
+        participant_quantity = AdditionalData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id
+        ).values('subject_of_group__subject').distinct().count() if \
+            data_type is None or data_type == "additional_data" else None
 
         data_list = [{'type': 'additional_data',
                       'icon_class': icon_class['additional_data'],

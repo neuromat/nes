@@ -7,7 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.forms import PasswordResetForm
 from custom_user.models import Institution, UserProfile
-from patient.quiz_widget import SelectBoxCountries
 
 
 class UserForm(ModelForm):
@@ -85,7 +84,7 @@ class UserProfileForm(ModelForm):
 
         widgets = {
             'institution': Select(attrs={'class': 'form-control'}),
-            'login_enabled': RadioSelect(attrs={'id': 'optradio'}),
+            'login_enabled': RadioSelect(),
             'citation_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Type citation name')}),
         }
 
@@ -123,7 +122,7 @@ class InstitutionForm(ModelForm):
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'required': "", 'autofocus': ''}),
             'acronym': TextInput(attrs={'class': 'form-control'}),
-            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'country': Select(attrs={'class': 'form-control'}),
             'parent': Select(attrs={'class': 'form-control'}),
         }
 

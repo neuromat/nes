@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-24 08:43-0200\n"
+"POT-Creation-Date: 2019-03-12 13:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -672,7 +672,8 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
-#: templates/404.html:14 templates/registration/change_password_custom.html:143
+#: templates/404.html:14
+#: templates/registration/change_password_custom.html:143
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Home"
@@ -752,7 +753,7 @@ msgstr "Fazer login"
 msgid "I forgot my password"
 msgstr "Esqueci minha senha"
 
-#: templates/registration/password_define_email.html:6
+#: templates/registration/password_define_email.html:5
 msgid ""
 "Hi, is everything ok?\n"
 "\n"
@@ -770,7 +771,7 @@ msgstr ""
 "    Por favor, vá para a seguinte página e entre com uma senha:\n"
 "    "
 
-#: templates/registration/password_define_email.html:17
+#: templates/registration/password_define_email.html:16
 #, python-format
 msgid ""
 "Your username: %(user.username)s\n"
@@ -841,7 +842,7 @@ msgstr ""
 msgid "You should receive it soon."
 msgstr "Você deve recebê-lo em breve."
 
-#: templates/registration/password_reset_email.html:5
+#: templates/registration/password_reset_email.html:4
 msgid ""
 "Hi, is everything ok?\n"
 "\n"
@@ -859,7 +860,7 @@ msgstr ""
 "        Por favor, vá para a seguinte página e entre com uma nova senha:\n"
 "    "
 
-#: templates/registration/password_reset_email.html:15
+#: templates/registration/password_reset_email.html:14
 msgid ""
 "\n"
 "    Thank you for using our site!\n"

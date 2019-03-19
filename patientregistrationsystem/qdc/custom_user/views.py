@@ -9,7 +9,6 @@ from django.utils.translation import ugettext as _
 
 from custom_user.forms import InstitutionForm, UserForm, UserFormUpdate, UserProfileForm, ResearcherForm
 from custom_user.models import Institution, UserProfile
-from patient.quiz_widget import SelectBoxCountriesDisabled
 
 
 def get_group_permissions(user):
@@ -242,9 +241,6 @@ def institution_view(request, institution_id, template_name="custom_user/institu
 
     for field in institution_form.fields:
         institution_form.fields[field].widget.attrs['disabled'] = True
-
-    institution_form.fields['country'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_country', 'data-flags': 'true', 'disabled': 'true'})
 
     if request.method == "POST":
         if request.POST['action'] == "remove":

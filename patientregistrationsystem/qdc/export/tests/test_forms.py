@@ -13,15 +13,13 @@ class ParticipantsSelectionFormValidation(TestCase):
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
+        self.gender = Gender.objects.create(name="Masculino")
 
     def test_ParticipantsSelectionForm_is_valid(self):
-        gender = Gender.objects.create(name="Masculino")
-        maritalstatus = MaritalStatus.objects.create(name="Solteiro")
 
         self.data = {
-            'gender': gender.id,
-            'marital_status': maritalstatus.id,
-            'country': 'Brasil',
+            'gender': self.gender.id,
+            'country': 'BR',
             'state': 'Bahia',
             'city': 'Porto Seguro'
         }
@@ -42,7 +40,7 @@ class ParticipantsSelectionFormValidation(TestCase):
         self.assertTrue(export.is_valid())
 
     def test_ParticipantsSelectionForm_is_valid_with_only_country(self):
-        self.data = {'country': 'Brasil'}
+        self.data = {'country': 'BR'}
         export = ParticipantsSelectionForm(data=self.data)
         self.assertTrue(export.is_valid())
 

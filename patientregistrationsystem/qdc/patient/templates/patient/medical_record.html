@@ -221,15 +221,8 @@
         </div>
         <div class="col-md-1"></div>
 
-        <div class="btn-toolbar">
-            <div class="btn-group pull-right">
-                {% if not object_list %}
-                    <button type="submit" name="action" value="finish" class="btn btn-primary" disabled>{% trans "Finalize evaluation" %}</button>
-                {% elif creating or editing %}
-                    <button type="submit" name="action" value="finish" class="btn btn-primary">{% trans "Finalize evaluation" %}</button>
-                {% endif %}
-            </div>
-            <div class="btn-group pull-right">
+        <div class="btn-toolbar pull-right">
+            <div class="btn-group">
                 {% if creating %}
                     <a href="/patient/edit/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                 {% else %}
@@ -238,6 +231,13 @@
                     {% else %}
                         <a href="/patient/{{ patient_id }}/?currentTab=3" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     {% endif %}
+                {% endif %}
+            </div>
+            <div class="btn-group">
+                {% if not object_list %}
+                    <button type="submit" name="action" value="finish" class="btn btn-primary" disabled>{% trans "Finalize evaluation" %}</button>
+                {% elif creating or editing %}
+                    <button type="submit" name="action" value="finish" class="btn btn-primary">{% trans "Finalize evaluation" %}</button>
                 {% endif %}
             </div>
         </div>

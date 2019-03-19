@@ -161,8 +161,8 @@ class Equipment(models.Model):
         ("ad_converter", _("A/D Converter")),
         ("tms_device", _("TMS device"))
     )
-    manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_equipment")
-    equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
+    manufacturer = models.ForeignKey(Manufacturer, related_name="set_of_equipment")
+    equipment_type = models.CharField(blank=True, max_length=50, choices=EQUIPMENT_TYPES)
     identification = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
     serial_number = models.CharField(max_length=50, null=True, blank=True)
@@ -212,7 +212,7 @@ class EEGSolution(models.Model):
 
 class FilterType(models.Model):
     name = models.CharField(max_length=150)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(blank=True)
     tags = models.ManyToManyField(Tag)
 
     def __str__(self):
@@ -221,7 +221,7 @@ class FilterType(models.Model):
 
 class Material(models.Model):
     name = models.CharField(max_length=150)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -446,7 +446,7 @@ class TMSDevice(Equipment):
         ("biphase", _("Biphase")),
     )
 
-    pulse_type = models.CharField(null=True, blank=True, max_length=50, choices=PULSE_TYPES)
+    pulse_type = models.CharField(blank=True, max_length=50, choices=PULSE_TYPES)
 
     def __str__(self):
         return self.identification
@@ -457,8 +457,6 @@ class EEGSetting(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField()
     copied_from = models.ForeignKey('self', null=True, related_name='children')
-
-    # set_of_equipment = models.ManyToManyField(Equipment)
 
     def __str__(self):
         return self.name
@@ -561,15 +559,15 @@ class StandardizationSystem(models.Model):
 
 
 class Muscle(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, unique=True)
 
     def __str__(self):
         return self.name
 
 
 class MuscleSubdivision(models.Model):
-    muscle = models.ForeignKey(Muscle)
     name = models.CharField(max_length=150)
+    muscle = models.ForeignKey(Muscle)
     anatomy_origin = models.TextField(null=True, blank=True)
     anatomy_insertion = models.TextField(null=True, blank=True)
     anatomy_function = models.TextField(null=True, blank=True)
@@ -579,8 +577,8 @@ class MuscleSubdivision(models.Model):
 
 
 class MuscleSide(models.Model):
-    muscle = models.ForeignKey(Muscle)
     name = models.CharField(max_length=150)
+    muscle = models.ForeignKey(Muscle)
 
     def __str__(self):
         return self.name
@@ -736,8 +734,9 @@ class EMGAnalogFilterSetting(models.Model):
 
 
 class EMGElectrodePlacementSetting(models.Model):
-    emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
-                                                 primary_key=True, related_name='emg_electrode_placement_setting')
+    emg_electrode_setting = models.OneToOneField(
+        EMGElectrodeSetting, primary_key=True, related_name='emg_electrode_placement_setting'
+    )
     emg_electrode_placement = models.ForeignKey(EMGElectrodePlacement)
     remarks = models.TextField(null=True, blank=True)
     muscle_side = models.ForeignKey(MuscleSide, null=True, blank=True)
