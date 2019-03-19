@@ -116,7 +116,7 @@ You will see the name of file close to the button.
 
 .. image:: ../../_img/participant_medical_evaluation_exam_file_included.png
 
-Click the `Upload` button to include the file as an attachment. A message to confirm the file attachment is presented (in green, on the top right of the screen) and the file will be inserted into the attachment area. You can include as many files as necessary.
+Click the `Save` button at the bottom right of the page to include the file as an attachment. A message to confirm the file attachment is presented (in green, on the top right of the screen) and the file will be inserted into the attachment area. You can include as many files as necessary.
 
 .. image:: ../../_img/participant_medical_evaluation_exam_file_attached.png
 
@@ -124,9 +124,7 @@ Now you can either download the file (by clicking the |download icon| icon)  or 
 
 .. |delete icon| image:: ../../_img/delete_icon.png
 
-You can save exam information by clicking *Save* button.
-
-If you click `Back` button, you will see the attached exam.
+To go back to the page of the diagnosis you may click in the `Back` button. There you will see the attached exam.
 
 .. image:: ../../_img/participant_medical_evaluation_show_exam.png
 
