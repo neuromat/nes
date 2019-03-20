@@ -598,7 +598,7 @@ class ObjectsFactory(object):
         return zip_file
 
     @staticmethod
-    def create_generic_data_colletion_file(gdc_data):
+    def create_generic_data_collection_file(gdc_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
