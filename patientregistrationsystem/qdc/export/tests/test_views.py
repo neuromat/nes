@@ -886,7 +886,7 @@ class ExportDataCollectionTest(ExportTestCase):
         gdc_data = ObjectsFactory.create_generic_data_collection_data(
             dct, self.subject_of_group
         )
-        gdcf = ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
@@ -1276,8 +1276,8 @@ class ExportDataCollectionTest(ExportTestCase):
             dct1, subject_of_group1
         )
 
-        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
-        ObjectsFactory.create_generic_data_colletion_file(gdc_data1)
+        ObjectsFactory.create_generic_data_collection_file(gdc_data)
+        ObjectsFactory.create_generic_data_collection_file(gdc_data1)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
@@ -1443,7 +1443,7 @@ class ExportDataCollectionTest(ExportTestCase):
         gdc_data = ObjectsFactory.create_generic_data_collection_data(
             dct, self.subject_of_group
         )
-        gdcf = ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
@@ -1570,7 +1570,7 @@ class ExportDataCollectionTest(ExportTestCase):
         # change generic data collection date for testing
         gdc_data.date = date(2018, 7, 7)
         gdc_data.save()
-        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
         # eeg data collection stuff
         eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)

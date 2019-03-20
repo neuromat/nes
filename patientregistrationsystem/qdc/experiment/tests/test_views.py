@@ -3355,7 +3355,7 @@ class ImportExperimentTest(TestCase):
                                                            'digital_game_phase_data',
                                                            self._create_digital_game_phase_data_collection_objects())
 
-    # Tests for Additional data collection
+    # Tests for Digital Game Phase data collection
     def _create_digital_game_phase_data_collection_objects(self):
         # Create base objects for an experiment with one step of tms
         research_project = ObjectsFactory.create_research_project(owner=self.user)
@@ -3408,3 +3408,57 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.digitalgamephasefile',
                                                            'digital_game_phase_data',
                                                            self._create_digital_game_phase_data_collection_objects())
+
+    # Tests for Generic Data collection
+    def _create_generic_data_collection_objects(self):
+        # Create base objects for an experiment with one step of tms
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+        information_type = ObjectsFactory.create_information_type()
+
+        generic_data_collection_step = ObjectsFactory.create_component(
+            experiment,
+            'generic_data_collection',
+            kwargs={'it': information_type})
+        component_configuration = ObjectsFactory.create_component_configuration(
+            rootcomponent,
+            generic_data_collection_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+
+        # Create objects for the digital game phase data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        generic_data_collection_data = ObjectsFactory.create_generic_data_collection_data(dct, subject_of_group)
+        ObjectsFactory.create_generic_data_collection_file(generic_data_collection_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_generic_data_collection(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.genericdatacollectiondata',
+                                                           'data_configuration_tree',
+                                                           self._create_generic_data_collection_objects())
+
+    def test_subject_of_group_and_generic_data_collection(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.genericdatacollectiondata',
+                                                           'subject_of_group',
+                                                           self._create_generic_data_collection_objects())
+
+    def test_file_format_and_generic_data_collection(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.genericdatacollectiondata',
+                                                           'file_format',
+                                                           self._create_generic_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_generic_data_collection_data_and_generic_data_collection_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.genericdatacollectiondata',
+                                                           'experiment.genericdatacollectionfile',
+                                                           'generic_data_collection_data',
+                                                           self._create_generic_data_collection_objects())
