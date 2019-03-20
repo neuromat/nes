@@ -2,8 +2,8 @@ MODEL_ROOT_NODES = [
             'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
             'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
             'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
-            'experiment.muscle', 'experiment.standardizationsystem',
-            'patient.patient'
+            'experiment.muscle', 'experiment.standardizationsystem', 'experiment.brainareasystem',
+            'patient.patient', 'experiment.directionoftheinducedcurrent',
         ]
 
 FOREIGN_RELATIONS = {
@@ -99,6 +99,20 @@ FOREIGN_RELATIONS = {
 
     # Data collections
     'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']],
+    'experiment.tmsdata': [
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.tmssetting', 'tms_setting'],
+        ['experiment.coilorientation', 'coil_orientation'],
+        ['experiment.directionoftheinducedcurrent', 'direction_of_induced_current'],
+    ],
+    'experiment.directionoftheinducedcurrent': [['', '']],
+    'experiment.coilorientation': [['', '']],
+
+    'experiment.hotspot': [['experiment.tmslocalizationsystem', 'tms_localization_system']],
+    'experiment.tmslocalizationsystem': [['experiment.brainarea', 'brain_area']],
+    'experiment.brainarea': [['experiment.brainareasystem', 'brain_area_system']],
+    'experiment.brainareasystem': [['', '']],
 
     # Participants
     'experiment.subject': [['patient.patient', 'patient']],
@@ -145,6 +159,7 @@ ONE_TO_ONE_RELATION = {
     'experiment.emgpreamplifiersetting': 'experiment.emgelectrodesetting',
     'experiment.emgpreamplifierfiltersetting': 'experiment.emgpreamplifiersetting',
     'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
+    'experiment.hotspot': 'experiment.tmsdata',
 }
 
 EXPERIMENT_JSON_FILES = {
@@ -190,6 +205,8 @@ EXPERIMENT_JSON_FILES = {
         'emgelectrodeplacementsetting', 'emg_electrode_setting__emg_setting__experiment_id__in'
     ),
     'keywords': ('researchproject_keywords', 'researchproject_id__in'),
+    'tmsdata': ('tmsdata', 'tms_setting__experiment_id__in'),
+    'hotspot': ('hotspot', 'tms_data__tms_setting__experiment_id__in'),
 
 }
 

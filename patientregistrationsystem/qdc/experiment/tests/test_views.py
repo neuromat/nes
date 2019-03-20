@@ -3,6 +3,7 @@ import shutil
 import sys
 import tempfile
 from unittest import skip
+import os
 
 from django.apps import apps
 from django.contrib.auth.models import Group, User
@@ -29,7 +30,9 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     MuscleSubdivision, EMGElectrodePlacementSetting, StandardizationSystem, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
-    StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, DataCollection
+    StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, DataCollection, \
+    TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, BrainArea, BrainAreaSystem, \
+    HotSpot
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -730,13 +733,18 @@ class ImportExperimentTest(TestCase):
         return experiment
 
     def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name, linking_field,
-                                                      _experiment, filter_model_1={},
-                                                      flag1=False, to_create1=True, to_create2=True):
+                                                      _experiment, filter_model_1={}, flag1=False,
+                                                      to_create1=True, to_create2=True, resolve_patients=True):
         """
         This test is a general test for testing the sucessfull importation of two linked models
         :param model_1_name: Name of the model inherited by the second model; The one that is being pointed at.
         :param model_2_name: Name of the model that inherits the first model; The one that is pointing to.
         :param linking_field: Name of the field that links both models
+        :param _experiment: Experiment object
+        :param flag1: Boolean to determine if the filter must use linking field or "id"
+        :param to_create1: Boolean that determine if the first model is not created
+        :param to_create2: Boolean that determine if the second model is not created
+        :param resolve_patients: Boolean that determine if the patients will be duplicated
         """
         model_1 = apps.get_model(model_1_name)
         model_2 = apps.get_model(model_2_name)
@@ -751,6 +759,12 @@ class ImportExperimentTest(TestCase):
         old_model_2_objects_ids = list(model_2.objects.values_list('pk', flat=True))
 
         with open(file_path, 'rb') as file:
+            if resolve_patients:
+                session = self.client.session
+                session['patients'] = []
+                session['patients_conflicts_resolved'] = True
+                session['file_name'] = file.name
+                session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
@@ -3109,3 +3123,134 @@ class ImportExperimentTest(TestCase):
                 self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
         # TODO: remove file created
+
+    # Tests for TMS data collections
+    def _create_tms_data_collection_objects(self):
+        # Create base objects for an experiment with one step of tms
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        tms_setting = ObjectsFactory.create_tms_setting(experiment)
+        tms_step = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': tms_setting})
+        component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, tms_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+
+        # Create objects for the tms data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        tms_data = ObjectsFactory.create_tms_data_collection_data(dct, subject_of_group, tms_setting)
+
+        # Create objects for the hotspot (optional, but desired step of the tms data)
+        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
+        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
+
+        temp_dir = tempfile.mkdtemp()
+        with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
+            f.write(b'carambola')
+        temp_file = f.name
+
+        tms_local_sys = TMSLocalizationSystem.objects.create(
+            name="TMS name", brain_area=brainarea,
+            tms_localization_system_image=temp_file)
+
+        hotspot = HotSpot.objects.create(
+            tms_data=tms_data,
+            name="TMS Data Collection File",
+            tms_localization_system=tms_local_sys)
+
+        ObjectsFactory.create_hotspot_data_collection_file(hotspot)
+
+        return experiment
+
+    def test_component_and_component_configuration(self):
+        self._create_minimum_objects_to_test_components()
+        tms_setting = ObjectsFactory.create_tms_setting(self.experiment)
+        tms = ObjectsFactory.create_component(self.experiment, 'tms', kwargs={'tms_set': tms_setting})
+        component_config = ObjectsFactory.create_component_configuration(self.rootcomponent, tms)
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        old_components = Component.objects.count()
+        old_componentsconfiguration = ComponentConfiguration.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import', args=(self.research_project.id,)),
+                                        {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_components = Component.objects.exclude(id__in=[self.rootcomponent.id, tms.id])
+        new_componentconfiguration = ComponentConfiguration.objects.exclude(id=component_config.id)
+
+        self.assertEqual(
+            Component.objects.count(),
+            old_components + len(new_components))
+        self.assertEqual(
+            ComponentConfiguration.objects.count(),
+            old_componentsconfiguration + len(new_componentconfiguration))
+
+        for item in new_components:
+            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+        for item in new_componentconfiguration:
+            self.assertTrue(new_components.filter(id=item.component_id).exists())
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso.')
+
+    def test_component_configuration_and_data_configuration_tree(self):
+        self._test_creation_and_linking_between_two_models('experiment.componentconfiguration',
+                                                           'experiment.dataconfigurationtree',
+                                                           'component_configuration',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_data_configuration_tree_and_tms_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.tmsdata',
+                                                           'data_configuration_tree',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_coil_orientation_and_tms_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.coilorientation',
+                                                           'experiment.tmsdata',
+                                                           'coil_orientation',
+                                                           self._create_tms_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_direction_of_the_induced_current_and_tms_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.directionoftheinducedcurrent',
+                                                           'experiment.tmsdata',
+                                                           'direction_of_induced_current',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_tms_setting_and_tms_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmssetting',
+                                                           'experiment.tmsdata',
+                                                           'tms_setting',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_tms_data_and_hotspot(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmsdata',
+                                                           'experiment.hotspot',
+                                                           'tms_data',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_brain_area_system_and_brain_area(self):
+        self._test_creation_and_linking_between_two_models('experiment.brainareasystem',
+                                                           'experiment.brainarea',
+                                                           'brain_area_system',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_brain_area_and_tms_localization_system(self):
+        self._test_creation_and_linking_between_two_models('experiment.brainarea',
+                                                           'experiment.tmslocalizationsystem',
+                                                           'brain_area',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_tms_localization_system_and_hotspot(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmslocalizationsystem',
+                                                           'experiment.hotspot',
+                                                           'tms_localization_system',
+                                                           self._create_tms_data_collection_objects())
