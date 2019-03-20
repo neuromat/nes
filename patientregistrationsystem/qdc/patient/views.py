@@ -24,7 +24,6 @@ from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm,
     ComplementaryExamForm, ExamFileForm
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam, QuestionnaireResponse
-from patient.quiz_widget import SelectBoxCountriesDisabled
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -901,15 +900,13 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                     new_file_data.save()
                     messages.success(request, _('Exam successfully saved.'))
 
-                if request.POST['action'] == "save":
-                    if new_medical_record:
-                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                    else:
-                        redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
-
-                    return HttpResponseRedirect(redirect_url + "?status=" + status)
+                if new_medical_record:
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
                 else:
-                    messages.error(request, _('It is not possible to save exam without files.'))
+                    redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
+
+                return HttpResponseRedirect(redirect_url + "?status=" + status)
+
         else:
             messages.error(request, _('It is not possible to save exam without files.'))
 
@@ -965,16 +962,10 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                         new_file_data.exam = complementary_exam
                         new_file_data.save()
 
-                    if request.POST['action'] == "save":
-                        messages.success(request, _('Exam successfully saved.'))
+                    messages.success(request, _('Exam successfully saved.'))
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                    return HttpResponseRedirect(redirect_url + "?status=" + status)
 
-                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                        return HttpResponseRedirect(redirect_url + "?status=" + status)
-
-                    else:
-                        if request.POST['action'] == 'upload':
-                            exam_file_list = ExamFile.objects.filter(exam=exam_id)
-                            length = exam_file_list.__len__()
             else:
                 messages.error(request, _('It is not possible to save exam without files.'))
 
