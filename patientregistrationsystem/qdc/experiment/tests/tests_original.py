@@ -34,7 +34,9 @@ from experiment.models import Experiment, Group, Subject, \
     ContextTree, ExperimentResearcher, InformationType, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
     GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
-    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS
+    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, \
+    TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, \
+    BrainArea, BrainAreaSystem
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -639,6 +641,19 @@ class ObjectsFactory(object):
         return eegf
 
     @staticmethod
+    def create_eeg_data_collection_data(data_conf_tree, subj_of_group, eeg_set):
+
+        faker = Factory.create()
+
+        file_format = ObjectsFactory.create_file_format()
+        return EEGData.objects.create(
+            description=faker.text(), file_format=file_format,
+            file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group, eeg_setting=eeg_set
+        )
+
+    @staticmethod
     def create_emg_data_collection_data(data_conf_tree,
                                         subj_of_group, emg_set):
 
@@ -651,6 +666,22 @@ class ObjectsFactory(object):
             data_configuration_tree=data_conf_tree,
             subject_of_group=subj_of_group, emg_setting=emg_set
         )
+
+    @staticmethod
+    def create_tms_data_collection_data(data_conf_tree,
+                                        subj_of_group, tms_set):
+
+        faker = Factory.create()
+        doic = DirectionOfTheInducedCurrent.objects.create(name="Direction of Induced Current")
+        coilor = CoilOrientation.objects.create(name="Coil Orientation")
+
+        return TMSData.objects.create(
+            tms_setting=tms_set,
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group,
+            coil_orientation=coilor,
+            description=faker.text(),
+            direction_of_induced_current=doic,)
 
     @staticmethod
     def create_emg_data_collection_file(emg_data):
