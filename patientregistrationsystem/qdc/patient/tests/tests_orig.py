@@ -1127,17 +1127,11 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 3)
 
-        self.data['action'] = ''
         response = self.client.post(
             reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 4)
-
-        response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         self.assertGreaterEqual(ComplementaryExam.objects.all().count(), 1)
-        self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 5)
+        self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 4)
 
     def create_complementary_exam(self, patient_mock, medical_record_mock, diagnosis_mock):
         """
@@ -1165,13 +1159,6 @@ class MedicalRecordFormValidation(TestCase):
 
         # Tests for exam edit method
         complementary_exam = ComplementaryExam.objects.all().first()
-
-        self.fill_exam_record(test_file=False)
-        self.data['action'] = ''
-        response = self.client.post(
-            reverse('exam_edit', args=(patient_mock.pk, medical_record_mock.pk, complementary_exam.pk,)), self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(ComplementaryExam.objects.all().count(), count_exams)
 
         self.fill_exam_record()
         self.data['action'] = 'save'

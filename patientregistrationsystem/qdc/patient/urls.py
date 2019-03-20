@@ -16,7 +16,8 @@ urlpatterns = [
 
     # medical_record (create, read, update)
     url(r'^(?P<patient_id>\d+)/medical_record/new/$', views.medical_record_create, name='medical_record_new'),
-    url(r'^(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/$', views.medical_record_view, name='medical_record_view'),
+    url(r'^(?P<patient_id>\d+)/medical_record/(?P<record_id>\d+)/$', views.medical_record_view,
+        name='medical_record_view'),
     url(r'^(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/$', views.medical_record_update,
         name='medical_record_edit'),
 
@@ -28,7 +29,8 @@ urlpatterns = [
         views.diagnosis_create, name='diagnosis_create'),
     url(r'^(?P<patient_id>\d+)/medical_record/new/diagnosis/(?P<cid10_id>\d+)/$',
         views.medical_record_create_diagnosis_create, name='medical_record_diagnosis_create'),
-    url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', views.diagnosis_delete, name='diagnosis_delete'),
+    url(r'^diagnosis/delete/(?P<patient_id>\d+)/(?P<diagnosis_id>\d+)/$', views.diagnosis_delete,
+        name='diagnosis_delete'),
 
     # exam (create, read, update, delete)
     url(r'^(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/diagnosis/(?P<diagnosis_id>\d+)/exam/new/$',
@@ -37,8 +39,8 @@ urlpatterns = [
         name='exam_view'),
     url(r'^(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/exam/edit/(?P<exam_id>\d+)/$', views.exam_edit,
         name='exam_edit'),
-    url(r'^(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/exam/remove/(?P<exam_id>\d+)/$', views.exam_delete,
-        name='exam_delete'),
+    url(r'^(?P<patient_id>\d+)/medical_record/edit/(?P<record_id>\d+)/exam/remove/(?P<exam_id>\d+)/$',
+        views.exam_delete, name='exam_delete'),
 
     # exam file (delete)
     url(r'^exam_file/delete/(?P<exam_file_id>\d+)/$', views.exam_file_delete, name='exam_file_delete'),
@@ -51,13 +53,3 @@ urlpatterns = [
     url(r'^questionnaire_response/edit/(?P<questionnaire_response_id>\d+)/$', views.questionnaire_response_update,
         name='questionnaire_response_edit')
 ]
-
-# internationalization
-# js_info_dict = {
-#     'domain': 'djangojs',
-#     'packages': ('patient',),
-# }
-#
-# urlpatterns += patterns('',
-#     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-# )
