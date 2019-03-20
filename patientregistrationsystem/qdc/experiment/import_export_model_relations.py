@@ -3,7 +3,7 @@ MODEL_ROOT_NODES = [
             'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
             'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
             'experiment.muscle', 'experiment.standardizationsystem', 'experiment.brainareasystem',
-            'patient.patient', 'experiment.directionoftheinducedcurrent',
+            'patient.patient', 'experiment.directionoftheinducedcurrent', 'experiment.fileformat',
         ]
 
 FOREIGN_RELATIONS = {
@@ -99,6 +99,7 @@ FOREIGN_RELATIONS = {
 
     # Data collections
     'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']],
+
     'experiment.tmsdata': [
         ['experiment.dataconfigurationtree', 'data_configuration_tree'],
         ['experiment.subjectofgroup', 'subject_of_group'],
@@ -108,11 +109,18 @@ FOREIGN_RELATIONS = {
     ],
     'experiment.directionoftheinducedcurrent': [['', '']],
     'experiment.coilorientation': [['', '']],
-
     'experiment.hotspot': [['experiment.tmslocalizationsystem', 'tms_localization_system']],
     'experiment.tmslocalizationsystem': [['experiment.brainarea', 'brain_area']],
     'experiment.brainarea': [['experiment.brainareasystem', 'brain_area_system']],
     'experiment.brainareasystem': [['', '']],
+
+    'experiment.additionaldatafile': [['experiment.additionaldata', 'additional_data']],
+    'experiment.additionaldata': [
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.fileformat', 'file_format'],
+    ],
+    'experiment.fileformat': [['', '']],
 
     # Participants
     'experiment.subject': [['patient.patient', 'patient']],
@@ -207,6 +215,9 @@ EXPERIMENT_JSON_FILES = {
     'keywords': ('researchproject_keywords', 'researchproject_id__in'),
     'tmsdata': ('tmsdata', 'tms_setting__experiment_id__in'),
     'hotspot': ('hotspot', 'tms_data__tms_setting__experiment_id__in'),
+    'additionaldatafile':
+        ('additionaldatafile',
+         'additional_data__subject_of_group__group__experiment_id__in'),
 
 }
 
@@ -298,7 +309,8 @@ PRE_LOADED_MODELS_INHERITANCE = {
 
 PRE_LOADED_MODELS_NOT_EDITABLE = [
     'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem',
-    'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape'
+    'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape',
+    'experiment.fileformat',
 ]
 
 PRE_LOADED_PATIENT_MODEL = {
