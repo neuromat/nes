@@ -135,6 +135,14 @@ FOREIGN_RELATIONS = {
     ],
     'experiment.genericdatacollectionfile': [['experiment.genericdatacollectiondata', 'generic_data_collection_data']],
 
+    'experiment.emgdata': [
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.fileformat', 'file_format'],
+        ['experiment.emgsetting', 'emg_setting'],
+    ],
+    'experiment.emgfile': [['experiment.emgdata', 'emg_data']],
+
     # Participants
     'experiment.subject': [['patient.patient', 'patient']],
     'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
@@ -237,6 +245,7 @@ EXPERIMENT_JSON_FILES = {
     'genericdatacollectionfile':
         ('genericdatacollectionfile',
          'generic_data_collection_data__subject_of_group__group__experiment_id__in'),
+    'emgfile': ('emgfile', 'emg_data__emg_setting__experiment_id__in'),
 }
 
 PATIENT_JSON_FILES = {
