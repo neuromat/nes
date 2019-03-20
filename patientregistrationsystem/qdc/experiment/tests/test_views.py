@@ -3300,3 +3300,111 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.additionaldatafile',
                                                            'additional_data',
                                                            self._create_additional_data_collection_objects())
+
+    # Tests for Additional data collection
+    def _create_digital_game_phase_data_collection_objects(self):
+        # Create base objects for an experiment with one step of tms
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+
+        digital_game_phase_step = ObjectsFactory.create_component(
+            experiment,
+            'digital_game_phase',
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
+        component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, digital_game_phase_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+
+        # Create objects for the digital game phase data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        digital_game_phase_data = ObjectsFactory.create_digital_game_phase_data(dct, subject_of_group)
+        ObjectsFactory.create_digital_game_phase_file(digital_game_phase_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.digitalgamephasedata',
+                                                           'data_configuration_tree',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    def test_subject_of_group_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.digitalgamephasedata',
+                                                           'subject_of_group',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    def test_file_format_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.digitalgamephasedata',
+                                                           'file_format',
+                                                           self._create_digital_game_phase_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_digital_game_phase_data_and_digital_game_phase_data_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.digitalgamephasedata',
+                                                           'experiment.digitalgamephasefile',
+                                                           'digital_game_phase_data',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    # Tests for Additional data collection
+    def _create_digital_game_phase_data_collection_objects(self):
+        # Create base objects for an experiment with one step of tms
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+
+        digital_game_phase_step = ObjectsFactory.create_component(
+            experiment,
+            'digital_game_phase',
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
+        component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, digital_game_phase_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+
+        # Create objects for the digital game phase data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        digital_game_phase_data = ObjectsFactory.create_digital_game_phase_data(dct, subject_of_group)
+        ObjectsFactory.create_digital_game_phase_file(digital_game_phase_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.digitalgamephasedata',
+                                                           'data_configuration_tree',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    def test_subject_of_group_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.digitalgamephasedata',
+                                                           'subject_of_group',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    def test_file_format_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.digitalgamephasedata',
+                                                           'file_format',
+                                                           self._create_digital_game_phase_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_digital_game_phase_data_and_digital_game_phase_data_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.digitalgamephasedata',
+                                                           'experiment.digitalgamephasefile',
+                                                           'digital_game_phase_data',
+                                                           self._create_digital_game_phase_data_collection_objects())

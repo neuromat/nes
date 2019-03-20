@@ -121,6 +121,12 @@ FOREIGN_RELATIONS = {
         ['experiment.fileformat', 'file_format'],
     ],
     'experiment.fileformat': [['', '']],
+    'experiment.digitalgamephasedata': [
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.fileformat', 'file_format'],
+    ],
+    'experiment.digitalgamephasefile': [['experiment.digitalgamephasedata', 'digital_game_phase_data']],
 
     # Participants
     'experiment.subject': [['patient.patient', 'patient']],
@@ -218,7 +224,9 @@ EXPERIMENT_JSON_FILES = {
     'additionaldatafile':
         ('additionaldatafile',
          'additional_data__subject_of_group__group__experiment_id__in'),
-
+    'digitalgamephasefile':
+        ('digitalgamephasefile',
+         'digital_game_phase_data__subject_of_group__group__experiment_id__in'),
 }
 
 PATIENT_JSON_FILES = {
