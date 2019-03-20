@@ -3124,7 +3124,7 @@ class ImportExperimentTest(TestCase):
 
         # TODO: remove file created
 
-    # Tests for TMS data collections
+    # Tests for TMS data collection
     def _create_tms_data_collection_objects(self):
         # Create base objects for an experiment with one step of tms
         research_project = ObjectsFactory.create_research_project(owner=self.user)
@@ -3133,14 +3133,14 @@ class ImportExperimentTest(TestCase):
         tms_setting = ObjectsFactory.create_tms_setting(experiment)
         tms_step = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': tms_setting})
         component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, tms_step)
-        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+        self.dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
 
         # Create objects for the tms data
         group = ObjectsFactory.create_group(experiment)
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
-        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
-        tms_data = ObjectsFactory.create_tms_data_collection_data(dct, subject_of_group, tms_setting)
+        self.subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        tms_data = ObjectsFactory.create_tms_data_collection_data(self.dct, self.subject_of_group, tms_setting)
 
         # Create objects for the hotspot (optional, but desired step of the tms data)
         brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
@@ -3254,3 +3254,49 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.hotspot',
                                                            'tms_localization_system',
                                                            self._create_tms_data_collection_objects())
+
+    # Tests for Additional data collection
+    def _create_additional_data_collection_objects(self):
+        # Create objects for the additional data
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        additional_data = ObjectsFactory.create_additional_data_data(None, subject_of_group)
+        ObjectsFactory.create_additional_data_file(additional_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_additional_data(self):
+        # Additional data doesn't need a data configuration tree to exist,
+        # unless they are associated to a step
+        experiment = self._create_tms_data_collection_objects()
+        additional_data = ObjectsFactory.create_additional_data_data(self.dct, self.subject_of_group)
+        ObjectsFactory.create_additional_data_file(additional_data)
+
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.additionaldata',
+                                                           'data_configuration_tree',
+                                                           experiment)
+
+    def test_subject_of_group_and_additional_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.additionaldata',
+                                                           'subject_of_group',
+                                                           self._create_additional_data_collection_objects())
+
+    def test_file_format_and_additional_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.additionaldata',
+                                                           'file_format',
+                                                           self._create_additional_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_additional_data_and_additional_data_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.additionaldata',
+                                                           'experiment.additionaldatafile',
+                                                           'additional_data',
+                                                           self._create_additional_data_collection_objects())
