@@ -31,14 +31,8 @@
 
 {% block form %}
     <div class="row">
-    {% if not creating and not viewing %}
-        <form id="form_exam" role="form" method="post" enctype="multipart/form-data">
-    {% else %}
         <form id="form_exam" role="form" method="post" data-toggle="validator" enctype="multipart/form-data">
-    {% endif %}
-
-    {% csrf_token %}
-
+        {% csrf_token %}
 {% endblock %}
 
 

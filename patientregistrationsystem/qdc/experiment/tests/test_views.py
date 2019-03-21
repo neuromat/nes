@@ -3,6 +3,7 @@ import shutil
 import sys
 import tempfile
 from unittest import skip
+import os
 
 from django.apps import apps
 from django.contrib.auth.models import Group, User
@@ -29,7 +30,9 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     MuscleSubdivision, EMGElectrodePlacementSetting, StandardizationSystem, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
-    StimulusType, ContextTree, EMGElectrodePlacement, Equipment
+    StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, DataCollection, \
+    TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, BrainArea, BrainAreaSystem, \
+    HotSpot
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -401,7 +404,7 @@ class ExportExperimentTest(TestCase):
             'attachment; filename=%s' % smart_str('experiment.json')
         )
 
-    def test_GET_experiment_export_returns_json_file_wo_user_object(self):
+    def test_GET_experiment_export_returns_json_file_without_user_object(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         data = json.loads(response.content.decode('utf-8'))
         self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
@@ -730,13 +733,18 @@ class ImportExperimentTest(TestCase):
         return experiment
 
     def _test_creation_and_linking_between_two_models(self, model_1_name, model_2_name, linking_field,
-                                                      _experiment, filter_model_1={},
-                                                      flag1=False, to_create1=True, to_create2=True):
+                                                      _experiment, filter_model_1={}, flag1=False,
+                                                      to_create1=True, to_create2=True, resolve_patients=True):
         """
         This test is a general test for testing the sucessfull importation of two linked models
         :param model_1_name: Name of the model inherited by the second model; The one that is being pointed at.
         :param model_2_name: Name of the model that inherits the first model; The one that is pointing to.
         :param linking_field: Name of the field that links both models
+        :param _experiment: Experiment object
+        :param flag1: Boolean to determine if the filter must use linking field or "id"
+        :param to_create1: Boolean that determine if the first model is not created
+        :param to_create2: Boolean that determine if the second model is not created
+        :param resolve_patients: Boolean that determine if the patients will be duplicated
         """
         model_1 = apps.get_model(model_1_name)
         model_2 = apps.get_model(model_2_name)
@@ -751,6 +759,12 @@ class ImportExperimentTest(TestCase):
         old_model_2_objects_ids = list(model_2.objects.values_list('pk', flat=True))
 
         with open(file_path, 'rb') as file:
+            if resolve_patients:
+                session = self.client.session
+                session['patients'] = []
+                session['patients_conflicts_resolved'] = True
+                session['file_name'] = file.name
+                session.save()
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
@@ -1505,8 +1519,8 @@ class ImportExperimentTest(TestCase):
     def test_experiment_and_group(self):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
-        group1 = ObjectsFactory.create_group(experiment)
-        group2 = ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_group(experiment)
 
         self._test_creation_and_linking_between_two_models('experiment.experiment',
                                                            'experiment.group',
@@ -1518,9 +1532,9 @@ class ImportExperimentTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
         root1 = ObjectsFactory.create_block(experiment)
         root2 = ObjectsFactory.create_block(experiment)
-        group1 = ObjectsFactory.create_group(experiment, root1)
-        group2 = ObjectsFactory.create_group(experiment, root2)
-        group3 = ObjectsFactory.create_group(experiment)
+        ObjectsFactory.create_group(experiment, root1)
+        ObjectsFactory.create_group(experiment, root2)
+        ObjectsFactory.create_group(experiment)
 
         self._test_creation_and_linking_between_two_models('experiment.group',
                                                            'experiment.block',
@@ -2588,6 +2602,54 @@ class ImportExperimentTest(TestCase):
             self._create_experiment_with_emg_setting(), to_create1=False
         )
 
+    def test_musclesubdivision_and_emgelectrodeplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.musclesubdivision', 'experiment.emgelectrodeplacement', 'muscle_subdivision',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
+
+    def test_standardizationsystem_and_emgelectrodeplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.standardizationsystem', 'experiment.emgelectrodeplacement', 'standardization_system',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
+
+    def test_emgelectrodesetting_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodesetting', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_setting',
+            self._create_experiment_with_emg_setting()
+        )
+
+    def test_muscleside_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
+            self._create_experiment_with_emg_setting(), to_create1=False
+        )
+
+    def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_placement',
+            self._create_experiment_with_emg_setting()
+        )
+
+    def test_emgelectrodeplacement_and_emgintramuscularplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgintramuscularplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), flag1=True  # TODO (NES-908): momentarily put this flag
+        )
+
+    def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), flag1=True, to_create2=False
+        )
+
+    def test_emgelectrodeplacement_and_emgneedleplacement(self):
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgelectrodeplacement', 'experiment.emgneedleplacement', 'emgelectrodeplacement_ptr',
+            self._create_experiment_with_emg_setting(), flag1=True
+        )
+
     def test_muscle_and_muscleside(self):
         self._test_creation_and_linking_between_two_models(
             'experiment.muscle', 'experiment.muscleside', 'muscle', self._create_experiment_with_emg_setting(),
@@ -2831,7 +2893,8 @@ class ImportExperimentTest(TestCase):
             (Material, 'description', 1): [(CoilModel, 'material', 1)],
         }
 
-    def _get_pre_loaded_models_tms_not_editable(self):
+    @staticmethod
+    def _get_pre_loaded_models_tms_not_editable():
         return {
             (CoilShape, '', 1): [(CoilModel, 'coil_shape', 1)]
         }
@@ -2928,54 +2991,6 @@ class ImportExperimentTest(TestCase):
         # TODO: test when importing/exporting data collections
         # self.assertEqual(EEGElectrodeCap.objects.last().material, material)
 
-    def test_musclesubdivision_and_emgelectrodeplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.musclesubdivision', 'experiment.emgelectrodeplacement', 'muscle_subdivision',
-            self._create_experiment_with_emg_setting(), to_create1=False
-        )
-
-    def test_standardizationsystem_and_emgelectrodeplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.standardizationsystem', 'experiment.emgelectrodeplacement', 'standardization_system',
-            self._create_experiment_with_emg_setting(), to_create1=False
-        )
-
-    def test_emgelectrodesetting_and_emgelectrodeplacementsetting(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodesetting', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_setting',
-            self._create_experiment_with_emg_setting()
-        )
-
-    def test_muscleside_and_emgelectrodeplacementsetting(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.muscleside', 'experiment.emgelectrodeplacementsetting', 'muscle_side',
-            self._create_experiment_with_emg_setting(), to_create1=False
-        )
-
-    def test_emgelectrodeplacement_and_emgelectrodeplacementsetting(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodeplacement', 'experiment.emgelectrodeplacementsetting', 'emg_electrode_placement',
-            self._create_experiment_with_emg_setting()
-        )
-
-    def test_emgelectrodeplacement_and_emgintramuscularplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodeplacement', 'experiment.emgintramuscularplacement', 'emgelectrodeplacement_ptr',
-            self._create_experiment_with_emg_setting(), flag1=True  # TODO (NES-908): momentarily put this flag
-        )
-
-    def test_emgelectrodeplacement_and_emgsurfaceplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodeplacement', 'experiment.emgsurfaceplacement', 'emgelectrodeplacement_ptr',
-            self._create_experiment_with_emg_setting(), flag1=True, to_create2=False
-        )
-
-    def test_emgelectrodeplacement_and_emgneedleplacement(self):
-        self._test_creation_and_linking_between_two_models(
-            'experiment.emgelectrodeplacement', 'experiment.emgneedleplacement', 'emgelectrodeplacement_ptr',
-            self._create_experiment_with_emg_setting(), flag1=True
-        )
-
     def test_change_user_references_to_logged_user_before_import_experiment(self):
         patient = UtilTests.create_patient(changed_by=self.user)
         UtilTests.create_telephone(patient, changed_by=self.user)
@@ -3058,3 +3073,448 @@ class ImportExperimentTest(TestCase):
 
     def test_error_loading_fixture_display_error_message(self):
         pass
+
+    def _create_eeg_data_collection_objects(self):
+        eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
+        eeg_step = ObjectsFactory.create_component(self.experiment, 'eeg', kwargs={'eeg_set': eeg_setting})
+        component_configuration = ObjectsFactory.create_component_configuration(self.rootcomponent, eeg_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+        eeg_data = ObjectsFactory.create_eeg_data_collection_data(dct, self.subject_of_group, eeg_setting)
+        ObjectsFactory.create_eeg_data_collection_file(eeg_data)
+
+    def _get_relations(self):
+        return {
+            ComponentConfiguration: [(DataConfigurationTree, 'component_configuration')],
+            # DataConfigurationTree: [(DataConfigurationTree, 'parent')],
+            # DataConfigurationTree: [(EEGData, 'data_configuration_tree')],
+        }
+
+    # Tests for EEG data collections
+    def test_import_eeg_data_collection(self):
+        self._create_minimum_objects_to_test_components()
+        group = ObjectsFactory.create_group(self.experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        self.subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        self._create_eeg_data_collection_objects()
+
+        relations = self._get_relations()
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in relations:
+            self.assertEqual(2, model.objects.count(), model)
+            model_instance = model.objects.last()
+            for dependent_model in relations[model]:
+                self.assertEqual(2, dependent_model[0].objects.count(), dependent_model)
+                dependent_model_instance = dependent_model[0].objects.last()
+                reference = getattr(dependent_model_instance, dependent_model[1])
+                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
+        # TODO: remove file created
+
+    # Tests for TMS data collection
+    def _create_tms_data_collection_objects(self):
+        # Create base objects for an experiment with one step of tms
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        tms_setting = ObjectsFactory.create_tms_setting(experiment)
+        tms_step = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': tms_setting})
+        component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, tms_step)
+        self.dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+
+        # Create objects for the tms data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        self.subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        tms_data = ObjectsFactory.create_tms_data_collection_data(self.dct, self.subject_of_group, tms_setting)
+
+        # Create objects for the hotspot (optional, but desired step of the tms data)
+        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
+        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
+
+        temp_dir = tempfile.mkdtemp()
+        with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
+            f.write(b'carambola')
+        temp_file = f.name
+
+        tms_local_sys = TMSLocalizationSystem.objects.create(
+            name="TMS name", brain_area=brainarea,
+            tms_localization_system_image=temp_file)
+
+        hotspot = HotSpot.objects.create(
+            tms_data=tms_data,
+            name="TMS Data Collection File",
+            tms_localization_system=tms_local_sys)
+
+        ObjectsFactory.create_hotspot_data_collection_file(hotspot)
+
+        return experiment
+
+    def test_component_and_component_configuration(self):
+        self._create_minimum_objects_to_test_components()
+        tms_setting = ObjectsFactory.create_tms_setting(self.experiment)
+        tms = ObjectsFactory.create_component(self.experiment, 'tms', kwargs={'tms_set': tms_setting})
+        component_config = ObjectsFactory.create_component_configuration(self.rootcomponent, tms)
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        old_components = Component.objects.count()
+        old_componentsconfiguration = ComponentConfiguration.objects.count()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(reverse('experiment_import', args=(self.research_project.id,)),
+                                        {'file': file}, follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        new_components = Component.objects.exclude(id__in=[self.rootcomponent.id, tms.id])
+        new_componentconfiguration = ComponentConfiguration.objects.exclude(id=component_config.id)
+
+        self.assertEqual(
+            Component.objects.count(),
+            old_components + len(new_components))
+        self.assertEqual(
+            ComponentConfiguration.objects.count(),
+            old_componentsconfiguration + len(new_componentconfiguration))
+
+        for item in new_components:
+            self.assertEqual(Experiment.objects.last().id, item.experiment.id)
+        for item in new_componentconfiguration:
+            self.assertTrue(new_components.filter(id=item.component_id).exists())
+
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Experimento importado com sucesso.')
+
+    def test_component_configuration_and_data_configuration_tree(self):
+        self._test_creation_and_linking_between_two_models('experiment.componentconfiguration',
+                                                           'experiment.dataconfigurationtree',
+                                                           'component_configuration',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_data_configuration_tree_and_tms_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.tmsdata',
+                                                           'data_configuration_tree',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_coil_orientation_and_tms_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.coilorientation',
+                                                           'experiment.tmsdata',
+                                                           'coil_orientation',
+                                                           self._create_tms_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_direction_of_the_induced_current_and_tms_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.directionoftheinducedcurrent',
+                                                           'experiment.tmsdata',
+                                                           'direction_of_induced_current',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_tms_setting_and_tms_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmssetting',
+                                                           'experiment.tmsdata',
+                                                           'tms_setting',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_tms_data_and_hotspot(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmsdata',
+                                                           'experiment.hotspot',
+                                                           'tms_data',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_brain_area_system_and_brain_area(self):
+        self._test_creation_and_linking_between_two_models('experiment.brainareasystem',
+                                                           'experiment.brainarea',
+                                                           'brain_area_system',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_brain_area_and_tms_localization_system(self):
+        self._test_creation_and_linking_between_two_models('experiment.brainarea',
+                                                           'experiment.tmslocalizationsystem',
+                                                           'brain_area',
+                                                           self._create_tms_data_collection_objects())
+
+    def test_tms_localization_system_and_hotspot(self):
+        self._test_creation_and_linking_between_two_models('experiment.tmslocalizationsystem',
+                                                           'experiment.hotspot',
+                                                           'tms_localization_system',
+                                                           self._create_tms_data_collection_objects())
+
+    # Tests for Additional data collection
+    def _create_additional_data_collection_objects(self):
+        # Create objects for the additional data
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        additional_data = ObjectsFactory.create_additional_data_data(None, subject_of_group)
+        ObjectsFactory.create_additional_data_file(additional_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_additional_data(self):
+        # Additional data doesn't need a data configuration tree to exist,
+        # unless they are associated to a step
+        experiment = self._create_tms_data_collection_objects()
+        additional_data = ObjectsFactory.create_additional_data_data(self.dct, self.subject_of_group)
+        ObjectsFactory.create_additional_data_file(additional_data)
+
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.additionaldata',
+                                                           'data_configuration_tree',
+                                                           experiment)
+
+    def test_subject_of_group_and_additional_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.additionaldata',
+                                                           'subject_of_group',
+                                                           self._create_additional_data_collection_objects())
+
+    def test_file_format_and_additional_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.additionaldata',
+                                                           'file_format',
+                                                           self._create_additional_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_additional_data_and_additional_data_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.additionaldata',
+                                                           'experiment.additionaldatafile',
+                                                           'additional_data',
+                                                           self._create_additional_data_collection_objects())
+
+    # Tests for Additional data collection
+    def _create_digital_game_phase_data_collection_objects(self):
+        # Create base objects for an experiment with one step of tms
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+
+        digital_game_phase_step = ObjectsFactory.create_component(
+            experiment,
+            'digital_game_phase',
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
+        component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, digital_game_phase_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+
+        # Create objects for the digital game phase data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        digital_game_phase_data = ObjectsFactory.create_digital_game_phase_data(dct, subject_of_group)
+        ObjectsFactory.create_digital_game_phase_file(digital_game_phase_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.digitalgamephasedata',
+                                                           'data_configuration_tree',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    def test_subject_of_group_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.digitalgamephasedata',
+                                                           'subject_of_group',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    def test_file_format_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.digitalgamephasedata',
+                                                           'file_format',
+                                                           self._create_digital_game_phase_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_digital_game_phase_data_and_digital_game_phase_data_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.digitalgamephasedata',
+                                                           'experiment.digitalgamephasefile',
+                                                           'digital_game_phase_data',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    # Tests for Digital Game Phase data collection
+    def _create_digital_game_phase_data_collection_objects(self):
+        # Create base objects for an experiment with one step of digital_phase_data
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+
+        digital_game_phase_step = ObjectsFactory.create_component(
+            experiment,
+            'digital_game_phase',
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
+        component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, digital_game_phase_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+
+        # Create objects for the digital game phase data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        digital_game_phase_data = ObjectsFactory.create_digital_game_phase_data(dct, subject_of_group)
+        ObjectsFactory.create_digital_game_phase_file(digital_game_phase_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.digitalgamephasedata',
+                                                           'data_configuration_tree',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    def test_subject_of_group_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.digitalgamephasedata',
+                                                           'subject_of_group',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    def test_file_format_and_digital_game_phase_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.digitalgamephasedata',
+                                                           'file_format',
+                                                           self._create_digital_game_phase_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_digital_game_phase_data_and_digital_game_phase_data_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.digitalgamephasedata',
+                                                           'experiment.digitalgamephasefile',
+                                                           'digital_game_phase_data',
+                                                           self._create_digital_game_phase_data_collection_objects())
+
+    # Tests for Generic Data collection
+    def _create_generic_data_collection_objects(self):
+        # Create base objects for an experiment with one step of generic data collection
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        information_type = ObjectsFactory.create_information_type()
+
+        generic_data_collection_step = ObjectsFactory.create_component(
+            experiment,
+            'generic_data_collection',
+            kwargs={'it': information_type})
+        component_configuration = ObjectsFactory.create_component_configuration(
+            rootcomponent,
+            generic_data_collection_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+
+        # Create objects for the digital game phase data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        generic_data_collection_data = ObjectsFactory.create_generic_data_collection_data(dct, subject_of_group)
+        ObjectsFactory.create_generic_data_collection_file(generic_data_collection_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_generic_data_collection(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.genericdatacollectiondata',
+                                                           'data_configuration_tree',
+                                                           self._create_generic_data_collection_objects())
+
+    def test_subject_of_group_and_generic_data_collection(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.genericdatacollectiondata',
+                                                           'subject_of_group',
+                                                           self._create_generic_data_collection_objects())
+
+    def test_file_format_and_generic_data_collection(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.genericdatacollectiondata',
+                                                           'file_format',
+                                                           self._create_generic_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_generic_data_collection_data_and_generic_data_collection_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.genericdatacollectiondata',
+                                                           'experiment.genericdatacollectionfile',
+                                                           'generic_data_collection_data',
+                                                           self._create_generic_data_collection_objects())
+
+    # Tests for EMG data collection
+    def _create_emg_data_collection_objects(self):
+        # Create base objects for an experiment with one step of tms
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # Create objects for the digital game phase data
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
+        ObjectsFactory.create_emg_data_collection_file(emg_data)
+
+        return experiment
+
+    def test_data_configuration_tree_and_emg_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
+                                                           'experiment.emgdata',
+                                                           'data_configuration_tree',
+                                                           self._create_emg_data_collection_objects())
+
+    def test_subject_of_group_and_emg_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
+                                                           'experiment.emgdata',
+                                                           'subject_of_group',
+                                                           self._create_emg_data_collection_objects())
+
+    def test_file_format_and_emg_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.fileformat',
+                                                           'experiment.emgdata',
+                                                           'file_format',
+                                                           self._create_emg_data_collection_objects(),
+                                                           to_create1=False)
+
+    def test_emg_setting_and_emg_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgsetting',
+                                                           'experiment.emgdata',
+                                                           'emg_setting',
+                                                           self._create_emg_data_collection_objects())
+
+    def test_emg_data_and_emg_file(self):
+        self._test_creation_and_linking_between_two_models('experiment.emgdata',
+                                                           'experiment.emgfile',
+                                                           'emg_data',
+                                                           self._create_emg_data_collection_objects())
