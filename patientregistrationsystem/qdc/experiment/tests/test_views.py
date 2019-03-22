@@ -1,7 +1,9 @@
+import io
 import json
 import shutil
 import sys
 import tempfile
+import zipfile
 from unittest import skip
 import os
 
@@ -396,13 +398,20 @@ class ExportExperimentTest(TestCase):
 
         return experiment
 
-    def test_GET_experiment_export_returns_json_file(self):
+    def test_GET_experiment_export_returns_zip_file(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         self.assertEqual(response.status_code, 200)
-        self.assertEquals(
-            response.get('Content-Disposition'),
-            'attachment; filename=%s' % smart_str('experiment.json')
-        )
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename=%s' % smart_str('experiment.zip'))
+        # get zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
+
+    def test_GET_experiment_export_returns_json_inside_zip_file(self):
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
+        json_file = zipped_file.namelist()[0]  # There's only one file archived
+        self.assertEqual('experiment.json', json_file)
 
     def test_GET_experiment_export_returns_json_file_without_user_object(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
