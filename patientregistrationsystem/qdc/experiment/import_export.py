@@ -2,6 +2,7 @@ import shutil
 import sys
 import tempfile
 import json
+import zipfile
 from json import JSONDecodeError
 from os import path
 
@@ -25,7 +26,8 @@ from survey.models import Survey
 
 class ExportExperiment:
 
-    FILE_NAME = 'experiment.json'
+    FILE_NAME_JSON = 'experiment.json'
+    FILE_NAME_ZIP = 'experiment.zip'
 
     def __init__(self, experiment):
         self.experiment = experiment
@@ -52,6 +54,14 @@ class ExportExperiment:
         sys.stdout = open(path.join(self.temp_dir, filename + '.json'), 'w')
         call_command(
             'dump_object', 'experiment.' + elements[0], '--query', '{"' + elements[1] + '": ' + str(parent_ids) + '}')
+        sys.stdout = sysout
+
+    def _generate_keywords_fixture(self):
+        # Generate fixture to keywords of the research project
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, 'keywords.json'), 'w')
+        call_command('dump_object', 'experiment.researchproject_keywords', '--query',
+                     '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
         sys.stdout = sysout
 
     def _remove_auth_user_model_from_json(self, filename):
@@ -139,6 +149,9 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
 
+    def get_file_path(self):
+        return path.join(self.temp_dir, self.FILE_NAME_ZIP)
+
     def export_all(self):
         for key, value in EXPERIMENT_JSON_FILES.items():
             self._generate_fixture(key, value)
@@ -146,31 +159,25 @@ class ExportExperiment:
             self._generate_fixture(key, value, 'patient.')
         for key, value in JSON_FILES_DETACHED_MODELS.items():
             self._generate_detached_fixture(key, value)
-
-        # Generate fixture to keywords of the research project
-        sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, 'keywords.json'), 'w')
-        call_command('dump_object', 'experiment.researchproject_keywords', '--query',
-                     '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
-        sys.stdout = sysout
+        self._generate_keywords_fixture()
 
         fixtures = []
         for filename in {**EXPERIMENT_JSON_FILES, **PATIENT_JSON_FILES, **JSON_FILES_DETACHED_MODELS}:
             fixtures.append(path.join(self.temp_dir, filename + '.json'))
 
         sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
+        sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w')
         call_command('merge_fixtures', *fixtures)
         sys.stdout = sysout
 
-        self._remove_researchproject_keywords_model_from_json(self.FILE_NAME)
-        self._change_group_code_to_null_from_json(self.FILE_NAME)
-        self._remove_survey_code(self.FILE_NAME)
-        self._update_classification_of_diseases_reference(self.FILE_NAME)
-        self._remove_auth_user_model_from_json(self.FILE_NAME)
+        self._remove_researchproject_keywords_model_from_json(self.FILE_NAME_JSON)
+        self._change_group_code_to_null_from_json(self.FILE_NAME_JSON)
+        self._remove_survey_code(self.FILE_NAME_JSON)
+        self._update_classification_of_diseases_reference(self.FILE_NAME_JSON)
+        self._remove_auth_user_model_from_json(self.FILE_NAME_JSON)
 
-    def get_file_path(self):
-        return path.join(self.temp_dir, self.FILE_NAME)
+        with zipfile.ZipFile(self.get_file_path(), 'w') as zip_file:
+            zip_file.write(path.join(self.temp_dir, self.FILE_NAME_JSON).encode('utf-8'), self.FILE_NAME_JSON)
 
 
 class ImportExperiment:
