@@ -9,6 +9,7 @@ from django.apps import apps
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.core.files import File
 from django.test import TestCase
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
@@ -32,7 +33,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, DataCollection, \
     TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, BrainArea, BrainAreaSystem, \
-    HotSpot
+    HotSpot, ComponentAdditionalFile
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -3301,60 +3302,6 @@ class ImportExperimentTest(TestCase):
                                                            'additional_data',
                                                            self._create_additional_data_collection_objects())
 
-    # Tests for Additional data collection
-    def _create_digital_game_phase_data_collection_objects(self):
-        # Create base objects for an experiment with one step of tms
-        research_project = ObjectsFactory.create_research_project(owner=self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-
-        context_tree = ObjectsFactory.create_context_tree(experiment)
-        manufacturer = ObjectsFactory.create_manufacturer()
-        software = ObjectsFactory.create_software(manufacturer)
-        software_version = ObjectsFactory.create_software_version(software)
-
-        digital_game_phase_step = ObjectsFactory.create_component(
-            experiment,
-            'digital_game_phase',
-            kwargs={'software_version': software_version, 'context_tree': context_tree})
-        component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, digital_game_phase_step)
-        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
-
-        # Create objects for the digital game phase data
-        group = ObjectsFactory.create_group(experiment)
-        patient = UtilTests.create_patient(changed_by=self.user)
-        subject = ObjectsFactory.create_subject(patient)
-        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
-        digital_game_phase_data = ObjectsFactory.create_digital_game_phase_data(dct, subject_of_group)
-        ObjectsFactory.create_digital_game_phase_file(digital_game_phase_data)
-
-        return experiment
-
-    def test_data_configuration_tree_and_digital_game_phase_data(self):
-        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
-                                                           'experiment.digitalgamephasedata',
-                                                           'data_configuration_tree',
-                                                           self._create_digital_game_phase_data_collection_objects())
-
-    def test_subject_of_group_and_digital_game_phase_data(self):
-        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
-                                                           'experiment.digitalgamephasedata',
-                                                           'subject_of_group',
-                                                           self._create_digital_game_phase_data_collection_objects())
-
-    def test_file_format_and_digital_game_phase_data(self):
-        self._test_creation_and_linking_between_two_models('experiment.fileformat',
-                                                           'experiment.digitalgamephasedata',
-                                                           'file_format',
-                                                           self._create_digital_game_phase_data_collection_objects(),
-                                                           to_create1=False)
-
-    def test_digital_game_phase_data_and_digital_game_phase_data_file(self):
-        self._test_creation_and_linking_between_two_models('experiment.digitalgamephasedata',
-                                                           'experiment.digitalgamephasefile',
-                                                           'digital_game_phase_data',
-                                                           self._create_digital_game_phase_data_collection_objects())
-
     # Tests for Digital Game Phase data collection
     def _create_digital_game_phase_data_collection_objects(self):
         # Create base objects for an experiment with one step of digital_phase_data
@@ -3427,7 +3374,7 @@ class ImportExperimentTest(TestCase):
             generic_data_collection_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
 
-        # Create objects for the digital game phase data
+        # Create objects for the generic data collection
         group = ObjectsFactory.create_group(experiment)
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
@@ -3464,7 +3411,7 @@ class ImportExperimentTest(TestCase):
 
     # Tests for EMG data collection
     def _create_emg_data_collection_objects(self):
-        # Create base objects for an experiment with one step of tms
+        # Create base objects for an experiment with one step of emg
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
@@ -3478,7 +3425,7 @@ class ImportExperimentTest(TestCase):
         component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
-        # Create objects for the digital game phase data
+        # Create objects for the emg data collection
         group = ObjectsFactory.create_group(experiment)
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
@@ -3518,3 +3465,112 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.emgfile',
                                                            'emg_data',
                                                            self._create_emg_data_collection_objects())
+
+    # Tests for Component Additional Data
+    def _create_all_data_collections(self):
+        # TODO: include EEG
+        # Base elements
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+
+        # TMS
+        tms_setting = ObjectsFactory.create_tms_setting(experiment)
+        tms_step = ObjectsFactory.create_component(experiment, 'tms', kwargs={'tms_set': tms_setting})
+        tms_component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, tms_step)
+        tms_dct = ObjectsFactory.create_data_configuration_tree(tms_component_configuration)
+
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+
+        # EMG
+        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        emg_component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
+        emg_dct = ObjectsFactory.create_data_configuration_tree(emg_component_config)
+
+        # Digital Game Phase
+        context_tree = ObjectsFactory.create_context_tree(experiment)
+        digital_game_phase_step = ObjectsFactory.create_component(
+            experiment,
+            'digital_game_phase',
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
+        dgp_component_configuration = ObjectsFactory.create_component_configuration(
+            rootcomponent,
+            digital_game_phase_step)
+        dgp_dct = ObjectsFactory.create_data_configuration_tree(dgp_component_configuration)
+
+        # Generic Data Collection
+        information_type = ObjectsFactory.create_information_type()
+        generic_data_collection_step = ObjectsFactory.create_component(
+            experiment,
+            'generic_data_collection',
+            kwargs={'it': information_type})
+        gdc_component_configuration = ObjectsFactory.create_component_configuration(
+            rootcomponent,
+            generic_data_collection_step)
+        gdc_dct = ObjectsFactory.create_data_configuration_tree(gdc_component_configuration)
+
+        # Task for the Experimenter
+        task_experimenter_step = ObjectsFactory.create_component(experiment, 'task_experiment')
+        task_experimenter_component_configuration = ObjectsFactory.create_component_configuration(
+            rootcomponent, task_experimenter_step)
+
+        # Task for the Participant
+        task_step = ObjectsFactory.create_component(experiment, 'task')
+        task_component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, task_step)
+
+        # Pause
+        pause_step = ObjectsFactory.create_component(experiment, 'pause')
+        pause_component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, pause_step)
+
+        # Instruction
+        instruction_step = ObjectsFactory.create_component(experiment, 'instruction')
+        instruction_component_configuration = ObjectsFactory.create_component_configuration(
+            rootcomponent,
+            instruction_step)
+
+        # Stimulus
+        stimulus_type = ObjectsFactory.create_stimulus_type()
+
+        stimulus_step = ObjectsFactory.create_component(experiment, 'stimulus', kwargs={'stimulus_type': stimulus_type})
+        stimulus_component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, stimulus_step)
+
+        # Block
+        block_step = ObjectsFactory.create_component(experiment, 'block', 'another block component')
+        block_component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, block_step)
+
+        dict_ = [
+            ['rootcomponent', rootcomponent],
+            ['block', block_step],
+            ['tms', tms_step],
+            ['emg', emg_step],
+            ['gdp', digital_game_phase_step],
+            ['gdc', generic_data_collection_step],
+            ['task_experimenter', task_experimenter_step],
+            ['task', task_step],
+            ['pause', pause_step],
+            ['instruction', instruction_step],
+            ['stimulus', stimulus_step],
+        ]
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            for component in dict_:
+                with open(os.path.join(tmpdirname, component[0]+'additionalfile.bin'), 'wb') as f:
+                    f.write(b'carambola')
+
+                with File(open(f.name, 'rb')) as file:
+                    ComponentAdditionalFile.objects.create(component=component[1], file=file)
+
+        return experiment
+
+    def test_component_additional_data_for_each_component_with_additional_data(self):
+        self._test_creation_and_linking_between_two_models('experiment.component',
+                                                           'experiment.componentadditionalfile',
+                                                           'component',
+                                                           self._create_all_data_collections())
