@@ -16,6 +16,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from faker import Factory
+from mne.io.ctf import eeg
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, \
@@ -36,7 +37,8 @@ from experiment.models import Experiment, Group, Subject, \
     GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
     AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, \
     TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, \
-    BrainArea, BrainAreaSystem
+    BrainArea, BrainAreaSystem, \
+    EEGElectrodePositionCollectionStatus, EEGElectrodePositionSetting, EEGElectrodeLayoutSetting
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -429,20 +431,39 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_electrode_localization_system():
-        eeg_electrode_localization_system = EEGElectrodeLocalizationSystem.objects.create(
-            name="Localization System name"
-        )
-        eeg_electrode_localization_system.save()
-        return eeg_electrode_localization_system
+        return EEGElectrodeLocalizationSystem.objects.create(name="Localization System name")
 
     @staticmethod
     def create_eeg_electrode_position(eeg_electrode_localization_system):
-        eeg_electrode_position = EEGElectrodePosition.objects.create(
+        return EEGElectrodePosition.objects.create(
             eeg_electrode_localization_system=eeg_electrode_localization_system,
             name="Position name"
         )
-        eeg_electrode_position.save()
-        return eeg_electrode_position
+
+    @staticmethod
+    def create_eeg_electrode_layout_setting(eeg_setting, eeg_electrode_net_system):
+        return EEGElectrodeLayoutSetting.objects.create(
+            eeg_setting=eeg_setting, eeg_electrode_net_system=eeg_electrode_net_system
+        )
+
+    @staticmethod
+    def create_eeg_electrode_position_setting(eeg_electrode_layout_setting, eeg_electrode_position, electrode_model):
+        faker = Factory.create()
+        return EEGElectrodePositionSetting.objects.create(
+            eeg_electrode_layout_setting=eeg_electrode_layout_setting,
+            eeg_electrode_position=eeg_electrode_position,
+            electrode_model=electrode_model,
+            used=random.choice([True, False]),
+            channel_index=faker.pyint()
+        )
+
+    @staticmethod
+    def create_eeg_electrode_position_collection_status(eeg_data, eeg_electrode_position_setting):
+        faker = Factory.create()
+        return EEGElectrodePositionCollectionStatus.objects.create(
+            eeg_data=eeg_data, eeg_electrode_position_setting=eeg_electrode_position_setting,
+            worked=random.choice([True, False]), channel_index=faker.pyint()
+        )
 
     @staticmethod
     def create_software(manufacturer):
@@ -499,8 +520,16 @@ class ObjectsFactory(object):
             manufacturer=manufacturer,
             identification="EEG electrode cap identification",
             electrode_model_default=electrode_model,
-            material=material
+            material=material,
+            equipment_type= 'eeg_electrode_net'
         )
+
+    @staticmethod
+    def create_eeg_electrode_capsize(eeg_electrode_cap):
+        faker = Factory.create()
+        return EEGCapSize.objects.create(
+            eeg_electrode_cap=eeg_electrode_cap, size=faker.word(),
+            electrode_adjacent_distance=faker.pyfloat())
 
     @staticmethod
     def create_coil_model(coil_shape):
@@ -530,10 +559,11 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_data_configuration_tree(component_config):
+    def create_data_configuration_tree(component_config, parent=None):
         return DataConfigurationTree.objects.create(
             component_configuration=component_config,
-            code=random.randint(1, 999)
+            code=random.randint(1, 999),
+            parent=parent
         )
 
     @staticmethod
@@ -613,7 +643,7 @@ class ObjectsFactory(object):
         return gdcf
 
     @staticmethod
-    def create_eeg_data_collection_data(data_conf_tree, subj_of_group, eeg_set):
+    def create_eeg_data_collection_data(data_conf_tree, subj_of_group, eeg_set, eeg_cap_size=None):
 
         faker = Factory.create()
 
@@ -622,7 +652,8 @@ class ObjectsFactory(object):
             description=faker.text(), file_format=file_format,
             file_format_description=faker.text(),
             data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group, eeg_setting=eeg_set
+            subject_of_group=subj_of_group, eeg_setting=eeg_set,
+            eeg_cap_size=eeg_cap_size
         )
 
     @staticmethod
@@ -639,19 +670,6 @@ class ObjectsFactory(object):
             eegf.save()
 
         return eegf
-
-    @staticmethod
-    def create_eeg_data_collection_data(data_conf_tree, subj_of_group, eeg_set):
-
-        faker = Factory.create()
-
-        file_format = ObjectsFactory.create_file_format()
-        return EEGData.objects.create(
-            description=faker.text(), file_format=file_format,
-            file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group, eeg_setting=eeg_set
-        )
 
     @staticmethod
     def create_emg_data_collection_data(data_conf_tree,
