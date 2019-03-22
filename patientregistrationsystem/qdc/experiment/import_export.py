@@ -149,8 +149,11 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
 
-    def get_file_path(self):
-        return path.join(self.temp_dir, self.FILE_NAME_ZIP)
+    def get_file_path(self, type_='zip'):
+        if type_=='zip':
+            return path.join(self.temp_dir, self.FILE_NAME_ZIP)
+        elif type_=='json':
+            return path.join(self.temp_dir, self.FILE_NAME_JSON)
 
     def export_all(self):
         for key, value in EXPERIMENT_JSON_FILES.items():
@@ -176,9 +179,14 @@ class ExportExperiment:
         self._update_classification_of_diseases_reference(self.FILE_NAME_JSON)
         self._remove_auth_user_model_from_json(self.FILE_NAME_JSON)
 
+        with open(self.get_file_path('json')) as f:
+            data = json.load(f)
+
+         indexes = [index for index, dict_ in enumerate(data) if dict_['model'] in MODELS_WITH_FILE_FIELD]
         with zipfile.ZipFile(self.get_file_path(), 'w') as zip_file:
             zip_file.write(path.join(self.temp_dir, self.FILE_NAME_JSON).encode('utf-8'), self.FILE_NAME_JSON)
-
+            for index in indexes:
+                zip_file.write(MODEL_WITH_FILE_FIELD[data[index]['model']])
 
 class ImportExperiment:
     BAD_JSON_FILE_ERROR_CODE = 1
