@@ -10,8 +10,9 @@ import os
 from django.apps import apps
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import PermissionDenied
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 from faker import Factory
@@ -374,6 +375,8 @@ class CollaboratorTest(TestCase):
 
 class ExportExperimentTest(TestCase):
 
+    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
+
     def setUp(self):
         # create the groups of users and their permissions
         exec(open('add_initial_data.py').read())
@@ -389,6 +392,7 @@ class ExportExperimentTest(TestCase):
 
     def tearDown(self):
         self.client.logout()
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def _create_minimum_objects_to_test_patient(self, patient):
         # TODO: equal to the one in ImportExperimentTest
@@ -423,6 +427,8 @@ class ExportExperimentTest(TestCase):
         with open(os.path.join(self.temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
             data = json.loads(file.read().replace('\n', ''))
             self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
+
+        shutil.rmtree(self.temp_dir)
 
     def test_remove_all_auth_user_items_before_export(self):
         patient = UtilTests.create_patient(changed_by=self.user)
@@ -479,6 +485,20 @@ class ExportExperimentTest(TestCase):
         index = next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'patient.diagnosis'), None)
         code = deserialized[index]['fields']['classification_of_diseases'][0]
         self.assertEqual(diagnosis.classification_of_diseases.code, code)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_experiment_has_file_creates_correpondent_dir_file_in_experiment_zip_file(self):
+        self.experiment.ethics_committee_project_file = SimpleUploadedFile('file.bin', b'binnary content')
+        self.experiment.save()
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
+        self.assertTrue(self.experiment.ethics_committee_project_file in [subdir for subdir in zipped_file.namelist(
+
+        )], '%s not in %s' % (self.experiment.ethics_committee_project_file, zipped_file.namelist()))
+
+        shutil.rmtree(self.temp_dir)
 
 
 class ImportExperimentTest(TestCase):
