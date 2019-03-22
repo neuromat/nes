@@ -41,17 +41,6 @@
             mask("99/99/9999");
         });
 
-        jQuery(document).ready(function($) {
-           if (window.history && window.history.pushState) {
-
-            window.history.pushState('forward', null, null);
-
-            $(window).on('popstate', function() {
-               window.history.go(-3);
-            });
-          }
-        });
-
     </script>
 
     <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">

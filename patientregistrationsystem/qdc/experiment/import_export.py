@@ -17,7 +17,8 @@ from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component
 from experiment.import_export_model_relations import ONE_TO_ONE_RELATION, FOREIGN_RELATIONS, MODEL_ROOT_NODES, \
     EXPERIMENT_JSON_FILES, PATIENT_JSON_FILES, JSON_FILES_DETACHED_MODELS, PRE_LOADED_MODELS_FOREIGN_KEYS, \
-    PRE_LOADED_MODELS_INHERITANCE, PRE_LOADED_MODELS_NOT_EDITABLE, PRE_LOADED_PATIENT_MODEL
+    PRE_LOADED_MODELS_INHERITANCE, PRE_LOADED_MODELS_NOT_EDITABLE, PRE_LOADED_PATIENT_MODEL, \
+    PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -539,6 +540,17 @@ class ImportExperiment:
                 digraph.node[node]['pre_loaded'] = False
             else:
                 digraph.node[node]['pre_loaded'] = True
+
+        # set digraph.node[node]['pre_loaded'] = True for models inherited
+        nodes = [
+            node for node in digraph.nodes if self.data[node]['model'] in PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE
+        ]
+        for node in nodes:
+            model_inheritances = PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE[self.data[node]['model']]
+            for model in model_inheritances:
+                node_inheritance = next(node_inheritance for node_inheritance in digraph.nodes if self.data[node_inheritance]['model'] == model and
+                                        self.data[node]['pk'] == self.data[node_inheritance]['pk'])
+                digraph.node[node_inheritance]['pre_loaded'] = True
 
         return digraph
 
