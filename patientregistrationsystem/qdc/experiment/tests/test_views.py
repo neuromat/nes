@@ -385,6 +385,8 @@ class ExportExperimentTest(TestCase):
 
         self.client.login(username=self.user.username, password=passwd)
 
+        self.temp_dir = tempfile.mkdtemp()
+
     def tearDown(self):
         self.client.logout()
 
@@ -413,10 +415,14 @@ class ExportExperimentTest(TestCase):
         json_file = zipped_file.namelist()[0]  # There's only one file archived
         self.assertEqual('experiment.json', json_file)
 
+    # TODO: NES-946: see if it's deprecated or have to check for all user objects, not only one
     def test_GET_experiment_export_returns_json_file_without_user_object(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
-        data = json.loads(response.content.decode('utf-8'))
-        self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
+        zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
+        zipped_file.extractall(self.temp_dir)
+        with open(os.path.join(self.temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
+            data = json.loads(file.read().replace('\n', ''))
+            self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
 
     def test_remove_all_auth_user_items_before_export(self):
         patient = UtilTests.create_patient(changed_by=self.user)
@@ -436,13 +442,17 @@ class ExportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        with open(file_path) as file:
+        zipped_file = zipfile.ZipFile(file_path, 'r')
+        zipped_file.extractall(self.temp_dir)
+        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
 
         deserialized = json.loads(data)
         self.assertIsNone(
             next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'), None)
         )
+
+        shutil.rmtree(self.temp_dir)
 
     def test_diagnosis_classification_of_diseases_references_points_to_natural_key_code(self):
         patient = UtilTests.create_patient(changed_by=self.user)
@@ -455,8 +465,15 @@ class ExportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        with open(file_path) as file:
+        zipped_file = zipfile.ZipFile(file_path, 'r')
+        zipped_file.extractall(self.temp_dir)
+        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
+
+        deserialized = json.loads(data)
+        self.assertIsNone(
+            next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'), None)
+        )
 
         deserialized = json.loads(data)
         index = next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'patient.diagnosis'), None)
