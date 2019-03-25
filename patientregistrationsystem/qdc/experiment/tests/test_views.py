@@ -488,15 +488,16 @@ class ExportExperimentTest(TestCase):
         self.assertEqual(diagnosis.classification_of_diseases.code, code)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_experiment_has_file_creates_correpondent_dir_file_in_experiment_zip_file(self):
+    def test_experiment_has_file_creates_corresponding_dir_file_in_experiment_zip_file(self):
         self.experiment.ethics_committee_project_file = SimpleUploadedFile('file.bin', b'binnary content')
         self.experiment.save()
 
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
-        self.assertTrue(self.experiment.ethics_committee_project_file in [subdir for subdir in zipped_file.namelist(
-
-        )], '%s not in %s' % (self.experiment.ethics_committee_project_file, zipped_file.namelist()))
+        file_path = os.path.join(self.experiment.ethics_committee_project_file.name)
+        self.assertTrue(
+            file_path in [subdir for subdir in zipped_file.namelist()],
+            '%s not in %s' % (file_path, zipped_file.namelist()))
 
         shutil.rmtree(self.temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
