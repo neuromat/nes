@@ -1093,7 +1093,6 @@ def get_data_file_dir(instance, filename):
     directory = 'data_files'
 
     if isinstance(instance, EEGFile):
-
         directory = path.join(
             'data_collection_files',
             str(instance.eeg_data.subject_of_group.group.experiment.id),
