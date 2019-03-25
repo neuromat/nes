@@ -1,16 +1,19 @@
+import io
 import json
 import shutil
 import sys
 import tempfile
+import zipfile
 from unittest import skip
 import os
 
 from django.apps import apps
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import PermissionDenied
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from django.core.files import File
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 from faker import Factory
@@ -374,6 +377,8 @@ class CollaboratorTest(TestCase):
 
 class ExportExperimentTest(TestCase):
 
+    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
+
     def setUp(self):
         # create the groups of users and their permissions
         exec(open('add_initial_data.py').read())
@@ -384,6 +389,8 @@ class ExportExperimentTest(TestCase):
         self.group = ObjectsFactory.create_group(self.experiment)
 
         self.client.login(username=self.user.username, password=passwd)
+
+        self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         self.client.logout()
@@ -398,18 +405,31 @@ class ExportExperimentTest(TestCase):
 
         return experiment
 
-    def test_GET_experiment_export_returns_json_file(self):
+    def test_GET_experiment_export_returns_zip_file(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         self.assertEqual(response.status_code, 200)
-        self.assertEquals(
-            response.get('Content-Disposition'),
-            'attachment; filename=%s' % smart_str('experiment.json')
-        )
+        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename=%s' % smart_str('experiment.zip'))
+        # get zipped file to test against its content
+        file = io.BytesIO(response.content)
+        zipped_file = zipfile.ZipFile(file, 'r')
+        self.assertIsNone(zipped_file.testzip())
 
+    def test_GET_experiment_export_returns_json_inside_zip_file(self):
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
+        json_file = zipped_file.namelist()[0]  # There's only one file archived
+        self.assertEqual('experiment.json', json_file)
+
+    # TODO: NES-946: see if it's deprecated or have to check for all user objects, not only one
     def test_GET_experiment_export_returns_json_file_without_user_object(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
-        data = json.loads(response.content.decode('utf-8'))
-        self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
+        zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
+        zipped_file.extractall(self.temp_dir)
+        with open(os.path.join(self.temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
+            data = json.loads(file.read().replace('\n', ''))
+            self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
+
+        shutil.rmtree(self.temp_dir)
 
     def test_remove_all_auth_user_items_before_export(self):
         patient = UtilTests.create_patient(changed_by=self.user)
@@ -429,13 +449,17 @@ class ExportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        with open(file_path) as file:
+        zipped_file = zipfile.ZipFile(file_path, 'r')
+        zipped_file.extractall(self.temp_dir)
+        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
 
         deserialized = json.loads(data)
         self.assertIsNone(
             next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'), None)
         )
+
+        shutil.rmtree(self.temp_dir)
 
     def test_diagnosis_classification_of_diseases_references_points_to_natural_key_code(self):
         patient = UtilTests.create_patient(changed_by=self.user)
@@ -448,13 +472,34 @@ class ExportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        with open(file_path) as file:
+        zipped_file = zipfile.ZipFile(file_path, 'r')
+        zipped_file.extractall(self.temp_dir)
+        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
+
+        deserialized = json.loads(data)
+        self.assertIsNone(
+            next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'), None)
+        )
 
         deserialized = json.loads(data)
         index = next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'patient.diagnosis'), None)
         code = deserialized[index]['fields']['classification_of_diseases'][0]
         self.assertEqual(diagnosis.classification_of_diseases.code, code)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_experiment_has_file_creates_correpondent_dir_file_in_experiment_zip_file(self):
+        self.experiment.ethics_committee_project_file = SimpleUploadedFile('file.bin', b'binnary content')
+        self.experiment.save()
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
+        self.assertTrue(self.experiment.ethics_committee_project_file in [subdir for subdir in zipped_file.namelist(
+
+        )], '%s not in %s' % (self.experiment.ethics_committee_project_file, zipped_file.namelist()))
+
+        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
 
 class ImportExperimentTest(TestCase):
@@ -831,9 +876,12 @@ class ImportExperimentTest(TestCase):
 
     def test_POST_experiment_import_file_has_bad_json_file_redirects_with_error_message(self):
         temp_dir = tempfile.mkdtemp()
-        dummy_file = ObjectsFactory.create_csv_file(temp_dir, 'experiment.json')
-
-        with open(dummy_file.name, 'rb') as file:
+        json_filename = 'experiment.json'
+        zip_filename = 'experiment.zip'
+        dummy_json_file = ObjectsFactory.create_csv_file(temp_dir, json_filename)
+        with zipfile.ZipFile(os.path.join(temp_dir, zip_filename), 'w') as zip_file:
+            zip_file.write(dummy_json_file.name, json_filename)
+        with open(os.path.join(temp_dir, zip_filename), 'rb') as file:
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('experiment_import'))
         message = str(list(response.context['messages'])[0])
