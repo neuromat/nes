@@ -2,6 +2,7 @@ import shutil
 import sys
 import tempfile
 import json
+import zipfile
 from json import JSONDecodeError
 from os import path
 
@@ -18,14 +19,15 @@ from experiment.models import Group, ResearchProject, Experiment, \
 from experiment.import_export_model_relations import ONE_TO_ONE_RELATION, FOREIGN_RELATIONS, MODEL_ROOT_NODES, \
     EXPERIMENT_JSON_FILES, PATIENT_JSON_FILES, JSON_FILES_DETACHED_MODELS, PRE_LOADED_MODELS_FOREIGN_KEYS, \
     PRE_LOADED_MODELS_INHERITANCE, PRE_LOADED_MODELS_NOT_EDITABLE, PRE_LOADED_PATIENT_MODEL, \
-    PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE
+    PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE, MODELS_WITH_FILE_FIELD
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
 
 class ExportExperiment:
 
-    FILE_NAME = 'experiment.json'
+    FILE_NAME_JSON = 'experiment.json'
+    FILE_NAME_ZIP = 'experiment.zip'
 
     def __init__(self, experiment):
         self.experiment = experiment
@@ -52,6 +54,14 @@ class ExportExperiment:
         sys.stdout = open(path.join(self.temp_dir, filename + '.json'), 'w')
         call_command(
             'dump_object', 'experiment.' + elements[0], '--query', '{"' + elements[1] + '": ' + str(parent_ids) + '}')
+        sys.stdout = sysout
+
+    def _generate_keywords_fixture(self):
+        # Generate fixture to keywords of the research project
+        sysout = sys.stdout
+        sys.stdout = open(path.join(self.temp_dir, 'keywords.json'), 'w')
+        call_command('dump_object', 'experiment.researchproject_keywords', '--query',
+                     '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
         sys.stdout = sysout
 
     def _remove_auth_user_model_from_json(self, filename):
@@ -139,6 +149,12 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
 
+    def get_file_path(self, type_='zip'):
+        if type_ == 'zip':
+            return path.join(self.temp_dir, self.FILE_NAME_ZIP)
+        elif type_ == 'json':
+            return path.join(self.temp_dir, self.FILE_NAME_JSON)
+
     def export_all(self):
         for key, value in EXPERIMENT_JSON_FILES.items():
             self._generate_fixture(key, value)
@@ -146,31 +162,31 @@ class ExportExperiment:
             self._generate_fixture(key, value, 'patient.')
         for key, value in JSON_FILES_DETACHED_MODELS.items():
             self._generate_detached_fixture(key, value)
-
-        # Generate fixture to keywords of the research project
-        sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, 'keywords.json'), 'w')
-        call_command('dump_object', 'experiment.researchproject_keywords', '--query',
-                     '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
-        sys.stdout = sysout
+        self._generate_keywords_fixture()
 
         fixtures = []
         for filename in {**EXPERIMENT_JSON_FILES, **PATIENT_JSON_FILES, **JSON_FILES_DETACHED_MODELS}:
             fixtures.append(path.join(self.temp_dir, filename + '.json'))
 
         sysout = sys.stdout
-        sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME), 'w')
+        sys.stdout = open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w')
         call_command('merge_fixtures', *fixtures)
         sys.stdout = sysout
 
-        self._remove_researchproject_keywords_model_from_json(self.FILE_NAME)
-        self._change_group_code_to_null_from_json(self.FILE_NAME)
-        self._remove_survey_code(self.FILE_NAME)
-        self._update_classification_of_diseases_reference(self.FILE_NAME)
-        self._remove_auth_user_model_from_json(self.FILE_NAME)
+        self._remove_researchproject_keywords_model_from_json(self.FILE_NAME_JSON)
+        self._change_group_code_to_null_from_json(self.FILE_NAME_JSON)
+        self._remove_survey_code(self.FILE_NAME_JSON)
+        self._update_classification_of_diseases_reference(self.FILE_NAME_JSON)
+        self._remove_auth_user_model_from_json(self.FILE_NAME_JSON)
 
-    def get_file_path(self):
-        return path.join(self.temp_dir, self.FILE_NAME)
+        with open(self.get_file_path('json')) as f:
+            data = json.load(f)
+
+        indexes = [index for index, dict_ in enumerate(data) if dict_['model'] in MODELS_WITH_FILE_FIELD]
+        with zipfile.ZipFile(self.get_file_path(), 'w') as zip_file:
+            zip_file.write(path.join(self.temp_dir, self.FILE_NAME_JSON).encode('utf-8'), self.FILE_NAME_JSON)
+            for index in indexes:
+                zip_file.write(MODELS_WITH_FILE_FIELD[data[index]['model']])
 
 
 class ImportExperiment:
@@ -416,8 +432,10 @@ class ImportExperiment:
 
     def _check_for_duplicates_of_participants(self):
         try:
-            with open(self.file_path) as f:
-                data = json.load(f)
+            with zipfile.ZipFile(self.file_path) as zip_file:
+                json_file = zip_file.extract(self.FIXTURE_FILE_NAME, self.temp_dir)
+                with open(json_file) as f:
+                    data = json.load(f)
         except (ValueError, JSONDecodeError):
             return self.BAD_JSON_FILE_ERROR_CODE, 'Bad json file. Aborting import experiment.', None
 
@@ -565,10 +583,12 @@ class ImportExperiment:
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
         try:
-            with open(self.file_path) as f:
-                self.data = json.load(f)
-                # To Import Log page
-                self._set_last_objects_before_import(research_project_id)
+            with zipfile.ZipFile(self.file_path) as zip_file:
+                json_file = zip_file.extract(self.FIXTURE_FILE_NAME, self.temp_dir)
+                with open(json_file) as f:
+                    self.data = json.load(f)
+                    # To Import Log page
+                    self._set_last_objects_before_import(research_project_id)
         except (ValueError, JSONDecodeError):
             return self.BAD_JSON_FILE_ERROR_CODE, 'Bad json file. Aborting import experiment.'
 

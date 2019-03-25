@@ -809,10 +809,10 @@ def experiment_export(request, experiment_id):
     export = ExportExperiment(experiment)
     export.export_all()
 
-    file = open(path.join(export.temp_dir, export.FILE_NAME), 'rb')
-    response = HttpResponse(file, content_type='application/json')
+    file = open(path.join(export.temp_dir, export.FILE_NAME_ZIP), 'rb')
+    response = HttpResponse(file, content_type='application/zip')
     response['Content-Length'] = path.getsize(file.name)
-    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('experiment.json')
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('experiment.zip')
 
     return response
 
@@ -862,12 +862,8 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
 
             if patients_with_conflict:
                 request.session['patients_conflicts_resolved'] = True
-                if research_project_id:
-                    return render(request, 'experiment/decide_about_patients.html',
-                                  context={'patients': patients_with_conflict})
-                else:
-                    return render(request, 'experiment/decide_about_patients.html',
-                                  context={'patients': patients_with_conflict})
+                return render(
+                    request, 'experiment/decide_about_patients.html', context={'patients': patients_with_conflict})
 
             patients_conflicts_resolved = True
 
