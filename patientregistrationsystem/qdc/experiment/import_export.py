@@ -10,6 +10,7 @@ from functools import reduce
 from operator import or_
 
 import networkx as nx
+from django.conf import settings
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count, Q
@@ -149,6 +150,21 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
 
+    def _create_zip_file(self):
+        """Create zip file with experiment.json file and subdirs corresponding
+        to file paths from models that have FileField fields
+        """
+        with open(self.get_file_path('json')) as f:
+            data = json.load(f)
+
+        indexes = [index for index, dict_ in enumerate(data) if dict_['model'] in MODELS_WITH_FILE_FIELD]
+        with zipfile.ZipFile(self.get_file_path(), 'w') as zip_file:
+            zip_file.write(self.get_file_path('json').encode('utf-8'), self.FILE_NAME_JSON)
+            for index in indexes:
+                relative_filepath = data[index]['fields'][MODELS_WITH_FILE_FIELD[data[index]['model']]]
+                absolute_filepath = path.join(settings.MEDIA_ROOT, relative_filepath)
+                zip_file.write(absolute_filepath, relative_filepath)
+
     def get_file_path(self, type_='zip'):
         if type_ == 'zip':
             return path.join(self.temp_dir, self.FILE_NAME_ZIP)
@@ -173,20 +189,14 @@ class ExportExperiment:
         call_command('merge_fixtures', *fixtures)
         sys.stdout = sysout
 
+        # TODO: remove self.FILE_NAME_JSON as they are accessible for all methods in the class
         self._remove_researchproject_keywords_model_from_json(self.FILE_NAME_JSON)
         self._change_group_code_to_null_from_json(self.FILE_NAME_JSON)
         self._remove_survey_code(self.FILE_NAME_JSON)
         self._update_classification_of_diseases_reference(self.FILE_NAME_JSON)
         self._remove_auth_user_model_from_json(self.FILE_NAME_JSON)
 
-        with open(self.get_file_path('json')) as f:
-            data = json.load(f)
-
-        indexes = [index for index, dict_ in enumerate(data) if dict_['model'] in MODELS_WITH_FILE_FIELD]
-        with zipfile.ZipFile(self.get_file_path(), 'w') as zip_file:
-            zip_file.write(path.join(self.temp_dir, self.FILE_NAME_JSON).encode('utf-8'), self.FILE_NAME_JSON)
-            for index in indexes:
-                zip_file.write(MODELS_WITH_FILE_FIELD[data[index]['model']])
+        self._create_zip_file()
 
 
 class ImportExperiment:
