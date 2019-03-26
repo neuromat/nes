@@ -176,30 +176,21 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_emg_electrode_setting(emg_setting, electrode_model):
-        emg_electrode_setting = EMGElectrodeSetting.objects.create(emg_setting=emg_setting, electrode=electrode_model)
-
-        emg_electrode_setting.save()
-        return emg_electrode_setting
+        return EMGElectrodeSetting.objects.create(emg_setting=emg_setting, electrode=electrode_model)
 
     @staticmethod
-    def create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side):
-        emg_electrode_placement_setting = EMGElectrodePlacementSetting.objects.create(
+    def create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side=None):
+        return EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting,
             emg_electrode_placement=electrode_placement,
             muscle_side=muscle_side,
             remarks="Remarks electrode placement setting")
 
-        emg_electrode_placement_setting.save()
-        return emg_electrode_placement_setting
-
     @staticmethod
     def create_standardization_system():
-        standardization_system = StandardizationSystem.objects.create(
+        return StandardizationSystem.objects.create(
             name='Standardization System identification',
-            description='Standardization System description'
-        )
-        standardization_system.save()
-        return standardization_system
+            description='Standardization System description')
 
     @staticmethod
     def create_muscle():
@@ -225,12 +216,18 @@ class ObjectsFactory(object):
         return muscle_side
 
     @staticmethod
-    def create_emg_electrode_placement(standardization_system, muscle_subdivision, placement_type):
-        return EMGElectrodePlacement.objects.create(
-            standardization_system=standardization_system,
-            muscle_subdivision=muscle_subdivision,
-            placement_type=placement_type
-        )
+    def create_emg_electrode_placement(standardization_system, muscle_subdivision):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            emg_ep = EMGElectrodePlacement.objects.create(
+                standardization_system=standardization_system,
+                muscle_subdivision=muscle_subdivision,
+                placement_type=random.choice(EMGElectrodePlacement.PLACEMENT_TYPES)[0]
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                emg_ep.photo.save('file.bin', f)
+            emg_ep.save()
+        return emg_ep
 
     @staticmethod
     def create_component(experiment, component_type, identification=None, kwargs=None):
@@ -704,13 +701,9 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_emg_data_collection_file(emg_data):
-
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-
-            emgf = EMGFile.objects.create(
-                emg_data=emg_data
-            )
+            emgf = EMGFile.objects.create(emg_data=emg_data)
             with File(open(bin_file.name, 'rb')) as f:
                 emgf.file.save('file.bin', f)
             emgf.save()
