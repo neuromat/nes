@@ -34,10 +34,9 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     MuscleSubdivision, EMGElectrodePlacementSetting, StandardizationSystem, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
-    StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, DataCollection, \
-    TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, BrainArea, BrainAreaSystem, \
+    StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, \
     HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
-    EEGElectrodeCap, EEGElectrodePositionCollectionStatus
+    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -578,6 +577,72 @@ class ExportExperimentTest(TestCase):
         )
 
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
+            self.assertEqual(1, len(zipped_file.namelist()))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_emg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        subject_of_group = SubjectOfGroup.objects.last()
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        electrode_model = ObjectsFactory.create_electrode_model()
+        emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
+        emg_ep = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
+        ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
+        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
+        emg_file = ObjectsFactory.create_emg_data_collection_file(emg_data)
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': experiment.id}))
+        with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
+            self.assertTrue(
+                emg_file.file.name in [subdir for subdir in zipped_file.namelist()],
+                '%s not in %s' % (emg_file.file.name, zipped_file.namelist()))
+            self.assertTrue(
+                emg_ep.photo.name in [subdir for subdir in zipped_file.namelist()],
+                '%s not in %s' % (emg_ep.photo.name, zipped_file.namelist()))
+
+        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_emg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        subject_of_group = SubjectOfGroup.objects.last()
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        electrode_model = ObjectsFactory.create_electrode_model()
+        emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
+        emg_ep = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
+        emg_ep.photo = ''
+        emg_ep.save()
+        ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
+        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
+        emg_file = ObjectsFactory.create_emg_data_collection_file(emg_data)
+        emg_file.file = ''
+        emg_file.save()
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertEqual(1, len(zipped_file.namelist()))
 
@@ -3480,7 +3545,7 @@ class ImportExperimentTest(TestCase):
                                                            self._create_generic_data_collection_objects())
 
     # Tests for EMG data collection
-    def _create_emg_data_collection_objects(self):
+    def _create_emg_data_collection_related_objects(self):
         # Create base objects for an experiment with one step of emg
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
@@ -3505,36 +3570,75 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_import_emg_data_collection_files(self):
+        experiment = self._create_emg_data_collection_related_objects()
+        emg_setting = EMGSetting.objects.last()
+        emg_file = EMGFile.objects.last()
+
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        electrode_model = ObjectsFactory.create_electrode_model()
+        emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
+        emg_ep = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
+        ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, emg_file.file.name))
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, emg_ep.photo.name))
+
+        emg_file_imported = EMGFile.objects.last()
+        emg_ep_imported = EMGElectrodePlacement.objects.last()
+        filepath1 = os.path.join(self.TEMP_MEDIA_ROOT, emg_file_imported.file.name)
+        filepath2 = os.path.join(self.TEMP_MEDIA_ROOT, emg_ep_imported.photo.name)
+        self.assertTrue(os.path.exists(filepath1))
+        self.assertTrue(os.path.exists(filepath2))
+
     def test_data_configuration_tree_and_emg_data(self):
         self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
                                                            'experiment.emgdata',
                                                            'data_configuration_tree',
-                                                           self._create_emg_data_collection_objects())
+                                                           self._create_emg_data_collection_related_objects())
 
     def test_subject_of_group_and_emg_data(self):
         self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
                                                            'experiment.emgdata',
                                                            'subject_of_group',
-                                                           self._create_emg_data_collection_objects())
+                                                           self._create_emg_data_collection_related_objects())
 
     def test_file_format_and_emg_data(self):
         self._test_creation_and_linking_between_two_models('experiment.fileformat',
                                                            'experiment.emgdata',
                                                            'file_format',
-                                                           self._create_emg_data_collection_objects(),
+                                                           self._create_emg_data_collection_related_objects(),
                                                            to_create1=False)
 
     def test_emg_setting_and_emg_data(self):
         self._test_creation_and_linking_between_two_models('experiment.emgsetting',
                                                            'experiment.emgdata',
                                                            'emg_setting',
-                                                           self._create_emg_data_collection_objects())
+                                                           self._create_emg_data_collection_related_objects())
 
     def test_emg_data_and_emg_file(self):
         self._test_creation_and_linking_between_two_models('experiment.emgdata',
                                                            'experiment.emgfile',
                                                            'emg_data',
-                                                           self._create_emg_data_collection_objects())
+                                                           self._create_emg_data_collection_related_objects())
 
     def _create_eeg_data_collection_related_objects(self):
         eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
