@@ -36,7 +36,8 @@ from experiment.models import Experiment, Group, Subject, \
     GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
     AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, \
     TMSData, DirectionOfTheInducedCurrent, CoilOrientation, \
-    EEGElectrodePositionCollectionStatus, EEGElectrodePositionSetting, EEGElectrodeLayoutSetting
+    EEGElectrodePositionCollectionStatus, EEGElectrodePositionSetting, EEGElectrodeLayoutSetting, \
+    TMSLocalizationSystem, BrainAreaSystem, BrainArea
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -701,6 +702,22 @@ class ObjectsFactory(object):
             coil_orientation=coilor,
             description=faker.text(),
             direction_of_induced_current=doic,)
+
+    @staticmethod
+    def create_tms_localization_system_file():
+        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
+        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+
+            tmslsf = TMSLocalizationSystem.objects.create(
+                name="TMS name", brain_area=brainarea)
+            with File(open(bin_file.name, 'rb')) as f:
+                tmslsf.tms_localization_system_image.save('file.bin', f)
+            tmslsf.save()
+
+        return tmslsf
 
     @staticmethod
     def create_emg_data_collection_file(emg_data):
