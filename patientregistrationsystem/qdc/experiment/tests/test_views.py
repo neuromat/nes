@@ -38,7 +38,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, BrainArea, BrainAreaSystem, \
     HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
     EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, EMGData, DigitalGamePhase, \
-    DigitalGamePhaseFile, GenericDataCollectionFile
+    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile
 
 
 from experiment.models import Group as ExperimentGroup
@@ -3385,6 +3385,34 @@ class ImportExperimentTest(TestCase):
                                                            'additional_data',
                                                            self._create_additional_data_collection_objects())
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_import_additional_data_collection_files(self):
+        experiment = self._create_additional_data_collection_objects()
+
+        # Created right above: to remove files below
+        adc = AdditionalDataFile.objects.last()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, adc.file.name))
+
+        adc_file_imported = AdditionalDataFile.objects.last()
+        filepath = os.path.join(self.TEMP_MEDIA_ROOT, adc_file_imported.file.name)
+        self.assertTrue(os.path.exists(filepath))
+
     # Tests for Digital Game Phase data collection
     def _create_digital_game_phase_data_collection_objects(self):
         # Create base objects for an experiment with one step of digital_phase_data
@@ -3768,9 +3796,6 @@ class ImportExperimentTest(TestCase):
         experiment = ObjectsFactory.create_experiment(research_project)
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
         group = ObjectsFactory.create_group(experiment)
-        patient = UtilTests.create_patient(changed_by=self.user)
-        subject = ObjectsFactory.create_subject(patient)
-        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
 
         # TMS
         tms_setting = ObjectsFactory.create_tms_setting(experiment)
@@ -3862,7 +3887,7 @@ class ImportExperimentTest(TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             for component in dict_:
-                with open(os.path.join(tmpdirname, component[0]+'additionalfile.bin'), 'wb') as f:
+                with open(os.path.join(tmpdirname, component[0]+'adf.bin'), 'wb') as f:
                     f.write(b'carambola')
 
                 with File(open(f.name, 'rb')) as file:
@@ -3875,3 +3900,35 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.componentadditionalfile',
                                                            'component',
                                                            self._create_all_data_collections())
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_import_component_additional_data_collection_files(self):
+        experiment = self._create_all_data_collections()
+
+        # Created right above: to remove files below
+        component_ad_files_ids = ComponentAdditionalFile.objects.all().values_list('id', flat=True)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        for component_ad_file_id in component_ad_files_ids:
+            os.remove(os.path.join(
+                self.TEMP_MEDIA_ROOT,
+                ComponentAdditionalFile.objects.get(id=component_ad_file_id).file.name))
+
+        component_files_imported = ComponentAdditionalFile.objects.exclude(id__in=component_ad_files_ids)
+        for component_file_imported in component_files_imported:
+            filepath = os.path.join(self.TEMP_MEDIA_ROOT, component_file_imported.file.name)
+            self.assertTrue(os.path.exists(filepath))
