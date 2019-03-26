@@ -375,14 +375,15 @@ PRE_LOADED_PATIENT_MODEL = {
 
 MODELS_WITH_FILE_FIELD = {
     'experiment.experiment': 'ethics_committee_project_file',
+    'experiment.eegelectrodelocalizationsystem': 'map_image_file',
+    'experiment.eegfile': 'file',
+
     # ("experiment.componentadditionalfile", "file"),
     # ("experiment.emgelectrodeplacement", "photo"),
-    # ("experiment.eegelectrodelocalizationsystem", "map_image_file"),
     # ("experiment.genericdatacollectionfile", "file"),
     # ("experiment.additionaldatafile", "file"),
     # ("experiment.emgfile", "file"),
     # ("experiment.tmslocalizationsystem", "tms_localization_system_image"),
-    # ("experiment.eegfile", "file"),
     # ("experiment.stimulus", "media_file"),
     # ("experiment.contexttree", "setting_file"),
     # ("experiment.digitalgamephasefile", "file"),
