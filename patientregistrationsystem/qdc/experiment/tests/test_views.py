@@ -3421,6 +3421,13 @@ class ImportExperimentTest(TestCase):
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
 
         context_tree = ObjectsFactory.create_context_tree(experiment)
+        # Create file to context tree
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            with File(open(bin_file.name, 'rb')) as f:
+                context_tree.setting_file.save('file.bin', f)
+            context_tree.save()
+
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
@@ -3480,6 +3487,7 @@ class ImportExperimentTest(TestCase):
 
         # Created right above: to remove files below
         dgpf = DigitalGamePhaseFile.objects.last()
+        contexttreefile = ContextTree.objects.last()
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -3497,10 +3505,14 @@ class ImportExperimentTest(TestCase):
         # Remove exported files, so we guarantee
         # that the new ones imported have correct files uploaded
         os.remove(os.path.join(self.TEMP_MEDIA_ROOT, dgpf.file.name))
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, contexttreefile.setting_file.name))
 
         dgp_file_imported = DigitalGamePhaseFile.objects.last()
-        filepath = os.path.join(self.TEMP_MEDIA_ROOT, dgp_file_imported.file.name)
-        self.assertTrue(os.path.exists(filepath))
+        contexttree_file_imported = ContextTree.objects.last()
+        filepath1 = os.path.join(self.TEMP_MEDIA_ROOT, dgp_file_imported.file.name)
+        filepath2 = os.path.join(self.TEMP_MEDIA_ROOT, contexttree_file_imported.setting_file.name)
+        self.assertTrue(os.path.exists(filepath1))
+        self.assertTrue(os.path.exists(filepath2))
 
     # Tests for Generic Data collection
     def _create_generic_data_collection_objects(self):
