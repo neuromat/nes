@@ -382,10 +382,10 @@ MODELS_WITH_FILE_FIELD = {
     'experiment.genericdatacollectionfile': 'file',
     'experiment.additionaldatafile': 'file',
     'experiment.componentadditionalfile': 'file',
+    'experiment.contexttree': 'setting_file',
 
     # ("experiment.emgelectrodeplacement", "photo"),
     # ("experiment.emgfile", "file"),
     # ("experiment.stimulus", "media_file"),
-    # ("experiment.contexttree", "setting_file"),
     # ("patient.examfile", "content")
 }
