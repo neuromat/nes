@@ -504,11 +504,11 @@ class ExportExperimentTest(TestCase):
 
     def test_experiment_has_not_file_does_not_creates_corresponding_dir_file_in_experiment_zip_file(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
-        zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
-        self.assertTrue(
-            ExportExperiment.FILE_NAME_JSON in [file for file in zipped_file.namelist()],
-            '%s not in %s' % (ExportExperiment.FILE_NAME_JSON, zipped_file.namelist()))
-        self.assertEqual(1, len(zipped_file.namelist()))
+        with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
+            self.assertTrue(
+                ExportExperiment.FILE_NAME_JSON in [file for file in zipped_file.namelist()],
+                '%s not in %s' % (ExportExperiment.FILE_NAME_JSON, zipped_file.namelist()))
+            self.assertEqual(1, len(zipped_file.namelist()))
 
         shutil.rmtree(self.temp_dir)
 
@@ -548,6 +548,38 @@ class ExportExperimentTest(TestCase):
 
         shutil.rmtree(self.temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    def test_eeg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(self.group, subject)
+        eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
+        component = ObjectsFactory.create_component(self.experiment, 'eeg', kwargs={'eeg_set': eeg_set})
+        component_configuration = ObjectsFactory.create_component_configuration(rootcomponent, component)
+        dct = ObjectsFactory.create_data_configuration_tree(component_configuration)
+        eeg_data = ObjectsFactory.create_eeg_data(dct, subject_of_group, eeg_set)
+        eeg_file = ObjectsFactory.create_eeg_file(eeg_data)
+        eeg_file.file = ''
+        eeg_file.save()
+        eeg_els = ObjectsFactory.create_eeg_electrode_localization_system()
+        eeg_els.map_image_file = ''
+        eeg_els.save()
+        manufacturer = ObjectsFactory.create_manufacturer()
+        eeg_electrode_model = ObjectsFactory.create_electrode_model()
+        eeg_electrode_cap = ObjectsFactory.create_eeg_electrode_cap(manufacturer, eeg_electrode_model)
+        eeg_electrode_net_system = ObjectsFactory.create_eeg_electrode_net_system(
+            eeg_electrode_cap, eeg_els
+        )
+        eeg_electrode_localization_system = ObjectsFactory.create_eeg_electrode_localization_system()
+        ObjectsFactory.create_eeg_electrode_position(eeg_electrode_localization_system)
+        ObjectsFactory.create_eeg_electrode_layout_setting(
+            eeg_set, eeg_electrode_net_system
+        )
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
+            self.assertEqual(1, len(zipped_file.namelist()))
 
 
 class ImportExperimentTest(TestCase):
@@ -979,6 +1011,8 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
+        # Remove experiment exported file, so we guarantee
+        # that the experiment imported has correct file uploaded
         os.remove(os.path.join(self.TEMP_MEDIA_ROOT, experiment.ethics_committee_project_file.name))
 
         experiment_imported = Experiment.objects.last()
@@ -3575,14 +3609,17 @@ class ImportExperimentTest(TestCase):
                 reference = getattr(dependent_model_instance, dependent_model[1])
                 self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_import_eeg_data_collection_files(self):
-        # CONTINUE: import eeg data collection files
         self._create_minimum_objects_to_test_components()
         group = ObjectsFactory.create_group(self.experiment)
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
         self.subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
         self._create_eeg_data_collection_related_objects()
+        # Created right above: to remove files below
+        eeg_file = EEGFile.objects.last()
+        eeg_els = EEGElectrodeLocalizationSystem.objects.last()
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -3596,6 +3633,18 @@ class ImportExperimentTest(TestCase):
             session['file_name'] = file.name
             session.save()
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, eeg_file.file.name))
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, eeg_els.map_image_file.name))
+
+        eeg_file_imported = EEGFile.objects.last()
+        eeg_els_imported = EEGElectrodeLocalizationSystem.objects.last()
+        filepath1 = os.path.join(self.TEMP_MEDIA_ROOT, eeg_file_imported.file.name)
+        filepath2 = os.path.join(self.TEMP_MEDIA_ROOT, eeg_els_imported.map_image_file.name)
+        self.assertTrue(os.path.exists(filepath1))
+        self.assertTrue(os.path.exists(filepath2))
 
     def test_import_data_configuration_tree_with_parent_data_configuration_tree(self):
         self._create_minimum_objects_to_test_components()
