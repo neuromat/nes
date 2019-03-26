@@ -37,7 +37,8 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, DataCollection, \
     TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, BrainArea, BrainAreaSystem, \
     HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
-    EEGElectrodeCap, EEGElectrodePositionCollectionStatus
+    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, EMGData, DigitalGamePhase, DigitalGamePhaseFile, \
+
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -3207,17 +3208,7 @@ class ImportExperimentTest(TestCase):
         tms_data = ObjectsFactory.create_tms_data_collection_data(self.dct, self.subject_of_group, tms_setting)
 
         # Create objects for the hotspot (optional, but desired step of the tms data)
-        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
-        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
-
-        temp_dir = tempfile.mkdtemp()
-        with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
-            f.write(b'carambola')
-        temp_file = f.name
-
-        tms_local_sys = TMSLocalizationSystem.objects.create(
-            name="TMS name", brain_area=brainarea,
-            tms_localization_system_image=temp_file)
+        tms_local_sys = ObjectsFactory.create_tms_localization_system_file()
 
         hotspot = HotSpot.objects.create(
             tms_data=tms_data,
@@ -3318,6 +3309,34 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.hotspot',
                                                            'tms_localization_system',
                                                            self._create_tms_data_collection_objects())
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_import_tms_data_collection_files(self):
+        experiment = self._create_tms_data_collection_objects()
+
+        # Created right above: to remove files below
+        tms_ls = TMSLocalizationSystem.objects.last()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, tms_ls.tms_localization_system_image.name))
+
+        tms_file_imported = TMSLocalizationSystem.objects.last()
+        filepath = os.path.join(self.TEMP_MEDIA_ROOT, tms_file_imported.tms_localization_system_image.name)
+        self.assertTrue(os.path.exists(filepath))
 
     # Tests for Additional data collection
     def _create_additional_data_collection_objects(self):
