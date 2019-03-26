@@ -16,7 +16,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from faker import Factory
-from mne.io.ctf import eeg
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, \
@@ -36,8 +35,7 @@ from experiment.models import Experiment, Group, Subject, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
     GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
     AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, \
-    TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, \
-    BrainArea, BrainAreaSystem, \
+    TMSData, DirectionOfTheInducedCurrent, CoilOrientation, \
     EEGElectrodePositionCollectionStatus, EEGElectrodePositionSetting, EEGElectrodeLayoutSetting
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
@@ -235,8 +233,7 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_component(experiment, component_type, identification=None,
-                         kwargs=None):
+    def create_component(experiment, component_type, identification=None, kwargs=None):
         faker = Factory.create()
 
         if component_type == Component.TASK_EXPERIMENT:
@@ -431,7 +428,15 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_electrode_localization_system():
-        return EEGElectrodeLocalizationSystem.objects.create(name="Localization System name")
+        faker = Factory.create()
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            eeg_els = EEGElectrodeLocalizationSystem.objects.create(name=faker.word(), description=faker.text())
+            with File(open(bin_file.name, 'rb')) as f:
+                eeg_els.map_image_file.save('file.bin', f)
+            eeg_els.save()
+        return eeg_els
 
     @staticmethod
     def create_eeg_electrode_position(eeg_electrode_localization_system):
@@ -643,7 +648,7 @@ class ObjectsFactory(object):
         return gdcf
 
     @staticmethod
-    def create_eeg_data_collection_data(data_conf_tree, subj_of_group, eeg_set, eeg_cap_size=None):
+    def create_eeg_data(data_conf_tree, subj_of_group, eeg_set, eeg_cap_size=None):
 
         faker = Factory.create()
 
@@ -657,14 +662,10 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_eeg_data_collection_file(eeg_data):
-
+    def create_eeg_file(eeg_data):
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname,)
-
-            eegf = EEGFile.objects.create(
-                eeg_data=eeg_data
-            )
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            eegf = EEGFile.objects.create(eeg_data=eeg_data)
             with File(open(bin_file.name, 'rb')) as f:
                 eegf.file.save('file.bin', f)
             eegf.save()

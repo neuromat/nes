@@ -11,6 +11,7 @@ from operator import or_
 
 import networkx as nx
 from django.conf import settings
+from django.core.files import File
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count, Q
@@ -161,9 +162,11 @@ class ExportExperiment:
         with zipfile.ZipFile(self.get_file_path(), 'w') as zip_file:
             zip_file.write(self.get_file_path('json').encode('utf-8'), self.FILE_NAME_JSON)
             for index in indexes:
+                # relative to MEDIA_ROOT
                 relative_filepath = data[index]['fields'][MODELS_WITH_FILE_FIELD[data[index]['model']]]
-                absolute_filepath = path.join(settings.MEDIA_ROOT, relative_filepath)
-                zip_file.write(absolute_filepath, relative_filepath)
+                if relative_filepath is not '':
+                    absolute_filepath = path.join(settings.MEDIA_ROOT, relative_filepath)
+                    zip_file.write(absolute_filepath, relative_filepath)
 
     def get_file_path(self, type_='zip'):
         if type_ == 'zip':
@@ -569,7 +572,7 @@ class ImportExperiment:
             else:
                 digraph.node[node]['pre_loaded'] = True
 
-        # set digraph.node[node]['pre_loaded'] = True for models inherited
+        # set digraph.node[node]['pre_loaded'] == True for models inherited
         nodes = [
             node for node in digraph.nodes if self.data[node]['model'] in PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE
         ]
@@ -589,6 +592,21 @@ class ImportExperiment:
             for root_node in root_nodes:
                 self._update_pks(digraph, root_node, next_id)
                 next_id += 1
+
+    def _upload_files(self):
+        indexes = [index for index, dict_ in enumerate(self.data) if dict_['model'] in MODELS_WITH_FILE_FIELD]
+        with zipfile.ZipFile(self.file_path) as zip_file:
+            for index in indexes:
+                relative_path = self.data[index]['fields'][MODELS_WITH_FILE_FIELD[self.data[index]['model']]]
+                if relative_path:
+                    file_path = zip_file.extract(relative_path, self.temp_dir)
+                    app_model = self.data[index]['model'].split('.')
+                    model_class = apps.get_model(app_model[0], app_model[1])
+                    object_imported = model_class.objects.get(id=self.data[index]['pk'])
+                    with File(open(file_path, 'rb')) as f:
+                        file_field = MODELS_WITH_FILE_FIELD[self.data[index]['model']]
+                        getattr(object_imported, file_field).save(path.basename(file_path), f)
+                        object_imported.save()
 
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
@@ -610,6 +628,7 @@ class ImportExperiment:
             file.write(json.dumps(self.data))
 
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
+        self._upload_files()
 
         self._collect_new_objects()
 
