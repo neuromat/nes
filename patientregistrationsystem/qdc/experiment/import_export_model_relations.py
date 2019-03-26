@@ -163,7 +163,7 @@ FOREIGN_RELATIONS = {
     'patient.medicalrecorddata': [['patient.patient', 'patient']],
     'patient.diagnosis': [['patient.medicalrecorddata', 'medical_record_data']],
     'patient.complementaryexam': [['patient.diagnosis', 'diagnosis']],
-    'patient,examfile': [['patient.complementaryexam', 'exam']]
+    'patient.examfile': [['patient.complementaryexam', 'exam']]
 }
 
 ONE_TO_ONE_RELATION = {
