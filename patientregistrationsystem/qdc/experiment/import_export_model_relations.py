@@ -379,14 +379,13 @@ MODELS_WITH_FILE_FIELD = {
     'experiment.eegfile': 'file',
     'experiment.tmslocalizationsystem': 'tms_localization_system_image',
     'experiment.digitalgamephasefile': 'file',
+    'experiment.genericdatacollectionfile': 'file',
 
     # ("experiment.componentadditionalfile", "file"),
     # ("experiment.emgelectrodeplacement", "photo"),
-    # ("experiment.genericdatacollectionfile", "file"),
     # ("experiment.additionaldatafile", "file"),
     # ("experiment.emgfile", "file"),
     # ("experiment.stimulus", "media_file"),
     # ("experiment.contexttree", "setting_file"),
-    #
     # ("patient.examfile", "content")
 }
