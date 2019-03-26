@@ -37,7 +37,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, DataCollection, \
     TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, BrainArea, BrainAreaSystem, \
     HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
-    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, EMGData, DigitalGamePhase, DigitalGamePhaseFile, \
+    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, EMGData, DigitalGamePhase, DigitalGamePhaseFile
 
 
 from experiment.models import Group as ExperimentGroup
@@ -3444,6 +3444,34 @@ class ImportExperimentTest(TestCase):
                                                            'experiment.digitalgamephasefile',
                                                            'digital_game_phase_data',
                                                            self._create_digital_game_phase_data_collection_objects())
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_import_digital_game_phase_data_collection_files(self):
+        experiment = self._create_digital_game_phase_data_collection_objects()
+
+        # Created right above: to remove files below
+        dgp_ls = DigitalGamePhaseFile.objects.last()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, dgp_ls.file.name))
+
+        dgp_file_imported = DigitalGamePhaseFile.objects.last()
+        filepath = os.path.join(self.TEMP_MEDIA_ROOT, dgp_file_imported.file.name)
+        self.assertTrue(os.path.exists(filepath))
 
     # Tests for Generic Data collection
     def _create_generic_data_collection_objects(self):
