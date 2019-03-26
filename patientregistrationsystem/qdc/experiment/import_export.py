@@ -594,14 +594,19 @@ class ImportExperiment:
                 next_id += 1
 
     def _upload_files(self):
-        index = next(index for index, dict_ in enumerate(self.data) if dict_['model'] == 'experiment.experiment')
+        indexes = [index for index, dict_ in enumerate(self.data) if dict_['model'] in MODELS_WITH_FILE_FIELD]
         with zipfile.ZipFile(self.file_path) as zip_file:
-            ecpf = zip_file.extract(
-                self.data[index]['fields']['ethics_committee_project_file'], self.temp_dir)
-        experiment_imported = Experiment.objects.get(id=self.data[index]['pk'])
-        with File(open(ecpf, 'rb')) as f:
-            experiment_imported.ethics_committee_project_file.save(path.basename(ecpf), f)
-            experiment_imported.save()
+            for index in indexes:
+                relative_path = self.data[index]['fields'][MODELS_WITH_FILE_FIELD[self.data[index]['model']]]
+                if relative_path:
+                    file_path = zip_file.extract(relative_path, self.temp_dir)
+                    app_model = self.data[index]['model'].split('.')
+                    model_class = apps.get_model(app_model[0], app_model[1])
+                    object_imported = model_class.objects.get(id=self.data[index]['pk'])
+                    with File(open(file_path, 'rb')) as f:
+                        file_field = MODELS_WITH_FILE_FIELD[self.data[index]['model']]
+                        getattr(object_imported, file_field).save(path.basename(file_path), f)
+                        object_imported.save()
 
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
