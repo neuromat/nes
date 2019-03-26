@@ -379,10 +379,10 @@ MODELS_WITH_FILE_FIELD = {
     'experiment.eegfile': 'file',
 
     # ("experiment.componentadditionalfile", "file"),
-    # ("experiment.emgelectrodeplacement", "photo"),
+    'experiment.emgelectrodeplacement': 'photo',
     # ("experiment.genericdatacollectionfile", "file"),
     # ("experiment.additionaldatafile", "file"),
-    # ("experiment.emgfile", "file"),
+    'experiment.emgfile': 'file',
     # ("experiment.tmslocalizationsystem", "tms_localization_system_image"),
     # ("experiment.stimulus", "media_file"),
     # ("experiment.contexttree", "setting_file"),
