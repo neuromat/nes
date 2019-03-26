@@ -4368,9 +4368,7 @@ class EMGSettingTest(TestCase):
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
-            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
-        )
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
 
         self.data = {'action': 'save', 'electrode': electrode_model.id,
@@ -4418,9 +4416,7 @@ class EMGSettingTest(TestCase):
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
-            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
-        )
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side)
 
@@ -4488,9 +4484,7 @@ class EMGSettingTest(TestCase):
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
-            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
-        )
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side)
         self.data = {'action': 'remove-amplifier'}
