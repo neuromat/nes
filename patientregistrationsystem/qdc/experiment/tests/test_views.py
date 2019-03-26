@@ -36,7 +36,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, \
     HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
-    EEGElectrodeCap, EEGElectrodePositionCollectionStatus
+    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -3570,9 +3570,44 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_import_emg_data_collection_files(self):
-        # TODO (NES-948): implement it!
-        pass
+        experiment = self._create_emg_data_collection_related_objects()
+        emg_setting = EMGSetting.objects.last()
+        emg_file = EMGFile.objects.last()
+
+        standardization_system = ObjectsFactory.create_standardization_system()
+        muscle = ObjectsFactory.create_muscle()
+        muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
+        electrode_model = ObjectsFactory.create_electrode_model()
+        emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
+        emg_ep = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
+        ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, emg_file.file.name))
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, emg_ep.photo.name))
+
+        emg_file_imported = EMGFile.objects.last()
+        emg_ep_imported = EMGElectrodePlacement.objects.last()
+        filepath1 = os.path.join(self.TEMP_MEDIA_ROOT, emg_file_imported.file.name)
+        filepath2 = os.path.join(self.TEMP_MEDIA_ROOT, emg_ep_imported.photo.name)
+        self.assertTrue(os.path.exists(filepath1))
+        self.assertTrue(os.path.exists(filepath2))
 
     def test_data_configuration_tree_and_emg_data(self):
         self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
