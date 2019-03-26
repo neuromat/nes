@@ -45,7 +45,7 @@ from experiment.views import experiment_update, upload_file, research_project_up
 
 from custom_user.views import User
 
-from patient.models import ClassificationOfDiseases
+from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile
 from patient.tests.tests_orig import UtilTests
 
 from survey.models import Survey
@@ -857,6 +857,29 @@ class ObjectsFactory(object):
             experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type}
         )
         ObjectsFactory.create_component_configuration(rootcomponent, component13)
+
+    @staticmethod
+    def create_exam_file(patient, user):
+        faker = Factory.create()
+
+        cid10 = ClassificationOfDiseases.objects.create(
+            code=faker.word(),
+            description=faker.text(),
+            abbreviated_description=faker.text())
+        medical_record = MedicalRecordData.objects.create(patient=patient, record_responsible=user)
+        diagnosis = Diagnosis.objects.create(medical_record_data=medical_record, classification_of_diseases=cid10)
+        complementary_exam = ComplementaryExam.objects.create(diagnosis=diagnosis,
+                                                              date=datetime.date.today(),
+                                                              description=faker.text())
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+
+            exam_file = ExamFile.objects.create(exam=complementary_exam)
+            with File(open(bin_file.name, 'rb')) as f:
+                exam_file.content.save('file.bin', f)
+            exam_file.save()
+        return exam_file
 
 
 class ExperimentalProtocolTest(TestCase):
