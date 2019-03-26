@@ -389,7 +389,6 @@ MODELS_WITH_FILE_FIELD = {
     'experiment.contexttree': 'setting_file',
     'experiment.stimulus': 'media_file',
     'patient.examfile': 'content',
-
-    # ("experiment.emgelectrodeplacement", "photo"),
-    # ("experiment.emgfile", "file"),
+    'experiment.emgelectrodeplacement': 'photo',
+    'experiment.emgfile': 'file',
 }
