@@ -162,6 +162,8 @@ FOREIGN_RELATIONS = {
     'patient.socialhistorydata': [['patient.patient', 'patient']],
     'patient.medicalrecorddata': [['patient.patient', 'patient']],
     'patient.diagnosis': [['patient.medicalrecorddata', 'medical_record_data']],
+    'patient.complementaryexam': [['patient.diagnosis', 'diagnosis']],
+    'patient,examfile': [['patient.complementaryexam', 'exam']]
 }
 
 ONE_TO_ONE_RELATION = {
@@ -273,8 +275,10 @@ PATIENT_JSON_FILES = {
     'socialhistorydata': ('socialhistorydata', 'patient__subject__subjectofgroup__group__experiment_id__in'),
     'socialdemographicdata':
         ('socialdemographicdata', 'patient__subject__subjectofgroup__group__experiment_id__in'),
-    'diagnosis.json':
+    'diagnosis':
         ('diagnosis', 'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in'),
+    'examfile':
+        ('examfile', 'exam__diagnosis__medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
 }
 
 JSON_FILES_DETACHED_MODELS = {
@@ -383,9 +387,9 @@ MODELS_WITH_FILE_FIELD = {
     'experiment.additionaldatafile': 'file',
     'experiment.componentadditionalfile': 'file',
     'experiment.contexttree': 'setting_file',
+    'experiment.stimulus': 'media_file',
+    'patient.examfile': 'content',
 
     # ("experiment.emgelectrodeplacement", "photo"),
     # ("experiment.emgfile", "file"),
-    # ("experiment.stimulus", "media_file"),
-    # ("patient.examfile", "content")
 }

@@ -38,7 +38,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     TMSData, TMSLocalizationSystem, DirectionOfTheInducedCurrent, CoilOrientation, BrainArea, BrainAreaSystem, \
     HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
     EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, EMGData, DigitalGamePhase, \
-    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile
+    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus
 
 
 from experiment.models import Group as ExperimentGroup
@@ -47,7 +47,7 @@ from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
     AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases, FleshTone, Payment, \
-    Religion, Schooling
+    Religion, Schooling, ComplementaryExam, ExamFile
 
 from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
@@ -3944,3 +3944,92 @@ class ImportExperimentTest(TestCase):
         for component_file_imported in component_files_imported:
             filepath = os.path.join(self.TEMP_MEDIA_ROOT, component_file_imported.file.name)
             self.assertTrue(os.path.exists(filepath))
+
+    # Tests for Other models with file
+    def _create_stimulus_step_with_media_file(self):
+        # Base elements
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        # Stimulus
+        stimulus_type = ObjectsFactory.create_stimulus_type()
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(os.path.join(tmpdirname, 'stimulus_media_file.bin'), 'wb') as f:
+                f.write(b'carambola')
+            with File(open(f.name, 'rb')) as file:
+                ObjectsFactory.create_component(experiment, 'stimulus', kwargs={
+                    'stimulus_type': stimulus_type,
+                    'media_file': file})
+
+        return experiment
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_import_media_file_from_stimulus(self):
+        experiment = self._create_stimulus_step_with_media_file()
+
+        # Created right above: to remove files below
+        stimulus = Stimulus.objects.last()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, stimulus.media_file.name))
+
+        stimulus_imported = Stimulus.objects.last()
+        filepath = os.path.join(self.TEMP_MEDIA_ROOT, stimulus_imported.media_file.name)
+        self.assertTrue(os.path.exists(filepath))
+
+    def _create_exam_file_of_patient(self):
+        # Create objects for the exam file
+        research_project = ObjectsFactory.create_research_project(owner=self.user)
+        experiment = ObjectsFactory.create_experiment(research_project)
+
+        group = ObjectsFactory.create_group(experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+
+        ObjectsFactory.create_exam_file(patient, self.user)
+
+        return experiment
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_import_exam_file(self):
+        experiment = self._create_exam_file_of_patient()
+
+        # Created right above: to remove files below
+        exam_file = ExamFile.objects.last()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # Remove exported files, so we guarantee
+        # that the new ones imported have correct files uploaded
+        os.remove(os.path.join(self.TEMP_MEDIA_ROOT, exam_file.content.name))
+
+        exam_file_imported = ExamFile.objects.last()
+        filepath = os.path.join(self.TEMP_MEDIA_ROOT, exam_file_imported.content.name)
+        self.assertTrue(os.path.exists(filepath))
