@@ -3146,24 +3146,24 @@ msgid "Import Study/Experiment"
 msgstr "Importar Estudo/Experimento"
 
 #: experiment/templates/experiment/experiment_import.html:71
-msgid "Choose a .json file previously exported by NES"
-msgstr "Selecione um arquivo .json previamente exportado pelo NES"
+msgid "Choose a .zip file previously exported by NES"
+msgstr "Selecione um arquivo .zip previamente exportado pelo NES"
 
 #: experiment/templates/experiment/experiment_import.html:74
 msgid ""
 "This will create a whole new Experiment. The extension of objects that will "
-"be imported depends upon the stuff inside json file."
+"be imported depends upon the stuff inside zip file."
 msgstr ""
 "Isto irá criar um Experimento completo. A extensão dos objetos que serão "
-"importados depende das coisas que estão dentro do arquivo json."
+"importados depende das coisas que estão dentro do arquivo zip."
 
 #: experiment/templates/experiment/experiment_import.html:76
 msgid ""
 "This will create a whole new Study/Experiment. The extension of objects that "
-"will be imported depends upon the stuff inside json file."
+"will be imported depends upon the stuff inside zip file."
 msgstr ""
 "Isto irá criar um Estudo/Experimento completo. A extensão dos objetos que "
-"serão importados depende das coisas que estão dentro do arquivo json."
+"serão importados depende das coisas que estão dentro do arquivo zip."
 
 #: experiment/templates/experiment/experiment_info_pdf.html:36
 #: experiment/templates/experiment/experiment_register.html:72
@@ -5045,8 +5045,8 @@ msgid "Please, select at least one researcher."
 msgstr "Por favor, selecione pelo menos um pesquisador."
 
 #: experiment/views.py:841
-msgid "Please select a json file"
-msgstr "Por favor, selecione um arquivo .json"
+msgid "Please select a zip file"
+msgstr "Por favor, selecione um arquivo .zip"
 
 #: experiment/views.py:893
 msgid "Experiment successfully imported."
