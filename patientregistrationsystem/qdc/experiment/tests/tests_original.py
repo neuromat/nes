@@ -34,7 +34,10 @@ from experiment.models import Experiment, Group, Subject, \
     ContextTree, ExperimentResearcher, InformationType, \
     GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
     GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
-    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS
+    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, \
+    TMSData, DirectionOfTheInducedCurrent, CoilOrientation, \
+    EEGElectrodePositionCollectionStatus, EEGElectrodePositionSetting, EEGElectrodeLayoutSetting, \
+    TMSLocalizationSystem, BrainAreaSystem, BrainArea
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -42,7 +45,7 @@ from experiment.views import experiment_update, upload_file, research_project_up
 
 from custom_user.views import User
 
-from patient.models import ClassificationOfDiseases
+from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile
 from patient.tests.tests_orig import UtilTests
 
 from survey.models import Survey
@@ -174,30 +177,21 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_emg_electrode_setting(emg_setting, electrode_model):
-        emg_electrode_setting = EMGElectrodeSetting.objects.create(emg_setting=emg_setting, electrode=electrode_model)
-
-        emg_electrode_setting.save()
-        return emg_electrode_setting
+        return EMGElectrodeSetting.objects.create(emg_setting=emg_setting, electrode=electrode_model)
 
     @staticmethod
-    def create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side):
-        emg_electrode_placement_setting = EMGElectrodePlacementSetting.objects.create(
+    def create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side=None):
+        return EMGElectrodePlacementSetting.objects.create(
             emg_electrode_setting=emg_electrode_setting,
             emg_electrode_placement=electrode_placement,
             muscle_side=muscle_side,
             remarks="Remarks electrode placement setting")
 
-        emg_electrode_placement_setting.save()
-        return emg_electrode_placement_setting
-
     @staticmethod
     def create_standardization_system():
-        standardization_system = StandardizationSystem.objects.create(
+        return StandardizationSystem.objects.create(
             name='Standardization System identification',
-            description='Standardization System description'
-        )
-        standardization_system.save()
-        return standardization_system
+            description='Standardization System description')
 
     @staticmethod
     def create_muscle():
@@ -223,16 +217,21 @@ class ObjectsFactory(object):
         return muscle_side
 
     @staticmethod
-    def create_emg_electrode_placement(standardization_system, muscle_subdivision, placement_type):
-        return EMGElectrodePlacement.objects.create(
-            standardization_system=standardization_system,
-            muscle_subdivision=muscle_subdivision,
-            placement_type=placement_type
-        )
+    def create_emg_electrode_placement(standardization_system, muscle_subdivision):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            emg_ep = EMGElectrodePlacement.objects.create(
+                standardization_system=standardization_system,
+                muscle_subdivision=muscle_subdivision,
+                placement_type=random.choice(EMGElectrodePlacement.PLACEMENT_TYPES)[0]
+            )
+            with File(open(bin_file.name, 'rb')) as f:
+                emg_ep.photo.save('file.bin', f)
+            emg_ep.save()
+        return emg_ep
 
     @staticmethod
-    def create_component(experiment, component_type, identification=None,
-                         kwargs=None):
+    def create_component(experiment, component_type, identification=None, kwargs=None):
         faker = Factory.create()
 
         if component_type == Component.TASK_EXPERIMENT:
@@ -427,20 +426,47 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_electrode_localization_system():
-        eeg_electrode_localization_system = EEGElectrodeLocalizationSystem.objects.create(
-            name="Localization System name"
-        )
-        eeg_electrode_localization_system.save()
-        return eeg_electrode_localization_system
+        faker = Factory.create()
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            eeg_els = EEGElectrodeLocalizationSystem.objects.create(name=faker.word(), description=faker.text())
+            with File(open(bin_file.name, 'rb')) as f:
+                eeg_els.map_image_file.save('file.bin', f)
+            eeg_els.save()
+        return eeg_els
 
     @staticmethod
     def create_eeg_electrode_position(eeg_electrode_localization_system):
-        eeg_electrode_position = EEGElectrodePosition.objects.create(
+        return EEGElectrodePosition.objects.create(
             eeg_electrode_localization_system=eeg_electrode_localization_system,
             name="Position name"
         )
-        eeg_electrode_position.save()
-        return eeg_electrode_position
+
+    @staticmethod
+    def create_eeg_electrode_layout_setting(eeg_setting, eeg_electrode_net_system):
+        return EEGElectrodeLayoutSetting.objects.create(
+            eeg_setting=eeg_setting, eeg_electrode_net_system=eeg_electrode_net_system
+        )
+
+    @staticmethod
+    def create_eeg_electrode_position_setting(eeg_electrode_layout_setting, eeg_electrode_position, electrode_model):
+        faker = Factory.create()
+        return EEGElectrodePositionSetting.objects.create(
+            eeg_electrode_layout_setting=eeg_electrode_layout_setting,
+            eeg_electrode_position=eeg_electrode_position,
+            electrode_model=electrode_model,
+            used=random.choice([True, False]),
+            channel_index=faker.pyint()
+        )
+
+    @staticmethod
+    def create_eeg_electrode_position_collection_status(eeg_data, eeg_electrode_position_setting):
+        faker = Factory.create()
+        return EEGElectrodePositionCollectionStatus.objects.create(
+            eeg_data=eeg_data, eeg_electrode_position_setting=eeg_electrode_position_setting,
+            worked=random.choice([True, False]), channel_index=faker.pyint()
+        )
 
     @staticmethod
     def create_software(manufacturer):
@@ -497,8 +523,16 @@ class ObjectsFactory(object):
             manufacturer=manufacturer,
             identification="EEG electrode cap identification",
             electrode_model_default=electrode_model,
-            material=material
+            material=material,
+            equipment_type= 'eeg_electrode_net'
         )
+
+    @staticmethod
+    def create_eeg_electrode_capsize(eeg_electrode_cap):
+        faker = Factory.create()
+        return EEGCapSize.objects.create(
+            eeg_electrode_cap=eeg_electrode_cap, size=faker.word(),
+            electrode_adjacent_distance=faker.pyfloat())
 
     @staticmethod
     def create_coil_model(coil_shape):
@@ -528,10 +562,11 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_data_configuration_tree(component_config):
+    def create_data_configuration_tree(component_config, parent=None):
         return DataConfigurationTree.objects.create(
             component_configuration=component_config,
-            code=random.randint(1, 999)
+            code=random.randint(1, 999),
+            parent=parent
         )
 
     @staticmethod
@@ -596,7 +631,7 @@ class ObjectsFactory(object):
         return zip_file
 
     @staticmethod
-    def create_generic_data_colletion_file(gdc_data):
+    def create_generic_data_collection_file(gdc_data):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
@@ -611,7 +646,7 @@ class ObjectsFactory(object):
         return gdcf
 
     @staticmethod
-    def create_eeg_data_collection_data(data_conf_tree, subj_of_group, eeg_set):
+    def create_eeg_data(data_conf_tree, subj_of_group, eeg_set, eeg_cap_size=None):
 
         faker = Factory.create()
 
@@ -620,18 +655,15 @@ class ObjectsFactory(object):
             description=faker.text(), file_format=file_format,
             file_format_description=faker.text(),
             data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group, eeg_setting=eeg_set
+            subject_of_group=subj_of_group, eeg_setting=eeg_set,
+            eeg_cap_size=eeg_cap_size
         )
 
     @staticmethod
-    def create_eeg_data_collection_file(eeg_data):
-
+    def create_eeg_file(eeg_data):
         with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname,)
-
-            eegf = EEGFile.objects.create(
-                eeg_data=eeg_data
-            )
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            eegf = EEGFile.objects.create(eeg_data=eeg_data)
             with File(open(bin_file.name, 'rb')) as f:
                 eegf.file.save('file.bin', f)
             eegf.save()
@@ -653,14 +685,42 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_emg_data_collection_file(emg_data):
+    def create_tms_data_collection_data(data_conf_tree,
+                                        subj_of_group, tms_set):
+
+        faker = Factory.create()
+        doic = DirectionOfTheInducedCurrent.objects.create(name="Direction of Induced Current")
+        coilor = CoilOrientation.objects.create(name="Coil Orientation")
+
+        return TMSData.objects.create(
+            tms_setting=tms_set,
+            data_configuration_tree=data_conf_tree,
+            subject_of_group=subj_of_group,
+            coil_orientation=coilor,
+            description=faker.text(),
+            direction_of_induced_current=doic,)
+
+    @staticmethod
+    def create_tms_localization_system_file():
+        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
+        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
-            emgf = EMGFile.objects.create(
-                emg_data=emg_data
-            )
+            tmslsf = TMSLocalizationSystem.objects.create(
+                name="TMS name", brain_area=brainarea)
+            with File(open(bin_file.name, 'rb')) as f:
+                tmslsf.tms_localization_system_image.save('file.bin', f)
+            tmslsf.save()
+
+        return tmslsf
+
+    @staticmethod
+    def create_emg_data_collection_file(emg_data):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            emgf = EMGFile.objects.create(emg_data=emg_data)
             with File(open(bin_file.name, 'rb')) as f:
                 emgf.file.save('file.bin', f)
             emgf.save()
@@ -790,6 +850,29 @@ class ObjectsFactory(object):
             experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type}
         )
         ObjectsFactory.create_component_configuration(rootcomponent, component13)
+
+    @staticmethod
+    def create_exam_file(patient, user):
+        faker = Factory.create()
+
+        cid10 = ClassificationOfDiseases.objects.create(
+            code=faker.word(),
+            description=faker.text(),
+            abbreviated_description=faker.text())
+        medical_record = MedicalRecordData.objects.create(patient=patient, record_responsible=user)
+        diagnosis = Diagnosis.objects.create(medical_record_data=medical_record, classification_of_diseases=cid10)
+        complementary_exam = ComplementaryExam.objects.create(diagnosis=diagnosis,
+                                                              date=datetime.date.today(),
+                                                              description=faker.text())
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+
+            exam_file = ExamFile.objects.create(exam=complementary_exam)
+            with File(open(bin_file.name, 'rb')) as f:
+                exam_file.content.save('file.bin', f)
+            exam_file.save()
+        return exam_file
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -4325,9 +4408,7 @@ class EMGSettingTest(TestCase):
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
-            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
-        )
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
 
         self.data = {'action': 'save', 'electrode': electrode_model.id,
@@ -4375,9 +4456,7 @@ class EMGSettingTest(TestCase):
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
-            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
-        )
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side)
 
@@ -4445,9 +4524,7 @@ class EMGSettingTest(TestCase):
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
-        electrode_placement = ObjectsFactory.create_emg_electrode_placement(
-            standardization_system, muscle_subdivision, EMGElectrodePlacement.PLACEMENT_TYPES[0][0]
-        )
+        electrode_placement = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         muscle_side = ObjectsFactory.create_muscle_side(electrode_placement.muscle_subdivision.muscle)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side)
         self.data = {'action': 'remove-amplifier'}
