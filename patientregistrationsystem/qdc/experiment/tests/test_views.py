@@ -1020,7 +1020,7 @@ class ImportExperimentTest(TestCase):
         response = self.client.post(reverse('experiment_import'), {'file': ''}, follow=True)
         self.assertRedirects(response, reverse('experiment_import'))
         message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Por favor, selecione um arquivo .json')
+        self.assertEqual(message, 'Por favor, selecione um arquivo .zip')
 
     def test_POST_experiment_import_file_has_bad_json_file_redirects_with_error_message(self):
         temp_dir = tempfile.mkdtemp()
