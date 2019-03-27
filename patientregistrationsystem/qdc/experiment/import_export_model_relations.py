@@ -2,8 +2,8 @@ MODEL_ROOT_NODES = [
             'experiment.researchproject', 'experiment.manufacturer', 'survey.survey', 'experiment.coilshape',
             'experiment.material', 'experiment.electrodeconfiguration', 'experiment.eegelectrodelocalizationsystem',
             'experiment.filtertype', 'experiment.amplifierdetectiontype', 'experiment.tetheringsystem',
-            'experiment.muscle', 'experiment.standardizationsystem',
-            'patient.patient'
+            'experiment.muscle', 'experiment.standardizationsystem', 'experiment.brainareasystem',
+            'patient.patient', 'experiment.directionoftheinducedcurrent',
         ]
 
 FOREIGN_RELATIONS = {
@@ -56,6 +56,7 @@ FOREIGN_RELATIONS = {
         ['experiment.eegelectrodenet', 'eeg_electrode_net']
     ],
     'experiment.eegelectrodenet': [['experiment.electrodemodel', 'electrode_model_default']],
+    'experiment.eegcapsize': [['experiment.eegelectrodecap', 'eeg_electrode_cap']],
     'experiment.eegfiltersetting': [['experiment.filtertype', 'eeg_filter_type']],
     'experiment.eegamplifiersetting': [['experiment.amplifier', 'eeg_amplifier']],
     'experiment.amplifier': [
@@ -98,7 +99,59 @@ FOREIGN_RELATIONS = {
     'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
 
     # Data collections
-    'experiment.dataconfigurationtree': [['experiment.componentconfiguration', 'component_configuration']],
+    'experiment.dataconfigurationtree': [
+        ['experiment.componentconfiguration', 'component_configuration'], ['experiment.dataconfigurationtree', 'parent']
+    ],
+    'experiment.eegdata': [
+        ('experiment.dataconfigurationtree', 'data_configuration_tree'),
+        ('experiment.eegsetting', 'eeg_setting'), ('experiment.subjectofgroup', 'subject_of_group'),
+        ('experiment.eegcapsize', 'eeg_cap_size')
+    ],
+    'experiment.eegfile': [('experiment.eegdata', 'eeg_data')],
+    'experiment.eegelectrodepositioncollectionstatus': [('experiment.eegdata', 'eeg_data')],
+    'experiment.tmsdata': [
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.tmssetting', 'tms_setting'],
+        ['experiment.coilorientation', 'coil_orientation'],
+        ['experiment.directionoftheinducedcurrent', 'direction_of_induced_current'],
+    ],
+    'experiment.directionoftheinducedcurrent': [['', '']],
+    'experiment.coilorientation': [['', '']],
+    'experiment.hotspot': [['experiment.tmslocalizationsystem', 'tms_localization_system']],
+    'experiment.tmslocalizationsystem': [['experiment.brainarea', 'brain_area']],
+    'experiment.brainarea': [['experiment.brainareasystem', 'brain_area_system']],
+    'experiment.brainareasystem': [['', '']],
+
+    'experiment.additionaldatafile': [['experiment.additionaldata', 'additional_data']],
+    'experiment.additionaldata': [
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.fileformat', 'file_format'],
+    ],
+    'experiment.fileformat': [['', '']],
+    'experiment.digitalgamephasedata': [
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.fileformat', 'file_format'],
+    ],
+    'experiment.digitalgamephasefile': [['experiment.digitalgamephasedata', 'digital_game_phase_data']],
+
+    'experiment.genericdatacollectiondata': [
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.fileformat', 'file_format'],
+    ],
+    'experiment.genericdatacollectionfile': [['experiment.genericdatacollectiondata', 'generic_data_collection_data']],
+
+    'experiment.emgdata': [
+        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
+        ['experiment.subjectofgroup', 'subject_of_group'],
+        ['experiment.fileformat', 'file_format'],
+        ['experiment.emgsetting', 'emg_setting'],
+    ],
+    'experiment.emgfile': [['experiment.emgdata', 'emg_data']],
+    'experiment.componentadditionalfile': [['experiment.component', 'component']],
 
     # Participants
     'experiment.subject': [['patient.patient', 'patient']],
@@ -109,6 +162,8 @@ FOREIGN_RELATIONS = {
     'patient.socialhistorydata': [['patient.patient', 'patient']],
     'patient.medicalrecorddata': [['patient.patient', 'patient']],
     'patient.diagnosis': [['patient.medicalrecorddata', 'medical_record_data']],
+    'patient.complementaryexam': [['patient.diagnosis', 'diagnosis']],
+    'patient.examfile': [['patient.complementaryexam', 'exam']]
 }
 
 ONE_TO_ONE_RELATION = {
@@ -127,6 +182,7 @@ ONE_TO_ONE_RELATION = {
     'experiment.genericdatacollection': 'experiment.component',
     'experiment.tmsdevice': 'experiment.equipment',
     'experiment.eegelectrodenet': 'experiment.equipment',
+    'experiment.eegelectrodecap': 'experiment.eegelectrodenet',
     'experiment.amplifier': 'experiment.equipment',
     'experiment.emgintramuscularplacement': 'experiment.emgelectrodeplacement',
     'experiment.emgsurfaceplacement': 'experiment.emgelectrodeplacement',
@@ -145,12 +201,21 @@ ONE_TO_ONE_RELATION = {
     'experiment.emgpreamplifiersetting': 'experiment.emgelectrodesetting',
     'experiment.emgpreamplifierfiltersetting': 'experiment.emgpreamplifiersetting',
     'experiment.emgelectrodeplacementsetting': 'experiment.emgelectrodesetting',
+    'experiment.hotspot': 'experiment.tmsdata',
 }
 
+# Structure:
+#   'filename': ('model', 'key_path')
 EXPERIMENT_JSON_FILES = {
     'experimentfixture': ('experiment', 'id__in'),
     'componentconfiguration': ('componentconfiguration', 'component_id__experiment_id__in'),
     'dataconfigurationtree': ('dataconfigurationtree', 'component_configuration__component__experiment_id__in'),
+    'eegdata': ('eegdata', 'data_configuration_tree__component_configuration__component__experiment_id__in'),
+    'eegfile': ('eegfile', 'eeg_data__data_configuration_tree__component_configuration__component__experiment_id__in'),
+    'eeg_electrodeposition_collection_status': (
+        'eegelectrodepositioncollectionstatus',
+        'eeg_data__data_configuration_tree__component_configuration__component__experiment_id__in'
+    ),
     'group': ('group', 'experiment_id__in'),
     'block': ('block', 'component_ptr_id__experiment_id__in'),
     'instruction': ('instruction', 'component_ptr_id__experiment_id__in'),
@@ -163,7 +228,7 @@ EXPERIMENT_JSON_FILES = {
     'emg': ('emg', 'component_ptr_id__experiment_id__in'),
     'tms': ('tms', 'component_ptr_id__experiment_id__in'),
     'digital_game_phase': ('digitalgamephase', 'component_ptr_id__experiment_id__in'),
-    'generic_data_collection.json': ('genericdatacollection', 'component_ptr_id__experiment_id__in'),
+    'generic_data_collection': ('genericdatacollection', 'component_ptr_id__experiment_id__in'),
     'participant': ('subjectofgroup', 'group_id__experiment_id__in'),
     'tms_device': ('tmsdevicesetting', 'tms_setting__experiment_id__in'),
     'tms_setting': ('tmssetting', 'experiment_id__in'),
@@ -190,7 +255,19 @@ EXPERIMENT_JSON_FILES = {
         'emgelectrodeplacementsetting', 'emg_electrode_setting__emg_setting__experiment_id__in'
     ),
     'keywords': ('researchproject_keywords', 'researchproject_id__in'),
-
+    'tmsdata': ('tmsdata', 'tms_setting__experiment_id__in'),
+    'hotspot': ('hotspot', 'tms_data__tms_setting__experiment_id__in'),
+    'additionaldatafile':
+        ('additionaldatafile',
+         'additional_data__subject_of_group__group__experiment_id__in'),
+    'digitalgamephasefile':
+        ('digitalgamephasefile',
+         'digital_game_phase_data__subject_of_group__group__experiment_id__in'),
+    'genericdatacollectionfile':
+        ('genericdatacollectionfile',
+         'generic_data_collection_data__subject_of_group__group__experiment_id__in'),
+    'emgfile': ('emgfile', 'emg_data__emg_setting__experiment_id__in'),
+    'componentadditionalfile': ('componentadditionalfile', 'component__experiment_id__in'),
 }
 
 PATIENT_JSON_FILES = {
@@ -198,8 +275,10 @@ PATIENT_JSON_FILES = {
     'socialhistorydata': ('socialhistorydata', 'patient__subject__subjectofgroup__group__experiment_id__in'),
     'socialdemographicdata':
         ('socialdemographicdata', 'patient__subject__subjectofgroup__group__experiment_id__in'),
-    'diagnosis.json':
+    'diagnosis':
         ('diagnosis', 'medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in'),
+    'examfile':
+        ('examfile', 'exam__diagnosis__medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
 }
 
 JSON_FILES_DETACHED_MODELS = {
@@ -226,15 +305,13 @@ PRE_LOADED_MODELS_FOREIGN_KEYS = {
             ('experiment.electrodemodel', 'material'),
             # Not used by the system (uncomment if it is)
             # ('experiment.intramuscularelectrode', 'insulation_material'),
-            # TODO: uncomment when exporting/importing data collections
-            # ('experiment.eegelectrodecap', 'material'),
+            ('experiment.eegelectrodecap', 'material'),
             ('experiment.coilmodel', 'material')
     ],
     ('experiment.muscle', ('name',)): [('experiment.muscleside', 'muscle'), ('experiment.musclesubdivision', 'muscle')],
     ('experiment.musclesubdivision', ('name', 'anatomy_origin', 'anatomy_insertion', 'anatomy_function')): [
         ('experiment.emgelectrodeplacement', 'muscle_subdivision'),
     ],
-    # TODO: experiment.standardiationsystem: see ~/Temporário/models.txt
     ('experiment.muscleside', ('name',)): [('experiment.emgelectrodeplacementsetting', 'muscle_side')],
     ('experiment.filtertype', ('name', 'description')): [
         ('experiment.emgdigitalfiltersetting', 'filter_type'), ('experiment.eegfiltersetting', 'eeg_filter_type')
@@ -280,16 +357,38 @@ PRE_LOADED_MODELS_INHERITANCE = {
 }
 
 PRE_LOADED_MODELS_NOT_EDITABLE = [
-    'experiment.eegelectrodenetsystem', 'experiment.stimulus_type', 'experiment.tetheringsystem',
-    'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape'
+    'experiment.eegelectrodenetsystem', 'experiment.stimulustype', 'experiment.tetheringsystem',
+    'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape',
+    'experiment.eegelectrodecap', 'experiment.fileformat'
 ]
 
+PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE = {
+    'experiment.eegelectrodecap': ('experiment.eegelectrodenet', 'experiment.equipment')
+}
+
 PRE_LOADED_PATIENT_MODEL = {
-('patient.patient', ('cpf', 'name',)): [
-    ('patient.socialhistorydata', 'patient'),
-    ('patient.medicalrecorddata', 'patient'),
-    ('patient.socialdemographicdata', 'patient'),
-    ('patient.telephone', 'patient'),
-    ('patient.questionnaireresponse', 'patient'),
-    ('experiment.subject', 'patient'),],
+    ('patient.patient', ('cpf', 'name',)): [
+        ('patient.socialhistorydata', 'patient'),
+        ('patient.medicalrecorddata', 'patient'),
+        ('patient.socialdemographicdata', 'patient'),
+        ('patient.telephone', 'patient'),
+        ('patient.questionnaireresponse', 'patient'),
+        ('experiment.subject', 'patient')
+    ],
+}
+
+MODELS_WITH_FILE_FIELD = {
+    'experiment.experiment': 'ethics_committee_project_file',
+    'experiment.eegelectrodelocalizationsystem': 'map_image_file',
+    'experiment.eegfile': 'file',
+    'experiment.tmslocalizationsystem': 'tms_localization_system_image',
+    'experiment.digitalgamephasefile': 'file',
+    'experiment.genericdatacollectionfile': 'file',
+    'experiment.additionaldatafile': 'file',
+    'experiment.componentadditionalfile': 'file',
+    'experiment.contexttree': 'setting_file',
+    'experiment.stimulus': 'media_file',
+    'patient.examfile': 'content',
+    'experiment.emgelectrodeplacement': 'photo',
+    'experiment.emgfile': 'file',
 }

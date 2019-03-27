@@ -886,7 +886,7 @@ class ExportDataCollectionTest(ExportTestCase):
         gdc_data = ObjectsFactory.create_generic_data_collection_data(
             dct, self.subject_of_group
         )
-        gdcf = ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
@@ -1022,11 +1022,11 @@ class ExportDataCollectionTest(ExportTestCase):
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' eeg file
-        eegdata = ObjectsFactory.create_eeg_data_collection_data(
+        eegdata = ObjectsFactory.create_eeg_data(
             dct, self.subject_of_group, eeg_set
         )
 
-        eegf = ObjectsFactory.create_eeg_data_collection_file(eegdata)
+        eegf = ObjectsFactory.create_eeg_file(eegdata)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
@@ -1276,8 +1276,8 @@ class ExportDataCollectionTest(ExportTestCase):
             dct1, subject_of_group1
         )
 
-        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
-        ObjectsFactory.create_generic_data_colletion_file(gdc_data1)
+        ObjectsFactory.create_generic_data_collection_file(gdc_data)
+        ObjectsFactory.create_generic_data_collection_file(gdc_data1)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
@@ -1443,7 +1443,7 @@ class ExportDataCollectionTest(ExportTestCase):
         gdc_data = ObjectsFactory.create_generic_data_collection_data(
             dct, self.subject_of_group
         )
-        gdcf = ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
@@ -1570,7 +1570,7 @@ class ExportDataCollectionTest(ExportTestCase):
         # change generic data collection date for testing
         gdc_data.date = date(2018, 7, 7)
         gdc_data.save()
-        ObjectsFactory.create_generic_data_colletion_file(gdc_data)
+        ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
         # eeg data collection stuff
         eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
@@ -1582,13 +1582,13 @@ class ExportDataCollectionTest(ExportTestCase):
             self.root_component, eeg_comp
         )
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
-        eeg_data = ObjectsFactory.create_eeg_data_collection_data(
+        eeg_data = ObjectsFactory.create_eeg_data(
             dct, self.subject_of_group, eeg_set
         )
         # change eeg data collection date for testing
         eeg_data.date = date(2012, 5, 5)
         eeg_data.save()
-        ObjectsFactory.create_eeg_data_collection_file(eeg_data)
+        ObjectsFactory.create_eeg_file(eeg_data)
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
