@@ -838,7 +838,7 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
     if not patients_conflicts_resolved:
         file = request.FILES.get('file')
         if not file:
-            messages.warning(request, _('Please select a json file'))
+            messages.warning(request, _('Please select a zip file'))
             return HttpResponseRedirect(reverse('experiment_import'))
 
         file_name = handle_uploaded_file(file)
