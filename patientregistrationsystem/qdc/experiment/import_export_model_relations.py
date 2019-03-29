@@ -458,7 +458,5 @@ MODELS_WITH_RELATION_TO_AUTH_USER = [
     ('patient.medicalrecorddata', 'record_responsible'),
     ('patient.socialdemographicdata', 'changed_by'),
     ('patient.socialhistorydata', 'changed_by'),
-    ('patient.questionnaireresponse', 'questionnaire_responsible'),
     ('experiment.researchproject', 'owner'),
-    ('experiment.questionnaireresponse', 'questionnaire_responsible'),
 ]
