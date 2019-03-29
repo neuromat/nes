@@ -21,7 +21,7 @@ from experiment.models import Group, ResearchProject, Experiment, \
 from experiment.import_export_model_relations import ONE_TO_ONE_RELATION, FOREIGN_RELATIONS, MODEL_ROOT_NODES, \
     EXPERIMENT_JSON_FILES, PATIENT_JSON_FILES, JSON_FILES_DETACHED_MODELS, PRE_LOADED_MODELS_FOREIGN_KEYS, \
     PRE_LOADED_MODELS_INHERITANCE, PRE_LOADED_MODELS_NOT_EDITABLE, PRE_LOADED_PATIENT_MODEL, \
-    PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE, MODELS_WITH_FILE_FIELD
+    PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE, MODELS_WITH_FILE_FIELD, MODELS_WITH_RELATION_TO_AUTH_USER,
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
 
@@ -338,13 +338,7 @@ class ImportExperiment:
                     self.data[i]['fields']['cpf'] = None
 
     def _update_references_to_user(self, request):
-        models_with_user_reference = [
-            ('patient.patient', 'changed_by'), ('patient.telephone', 'changed_by'),
-            ('patient.medicalrecorddata', 'record_responsible'),
-            ('patient.socialdemographicdata', 'changed_by'),
-            ('patient.socialhistorydata', 'changed_by'),
-            ('patient.questionnaireresponse', 'questionnaire_responsible'),
-        ]
+        models_with_user_reference = MODELS_WITH_RELATION_TO_AUTH_USER
         for model in models_with_user_reference:
             indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] in model[0]]
             for i in indexes:
