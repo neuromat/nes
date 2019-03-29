@@ -340,7 +340,10 @@ class ImportExperiment:
     def _update_references_to_user(self, request):
         models_with_user_reference = [
             ('patient.patient', 'changed_by'), ('patient.telephone', 'changed_by'),
-            ('patient.medicalrecorddata', 'record_responsible')
+            ('patient.medicalrecorddata', 'record_responsible'),
+            ('patient.socialdemographicdata', 'changed_by'),
+            ('patient.socialhistorydata', 'changed_by'),
+            ('patient.questionnaireresponse', 'questionnaire_responsible'),
         ]
         for model in models_with_user_reference:
             indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] in model[0]]
