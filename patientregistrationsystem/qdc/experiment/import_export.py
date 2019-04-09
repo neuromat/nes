@@ -17,12 +17,13 @@ from django.apps import apps
 from django.db.models import Count, Q
 
 from experiment.models import Group, ResearchProject, Experiment, \
-    Keyword, Component
+    Keyword, Component, Questionnaire
 from experiment.import_export_model_relations import ONE_TO_ONE_RELATION, FOREIGN_RELATIONS, MODEL_ROOT_NODES, \
     EXPERIMENT_JSON_FILES, PATIENT_JSON_FILES, JSON_FILES_DETACHED_MODELS, PRE_LOADED_MODELS_FOREIGN_KEYS, \
     PRE_LOADED_MODELS_INHERITANCE, PRE_LOADED_MODELS_NOT_EDITABLE, PRE_LOADED_PATIENT_MODEL, \
     PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE, MODELS_WITH_FILE_FIELD, MODELS_WITH_RELATION_TO_AUTH_USER
 from patient.models import Patient, ClassificationOfDiseases
+from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
 
@@ -151,7 +152,22 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
 
-    def _create_zip_file(self):
+    def _export_surveys(self):
+        """Export experiment surveys archives using LimeSurvey RPC API
+        :return: list of survey archive paths
+        """
+        questionnaire_ids = Questionnaire.objects.filter(
+            experiment=self.experiment).values_list('survey_id', flat=True)
+        surveys = Survey.objects.filter(id__in=questionnaire_ids)
+        limesurvey_rpc = Questionnaires()
+        survey_archive_paths = []
+        for survey in surveys:
+            archive_path = limesurvey_rpc.export_survey(survey.lime_survey_id)
+            survey_archive_paths.append((archive_path, survey.lime_survey_id))
+
+        return survey_archive_paths
+
+    def _create_zip_file(self, survey_archives=None):
         """Create zip file with experiment.json file and subdirs corresponding
         to file paths from models that have FileField fields
         """
@@ -161,12 +177,16 @@ class ExportExperiment:
         indexes = [index for index, dict_ in enumerate(data) if dict_['model'] in MODELS_WITH_FILE_FIELD]
         with zipfile.ZipFile(self.get_file_path(), 'w') as zip_file:
             zip_file.write(self.get_file_path('json').encode('utf-8'), self.FILE_NAME_JSON)
+            # Append file subdirs
             for index in indexes:
-                # relative to MEDIA_ROOT
+                # Relative to MEDIA_ROOT
                 relative_filepath = data[index]['fields'][MODELS_WITH_FILE_FIELD[data[index]['model']]]
                 if relative_filepath is not '':
                     absolute_filepath = path.join(settings.MEDIA_ROOT, relative_filepath)
                     zip_file.write(absolute_filepath, relative_filepath)
+            # Append limesurvey archives if they exists
+            for survey_archive_path in survey_archives:
+                zip_file.write(survey_archive_path[0], 'survey_%s.lsa' % survey_archive_path[1])
 
     def get_file_path(self, type_='zip'):
         if type_ == 'zip':
@@ -199,7 +219,8 @@ class ExportExperiment:
         self._update_classification_of_diseases_reference(self.FILE_NAME_JSON)
         self._remove_auth_user_model_from_json(self.FILE_NAME_JSON)
 
-        self._create_zip_file()
+        survey_archive_paths = self._export_surveys()
+        self._create_zip_file(survey_archive_paths)
 
 
 class ImportExperiment:
