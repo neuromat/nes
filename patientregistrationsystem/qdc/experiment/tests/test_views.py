@@ -6,6 +6,7 @@ import tempfile
 import zipfile
 from unittest import skip
 import os
+from unittest.mock import patch, call
 
 from django.apps import apps
 from django.contrib.auth.models import Group, User
@@ -35,8 +36,8 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, \
-    HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
-    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, EMGData, DigitalGamePhase, \
+    HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, EEGFile, EEGCapSize, \
+    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, \
     DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus
 
 from experiment.models import Group as ExperimentGroup
@@ -45,7 +46,7 @@ from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
     AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases, FleshTone, Payment, \
-    Religion, Schooling, ComplementaryExam, ExamFile
+    Religion, Schooling, ExamFile
 
 from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
@@ -390,20 +391,13 @@ class ExportExperimentTest(TestCase):
 
         self.client.login(username=self.user.username, password=passwd)
 
-        self.temp_dir = tempfile.mkdtemp()
-
     def tearDown(self):
         self.client.logout()
 
     def _create_minimum_objects_to_test_patient(self, patient):
         # TODO: equal to the one in ImportExperimentTest
-        research_project = ObjectsFactory.create_research_project(self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        group = ObjectsFactory.create_group(experiment)
         subject = ObjectsFactory.create_subject(patient)
-        ObjectsFactory.create_subject_of_group(group, subject)
-
-        return experiment
+        return ObjectsFactory.create_subject_of_group(self.group, subject)
 
     def test_GET_experiment_export_returns_zip_file(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
@@ -422,16 +416,19 @@ class ExportExperimentTest(TestCase):
 
     # TODO: NES-946: see if it's deprecated or have to check for all user objects, not only one
     def test_GET_experiment_export_returns_json_file_without_user_object(self):
+        temp_dir = tempfile.mkdtemp()
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
             data = json.loads(file.read().replace('\n', ''))
             self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
 
     def test_remove_all_auth_user_items_before_export(self):
+        temp_dir = tempfile.mkdtemp()
+
         patient = UtilTests.create_patient(changed_by=self.user)
         user2, passwd2 = create_user(Group.objects.all())
         UtilTests.create_telephone(patient, changed_by=user2)
@@ -450,8 +447,8 @@ class ExportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         zipped_file = zipfile.ZipFile(file_path, 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -459,22 +456,24 @@ class ExportExperimentTest(TestCase):
             next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'), None)
         )
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
 
     def test_diagnosis_classification_of_diseases_references_points_to_natural_key_code(self):
+        temp_dir = tempfile.mkdtemp()
+
         patient = UtilTests.create_patient(changed_by=self.user)
         medical_record = UtilTests.create_medical_record(self.user, patient)
         diagnosis = UtilTests.create_diagnosis(medical_record)
 
-        experiment = self._create_minimum_objects_to_test_patient(patient)
+        self._create_minimum_objects_to_test_patient(patient)
 
-        export = ExportExperiment(experiment)
+        export = ExportExperiment(self.experiment)
         export.export_all()
         file_path = export.get_file_path()
 
         zipped_file = zipfile.ZipFile(file_path, 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -489,6 +488,8 @@ class ExportExperimentTest(TestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_experiment_has_file_creates_corresponding_dir_file_in_experiment_zip_file(self):
+        temp_dir = tempfile.mkdtemp()
+
         self.experiment.ethics_committee_project_file = SimpleUploadedFile('file.bin', b'binnary content')
         self.experiment.save()
 
@@ -499,10 +500,12 @@ class ExportExperimentTest(TestCase):
             file_path in [subdir for subdir in zipped_file.namelist()],
             '%s not in %s' % (file_path, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_experiment_has_not_file_does_not_creates_corresponding_dir_file_in_experiment_zip_file(self):
+        temp_dir = tempfile.mkdtemp()
+
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertTrue(
@@ -510,10 +513,12 @@ class ExportExperimentTest(TestCase):
                 '%s not in %s' % (ExportExperiment.FILE_NAME_JSON, zipped_file.namelist()))
             self.assertEqual(1, len(zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_eeg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
+        temp_dir = tempfile.mkdtemp()
+
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
@@ -546,7 +551,7 @@ class ExportExperimentTest(TestCase):
                 eeg_els.map_image_file.name in [subdir for subdir in zipped_file.namelist()],
                 '%s not in %s' % (eeg_els.map_image_file.name, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_eeg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
@@ -583,14 +588,16 @@ class ExportExperimentTest(TestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_emg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
+        temp_dir = tempfile.mkdtemp()
+
         patient = UtilTests.create_patient(changed_by=self.user)
-        experiment = self._create_minimum_objects_to_test_patient(patient)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         subject_of_group = SubjectOfGroup.objects.last()
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, software_version)
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
@@ -598,13 +605,13 @@ class ExportExperimentTest(TestCase):
         emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
         emg_ep = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
-        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        emg_step = ObjectsFactory.create_component(self.experiment, 'emg', kwargs={'emg_set': emg_setting})
         component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
         emg_file = ObjectsFactory.create_emg_data_collection_file(emg_data)
 
-        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': experiment.id}))
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertTrue(
                 emg_file.file.name in [subdir for subdir in zipped_file.namelist()],
@@ -613,19 +620,18 @@ class ExportExperimentTest(TestCase):
                 emg_ep.photo.name in [subdir for subdir in zipped_file.namelist()],
                 '%s not in %s' % (emg_ep.photo.name, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_emg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
         patient = UtilTests.create_patient(changed_by=self.user)
-        experiment = self._create_minimum_objects_to_test_patient(patient)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        subject_of_group = SubjectOfGroup.objects.last()
+        subject_of_group = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, software_version)
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
@@ -635,7 +641,7 @@ class ExportExperimentTest(TestCase):
         emg_ep.photo = ''
         emg_ep.save()
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
-        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        emg_step = ObjectsFactory.create_component(self.experiment, 'emg', kwargs={'emg_set': emg_setting})
         component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
@@ -643,9 +649,37 @@ class ExportExperimentTest(TestCase):
         emg_file.file = ''
         emg_file.save()
 
-        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': experiment.id}))
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertEqual(1, len(zipped_file.namelist()))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_experiment_has_questionnaire_step_returns_survey_archive_from_lime_survey(self, mockServer):
+        temp_dir = tempfile.mkdtemp()
+
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        # limesurvey temp dir is in limesurvey dir, so we create another temp dir
+        temp_dir = tempfile.mkdtemp()
+        file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
+        mockServer.return_value.export_survey.return_value = file.name
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+
+        self.assertTrue(mockServer.return_value.export_survey.called)
+        self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey.lime_survey_id))
+        with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
+            self.assertEqual(2, len(zipped_file.namelist()))
+            self.assertIn('survey_%s.lsa' % survey.lime_survey_id, zipped_file.namelist())
+
+        shutil.rmtree(temp_dir)
 
 
 class ImportExperimentTest(TestCase):
@@ -907,6 +941,7 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
+    # TODO (NES-956): remove survey_id
     def _create_minimum_objects_to_test_questionnaire(self, survey_id=212121):
         ObjectsFactory.create_group(self.experiment, self.rootcomponent)
         survey = create_survey(survey_id)

@@ -21,10 +21,10 @@ class ABCSearchEngine(ABC):
     def get_session_key(self):
 
         self.server = Server(
-            settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
-            # TODO:
-            # settings.LIMESURVEY['URL_API'] +
-            # '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+            # settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
+            # TODO: make this link optional if the extended plugin is used
+            settings.LIMESURVEY['URL_API'] +
+            '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
 
         try:
             self.session_key = self.server.get_session_key(
@@ -427,11 +427,11 @@ class ABCSearchEngine(ABC):
         )
 
     # TODO:
-    # def export_survey(self, sid):
-    #     return self.server.export_survey(self.session_key, sid)
-    #
     # def import_survey(self, sid):
     #     return self.server.import_survey(self.session_key, sid)
+
+    def export_survey(self, sid):
+        return self.server.export_survey(self.session_key, sid)
 
 
 class Questionnaires(ABCSearchEngine):
@@ -531,8 +531,8 @@ class Questionnaires(ABCSearchEngine):
         )
 
     # TODO:
-    # def export_survey(self, sid):
-    #     return super(Questionnaires, self).export_survey(sid)
-    #
     # def import_survey(self, sid):
     #     return super(Questionnaires, self).import_survey(sid)
+
+    def export_survey(self, sid):
+        return super(Questionnaires, self).export_survey(sid)
