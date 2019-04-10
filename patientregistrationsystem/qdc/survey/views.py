@@ -49,10 +49,45 @@ class GroupOfQuestions:
     questionnaire_responses = []
 
 
+def get_survey_title_based_on_the_user_language(survey, language_code, update=False):
+
+    if not update:
+        # Get the titles in both languages and return the one compatible with the user's language,
+        # If the title is blank in that language, return it in the other language, and
+        # if that one is also blank, try to update the titles in each language
+        # if any of them updates isn't blank, recursively calls this function
+        # otherwise, try to get the title for this survey at LimeSurvey and return it
+        titles = {'pt-br': survey.pt_title, 'en': survey.en_title}
+        fallback_language = 'en' if language_code == 'pt-br' else 'pt-br'
+
+        if titles[language_code] != None and titles[language_code] != "":
+            title = titles[language_code]
+            return title
+        elif titles[fallback_language] != None and titles[fallback_language] != "":
+            title = titles[fallback_language]
+            return title
+
+    surveys = Questionnaires()
+    pt_title = surveys.get_survey_title(survey.lime_survey_id, 'pt-BR')
+    en_title = surveys.get_survey_title(survey.lime_survey_id, 'en')
+
+    if pt_title != None and pt_title != "" or en_title != None and en_title != "":
+        surveys.release_session_key()
+
+        survey.pt_title = pt_title
+        survey.en_title = en_title
+        survey.save()
+
+        return get_survey_title_based_on_the_user_language(survey, language_code)
+    else:
+        title = surveys.get_survey_title(survey.lime_survey_id, language_code)
+        surveys.release_session_key()
+        return title
+
+
 @login_required
 @permission_required('survey.view_survey')
 def survey_list(request, template_name='survey/survey_list.html'):
-
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
 
@@ -60,16 +95,35 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     language_code = request.LANGUAGE_CODE
 
+    update = False
+    if request.method == "POST":
+        if request.POST['action'] == "update":
+            update = True
+
     for survey in Survey.objects.all():
-        language = get_questionnaire_language(surveys, survey.lime_survey_id, language_code)
+        survey_title = get_survey_title_based_on_the_user_language(survey, language_code, update)
+
+        # Get the status of the survey
+        # If there's any inactive survey, search LimeSurvey to see if there's any change in that matter
+        # and update the fields in the database
+        is_active = survey.is_active
+
+        if not is_active:
+            status = surveys.get_survey_properties(survey.lime_survey_id, 'active')
+            if status == 'Y':
+                survey.is_active = True
+            else:
+                survey.is_active = False
+
+            survey.save()
 
         questionnaires_list.append(
             {
                 'id': survey.id,
                 'lime_survey_id': survey.lime_survey_id,
-                'title': surveys.get_survey_title(survey.lime_survey_id, language),
+                'title': survey_title,
                 'is_initial_evaluation': survey.is_initial_evaluation,
-                'is_active': surveys.get_survey_properties(survey.lime_survey_id, 'active'),
+                'is_active': survey.is_active,
             }
         )
 
@@ -89,11 +143,27 @@ def survey_list(request, template_name='survey/survey_list.html'):
 @permission_required('survey.add_survey')
 def survey_create(request, template_name="survey/survey_register.html"):
     survey_form = SurveyForm(request.POST or None, initial={'title': 'title', 'is_initial_evaluation': False})
-
     surveys = Questionnaires()
     limesurvey_available = check_limesurvey_access(request, surveys)
-
     questionnaires_list = []
+
+    if request.method == "POST":
+        if request.POST['action'] == "save":
+            if survey_form.is_valid():
+
+                survey_added = survey_form.save(commit=False)
+
+                survey, created = Survey.objects.get_or_create(
+                    lime_survey_id=request.POST['questionnaire_selected'],
+                    is_initial_evaluation=survey_added.is_initial_evaluation)
+
+                surveys.release_session_key()
+
+                if created:
+                    messages.success(request, _('Questionnaire created successfully.'))
+                    redirect_url = reverse("survey_list")
+
+                    return HttpResponseRedirect(redirect_url)
 
     if limesurvey_available:
         questionnaires_list = surveys.find_all_active_questionnaires()
@@ -108,34 +178,6 @@ def survey_create(request, template_name="survey/survey_register.html"):
                     break
     else:
         messages.warning(request, _('No questionnaire found.'))
-
-    if request.method == "POST":
-        if request.POST['action'] == "save":
-            if survey_form.is_valid():
-
-                survey_added = survey_form.save(commit=False)
-
-                survey, created = Survey.objects.get_or_create(
-                    lime_survey_id=request.POST['questionnaire_selected'],
-                    is_initial_evaluation=survey_added.is_initial_evaluation)
-
-                has_file_upload_question = is_type_of_question_in_survey(
-                    surveys=surveys,
-                    survey=survey,
-                    type="|"
-                )
-
-                surveys.release_session_key()
-
-                if created:
-                    if has_file_upload_question:
-                        messages.warning(request, _('NES can\'t retrieve files from \"file upload\" '
-                                                    'questions from LimeSurvey.') + ' ' +
-                                         _('See \"Best Pratices and Recommendations\" at '
-                                           'https://nes.rtfd.io for more details.'))
-                    messages.success(request, _('Questionnaire created successfully.'))
-                    redirect_url = reverse("survey_list")
-                    return HttpResponseRedirect(redirect_url)
 
     surveys.release_session_key()
 
