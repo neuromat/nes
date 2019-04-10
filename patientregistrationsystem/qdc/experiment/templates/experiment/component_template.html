@@ -313,23 +313,22 @@
                 </div>
             {% endif %}
 
-            <div class="btn-toolbar pull-right">
+            <div class="btn-toolbar">
                 {% if not component_configuration and can_change %}
                     {% if component.id in protected_steps %}
                         <div class="btn-group pull-left" data-toggle="tooltip" data-placement="right" title="{% trans "There is data collection related to this step. Alternatively, make a copy of the experiment." %}">
                             <button type="button" class="btn btn-danger" disabled="disabled">{% trans "Delete" %}</button>
                         </div>
                     {% else %}
-                        <div class="btn-group pull-left">
-                            <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
-                        </div>
+                        {% if not creating %}
+                            <div class="btn-group pull-left">
+                                <button type="button" class="btn btn-danger" onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
+                            </div>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
                 {% if updating or creating or component_configuration %}
-                    <div class="btn-group">
-                        <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
-                    </div>
-                    <div class="btn-group">
+                    <div class="btn-group pull-right">
                         <button {% if not can_change %}disabled{% endif %} type="submit" name="action" value="save" class="btn btn-primary" id="submit_button">
                             {% if reusing or can_reuse %}
                                 {% trans "Insert" %}
@@ -338,8 +337,11 @@
                             {% endif %}
                         </button>
                     </div>
+                    <div class="btn-group pull-right">
+                        <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+                    </div>
                 {% else %}
-                    <div class="btn-group">
+                    <div class="btn-group pull-right">
                         <a href="{{ back_cancel_url }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>
                 {% endif %}
