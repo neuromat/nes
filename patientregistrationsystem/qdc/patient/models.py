@@ -650,6 +650,7 @@ class QuestionnaireResponse(models.Model):
     questionnaire_responsible = models.ForeignKey(
         User, null=False, related_name="+"
     )
+    is_completed = models.CharField(null=False, max_length=50, default="")
 
     class Meta:
         permissions = (

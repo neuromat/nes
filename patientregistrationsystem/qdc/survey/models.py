@@ -7,6 +7,9 @@ class Survey(models.Model):
 
     lime_survey_id = models.IntegerField(unique=True)
     is_initial_evaluation = models.BooleanField(default=True)
+    pt_title = models.CharField(null=True, max_length=255, default=None)
+    en_title = models.CharField(null=True, max_length=255, default=None)
+    is_active = models.NullBooleanField(default=None)
 
     class Meta:
         permissions = (
