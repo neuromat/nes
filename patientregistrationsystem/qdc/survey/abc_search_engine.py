@@ -23,6 +23,8 @@ class ABCSearchEngine(ABC):
         self.server = Server(
             # settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
             # TODO: make this link optional if the extended plugin is used
+            #  IMPORTANT: Exception Transport Error raised when using link bellow to
+            #  visualize questions.
             settings.LIMESURVEY['URL_API'] +
             '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
 

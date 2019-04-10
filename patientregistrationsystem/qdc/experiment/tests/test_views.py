@@ -655,17 +655,25 @@ class ExportExperimentTest(TestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_experiment_has_questionnaire_step_returns_survey_archive_from_lime_survey(self, mockServer):
+    def test_experiment_has_questionnaire_step_returns_survey_archive_from_limesurvey(self, mockServer):
         temp_dir = tempfile.mkdtemp()
 
         patient = UtilTests.create_patient(changed_by=self.user)
         self._create_minimum_objects_to_test_patient(patient)
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
-        survey = create_survey()
-        questionnaire_step = ObjectsFactory.create_component(
+
+        # First survey
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE,
-            kwargs={'survey': survey})
-        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+            kwargs={'survey': survey1})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        # Second survey
+        survey2 = create_survey(505050)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey2})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
 
         # limesurvey temp dir is in limesurvey dir, so we create another temp dir
         temp_dir = tempfile.mkdtemp()
@@ -674,10 +682,11 @@ class ExportExperimentTest(TestCase):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
 
         self.assertTrue(mockServer.return_value.export_survey.called)
-        self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey.lime_survey_id))
+        self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey1.lime_survey_id))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
-            self.assertEqual(2, len(zipped_file.namelist()))
-            self.assertIn('survey_%s.lsa' % survey.lime_survey_id, zipped_file.namelist())
+            self.assertEqual(3, len(zipped_file.namelist()))
+            self.assertIn('survey_%s.lsa' % survey1.lime_survey_id, zipped_file.namelist())
+            self.assertIn('survey_%s.lsa' % survey2.lime_survey_id, zipped_file.namelist())
 
         shutil.rmtree(temp_dir)
 
