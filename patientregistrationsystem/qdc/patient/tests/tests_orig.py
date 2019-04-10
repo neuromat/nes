@@ -1507,7 +1507,7 @@ class QuestionnaireFormValidation(TestCase):
 
     @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
                                            'LOCATION': 'limesurveycache',
-                                           'TIMEOUT': 1}})
+                                           'TIMEOUT': 60}})
     def test_entrance_ev_response_complete_with_cache(self):
         """
         Test view of questionnaire response when questionnaire is complete
