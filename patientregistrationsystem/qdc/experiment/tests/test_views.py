@@ -486,10 +486,10 @@ class ExportExperimentTest(TestCase):
         code = deserialized[index]['fields']['classification_of_diseases'][0]
         self.assertEqual(diagnosis.classification_of_diseases.code, code)
 
+        shutil.rmtree(temp_dir)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_experiment_has_file_creates_corresponding_dir_file_in_experiment_zip_file(self):
-        temp_dir = tempfile.mkdtemp()
-
         self.experiment.ethics_committee_project_file = SimpleUploadedFile('file.bin', b'binnary content')
         self.experiment.save()
 
@@ -500,12 +500,9 @@ class ExportExperimentTest(TestCase):
             file_path in [subdir for subdir in zipped_file.namelist()],
             '%s not in %s' % (file_path, zipped_file.namelist()))
 
-        shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_experiment_has_not_file_does_not_creates_corresponding_dir_file_in_experiment_zip_file(self):
-        temp_dir = tempfile.mkdtemp()
-
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertTrue(
@@ -513,12 +510,8 @@ class ExportExperimentTest(TestCase):
                 '%s not in %s' % (ExportExperiment.FILE_NAME_JSON, zipped_file.namelist()))
             self.assertEqual(1, len(zipped_file.namelist()))
 
-        shutil.rmtree(temp_dir)
-
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_eeg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
-        temp_dir = tempfile.mkdtemp()
-
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
@@ -551,7 +544,6 @@ class ExportExperimentTest(TestCase):
                 eeg_els.map_image_file.name in [subdir for subdir in zipped_file.namelist()],
                 '%s not in %s' % (eeg_els.map_image_file.name, zipped_file.namelist()))
 
-        shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_eeg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
@@ -588,8 +580,6 @@ class ExportExperimentTest(TestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_emg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
-        temp_dir = tempfile.mkdtemp()
-
         patient = UtilTests.create_patient(changed_by=self.user)
         self._create_minimum_objects_to_test_patient(patient)
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
@@ -620,7 +610,6 @@ class ExportExperimentTest(TestCase):
                 emg_ep.photo.name in [subdir for subdir in zipped_file.namelist()],
                 '%s not in %s' % (emg_ep.photo.name, zipped_file.namelist()))
 
-        shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -653,11 +642,10 @@ class ExportExperimentTest(TestCase):
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertEqual(1, len(zipped_file.namelist()))
 
-    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
     @patch('survey.abc_search_engine.Server')
     def test_experiment_has_questionnaire_step_returns_survey_archive_from_limesurvey(self, mockServer):
-        temp_dir = tempfile.mkdtemp()
-
         patient = UtilTests.create_patient(changed_by=self.user)
         self._create_minimum_objects_to_test_patient(patient)
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
@@ -675,7 +663,6 @@ class ExportExperimentTest(TestCase):
             kwargs={'survey': survey2})
         ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
 
-        # limesurvey temp dir is in limesurvey dir, so we create another temp dir
         temp_dir = tempfile.mkdtemp()
         file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
         mockServer.return_value.export_survey.return_value = file.name
