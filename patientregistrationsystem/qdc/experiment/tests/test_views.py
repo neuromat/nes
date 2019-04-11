@@ -393,6 +393,7 @@ class ExportExperimentTest(TestCase):
 
     def tearDown(self):
         self.client.logout()
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def _create_minimum_objects_to_test_patient(self, patient):
         # TODO: equal to the one in ImportExperimentTest
@@ -645,7 +646,8 @@ class ExportExperimentTest(TestCase):
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @patch('survey.abc_search_engine.Server')
-    def test_experiment_has_questionnaire_step_returns_survey_archive_from_limesurvey(self, mockServer):
+    def test_experiment_has_questionnaire_step_copy_limesurvey_archive_files_from_limesurvey_server_to_localhost(self, mockServer):
+        # TODO (NES-966): solve temp dir created misteriously
         patient = UtilTests.create_patient(changed_by=self.user)
         self._create_minimum_objects_to_test_patient(patient)
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
@@ -663,9 +665,43 @@ class ExportExperimentTest(TestCase):
             kwargs={'survey': survey2})
         ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
 
-        temp_dir = tempfile.mkdtemp()
-        file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
+        remote_temp_dir = tempfile.mkdtemp()
+        file = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive.lsa')
         mockServer.return_value.export_survey.return_value = file.name
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+
+        self.assertTrue(mockServer.return_value.export_survey.called)
+        self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey1.lime_survey_id))
+        self.assertIn('survey_%s.lsa' % survey1.lime_survey_id, os.listdir(export.temp_dir))
+        self.assertIn('survey_%s.lsa' % survey2.lime_survey_id, os.listdir(export.temp_dir))
+
+        shutil.rmtree(remote_temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_experiment_has_questionnaire_step_add_survey_archive_in_experiment_zip_file(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+
+        # First survey
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey1})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        # Second survey
+        survey2 = create_survey(505050)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey2})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
+
+        remote_temp_dir = tempfile.mkdtemp()
+        file = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive.lsa')
+        mockServer.return_value.export_survey.return_value = file.name
+
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
 
         self.assertTrue(mockServer.return_value.export_survey.called)
@@ -674,6 +710,27 @@ class ExportExperimentTest(TestCase):
             self.assertEqual(3, len(zipped_file.namelist()))
             self.assertIn('survey_%s.lsa' % survey1.lime_survey_id, zipped_file.namelist())
             self.assertIn('survey_%s.lsa' % survey2.lime_survey_id, zipped_file.namelist())
+
+        shutil.rmtree(remote_temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_export_survey_archive_removes_limesurvey_zip_file_created_in_temp_dir(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey1})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+
+        temp_dir = tempfile.mkdtemp()
+        file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
+        mockServer.return_value.export_survey.return_value = file.name
+        self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+
+        self.assertRaises(FileNotFoundError, open, os.path.join(temp_dir, 'limesurvey_archive.lsa'))
 
         shutil.rmtree(temp_dir)
 
@@ -4134,7 +4191,7 @@ class ImportExperimentTest(TestCase):
         group = ObjectsFactory.create_group(experiment)
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
-        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        ObjectsFactory.create_subject_of_group(group, subject)
 
         ObjectsFactory.create_exam_file(patient, self.user)
 
