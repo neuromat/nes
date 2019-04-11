@@ -1,3 +1,4 @@
+import os
 import shutil
 import sys
 import tempfile
@@ -15,6 +16,8 @@ from django.core.files import File
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count, Q
+from paramiko import SSHClient, AutoAddPolicy
+from scp import SCPClient
 
 from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component, Questionnaire
@@ -152,24 +155,45 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
 
+    def _copy_from_limesurvey_server(self, remote_archive_paths):
+        ssh = SSHClient()
+        ssh.set_missing_host_key_policy(AutoAddPolicy)  # TODO: add only for Limesurvey host?
+        ssh.connect(
+            settings.LIMESURVEY_SERVER['host'], settings.LIMESURVEY_SERVER['port'],
+            settings.LIMESURVEY_SERVER['user'], settings.LIMESURVEY_SERVER['password'],
+            sock=None)
+        scp = SCPClient(ssh.get_transport())
+        local_survey_paths = []
+        for remote_archive_path in remote_archive_paths:
+            dest_file = os.path.join(self.temp_dir, 'survey_%s.lsa' % remote_archive_path[1])
+            local_survey_paths.append(dest_file)
+            scp.get(remote_archive_path[0], dest_file)
+
+        return local_survey_paths
+
     def _export_surveys(self):
-        """Export experiment surveys archives using LimeSurvey RPC API
+        """Export experiment surveys archives using LimeSurvey RPC API.
+        The archive files are saved in LimeSurvey default temp directory.
+        After saved archives are copyed to local NES file system.
         :return: list of survey archive paths
         """
         questionnaire_ids = Questionnaire.objects.filter(
             experiment=self.experiment).values_list('survey_id', flat=True)
         surveys = Survey.objects.filter(id__in=questionnaire_ids)
-        limesurvey_rpc = Questionnaires()
-        survey_archive_paths = []
+        questionnaire = Questionnaires()
+        remote_archive_paths = []
         for survey in surveys:
-            archive_path = limesurvey_rpc.export_survey(survey.lime_survey_id)
-            survey_archive_paths.append((archive_path, survey.lime_survey_id))
-
+            archive_path = questionnaire.export_survey(survey.lime_survey_id)
+            remote_archive_paths.append((archive_path, str(survey.lime_survey_id)))
+        
+        survey_archive_paths = self._copy_from_limesurvey_server(remote_archive_paths)
+            
         return survey_archive_paths
 
     def _create_zip_file(self, survey_archives=None):
         """Create zip file with experiment.json file and subdirs corresponding
         to file paths from models that have FileField fields
+        :param survey_archives: list of survey archive paths
         """
         with open(self.get_file_path('json')) as f:
             data = json.load(f)
@@ -186,7 +210,12 @@ class ExportExperiment:
                     zip_file.write(absolute_filepath, relative_filepath)
             # Append limesurvey archives if they exists
             for survey_archive_path in survey_archives:
-                zip_file.write(survey_archive_path[0], 'survey_%s.lsa' % survey_archive_path[1])
+                zip_file.write(survey_archive_path, os.path.basename(survey_archive_path))
+
+    @staticmethod
+    def _remove_survey_archives(survey_archive_paths):
+        for survey_path in survey_archive_paths:
+            os.remove(survey_path[0])
 
     def get_file_path(self, type_='zip'):
         if type_ == 'zip':
@@ -221,6 +250,7 @@ class ExportExperiment:
 
         survey_archive_paths = self._export_surveys()
         self._create_zip_file(survey_archive_paths)
+        # self._remove_survey_archives(remote_archive_paths) TODO: implement it!
 
 
 class ImportExperiment:
