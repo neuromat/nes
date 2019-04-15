@@ -157,7 +157,8 @@ class ExportExperiment:
 
     def _copy_from_limesurvey_server(self, remote_archive_paths):
         ssh = SSHClient()
-        ssh.set_missing_host_key_policy(AutoAddPolicy)  # TODO: add only for Limesurvey host?
+        ssh.set_missing_host_key_policy(AutoAddPolicy)  # TODO (NES-956): add only for Limesurvey host?
+        # TODO (NES-956): put exception trying to connect
         ssh.connect(
             settings.LIMESURVEY_SERVER['host'], settings.LIMESURVEY_SERVER['port'],
             settings.LIMESURVEY_SERVER['user'], settings.LIMESURVEY_SERVER['password'],
@@ -166,10 +167,27 @@ class ExportExperiment:
         local_survey_paths = []
         for remote_archive_path in remote_archive_paths:
             dest_file = os.path.join(self.temp_dir, 'survey_%s.lsa' % remote_archive_path[1])
-            local_survey_paths.append(dest_file)
+            # TODO (NES-956): put exception trying to download file
             scp.get(remote_archive_path[0], dest_file)
+            local_survey_paths.append(dest_file)
+
+        ssh.close()
 
         return local_survey_paths
+
+    @staticmethod
+    def _remove_remote_survey_archives(remote_survey_archive_paths):
+        ssh = SSHClient()
+        ssh.set_missing_host_key_policy(AutoAddPolicy)  # TODO (NES-956): add only for Limesurvey host?
+        # TODO (NES-956): put exception trying to connect
+        ssh.connect(
+            settings.LIMESURVEY_SERVER['host'], settings.LIMESURVEY_SERVER['port'],
+            settings.LIMESURVEY_SERVER['user'], settings.LIMESURVEY_SERVER['password'],
+            sock=None)
+        sftp = ssh.open_sftp()
+        for remote_survey_archive_path in remote_survey_archive_paths:
+            # TODO (NES-956): put exception trying to remove
+            sftp.remove(remote_survey_archive_path[0])
 
     def _export_surveys(self):
         """Export experiment surveys archives using LimeSurvey RPC API.
@@ -187,7 +205,8 @@ class ExportExperiment:
             remote_archive_paths.append((archive_path, str(survey.lime_survey_id)))
         
         survey_archive_paths = self._copy_from_limesurvey_server(remote_archive_paths)
-            
+
+        self._remove_remote_survey_archives(remote_archive_paths)
         return survey_archive_paths
 
     def _create_zip_file(self, survey_archives=None):
@@ -211,11 +230,6 @@ class ExportExperiment:
             # Append limesurvey archives if they exists
             for survey_archive_path in survey_archives:
                 zip_file.write(survey_archive_path, os.path.basename(survey_archive_path))
-
-    @staticmethod
-    def _remove_survey_archives(survey_archive_paths):
-        for survey_path in survey_archive_paths:
-            os.remove(survey_path[0])
 
     def get_file_path(self, type_='zip'):
         if type_ == 'zip':
@@ -250,7 +264,6 @@ class ExportExperiment:
 
         survey_archive_paths = self._export_surveys()
         self._create_zip_file(survey_archive_paths)
-        # self._remove_survey_archives(remote_archive_paths) TODO: implement it!
 
 
 class ImportExperiment:
