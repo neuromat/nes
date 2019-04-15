@@ -666,8 +666,8 @@ class ExportExperimentTest(TestCase):
         ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
 
         remote_temp_dir = tempfile.mkdtemp()
-        file = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive.lsa')
-        mockServer.return_value.export_survey.return_value = file.name
+        remote_file = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -713,21 +713,23 @@ class ExportExperimentTest(TestCase):
 
         shutil.rmtree(remote_temp_dir)
 
+    # @patch('survey.abc_search_engine.Server')
+
     @patch('survey.abc_search_engine.Server')
-    def test_export_survey_archive_removes_limesurvey_zip_file_created_in_temp_dir(self, mockServer):
+    def test_export_survey_archive_removes_limesurvey_zip_file_created_in_remote_dir(self, mockServer):
         patient = UtilTests.create_patient(changed_by=self.user)
         self._create_minimum_objects_to_test_patient(patient)
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
 
-        survey1 = create_survey()
+        survey = create_survey()
         questionnaire_step1 = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE,
-            kwargs={'survey': survey1})
+            kwargs={'survey': survey})
         ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
 
         temp_dir = tempfile.mkdtemp()
-        file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
-        mockServer.return_value.export_survey.return_value = file.name
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
         self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
 
         self.assertRaises(FileNotFoundError, open, os.path.join(temp_dir, 'limesurvey_archive.lsa'))
