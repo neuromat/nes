@@ -1,4 +1,6 @@
+import base64
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -166,7 +168,7 @@ class ExportExperiment:
         scp = SCPClient(ssh.get_transport())
         local_survey_paths = []
         for remote_archive_path in remote_archive_paths:
-            dest_file = os.path.join(self.temp_dir, 'survey_%s.lsa' % remote_archive_path[1])
+            dest_file = os.path.join(self.temp_dir, '%s.lsa' % remote_archive_path[1])
             # TODO (NES-956): put exception trying to download file
             scp.get(remote_archive_path[0], dest_file)
             local_survey_paths.append(dest_file)
@@ -408,39 +410,40 @@ class ImportExperiment:
             for i in indexes:
                 self.data[i]['fields'][model[1]] = request.user.id
 
-    def _solve_limey_survey_reference(self, survey_index):
-        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-        if min_limesurvey_id >= 0:
-            new_limesurvey_id = -99
-        else:
-            min_limesurvey_id -= 1
-            new_limesurvey_id = min_limesurvey_id
-        self.data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
+    # def _solve_limey_survey_reference(self, survey_index):
+    #     min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+    #     if min_limesurvey_id >= 0:
+    #         new_limesurvey_id = -99
+    #     else:
+    #         min_limesurvey_id -= 1
+    #         new_limesurvey_id = min_limesurvey_id
+    #     self.data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
 
-    def _make_dummy_reference_to_limesurvey(self):
-        survey_indexes = [index for index, dict_ in enumerate(self.data) if dict_['model'] == 'survey.survey']
-        for survey_index in survey_indexes:
-            self._solve_limey_survey_reference(survey_index)
+    # def _make_dummy_reference_to_limesurvey(self):
+        # survey_indexes = [index for index, dict_ in enumerate(self.data) if dict_['model'] == 'survey.survey']
+        # for survey_index in survey_indexes:
+        #     self._solve_limey_survey_reference(survey_index)
 
-    def _update_survey_stuff(self):
+    def _update_survey_data(self, surveys_imported):
         indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'survey.survey']
-
         if indexes:
             # Update survey codes
             next_code = Survey.create_random_survey_code()
-
             # Update lime survey ids
             min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
             if min_limesurvey_id >= 0:
-                new_limesurvey_id = -99
+                dummy_limesurvey_id = -99
             else:
-                new_limesurvey_id = min_limesurvey_id
-
+                dummy_limesurvey_id = min_limesurvey_id
             for i in indexes:
                 self.data[i]['fields']['code'] = next_code
                 next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
-                new_limesurvey_id -= 1
-                self.data[i]['fields']['lime_survey_id'] = new_limesurvey_id
+                new_limesurvey_id = surveys_imported.get(self.data[i]['fields']['lime_survey_id'], None)
+                if new_limesurvey_id is not None:
+                    self.data[i]['fields']['lime_survey_id'] = new_limesurvey_id
+                else:
+                    dummy_limesurvey_id -= 1
+                    self.data[i]['fields']['lime_survey_id'] = dummy_limesurvey_id
 
     def _keep_objects_pre_loaded(self):
         """For objects in fixtures initially loaded, check if the objects
@@ -549,12 +552,12 @@ class ImportExperiment:
                     abbreviated_description='(imported, not recognized)'
                 )
 
-    def _manage_last_stuffs_before_importing(self, request, research_project_id, patients_to_update):
-        self._make_dummy_reference_to_limesurvey()
+    def _update_data_before_importing(self, request, research_project_id, patients_to_update):
+        # self._make_dummy_reference_to_limesurvey()
         self._update_research_project_pk(research_project_id)
         self._verify_keywords()
         self._update_references_to_user(request)
-        self._update_survey_stuff()
+        # self._update_survey_data()
         self._keep_objects_pre_loaded()
         self._keep_patients_pre_loaded(patients_to_update)
         self._update_patients_stuff(patients_to_update)
@@ -669,6 +672,36 @@ class ImportExperiment:
                         getattr(object_imported, file_field).save(path.basename(file_path), f)
                         object_imported.save()
 
+    def _get_indexes(self, app, model):
+        deserialized = json.loads(self.data)
+        return [index for (index, dict_) in enumerate(deserialized) if dict_['model'] == app + model]
+
+    def _import_surveys(self):
+        """Import surveys to Limesurvey server and call updating references
+        in json data
+        """
+        surveys_imported = dict()
+        surveys = Questionnaires()
+        # Does not add try/exception trying to open zipfile here because it
+        # was done in import_all method
+        with zipfile.ZipFile(self.file_path) as zip_file:
+            for filename in zip_file.namelist():
+                result = re.match('(^.+)(\.lsa)', filename)
+                if result:
+                    survey_archive = zip_file.extract(filename, self.temp_dir)
+                    with open(survey_archive, 'rb') as file:
+                        encoded_string = base64.b64encode(file.read())
+                        encoded_string = encoded_string.decode('utf-8')
+                    limesurvey_id = int(result.group(1))
+                    try:
+                        surveys_imported[limesurvey_id] = surveys.import_survey(encoded_string)
+                    except:  # TODO (NES-956): specify exception
+                        # TODO: return with messages
+                        pass
+
+        if surveys_imported:
+            self._update_survey_data(surveys_imported)
+
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
         try:
@@ -683,7 +716,8 @@ class ImportExperiment:
 
         digraph = self._build_digraph()
         self._manage_pks(digraph)
-        self._manage_last_stuffs_before_importing(request, research_project_id, patients_to_update)
+        self._update_data_before_importing(request, research_project_id, patients_to_update)
+        self._import_surveys()
 
         with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
             file.write(json.dumps(self.data))
