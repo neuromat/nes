@@ -6,101 +6,110 @@ MODEL_ROOT_NODES = [
             'patient.patient', 'experiment.directionoftheinducedcurrent',
         ]
 
+# Map ForeignKey relation fields between models.
+# Models with relations:
+# {
+#   <app>.<model>: [(<app>.<related_model>, <foreignkey field>), [...]],
+#   [...]
+# }
+# Models without relations:
+# {
+#   <app>.<model>: [('', '')]
 FOREIGN_RELATIONS = {
-    'experiment.researchproject': [['', '']],
-    'experiment.experiment': [['experiment.researchproject', 'research_project']],
+    'experiment.researchproject': [('', '')],
+    'experiment.experiment': [('experiment.researchproject', 'research_project')],
     'experiment.group': [
-        ['experiment.experiment', 'experiment'], ['experiment.component', 'experimental_protocol']
+        ('experiment.experiment', 'experiment'), ('experiment.component', 'experimental_protocol')
     ],
-    'experiment.component': [['experiment.experiment', 'experiment']],
+    'experiment.component': [('experiment.experiment', 'experiment')],
     'experiment.componentconfiguration': [
-        ['experiment.component', 'component'], ['experiment.component', 'parent']
+        ('experiment.component', 'component'), ('experiment.component', 'parent')
     ],
-    'experiment.questionnaire': [['survey.survey', 'survey']],
-    'survey.survey': [['', '']],
+    'experiment.questionnaire': [('survey.survey', 'survey')],
+    'survey.survey': [('', '')],
 
     'experiment.digitalgamephase': [
-        ['experiment.contexttree', 'context_tree'],
-        ['experiment.softwareversion', 'software_version']
+        ('experiment.contexttree', 'context_tree'),
+        ('experiment.softwareversion', 'software_version')
     ],
-    'experiment.contexttree': [['experiment.experiment', 'experiment']],
-    # 'experiment.genericdatacollection': [['experiment.informationtype', 'information_type']],
-    # 'experiment.informationtype': [['', '']],
-    'experiment.stimulus': [['experiment.stimulustype', 'stimulus_type']],
-    'experiment.stimulustype': [['', '']],
+    'experiment.contexttree': [('experiment.experiment', 'experiment')],
+    # 'experiment.genericdatacollection': [('experiment.informationtype', 'information_type')],
+    # 'experiment.informationtype': [('', '')],
+    'experiment.stimulus': [('experiment.stimulustype', 'stimulus_type')],
+    'experiment.stimulustype': [('', '')],
     # TMS
-    'experiment.tms': [['experiment.tmssetting', 'tms_setting']],
-    'experiment.tmssetting': [['experiment.experiment', 'experiment']],
+    'experiment.tms': [('experiment.tmssetting', 'tms_setting')],
+    'experiment.tmssetting': [('experiment.experiment', 'experiment')],
     'experiment.tmsdevicesetting': [
-        ['experiment.coilmodel', 'coil_model'], ['experiment.tmsdevice', 'tms_device']
+        ('experiment.coilmodel', 'coil_model'), ('experiment.tmsdevice', 'tms_device')
     ],
-    'experiment.coilmodel': [['experiment.coilshape', 'coil_shape'], ['experiment.material', 'material']],
-    'experiment.coilshape': [['', '']],
-    'experiment.material': [['', '']],
+    'experiment.coilmodel': [('experiment.coilshape', 'coil_shape'), ('experiment.material', 'material')],
+    'experiment.coilshape': [('', '')],
+    'experiment.material': [('', '')],
     # EEG
-    'experiment.eeg': [['experiment.eegsetting', 'eeg_setting']],
-    'experiment.eegsetting': [['experiment.experiment', 'experiment']],
+    'experiment.eeg': [('experiment.eegsetting', 'eeg_setting')],
+    'experiment.eegsetting': [('experiment.experiment', 'experiment')],
     'experiment.electrodemodel': [
-        ['experiment.material', 'material'], ['experiment.electrodeconfiguration', 'electrode_configuration']],
+        ('experiment.material', 'material'), ('experiment.electrodeconfiguration', 'electrode_configuration')],
     'experiment.eegelectrodepositionsetting': [
         ['experiment.electrodemodel', 'electrode_model'],
         ['experiment.eegelectrodelayoutsetting', 'eeg_electrode_layout_setting'],
         ['experiment.eegelectrodeposition', 'eeg_electrode_position']
     ],
-    'experiment.eegelectrodelayoutsetting': [['experiment.eegelectrodenetsystem', 'eeg_electrode_net_system']],
+    'experiment.eegelectrodelayoutsetting': [('experiment.eegelectrodenetsystem', 'eeg_electrode_net_system')],
     'experiment.eegelectrodeposition': [
-        ['experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system']
+        ('experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system')
     ],
     'experiment.eegelectrodenetsystem': [
-        ['experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system'],
-        ['experiment.eegelectrodenet', 'eeg_electrode_net']
+        ('experiment.eegelectrodelocalizationsystem', 'eeg_electrode_localization_system'),
+        ('experiment.eegelectrodenet', 'eeg_electrode_net')
     ],
-    'experiment.eegelectrodenet': [['experiment.electrodemodel', 'electrode_model_default']],
-    'experiment.eegcapsize': [['experiment.eegelectrodecap', 'eeg_electrode_cap']],
-    'experiment.eegfiltersetting': [['experiment.filtertype', 'eeg_filter_type']],
-    'experiment.eegamplifiersetting': [['experiment.amplifier', 'eeg_amplifier']],
+    'experiment.eegelectrodenet': [('experiment.electrodemodel', 'electrode_model_default')],
+    'experiment.eegcapsize': [('experiment.eegelectrodecap', 'eeg_electrode_cap')],
+    'experiment.eegfiltersetting': [('experiment.filtertype', 'eeg_filter_type')],
+    'experiment.eegamplifiersetting': [('experiment.amplifier', 'eeg_amplifier')],
     'experiment.amplifier': [
-        ['experiment.amplifierdetectiontype', 'amplifier_detection_type'],
-        ['experiment.tetheringsystem', 'tethering_system']
+        ('experiment.amplifierdetectiontype', 'amplifier_detection_type'),
+        ('experiment.tetheringsystem', 'tethering_system')
     ],
-    'experiment.eegsolutionsetting': [['experiment.eegsolution', 'eeg_solution']],
-    'experiment.eegsolution': [['experiment.manufacturer', 'manufacturer']],
+    'experiment.eegsolutionsetting': [('experiment.eegsolution', 'eeg_solution')],
+    'experiment.eegsolution': [('experiment.manufacturer', 'manufacturer')],
     # EMG
-    'experiment.emg': [['experiment.emgsetting', 'emg_setting']],
+    'experiment.emg': [('experiment.emgsetting', 'emg_setting')],
     'experiment.emgsetting': [
-        ['experiment.experiment', 'experiment'], ['experiment.softwareversion', 'acquisition_software_version'],
+        ('experiment.experiment', 'experiment'), ('experiment.softwareversion', 'acquisition_software_version'),
     ],
-    'experiment.muscle': [['', '']],
-    'experiment.standardizationsystem': [['', '']],
-    'experiment.muscleside': [['experiment.muscle', 'muscle']],
-    'experiment.musclesubdivision': [['experiment.muscle', 'muscle']],
+    'experiment.muscle': [('', '')],
+    'experiment.standardizationsystem': [('', '')],
+    'experiment.muscleside': [('experiment.muscle', 'muscle')],
+    'experiment.musclesubdivision': [('experiment.muscle', 'muscle')],
     'experiment.emgelectrodeplacement': [
-        ['experiment.musclesubdivision', 'muscle_subdivision'],
-        ['experiment.standardizationsystem', 'standardization_system']
+        ('experiment.musclesubdivision', 'muscle_subdivision'),
+        ('experiment.standardizationsystem', 'standardization_system')
     ],
     'experiment.emgelectrodesetting': [
-        ['experiment.emgsetting', 'emg_setting'], ['experiment.electrodemodel', 'electrode']
+        ('experiment.emgsetting', 'emg_setting'), ('experiment.electrodemodel', 'electrode')
     ],
-    'experiment.emgpreamplifiersetting': [['experiment.amplifier', 'amplifier']],
+    'experiment.emgpreamplifiersetting': [('experiment.amplifier', 'amplifier')],
     'experiment.emgelectrodeplacementsetting': [
-        ['experiment.muscleside', 'muscle_side'],
-        ['experiment.emgelectrodeplacement', 'emg_electrode_placement']
+        ('experiment.muscleside', 'muscle_side'),
+        ('experiment.emgelectrodeplacement', 'emg_electrode_placement')
     ],
-    'experiment.softwareversion': [['experiment.software', 'software']],
-    'experiment.software': [['experiment.manufacturer', 'manufacturer']],
-    'experiment.manufacturer': [['', '']],
-    'experiment.equipment': [['experiment.manufacturer', 'manufacturer']],
-    'experiment.emgadconvertersetting': [['experiment.adconverter', 'ad_converter']],
-    'experiment.emgdigitalfiltersetting': [['experiment.filtertype', 'filter_type']],
-    'experiment.filtertype': [['', '']],
+    'experiment.softwareversion': [('experiment.software', 'software')],
+    'experiment.software': [('experiment.manufacturer', 'manufacturer')],
+    'experiment.manufacturer': [('', '')],
+    'experiment.equipment': [('experiment.manufacturer', 'manufacturer')],
+    'experiment.emgadconvertersetting': [('experiment.adconverter', 'ad_converter')],
+    'experiment.emgdigitalfiltersetting': [('experiment.filtertype', 'filter_type')],
+    'experiment.filtertype': [('', '')],
 
-    'experiment.tetheringsystem': [['', '']],
-    'experiment.amplifierdetectiontype': [['', '']],
-    'experiment.emgamplifiersetting': [['experiment.amplifier', 'amplifier']],
+    'experiment.tetheringsystem': [('', '')],
+    'experiment.amplifierdetectiontype': [('', '')],
+    'experiment.emgamplifiersetting': [('experiment.amplifier', 'amplifier')],
 
     # Data collections
     'experiment.dataconfigurationtree': [
-        ['experiment.componentconfiguration', 'component_configuration'], ['experiment.dataconfigurationtree', 'parent']
+        ('experiment.componentconfiguration', 'component_configuration'), ('experiment.dataconfigurationtree', 'parent')
     ],
     'experiment.eegdata': [
         ('experiment.dataconfigurationtree', 'data_configuration_tree'),
@@ -110,62 +119,66 @@ FOREIGN_RELATIONS = {
     'experiment.eegfile': [('experiment.eegdata', 'eeg_data')],
     'experiment.eegelectrodepositioncollectionstatus': [('experiment.eegdata', 'eeg_data')],
     'experiment.tmsdata': [
-        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
-        ['experiment.subjectofgroup', 'subject_of_group'],
-        ['experiment.tmssetting', 'tms_setting'],
-        ['experiment.coilorientation', 'coil_orientation'],
-        ['experiment.directionoftheinducedcurrent', 'direction_of_induced_current'],
+        ('experiment.dataconfigurationtree', 'data_configuration_tree'),
+        ('experiment.subjectofgroup', 'subject_of_group'),
+        ('experiment.tmssetting', 'tms_setting'),
+        ('experiment.coilorientation', 'coil_orientation'),
+        ('experiment.directionoftheinducedcurrent', 'direction_of_induced_current'),
     ],
-    'experiment.directionoftheinducedcurrent': [['', '']],
-    'experiment.coilorientation': [['', '']],
-    'experiment.hotspot': [['experiment.tmslocalizationsystem', 'tms_localization_system']],
-    'experiment.tmslocalizationsystem': [['experiment.brainarea', 'brain_area']],
-    'experiment.brainarea': [['experiment.brainareasystem', 'brain_area_system']],
-    'experiment.brainareasystem': [['', '']],
+    'experiment.directionoftheinducedcurrent': [('', '')],
+    'experiment.coilorientation': [('', '')],
+    'experiment.hotspot': [('experiment.tmslocalizationsystem', 'tms_localization_system')],
+    'experiment.tmslocalizationsystem': [('experiment.brainarea', 'brain_area')],
+    'experiment.brainarea': [('experiment.brainareasystem', 'brain_area_system')],
+    'experiment.brainareasystem': [('', '')],
 
-    'experiment.additionaldatafile': [['experiment.additionaldata', 'additional_data']],
+    'experiment.additionaldatafile': [('experiment.additionaldata', 'additional_data')],
     'experiment.additionaldata': [
-        ['experiment.subjectofgroup', 'subject_of_group'],
-        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
-        ['experiment.fileformat', 'file_format'],
+        ('experiment.subjectofgroup', 'subject_of_group'),
+        ('experiment.dataconfigurationtree', 'data_configuration_tree'),
+        ('experiment.fileformat', 'file_format'),
     ],
-    'experiment.fileformat': [['', '']],
+    'experiment.fileformat': [('', '')],
     'experiment.digitalgamephasedata': [
-        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
-        ['experiment.subjectofgroup', 'subject_of_group'],
-        ['experiment.fileformat', 'file_format'],
+        ('experiment.dataconfigurationtree', 'data_configuration_tree'),
+        ('experiment.subjectofgroup', 'subject_of_group'),
+        ('experiment.fileformat', 'file_format'),
     ],
-    'experiment.digitalgamephasefile': [['experiment.digitalgamephasedata', 'digital_game_phase_data']],
+    'experiment.digitalgamephasefile': [('experiment.digitalgamephasedata', 'digital_game_phase_data')],
 
     'experiment.genericdatacollectiondata': [
-        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
-        ['experiment.subjectofgroup', 'subject_of_group'],
-        ['experiment.fileformat', 'file_format'],
+        ('experiment.dataconfigurationtree', 'data_configuration_tree'),
+        ('experiment.subjectofgroup', 'subject_of_group'),
+        ('experiment.fileformat', 'file_format'),
     ],
-    'experiment.genericdatacollectionfile': [['experiment.genericdatacollectiondata', 'generic_data_collection_data']],
+    'experiment.genericdatacollectionfile': [('experiment.genericdatacollectiondata', 'generic_data_collection_data')],
 
     'experiment.emgdata': [
-        ['experiment.dataconfigurationtree', 'data_configuration_tree'],
-        ['experiment.subjectofgroup', 'subject_of_group'],
-        ['experiment.fileformat', 'file_format'],
-        ['experiment.emgsetting', 'emg_setting'],
+        ('experiment.dataconfigurationtree', 'data_configuration_tree'),
+        ('experiment.subjectofgroup', 'subject_of_group'),
+        ('experiment.fileformat', 'file_format'),
+        ('experiment.emgsetting', 'emg_setting'),
     ],
-    'experiment.emgfile': [['experiment.emgdata', 'emg_data']],
-    'experiment.componentadditionalfile': [['experiment.component', 'component']],
+    'experiment.emgfile': [('experiment.emgdata', 'emg_data')],
+    'experiment.componentadditionalfile': [('experiment.component', 'component')],
 
     # Participants
-    'experiment.subject': [['patient.patient', 'patient']],
-    'experiment.subjectofgroup': [['experiment.subject', 'subject'], ['experiment.group', 'group']],
-    'patient.patient': [['', '']],
-    'patient.telephone': [['patient.patient', 'patient']],
-    'patient.socialdemographicdata': [['patient.patient', 'patient']],
-    'patient.socialhistorydata': [['patient.patient', 'patient']],
-    'patient.medicalrecorddata': [['patient.patient', 'patient']],
-    'patient.diagnosis': [['patient.medicalrecorddata', 'medical_record_data']],
-    'patient.complementaryexam': [['patient.diagnosis', 'diagnosis']],
-    'patient.examfile': [['patient.complementaryexam', 'exam']]
+    'experiment.subject': [('patient.patient', 'patient')],
+    'experiment.subjectofgroup': [('experiment.subject', 'subject'), ('experiment.group', 'group')],
+    'patient.patient': [('', '')],
+    'patient.telephone': [('patient.patient', 'patient')],
+    'patient.socialdemographicdata': [('patient.patient', 'patient')],
+    'patient.socialhistorydata': [('patient.patient', 'patient')],
+    'patient.medicalrecorddata': [('patient.patient', 'patient')],
+    'patient.diagnosis': [('patient.medicalrecorddata', 'medical_record_data')],
+    'patient.complementaryexam': [('patient.diagnosis', 'diagnosis')],
+    'patient.examfile': [('patient.complementaryexam', 'exam')]
 }
 
+# Map one to one relations between models (OneToOneFeild fields and multi-table inheritance).
+# {
+#   <app>.<model>: <app>.<model>
+# }
 ONE_TO_ONE_RELATION = {
     # Multi table inheritance
     'experiment.block': 'experiment.component',
@@ -204,8 +217,11 @@ ONE_TO_ONE_RELATION = {
     'experiment.hotspot': 'experiment.tmsdata',
 }
 
-# Structure:
-#   'filename': ('model', 'key_path')
+# Define json file names (without extension) to map experiment related models.
+# {
+#   <filename>: (<model>, <experiment id path>),
+#   [...]
+# }
 EXPERIMENT_JSON_FILES = {
     'experimentfixture': ('experiment', 'id__in'),
     'componentconfiguration': ('componentconfiguration', 'component_id__experiment_id__in'),
@@ -270,6 +286,11 @@ EXPERIMENT_JSON_FILES = {
     'componentadditionalfile': ('componentadditionalfile', 'component__experiment_id__in'),
 }
 
+# Define json file names (without extension) to map patient related models.
+# {
+#   <filename>: (<model>, <experiment id path>),
+#   [...]
+# }
 PATIENT_JSON_FILES = {
     'telephone': ('telephone', 'patient__subject__subjectofgroup__group__experiment_id__in'),
     'socialhistorydata': ('socialhistorydata', 'patient__subject__subjectofgroup__group__experiment_id__in'),
@@ -281,6 +302,13 @@ PATIENT_JSON_FILES = {
         ('examfile', 'exam__diagnosis__medical_record_data__patient__subject__subjectofgroup__group__experiment_id__in')
 }
 
+# Define json file names (without extension) that are not attached to an experiment through
+# a chain of relational fields
+# {
+#   <filename>: (
+#   <model> , <multi-table inheritade model pks>, <multi-table inheritade model>,
+#   <json_filename already existent>),
+#   ...
 JSON_FILES_DETACHED_MODELS = {
     'emg_intramuscularplacement': (
         'emgintramuscularplacement', 'emgelectrodeplacement_ptr__in', 'experiment.emgelectrodeplacement',
@@ -296,6 +324,14 @@ JSON_FILES_DETACHED_MODELS = {
     )
 }
 
+# Map ForeignKey fields for pre-loaded models.
+# Dict key is a tupple with model and a tupple of fields the will be tested
+# for equality when deciding if insert new model instance or not.
+# Dict value is a list of tupples. Each tupple is formed by the model that relates
+# to dict key model, and the field that points for to it.
+# {
+#   (<app>.<model>, (<field1>, <field2>, [...]): [(<app>.<model>, <ForeignKey field>), [...])]
+# }
 PRE_LOADED_MODELS_FOREIGN_KEYS = {
     ('experiment.manufacturer', ('name',)): [
         ('experiment.equipment', 'manufacturer'), ('experiment.eegsolution', 'manufacturer'),
@@ -347,6 +383,10 @@ PRE_LOADED_MODELS_FOREIGN_KEYS = {
     ]
 }
 
+# Map multi-table inheritance and fields of inheritade model
+# {
+#   <app>.<model>:  [<app>.<inheritade_model>, (<inheritade_model_field>, [...])
+# }
 PRE_LOADED_MODELS_INHERITANCE = {
     'experiment.amplifier':
         ['experiment.equipment', ('equipment_type', 'identification', 'description', 'serial_number')],
@@ -356,16 +396,25 @@ PRE_LOADED_MODELS_INHERITANCE = {
         ['experiment.emgelectrodeplacement', ('location', 'placement_type')]
 }
 
+# Map models pre-loaded using initial data from fixtures.
+# Not editable models are considered with the same id
+# presented in fixtures when importing. So it's necessary
+# loading fixtures before importing.
 PRE_LOADED_MODELS_NOT_EDITABLE = [
     'experiment.eegelectrodenetsystem', 'experiment.stimulustype', 'experiment.tetheringsystem',
     'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape',
     'experiment.eegelectrodecap', 'experiment.fileformat'
 ]
 
+# Maps multi-table inheritance
+# {
+#   <app>.<model>: (<first_model_inheritance>, <second_model_inheritance>, [...])
+# }
 PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE = {
     'experiment.eegelectrodecap': ('experiment.eegelectrodenet', 'experiment.equipment')
 }
 
+# TODO: Éder: insert comment here
 PRE_LOADED_PATIENT_MODEL = {
     ('patient.patient', ('cpf', 'name',)): [
         ('patient.socialhistorydata', 'patient'),
@@ -377,6 +426,11 @@ PRE_LOADED_PATIENT_MODEL = {
     ],
 }
 
+# Map models with FileField fields
+#   {
+#       <app>.<model>: <FileField field>,
+#       ...
+#   }
 MODELS_WITH_FILE_FIELD = {
     'experiment.experiment': 'ethics_committee_project_file',
     'experiment.eegelectrodelocalizationsystem': 'map_image_file',
@@ -392,3 +446,17 @@ MODELS_WITH_FILE_FIELD = {
     'experiment.emgelectrodeplacement': 'photo',
     'experiment.emgfile': 'file',
 }
+
+# Map models that have a field pointing to auth.user table
+#   [
+#       (<app>.<model>, <field>),
+#       ...
+#   ]
+MODELS_WITH_RELATION_TO_AUTH_USER = [
+    ('patient.patient', 'changed_by'),
+    ('patient.telephone', 'changed_by'),
+    ('patient.medicalrecorddata', 'record_responsible'),
+    ('patient.socialdemographicdata', 'changed_by'),
+    ('patient.socialhistorydata', 'changed_by'),
+    ('experiment.researchproject', 'owner'),
+]

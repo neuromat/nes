@@ -1217,6 +1217,7 @@ class QuestionnaireResponse(DataCollection):
     questionnaire_responsible = \
         models.ForeignKey(User, null=False, related_name="+")
     history = HistoricalRecords()
+    is_completed = models.CharField(null=False, max_length=50, default="")
 
     class Meta:
         permissions = (
