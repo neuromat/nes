@@ -393,7 +393,6 @@ class ExportExperimentTest(TestCase):
 
     def tearDown(self):
         self.client.logout()
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def _create_minimum_objects_to_test_patient(self, patient):
         # TODO: equal to the one in ImportExperimentTest
@@ -666,16 +665,17 @@ class ExportExperimentTest(TestCase):
         ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
 
         remote_temp_dir = tempfile.mkdtemp()
-        remote_file = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive.lsa')
-        mockServer.return_value.export_survey.return_value = remote_file.name
+        remote_file1 = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive1.lsa')
+        remote_file2 = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive2.lsa')
+        mockServer.return_value.export_survey.side_effect = [remote_file1.name, remote_file2.name]
 
         export = ExportExperiment(self.experiment)
         export.export_all()
 
         self.assertTrue(mockServer.return_value.export_survey.called)
         self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey1.lime_survey_id))
-        self.assertIn('survey_%s.lsa' % survey1.lime_survey_id, os.listdir(export.temp_dir))
-        self.assertIn('survey_%s.lsa' % survey2.lime_survey_id, os.listdir(export.temp_dir))
+        self.assertIn('%s.lsa' % survey1.lime_survey_id, os.listdir(export.temp_dir))
+        self.assertIn('%s.lsa' % survey2.lime_survey_id, os.listdir(export.temp_dir))
 
         shutil.rmtree(remote_temp_dir)
 
@@ -699,8 +699,9 @@ class ExportExperimentTest(TestCase):
         ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
 
         remote_temp_dir = tempfile.mkdtemp()
-        file = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive.lsa')
-        mockServer.return_value.export_survey.return_value = file.name
+        file1 = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive1.lsa')
+        file2 = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive2.lsa')
+        mockServer.return_value.export_survey.side_effect = [file1.name, file2.name]
 
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
 
@@ -708,12 +709,10 @@ class ExportExperimentTest(TestCase):
         self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey1.lime_survey_id))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertEqual(3, len(zipped_file.namelist()))
-            self.assertIn('survey_%s.lsa' % survey1.lime_survey_id, zipped_file.namelist())
-            self.assertIn('survey_%s.lsa' % survey2.lime_survey_id, zipped_file.namelist())
+            self.assertIn('%s.lsa' % survey1.lime_survey_id, zipped_file.namelist())
+            self.assertIn('%s.lsa' % survey2.lime_survey_id, zipped_file.namelist())
 
         shutil.rmtree(remote_temp_dir)
-
-    # @patch('survey.abc_search_engine.Server')
 
     @patch('survey.abc_search_engine.Server')
     def test_export_survey_archive_removes_limesurvey_zip_file_created_in_remote_dir(self, mockServer):
@@ -4226,3 +4225,41 @@ class ImportExperimentTest(TestCase):
         exam_file_imported = ExamFile.objects.last()
         filepath = os.path.join(self.TEMP_MEDIA_ROOT, exam_file_imported.content.name)
         self.assertTrue(os.path.exists(filepath))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_experiment_with_questionnaire_import_limesurvey_survey_reference(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        mockServer.return_value.import_survey.return_value = 505050
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        self.assertTrue(mockServer.return_value.import_survey.called)
+        # Pass str that would be a base64 encoded string of lsa archive
+        self.assertTrue(mockServer.return_value.import_survey.call_args, call('ldg69aesf0adfakhf'))
+        self.assertEqual(505050, Survey.objects.last().lime_survey_id)
+
+        shutil.rmtree(temp_dir)
