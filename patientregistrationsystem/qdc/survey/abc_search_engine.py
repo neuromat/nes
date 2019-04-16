@@ -329,7 +329,7 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def insert_questions(self, sid, questions_data, format_import_file):
-        """ Imports a group of questions from a file
+        """ Import a group of questions from a file
         :param sid: survey ID
         :param questions_data: question data
         :param format_import_file: lsg file
@@ -436,7 +436,15 @@ class ABCSearchEngine(ABC):
         return self.server.import_survey(self.session_key, base64_encoded_lsa, 'lsa')
 
     def export_survey(self, sid):
-        return self.server.export_survey(self.session_key, sid)
+        """TODO (NES-956): insert docstring
+        :param sid:
+        :return:
+        """
+        result = self.server.export_survey(self.session_key, sid)
+        # TODO (NES-956): see if care better for result returned
+        if isinstance(result, list):  # Returned a list with one dict element (error)
+            return None
+        return result
 
 
 class Questionnaires(ABCSearchEngine):

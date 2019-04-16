@@ -996,9 +996,9 @@ class ImportExperimentTest(TestCase):
         return experiment
 
     # TODO (NES-956): remove survey_id
-    def _create_minimum_objects_to_test_questionnaire(self, survey_id=212121):
+    def _create_minimum_objects_to_test_questionnaire(self, survey_id=None):
         ObjectsFactory.create_group(self.experiment, self.rootcomponent)
-        survey = create_survey(survey_id)
+        survey = create_survey(survey_id) if survey_id else create_survey()
         questionnaire = ObjectsFactory.create_component(self.experiment, Component.QUESTIONNAIRE,
                                                         kwargs={'survey': survey})
         ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
@@ -1028,7 +1028,7 @@ class ImportExperimentTest(TestCase):
         """
         model_1 = apps.get_model(model_1_name)
         model_2 = apps.get_model(model_2_name)
-
+        
         experiment = experiment_
         export = ExportExperiment(experiment)
         export.export_all()
@@ -1726,7 +1726,8 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertContains(response, '2 Grupos importados')
 
-    def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self, mockServer):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         ObjectsFactory.create_research_project(owner=self.user)
@@ -1741,6 +1742,8 @@ class ImportExperimentTest(TestCase):
         # Create one more component to test pluralization
         component = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
         ObjectsFactory.create_component_configuration(rootcomponent2, component)
+        
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -2011,9 +2014,12 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     # Questionnaire tests
-    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -2031,9 +2037,12 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_creates_random_code_in_surveys(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_random_code_in_surveys(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -2045,10 +2054,13 @@ class ImportExperimentTest(TestCase):
         new_survey = Survey.objects.last()
         self.assertTrue(1 <= int(new_survey.code.split('Q')[1]) <= 100000)
 
-    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
         self._create_minimum_objects_to_test_questionnaire(survey_id=121212)
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -2057,10 +2069,10 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
-        new_survey1 = Survey.objects.all().order_by('-id')[1]
-        new_survey2 = Survey.objects.all().order_by('-id')[0]
+        new_survey1 = Survey.objects.order_by('-id')[1]
+        new_survey2 = Survey.objects.order_by('-id')[0]
         self.assertEqual(-100, new_survey1.lime_survey_id)
-        self.assertEqual(-101, new_survey2.lime_survey_id)
+        self.assertEqual(-99, new_survey2.lime_survey_id)
 
     # Components tests
     def test_component_and_block(self):
@@ -2215,14 +2227,16 @@ class ImportExperimentTest(TestCase):
                                                            self.experiment,
                                                            {'component_type': 'digital_game_phase'})
 
-    def test_component_and_questionnaire(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_component_and_questionnaire(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
-        self._test_creation_and_linking_between_two_models('experiment.component',
-                                                           'experiment.questionnaire',
-                                                           'component_ptr_id',
-                                                           self.experiment,
-                                                           {'component_type': 'questionnaire'})
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
+
+        self._test_creation_and_linking_between_two_models(
+            'experiment.component', 'experiment.questionnaire', 'component_ptr_id',
+            self.experiment, {'component_type': 'questionnaire'})
 
     # Participants tests
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
@@ -4271,3 +4285,6 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(1, Survey.objects.filter(lime_survey_id=100000).count())
 
         shutil.rmtree(temp_dir)
+
+    def test_import_has_not_limesurvey_survey_archive_import_experiment_but_display_message_that_could_not_import_limesurvey_survey(self):
+        pass

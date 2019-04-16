@@ -204,14 +204,17 @@ class ExportExperiment:
         remote_archive_paths = []
         for survey in surveys:
             archive_path = questionnaire.export_survey(survey.lime_survey_id)
-            remote_archive_paths.append((archive_path, str(survey.lime_survey_id)))
-        
-        survey_archive_paths = self._copy_from_limesurvey_server(remote_archive_paths)
+            if archive_path is not None:
+                remote_archive_paths.append((archive_path, str(survey.lime_survey_id),))
 
-        self._remove_remote_survey_archives(remote_archive_paths)
-        return survey_archive_paths
+        if remote_archive_paths:
+            survey_archive_paths = self._copy_from_limesurvey_server(remote_archive_paths)
+            self._remove_remote_survey_archives(remote_archive_paths)
+            return survey_archive_paths
+        else:
+            return []  # TODO (NES_956): return empty list?
 
-    def _create_zip_file(self, survey_archives=None):
+    def _create_zip_file(self, survey_archives):
         """Create zip file with experiment.json file and subdirs corresponding
         to file paths from models that have FileField fields
         :param survey_archives: list of survey archive paths
@@ -425,25 +428,21 @@ class ImportExperiment:
         #     self._solve_limey_survey_reference(survey_index)
 
     def _update_survey_data(self, surveys_imported):
-        indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'survey.survey']
-        if indexes:
-            # Update survey codes
-            next_code = Survey.create_random_survey_code()
-            # Update lime survey ids
-            min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-            if min_limesurvey_id >= 0:
-                dummy_limesurvey_id = -99
+        next_code = Survey.create_random_survey_code()
+        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+        if min_limesurvey_id >= 0:
+            dummy_limesurvey_id = -99
+        else:
+            dummy_limesurvey_id = min_limesurvey_id
+
+        for key, new_survey in surveys_imported.items():
+            next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
+            self.data[key[0]]['fields']['code'] = next_code
+            if new_survey is not None:
+                self.data[key[0]]['fields']['lime_survey_id'] = new_survey
             else:
-                dummy_limesurvey_id = min_limesurvey_id
-            for i in indexes:
-                self.data[i]['fields']['code'] = next_code
-                next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
-                new_limesurvey_id = surveys_imported.get(self.data[i]['fields']['lime_survey_id'], None)
-                if new_limesurvey_id is not None:
-                    self.data[i]['fields']['lime_survey_id'] = new_limesurvey_id
-                else:
-                    dummy_limesurvey_id -= 1
-                    self.data[i]['fields']['lime_survey_id'] = dummy_limesurvey_id
+                self.data[key[0]]['fields']['lime_survey_id'] = dummy_limesurvey_id
+                dummy_limesurvey_id -= 1
 
     def _keep_objects_pre_loaded(self):
         """For objects in fixtures initially loaded, check if the objects
@@ -682,24 +681,31 @@ class ImportExperiment:
         """
         surveys_imported = dict()
         surveys = Questionnaires()
+        indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'survey.survey']
         # Does not add try/exception trying to open zipfile here because it
         # was done in import_all method
         with zipfile.ZipFile(self.file_path) as zip_file:
-            for filename in zip_file.namelist():
-                result = re.match('(^.+)(\.lsa)', filename)
-                if result:
-                    survey_archive = zip_file.extract(filename, self.temp_dir)
+            for index in indexes:
+                limesurvey_id = self.data[index]['fields']['lime_survey_id']
+                survey_archivename = str(limesurvey_id) + '.lsa'
+                if survey_archivename in zip_file.namelist():
+                    survey_archive = zip_file.extract(survey_archivename, self.temp_dir)
                     with open(survey_archive, 'rb') as file:
                         encoded_string = base64.b64encode(file.read())
                         encoded_string = encoded_string.decode('utf-8')
-                    limesurvey_id = int(result.group(1))
                     try:
-                        surveys_imported[limesurvey_id] = surveys.import_survey(encoded_string)
+                        result = surveys.import_survey(encoded_string)
+                        # TODO (NES-956): see if this is the value returned allways when could not
+                        #  create survey
+                        # TODO (NES-956): maybe it's only necessary index
+                        surveys_imported[(index, limesurvey_id)] = None if not result else result
                     except:  # TODO (NES-956): specify exception
                         # TODO: return with messages
                         pass
+                else:
+                    surveys_imported[(index, limesurvey_id)] = None
 
-        if surveys_imported:
+        if indexes:
             self._update_survey_data(surveys_imported)
 
     def import_all(self, request, research_project_id=None, patients_to_update=None):
