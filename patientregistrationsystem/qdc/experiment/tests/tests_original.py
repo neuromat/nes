@@ -858,7 +858,7 @@ class ObjectsFactory(object):
         cid10 = ClassificationOfDiseases.objects.create(
             code=faker.word(),
             description=faker.text(),
-            abbreviated_description=faker.text())
+            abbreviated_description=faker.word())
         medical_record = MedicalRecordData.objects.create(patient=patient, record_responsible=user)
         diagnosis = Diagnosis.objects.create(medical_record_data=medical_record, classification_of_diseases=cid10)
         complementary_exam = ComplementaryExam.objects.create(diagnosis=diagnosis,

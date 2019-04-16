@@ -96,6 +96,15 @@ TEMPLATES = [
     },
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'limesurveycache',
+        'TIMEOUT': 24*60*60,
+
+    }
+}
+
 ROOT_URLCONF = 'qdc.urls'
 
 WSGI_APPLICATION = 'qdc.wsgi.application'
@@ -189,4 +198,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.57.1'
+VERSION = '1.57.2'
