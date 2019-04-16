@@ -4232,21 +4232,27 @@ class ImportExperimentTest(TestCase):
         experiment = self._create_minimum_objects_to_test_patient(patient)
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
 
-        survey = create_survey()
-        questionnaire_step = ObjectsFactory.create_component(
-            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey1}
         )
-        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        survey2 = create_survey(111111)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey2}
+        )
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
 
         temp_dir = tempfile.mkdtemp()
-        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
-        mockServer.return_value.export_survey.return_value = remote_file.name
+        remote_file1 = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive1.lsa')
+        remote_file2 = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive2.lsa')
+        mockServer.return_value.export_survey.side_effect = [remote_file1.name, remote_file2.name]
 
         export = ExportExperiment(experiment)
         export.export_all()
         file_path = export.get_file_path()
 
-        mockServer.return_value.import_survey.return_value = 505050
+        mockServer.return_value.import_survey.side_effect = [505050, 100000]
 
         # Add session variables related to updating/overwrite patients when importing
         session = self.client.session
@@ -4259,7 +4265,9 @@ class ImportExperimentTest(TestCase):
 
         self.assertTrue(mockServer.return_value.import_survey.called)
         # Pass str that would be a base64 encoded string of lsa archive
-        self.assertTrue(mockServer.return_value.import_survey.call_args, call('ldg69aesf0adfakhf'))
-        self.assertEqual(505050, Survey.objects.last().lime_survey_id)
+        self.assertTrue(
+            mockServer.return_value.import_survey.mock_calls, [call('ldg69aesf0adfakhf'), call('adadfl0e9843ljfdasf')])
+        self.assertEqual(1, Survey.objects.filter(lime_survey_id=505050).count())
+        self.assertEqual(1, Survey.objects.filter(lime_survey_id=100000).count())
 
         shutil.rmtree(temp_dir)
