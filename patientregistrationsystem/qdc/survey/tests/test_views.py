@@ -291,6 +291,52 @@ class SurveyTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['questionnaires_list']), 1)
 
+    def test_update_survey_info_in_list_page(self):
+        server = Server(settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol') or None
+        try:
+            session_key = server.get_session_key(settings.LIMESURVEY['USER'],
+                                                 settings.LIMESURVEY['PASSWORD'])
+            session_key = None if isinstance(session_key, dict) else session_key
+        except TransportError:
+            session_key = None
+
+        lime_survey = Questionnaires()
+        sid = None
+
+        try:
+            # Create a new survey at LimeSurvey
+            title_survey = 'Test Questionnaire'
+            sid = lime_survey.add_survey(9999, title_survey, 'en', 'G')
+
+            # Import survey to NES
+            response = self.client.get(reverse('survey_create'))
+            self.assertEqual(response.status_code, 200)
+
+            # Set survey data
+            data = {'action': 'save', 'questionnaire_selected': sid}
+            response = self.client.post(reverse('survey_create'), data)
+            self.assertEqual(response.status_code, 302)
+            response = self.client.get(reverse('survey_list'))
+
+            # Verify that the name of the survey in portuguese in database doesn't exist
+            survey = Survey.objects.get(lime_survey_id=sid)
+            self.assertIsNone(survey.pt_title)
+            self.assertEqual(survey.en_title, 'Test Questionnaire')
+
+            # Change the info locally
+            survey.en_title = "Test"
+            survey.save()
+            self.assertEqual(survey.en_title, "Test")
+
+            # Update the info if hit the 'Update' button
+            self.client.post(reverse('survey_list'), {'action': 'update'})
+            survey = Survey.objects.get(lime_survey_id=sid)
+            self.assertEqual(survey.en_title, 'Test Questionnaire')
+
+        finally:
+            # Deletes the survey created at Lime Survey
+            self.assertEqual(lime_survey.delete_survey(sid), 'OK')
+
     def test_survey_create(self):
 
         # Request the survey register screen

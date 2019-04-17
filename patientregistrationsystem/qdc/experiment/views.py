@@ -828,24 +828,19 @@ def handle_uploaded_file(file):
 @login_required
 # @permission_required('experiment.import_experiment')  # TODO: add permissons
 def experiment_import(request, template_name='experiment/experiment_import.html', research_project_id=None):
-    patients_conflicts_resolved = request.session.get('patients_conflicts_resolved') or False
-    patients_to_update = request.POST.getlist('from[]')
-    if patients_to_update:
-        patients_conflicts_resolved = True
-
-    if request.method == 'GET' and not patients_conflicts_resolved:
+    if request.method == 'GET':
         return render(request, template_name, context={'research_project_id': research_project_id})
 
-    if not patients_conflicts_resolved:
-        file = request.FILES.get('file')
-        if not file:
-            messages.warning(request, _('Please select a zip file'))
-            return HttpResponseRedirect(reverse('experiment_import'))
+    if request.method == 'POST':
+        if not request.POST.get('action'):
+            file = request.FILES.get('file')
+            if not file:
+                messages.warning(request, _('Please select a zip file'))
+                return HttpResponseRedirect(reverse('experiment_import'))
 
-        file_name = handle_uploaded_file(file)
-        import_experiment = ImportExperiment(file_name)
+            file_name = handle_uploaded_file(file)
+            import_experiment = ImportExperiment(file_name)
 
-        if not patients_conflicts_resolved:
             # Deal with patients before trying to import the experiment
             err_code_patients, err_message_patients, patients_with_conflict = \
                 import_experiment._check_for_duplicates_of_participants()
@@ -861,38 +856,34 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
             request.session['patients'] = patients_with_conflict
             request.session['file_name'] = file_name
 
-            if patients_with_conflict:
-                request.session['patients_conflicts_resolved'] = True
+            if patients_with_conflict and not request.session.get('patients_conflicts_resolved', None):
                 return render(
                     request, 'experiment/decide_about_patients.html', context={'patients': patients_with_conflict})
 
-            patients_conflicts_resolved = True
+    patients_to_update = request.POST.getlist('from[]')
 
-    if patients_conflicts_resolved:
-        file_name = request.session.get('file_name')
-        import_experiment = ImportExperiment(file_name)
+    file_name = request.session.get('file_name')
+    import_experiment = ImportExperiment(file_name)
+    err_code_experiment, err_message_experiment = \
+        import_experiment.import_all(request, research_project_id, patients_to_update)
+    os.remove(file_name)
 
-        request.session['patients_conflicts_resolved'] = False
-        err_code_experiment, err_message_experiment = \
-            import_experiment.import_all(request, research_project_id, patients_to_update)
-        os.remove(file_name)
-
-        if err_code_experiment:
-            messages.error(request, _(err_message_experiment))
-            if research_project_id:
-                return HttpResponseRedirect(reverse('experiment_import',
-                                                    kwargs={'research_project_id': research_project_id}))
-            else:
-                return HttpResponseRedirect(reverse('experiment_import'))
-
+    if err_code_experiment:
+        messages.error(request, _(err_message_experiment))
         if research_project_id:
-            messages.success(request, _('Experiment successfully imported.'))
+            return HttpResponseRedirect(reverse('experiment_import',
+                                                kwargs={'research_project_id': research_project_id}))
         else:
-            messages.success(request, _('Experiment successfully imported. New study was created.'))
+            return HttpResponseRedirect(reverse('experiment_import'))
 
-        # Push new object to session to display log to users
-        request.session['objects_imported'] = import_experiment.get_new_objects()
-        return HttpResponseRedirect(reverse('import_log'))
+    if research_project_id:
+        messages.success(request, _('Experiment successfully imported.'))
+    else:
+        messages.success(request, _('Experiment successfully imported. New study was created.'))
+
+    # Push new object to session to display log to users
+    request.session['objects_imported'] = import_experiment.get_new_objects()
+    return HttpResponseRedirect(reverse('import_log'))
 
 
 @login_required
@@ -11290,7 +11281,7 @@ def component_add_new(request, path_of_the_components, component_type):
     questionnaires_with_names=[]
 
     for questionnaire in questionnaires_list:
-         questionnaires_with_names.append(find_questionnaire_name(questionnaire,request.LANGUAGE_CODE)["name"])
+         questionnaires_with_names.append(find_questionnaire_name(questionnaire, request.LANGUAGE_CODE))
 
     context = {"back_cancel_url": back_cancel_url,
                "block": block,
