@@ -209,7 +209,7 @@ else
 		DEBUG404 = True
 		TEMPLATE_DEBUG = DEBUG
 		IS_TESTING = False
-		ALLOWED_HOSTS = ["$NES_IP"]
+		ALLOWED_HOSTS = ["localhost","127.0.0.1","$NES_IP"]
 		DATABASES = {
 		    "default": {
 		        "ENGINE": "django.db.backends.postgresql_psycopg2",
