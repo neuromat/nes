@@ -1214,8 +1214,7 @@ class DataCollection(models.Model):
 
 class QuestionnaireResponse(DataCollection):
     token_id = models.IntegerField(null=False)
-    questionnaire_responsible = \
-        models.ForeignKey(User, null=False, related_name="+")
+    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
     history = HistoricalRecords()
 
     class Meta:
@@ -1263,7 +1262,6 @@ class EEGData(DataFile, DataCollection):
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
     eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
 
-    # Audit trail - Simple History
     history = HistoricalRecords()
 
     def __str__(self):

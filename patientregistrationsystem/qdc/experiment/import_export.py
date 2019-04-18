@@ -407,9 +407,8 @@ class ImportExperiment:
                     self.data[i]['fields']['cpf'] = None
 
     def _update_references_to_user(self, request):
-        models_with_user_reference = MODELS_WITH_RELATION_TO_AUTH_USER
-        for model in models_with_user_reference:
-            indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] in model[0]]
+        for model in MODELS_WITH_RELATION_TO_AUTH_USER:
+            indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == model[0]]
             for i in indexes:
                 self.data[i]['fields'][model[1]] = request.user.id
 

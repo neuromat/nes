@@ -4,8 +4,8 @@ import shutil
 import sys
 import tempfile
 import zipfile
-from unittest import skip
 import os
+from unittest import skip
 from unittest.mock import patch, call
 
 from django.apps import apps
@@ -38,7 +38,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, \
     HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, EEGFile, EEGCapSize, \
     EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, \
-    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus
+    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus, QuestionnaireResponse
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -734,6 +734,28 @@ class ExportExperimentTest(TestCase):
         self.assertRaises(FileNotFoundError, open, os.path.join(temp_dir, 'limesurvey_archive.lsa'))
 
         shutil.rmtree(temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_export_all_generates_partial_fixture_with_questionnaire_response_data(self, mockServer):
+        patient = UtilTests.create_patient(self.user)
+        subject_of_group = self._create_minimum_objects_to_test_patient(patient)
+        survey = create_survey()
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(
+            dct, self.user, token_id=212121, subject_of_group=subject_of_group)
+
+        # Return error for it's not necessary survey mock
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+
+        self.assertIn('questionnaireresponse.json', os.listdir(export.temp_dir))
 
 
 class ImportExperimentTest(TestCase):
@@ -2074,6 +2096,56 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(-100, new_survey1.lime_survey_id)
         self.assertEqual(-99, new_survey2.lime_survey_id)
 
+    @staticmethod
+    def _get_relations_questionnaire_response():
+        return {
+            ComponentConfiguration: [(DataConfigurationTree, 'component_configuration')],
+            DataConfigurationTree: [(QuestionnaireResponse, 'data_configuration_tree')],
+            SubjectOfGroup: [(QuestionnaireResponse, 'subject_of_group')],
+        }
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_questionnaire_response(self, mockServer):
+        self._create_minimum_objects_to_test_components()
+        group = ObjectsFactory.create_group(self.experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        survey = create_survey()
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(dct, self.user, 212121, subject_of_group)
+
+        relations = self._get_relations_questionnaire_response()
+
+        # Return error for it's not necessary survey mock
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in relations:
+            self.assertEqual(2, model.objects.count(), model)
+            model_instance = model.objects.last()
+            for dependent_model in relations[model]:
+                self.assertEqual(2, dependent_model[0].objects.count(), (model, dependent_model))
+                dependent_model_instance = dependent_model[0].objects.last()
+                reference = getattr(dependent_model_instance, dependent_model[1])
+                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
     # Components tests
     def test_component_and_block(self):
         self._create_minimum_objects_to_test_components()
@@ -3355,6 +3427,7 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(new_cid10.abbreviated_description, '(imported, not recognized)')
 
     def test_error_loading_fixture_display_error_message(self):
+        # TODO: implement it!
         pass
 
     # Tests for TMS data collection
@@ -3883,7 +3956,7 @@ class ImportExperimentTest(TestCase):
         ObjectsFactory.create_eeg_electrode_position_collection_status(eeg_data, eeg_electrode_position_setting)
 
     @staticmethod
-    def _get_relations():
+    def _get_relations_eegdata():
         return {
             ComponentConfiguration: [(DataConfigurationTree, 'component_configuration')],
             # DataConfigurationTree: [(DataConfigurationTree, 'parent')],
@@ -3905,7 +3978,7 @@ class ImportExperimentTest(TestCase):
         self.subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
         self._create_eeg_data_collection_related_objects()
 
-        relations = self._get_relations()
+        relations = self._get_relations_eegdata()
         pre_loaded_models = [key[0] for key in self._get_pre_loaded_models_eeg_not_editable().keys()]
 
         export = ExportExperiment(self.experiment)
@@ -4286,5 +4359,6 @@ class ImportExperimentTest(TestCase):
 
         shutil.rmtree(temp_dir)
 
-    def test_import_has_not_limesurvey_survey_archive_import_experiment_but_display_message_that_could_not_import_limesurvey_survey(self):
+    def test_import_has_not_limesurvey_survey_archive_import_experiment_and_display_message_that_could_not_import_limesurvey_survey(self):
+        # TODO (NES-956): implement it!
         pass

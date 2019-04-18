@@ -1691,37 +1691,30 @@ class SubjectTest(TestCase):
         # self.tag_eeg.name =
 
     def test_subject_view_and_search(self):
-        """
-        Teste de visualizacao de participante após cadastro na base de dados
-        """
+        """Teste de visualizacao de participante após cadastro na base de dados"""
 
-        # Create a research project
         research_project = ObjectsFactory.create_research_project()
-
-        # Criar um experimento mock para ser utilizado no teste
         experiment = ObjectsFactory.create_experiment(research_project)
-
-        # Criar um grupo mock para ser utilizado no teste
         group = ObjectsFactory.create_group(experiment)
 
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
-        patient_mock.save()
+        patient = self.util.create_patient(changed_by=self.user)
+        patient.cpf = '374.276.738-08'  # To test search for cpf
+        patient.save()
         self.data = {
-            SEARCH_TEXT: 'Patient', 'experiment_id': experiment.id,
+            SEARCH_TEXT: patient.name, 'experiment_id': experiment.id,
             'group_id': group.id
         }
 
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.name)
+        self.assertContains(response, patient.name)
         self.assertEqual(response.context['patients'].count(), 1)
 
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'].count(), 1)
-        self.assertContains(response, patient_mock.cpf)
+        self.assertContains(response, patient.cpf)
 
         self.data[SEARCH_TEXT] = ''
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
