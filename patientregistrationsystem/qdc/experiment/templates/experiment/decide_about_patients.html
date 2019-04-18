@@ -69,7 +69,7 @@
                                                     {% for patient in patients %}
                                                         {% if not patient.selected %}
                                                             <option title="{% trans "Conflict with"%} {% if patient.name_db %}{{ patient.name_db }}{% else %}{{ patient.code_db }}{% endif %} {% if patient.cpf_db %}({{ patient.cpf_db }}){% endif %}"
-                                                                    value="{{ patient.id_new }}">
+                                                                    value="{{ patient.id_db }}">
                                                                 {% if patient.name_new %}{{ patient.name_new }}{% else %}{{ patient.code_new }}{% endif %} {% if patient.cpf_new %}({{ patient.cpf_new }}){% endif %}
                                                             </option>
                                                         {% endif %}

@@ -345,7 +345,8 @@ class ImportExperiment:
                 self.data[i]['fields'][model[1]] = request.user.id
 
     def _solve_limey_survey_reference(self, survey_index):
-        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id \
+            if Survey.objects.count() > 0 else 0
         if min_limesurvey_id >= 0:
             new_limesurvey_id = -99
         else:
@@ -366,7 +367,8 @@ class ImportExperiment:
             next_code = Survey.create_random_survey_code()
 
             # Update lime survey ids
-            min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
+            min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id \
+                if Survey.objects.count() > 0 else 0
             if min_limesurvey_id >= 0:
                 new_limesurvey_id = -99
             else:
@@ -426,19 +428,23 @@ class ImportExperiment:
         for model, dependent_models in PRE_LOADED_PATIENT_MODEL.items():
             indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == model[0]]
             for i in indexes:
-                list_of_filters = [Q(**{key: val}) for key, val in [('cpf', self.data[i]['fields']['cpf']),
-                                                                    ('name', self.data[i]['fields']['name'])]]
+                list_of_filters = []
+                if self.data[i]['fields']['cpf']:
+                    list_of_filters.append(Q(**{'cpf': self.data[i]['fields']['cpf']}))
+                list_of_filters.append(Q(**{'name': self.data[i]['fields']['name']}))
 
-                instance = Patient.objects.filter(reduce(or_, list_of_filters)).first()
-                if instance and str(instance.id) in patients_to_update:
-                    self.data[i]['pk'], old_id = instance.id, self.data[i]['pk']
-                    for dependent_model in dependent_models:
-                        dependent_indexes = [
-                            index for (index, dict_) in enumerate(self.data)
-                            if dict_['model'] == dependent_model[0] and dict_['fields'][dependent_model[1]] == old_id
-                        ]
-                        for dependent_index in dependent_indexes:
-                            self.data[dependent_index]['fields'][dependent_model[1]] = self.data[i]['pk']
+                instances = Patient.objects.filter(reduce(or_, list_of_filters))
+
+                for instance in instances:
+                    if instance and str(instance.id) in patients_to_update:
+                        self.data[i]['pk'], old_id = instance.id, self.data[i]['pk']
+                        for dependent_model in dependent_models:
+                            dependent_indexes = [
+                                index for (index, dict_) in enumerate(self.data)
+                                if dict_['model'] == dependent_model[0] and dict_['fields'][dependent_model[1]] == old_id
+                            ]
+                            for dependent_index in dependent_indexes:
+                                self.data[dependent_index]['fields'][dependent_model[1]] = self.data[i]['pk']
 
     def _check_for_duplicates_of_participants(self):
         try:
@@ -451,10 +457,14 @@ class ImportExperiment:
 
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
+        # For each participant in the json file, check if there are any participant with the same CPF
+        # or same name already in the database and return the list of the ones in conflict
         list_of_participants_with_conflict = []
         for i in indexes:
-            list_of_filters = [Q(**{key: val}) for key, val in [('cpf', data[i]['fields']['cpf']),
-                                                                ('name', data[i]['fields']['name'])]]
+            list_of_filters = []
+            if data[i]['fields']['cpf']:
+                list_of_filters.append(Q(**{'cpf': data[i]['fields']['cpf']}))
+            list_of_filters.append(Q(**{'name': data[i]['fields']['name']}))
 
             patient_already_in_database = Patient.objects.filter(reduce(or_, list_of_filters)).first()
 
