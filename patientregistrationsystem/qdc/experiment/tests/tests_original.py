@@ -170,10 +170,9 @@ class ObjectsFactory(object):
     @staticmethod
     def create_tms_device(manufacturer):
         faker = Factory.create()
-        tms_device = TMSDevice.objects.create(
+        TMSDevice.objects.create(
             manufacturer=manufacturer, equipment_type=TMSDevice.EQUIPMENT_TYPES[0][0], identification=faker.word(),
-            description=faker.text(), serial_number=faker.ssn()
-        )
+            description=faker.text(), serial_number=faker.ssn())
 
     @staticmethod
     def create_emg_electrode_setting(emg_setting, electrode_model):
@@ -524,7 +523,7 @@ class ObjectsFactory(object):
             identification="EEG electrode cap identification",
             electrode_model_default=electrode_model,
             material=material,
-            equipment_type= 'eeg_electrode_net'
+            equipment_type='eeg_electrode_net'
         )
 
     @staticmethod
@@ -789,7 +788,7 @@ class ObjectsFactory(object):
         return StimulusType.objects.create(name=faker.word())
 
     @staticmethod
-    def create_stimulus_step(stimulus_type,mediafile):
+    def create_stimulus_step(stimulus_type, mediafile):
         return Stimulus.objects.create(
             stimulus_type=stimulus_type,
             media_file=mediafile
@@ -801,7 +800,6 @@ class ObjectsFactory(object):
         with tempfile.TemporaryDirectory() as tmpdirname:
             with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
                 bin_file.write(b'carambola')
-
 
             with File(open(bin_file.name, 'rb')) as f:
                 hotspot.hot_spot_map.save('file.bin', f)
@@ -3718,7 +3716,7 @@ class EEGEquipmentRegisterTest(TestCase):
                      'manufacturer': str(manufacturer.id),
                      'identification': identification,
                      'electrode_model_default': str(electrode_model.id)
-                    }
+                     }
 
         response = self.client.post(reverse("eegelectrodenet_new", args=()), self.data)
         self.assertEqual(response.status_code, 302)
@@ -4052,7 +4050,7 @@ class EEGEquipmentRegisterTest(TestCase):
     def test_tms_device_register(self):
         manufacturer = ObjectsFactory.create_manufacturer()
         coil_shape = ObjectsFactory.create_coil_shape()
-        coil_model = ObjectsFactory.create_coil_model(CoilShape.objects.all().first())
+        coil_model = ObjectsFactory.create_coil_model(coil_shape)
 
         # list
         response = self.client.get(reverse("tmsdevice_list", args=()))
