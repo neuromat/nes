@@ -81,8 +81,7 @@ class UtilTests:
 
     @staticmethod
     # TODO: changed_by can't be None, changed_by is required!
-    def create_patient(name='Patient Test', changed_by=None):
-        """Cria um participante para ser utilizado durante os testes"""
+    def create_patient(changed_by):
         faker = Factory.create()
 
         # TODO:
@@ -94,7 +93,7 @@ class UtilTests:
 
         # TODO: make loop to guarantee unique patient cpf
         return Patient.objects.create(
-            name=name, date_birth=faker.date(), cpf=faker.ssn(), gender=gender, changed_by=changed_by,
+            name=faker.name(), date_birth=faker.date(), cpf=faker.ssn(), gender=gender, changed_by=changed_by,
             marital_status=MaritalStatus.objects.create(name=faker.word())
         )
 
@@ -136,18 +135,18 @@ class UtilTests:
         )
 
     @staticmethod
-    def create_survey_mock(survey_id, is_initial_evaluation):
+    def create_survey(survey_id, is_initial_evaluation):
         survey = Survey(lime_survey_id=survey_id, is_initial_evaluation=is_initial_evaluation)
         survey.save()
 
         return survey
 
     @staticmethod
-    def create_token_id_mock(survey):
-        questionnaire_lime_survey = Questionnaires()
+    def create_token_id(survey):
+        questionnaire = Questionnaires()
         result = \
-            questionnaire_lime_survey.add_participant(survey.lime_survey_id)
-        questionnaire_lime_survey.release_session_key()
+            questionnaire.add_participant(survey.lime_survey_id)
+        questionnaire.release_session_key()
 
         return result['tid']
 
@@ -159,9 +158,9 @@ class UtilTests:
         return result
 
     @staticmethod
-    def create_response_survey_mock(responsible, patient, survey, token_id=None):
+    def create_response_survey(responsible, patient, survey, token_id=None):
         if not token_id:
-            token_id = UtilTests.create_token_id_mock(survey)
+            token_id = UtilTests.create_token_id(survey)
 
         return QuestionnaireResponse.objects.create(
             patient=patient, survey=survey, token_id=token_id,
@@ -649,29 +648,29 @@ class PatientFormValidation(TestCase):
         Teste de visualizacao de participante apos cadastro na base de dados
         """
 
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
-        patient_mock.save()
+        patient = self.util.create_patient(changed_by=self.user)
+        patient.cpf = '374.276.738-08'  # to test search for cpf
+        patient.save()
 
         # Create an instance of a GET request.
-        request = self.factory.get(reverse('patient_view', args=[patient_mock.pk]))
+        request = self.factory.get(reverse('patient_view', args=[patient.pk]))
         request.user = self.user
 
         # Test view() as if it were deployed at /quiz/patient/%id
-        response = patient_view(request, patient_id=patient_mock.pk)
+        response = patient_view(request, patient_id=patient.pk)
         self.assertEqual(response.status_code, 200)
 
-        self.data[SEARCH_TEXT] = 'Patient'
+        self.data[SEARCH_TEXT] = patient.name
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.name)
+        self.assertContains(response, patient.name)
         self.assertEqual(response.context['patients'].count(), 1)
 
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'].count(), 1)
-        self.assertContains(response, patient_mock.cpf)
+        self.assertContains(response, patient.cpf)
 
         self.data[SEARCH_TEXT] = ''
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
@@ -682,28 +681,27 @@ class PatientFormValidation(TestCase):
         """
         Teste a visualizacao de participante
         """
-        patient_mock = self.util.create_patient(changed_by=self.user)
+        patient = self.util.create_patient(changed_by=self.user)
 
-        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
+        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient.pk]))
         request.user = self.user
 
-        response = patient_view(request, patient_mock.pk)
+        response = patient_view(request, patient.pk)
         self.assertEqual(response.status_code, 200)
 
     def test_patient_update_and_remove(self):
-        """Teste de participante existente na base de dados """
+        """Test for participant existent in data base"""
 
-        nameMethod = self._testMethodName
-        userMethod = self.user
-        patient_mock = self.util.create_patient(nameMethod, userMethod)
-        # To test posting cpf patient attribute (patient_mock.cpf value
+        user_method = self.user
+        patient = self.util.create_patient(user_method)
+        # To test posting cpf patient attribute (patient.cpf value
         # is due to what it was before creating this attribute value with
         # faker).
-        patient_mock.cpf = '374.276.738-08'
-        patient_mock.save()
+        patient.cpf = '374.276.738-08'
+        patient.save()
 
         # Create an instance of a GET request.
-        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]))
+        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient.pk]))
         request.user = self.user
 
         # This data is required for the ManagementForm. This form is used
@@ -711,61 +709,61 @@ class PatientFormValidation(TestCase):
         # formset.
         self.fill_management_form()
 
-        response = patient_update(request, patient_id=patient_mock.pk)
+        response = patient_update(request, patient_id=patient.pk)
         self.assertEqual(response.status_code, 200)
-        response = self.client.post(reverse(PATIENT_EDIT, args=[patient_mock.pk]), self.data)
+        response = self.client.post(reverse(PATIENT_EDIT, args=[patient.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
         self.data['currentTab'] = 0
-        response = self.client.post(reverse(PATIENT_EDIT, args=[patient_mock.pk]), self.data)
+        response = self.client.post(reverse(PATIENT_EDIT, args=[patient.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
         self.data[CPF_ID] = ''
-        response = self.client.post(reverse(PATIENT_EDIT, args=[patient_mock.pk]), self.data)
+        response = self.client.post(reverse(PATIENT_EDIT, args=[patient.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
-        self.data[CPF_ID] = patient_mock.cpf
-        response = self.client.post(reverse(PATIENT_EDIT, args=[patient_mock.pk]), self.data)
+        self.data[CPF_ID] = patient.cpf
+        response = self.client.post(reverse(PATIENT_EDIT, args=[patient.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
         # Inicio do CPF inserido no self.data para retorno positivo na busca
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.cpf)
+        self.assertContains(response, patient.cpf)
 
         self.data[ACTION] = 'remove'
-        response = self.client.post(reverse(PATIENT_VIEW, args=[patient_mock.pk]), self.data)
+        response = self.client.post(reverse(PATIENT_VIEW, args=[patient.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
         self.data[ACTION] = 'not'
-        response = self.client.post(reverse(PATIENT_VIEW, args=[patient_mock.pk]), self.data)
+        response = self.client.post(reverse(PATIENT_VIEW, args=[patient.pk]), self.data)
         self.assertEqual(response.status_code, 302)
 
-        patient_removed = Patient.objects.get(pk=patient_mock.pk)
+        patient_removed = Patient.objects.get(pk=patient.pk)
         self.assertEqual(patient_removed.removed, True)
 
         # Inicio do CPF inserido no self.data - nao eh pra haver retorno para este inicio de CPF
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, patient_mock.cpf)
+        self.assertNotContains(response, patient.cpf)
 
     def test_remove_patient_get(self):
-        patient_mock = self.util.create_patient(changed_by=self.user)
+        patient = self.util.create_patient(changed_by=self.user)
 
         count_patients = Patient.objects.count()
 
         self.assertEqual(count_patients, 1)
 
         self.data[ACTION] = 'remove'
-        request = self.factory.get(reverse(PATIENT_EDIT, args=[patient_mock.pk]))
+        request = self.factory.get(reverse(PATIENT_EDIT, args=[patient.pk]))
         request.user = self.user
 
-        patient_update(request=request, patient_id=patient_mock.pk)
-        patient_mock = get_object_or_404(Patient, id=patient_mock.pk)
+        patient_update(request=request, patient_id=patient.pk)
+        patient = get_object_or_404(Patient, id=patient.pk)
 
-        self.assertEqual(patient_mock.removed, False)
+        self.assertEqual(patient.removed, False)
 
     def test_update_patient_not_exist(self):
         """Teste de participante nao existente na base de dados """
@@ -788,30 +786,30 @@ class PatientFormValidation(TestCase):
         Tests removed patient recovering
         """
         # Creates participant already removed
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
-        patient_mock.removed = True
-        patient_mock.save()
+        patient = self.util.create_patient(changed_by=self.user)
+        patient.cpf = '374.276.738-08'  # to test search for cpf
+        patient.removed = True
+        patient.save()
 
         # Create an instance of a GET request.
         request = self.factory.get(
-            reverse(PATIENT_VIEW, args=[patient_mock.pk, ])
+            reverse(PATIENT_VIEW, args=[patient.pk, ])
         )
         request.user = self.user
 
         self.data['search_text'] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, patient_mock.cpf)
+        self.assertNotContains(response, patient.cpf)
 
-        response = restore_patient(request, patient_id=patient_mock.pk)
+        response = restore_patient(request, patient_id=patient.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Patient.objects.filter(name=patient_mock.name).exclude(removed=True).count(), 1)
+        self.assertEqual(Patient.objects.filter(name=patient.name).exclude(removed=True).count(), 1)
 
         self.data['search_text'] = 374
         response = self.client.post(reverse(PATIENT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.cpf)
+        self.assertContains(response, patient.cpf)
 
     def test_views(self):
         """
@@ -829,10 +827,10 @@ class PatientFormValidation(TestCase):
 
     def test_patient_verify_homonym(self):
         """  Testar a busca por homonimo """
-        patient_mock = self.util.create_patient(changed_by=self.user)
+        patient = self.util.create_patient(changed_by=self.user)
 
         # Busca valida
-        self.data[SEARCH_TEXT] = patient_mock.name
+        self.data[SEARCH_TEXT] = patient.name
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym'].count(), 1)
@@ -841,7 +839,7 @@ class PatientFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 0)
 
-        self.data[SEARCH_TEXT] = patient_mock.cpf
+        self.data[SEARCH_TEXT] = patient.cpf
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym'].count(), 1)
@@ -862,10 +860,10 @@ class PatientFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym'].count(), 0)
 
-        patient_mock.removed = True
-        patient_mock.save()
+        patient.removed = True
+        patient.save()
 
-        self.data[SEARCH_TEXT] = patient_mock.name
+        self.data[SEARCH_TEXT] = patient.name
 
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
@@ -875,7 +873,7 @@ class PatientFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_homonym_excluded'].count(), 1)
 
-        self.data[SEARCH_TEXT] = patient_mock.cpf
+        self.data[SEARCH_TEXT] = patient.cpf
 
         response = self.client.post(reverse('patients_verify_homonym'), self.data)
         self.assertEqual(response.status_code, 200)
@@ -928,26 +926,26 @@ class MedicalRecordFormValidation(TestCase):
 
         # Create mock objects to tests
         self.util.create_cid10_to_search()
-        cid10_mock = ClassificationOfDiseases.objects.filter(code='B01').first()
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
+        cid10 = ClassificationOfDiseases.objects.filter(code='B01').first()
+        patient = self.util.create_patient(changed_by=self.user)
+        medical_record = self.util.create_medical_record(self.user, patient)
 
         request = self.factory.get(
-            reverse('diagnosis_create', args=[patient_mock.pk, medical_record_mock.pk, cid10_mock.id, ]))
+            reverse('diagnosis_create', args=[patient.pk, medical_record.pk, cid10.id, ]))
         request.user = self.user
-        response = diagnosis_create(request, patient_id=patient_mock.pk, medical_record_id=medical_record_mock.pk,
-                                    cid10_id=cid10_mock.pk)
+        response = diagnosis_create(request, patient_id=patient.pk, medical_record_id=medical_record.pk,
+                                    cid10_id=cid10.pk)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Diagnosis.objects.filter(medical_record_data=MedicalRecordData.objects.filter(
-            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()).count(), 1)
+            patient_id=Patient.objects.get(pk=patient.pk)).first()).count(), 1)
 
-        diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
+        diagnosis = self.util.create_diagnosis(medical_record)
 
         # Test for diagnosis delete
         count_diagnosis = Diagnosis.objects.all().count()
 
         response = self.client.post(
-            reverse('diagnosis_delete', args=(patient_mock.pk, diagnosis_mock.pk,)), self.data)
+            reverse('diagnosis_delete', args=(patient.pk, diagnosis.pk,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Diagnosis.objects.all().count(), count_diagnosis - 1)
 
@@ -955,117 +953,117 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a criação, leitura, atualização e exclusão do Avaliação Medica (MedicalRecord)
         """
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        cid10_mock = self.util.create_cid10()
+        patient = self.util.create_patient(changed_by=self.user)
+        cid10 = self.util.create_cid10()
 
         # Create a new Medical Record and check if it created with successfully
-        url = reverse('medical_record_new', args=(patient_mock.pk,))
+        url = reverse('medical_record_new', args=(patient.pk,))
         response = self.client.post(url, self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
         # It test uses a GET method. Create an instance of a GET request -
-        request = self.factory.get(reverse('medical_record_diagnosis_create', args=[patient_mock.pk, cid10_mock.pk, ]))
+        request = self.factory.get(reverse('medical_record_diagnosis_create', args=[patient.pk, cid10.pk, ]))
         request.user = self.user
-        response = medical_record_create_diagnosis_create(request, patient_id=patient_mock.pk, cid10_id=cid10_mock.pk)
+        response = medical_record_create_diagnosis_create(request, patient_id=patient.pk, cid10_id=cid10.pk)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Diagnosis.objects.filter(medical_record_data=MedicalRecordData.objects.filter(
-            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()).count(), 1)
+            patient_id=Patient.objects.get(pk=patient.pk)).first()).count(), 1)
 
         # Test a Medical Record View method
         medical_record_data = MedicalRecordData.objects.filter(
-            patient_id=Patient.objects.get(pk=patient_mock.pk)).first()
+            patient_id=Patient.objects.get(pk=patient.pk)).first()
 
-        url = reverse('medical_record_view', args=[patient_mock.pk, medical_record_data.pk, ])
+        url = reverse('medical_record_view', args=[patient.pk, medical_record_data.pk, ])
 
         request = self.factory.get(url + "?status=edit")
         request.user = self.user
 
-        response = medical_record_view(request, patient_mock.pk, medical_record_data.pk)
+        response = medical_record_view(request, patient.pk, medical_record_data.pk)
         self.assertEqual(response.status_code, 200)
 
         # It makes tests with a invalid ID for method medical record view
         try:
-            url = reverse('medical_record_view', args=[patient_mock.pk, 9999, ])
+            url = reverse('medical_record_view', args=[patient.pk, 9999, ])
             request = self.factory.get(url + "?status=edit")
             request.user = self.user
-            self.assertRaises(medical_record_view(request, patient_mock.pk, 9999))
+            self.assertRaises(medical_record_view(request, patient.pk, 9999))
 
         except Http404:
             pass
 
     def test_medical_record_view(self):
 
-        patient_mock = self.util.create_patient(changed_by=self.user)
+        patient = self.util.create_patient(changed_by=self.user)
         self.util.create_cid10()
-        self.util.create_medical_record(self.user, patient_mock)
+        self.util.create_medical_record(self.user, patient)
 
-        response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=3")
+        response = self.client.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=3")
         self.assertEqual(response.status_code, 200)
-        # self.assertEqual(medical_record_mock.pk, response.context['medical_record'])
+        # self.assertEqual(medical_record.pk, response.context['medical_record'])
 
     def test_medical_record_update(self):
 
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        self.util.create_medical_record(self.user, patient_mock)
+        patient = self.util.create_patient(changed_by=self.user)
+        self.util.create_medical_record(self.user, patient)
 
-        response = self.client.get(reverse(PATIENT_EDIT, args=[patient_mock.pk]) + "?currentTab=3")
+        response = self.client.get(reverse(PATIENT_EDIT, args=[patient.pk]) + "?currentTab=3")
         self.assertEqual(response.status_code, 200)
 
         self.data['action'] = 'save'
         self.data['currentTab'] = 3
         self.data['nextTab'] = ""
         self.data['nextTabURL'] = ""
-        url = reverse(PATIENT_EDIT, args=[patient_mock.pk])
+        url = reverse(PATIENT_EDIT, args=[patient.pk])
         response = self.client.post(url + "?currentTab=3", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-        # self.assertEqual(medical_record_mock.pk, response.context['medical_record'])
+        # self.assertEqual(medical_record.pk, response.context['medical_record'])
 
     def test_medical_record_edit(self):
         """
         Testar a edição de avaliação medica
         """
 
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
+        patient = self.util.create_patient(changed_by=self.user)
+        medical_record = self.util.create_medical_record(self.user, patient)
         # Test a medical record edit method - no changes it will occurs - just pass by the method
-        url = reverse("medical_record_edit", args=[patient_mock.pk, medical_record_mock.pk, ])
+        url = reverse("medical_record_edit", args=[patient.pk, medical_record.pk, ])
         request = self.factory.get(url + "?status=edit")
         request.user = self.user
 
-        response = medical_record_update(request, patient_id=patient_mock.pk, record_id=medical_record_mock.pk)
+        response = medical_record_update(request, patient_id=patient.pk, record_id=medical_record.pk)
         self.assertEqual(response.status_code, 200)
 
         # It makes tests with a invalid ID for method medical record edit
         try:
-            url = reverse("medical_record_edit", args=[patient_mock.pk, 9999, ])
+            url = reverse("medical_record_edit", args=[patient.pk, 9999, ])
             request = self.factory.get(url + "?status=edit")
             request.user = self.user
-            response = medical_record_update(request, patient_id=patient_mock.pk, record_id=9999)
+            response = medical_record_update(request, patient_id=patient.pk, record_id=9999)
             self.assertEqual(response.status_code, 200)
         except Http404:
             pass
 
         # It will coverage all method - medical record edit
         self.data['action'] = ''
-        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk,))
+        url = reverse('medical_record_edit', args=(patient.pk, medical_record.pk,))
         response = self.client.post(url + "?status=edit", self.data)
         self.assertEqual(response.status_code, 200)
 
         self.data['action'] = 'finish'
-        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk,))
+        url = reverse('medical_record_edit', args=(patient.pk, medical_record.pk,))
         response = self.client.post(url + "?status=edit", self.data)
         self.assertEqual(response.status_code, 302)
 
         # diagnosis update
-        diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
-        diagnosis_id = diagnosis_mock.pk  # classification_of_diseases_id
+        diagnosis = self.util.create_diagnosis(medical_record)
+        diagnosis_id = diagnosis.pk  # classification_of_diseases_id
 
         count_diagnosis = Diagnosis.objects.all().count()
         self.data['action'] = 'detail-' + str(diagnosis_id)
-        self.data['description-' + str(diagnosis_id)] = diagnosis_mock.classification_of_diseases.description
+        self.data['description-' + str(diagnosis_id)] = diagnosis.classification_of_diseases.description
         self.data['date-' + str(diagnosis_id)] = '21/02/2015'
-        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk))
+        url = reverse('medical_record_edit', args=(patient.pk, medical_record.pk))
         response = self.client.post(url + "?status=edit", self.data)
 
         self.assertEqual(response.status_code, 302)
@@ -1074,14 +1072,14 @@ class MedicalRecordFormValidation(TestCase):
 
         # incorrect date
         self.data['date-' + str(diagnosis_id)] = '99/02/2015'
-        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk))
+        url = reverse('medical_record_edit', args=(patient.pk, medical_record.pk))
         response = self.client.post(url + "?status=edit", self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Diagnosis.objects.filter(pk=diagnosis_id, date='2015-02-21').count(), 1)
 
         # no date
         self.data['date-' + str(diagnosis_id)] = ''
-        url = reverse('medical_record_edit', args=(patient_mock.pk, medical_record_mock.pk))
+        url = reverse('medical_record_edit', args=(patient.pk, medical_record.pk))
         response = self.client.post(url + "?status=edit", self.data)
         self.assertEqual(response.status_code, 302)
 
@@ -1089,19 +1087,19 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a criação de exames
         """
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
-        diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
+        patient = self.util.create_patient(changed_by=self.user)
+        medical_record = self.util.create_medical_record(self.user, patient)
+        diagnosis = self.util.create_diagnosis(medical_record)
 
         count_exams = ComplementaryExam.objects.all().count()
 
         # A simple test of Exam Create Method.
         request = self.factory.get(
-            reverse('exam_create', args=[patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk, ]))
+            reverse('exam_create', args=[patient.pk, medical_record.pk, diagnosis.pk, ]))
         request.user = self.user
 
-        response = exam_create(request, patient_id=patient_mock.pk, record_id=medical_record_mock.pk,
-                               diagnosis_id=diagnosis_mock.pk)
+        response = exam_create(request, patient_id=patient.pk, record_id=medical_record.pk,
+                               diagnosis_id=diagnosis.pk)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams)
 
@@ -1109,31 +1107,31 @@ class MedicalRecordFormValidation(TestCase):
         self.fill_exam_record()
 
         response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
+            reverse('exam_create', args=(patient.pk, medical_record.pk, diagnosis.pk,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 1)
 
         # Test of exam Create withoud file attachment
         self.fill_exam_record(test_file=False)
         response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
+            reverse('exam_create', args=(patient.pk, medical_record.pk, diagnosis.pk,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 2)
 
         # A tests more conditionals of exam create method.
         self.data['action'] = 'save'
         response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
+            reverse('exam_create', args=(patient.pk, medical_record.pk, diagnosis.pk,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 3)
 
         response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
+            reverse('exam_create', args=(patient.pk, medical_record.pk, diagnosis.pk,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertGreaterEqual(ComplementaryExam.objects.all().count(), 1)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 4)
 
-    def create_complementary_exam(self, patient_mock, medical_record_mock, diagnosis_mock):
+    def create_complementary_exam(self, patient, medical_record, diagnosis):
         """
         Testar a inclusao de exames complementares
         """
@@ -1142,7 +1140,7 @@ class MedicalRecordFormValidation(TestCase):
         count_exams = ComplementaryExam.objects.all().count()
 
         response = self.client.post(
-            reverse('exam_create', args=(patient_mock.pk, medical_record_mock.pk, diagnosis_mock.pk,)), self.data)
+            reverse('exam_create', args=(patient.pk, medical_record.pk, diagnosis.pk,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams + 1)
 
@@ -1150,11 +1148,11 @@ class MedicalRecordFormValidation(TestCase):
         """
         Testar a atualização de um exame complementar
         """
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
-        diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
+        patient = self.util.create_patient(changed_by=self.user)
+        medical_record = self.util.create_medical_record(self.user, patient)
+        diagnosis = self.util.create_diagnosis(medical_record)
 
-        self.create_complementary_exam(patient_mock, medical_record_mock, diagnosis_mock)
+        self.create_complementary_exam(patient, medical_record, diagnosis)
         count_exams = ComplementaryExam.objects.all().count()
 
         # Tests for exam edit method
@@ -1163,7 +1161,7 @@ class MedicalRecordFormValidation(TestCase):
         self.fill_exam_record()
         self.data['action'] = 'save'
         response = self.client.post(
-            reverse('exam_edit', args=(patient_mock.pk, medical_record_mock.pk, complementary_exam.pk,)), self.data)
+            reverse('exam_edit', args=(patient.pk, medical_record.pk, complementary_exam.pk,)), self.data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(ComplementaryExam.objects.all().count(), count_exams)
 
@@ -1179,20 +1177,20 @@ class MedicalRecordFormValidation(TestCase):
         Testar a adição de exame com arquivo anexo - inclusao e remoção
         """
         try:
-            patient_mock = self.util.create_patient(changed_by=self.user)
-            medical_record_mock = self.util.create_medical_record(self.user, patient_mock)
-            diagnosis_mock = self.util.create_diagnosis(medical_record_mock)
+            patient = self.util.create_patient(changed_by=self.user)
+            medical_record = self.util.create_medical_record(self.user, patient)
+            diagnosis = self.util.create_diagnosis(medical_record)
 
             # Tests for exam edit method
-            self.create_complementary_exam(patient_mock, medical_record_mock, diagnosis_mock)
+            self.create_complementary_exam(patient, medical_record, diagnosis)
             complementary_exam = ComplementaryExam.objects.all().first()
             # count_exams = ComplementaryExam.objects.all().count()
 
             self.data['status'] = 'edit'
             request = self.factory.get(
-                reverse('exam_view', args=(patient_mock.pk, medical_record_mock.pk, complementary_exam.pk,)), self.data)
+                reverse('exam_view', args=(patient.pk, medical_record.pk, complementary_exam.pk,)), self.data)
             request.user = self.user
-            response = exam_view(request, patient_mock.pk, medical_record_mock.pk, complementary_exam.pk)
+            response = exam_view(request, patient.pk, medical_record.pk, complementary_exam.pk)
             self.assertEqual(response.status_code, 200)
 
             # Tests delete file from exam
@@ -1204,7 +1202,7 @@ class MedicalRecordFormValidation(TestCase):
 
             # It will delete first exam created
             response = self.client.post(
-                reverse('exam_delete', args=(patient_mock.pk, medical_record_mock.pk, complementary_exam.pk,)),
+                reverse('exam_delete', args=(patient.pk, medical_record.pk, complementary_exam.pk,)),
                 self.data)
             self.assertEqual(response.status_code, 302)
             self.assertEqual(ComplementaryExam.objects.all().count(), 0)
@@ -1291,18 +1289,16 @@ class QuestionnaireFormValidation(TestCase):
         Test list of entrance evaluation
         of the entrance evaluation questionnaire type
         """
-        name_method = self._testMethodName
-        user_method = self.user
-        patient_mock = self.util.create_patient(name_method, user_method)
+        patient = self.util.create_patient(self.user)
 
-        response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        response = self.client.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patient_questionnaires_data_list'], [])
 
         # LimeSurvey system not available
         settings.LIMESURVEY['URL_API'] = 'https://surveys.numec.prp.usp.br/'  # with error
-        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
-        request.user = user_method
+        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
+        request.user = self.user
         request.LANGUAGE_CODE = 'pt-BR'
 
         # this was done in order to error messages can be "presented"
@@ -1310,33 +1306,34 @@ class QuestionnaireFormValidation(TestCase):
         messages = FallbackStorage(request)
         setattr(request, '_messages', messages)
 
-        response = patient_view(request, patient_mock.pk)
+        response = patient_view(request, patient.pk)
         self.assertEqual(response.status_code, 200)
 
         # return to correct url
         settings.LIMESURVEY['URL_API'] = 'https://survey.numec.prp.usp.br/'
 
         # new filling - creating one survey - no responses
-        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
 
-        response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        response = self.client.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['patient_questionnaires_data_list']), 1)
-        self.assertEqual(response.context['patient_questionnaires_data_list'][0]['survey_id'], survey_mock.pk)
-        self.assertEqual(response.context['patient_questionnaires_data_list'][0]['limesurvey_id'],
-                         survey_mock.lime_survey_id)
+        self.assertEqual(response.context['patient_questionnaires_data_list'][0]['survey_id'], survey.pk)
+        self.assertEqual(
+            response.context['patient_questionnaires_data_list'][0]['limesurvey_id'],
+            survey.lime_survey_id)
         self.assertEqual(len(response.context['patient_questionnaires_data_list'][0]['questionnaire_responses']), 0)
 
         # including a new survey response...
-        response_survey_mock = self.util.create_response_survey_mock(user_method, patient_mock, survey_mock)
-        response = self.client.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        response_survey = self.util.create_response_survey(self.user, patient, survey)
+        response = self.client.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(len(response.context['patient_questionnaires_data_list']), 1)
         entrance_evaluation = response.context['patient_questionnaires_data_list'][0]
         self.assertEqual(len(entrance_evaluation['questionnaire_responses']), 1)
         response_survey = entrance_evaluation['questionnaire_responses'][0]['questionnaire_response']
-        self.assertEqual(response_survey.token_id, int(response_survey_mock.token_id))
+        self.assertEqual(response_survey.token_id, int(response_survey.token_id))
 
         completed = entrance_evaluation['questionnaire_responses'][0]['completed']
         self.assertTrue(not completed)  # questionnaire is not completed
@@ -1345,11 +1342,9 @@ class QuestionnaireFormValidation(TestCase):
         """
         Test to see if LimeSurvey is available under circumstances
         """
-        namemethod = self._testMethodName
-        usermethod = self.user
-        patient_mock = self.util.create_patient(namemethod, usermethod)
+        patient = self.util.create_patient(self.user)
 
-        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient_mock.pk]) + "?currentTab=4")
+        request = self.factory.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
         request.user = self.user
 
         # test limesurvey available
@@ -1372,47 +1367,37 @@ class QuestionnaireFormValidation(TestCase):
         settings.LIMESURVEY['URL_API'] = 'https://survey.numec.prp.usp.br/'  # without error
 
     def test_entrance_evaluation_response_create(self):
-        # """
-        # Test inclusion of questionnaire response to a clear survey
-        # of the type: entrance evaluation questionnaire
-        # """
-        # create mock patient, questionnaire
+        """Test inclusion of questionnaire response to a clear survey
+        of the type: entrance evaluation questionnaire
+        """
 
-        name_method = self._testMethodName
-        user_method = self.user
-        patient_mock = self.util.create_patient(name_method, user_method)
-
-        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        patient = self.util.create_patient(self.user)
+        survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
 
         self.data['date'] = '01/09/2014'
         self.data['action'] = 'save'
         self.data['initial-date'] = '2015-09-02'
 
-        url = reverse(QUESTIONNAIRE_NEW, args=(patient_mock.pk, survey_mock.pk,))
+        url = reverse(QUESTIONNAIRE_NEW, args=(patient.pk, survey.pk,))
         response = self.client.post(url + "?origin=subject", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_entrance_evaluation_response_update(self):
-        """
-        Test update of questionnaire response to a clear survey
+        """Test update of questionnaire response to a clear survey
         of the type: entrance evaluation questionnaire
         """
-        name_method = self._testMethodName
-        user_method = self.user
-        patient_mock = self.util.create_patient(name_method, user_method)
-
-        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
-
-        response_survey_mock = self.util.create_response_survey_mock(
-            user_method, patient_mock, survey_mock, 12
+        patient = self.util.create_patient(self.user)
+        survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
+        response_survey = self.util.create_response_survey(
+            self.user, patient, survey, 12
         )
 
-        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
+        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')
         url2 = url1.replace('experiment', 'patient')
 
         response = self.client.get(url2 + "?origin=subject&status=edit")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
+        self.assertEqual(response_survey.token_id, response.context["questionnaire_response"].token_id)
 
         self.data['action'] = 'save'
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
@@ -1423,56 +1408,49 @@ class QuestionnaireFormValidation(TestCase):
         Test delete from 2 views: update and view
         of the type: entrance evaluation questionnaire
         """
-        namemethod = self._testMethodName
-        usermethod = self.user
-        patient_mock = self.util.create_patient(namemethod, usermethod)
+        patient = self.util.create_patient(self.user)
+        survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
+        response_survey = self.util.create_response_survey(self.user, patient, survey)
 
-        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
-
-        # response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
-        response_survey_mock = self.util.create_response_survey_mock(usermethod, patient_mock, survey_mock)
-
-        # delete questionnaire response when it is in mode
-        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey_mock.pk], current_app='patient')
+        # Delete questionnaire response when it is in mode
+        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey.pk], current_app='patient')
         url2 = url1.replace('experiment', 'patient')
         self.data['action'] = 'remove'
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-        # workaround because reverse is getting experiment url instead of patient
-        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
+        # Workaround because reverse is getting experiment url instead of patient
+        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')
         url2 = url1.replace('experiment', 'patient')
 
         self.data['action'] = 'remove'
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
-        self.assertEqual(response.status_code, 404)  # error - response already deleted
+        self.assertEqual(response.status_code, 404)  # Error - response already deleted
 
-        response_survey_mock = self.util.create_response_survey_mock(usermethod, patient_mock, survey_mock)
+        response_survey = self.util.create_response_survey(self.user, patient, survey)
 
-        # workaround because reverse is getting experiment url instead of patient
-        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey_mock.pk], current_app='patient')
+        # Workaround because reverse is getting experiment url instead of patient
+        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')
         url2 = url1.replace('experiment', 'patient')
 
         self.data['action'] = 'remove'
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
-        self.assertEqual(response.status_code, 200)  # now it is deleted
+        self.assertEqual(response.status_code, 200)  # Now it is deleted
 
     def test_entrance_ev_response_complete(self):
         """
         Test view of questionnaire response when questionnaire is complete
         of the type: entrance evaluation questionnaire
         """
-        namemethod = self._testMethodName
-        usermethod = self.user
-        patient_mock = self.util.create_patient(namemethod, usermethod)
-        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
-        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 2)
+        patient = self.util.create_patient(self.user)
+        survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
+        response_survey = self.util.create_response_survey(self.user, patient, survey, 2)
 
-        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey_mock.pk], current_app='patient')
+        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey.pk], current_app='patient')
         url2 = url1.replace('experiment', 'patient')
         response = self.client.get(url2 + "?origin=subject&status=edit")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
+        self.assertEqual(response_survey.token_id, response.context["questionnaire_response"].token_id)
 
     def _test_experiment_response_view(self):
         """
@@ -1480,23 +1458,21 @@ class QuestionnaireFormValidation(TestCase):
         """
 
         # Create a research project
-        research_project = ResearchProject.objects.create(title="Research project title",
-                                                          start_date=date.today(),
-                                                          description="Research project description")
+        research_project = ResearchProject.objects.create(
+            title="Research project title", start_date=date.today(),
+            description="Research project description")
         research_project.save()
 
         # Criar um experimento mock para ser utilizado no teste
-        experiment = Experiment.objects.create(title="Experimento-Update",
-                                               description="Descricao do Experimento-Update",
-                                               research_project=research_project)
+        experiment = Experiment.objects.create(
+            title="Experimento-Update", description="Descricao do Experimento-Update",
+            research_project=research_project)
         experiment.save()
 
         # Create the root of the experimental protocol
-        block = Block.objects.create(identification='Root',
-                                     description='Root description',
-                                     experiment=Experiment.objects.first(),
-                                     component_type='block',
-                                     type="sequence")
+        block = Block.objects.create(
+            identification='Root', description='Root description', experiment=Experiment.objects.first(),
+            component_type='block', type="sequence")
         block.save()
 
         # Create a quesitonnaire at LiveSurvey to use in this test.
@@ -1537,12 +1513,12 @@ class QuestionnaireFormValidation(TestCase):
             group.save()
 
             # Criar um Subject para o experimento
-            patient_mock = self.util.create_patient(changed_by=self.user)
+            patient = self.util.create_patient(changed_by=self.user)
 
-            subject_mock = Subject(patient=patient_mock)
-            subject_mock.save()
+            subject = Subject(patient=patient)
+            subject.save()
 
-            subject_group = SubjectOfGroup(subject=subject_mock, group=group)
+            subject_group = SubjectOfGroup(subject=subject, group=group)
             subject_group.save()
 
             group.subjectofgroup_set.add(subject_group)
@@ -1560,7 +1536,7 @@ class QuestionnaireFormValidation(TestCase):
             # Visualiza preenchimento da Survey
             self.data['currentTab'] = 4
 
-            url = reverse(PATIENT_VIEW, args=[patient_mock.pk, ])
+            url = reverse(PATIENT_VIEW, args=[patient.pk, ])
 
             response = self.client.get(url + "?currentTab=4", data=self.data)
             # We don't get any error, because the method get_questionnaire_responses called by

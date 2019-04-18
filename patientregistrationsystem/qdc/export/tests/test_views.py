@@ -693,7 +693,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         """
         # In setUp we create experiment questionnaire response. Here we
         # create a participant questionnaire response (entrance questionnaire)
-        questionnaire_response = UtilTests.create_response_survey_mock(
+        questionnaire_response = UtilTests.create_response_survey(
             responsible=self.user, patient=self.patient, survey=self.survey
         )
 

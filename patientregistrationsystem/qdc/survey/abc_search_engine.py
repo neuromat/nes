@@ -21,12 +21,12 @@ class ABCSearchEngine(ABC):
     def get_session_key(self):
 
         self.server = Server(
-            # settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
+            settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
             # TODO (NES-956): make this link optional if the extended plugin is used
             #  IMPORTANT: Exception Transport Error raised when using link bellow to
             #  visualize questions.
-            settings.LIMESURVEY['URL_API'] +
-            '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+            # settings.LIMESURVEY['URL_API'] +
+            # '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
 
         try:
             self.session_key = self.server.get_session_key(
