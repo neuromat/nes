@@ -21,12 +21,12 @@ class ABCSearchEngine(ABC):
     def get_session_key(self):
 
         self.server = Server(
-            settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
+            # settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
             # TODO (NES-956): make this link optional if the extended plugin is used
             #  IMPORTANT: Exception Transport Error raised when using link bellow to
             #  visualize questions.
-            # settings.LIMESURVEY['URL_API'] +
-            # '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+            settings.LIMESURVEY['URL_API'] +
+            '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
 
         try:
             self.session_key = self.server.get_session_key(
@@ -115,12 +115,7 @@ class ABCSearchEngine(ABC):
         :param tokens_ids: token_id to put in a list
         :return: on success, an array of deletion status for each participant; on failure, status array.
         """
-        result = self.server.delete_participants(
-            self.session_key,
-            survey_id,
-            [tokens_ids]
-        )
-        return result
+        return self.server.delete_participants(self.session_key, survey_id, [tokens_ids])
 
     @abstractmethod
     def get_survey_title(self, sid, language):
@@ -190,6 +185,7 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def get_participant_properties(self, survey_id, token_id, prop):
+        # TODO: can make prop=null to return all attributes
         """
         :param survey_id: survey ID
         :param token_id: token ID
@@ -244,7 +240,7 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def get_responses_by_token(self, sid, token, language, fields=[]):
-        """ obtains responses from a determined token
+        """Obtain responses from a determined token
         :param sid: survey ID
         :param token: token
         :param language: language
