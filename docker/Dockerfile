@@ -76,6 +76,7 @@ RUN apk update && \
 		# supervisord  \\
 		supervisor \
 		# nes dependencies \\
+		graphviz \
 		openblas-dev && \
 		apk add --no-cache \
 			--repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
