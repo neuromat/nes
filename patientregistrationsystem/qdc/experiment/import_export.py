@@ -1,6 +1,5 @@
 import base64
 import os
-import re
 import shutil
 import sys
 import tempfile
@@ -281,6 +280,7 @@ class ImportExperiment:
         self.data = []
         self.last_objects_before_import = dict()
         self.new_objects = dict()
+        self.limesurvey_relations = dict()
 
     def __del__(self):
         shutil.rmtree(self.temp_dir)
@@ -412,36 +412,25 @@ class ImportExperiment:
             for i in indexes:
                 self.data[i]['fields'][model[1]] = request.user.id
 
-    # def _solve_limey_survey_reference(self, survey_index):
-    #     min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-    #     if min_limesurvey_id >= 0:
-    #         new_limesurvey_id = -99
-    #     else:
-    #         min_limesurvey_id -= 1
-    #         new_limesurvey_id = min_limesurvey_id
-    #     self.data[survey_index]['fields']['lime_survey_id'] = new_limesurvey_id
-
-    # def _make_dummy_reference_to_limesurvey(self):
-        # survey_indexes = [index for index, dict_ in enumerate(self.data) if dict_['model'] == 'survey.survey']
-        # for survey_index in survey_indexes:
-        #     self._solve_limey_survey_reference(survey_index)
-
-    def _update_survey_data(self, surveys_imported):
+    def _update_survey_data(self):
+        """Make dummy references to limesurvey surveys until import them in Limesurvey.
+        Create new survey codes
+        """
         next_code = Survey.create_random_survey_code()
-        min_limesurvey_id = Survey.objects.all().order_by('lime_survey_id')[0].lime_survey_id
-        if min_limesurvey_id >= 0:
-            dummy_limesurvey_id = -99
-        else:
-            dummy_limesurvey_id = min_limesurvey_id
-
-        for key, new_survey in surveys_imported.items():
-            next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
-            self.data[key[0]]['fields']['code'] = next_code
-            if new_survey is not None:
-                self.data[key[0]]['fields']['lime_survey_id'] = new_survey
+        indexes = [index for index, dict_ in enumerate(self.data) if dict_['model'] == 'survey.survey']
+        if indexes:
+            min_limesurvey_id = Survey.objects.order_by('lime_survey_id')[0].lime_survey_id
+            if min_limesurvey_id >= 0:
+                dummy_limesurvey_id = -99
             else:
-                self.data[key[0]]['fields']['lime_survey_id'] = dummy_limesurvey_id
+                dummy_limesurvey_id = min_limesurvey_id
+            for index in indexes:
+                self.limesurvey_relations[self.data[index]['fields']['lime_survey_id']] = dummy_limesurvey_id
+                self.data[index]['fields']['lime_survey_id'] = dummy_limesurvey_id
                 dummy_limesurvey_id -= 1
+
+                next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
+                self.data[index]['fields']['code'] = next_code
 
     def _keep_objects_pre_loaded(self):
         """For objects in fixtures initially loaded, check if the objects
@@ -551,11 +540,10 @@ class ImportExperiment:
                 )
 
     def _update_data_before_importing(self, request, research_project_id, patients_to_update):
-        # self._make_dummy_reference_to_limesurvey()
+        self._update_survey_data()
         self._update_research_project_pk(research_project_id)
         self._verify_keywords()
         self._update_references_to_user(request)
-        # self._update_survey_data()
         self._keep_objects_pre_loaded()
         self._keep_patients_pre_loaded(patients_to_update)
         self._update_patients_stuff(patients_to_update)
@@ -675,37 +663,33 @@ class ImportExperiment:
         return [index for (index, dict_) in enumerate(deserialized) if dict_['model'] == app + model]
 
     def _import_surveys(self):
-        """Import surveys to Limesurvey server and call updating references
-        in json data
-        """
-        surveys_imported = dict()
-        surveys = Questionnaires()
-        indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'survey.survey']
+        """Import surveys to Limesurvey server"""
+        ls_interface = Questionnaires()
         # Does not add try/exception trying to open zipfile here because it
         # was done in import_all method
         with zipfile.ZipFile(self.file_path) as zip_file:
-            for index in indexes:
-                limesurvey_id = self.data[index]['fields']['lime_survey_id']
-                survey_archivename = str(limesurvey_id) + '.lsa'
+            for old_ls_id, dummy_ls_id in self.limesurvey_relations.items():
+                survey_archivename = str(old_ls_id) + '.lsa'
                 if survey_archivename in zip_file.namelist():
                     survey_archive = zip_file.extract(survey_archivename, self.temp_dir)
                     with open(survey_archive, 'rb') as file:
                         encoded_string = base64.b64encode(file.read())
                         encoded_string = encoded_string.decode('utf-8')
                     try:
-                        result = surveys.import_survey(encoded_string)
-                        # TODO (NES-956): see if this is the value returned allways when could not
+                        new_ls_id = ls_interface.import_survey(encoded_string)
+                        survey = Survey.objects.get(lime_survey_id=dummy_ls_id)
+                        survey.lime_survey_id = new_ls_id
+                        survey.save()
+                        self._remove_participants(new_ls_id)
+                        # TODO (NES-956): see if this is the value returned always when could not
                         #  create survey
-                        # TODO (NES-956): maybe it's only necessary index
-                        surveys_imported[(index, limesurvey_id)] = None if not result else result
                     except:  # TODO (NES-956): specify exception
-                        # TODO: return with messages
+                        # TODO (NES-956): return with messages
                         pass
                 else:
-                    surveys_imported[(index, limesurvey_id)] = None
-
-        if indexes:
-            self._update_survey_data(surveys_imported)
+                    # TODO (NES-956): add information that was not a survey archive
+                    #  to this survey
+                    continue
 
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
@@ -722,13 +706,15 @@ class ImportExperiment:
         digraph = self._build_digraph()
         self._manage_pks(digraph)
         self._update_data_before_importing(request, research_project_id, patients_to_update)
-        self._import_surveys()
 
         with open(path.join(self.temp_dir, self.FIXTURE_FILE_NAME), 'w') as file:
             file.write(json.dumps(self.data))
 
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
+
         self._upload_files()
+
+        self._import_surveys()
 
         self._collect_new_objects()
 
@@ -736,3 +722,8 @@ class ImportExperiment:
 
     def get_new_objects(self):
         return self.new_objects
+
+    def _remove_participants(self, surveys_imported):
+        for key, survey in surveys_imported:
+            survey = Survey.objects.get(lime_survey_id=survey)
+

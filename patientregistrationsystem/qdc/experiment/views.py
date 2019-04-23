@@ -5750,16 +5750,17 @@ def questionnaire_response_view(request, questionnaire_response_id,
 def delete_questionnaire_response(questionnaire: Questionnaire,
                                   questionnaire_response: QuestionnaireResponse):
 
-    # checking if it is used by patient_questionnaire_response
+    # Checking if it is used by patient_questionnaire_response
     token_is_used_patient_questionnaire_response = \
-        PatientQuestionnaireResponse.objects.filter(patient=questionnaire_response.subject_of_group.subject.patient,
-                                                    survey=questionnaire.survey,
-                                                    token_id=questionnaire_response.token_id).exists()
+        PatientQuestionnaireResponse.objects.filter(
+            patient=questionnaire_response.subject_of_group.subject.patient,
+            survey=questionnaire.survey,
+            token_id=questionnaire_response.token_id).exists()
     can_delete = False
     if token_is_used_patient_questionnaire_response:
         can_delete = True
     else:
-        # remove token from LimeSurvey
+        # Remove token from LimeSurvey
         surveys = Questionnaires()
         result = surveys.delete_participant(
             questionnaire.survey.lime_survey_id,
