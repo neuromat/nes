@@ -8623,13 +8623,13 @@ def get_experimental_protocol_image(experimental_protocol, tree, url=False):
 
     # graph file name
     file_name = \
-        "experimental_protocol_" + str(experimental_protocol.id) + ".png"
+        "experimental_protocol_" + str(experimental_protocol.id) + ".svg"
 
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
 
     try:
-        graph.write_png(path.join(path_complete, file_name))
+        graph.write_svg(path.join(path_complete, file_name))
     except:
         return None
 
