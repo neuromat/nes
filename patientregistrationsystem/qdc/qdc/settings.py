@@ -198,4 +198,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.57.3'
+VERSION = '1.58.0'
