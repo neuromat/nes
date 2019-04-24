@@ -60,29 +60,33 @@ def get_survey_title_based_on_the_user_language(survey, language_code, update=Fa
         titles = {'pt-br': survey.pt_title, 'en': survey.en_title}
         fallback_language = 'en' if language_code == 'pt-br' else 'pt-br'
 
-        if titles[language_code] != None and titles[language_code] != "":
-            title = titles[language_code]
-            return title
-        elif titles[fallback_language] != None and titles[fallback_language] != "":
-            title = titles[fallback_language]
-            return title
+        if titles[language_code]:
+            return titles[language_code]
+        elif titles[fallback_language]:
+            return titles[fallback_language]
 
     surveys = Questionnaires()
     pt_title = surveys.get_survey_title(survey.lime_survey_id, 'pt-BR')
     en_title = surveys.get_survey_title(survey.lime_survey_id, 'en')
 
-    if pt_title != None and pt_title != "" or en_title != None and en_title != "":
+    if language_code == 'pt-br' and pt_title:
         surveys.release_session_key()
-
         survey.pt_title = pt_title
+        survey.save()
+        return get_survey_title_based_on_the_user_language(survey, language_code)
+    elif language_code == 'en' and en_title:
+        surveys.release_session_key()
         survey.en_title = en_title
         survey.save()
-
         return get_survey_title_based_on_the_user_language(survey, language_code)
     else:
-        title = surveys.get_survey_title(survey.lime_survey_id, language_code)
+        title = surveys.get_survey_title(survey.lime_survey_id)
         surveys.release_session_key()
-        return title
+
+        if title:
+            return title
+        else:
+            return survey.lime_survey_id
 
 
 @login_required
@@ -108,7 +112,7 @@ def survey_list(request, template_name='survey/survey_list.html'):
         # and update the fields in the database
         is_active = survey.is_active
 
-        if not is_active:
+        if not is_active or update:
             status = surveys.get_survey_properties(survey.lime_survey_id, 'active')
             if status == 'Y':
                 survey.is_active = True
