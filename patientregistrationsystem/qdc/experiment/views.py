@@ -1291,12 +1291,8 @@ def send_all_experiments_to_portal():
                                 get_questionnaire_language(
                                     surveys, limesurvey_id, language_code
                                 )
-                            responses_string = \
-                                surveys.get_responses_by_token(
-                                    limesurvey_id,
-                                    token,
-                                    questionnaire_language
-                                )
+                            responses_string = surveys.get_responses_by_token(
+                                limesurvey_id, token, questionnaire_language)
                             limesurvey_response = \
                                 {'questions': '', 'answers': ''}
 
@@ -5682,21 +5678,19 @@ def questionnaire_response_view(request, questionnaire_response_id,
     subject = questionnaire_response.subject_of_group.subject
 
     surveys = Questionnaires()
-    survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                           questionnaire_response.token_id,
-                                                           "completed") != "N")
+    survey_completed = (surveys.get_participant_properties(
+        questionnaire.survey.lime_survey_id, questionnaire_response.token_id, "completed") != "N")
     surveys.release_session_key()
 
-    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
+    questionnaire_response_form = QuestionnaireResponseForm(
+        None, instance=questionnaire_response)
 
-    lime_survey_id = questionnaire.survey.lime_survey_id
+    limesurvey_id = questionnaire.survey.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
     # Get the responses for each question of the questionnaire.
-    survey_title, groups_of_questions = get_questionnaire_responses(
-        language_code, lime_survey_id, token_id, request
-    )
+    survey_title, groups_of_questions = get_questionnaire_responses(language_code, limesurvey_id, token_id, request)
 
     origin = get_origin(request)
 

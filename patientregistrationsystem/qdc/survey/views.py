@@ -585,8 +585,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     return render(request, template_name, context)
 
 
-def get_questionnaire_responses(language_code, lime_survey_id, token_id,
-                                request):
+def get_questionnaire_responses(language_code, lime_survey_id, token_id, request):
 
     groups_of_questions = []
 
@@ -723,15 +722,11 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                             'hidden': False
                         })
 
-        responses_string = surveys.get_responses_by_token(
-            lime_survey_id, token, language
-        )
+        responses_string = surveys.get_responses_by_token(lime_survey_id, token, language)
         responses_list = []
 
-        if isinstance(responses_string, bytes):
-            reader_ = csv.reader(
-                StringIO(responses_string.decode()), delimiter=','
-            )
+        if responses_string:
+            reader_ = csv.reader(StringIO(responses_string), delimiter=',')
 
             for row in reader_:
                 responses_list.append(row)
@@ -802,7 +797,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                         answer_list.append(answer)
 
                                         groups_of_questions = add_questionnaire_response_to_group(
-                                                groups_of_questions, question,answer_list, None, no_response_flag)
+                                                groups_of_questions, question, answer_list, None, no_response_flag)
                                     else:
                                         link = ''
                                         if question['question_id'] in responses_list[0]:

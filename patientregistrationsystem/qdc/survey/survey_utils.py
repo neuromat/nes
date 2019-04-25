@@ -1,5 +1,6 @@
 import collections
 import re
+# TODO (NES-956): see this
 from _csv import reader
 
 from operator import itemgetter
@@ -444,9 +445,7 @@ class QuestionnaireUtils:
         :param responses_string:
         :return:
         """
-        response_reader = reader(
-            StringIO(responses_string.decode()), delimiter=','
-        )
+        response_reader = reader(StringIO(responses_string), delimiter=',')
         responses_list = []
         for row in response_reader:
             responses_list.append(row)
