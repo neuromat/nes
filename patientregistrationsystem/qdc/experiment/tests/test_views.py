@@ -4363,8 +4363,111 @@ class ImportExperimentTest(TestCase):
         # TODO (NES-956): implement it!
         pass
 
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_keeps_only_responses_from_experiment_participants(self, mockServer):
+        session_key = 'idheugd835[djgh'
+        token_keeped = 'BNxaKxMt9SO87OA'
+        token_id_keeped = 1
+        token_not_keeped = '5NxeKxMtaSOp7OA'
+        token_id_not_keeped = 2
+        limesurvey_responses_ids_deleted = [1, 2]
+
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        subject_of_group = SubjectOfGroup.objects.last()
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(dct, self.user, token_id_keeped, subject_of_group)
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive1.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        mockServer.return_value.get_session_key.return_value = session_key
+        mockServer.return_value.import_survey.return_value = 505050
+        mockServer.return_value.list_participants.return_value = \
+            [
+                {
+                    'token': token_keeped,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': token_id_keeped,
+                },
+                {
+                    'token': token_not_keeped,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': token_id_not_keeped
+                }
+            ]
+        mockServer.return_value.delete_participants.return_value = {'status': 'Deleted'}
+        # Get responses for each token that will be deleted
+        # The string corresponds corresponds to:
+        # b'"id","submitdate","lastpage","startlanguage","token","responsibleid","acquisitiondate","subjectid",
+        # "firstQuestion","secondQuestion"\n
+        # "1","1980-01-01 00:00:00","2","en","BNxaKxMt9SO87OA","2","2018-03-08 00:00:00","5","c","d"\n
+        # "2","1980-01-01 00:00:00","2","en","5NxeKxMtaSOp7OA","2","2018-03-08 00:00:00","5","c","d"\n\n'
+        mockServer.return_value.export_responses_by_token.return_value = \
+            b'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIs' \
+            b'InRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZGF0ZSIsInN1' \
+            b'YmplY3RpZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIKIjEi' \
+            b'LCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiQk54YUt4TXQ5U084' \
+            b'N09BIiwiMiIsIjIwMTgtMDMtMDggMDA6MDA6MDAiLCI1IiwiYyIsImQiCiIy' \
+            b'IiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIjVOeGVLeE10YVNP' \
+            b'cDdPQSIsIjIiLCIyMDE4LTAzLTA4IDAwOjAwOjAwIiwiNSIsImMiLCJkIgoK'.decode()
+
+        # Mock deleted responses ids return value. There are two ids, 1 and 2.
+        # Only two was deleted
+        mockServer.return_value.delete_responses.return_value = {'status': 'OK'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # First list item corresponds to the token id 1, second item, to the token id 2
+        self.assertTrue(mockServer.return_value.list_participants.called)
+        self.assertEqual(
+            mockServer.return_value.list_participants.call_args,
+            call(session_key, 505050, 0, 99999999))
+
+        # Delete token of other experiments
+        self.assertTrue(mockServer.return_value.delete_participants.called)
+        self.assertEqual(mockServer.return_value.delete_participants.call_args, call(
+            session_key, 505050, [token_id_not_keeped]))
+        # Ensures that delete_participants was called only once
+        self.assertEqual(mockServer.return_value.delete_participants.call_count, 1)
+
+        # Mock Remote Control export_responses method with B64 encoded string.
+        # This corresponds to two responses, one for the new experiment, other from
+        # other experiment
+        self.assertTrue(mockServer.return_value.export_responses_by_token.called)
+        self.assertEqual(
+            mockServer.return_value.export_responses_by_token.call_args, call(
+                session_key, 505050, 'csv', token_not_keeped, None, 'complete'))
+
+        self.assertTrue(mockServer.return_value.delete_responses.called)
+        self.assertEqual(mockServer.return_value.delete_responses.call_args, call(
+            session_key, 505050, limesurvey_responses_ids_deleted))
+
+        shutil.rmtree(temp_dir)
+
     # @patch('survey.abc_search_engine.Server')
-    # def test_import_survey_keeps_only_responses_from_experiment_participants(self, mockServer):
+    # def test_import_survey_updates_subjectid(self, mockServer):
+    #     token_keeped = 'BNxaKxMt9SO87OA'
+    #     token_id_keeped = 1
+    #
     #     patient = UtilTests.create_patient(changed_by=self.user)
     #     experiment = self._create_minimum_objects_to_test_patient(patient)
     #     subject_of_group = SubjectOfGroup.objects.last()
@@ -4375,7 +4478,7 @@ class ImportExperimentTest(TestCase):
     #     )
     #     component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
     #     dct = ObjectsFactory.create_data_configuration_tree(component_config)
-    #     ObjectsFactory.create_questionnaire_response(dct, self.user, 1, subject_of_group)
+    #     ObjectsFactory.create_questionnaire_response(dct, self.user, token_id_keeped, subject_of_group)
     #
     #     temp_dir = tempfile.mkdtemp()
     #     remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive1.lsa')
@@ -4385,7 +4488,7 @@ class ImportExperimentTest(TestCase):
     #     export.export_all()
     #     file_path = export.get_file_path()
     #
-    #     mockServer.return_value.import_survey.return_value = 505050
+    #     mockServer.return_value.update_response.return_value = True
     #
     #     # Add session variables related to updating/overwrite patients when importing
     #     session = self.client.session
@@ -4396,24 +4499,3 @@ class ImportExperimentTest(TestCase):
     #         session.save()
     #         self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
     #
-    #     # First list item corresponds to the token id 1, second item, to the token id 2
-    #     mockServer.return_value.list_participants.return_value = ['oeytyqiweapo', 'oweyyriwyi83']
-    #     self.assertTrue(mockServer.return_value.list_participants.called)
-    #     self.assertEqual(mockServer.return_value.list_participants.call_args, call(505050))
-    #     # Delete token of other experiments
-    #     mockServer.return_value.delete_participants.return_value = 2
-    #     self.assertTrue(mockServer.return_value.delete_participants.called)
-    #     self.assertEqual(mockServer.return_value.delete_participants.call_args, call(505050, [2]))
-    #
-    #     # Mock Remote Control export_responses method with B64 encoded string.
-    #     # This corresponds to two responses, one for the new experiment, other from
-    #     # other experiment
-    #     mockServer.return_value.export_responses.return_value = 'ladjfçladsfjçladfsja'
-    #     self.assertTrue(mockServer.return_value.export_responses.called)
-    #     self.assertEqual(mockServer.return_value.export_responses.call_args, call(505050, 'csv'))
-    #
-    #     # Mock deleted responses ids return value. There are two ids, 1 and 2.
-    #     # Only two was deleted
-    #     mockServer.return_value.delete_responses.return_value = [2]
-    #
-    #     shutil.rmtree(temp_dir)

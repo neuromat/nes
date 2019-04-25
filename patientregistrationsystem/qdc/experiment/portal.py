@@ -1449,13 +1449,10 @@ def get_questionnaire_fields_for_portal(questionnaire_lime_survey, lime_survey_i
     """
 
     fields = []
-    responses_text = \
-        questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
+    responses_text = questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
     if responses_text:
         # header
-        header_fields = next(
-            reader(StringIO(responses_text.decode()), delimiter=',')
-        )
+        header_fields = next(reader(StringIO(responses_text), delimiter=','))
         for field in header_fields:
             if field not in questionnaire_evaluation_fields_excluded:
                 fields.append(field)
