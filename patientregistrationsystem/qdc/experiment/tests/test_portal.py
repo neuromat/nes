@@ -112,8 +112,7 @@ class PortalAPITest(TestCase):
 
         # Mock methods used in test calling methods
         survey_languages = {'language': 'en', 'additional_languages': None}
-        mockServerClass.return_value.get_survey_properties.return_value = \
-            survey_languages
+        mockServerClass.return_value.get_survey_properties.return_value = survey_languages
         mockServerClass.return_value.export_responses.return_value = \
             b'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFn' \
             b'ZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImZha2VRdWVzdGlvbiIKI' \
@@ -121,9 +120,7 @@ class PortalAPITest(TestCase):
             b'RhMGxoYjRMIiwiMiIsNSIsInRleHRvIGxvbmdvIgoK'
         mockServerClass.return_value.get_language_properties.return_value = \
             {'surveyls_title': 'Ein wunderbar Titel'}
-        mockServerClass.return_value.list_questions.return_value = [
-            {'id': {'qid': 1}}
-        ]
+        mockServerClass.return_value.list_questions.return_value = [{'id': {'qid': 1}}]
         # Mock get_question_properties LimeSurvey API method using
         # ABCSearchEngine.QUESTION_PROPERTIES constant list with fake values
         question_order = 21
@@ -141,12 +138,15 @@ class PortalAPITest(TestCase):
             question_properties
         # mock list_groups LimeSurvey API method (fake values)
         language = 'en'
-        mockServerClass.return_value.list_groups.return_value = \
-            [{'randomization_group': '',
-              'id': {'gid': group_id, 'language': language},
-              'group_name': 'Grupo 1', 'description': '', 'group_order': 1,
-              'sid': survey.lime_survey_id, 'gid': group_id,
-              'language': language, 'grelevance': ''}]
+        mockServerClass.return_value.list_groups.return_value = [
+            {
+                'randomization_group': '',
+                'id': {'gid': group_id, 'language': language},
+                'group_name': 'Grupo 1', 'description': '', 'group_order': 1,
+                'sid': survey.lime_survey_id, 'gid': group_id,
+                'language': language, 'grelevance': ''
+            }
+        ]
 
         send_steps_to_portal(21, tree, None, None, None, None, 'en')
 

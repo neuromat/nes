@@ -463,7 +463,6 @@ class SurveyTest(TestCase):
             self.assertEqual(response.status_code, 200)
 
             # Set survey data
-            # self.data = {'action': 'save', 'title': 'Survey title'}
             self.data = {'action': 'save', 'questionnaire_selected': sid}
 
             # Count the number of surveys currently in database
@@ -474,8 +473,10 @@ class SurveyTest(TestCase):
             self.assertEqual(response.status_code, 302)
 
             # Assert if the message is parsed
-            self.assertEqual(response.wsgi_request._messages._queued_messages[0].message,
-                             'O NES não importa arquivos carregados pelo Limesurvey através de questões do tipo \'Envio de arquivo\'. Veja \"Best Pratices and Recommendations\" em https://nes.rtfd.io para mais detalhes.')
+            self.assertEqual(
+                response.wsgi_request._messages._queued_messages[0].message,
+                'O NES não importa arquivos carregados pelo Limesurvey através de questões do tipo \'Envio de '
+                'arquivo\'. Veja \"Best Pratices and Recommendations\" em https://nes.rtfd.io para mais detalhes.')
 
             # Count the number of surveys currently in database
             count_after_insert = Survey.objects.all().count()

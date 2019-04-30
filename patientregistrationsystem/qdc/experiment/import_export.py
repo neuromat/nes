@@ -200,12 +200,15 @@ class ExportExperiment:
         questionnaire_ids = Questionnaire.objects.filter(
             experiment=self.experiment).values_list('survey_id', flat=True)
         surveys = Survey.objects.filter(id__in=questionnaire_ids)
-        ls_interface = Questionnaires()
+        ls_interface = Questionnaires(settings.LIMESURVEY['URL_API'] +
+                                      '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
         remote_archive_paths = []
         for survey in surveys:
             archive_path = ls_interface.export_survey(survey.lime_survey_id)
             if archive_path is not None:
                 remote_archive_paths.append((archive_path, str(survey.lime_survey_id),))
+
+        ls_interface.release_session_key()
 
         if remote_archive_paths:
             survey_archive_paths = self._copy_from_limesurvey_server(remote_archive_paths)
@@ -664,15 +667,26 @@ class ImportExperiment:
         # TODO (NES-956): disseminate to rest of the script
         return [index for (index, dict_) in enumerate(self.data) if dict_['model'] == app + '.' + model]
 
-    def _remove_participants(self):
+    def _remove_limesurvey_participants(self):
+        """Must be called after updating Limesurvey surveys references"""
+
         indexes = self._get_indexes('experiment', 'questionnaire')
         ls_interface = Questionnaires()
+        # As there can be same survey in more than one questionnaire component,
+        # create a dictionaire to nao questionnaire compontents by limesurvey
+        # surveys.
+        token_ids_survey = dict()
         for index in indexes:
             questionnaire = Questionnaire.objects.get(id=self.data[index]['pk'])
-            token_ids = QuestionnaireResponse.objects.filter(
-                data_configuration_tree__component_configuration__component=
-                questionnaire.id).values_list('token_id', flat=True)
             limesurvey_id = questionnaire.survey.lime_survey_id
+            # Initialize dict if first time of limesurvey_id
+            if limesurvey_id not in token_ids_survey:
+                token_ids_survey[limesurvey_id] = []
+            token_ids = list(QuestionnaireResponse.objects.filter(
+                data_configuration_tree__component_configuration__component=
+                questionnaire.id).values_list('token_id', flat=True))
+            token_ids_survey[limesurvey_id] += token_ids
+        for limesurvey_id, token_ids in token_ids_survey.items():
             all_participants = ls_interface.find_tokens_by_questionnaire(limesurvey_id)
             # TODO (NES-956): don't remove participants of other experiment of this NES.
             for participant in all_participants:
@@ -692,17 +706,15 @@ class ImportExperiment:
 
         ls_interface.release_session_key()
 
-    def _import_surveys(self):
+    def _import_limesurvey_surveys(self):
         """Import surveys to Limesurvey server
         :return: list of limsurvey surveys imported
         """
-
         ls_interface = Questionnaires()
         limesurvey_ids = []
         # Does not add try/exception trying to open zipfile here because it
         # was done in import_all method
         with zipfile.ZipFile(self.file_path) as zip_file:
-            # self.limesurvey_relations is an empty dict if not limesurvey surveys
             for old_ls_id, dummy_ls_id in self.limesurvey_relations.items():
                 survey_archivename = str(old_ls_id) + '.lsa'
                 if survey_archivename in zip_file.namelist():
@@ -726,7 +738,9 @@ class ImportExperiment:
                     #  to this survey
                     continue
 
-            return limesurvey_ids
+        if limesurvey_ids:
+            self._remove_limesurvey_participants()
+            self._update_limesurvey_subject_ids()
 
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
@@ -750,8 +764,7 @@ class ImportExperiment:
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
 
         self._upload_files()
-        self._import_surveys()
-        self._remove_participants()
+        self._import_limesurvey_surveys()
 
         self._collect_new_objects()
 
@@ -759,3 +772,27 @@ class ImportExperiment:
 
     def get_new_objects(self):
         return self.new_objects
+
+    def _update_limesurvey_subject_ids(self):
+        """Must be called after updating Limesurvey surveys references
+        """
+        indexes = self._get_indexes('experiment', 'questionnaire')
+        ls_interface = Questionnaires(
+            settings.LIMESURVEY['URL_API'] + '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+        for index in indexes:
+            questionnaire = Questionnaire.objects.get(id=self.data[index]['pk'])
+            questionnaire_responses = QuestionnaireResponse.objects.filter(
+                data_configuration_tree__component_configuration__component=questionnaire.id)
+            limesurvey_id = questionnaire.survey.lime_survey_id
+            for response in questionnaire_responses:
+                subject = response.subject_of_group.subject
+                token_id = response.token_id
+                token = ls_interface.get_participant_properties(limesurvey_id, token_id, 'token')
+                # TODO (NES-956): get the language. By now put 'en' to test
+                ls_subject_id_column_name = QuestionnaireUtils.get_response_column_name(
+                    ls_interface, limesurvey_id, 'subjectid', 'en')
+                # TODO (NES-956): deal with errors here
+                result = ls_interface.update_response(
+                    limesurvey_id, {'token': token, ls_subject_id_column_name: subject.id})
+
+        ls_interface.release_session_key()
