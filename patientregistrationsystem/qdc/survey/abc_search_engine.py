@@ -32,10 +32,8 @@ class ABCSearchEngine(ABC):
 
         try:
             self.session_key = self.server.get_session_key(
-                settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD']
-            )
-            self.session_key = None if isinstance(self.session_key, dict) \
-                else self.session_key
+                settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
+            self.session_key = None if isinstance(self.session_key, dict) else self.session_key
         except TransportError:
             self.session_key = None
 
@@ -371,8 +369,17 @@ class ABCSearchEngine(ABC):
             self.session_key, sid, data
         )
 
-    @abstractmethod
     def list_questions(self, sid, gid):
+        """TODO (NES-956)
+        :param sid:
+        :param gid:
+        """
+        result = self.server.list_questions(self.session_key, sid, gid)
+        # TODO (NES-956): deal with error
+        return result
+
+    @abstractmethod
+    def list_questions_ids(self, sid, gid):
         """
         :param sid: survey ID
         :param gid: group ID
@@ -380,7 +387,7 @@ class ABCSearchEngine(ABC):
         """
 
         question_list = []
-        questions = self.server.list_questions(self.session_key, sid, gid)
+        questions = self.list_questions(sid, gid)
         for question in questions:
             question_list.append(question['id']['qid'])
 
@@ -431,6 +438,12 @@ class ABCSearchEngine(ABC):
         result = self.server.delete_responses(self.session_key, sid, responses)
         if isinstance(result, dict):
             return result['status']
+        return result
+
+    def update_response(self, sid, response_data):
+        result = self.server.update_response(self.session_key, sid, response_data)
+        # TODO (NES-956): deal with errors here
+
         return result
 
 
@@ -498,9 +511,13 @@ class Questionnaires(ABCSearchEngine):
     def list_questions(self, sid, gid):
         return super(Questionnaires, self).list_questions(sid, gid)
 
+    def list_questions_ids(self, sid, gid):
+        return super(Questionnaires, self).list_questions_ids(sid, gid)
+
     def get_question_properties(self, question_id, language):
         return super(Questionnaires, self).get_question_properties(question_id, language)
 
+    # TODO (NES-956): see when this was created
     def set_question_properties(self, sid, data):
         return super(Questionnaires, self).set_question_properties(sid, data)
 
@@ -538,3 +555,6 @@ class Questionnaires(ABCSearchEngine):
 
     def delete_responses(self, sid, responses):
         return super(Questionnaires, self).delete_responses(sid, responses)
+
+    def update_response(self, sid, response_data):
+        return super(Questionnaires, self).update_response(sid, response_data)

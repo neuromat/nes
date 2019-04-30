@@ -5405,20 +5405,12 @@ def subject_questionnaire_response_create(
 
     check_can_change(request.user, group.experiment.research_project)
 
-    questionnaire_config = get_object_or_404(
-        ComponentConfiguration, id=questionnaire_id
-    )
+    questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
     surveys = Questionnaires()
-    lime_survey_id = Questionnaire.objects.get(
-        id=questionnaire_config.component_id
-    ).survey.lime_survey_id
+    lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
 
     survey_title = surveys.get_survey_title(
-        lime_survey_id,
-        get_questionnaire_language(
-            surveys, lime_survey_id, request.LANGUAGE_CODE
-        )
-    )
+        lime_survey_id, get_questionnaire_language(surveys, lime_survey_id, request.LANGUAGE_CODE))
     surveys.release_session_key()
 
     fail = None
@@ -5429,11 +5421,8 @@ def subject_questionnaire_response_create(
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            redirect_url, questionnaire_response_id = \
-                subject_questionnaire_response_start_fill_questionnaire(
-                    request, subject_id, group_id, questionnaire_id,
-                    list_of_path
-                )
+            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
+                    request, subject_id, group_id, questionnaire_id, list_of_path)
 
             fail = True if not redirect_url else False
 
@@ -5629,9 +5618,8 @@ def get_number_of_uses(request):
 
 
 def check_required_fields(surveys, lime_survey_id):
-    """
-    método para verificar se o questionário tem as questões de identificação corretas
-    e se seus tipos também são corretos
+    """Verify if questionnaire have the identification questions
+    and if question types are correct
     """
 
     fields_to_validate = {
@@ -5648,7 +5636,7 @@ def check_required_fields(surveys, lime_survey_id):
     if 'status' not in groups:
 
         for group in groups:
-            question_list = surveys.list_questions(lime_survey_id, group['id']['gid'])
+            question_list = surveys.list_questions_ids(lime_survey_id, group['id']['gid'])
             for question in question_list:
                 question_properties = surveys.get_question_properties(question, None)
                 if question_properties['title'] in fields_to_validate:

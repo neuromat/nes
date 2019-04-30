@@ -144,8 +144,7 @@ class UtilTests:
     @staticmethod
     def create_token_id(survey):
         questionnaire = Questionnaires()
-        result = \
-            questionnaire.add_participant(survey.lime_survey_id)
+        result = questionnaire.add_participant(survey.lime_survey_id)
         questionnaire.release_session_key()
 
         return result['tid']

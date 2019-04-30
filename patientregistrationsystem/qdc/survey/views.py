@@ -111,25 +111,17 @@ def survey_create(request, template_name="survey/survey_register.html"):
     if request.method == "POST":
         if request.POST['action'] == "save":
             if survey_form.is_valid():
-
                 survey_added = survey_form.save(commit=False)
-
                 survey, created = Survey.objects.get_or_create(
                     lime_survey_id=request.POST['questionnaire_selected'],
                     is_initial_evaluation=survey_added.is_initial_evaluation)
-
-                has_file_upload_question = is_type_of_question_in_survey(
-                    surveys=surveys,
-                    survey=survey,
-                    type="|"
-                )
-
+                has_file_upload_question = is_type_of_question_in_survey(surveys=surveys, survey=survey, type="|")
                 surveys.release_session_key()
-
                 if created:
                     if has_file_upload_question:
-                        messages.warning(request, _('NES can\'t retrieve files from \"file upload\" '
-                                                    'questions from LimeSurvey.') + ' ' +
+                        messages.warning(
+                            request, _('NES can\'t retrieve files from \"file upload\" '
+                                       'questions from LimeSurvey.') + ' ' +
                                          _('See \"Best Pratices and Recommendations\" at '
                                            'https://nes.rtfd.io for more details.'))
                     messages.success(request, _('Questionnaire created successfully.'))
@@ -266,14 +258,14 @@ def survey_update_sensitive_questions(request, survey_id, template_name="survey/
 
 def is_type_of_question_in_survey(surveys, survey, type):
     groups_list = surveys.list_groups(sid=survey.lime_survey_id)
-    if not 'status' in groups_list:
+    if 'status' not in groups_list:
         for group in groups_list:
-            group_questions = surveys.list_questions(sid=survey.lime_survey_id,
-                                                     gid=group['gid'])
+            group_questions = surveys.list_questions_ids(
+                sid=survey.lime_survey_id, gid=group['gid'])
 
             for question in group_questions:
-                group_properties = surveys.get_question_properties(question_id=question,
-                                                                   language=group['language'])
+                group_properties = surveys.get_question_properties(
+                    question_id=question, language=group['language'])
                 if 'type' in group_properties:
                     if group_properties['type'] == type:
                         return True
@@ -392,9 +384,8 @@ def create_experiments_questionnaire_data_list(survey, surveys):
                     'questionnaire_responses': []
                 }
 
-            response_result = surveys.get_participant_properties(q.survey.lime_survey_id,
-                                                                 qr.token_id,
-                                                                 "completed")
+            response_result = surveys.get_participant_properties(
+                q.survey.lime_survey_id, qr.token_id, "completed")
 
             experiments_questionnaire_data_dictionary[use.id]['patients'][patient.id]['questionnaire_responses'].append(
                 {
@@ -503,9 +494,8 @@ def create_patients_questionnaire_data_list(survey, surveys):
                 'questionnaire_responses': []
             }
 
-        response_result = surveys.get_participant_properties(response.survey.lime_survey_id,
-                                                             response.token_id,
-                                                             "completed")
+        response_result = surveys.get_participant_properties(
+            response.survey.lime_survey_id, response.token_id, "completed")
 
         patients_questionnaire_data_dictionary[response.patient.id]['questionnaire_responses'].append({
             'questionnaire_response': response,
@@ -620,7 +610,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
     if not isinstance(groups, dict):
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
-                question_list = surveys.list_questions(
+                question_list = surveys.list_questions_ids(
                     lime_survey_id, group['id']['gid']
                 )
                 question_list = sorted(question_list)
