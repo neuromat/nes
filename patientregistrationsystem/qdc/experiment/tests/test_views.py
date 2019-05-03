@@ -4,8 +4,9 @@ import shutil
 import sys
 import tempfile
 import zipfile
-from unittest import skip
 import os
+from unittest import skip
+from unittest.mock import patch, call
 
 from django.apps import apps
 from django.contrib.auth.models import Group, User
@@ -16,6 +17,7 @@ from django.core.files import File
 from django.test import TestCase, override_settings
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
+from django.conf import settings
 from faker import Factory
 
 from custom_user.tests_helper import create_user
@@ -35,9 +37,9 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, \
-    HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
-    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, EMGData, DigitalGamePhase, \
-    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus
+    HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, EEGFile, EEGCapSize, \
+    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, \
+    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus, QuestionnaireResponse
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -45,7 +47,7 @@ from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
     AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases, FleshTone, Payment, \
-    Religion, Schooling, ComplementaryExam, ExamFile
+    Religion, Schooling, ExamFile
 
 from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
@@ -376,7 +378,6 @@ class CollaboratorTest(TestCase):
 
 
 class ExportExperimentTest(TestCase):
-
     TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def setUp(self):
@@ -390,20 +391,13 @@ class ExportExperimentTest(TestCase):
 
         self.client.login(username=self.user.username, password=passwd)
 
-        self.temp_dir = tempfile.mkdtemp()
-
     def tearDown(self):
         self.client.logout()
 
     def _create_minimum_objects_to_test_patient(self, patient):
         # TODO: equal to the one in ImportExperimentTest
-        research_project = ObjectsFactory.create_research_project(self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        group = ObjectsFactory.create_group(experiment)
         subject = ObjectsFactory.create_subject(patient)
-        ObjectsFactory.create_subject_of_group(group, subject)
-
-        return experiment
+        return ObjectsFactory.create_subject_of_group(self.group, subject)
 
     def test_GET_experiment_export_returns_zip_file(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
@@ -422,16 +416,19 @@ class ExportExperimentTest(TestCase):
 
     # TODO: NES-946: see if it's deprecated or have to check for all user objects, not only one
     def test_GET_experiment_export_returns_json_file_without_user_object(self):
+        temp_dir = tempfile.mkdtemp()
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
             data = json.loads(file.read().replace('\n', ''))
             self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
 
     def test_remove_all_auth_user_items_before_export(self):
+        temp_dir = tempfile.mkdtemp()
+
         patient = UtilTests.create_patient(changed_by=self.user)
         user2, passwd2 = create_user(Group.objects.all())
         UtilTests.create_telephone(patient, changed_by=user2)
@@ -450,8 +447,8 @@ class ExportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         zipped_file = zipfile.ZipFile(file_path, 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -459,22 +456,24 @@ class ExportExperimentTest(TestCase):
             next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'), None)
         )
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
 
     def test_diagnosis_classification_of_diseases_references_points_to_natural_key_code(self):
+        temp_dir = tempfile.mkdtemp()
+
         patient = UtilTests.create_patient(changed_by=self.user)
         medical_record = UtilTests.create_medical_record(self.user, patient)
         diagnosis = UtilTests.create_diagnosis(medical_record)
 
-        experiment = self._create_minimum_objects_to_test_patient(patient)
+        self._create_minimum_objects_to_test_patient(patient)
 
-        export = ExportExperiment(experiment)
+        export = ExportExperiment(self.experiment)
         export.export_all()
         file_path = export.get_file_path()
 
         zipped_file = zipfile.ZipFile(file_path, 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -483,9 +482,12 @@ class ExportExperimentTest(TestCase):
         )
 
         deserialized = json.loads(data)
-        index = next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'patient.diagnosis'), None)
+        index = next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'patient.diagnosis'),
+                     None)
         code = deserialized[index]['fields']['classification_of_diseases'][0]
         self.assertEqual(diagnosis.classification_of_diseases.code, code)
+
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_experiment_has_file_creates_corresponding_dir_file_in_experiment_zip_file(self):
@@ -499,7 +501,6 @@ class ExportExperimentTest(TestCase):
             file_path in [subdir for subdir in zipped_file.namelist()],
             '%s not in %s' % (file_path, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_experiment_has_not_file_does_not_creates_corresponding_dir_file_in_experiment_zip_file(self):
@@ -509,8 +510,6 @@ class ExportExperimentTest(TestCase):
                 ExportExperiment.FILE_NAME_JSON in [file for file in zipped_file.namelist()],
                 '%s not in %s' % (ExportExperiment.FILE_NAME_JSON, zipped_file.namelist()))
             self.assertEqual(1, len(zipped_file.namelist()))
-
-        shutil.rmtree(self.temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_eeg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
@@ -546,7 +545,6 @@ class ExportExperimentTest(TestCase):
                 eeg_els.map_image_file.name in [subdir for subdir in zipped_file.namelist()],
                 '%s not in %s' % (eeg_els.map_image_file.name, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_eeg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
@@ -584,13 +582,13 @@ class ExportExperimentTest(TestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_emg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
         patient = UtilTests.create_patient(changed_by=self.user)
-        experiment = self._create_minimum_objects_to_test_patient(patient)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         subject_of_group = SubjectOfGroup.objects.last()
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, software_version)
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
@@ -598,13 +596,13 @@ class ExportExperimentTest(TestCase):
         emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
         emg_ep = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
-        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        emg_step = ObjectsFactory.create_component(self.experiment, 'emg', kwargs={'emg_set': emg_setting})
         component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
         emg_file = ObjectsFactory.create_emg_data_collection_file(emg_data)
 
-        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': experiment.id}))
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertTrue(
                 emg_file.file.name in [subdir for subdir in zipped_file.namelist()],
@@ -613,19 +611,17 @@ class ExportExperimentTest(TestCase):
                 emg_ep.photo.name in [subdir for subdir in zipped_file.namelist()],
                 '%s not in %s' % (emg_ep.photo.name, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_emg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
         patient = UtilTests.create_patient(changed_by=self.user)
-        experiment = self._create_minimum_objects_to_test_patient(patient)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        subject_of_group = SubjectOfGroup.objects.last()
+        subject_of_group = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, software_version)
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
@@ -635,7 +631,7 @@ class ExportExperimentTest(TestCase):
         emg_ep.photo = ''
         emg_ep.save()
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
-        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        emg_step = ObjectsFactory.create_component(self.experiment, 'emg', kwargs={'emg_set': emg_setting})
         component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
@@ -643,13 +639,156 @@ class ExportExperimentTest(TestCase):
         emg_file.file = ''
         emg_file.save()
 
-        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': experiment.id}))
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertEqual(1, len(zipped_file.namelist()))
 
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_experiment_has_questionnaire_step_copy_limesurvey_archive_files_from_limesurvey_server_to_localhost(self,
+                                                                                                                 mockServer):
+        # TODO (NES-966): solve temp dir created misteriously
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+
+        # First survey
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey1})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        # Second survey
+        survey2 = create_survey(505050)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey2})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
+
+        remote_temp_dir = tempfile.mkdtemp()
+        remote_file1 = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive1.lsa')
+        remote_file2 = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive2.lsa')
+        mockServer.return_value.export_survey.side_effect = [remote_file1.name, remote_file2.name]
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+
+        self.assertTrue(mockServer.return_value.export_survey.called)
+        self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey1.lime_survey_id))
+        self.assertIn('%s.lsa' % survey1.lime_survey_id, os.listdir(export.temp_dir))
+        self.assertIn('%s.lsa' % survey2.lime_survey_id, os.listdir(export.temp_dir))
+
+        shutil.rmtree(remote_temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_experiment_has_questionnaire_step_add_survey_archive_in_experiment_zip_file(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+
+        # First survey
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey1})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        # Second survey
+        survey2 = create_survey(505050)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey2})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
+
+        remote_temp_dir = tempfile.mkdtemp()
+        file1 = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive1.lsa')
+        file2 = ObjectsFactory.create_binary_file(remote_temp_dir, 'limesurvey_archive2.lsa')
+        mockServer.return_value.export_survey.side_effect = [file1.name, file2.name]
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+
+        self.assertTrue(mockServer.return_value.export_survey.called)
+        self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey1.lime_survey_id))
+        with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
+            self.assertEqual(3, len(zipped_file.namelist()))
+            self.assertIn('%s.lsa' % survey1.lime_survey_id, zipped_file.namelist())
+            self.assertIn('%s.lsa' % survey2.lime_survey_id, zipped_file.namelist())
+
+        shutil.rmtree(remote_temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_export_survey_archive_removes_limesurvey_zip_file_created_in_remote_dir(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
+        self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+
+        self.assertRaises(FileNotFoundError, open, os.path.join(temp_dir, 'limesurvey_archive.lsa'))
+
+        shutil.rmtree(temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_call_export_survey_rpc_method_uses_correct_url(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        mockServer.return_value.export_survey.return_value = 'survey_arquive_path'
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
+        self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+
+        def check_right_url():
+            self.assertEqual(mockServer.call_args, call(settings.LIMESURVEY['URL_API'] +
+                                                        '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action'))
+
+        mockServer.return_value.export_survey.side_effect = check_right_url()
+        mockServer.return_value.export_survey.assert_called_once_with(
+            mockServer.return_value.get_session_key.return_value, survey.lime_survey_id)
+
+        shutil.rmtree(temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_export_all_generates_partial_fixture_with_questionnaire_response_data(self, mockServer):
+        patient = UtilTests.create_patient(self.user)
+        subject_of_group = self._create_minimum_objects_to_test_patient(patient)
+        survey = create_survey()
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(
+            dct, self.user, token_id=212121, subject_of_group=subject_of_group)
+
+        # Return error for it's not necessary survey mock
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+
+        self.assertIn('questionnaireresponse.json', os.listdir(export.temp_dir))
+
 
 class ImportExperimentTest(TestCase):
-
     TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def setUp(self):
@@ -907,9 +1046,10 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
-    def _create_minimum_objects_to_test_questionnaire(self, survey_id=212121):
+    # TODO (NES-956): remove survey_id
+    def _create_minimum_objects_to_test_questionnaire(self, survey_id=None):
         ObjectsFactory.create_group(self.experiment, self.rootcomponent)
-        survey = create_survey(survey_id)
+        survey = create_survey(survey_id) if survey_id else create_survey()
         questionnaire = ObjectsFactory.create_component(self.experiment, Component.QUESTIONNAIRE,
                                                         kwargs={'survey': survey})
         ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
@@ -1468,6 +1608,7 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
     # Fim dos testes a serem revisados
 
     # Log tests
@@ -1637,7 +1778,8 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertContains(response, '2 Grupos importados')
 
-    def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self, mockServer):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         ObjectsFactory.create_research_project(owner=self.user)
@@ -1652,6 +1794,8 @@ class ImportExperimentTest(TestCase):
         # Create one more component to test pluralization
         component = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
         ObjectsFactory.create_component_configuration(rootcomponent2, component)
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -1710,7 +1854,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(
-                reverse('experiment_import', kwargs={'research_project_id':research_project.id}),
+                reverse('experiment_import', kwargs={'research_project_id': research_project.id}),
                 {'file': file}, follow=True
             )
         self.assertRedirects(response, reverse('import_log'))
@@ -1922,9 +2066,12 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     # Questionnaire tests
-    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -1942,9 +2089,12 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_creates_random_code_in_surveys(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_random_code_in_surveys(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -1956,10 +2106,13 @@ class ImportExperimentTest(TestCase):
         new_survey = Survey.objects.last()
         self.assertTrue(1 <= int(new_survey.code.split('Q')[1]) <= 100000)
 
-    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
         self._create_minimum_objects_to_test_questionnaire(survey_id=121212)
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -1968,10 +2121,60 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
-        new_survey1 = Survey.objects.all().order_by('-id')[1]
-        new_survey2 = Survey.objects.all().order_by('-id')[0]
-        self.assertEqual(-100, new_survey1.lime_survey_id)
-        self.assertEqual(-101, new_survey2.lime_survey_id)
+        new_survey1 = Survey.objects.order_by('-id')[1]
+        new_survey2 = Survey.objects.order_by('-id')[0]
+        self.assertEqual(-99, new_survey1.lime_survey_id)
+        self.assertEqual(-100, new_survey2.lime_survey_id)
+
+    @staticmethod
+    def _get_relations_questionnaire_response():
+        return {
+            ComponentConfiguration: [(DataConfigurationTree, 'component_configuration')],
+            DataConfigurationTree: [(QuestionnaireResponse, 'data_configuration_tree')],
+            SubjectOfGroup: [(QuestionnaireResponse, 'subject_of_group')],
+        }
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_questionnaire_response(self, mockServer):
+        self._create_minimum_objects_to_test_components()
+        group = ObjectsFactory.create_group(self.experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        survey = create_survey()
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(dct, self.user, 212121, subject_of_group)
+
+        relations = self._get_relations_questionnaire_response()
+
+        # Return error for it's not necessary survey mock
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in relations:
+            self.assertEqual(2, model.objects.count(), model)
+            model_instance = model.objects.last()
+            for dependent_model in relations[model]:
+                self.assertEqual(2, dependent_model[0].objects.count(), (model, dependent_model))
+                dependent_model_instance = dependent_model[0].objects.last()
+                reference = getattr(dependent_model_instance, dependent_model[1])
+                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
     # Components tests
     def test_component_and_block(self):
@@ -2126,14 +2329,16 @@ class ImportExperimentTest(TestCase):
                                                            self.experiment,
                                                            {'component_type': 'digital_game_phase'})
 
-    def test_component_and_questionnaire(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_component_and_questionnaire(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
-        self._test_creation_and_linking_between_two_models('experiment.component',
-                                                           'experiment.questionnaire',
-                                                           'component_ptr_id',
-                                                           self.experiment,
-                                                           {'component_type': 'questionnaire'})
+
+        mockServer.return_value.export_survey.return_value = [{'status': 'Error: Invalid survey ID'}]
+
+        self._test_creation_and_linking_between_two_models(
+            'experiment.component', 'experiment.questionnaire', 'component_ptr_id',
+            self.experiment, {'component_type': 'questionnaire'})
 
     # Participants tests
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
@@ -2460,7 +2665,8 @@ class ImportExperimentTest(TestCase):
             session['patients_conflicts_resolved'] = True
             session['file_name'] = file.name
             session.save()
-            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': [patient.id]}, follow=True)
+            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': [patient.id]},
+                                        follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
         new_participant = Patient.objects.exclude(id=patient.id)
@@ -3252,6 +3458,7 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(new_cid10.abbreviated_description, '(imported, not recognized)')
 
     def test_error_loading_fixture_display_error_message(self):
+        # TODO: implement it!
         pass
 
     # Tests for TMS data collection
@@ -3780,7 +3987,7 @@ class ImportExperimentTest(TestCase):
         ObjectsFactory.create_eeg_electrode_position_collection_status(eeg_data, eeg_electrode_position_setting)
 
     @staticmethod
-    def _get_relations():
+    def _get_relations_eegdata():
         return {
             ComponentConfiguration: [(DataConfigurationTree, 'component_configuration')],
             # DataConfigurationTree: [(DataConfigurationTree, 'parent')],
@@ -3802,7 +4009,7 @@ class ImportExperimentTest(TestCase):
         self.subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
         self._create_eeg_data_collection_related_objects()
 
-        relations = self._get_relations()
+        relations = self._get_relations_eegdata()
         pre_loaded_models = [key[0] for key in self._get_pre_loaded_models_eeg_not_editable().keys()]
 
         export = ExportExperiment(self.experiment)
@@ -4002,7 +4209,7 @@ class ImportExperimentTest(TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             for component in dict_:
-                with open(os.path.join(tmpdirname, component[0]+'adf.bin'), 'wb') as f:
+                with open(os.path.join(tmpdirname, component[0] + 'adf.bin'), 'wb') as f:
                     f.write(b'carambola')
 
                 with File(open(f.name, 'rb')) as file:
@@ -4103,7 +4310,7 @@ class ImportExperimentTest(TestCase):
         group = ObjectsFactory.create_group(experiment)
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
-        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        ObjectsFactory.create_subject_of_group(group, subject)
 
         ObjectsFactory.create_exam_file(patient, self.user)
 
@@ -4136,3 +4343,382 @@ class ImportExperimentTest(TestCase):
         exam_file_imported = ExamFile.objects.last()
         filepath = os.path.join(self.TEMP_MEDIA_ROOT, exam_file_imported.content.name)
         self.assertTrue(os.path.exists(filepath))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_experiment_with_questionnaire_import_limesurvey_survey_reference(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey1}
+        )
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        survey2 = create_survey(111111)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey2}
+        )
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file1 = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive1.lsa')
+        remote_file2 = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive2.lsa')
+        mockServer.return_value.export_survey.side_effect = [remote_file1.name, remote_file2.name]
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        mockServer.return_value.import_survey.side_effect = [505050, 100000]
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        self.assertTrue(mockServer.return_value.import_survey.called)
+        # Pass representing base64 encoded string of lsa archive
+        self.assertTrue(
+            mockServer.return_value.import_survey.mock_calls, [call('ldg69aesf0adfakhf'), call('adadfl0e9843ljfdasf')])
+        self.assertEqual(1, Survey.objects.filter(lime_survey_id=505050).count())
+        self.assertEqual(1, Survey.objects.filter(lime_survey_id=100000).count())
+
+        shutil.rmtree(temp_dir)
+
+    def test_import_has_not_limesurvey_survey_archive_import_experiment_and_display_message_that_could_not_import_limesurvey_survey(
+            self):
+        # TODO (NES-956): implement it!
+        pass
+
+    def _set_constants(self):
+        self.SESSION_KEY = 'idheugd835[djgh'
+        self.TOKEN_KEEPED = 'BNxaKxMt9SO87OA'
+        self.TOKEN_ID_KEEPED = 1
+        self.TOKEN_NOT_KEEPED = '5NxeKxMtaSOp7OA'
+        self.TOKEN_ID_NOT_KEEPED = 2
+        self.SURVEY_ID = 505050
+        self.QUESTION_SUBJECT_ID = 7
+        self.GROUP_ID = 1410
+        self.LIMESURVEY_RESPONSES_IDS_DELETED = [1, 2]
+
+    def _set_mock_values(self, mockServer):
+        mockServer.return_value.get_session_key.return_value = self.SESSION_KEY
+        mockServer.return_value.import_survey.return_value = self.SURVEY_ID
+        mockServer.return_value.list_participants.return_value = \
+            [
+                {
+                    'token': self.TOKEN_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.TOKEN_ID_KEEPED,
+                },
+                {
+                    'token': self.TOKEN_NOT_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.TOKEN_ID_NOT_KEEPED
+                }
+            ]
+        mockServer.return_value.get_participant_properties.return_value = {'token': self.TOKEN_KEEPED}
+        mockServer.return_value.list_groups.return_value = [
+            {
+                'group_order': 1, 'gid': self.GROUP_ID, 'grelevance': '',
+                'id': {'gid': self.GROUP_ID, 'language': 'en'},
+                'language': 'en', 'sid': self.SURVEY_ID, 'randomization_group': '',
+                'group_name': 'Identification', 'description': ''
+            },
+            {
+                'group_order': 2, 'gid': 1411, 'grelevance': '',
+                'id': {'gid': 1411, 'language': 'en'},
+                'language': 'en', 'sid': self.SURVEY_ID, 'randomization_group': '',
+                'group_name': 'First group', 'description': ''}]
+        mockServer.return_value.list_questions.return_value = [
+            {
+                'qid': 3847, 'question_order': 0,
+                'id': {'qid': 3847, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Responsible Identification number:',
+                'type': 'N', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'responsibleid',
+                'mandatory': 'Y',
+                'preg': ''
+            },
+            {
+                'qid': 3848, 'question_order': 1,
+                'id': {'qid': 3848, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Acquisition date<strong>:</strong><br />\n',
+                'type': 'D', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'acquisitiondate',
+                'mandatory': 'Y',
+                'preg': ''
+            },
+            {
+                'qid': self.QUESTION_SUBJECT_ID, 'question_order': 2,
+                'id': {'qid': self.QUESTION_SUBJECT_ID, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Participant Identification number<b>:</b>',
+                'type': 'N', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'subjectid', 'mandatory': 'Y',
+                'preg': ''
+            }
+        ]
+
+        mockServer.return_value.update_response.return_value = True
+
+        mockServer.return_value.delete_participants.return_value = {'status': 'Deleted'}
+        # Get responses from questionnaire for tokens that will be deleted
+        # The string corresponds to:
+        # b'"id","submitdate","lastpage","startlanguage","token","responsibleid","acquisitiondate","subjectid","firstQuestion","secondQuestion"\n
+        # "1","1980-01-01 00:00:00","2","en","5NxeKxMtaSOp7OA", "2","2018-03-08 00:00:00","5","c","d"\n
+        # "2","1980-01-01 00:00:00","2","en","5NxeKxMtaSOp7OA","7","2018-03-08 00:00:00", "5", "c","d"\n\n'
+        mockServer.return_value.export_responses_by_token.return_value = \
+            b'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRv' \
+            b'a2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZGF0ZSIsInN1YmplY3Rp' \
+            b'ZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIKIjEiLCIxOTgwLTAx' \
+            b'LTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiNU54ZUt4TXRhU09wN09BIiwiMiIsIjIw' \
+            b'MTgtMDMtMDggMDA6MDA6MDAiLCI1IiwiYyIsImQiCiIyIiwiMTk4MC0wMS0wMSAw' \
+            b'MDowMDowMCIsIjIiLCJlbiIsIjVOeGVLeE10YVNPcDdPQSIsIjciLCIyMDE4LTAz' \
+            b'LTA4IDAwOjAwOjAwIiwiNSIsImMiLCJkIgoK'.decode()
+
+        # Mock deleted responses ids return value. There are two ids, 1 and 2.
+        # Only two was deleted
+        mockServer.return_value.delete_responses.return_value = {'status': 'OK'}
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_keeps_only_responses_from_experiment_participants1(self, mockServer):
+        self._set_constants()
+
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        subject_of_group = SubjectOfGroup.objects.last()
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(dct, self.user, self.TOKEN_ID_KEEPED, subject_of_group)
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive1.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # First list item corresponds to the token id 1, second item, to the token id 2
+        self.assertTrue(mockServer.return_value.list_participants.called)
+        self.assertEqual(
+            mockServer.return_value.list_participants.call_args,
+            call(self.SESSION_KEY, self.SURVEY_ID, 0, 99999999))
+
+        # Delete token of other experiments
+        self.assertTrue(mockServer.return_value.delete_participants.called)
+        self.assertEqual(mockServer.return_value.delete_participants.call_args, call(
+            self.SESSION_KEY, self.SURVEY_ID, [self.TOKEN_ID_NOT_KEEPED]))
+        # Ensures that delete_participants was called only once
+        self.assertEqual(mockServer.return_value.delete_participants.call_count, 1)
+
+        # Mock Remote Control export_responses method with B64 encoded string.
+        # This corresponds to two responses, the responses of the token that was deleted.
+        self.assertTrue(mockServer.return_value.export_responses_by_token.called)
+        self.assertEqual(
+            mockServer.return_value.export_responses_by_token.call_args, call(
+                self.SESSION_KEY, self.SURVEY_ID, 'csv', self.TOKEN_NOT_KEEPED, None, 'complete'))
+
+        self.assertTrue(mockServer.return_value.delete_responses.called)
+        self.assertEqual(mockServer.return_value.delete_responses.call_args, call(
+            self.SESSION_KEY, self.SURVEY_ID, self.LIMESURVEY_RESPONSES_IDS_DELETED))
+
+        shutil.rmtree(temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_keeps_only_responses_from_experiment_participants2(self, mockServer):
+        """Test keeping participants with same questionnaire used in 2 groups"""
+
+        self._set_constants()
+        self.OTHER_TOKEN_ID_KEEPED = 3
+        self.OTHER_TOKEN_KEEPED = '9d6dggfllsiryt0y7df'
+
+        # First objects
+        patient1 = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient1)
+        subject_of_group1 = SubjectOfGroup.objects.last()
+        rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey1}
+        )
+        component_config1 = ObjectsFactory.create_component_configuration(rootcomponent1, questionnaire_step1)
+        dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
+        ObjectsFactory.create_questionnaire_response(dct1, self.user, self.TOKEN_ID_KEEPED, subject_of_group1)
+
+        # Second objects
+        patient2 = UtilTests.create_patient(changed_by=self.user)
+        group2 = ObjectsFactory.create_group(experiment)
+        subject2 = ObjectsFactory.create_subject(patient2)
+        subject_of_group2 = ObjectsFactory.create_subject_of_group(group2, subject2)
+        rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        questionnaire_step2 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey1}
+        )
+        component_config2 = ObjectsFactory.create_component_configuration(rootcomponent2, questionnaire_step2)
+        dct2 = ObjectsFactory.create_data_configuration_tree(component_config2)
+        ObjectsFactory.create_questionnaire_response(dct2, self.user, self.OTHER_TOKEN_ID_KEEPED, subject_of_group2)
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive1.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # Changing some mock's
+        mockServer.return_value.list_participants.return_value = \
+            [
+                {
+                    'token': self.TOKEN_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.TOKEN_ID_KEEPED,
+                },
+                {
+                    'token': self.OTHER_TOKEN_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.OTHER_TOKEN_ID_KEEPED,
+                },
+                {
+                    'token': self.TOKEN_NOT_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.TOKEN_ID_NOT_KEEPED
+                }
+            ]
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # First list item corresponds to the token id 1, second item, to the token id 2
+        self.assertTrue(mockServer.return_value.list_participants.called)
+        self.assertEqual(
+            mockServer.return_value.list_participants.call_args,
+            call(self.SESSION_KEY, self.SURVEY_ID, 0, 99999999))
+        # Delete token of other experiments
+        self.assertTrue(mockServer.return_value.delete_participants.called)
+        # Ensures that delete_participants was called only once ...
+        self.assertEqual(mockServer.return_value.delete_participants.call_count, 1)
+        # ... with this arguments
+        self.assertEqual(mockServer.return_value.delete_participants.call_args, call(
+            self.SESSION_KEY, self.SURVEY_ID, [self.TOKEN_ID_NOT_KEEPED]))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_update_responses_call_right_url(self, mockServer):
+        self._set_constants()
+
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        subject_of_group = SubjectOfGroup.objects.last()
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(dct, self.user, self.TOKEN_ID_KEEPED, subject_of_group)
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive1.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        def check_right_url():
+            self.assertEqual(mockServer.call_args, call(settings.LIMESURVEY['URL_API'] +
+                                                        '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action'))
+
+        mockServer.return_value.update_response.side_effect = check_right_url()
+
+        shutil.rmtree(temp_dir)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_updates_responses_subjectid(self, mockServer):
+        self._set_constants()
+
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        subject_of_group = SubjectOfGroup.objects.last()
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(dct, self.user, self.TOKEN_ID_KEEPED, subject_of_group)
+
+        temp_dir = tempfile.mkdtemp()
+        remote_file = ObjectsFactory.create_binary_file(temp_dir, 'limesurvey_archive1.lsa')
+        mockServer.return_value.export_survey.return_value = remote_file.name
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        new_subject = Subject.objects.last()
+
+        self.assertTrue(mockServer.return_value.update_response.called)
+        self.assertEqual(mockServer.return_value.update_response.call_args, call(
+            self.SESSION_KEY, self.SURVEY_ID,
+            {
+                'token': self.TOKEN_KEEPED,
+                str(self.SURVEY_ID) + 'X' + str(self.GROUP_ID) + 'X' + str(self.QUESTION_SUBJECT_ID): new_subject.id
+            }
+        ))
+
+        shutil.rmtree(temp_dir)
