@@ -1,4 +1,3 @@
-import base64
 import os
 import shutil
 import sys
@@ -17,8 +16,7 @@ from django.core.files import File
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count, Q
-from paramiko import SSHClient, AutoAddPolicy
-from scp import SCPClient
+from base64 import b64encode, b64decode
 
 from experiment.models import Group, ResearchProject, Experiment, \
     Keyword, Component, Questionnaire, QuestionnaireResponse
@@ -157,44 +155,8 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, filename), 'w') as f:
             f.write(json.dumps(serialized))
 
-    def _copy_from_limesurvey_server(self, remote_archive_paths):
-        ssh = SSHClient()
-        ssh.set_missing_host_key_policy(AutoAddPolicy)  # TODO (NES-956): add only for Limesurvey host?
-        # TODO (NES-956): put exception trying to connect
-        ssh.connect(
-            settings.LIMESURVEY_SERVER['host'], settings.LIMESURVEY_SERVER['port'],
-            settings.LIMESURVEY_SERVER['user'], settings.LIMESURVEY_SERVER['password'],
-            sock=None)
-        scp = SCPClient(ssh.get_transport())
-        local_survey_paths = []
-        for remote_archive_path in remote_archive_paths:
-            dest_file = os.path.join(self.temp_dir, '%s.lsa' % remote_archive_path[1])
-            # TODO (NES-956): put exception trying to download file
-            scp.get(remote_archive_path[0], dest_file)
-            local_survey_paths.append(dest_file)
-
-        ssh.close()
-
-        return local_survey_paths
-
-    @staticmethod
-    def _remove_remote_survey_archives(remote_survey_archive_paths):
-        ssh = SSHClient()
-        ssh.set_missing_host_key_policy(AutoAddPolicy)  # TODO (NES-956): add only for Limesurvey host?
-        # TODO (NES-956): put exception trying to connect
-        ssh.connect(
-            settings.LIMESURVEY_SERVER['host'], settings.LIMESURVEY_SERVER['port'],
-            settings.LIMESURVEY_SERVER['user'], settings.LIMESURVEY_SERVER['password'],
-            sock=None)
-        sftp = ssh.open_sftp()
-        for remote_survey_archive_path in remote_survey_archive_paths:
-            # TODO (NES-956): put exception trying to remove
-            sftp.remove(remote_survey_archive_path[0])
-
     def _export_surveys(self):
         """Export experiment surveys archives using LimeSurvey RPC API.
-        The archive files are saved in LimeSurvey default temp directory.
-        After saved archives are copyed to local NES file system.
         :return: list of survey archive paths
         """
         questionnaire_ids = Questionnaire.objects.filter(
@@ -202,20 +164,21 @@ class ExportExperiment:
         surveys = Survey.objects.filter(id__in=questionnaire_ids)
         ls_interface = Questionnaires(settings.LIMESURVEY['URL_API'] +
                                       '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
-        remote_archive_paths = []
+        archive_paths = []
         for survey in surveys:
-            archive_path = ls_interface.export_survey(survey.lime_survey_id)
-            if archive_path is not None:
-                remote_archive_paths.append((archive_path, str(survey.lime_survey_id),))
+            result = ls_interface.export_survey(survey.lime_survey_id)
+            if result is None:
+                # TODO (NES-956): deal with this
+                continue
+            decoded_archive = b64decode(result)
+            lsa_archive_path = os.path.join(self.temp_dir, str(survey.lime_survey_id) + '.lsa')
+            lsa_archive = open(lsa_archive_path, 'wb')
+            lsa_archive.write(decoded_archive)
+            archive_paths.append(lsa_archive_path)
 
         ls_interface.release_session_key()
 
-        if remote_archive_paths:
-            survey_archive_paths = self._copy_from_limesurvey_server(remote_archive_paths)
-            self._remove_remote_survey_archives(remote_archive_paths)
-            return survey_archive_paths
-        else:
-            return []  # TODO (NES_956): return empty list?
+        return archive_paths if archive_paths else []  # TODO (NES_956): return empty list?
 
     def _create_zip_file(self, survey_archives):
         """Create zip file with experiment.json file and subdirs corresponding
@@ -714,6 +677,30 @@ class ImportExperiment:
 
         ls_interface.release_session_key()
 
+    def _update_limesurvey_subject_ids(self):
+        """Must be called after updating Limesurvey surveys references
+        """
+        indexes = self._get_indexes('experiment', 'questionnaire')
+        ls_interface = Questionnaires(
+            settings.LIMESURVEY['URL_API'] + '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+        for index in indexes:
+            questionnaire = Questionnaire.objects.get(id=self.data[index]['pk'])
+            questionnaire_responses = QuestionnaireResponse.objects.filter(
+                data_configuration_tree__component_configuration__component=questionnaire.id)
+            limesurvey_id = questionnaire.survey.lime_survey_id
+            for response in questionnaire_responses:
+                subject = response.subject_of_group.subject
+                token_id = response.token_id
+                token = ls_interface.get_participant_properties(limesurvey_id, token_id, 'token')
+                # TODO (NES-956): get the language. By now put 'en' to test
+                ls_subject_id_column_name = QuestionnaireUtils.get_response_column_name(
+                    ls_interface, limesurvey_id, 'subjectid', 'en')
+                # TODO (NES-956): deal with errors here
+                result = ls_interface.update_response(
+                    limesurvey_id, {'token': token, ls_subject_id_column_name: subject.id})
+
+        ls_interface.release_session_key()
+
     def _import_limesurvey_surveys(self):
         """Import surveys to Limesurvey server
         :return: list of limsurvey surveys imported
@@ -728,7 +715,7 @@ class ImportExperiment:
                 if survey_archivename in zip_file.namelist():
                     survey_archive = zip_file.extract(survey_archivename, self.temp_dir)
                     with open(survey_archive, 'rb') as file:
-                        encoded_string = base64.b64encode(file.read())
+                        encoded_string = b64encode(file.read())
                         encoded_string = encoded_string.decode('utf-8')
                     try:
                         new_ls_id = ls_interface.import_survey(encoded_string)
@@ -780,27 +767,3 @@ class ImportExperiment:
 
     def get_new_objects(self):
         return self.new_objects
-
-    def _update_limesurvey_subject_ids(self):
-        """Must be called after updating Limesurvey surveys references
-        """
-        indexes = self._get_indexes('experiment', 'questionnaire')
-        ls_interface = Questionnaires(
-            settings.LIMESURVEY['URL_API'] + '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
-        for index in indexes:
-            questionnaire = Questionnaire.objects.get(id=self.data[index]['pk'])
-            questionnaire_responses = QuestionnaireResponse.objects.filter(
-                data_configuration_tree__component_configuration__component=questionnaire.id)
-            limesurvey_id = questionnaire.survey.lime_survey_id
-            for response in questionnaire_responses:
-                subject = response.subject_of_group.subject
-                token_id = response.token_id
-                token = ls_interface.get_participant_properties(limesurvey_id, token_id, 'token')
-                # TODO (NES-956): get the language. By now put 'en' to test
-                ls_subject_id_column_name = QuestionnaireUtils.get_response_column_name(
-                    ls_interface, limesurvey_id, 'subjectid', 'en')
-                # TODO (NES-956): deal with errors here
-                result = ls_interface.update_response(
-                    limesurvey_id, {'token': token, ls_subject_id_column_name: subject.id})
-
-        ls_interface.release_session_key()
