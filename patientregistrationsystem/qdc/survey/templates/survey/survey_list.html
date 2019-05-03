@@ -55,7 +55,7 @@
                             <tr>
                                 <td><a data-toggle="tooltip" data-placement="left" title="{% trans "View" %}" href="/survey/{{ questionnaire.id }}">{{ questionnaire.lime_survey_id }} - {{ questionnaire.title }}</a></td>
                                 <td style="text-align: center">{% if questionnaire.is_initial_evaluation %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
-                                <td style="text-align: center">{% if questionnaire.is_active == 'Y' %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% else %}<span class="glyphicon glyphicon-remove" style="color: red"></span> {% endif %}</td>
+                                <td style="text-align: center">{% if questionnaire.is_active == True %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% else %}<span class="glyphicon glyphicon-remove" style="color: red"></span> {% endif %}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -69,6 +69,14 @@
                     <div class="btn-group pull-left">
                         <a href="/survey/new/" class="btn btn-primary" {% if not limesurvey_available  %} disabled {% endif %}>{% trans "Insert new questionnaire" %}</a>
                     </div>
+                {% endif %}
+                {% if perms.survey.change_survey %}
+                    <form id="survey_form" method="post">
+                        {% csrf_token %}
+                        <div class="btn-group pull-right">
+                            <button type="submit" class="btn btn-default" name="action" value="update" {% if not limesurvey_available  %} disabled {% endif %} title={% trans "Update informations about the questionnaires" %}><i class="fa fa-refresh"></i> {% trans "Update" %}</button>
+                        </div>
+                    </form>
                 {% endif %}
             </div>
         </div>

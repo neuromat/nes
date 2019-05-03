@@ -10,7 +10,7 @@ Questionnaires are a very flexible way to collect data from a participant. In NE
 Questionnaires List
 -------------------
 
-In order to access all questionnaires registered at NES, click `Questionnaires` menu item and the `Questionnaire List` will show up. 
+In order to access all questionnaires registered at NES, click `Questionnaires` menu item and the `Questionnaire List` will show up displaying the informations about each questionnaire, namely `limesurvey ID`, `title`, if its `fill is required` and if the `questionnaire is or isn’t active` at LimeSurvey. Now, as this is an expensive call to LimeSurvey API, the informations are saved in the database at the moment of its registration at NES. If you want to update the informations of that list, you will need to click in the `Update` button at the bottom of the page. This might take a while depending of how many questionnaires you have registered.
 
 .. image:: ../../_img/questionnaire_list.png
 
