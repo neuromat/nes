@@ -23,6 +23,7 @@ GitPython==2.1.8
 reportlab==3.4.0
 xhtml2pdf==0.2.2
 networkx==2.2
+scp==0.13.2
 
 -e "git+https://github.com/davedash/django-fixture-magic.git#egg=django-fixture-magic"
 
