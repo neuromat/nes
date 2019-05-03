@@ -22,6 +22,8 @@ from django.test import TestCase, Client
 from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
+from django.test import override_settings
+from django.core.cache import cache
 
 from faker import Factory
 
@@ -1474,7 +1476,65 @@ class QuestionnaireFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
 
-    def _test_experiment_response_view(self):
+    @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+                                           'LOCATION': 'limesurveycache',
+                                           'TIMEOUT': 0}})
+    def test_entrance_ev_response_complete_without_cache(self):
+        """
+        Test view of questionnaire response when questionnaire is complete
+        of the type: entrance evaluation questionnaire and no information
+        is saved in the cache
+        """
+        namemethod = self._testMethodName
+        usermethod = self.user
+        patient_mock = self.util.create_patient(namemethod, usermethod)
+        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 2)
+
+        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey_mock.pk], current_app='patient')
+        url2 = url1.replace('experiment', 'patient')
+        response = self.client.get(url2 + "?origin=subject&status=edit")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(cache.get(
+            "pt-br" + "-" + str(survey_mock.lime_survey_id) + "-"
+            + str(response_survey_mock.token_id) + "_survey_title_participant")
+        )
+        self.assertIsNone(cache.get(
+            "pt-br" + "-" + str(survey_mock.lime_survey_id) + "-"
+            + str(response_survey_mock.token_id) + "_group_of_questions_participant")
+        )
+        self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
+
+    @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+                                           'LOCATION': 'limesurveycache',
+                                           'TIMEOUT': 60}})
+    def test_entrance_ev_response_complete_with_cache(self):
+        """
+        Test view of questionnaire response when questionnaire is complete
+        of the type: entrance evaluation questionnaire getting information
+        from a cache
+        """
+        namemethod = self._testMethodName
+        usermethod = self.user
+        patient_mock = self.util.create_patient(namemethod, usermethod)
+        survey_mock = self.util.create_survey_mock(CLEAN_QUESTIONNAIRE, True)
+        response_survey_mock = self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, 2)
+
+        url1 = reverse(QUESTIONNAIRE_VIEW, args=[response_survey_mock.pk], current_app='patient')
+        url2 = url1.replace('experiment', 'patient')
+        response = self.client.get(url2 + "?origin=subject&status=edit")
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(cache.get(
+            "pt-br" + "-" + str(survey_mock.lime_survey_id) + "-"
+            + str(response_survey_mock.token_id) + "_survey_title_participant")
+        )
+        self.assertIsNotNone(cache.get(
+            "pt-br" + "-" + str(survey_mock.lime_survey_id) + "-"
+            + str(response_survey_mock.token_id) + "_group_of_questions_participant")
+        )
+        self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
+
+    def test_experiment_response_view(self):
         """
         Testa a visualizacao completa do questionario respondido no Lime Survey
         """
@@ -1555,6 +1615,7 @@ class QuestionnaireFormValidation(TestCase):
             questionnaire_response.token_id = LIME_SURVEY_TOKEN_ID_1
             questionnaire_response.questionnaire_responsible = self.user
             questionnaire_response.date = datetime.now()
+            questionnaire_response.is_completed = datetime.now()
             questionnaire_response.save()
 
             # Visualiza preenchimento da Survey

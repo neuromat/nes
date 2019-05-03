@@ -2,7 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
 from jsonrpc_requests import Server, TransportError
@@ -419,70 +419,135 @@ class SurveyTest(TestCase):
         response = self.client.get(reverse('survey_view', args=(survey.pk,)))
         self.assertEqual(response.status_code, 200)
 
-    def test_survey_create_with_fileupload_question(self):
+    def test_survey_without_pt_title_gets_pt_title_filled_with_limesurvey_code_when_there_is_not_en_title(self):
+        # Check if list of survey is empty before inserting anything
+        response = self.client.get(reverse('survey_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 0)
+
+        # Create an survey with a dummy lime survey id and without any code
+        survey = Survey.objects.create(lime_survey_id=-1)
+        self.assertIsNone(survey.pt_title)
+
+        response = self.client.get(reverse('survey_list'))
+        self.assertIsNotNone(Survey.objects.last().pt_title)
+        self.assertEqual(Survey.objects.last().pt_title, str(survey.lime_survey_id))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 1)
+
+    @override_settings(LANGUAGE_CODE='en')
+    def test_survey_without_en_title_gets_en_title_filled_with_limesurvey_code_when_there_is_not_pt_title(self):
+        # Check if list of survey is empty before inserting anything
+        response = self.client.get(reverse('survey_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 0)
+
+        # Create an survey with a dummy lime survey id and without any code
+        survey = Survey.objects.create(lime_survey_id=-1)
+        self.assertIsNone(survey.en_title)
+
+        response = self.client.get(reverse('survey_list'))
+        self.assertIsNotNone(Survey.objects.last().en_title)
+        self.assertEqual(Survey.objects.last().en_title, str(survey.lime_survey_id))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 1)
+
+    def test_survey_without_pt_title_gets_listed_with_en_title_instead_but_remains_without_pt_title(self):
+        # Check if list of survey is empty before inserting anything
+        response = self.client.get(reverse('survey_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 0)
+
+        # Create an survey with a dummy lime survey id and without any code
+        survey = Survey.objects.create(lime_survey_id=-1, en_title='Test_en_title')
+        self.assertIsNone(survey.pt_title)
+
+        response = self.client.get(reverse('survey_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 1)
+
+        # Check if the page renders the en title of the survey
+        self.assertContains(response, survey.en_title)
+
+        # Check that the pt_title field remains null
+        self.assertIsNone(Survey.objects.last().pt_title)
+
+    @override_settings(LANGUAGE_CODE='en')
+    def test_survey_without_en_title_gets_listed_with_pt_title_instead_but_remains_without_en_title(self):
+        # Check if list of survey is empty before inserting anything
+        response = self.client.get(reverse('survey_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 0)
+
+        # Create an survey with a dummy lime survey id and without any code
+        survey = Survey.objects.create(lime_survey_id=-1, pt_title='Teste_pt_title')
+        self.assertIsNone(survey.en_title)
+
+        response = self.client.get(reverse('survey_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['questionnaires_list']), 1)
+
+        # Check if the page renders the pt title of the survey
+        self.assertContains(response, survey.pt_title)
+
+        # Check that the en_title field remains null
+        self.assertIsNone(Survey.objects.last().en_title)
+
+    def test_survey_without_pt_or_en_title_in_ls_returns_default_language_title_to_be_listed_but_dont_save(self):
         lime_survey = Questionnaires()
         sid = None
 
+        # Create a new survey at LimeSurvey withou titles in pt or en languages
         try:
-            # Cria uma nova survey no lime survey
-            title_survey = 'Questionario de teste'
-            sid = lime_survey.add_survey(9999, title_survey, 'en', 'G')
+            fr_title_survey = 'Test Questionnaire in French'
+            sid = lime_survey.add_survey(9999, fr_title_survey, 'fr', 'G')
 
-            # Obtenho o titulo da survey
-            survey_title = lime_survey.get_survey_title(sid)
-            self.assertEqual(survey_title, title_survey)
+            Survey.objects.create(lime_survey_id=sid)
+            response = self.client.get(reverse('survey_list'))
 
-            # Verifica se esta ativa
-            survey_active = lime_survey.get_survey_properties(sid, 'active')
-            self.assertEqual(survey_active, 'N')
+            # Check if the page renders the fr title of the survey
+            self.assertContains(response, fr_title_survey)
 
-            # Obtem uma propriedade - Administrador da Survey
-            survey_admin = lime_survey.get_survey_properties(sid, 'admin')
-            self.assertEqual(survey_admin, None)
-
-            # Importar grupo de questoes
-            handle_file_import = \
-                open('quiz/static/quiz/tests/limesurvey_groups_with_fileupload.lsg', 'r')
-            questions_data = handle_file_import.read()
-            questions_id = \
-                lime_survey.insert_questions(sid, questions_data, 'lsg')
-            self.assertGreaterEqual(questions_id, 1)
-
-            # Inicia tabela de tokens
-            self.assertEqual(lime_survey.activate_tokens(sid), 'OK')
-
-            # Ativar survey
-            self.assertEqual(lime_survey.activate_survey(sid), 'OK')
-
-            # Verifica se esta ativa
-            survey_active = lime_survey.get_survey_properties(sid, 'active')
-            self.assertEqual(survey_active, 'Y')
-
-            # Request the survey register screen
-            response = self.client.get(reverse('survey_create'))
-            self.assertEqual(response.status_code, 200)
-
-            # Set survey data
-            # self.data = {'action': 'save', 'title': 'Survey title'}
-            self.data = {'action': 'save', 'questionnaire_selected': sid}
-
-            # Count the number of surveys currently in database
-            count_before_insert = Survey.objects.all().count()
-
-            # Add the new survey
-            response = self.client.post(reverse('survey_create'), self.data)
-            self.assertEqual(response.status_code, 302)
-
-            # Assert if the message is parsed
-            self.assertEqual(response.wsgi_request._messages._queued_messages[0].message,
-                             'O NES não importa arquivos carregados pelo Limesurvey através de questões do tipo \'Envio de arquivo\'. Veja \"Best Pratices and Recommendations\" em https://nes.rtfd.io para mais detalhes.')
-
-            # Count the number of surveys currently in database
-            count_after_insert = Survey.objects.all().count()
-
-            # Check if it has increased
-            self.assertEqual(count_after_insert, count_before_insert + 1)
+            # Check that pt_title and en_title remain null
+            self.assertIsNone(Survey.objects.last().en_title)
+            self.assertIsNone(Survey.objects.last().pt_title)
 
         finally:
-            # Deleta a survey gerada no Lime Survey
+            # Deletes the survey created at Lime Survey
+            self.assertEqual(lime_survey.delete_survey(sid), 'OK')
+
+    def test_surveys_list_get_updated(self):
+        lime_survey = Questionnaires()
+        sid = None
+
+        # Create a new survey at LimeSurvey with pt title
+        try:
+            pt_title_survey = 'Questionário Teste'
+            sid = lime_survey.add_survey(9999, pt_title_survey, 'pt-BR', 'G')
+
+            # Update the infos when viewed
+            survey = Survey.objects.create(lime_survey_id=sid)
+
+            # Check that pt_title is null
+            self.assertIsNone(Survey.objects.last().pt_title)
+
+            self.client.get(reverse('survey_list'))
+
+            # Check that pt_title is updated
+            self.assertEqual(Survey.objects.last().pt_title, pt_title_survey)
+
+            # Simulate a discrepancy between the survey informations at limesurvey and NES
+            survey.pt_title = "Título discrepante"
+            survey.save()
+
+            self.assertNotEqual(Survey.objects.last().pt_title, pt_title_survey)
+
+            # Simulate clicking to update the list with new limesurvey information
+            self.client.post(reverse('survey_list'), {'action': 'update'}, follow=True)
+
+            # Check if the pt_title was updated properly
+            self.assertEqual(Survey.objects.last().pt_title, pt_title_survey)
+
+        finally:
+            # Deletes the survey created at Lime Survey
             self.assertEqual(lime_survey.delete_survey(sid), 'OK')
