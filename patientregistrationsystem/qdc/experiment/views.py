@@ -36,7 +36,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q, Min
 from django.apps import apps
 from django.db.models.deletion import ProtectedError
-from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
@@ -1283,12 +1283,8 @@ def send_all_experiments_to_portal():
                                 get_questionnaire_language(
                                     surveys, limesurvey_id, language_code
                                 )
-                            responses_string = \
-                                surveys.get_responses_by_token(
-                                    limesurvey_id,
-                                    token,
-                                    questionnaire_language
-                                )
+                            responses_string = surveys.get_responses_by_token(
+                                limesurvey_id, token, questionnaire_language)
                             limesurvey_response = \
                                 {'questions': '', 'answers': ''}
 
@@ -5400,15 +5396,12 @@ def subject_questionnaire_response_create(
 
     check_can_change(request.user, group.experiment.research_project)
 
-    questionnaire_config = get_object_or_404(
-        ComponentConfiguration, id=questionnaire_id
-    )
+    questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
     surveys = Questionnaires()
     survey = Questionnaire.objects.get(id=questionnaire_config.component_id).survey
     lime_survey_id = survey.lime_survey_id
 
     survey_title = find_questionnaire_name(survey, request.LANGUAGE_CODE)["name"]
-
     surveys.release_session_key()
 
     fail = None
@@ -5419,11 +5412,8 @@ def subject_questionnaire_response_create(
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            redirect_url, questionnaire_response_id = \
-                subject_questionnaire_response_start_fill_questionnaire(
-                    request, subject_id, group_id, questionnaire_id,
-                    list_of_path
-                )
+            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
+                    request, subject_id, group_id, questionnaire_id, list_of_path)
 
             fail = True if not redirect_url else False
 
@@ -5621,9 +5611,8 @@ def get_number_of_uses(request):
 
 
 def check_required_fields(surveys, lime_survey_id):
-    """
-    método para verificar se o questionário tem as questões de identificação corretas
-    e se seus tipos também são corretos
+    """Verify if questionnaire have the identification questions
+    and if question types are correct
     """
 
     fields_to_validate = {
@@ -5640,7 +5629,7 @@ def check_required_fields(surveys, lime_survey_id):
     if 'status' not in groups:
 
         for group in groups:
-            question_list = surveys.list_questions(lime_survey_id, group['id']['gid'])
+            question_list = surveys.list_questions_ids(lime_survey_id, group['id']['gid'])
             for question in question_list:
                 question_properties = surveys.get_question_properties(question, None)
                 if question_properties['title'] in fields_to_validate:
@@ -5673,13 +5662,13 @@ def questionnaire_response_view(request, questionnaire_response_id,
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
-    lime_survey_id = questionnaire.survey.lime_survey_id
+    limesurvey_id = questionnaire.survey.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
-    survey_title_key = request.LANGUAGE_CODE + "-" + str(lime_survey_id) + "-" + str(token_id) + "_survey_title"
+    survey_title_key = request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id) + "_survey_title"
     groups_of_questions_key = \
-        request.LANGUAGE_CODE + "-" + str(lime_survey_id) + "-" + str(token_id) + "_group_of_questions"
+        request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id) + "_group_of_questions"
 
     survey_title = cache.get(survey_title_key)
     groups_of_questions = cache.get(groups_of_questions_key)
@@ -5687,7 +5676,7 @@ def questionnaire_response_view(request, questionnaire_response_id,
     if not survey_title and not groups_of_questions:
         # Get the responses for each question of the questionnaire.
         survey_title, groups_of_questions = get_questionnaire_responses(
-            language_code, lime_survey_id, token_id, request)
+            language_code, limesurvey_id, token_id, request)
 
         cache.set(survey_title_key, survey_title)
         cache.set(groups_of_questions_key, groups_of_questions)
@@ -5744,16 +5733,17 @@ def questionnaire_response_view(request, questionnaire_response_id,
 def delete_questionnaire_response(questionnaire: Questionnaire,
                                   questionnaire_response: QuestionnaireResponse):
 
-    # checking if it is used by patient_questionnaire_response
+    # Checking if it is used by patient_questionnaire_response
     token_is_used_patient_questionnaire_response = \
-        PatientQuestionnaireResponse.objects.filter(patient=questionnaire_response.subject_of_group.subject.patient,
-                                                    survey=questionnaire.survey,
-                                                    token_id=questionnaire_response.token_id).exists()
+        PatientQuestionnaireResponse.objects.filter(
+            patient=questionnaire_response.subject_of_group.subject.patient,
+            survey=questionnaire.survey,
+            token_id=questionnaire_response.token_id).exists()
     can_delete = False
     if token_is_used_patient_questionnaire_response:
         can_delete = True
     else:
-        # remove token from LimeSurvey
+        # Remove token from LimeSurvey
         surveys = Questionnaires()
         result = surveys.delete_participant(
             questionnaire.survey.lime_survey_id,

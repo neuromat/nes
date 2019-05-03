@@ -4,13 +4,11 @@
 import re
 import csv
 import datetime
-import json
 
 from csv import reader
 from io import StringIO
 from operator import itemgetter
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
@@ -154,15 +152,11 @@ def survey_create(request, template_name="survey/survey_register.html"):
     if request.method == "POST":
         if request.POST['action'] == "save":
             if survey_form.is_valid():
-
                 survey_added = survey_form.save(commit=False)
-
                 survey, created = Survey.objects.get_or_create(
                     lime_survey_id=request.POST['questionnaire_selected'],
                     is_initial_evaluation=survey_added.is_initial_evaluation)
-
                 surveys.release_session_key()
-
                 if created:
                     messages.success(request, _('Questionnaire created successfully.'))
                     redirect_url = reverse("survey_list")
@@ -313,14 +307,14 @@ def survey_update_sensitive_questions(request, survey_id, template_name="survey/
 
 def is_type_of_question_in_survey(surveys, survey, type):
     groups_list = surveys.list_groups(sid=survey.lime_survey_id)
-    if not 'status' in groups_list:
+    if 'status' not in groups_list:
         for group in groups_list:
-            group_questions = surveys.list_questions(sid=survey.lime_survey_id,
-                                                     gid=group['gid'])
+            group_questions = surveys.list_questions_ids(
+                sid=survey.lime_survey_id, gid=group['gid'])
 
             for question in group_questions:
-                group_properties = surveys.get_question_properties(question_id=question,
-                                                                   language=group['language'])
+                group_properties = surveys.get_question_properties(
+                    question_id=question, language=group['language'])
                 if 'type' in group_properties:
                     if group_properties['type'] == type:
                         return True
@@ -439,9 +433,8 @@ def create_experiments_questionnaire_data_list(survey, surveys):
                     'questionnaire_responses': []
                 }
 
-            response_result = surveys.get_participant_properties(q.survey.lime_survey_id,
-                                                                 qr.token_id,
-                                                                 "completed")
+            response_result = surveys.get_participant_properties(
+                q.survey.lime_survey_id, qr.token_id, "completed")
 
             experiments_questionnaire_data_dictionary[use.id]['patients'][patient.id]['questionnaire_responses'].append(
                 {
@@ -536,12 +529,12 @@ def create_experiments_questionnaire_data_list(survey, surveys):
 
 
 def create_patients_questionnaire_data_list(survey, surveys):
-    # Create a list of patients by looking to the answers of this questionnaire. We do this way instead of looking for
-    # patients and then looking for answers of each patient to reduce the number of access to the data base.
-    # We use a dictionary because it is useful for filtering out duplicate patients from the list.
+    """Create a list of patients by looking to the answers of this questionnaire. We do this way instead of looking for
+    patients and then looking for answers of each patient to reduce the number of access to the data base.
+    We use a dictionary because it is useful for filtering out duplicate patients from the list.
+    """
     patients_questionnaire_data_dictionary = {}
 
-    # for response in PatientQuestionnaireResponse.objects.filter(survey=survey):
     for response in PatientQuestionnaireResponse.objects.filter(survey=survey).filter(patient__removed=False):
         if response.patient.id not in patients_questionnaire_data_dictionary:
             patients_questionnaire_data_dictionary[response.patient.id] = {
@@ -550,9 +543,8 @@ def create_patients_questionnaire_data_list(survey, surveys):
                 'questionnaire_responses': []
             }
 
-        response_result = surveys.get_participant_properties(response.survey.lime_survey_id,
-                                                             response.token_id,
-                                                             "completed")
+        response_result = surveys.get_participant_properties(
+            response.survey.lime_survey_id, response.token_id, "completed")
 
         patients_questionnaire_data_dictionary[response.patient.id]['questionnaire_responses'].append({
             'questionnaire_response': response,
@@ -632,8 +624,7 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     return render(request, template_name, context)
 
 
-def get_questionnaire_responses(language_code, lime_survey_id, token_id,
-                                request):
+def get_questionnaire_responses(language_code, lime_survey_id, token_id, request):
 
     groups_of_questions = []
 
@@ -668,17 +659,12 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
     if not isinstance(groups, dict):
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
-
-                question_list = surveys.list_questions(
+                question_list = surveys.list_questions_ids(
                     lime_survey_id, group['id']['gid']
                 )
                 question_list = sorted(question_list)
-
                 for question in question_list:
-
-                    properties = surveys.get_question_properties(
-                        question, group['id']['language']
-                    )
+                    properties = surveys.get_question_properties(question, group['id']['language'])
 
                     # cleaning the question field
                     properties['question'] = re.sub(
@@ -706,9 +692,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                 'hidden': 'hidden' in properties['attributes'] and
                                           properties['attributes']['hidden'] == '1'
                             })
-                            for key, value in sorted(
-                                    properties['subquestions'].items()
-                            ):
+                            for key, value in sorted(properties['subquestions'].items()):
                                 question_properties.append({
                                     'gid': group['id']['gid'],
                                     'group_name': group['group_name'],
@@ -777,18 +761,11 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                             'hidden': False
                         })
 
-        # Reading from Limesurvey and...
-        responses_string = surveys.get_responses_by_token(
-            lime_survey_id, token, language
-        )
-
-        # ... transforming to a list:
+        responses_string = surveys.get_responses_by_token(lime_survey_id, token, language)
         responses_list = []
 
-        if isinstance(responses_string, bytes):
-            reader_ = csv.reader(
-                StringIO(responses_string.decode()), delimiter=','
-            )
+        if responses_string:
+            reader_ = csv.reader(StringIO(responses_string), delimiter=',')
 
             for row in reader_:
                 responses_list.append(row)
@@ -806,26 +783,18 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                         if response.split('[')[0] in question_id:
                             questions.append(question_prop)
                 for question in questions:
-                    if question and \
-                            (question['question_id'] != previous_question):
+                    if question and (question['question_id'] != previous_question):
                         if not question['hidden']:
                             if isinstance(question['answer_options'], str) \
-                                    and question['answer_options'] == \
-                                    "super_question":
-                                if question['question'] != '' and \
-                                        question['question_id'] != \
-                                        last_super_question:
-                                    groups_of_questions = \
-                                        add_questionnaire_response_to_group(
-                                            groups_of_questions, question, '',
-                                            None, no_response_flag=True
-                                        )
-                                    last_super_question = \
-                                        question['question_id']
+                                    and question['answer_options'] == "super_question":
+                                if question['question'] != '' and question['question_id'] != last_super_question:
+                                    groups_of_questions = add_questionnaire_response_to_group(
+                                        groups_of_questions, question, '', None, no_response_flag=True)
+                                    last_super_question = question['question_id']
                                     last_super_question_index = [
                                         len(groups_of_questions) - 1,
-                                        len(groups_of_questions[-1]
-                                            ['questionnaire_responses']) - 1]
+                                        len(groups_of_questions[-1]['questionnaire_responses']) - 1
+                                    ]
 
                             else:
                                 previous_question = question['question_id']
@@ -838,22 +807,13 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                     # type "1" means "Array dual scale"
                                     if question['type'] == '1':
                                         answer_list = []
-                                        if question['question_id'] + "[1]" in \
-                                                responses_list[0]:
-                                            index = \
-                                                responses_list[0].index(
-                                                    question['question_id'] + "[1]"
-                                                )
-                                            answer_options = \
-                                                question['answer_options']
-                                            answer = \
-                                                question['question_id'] + "[1]: "
-                                            if responses_list[1][index] in \
-                                                    answer_options:
-                                                answer_option = \
-                                                    answer_options[responses_list[1][index]]
-                                                answer += \
-                                                    answer_option['answer']
+                                        if question['question_id'] + "[1]" in responses_list[0]:
+                                            index = responses_list[0].index(question['question_id'] + "[1]")
+                                            answer_options = question['answer_options']
+                                            answer = question['question_id'] + "[1]: "
+                                            if responses_list[1][index] in answer_options:
+                                                answer_option = answer_options[responses_list[1][index]]
+                                                answer += answer_option['answer']
                                             else:
                                                 # Sem resposta
                                                 answer += _('No answer')
@@ -861,45 +821,29 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
 
                                         answer_list.append(answer)
 
-                                        if question['question_id'] + "[2]" in \
-                                                responses_list[0]:
-                                            index = \
-                                                responses_list[0].index(
-                                                    question['question_id'] + "[2]"
-                                                )
-                                            answer_options = \
-                                                question['answer_options']
-                                            answer = \
-                                                question['question_id'] + "[2]: "
-                                            if responses_list[1][index] in \
-                                                    answer_options:
-                                                answer_option = \
-                                                    answer_options[responses_list[1][index]]
-                                                answer += \
-                                                    answer_option['answer']
+                                        if question['question_id'] + "[2]" in responses_list[0]:
+                                            index = responses_list[0].index(question['question_id'] + "[2]")
+                                            answer_options = question['answer_options']
+                                            answer = question['question_id'] + "[2]: "
+                                            if responses_list[1][index] in answer_options:
+                                                answer_option = answer_options[responses_list[1][index]]
+                                                answer += answer_option['answer']
                                             else:
-                                                # sem resposta
+                                                # no answer
                                                 answer += _('No answer')
                                                 no_response_flag = True
 
                                         answer_list.append(answer)
 
-                                        groups_of_questions =\
-                                            add_questionnaire_response_to_group(
-                                                groups_of_questions, question,
-                                                answer_list, None,
-                                                no_response_flag
-                                            )
+                                        groups_of_questions = add_questionnaire_response_to_group(
+                                                groups_of_questions, question, answer_list, None, no_response_flag)
                                     else:
                                         link = ''
-                                        if question['question_id'] in \
-                                                responses_list[0]:
-                                            index = \
-                                                responses_list[0].index(question['question_id'])
+                                        if question['question_id'] in responses_list[0]:
+                                            index = responses_list[0].index(question['question_id'])
                                             answer_options = question['answer_options']
                                             if isinstance(answer_options, dict):
-                                                # type "M" means "Multiple
-                                                # choice"
+                                                # type "M" means "Multiple choice"
                                                 if question['type'] == 'M':
                                                     answer = responses_list[1][index]
                                                     if question['other']:
@@ -909,25 +853,19 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
                                                         if answer != 'Y':
                                                             no_response_flag = True
                                                 else:
-                                                    if responses_list[1][index] in \
-                                                            answer_options:
-                                                        answer_option = \
-                                                            answer_options[responses_list[1][index]]
-                                                        answer = \
-                                                            answer_option['answer']
+                                                    if responses_list[1][index] in answer_options:
+                                                        answer_option = answer_options[responses_list[1][index]]
+                                                        answer = answer_option['answer']
                                                     else:
-                                                        # sem resposta
+                                                        # no answer
                                                         answer = _('No answer')
                                                         no_response_flag = True
                                             else:
                                                 # type "D" means "Date/Time"
                                                 if question['type'] == 'D':
                                                     if responses_list[1][index]:
-                                                        answer = \
-                                                            datetime.datetime.strptime(
-                                                                responses_list[1][index],
-                                                                '%Y-%m-%d %H:%M:%S'
-                                                            )
+                                                        answer = datetime.datetime.strptime(
+                                                            responses_list[1][index],'%Y-%m-%d %H:%M:%S')
                                                     else:
                                                         answer = ''
                                                         no_response_flag = True
@@ -946,27 +884,16 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id,
 
                                         # not show fileupload questions
                                         if question['type'] != '|':
-                                            groups_of_questions = \
-                                                add_questionnaire_response_to_group(
-                                                    groups_of_questions, question,
-                                                    answer, link, no_response_flag
-                                                )
+                                            groups_of_questions = add_questionnaire_response_to_group(
+                                                groups_of_questions, question, answer, link, no_response_flag)
 
                                         # checking if the super-question
                                         # should be unmarked
-                                        if last_super_question and not \
-                                                no_response_flag and \
-                                                question['question_id'].split('[')[0] \
-                                                == last_super_question:
-                                            mark_off_super_question(
-                                                groups_of_questions,
-                                                last_super_question_index
-                                            )
+                                        if last_super_question and not no_response_flag \
+                                                and question['question_id'].split('[')[0] == last_super_question:
+                                            mark_off_super_question(groups_of_questions, last_super_question_index)
         else:
-            messages.error(
-                request,
-                _("LimeSurvey did not find fill data for this questionnaire.")
-            )
+            messages.error(request, _("LimeSurvey did not find fill data for this questionnaire."))
 
     surveys.release_session_key()
 

@@ -817,9 +817,7 @@ def get_questionnaire_experiment_header(questionnaire_lime_survey, questionnaire
     )
 
     if not isinstance(responses_string, dict):
-
-        questionnaire_questions = \
-            QuestionnaireUtils.responses_to_csv(responses_string)
+        questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
 
         responses_heading_type = \
             questionnaire_lime_survey.get_header_response(

@@ -1,5 +1,5 @@
 # coding=utf-8
-
+import re
 from abc import abstractmethod, ABC
 from base64 import b64decode, b64encode
 from jsonrpc_requests import Server, TransportError
@@ -15,23 +15,25 @@ class ABCSearchEngine(ABC):
     session_key = None
     server = None
 
-    def __init__(self):
+    def __init__(self, limesurvey_rpc=None):
+        self.limesurvey_rpc = limesurvey_rpc or settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol'
         self.get_session_key()
 
     def get_session_key(self):
 
         self.server = Server(
-            settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
-            # TODO:
+            # settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
+            # TODO (NES-956): make this link optional if the extended plugin is used
+            #  IMPORTANT: Exception Transport Error raised when using link bellow to
+            #  visualize questions.
             # settings.LIMESURVEY['URL_API'] +
             # '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+            self.limesurvey_rpc)
 
         try:
             self.session_key = self.server.get_session_key(
-                settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD']
-            )
-            self.session_key = None if isinstance(self.session_key, dict) \
-                else self.session_key
+                settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
+            self.session_key = None if isinstance(self.session_key, dict) else self.session_key
         except TransportError:
             self.session_key = None
 
@@ -113,12 +115,7 @@ class ABCSearchEngine(ABC):
         :param tokens_ids: token_id to put in a list
         :return: on success, an array of deletion status for each participant; on failure, status array.
         """
-        result = self.server.delete_participants(
-            self.session_key,
-            survey_id,
-            [tokens_ids]
-        )
-        return result
+        return self.server.delete_participants(self.session_key, survey_id, [tokens_ids])
 
     @abstractmethod
     def get_survey_title(self, sid, language):
@@ -188,6 +185,7 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def get_participant_properties(self, survey_id, token_id, prop):
+        # TODO: can make prop=null to return all attributes
         """
         :param survey_id: survey ID
         :param token_id: token ID
@@ -241,28 +239,26 @@ class ABCSearchEngine(ABC):
         return status['status']
 
     @abstractmethod
-    def get_responses_by_token(self, sid, token, language, fields=[]):
-        """ obtains responses from a determined token
+    def get_responses_by_token(self, sid, token, language, doctype, fields):
+        """Obtain responses from a determined token.
+        Limesurvey returns a string that, when b65decoded, has two new lines at the end.
+        We eliminate that new lines.
         :param sid: survey ID
         :param token: token
+        :param doctype: type of coded string ('csv', 'json, ...)
         :param language: language
         :param fields: fields array, using SGQA identifier
         :return: responses in the txt format
         """
-
         if fields:
             responses = self.server.export_responses_by_token(
-                self.session_key, sid, 'csv', token, language, 'complete', 'code', 'short', fields)
+                self.session_key, sid, doctype, token, language, 'complete', 'code', 'short', fields)
         else:
             responses = self.server.export_responses_by_token(
-                self.session_key, sid, 'csv', token, language, 'complete')
+                self.session_key, sid, doctype, token, language, 'complete')
 
-        if isinstance(responses, str):
-            responses_txt = b64decode(responses)
-        else:
-            responses_txt = responses
-
-        return responses_txt
+        responses = b64decode(responses).decode()
+        return re.sub('\n\n', '\n', responses)
 
     @abstractmethod
     def get_responses(self, sid, language, response_type, fields, heading_type):
@@ -277,16 +273,9 @@ class ABCSearchEngine(ABC):
         :return: responses in txt format
         """
         responses = self.server.export_responses(
-            self.session_key, sid, 'csv', language, 'complete', heading_type,
-            response_type
-        )
+            self.session_key, sid, 'csv', language, 'complete', heading_type, response_type)
 
-        if isinstance(responses, str):
-            responses_txt = b64decode(responses)
-        else:
-            responses_txt = responses
-
-        return responses_txt
+        return b64decode(responses).decode()
 
     def get_header_response(self, sid, language, token, heading_type):
         """ Obtain header responses
@@ -297,21 +286,13 @@ class ABCSearchEngine(ABC):
         """
 
         responses = self.server.export_responses_by_token(
-            self.session_key, sid, 'csv', token, language,
-            'complete', heading_type, 'short'
-        )
+            self.session_key, sid, 'csv', token, language,'complete', heading_type, 'short')
 
         if not isinstance(responses, str):
             responses = self.server.export_responses(
-                self.session_key, sid, 'csv', language,
-                'complete', heading_type, 'short'
-            )
-        if isinstance(responses, str):
-            responses_txt = b64decode(responses)
-        else:
-            responses_txt = responses
+                self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
 
-        return responses_txt
+        return b64decode(responses).decode()
 
     @abstractmethod
     def get_summary(self, sid, stat_name):
@@ -327,7 +308,7 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def insert_questions(self, sid, questions_data, format_import_file):
-        """ Imports a group of questions from a file
+        """ Import a group of questions from a file
         :param sid: survey ID
         :param questions_data: question data
         :param format_import_file: lsg file
@@ -388,8 +369,17 @@ class ABCSearchEngine(ABC):
             self.session_key, sid, data
         )
 
-    @abstractmethod
     def list_questions(self, sid, gid):
+        """TODO (NES-956)
+        :param sid:
+        :param gid:
+        """
+        result = self.server.list_questions(self.session_key, sid, gid)
+        # TODO (NES-956): deal with error
+        return result
+
+    @abstractmethod
+    def list_questions_ids(self, sid, gid):
         """
         :param sid: survey ID
         :param gid: group ID
@@ -397,7 +387,7 @@ class ABCSearchEngine(ABC):
         """
 
         question_list = []
-        questions = self.server.list_questions(self.session_key, sid, gid)
+        questions = self.list_questions(sid, gid)
         for question in questions:
             question_list.append(question['id']['qid'])
 
@@ -426,12 +416,35 @@ class ABCSearchEngine(ABC):
             self.session_key, sid, tid, properties_dict
         )
 
-    # TODO:
-    # def export_survey(self, sid):
-    #     return self.server.export_survey(self.session_key, sid)
-    #
-    # def import_survey(self, sid):
-    #     return self.server.import_survey(self.session_key, sid)
+    def import_survey(self, base64_encoded_lsa):
+        """
+        :param base64_encoded_lsa: Base 64 encoded string from lsa archive
+        :return: lime survey id of survey created
+        """
+        return self.server.import_survey(self.session_key, base64_encoded_lsa, 'lsa')
+
+    def export_survey(self, sid):
+        """TODO (NES-956): insert docstring
+        :param sid:
+        :return:
+        """
+        result = self.server.export_survey(self.session_key, sid)
+        # TODO (NES-956): see if care better for result returned
+        if isinstance(result, list):  # Returned a list with one dict element (error)
+            return None
+        return result
+
+    def delete_responses(self, sid, responses):
+        result = self.server.delete_responses(self.session_key, sid, responses)
+        if isinstance(result, dict):
+            return result['status']
+        return result
+
+    def update_response(self, sid, response_data):
+        result = self.server.update_response(self.session_key, sid, response_data)
+        # TODO (NES-956): deal with errors here
+
+        return result
 
 
 class Questionnaires(ABCSearchEngine):
@@ -481,8 +494,8 @@ class Questionnaires(ABCSearchEngine):
     def activate_tokens(self, sid):
         return super(Questionnaires, self).activate_tokens(sid)
 
-    def get_responses_by_token(self, sid, token, language, fields=[]):
-        return super(Questionnaires, self).get_responses_by_token(sid, token, language, fields)
+    def get_responses_by_token(self, sid, token, language=None, doctype='csv', fields=[]):
+        return super(Questionnaires, self).get_responses_by_token(sid, token, language, doctype, fields)
 
     def get_responses(self, sid, language, response_type='short', fields=None, heading_type='code'):
         return super(Questionnaires, self).get_responses(sid, language, response_type, fields, heading_type)
@@ -498,9 +511,13 @@ class Questionnaires(ABCSearchEngine):
     def list_questions(self, sid, gid):
         return super(Questionnaires, self).list_questions(sid, gid)
 
+    def list_questions_ids(self, sid, gid):
+        return super(Questionnaires, self).list_questions_ids(sid, gid)
+
     def get_question_properties(self, question_id, language):
         return super(Questionnaires, self).get_question_properties(question_id, language)
 
+    # TODO (NES-956): see when this was created
     def set_question_properties(self, sid, data):
         return super(Questionnaires, self).set_question_properties(sid, data)
 
@@ -530,9 +547,14 @@ class Questionnaires(ABCSearchEngine):
             sid, tid, properties_dict
         )
 
-    # TODO:
-    # def export_survey(self, sid):
-    #     return super(Questionnaires, self).export_survey(sid)
-    #
-    # def import_survey(self, sid):
-    #     return super(Questionnaires, self).import_survey(sid)
+    def import_survey(self, base64_encoded_lsa_file):
+        return super(Questionnaires, self).import_survey(base64_encoded_lsa_file)
+
+    def export_survey(self, sid):
+        return super(Questionnaires, self).export_survey(sid)
+
+    def delete_responses(self, sid, responses):
+        return super(Questionnaires, self).delete_responses(sid, responses)
+
+    def update_response(self, sid, response_data):
+        return super(Questionnaires, self).update_response(sid, response_data)
