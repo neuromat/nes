@@ -70,8 +70,8 @@ class ExportExperiment:
                      '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
         sys.stdout = sysout
 
-    def _remove_auth_user_model_from_json(self, filename):
-        with open(path.join(self.temp_dir, filename)) as f:
+    def _remove_auth_user_model_from_json(self):
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -84,11 +84,11 @@ class ExportExperiment:
                 break
             del deserialized[index]
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(deserialized))
 
-    def _remove_researchproject_keywords_model_from_json(self, filename):
-        with open(path.join(self.temp_dir, filename)) as f:
+    def _remove_researchproject_keywords_model_from_json(self):
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -97,12 +97,12 @@ class ExportExperiment:
         for i in sorted(indexes, reverse=True):
             del (deserialized[i])
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(deserialized))
 
     # TODO: In future, import groups verifying existence of group_codes in the database, not excluding them
-    def _change_group_code_to_null_from_json(self, filename):
-        with open(path.join(self.temp_dir, filename)) as f:
+    def _change_group_code_to_null_from_json(self):
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         serialized = json.loads(data)
@@ -111,11 +111,11 @@ class ExportExperiment:
         for i in sorted(indexes, reverse=True):
             serialized[i]['fields']['code'] = None
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(serialized))
 
-    def _remove_survey_code(self, filename):
-        with open(path.join(self.temp_dir, filename)) as f:
+    def _remove_survey_code(self):
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         serialized = json.loads(data)
@@ -124,15 +124,15 @@ class ExportExperiment:
         for i in indexes:
             serialized[i]['fields']['code'] = ''
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(serialized))
 
-    def _update_classification_of_diseases_reference(self, filename):
+    def _update_classification_of_diseases_reference(self):
         """Change json data exported to replace references to classification
         of diseases so the reference is to code not to id. We consider that
         NES instances all share the same classification of diseases data
         """
-        with open(path.join(self.temp_dir, filename)) as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         serialized = json.loads(data)
@@ -152,8 +152,13 @@ class ExportExperiment:
                 break
             del serialized[index]
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(serialized))
+
+    def _get_indexes(self, app, model):
+        with open(self.get_file_path('json')) as f:
+            data = json.load(f)
+        return [index for (index, dict_) in enumerate(data) if dict_['model'] == app + '.' + model]
 
     def _export_surveys(self):
         """Export experiment surveys archives using LimeSurvey RPC API.
@@ -226,22 +231,16 @@ class ExportExperiment:
         call_command('merge_fixtures', *fixtures)
         sys.stdout = sysout
 
-        # TODO (NES-956): remove self.FILE_NAME_JSON as they are accessible for all methods in the class
-        self._remove_researchproject_keywords_model_from_json(self.FILE_NAME_JSON)
-        self._change_group_code_to_null_from_json(self.FILE_NAME_JSON)
-        self._remove_survey_code(self.FILE_NAME_JSON)
-        self._update_classification_of_diseases_reference(self.FILE_NAME_JSON)
-        self._remove_auth_user_model_from_json(self.FILE_NAME_JSON)
+        self._remove_researchproject_keywords_model_from_json()
+        self._change_group_code_to_null_from_json()
+        self._remove_survey_code()
+        self._update_classification_of_diseases_reference()
+        self._remove_auth_user_model_from_json()
 
         survey_archive_paths = []
         if self._get_indexes('experiment', 'questionnaire'):
             survey_archive_paths = self._export_surveys()
         self._create_zip_file(survey_archive_paths)
-
-    def _get_indexes(self, app, model):
-        with open(self.get_file_path('json')) as f:
-            data = json.load(f)
-        return [index for (index, dict_) in enumerate(data) if dict_['model'] == app + '.' + model]
 
 
 class ImportExperiment:
