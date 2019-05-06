@@ -5013,6 +5013,7 @@ class ImportExperimentTest(TestCase):
         self.TOKEN_ID_NOT_KEEPED = 2
         self.SURVEY_ID = 505050
         self.QUESTION_SUBJECT_ID = 7
+        self.QUESTION_RESPONSIBLE_ID = 8
         self.GROUP_ID = 1410
         self.LIMESURVEY_RESPONSES_IDS_DELETED = [1, 2]
 
@@ -5047,8 +5048,8 @@ class ImportExperimentTest(TestCase):
                 'group_name': 'First group', 'description': ''}]
         mockServer.return_value.list_questions.return_value = [
             {
-                'qid': 3847, 'question_order': 0,
-                'id': {'qid': 3847, 'language': 'en'},
+                'qid': self.QUESTION_RESPONSIBLE_ID, 'question_order': 0,
+                'id': {'qid': self.QUESTION_RESPONSIBLE_ID, 'language': 'en'},
                 'same_default': 0, 'relevance': '1', 'question': 'Responsible Identification number:',
                 'type': 'N', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
                 'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'responsibleid',
@@ -5522,7 +5523,7 @@ class ImportExperimentTest(TestCase):
         mockServer.return_value.update_response.side_effect = check_right_url()
 
     @patch('survey.abc_search_engine.Server')
-    def test_import_survey_updates_responses_subjectid(self, mockServer):
+    def test_import_survey_updates_responses_subjectid_and_responsibleid(self, mockServer):
         self._set_constants()
 
         patient = UtilTests.create_patient(changed_by=self.user)
@@ -5642,6 +5643,9 @@ class ImportExperimentTest(TestCase):
             self.SESSION_KEY, self.SURVEY_ID,
             {
                 'token': self.TOKEN_KEEPED,
-                str(self.SURVEY_ID) + 'X' + str(self.GROUP_ID) + 'X' + str(self.QUESTION_SUBJECT_ID): new_subject.id
+                str(self.SURVEY_ID) + 'X' + str(self.GROUP_ID) + 'X' + str(self.QUESTION_SUBJECT_ID): new_subject.id,
+                str(self.SURVEY_ID) + 'X' + str(self.GROUP_ID) + 'X' + str(self.QUESTION_RESPONSIBLE_ID):
+                    self.user_importer.id
+
             }
         ))

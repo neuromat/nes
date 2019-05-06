@@ -677,7 +677,7 @@ class ImportExperiment:
 
         ls_interface.release_session_key()
 
-    def _update_limesurvey_subject_ids(self):
+    def _update_limesurvey_identification_questions(self):
         """Must be called after updating Limesurvey surveys references
         """
         indexes = self._get_indexes('experiment', 'questionnaire')
@@ -689,15 +689,23 @@ class ImportExperiment:
                 data_configuration_tree__component_configuration__component=questionnaire.id)
             limesurvey_id = questionnaire.survey.lime_survey_id
             for response in questionnaire_responses:
-                subject = response.subject_of_group.subject
+                responsible_id = response.questionnaire_responsible_id
+                subject_id = response.subject_of_group.subject_id
                 token_id = response.token_id
                 token = ls_interface.get_participant_properties(limesurvey_id, token_id, 'token')
                 # TODO (NES-956): get the language. By now put 'en' to test
                 ls_subject_id_column_name = QuestionnaireUtils.get_response_column_name(
                     ls_interface, limesurvey_id, 'subjectid', 'en')
+                ls_responsible_id_column_name = QuestionnaireUtils.get_response_column_name(
+                    ls_interface, limesurvey_id, 'responsibleid', 'en')
                 # TODO (NES-956): deal with errors here
                 result = ls_interface.update_response(
-                    limesurvey_id, {'token': token, ls_subject_id_column_name: subject.id})
+                    limesurvey_id, {
+                        'token': token,
+                        ls_subject_id_column_name: subject_id,
+                        ls_responsible_id_column_name: responsible_id
+                    }
+                )
 
         ls_interface.release_session_key()
 
@@ -735,7 +743,7 @@ class ImportExperiment:
 
         if limesurvey_ids:
             self._remove_limesurvey_participants()
-            self._update_limesurvey_subject_ids()
+            self._update_limesurvey_identification_questions()
 
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
