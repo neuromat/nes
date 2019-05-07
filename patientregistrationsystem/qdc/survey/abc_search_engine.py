@@ -20,15 +20,7 @@ class ABCSearchEngine(ABC):
         self.get_session_key()
 
     def get_session_key(self):
-
-        self.server = Server(
-            # settings.LIMESURVEY['URL_API'] + '/index.php/admin/remotecontrol')
-            # TODO (NES-956): make this link optional if the extended plugin is used
-            #  IMPORTANT: Exception Transport Error raised when using link bellow to
-            #  visualize questions.
-            # settings.LIMESURVEY['URL_API'] +
-            # '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
-            self.limesurvey_rpc)
+        self.server = Server(self.limesurvey_rpc)
 
         try:
             self.session_key = self.server.get_session_key(
@@ -429,8 +421,7 @@ class ABCSearchEngine(ABC):
         :return:
         """
         result = self.server.export_survey(self.session_key, sid)
-        # TODO (NES-956): see if care better for result returned
-        if isinstance(result, list):  # Returned a list with one dict element (error)
+        if isinstance(result, dict):  # Returned a dict element (error)
             return None
         return result
 
