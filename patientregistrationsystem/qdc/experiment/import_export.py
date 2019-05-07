@@ -16,6 +16,7 @@ from django.core.files import File
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count, Q
+from django.utils.translation import ugettext as _
 from base64 import b64encode, b64decode
 
 from experiment.models import Group, ResearchProject, Experiment, \
@@ -34,6 +35,7 @@ class ExportExperiment:
 
     FILE_NAME_JSON = 'experiment.json'
     FILE_NAME_ZIP = 'experiment.zip'
+    LIMESURVEY_ERROR = 1
 
     def __init__(self, experiment):
         self.experiment = experiment
@@ -169,12 +171,16 @@ class ExportExperiment:
         surveys = Survey.objects.filter(id__in=questionnaire_ids)
         ls_interface = Questionnaires(settings.LIMESURVEY['URL_API'] +
                                       '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+        if not ls_interface.session_key:
+            return self.LIMESURVEY_ERROR, _('Could not export LimeSurvey data. Please try again. If problem persists '
+                                            'please contact the system administator')
         archive_paths = []
         for survey in surveys:
             result = ls_interface.export_survey(survey.lime_survey_id)
             if result is None:
-                # TODO (NES-956): deal with this
-                continue
+                return self.LIMESURVEY_ERROR, _(
+                    'Could not export LimeSurvey data. Please try again. If problem persists '
+                    'please contact the system administator')
             decoded_archive = b64decode(result)
             lsa_archive_path = os.path.join(self.temp_dir, str(survey.lime_survey_id) + '.lsa')
             lsa_archive = open(lsa_archive_path, 'wb')
@@ -203,9 +209,12 @@ class ExportExperiment:
                 if relative_filepath is not '':
                     absolute_filepath = path.join(settings.MEDIA_ROOT, relative_filepath)
                     zip_file.write(absolute_filepath, relative_filepath)
-            # Append limesurvey archives if they exists
+            # Append limesurvey archives if they exist
+            if isinstance(survey_archives, tuple):  # There was an error
+                return survey_archives
             for survey_archive_path in survey_archives:
                 zip_file.write(survey_archive_path, os.path.basename(survey_archive_path))
+        return 0, ''
 
     def get_file_path(self, type_='zip'):
         if type_ == 'zip':
@@ -237,10 +246,10 @@ class ExportExperiment:
         self._update_classification_of_diseases_reference()
         self._remove_auth_user_model_from_json()
 
-        survey_archive_paths = []
+        result = []
         if self._get_indexes('experiment', 'questionnaire'):
-            survey_archive_paths = self._export_surveys()
-        self._create_zip_file(survey_archive_paths)
+            result = self._export_surveys()
+        return self._create_zip_file(result)
 
 
 class ImportExperiment:
@@ -472,7 +481,7 @@ class ImportExperiment:
                             for dependent_index in dependent_indexes:
                                 self.data[dependent_index]['fields'][dependent_model[1]] = self.data[i]['pk']
 
-    def _check_for_duplicates_of_participants(self):
+    def check_for_duplicates_of_participants(self):
         try:
             with zipfile.ZipFile(self.file_path) as zip_file:
                 json_file = zip_file.extract(self.FIXTURE_FILE_NAME, self.temp_dir)
