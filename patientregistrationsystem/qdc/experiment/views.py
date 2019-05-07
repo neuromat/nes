@@ -808,7 +808,10 @@ def experiment_export(request, experiment_id):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
 
     export = ExportExperiment(experiment)
-    export.export_all()
+    err_code_experiment, err_message_experiment = export.export_all()
+
+    if err_code_experiment:
+        messages.warning(request, err_message_experiment)
 
     file = open(path.join(export.temp_dir, export.FILE_NAME_ZIP), 'rb')
     response = HttpResponse(file, content_type='application/zip')
@@ -843,7 +846,7 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
 
             # Deal with patients before trying to import the experiment
             err_code_patients, err_message_patients, patients_with_conflict = \
-                import_experiment._check_for_duplicates_of_participants()
+                import_experiment.check_for_duplicates_of_participants()
 
             if err_code_patients:
                 messages.error(request, _(err_message_patients))
@@ -6640,7 +6643,6 @@ def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
 
     # Was it open properly?
     ok_opening = False
-    segments = None
 
     if eeg_reading:
 

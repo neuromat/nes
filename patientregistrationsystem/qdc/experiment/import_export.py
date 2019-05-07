@@ -16,6 +16,7 @@ from django.core.files import File
 from django.core.management import call_command
 from django.apps import apps
 from django.db.models import Count, Q
+from django.utils.translation import ugettext as _
 from base64 import b64encode, b64decode
 
 from experiment.models import Group, ResearchProject, Experiment, \
@@ -34,6 +35,7 @@ class ExportExperiment:
 
     FILE_NAME_JSON = 'experiment.json'
     FILE_NAME_ZIP = 'experiment.zip'
+    LIMESURVEY_ERROR = 1
 
     def __init__(self, experiment):
         self.experiment = experiment
@@ -70,8 +72,8 @@ class ExportExperiment:
                      '{"researchproject_id__in": ' + str([self.experiment.research_project.id]) + '}')
         sys.stdout = sysout
 
-    def _remove_auth_user_model_from_json(self, filename):
-        with open(path.join(self.temp_dir, filename)) as f:
+    def _remove_auth_user_model_from_json(self):
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -84,11 +86,11 @@ class ExportExperiment:
                 break
             del deserialized[index]
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(deserialized))
 
-    def _remove_researchproject_keywords_model_from_json(self, filename):
-        with open(path.join(self.temp_dir, filename)) as f:
+    def _remove_researchproject_keywords_model_from_json(self):
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -97,12 +99,12 @@ class ExportExperiment:
         for i in sorted(indexes, reverse=True):
             del (deserialized[i])
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(deserialized))
 
     # TODO: In future, import groups verifying existence of group_codes in the database, not excluding them
-    def _change_group_code_to_null_from_json(self, filename):
-        with open(path.join(self.temp_dir, filename)) as f:
+    def _change_group_code_to_null_from_json(self):
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         serialized = json.loads(data)
@@ -111,11 +113,11 @@ class ExportExperiment:
         for i in sorted(indexes, reverse=True):
             serialized[i]['fields']['code'] = None
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(serialized))
 
-    def _remove_survey_code(self, filename):
-        with open(path.join(self.temp_dir, filename)) as f:
+    def _remove_survey_code(self):
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         serialized = json.loads(data)
@@ -124,15 +126,15 @@ class ExportExperiment:
         for i in indexes:
             serialized[i]['fields']['code'] = ''
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(serialized))
 
-    def _update_classification_of_diseases_reference(self, filename):
+    def _update_classification_of_diseases_reference(self):
         """Change json data exported to replace references to classification
         of diseases so the reference is to code not to id. We consider that
         NES instances all share the same classification of diseases data
         """
-        with open(path.join(self.temp_dir, filename)) as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON)) as f:
             data = f.read().replace('\n', '')
 
         serialized = json.loads(data)
@@ -152,8 +154,13 @@ class ExportExperiment:
                 break
             del serialized[index]
 
-        with open(path.join(self.temp_dir, filename), 'w') as f:
+        with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(serialized))
+
+    def _get_indexes(self, app, model):
+        with open(self.get_file_path('json')) as f:
+            data = json.load(f)
+        return [index for (index, dict_) in enumerate(data) if dict_['model'] == app + '.' + model]
 
     def _export_surveys(self):
         """Export experiment surveys archives using LimeSurvey RPC API.
@@ -164,12 +171,16 @@ class ExportExperiment:
         surveys = Survey.objects.filter(id__in=questionnaire_ids)
         ls_interface = Questionnaires(settings.LIMESURVEY['URL_API'] +
                                       '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+        if not ls_interface.session_key:
+            return self.LIMESURVEY_ERROR, _('Could not export LimeSurvey data. Please try again. If problem persists '
+                                            'please contact the system administator')
         archive_paths = []
         for survey in surveys:
             result = ls_interface.export_survey(survey.lime_survey_id)
             if result is None:
-                # TODO (NES-956): deal with this
-                continue
+                return self.LIMESURVEY_ERROR, _(
+                    'Could not export LimeSurvey data. Please try again. If problem persists '
+                    'please contact the system administator')
             decoded_archive = b64decode(result)
             lsa_archive_path = os.path.join(self.temp_dir, str(survey.lime_survey_id) + '.lsa')
             lsa_archive = open(lsa_archive_path, 'wb')
@@ -198,9 +209,12 @@ class ExportExperiment:
                 if relative_filepath is not '':
                     absolute_filepath = path.join(settings.MEDIA_ROOT, relative_filepath)
                     zip_file.write(absolute_filepath, relative_filepath)
-            # Append limesurvey archives if they exists
+            # Append limesurvey archives if they exist
+            if isinstance(survey_archives, tuple):  # There was an error
+                return survey_archives
             for survey_archive_path in survey_archives:
                 zip_file.write(survey_archive_path, os.path.basename(survey_archive_path))
+        return 0, ''
 
     def get_file_path(self, type_='zip'):
         if type_ == 'zip':
@@ -226,15 +240,16 @@ class ExportExperiment:
         call_command('merge_fixtures', *fixtures)
         sys.stdout = sysout
 
-        # TODO: remove self.FILE_NAME_JSON as they are accessible for all methods in the class
-        self._remove_researchproject_keywords_model_from_json(self.FILE_NAME_JSON)
-        self._change_group_code_to_null_from_json(self.FILE_NAME_JSON)
-        self._remove_survey_code(self.FILE_NAME_JSON)
-        self._update_classification_of_diseases_reference(self.FILE_NAME_JSON)
-        self._remove_auth_user_model_from_json(self.FILE_NAME_JSON)
+        self._remove_researchproject_keywords_model_from_json()
+        self._change_group_code_to_null_from_json()
+        self._remove_survey_code()
+        self._update_classification_of_diseases_reference()
+        self._remove_auth_user_model_from_json()
 
-        survey_archive_paths = self._export_surveys()
-        self._create_zip_file(survey_archive_paths)
+        result = []
+        if self._get_indexes('experiment', 'questionnaire'):
+            result = self._export_surveys()
+        return self._create_zip_file(result)
 
 
 class ImportExperiment:
@@ -466,7 +481,7 @@ class ImportExperiment:
                             for dependent_index in dependent_indexes:
                                 self.data[dependent_index]['fields'][dependent_model[1]] = self.data[i]['pk']
 
-    def _check_for_duplicates_of_participants(self):
+    def check_for_duplicates_of_participants(self):
         try:
             with zipfile.ZipFile(self.file_path) as zip_file:
                 json_file = zip_file.extract(self.FIXTURE_FILE_NAME, self.temp_dir)
