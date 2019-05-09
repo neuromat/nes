@@ -451,11 +451,11 @@ def export_view(request, template_name="export/export_data.html"):
                 per_questionnaire = False
                 responses_type = None
                 # TODO:
-                # When there'are not questionnaires avulsely answered
-                # by participants, export_form.cleaned_data['headings'] = ''.
-                # In fact there aren't questionnaires stuff at all. So this
-                # form attribute doesn't make sense. By now we make 'code'
-                # as value of that attribute for doesn't breaking the code.
+                #  When there'are not questionnaires avulsely answered
+                #  by participants, export_form.cleaned_data['headings'] = ''.
+                #  In fact there aren't questionnaires stuff at all. So this
+                #  form attribute doesn't make sense. By now we make 'code'
+                #  as value of that attribute for doesn't breaking the code.
 
                 filesformat_type = export_form.cleaned_data['filesformat'] or 'csv'
                 heading_type = export_form.cleaned_data['headings'] or 'code'
@@ -463,28 +463,18 @@ def export_view(request, template_name="export/export_data.html"):
                 update_participants_list(participants_list, heading_type)
                 update_diagnosis_list(diagnosis_list, heading_type)
 
-                component_list['per_eeg_raw_data'] = \
-                    export_form.cleaned_data['per_eeg_raw_data']
-                component_list['per_eeg_nwb_data'] = \
-                    export_form.cleaned_data['per_eeg_nwb_data']
-                component_list['per_emg_data'] = \
-                    export_form.cleaned_data['per_emg_data']
-                component_list['per_tms_data'] = \
-                    export_form.cleaned_data['per_tms_data']
-                component_list['per_additional_data'] = \
-                    export_form.cleaned_data['per_additional_data']
-                component_list['per_goalkeeper_game_data'] = \
-                    export_form.cleaned_data['per_goalkeeper_game_data']
-                component_list['per_stimulus_data'] = \
-                    export_form.cleaned_data['per_stimulus_data']
-                component_list['per_generic_data'] = \
-                    export_form.cleaned_data['per_generic_data']
+                component_list['per_eeg_raw_data'] = export_form.cleaned_data['per_eeg_raw_data']
+                component_list['per_eeg_nwb_data'] = export_form.cleaned_data['per_eeg_nwb_data']
+                component_list['per_emg_data'] = export_form.cleaned_data['per_emg_data']
+                component_list['per_tms_data'] = export_form.cleaned_data['per_tms_data']
+                component_list['per_additional_data'] = export_form.cleaned_data['per_additional_data']
+                component_list['per_goalkeeper_game_data'] = export_form.cleaned_data['per_goalkeeper_game_data']
+                component_list['per_stimulus_data'] = export_form.cleaned_data['per_stimulus_data']
+                component_list['per_generic_data'] = export_form.cleaned_data['per_generic_data']
 
                 if questionnaires_selected_list or experiment_questionnaires_list:
-                    per_participant = \
-                        export_form.cleaned_data['per_participant']
-                    per_questionnaire = \
-                        export_form.cleaned_data['per_questionnaire']
+                    per_participant = export_form.cleaned_data['per_participant']
+                    per_questionnaire = export_form.cleaned_data['per_questionnaire']
                     responses_type = export_form.cleaned_data['responses']
 
                     if questionnaires_selected_list:
@@ -495,26 +485,18 @@ def export_view(request, template_name="export/export_data.html"):
 
                     if experiment_questionnaires_list:
                         per_experiment = True
-                        experiment_questionnaires_list = \
-                            update_questionnaire_list(
-                                experiment_questionnaires_list,
-                                heading_type, True, request.LANGUAGE_CODE
-                            )
+                        experiment_questionnaires_list = update_questionnaire_list(
+                                experiment_questionnaires_list, heading_type, True, request.LANGUAGE_CODE)
 
                 export_instance = Export.objects.create(user=request.user)
 
                 input_export_file = path.join(
-                    EXPORT_DIRECTORY, str(request.user.id),
-                    str(export_instance.id), str(JSON_FILENAME)
-                )
+                    EXPORT_DIRECTORY, str(request.user.id), str(export_instance.id), str(JSON_FILENAME))
 
                 # copy data to media/export/<user_id>/<export_id>/
-                input_filename = \
-                    path.join(settings.MEDIA_ROOT, input_export_file)
+                input_filename = path.join(settings.MEDIA_ROOT, input_export_file)
 
-                create_directory(
-                    settings.MEDIA_ROOT, path.split(input_export_file)[0]
-                )
+                create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
                 build_complete_export_structure(
                     per_participant, per_questionnaire, per_experiment,
@@ -524,18 +506,13 @@ def export_view(request, template_name="export/export_data.html"):
                     language_code, filesformat_type
                 )
 
-                complete_filename = \
-                    export_create(request, export_instance.id, input_filename)
+                complete_filename = export_create(request, export_instance.id, input_filename)
 
                 if complete_filename:
-
                     messages.success(request, _("Export was finished correctly"))
-
                     zip_file = open(complete_filename, 'rb')
-                    response = \
-                        HttpResponse(zip_file, content_type='application/zip')
-                    response['Content-Disposition'] = \
-                        'attachment; filename="export.zip"'
+                    response = HttpResponse(zip_file, content_type='application/zip')
+                    response['Content-Disposition'] = 'attachment; filename="export.zip"'
                     response['Content-Length'] = path.getsize(complete_filename)
                     return response
                 else:
@@ -817,9 +794,7 @@ def get_questionnaire_experiment_header(questionnaire_lime_survey, questionnaire
     )
 
     if not isinstance(responses_string, dict):
-
-        questionnaire_questions = \
-            QuestionnaireUtils.responses_to_csv(responses_string)
+        questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
 
         responses_heading_type = \
             questionnaire_lime_survey.get_header_response(
