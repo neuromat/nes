@@ -103,8 +103,8 @@ class ExportQuestionnaireTest(ExportTestCase):
         column_names_dict = dict()
         for question_group in question_groups:
             for question_id \
-                    in self.lime_survey.list_questions(self.sid,
-                                                       question_group):
+                    in self.lime_survey.list_questions_ids(self.sid,
+                                                           question_group):
                 key = \
                     self.lime_survey.get_question_properties(question_id,
                                                              'en')['title']
@@ -693,7 +693,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         """
         # In setUp we create experiment questionnaire response. Here we
         # create a participant questionnaire response (entrance questionnaire)
-        questionnaire_response = UtilTests.create_response_survey_mock(
+        questionnaire_response = UtilTests.create_response_survey(
             responsible=self.user, patient=self.patient, survey=self.survey
         )
 

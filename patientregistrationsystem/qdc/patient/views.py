@@ -1126,15 +1126,12 @@ def questionnaire_response_create(
 
     showing = False
 
-    questionnaire_response_form = \
-        QuestionnaireResponseForm(request.POST or None)
+    questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
             redirect_url, questionnaire_response_id = \
-                questionnaire_response_start_fill_questionnaire(
-                    request, patient_id, survey
-                )
+                questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
 
             if not redirect_url:
                 fail = True
@@ -1287,8 +1284,8 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
             return None, None
 
         if not check_required_fields(questionnaire_lime_survey, survey.lime_survey_id):
-            messages.warning(request,
-                             _('Not available filling - questionnaire does not contain standard fields'))
+            messages.warning(
+                request, _('Not available filling - questionnaire does not contain standard fields'))
             return None, None
 
         result = questionnaire_lime_survey.add_participant(survey.lime_survey_id)
@@ -1317,8 +1314,8 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
 
 def check_required_fields(surveys, lime_survey_id):
     """
-    Verifica se o questionário tem as questões de identificação
-    corretas e se seus tipos também são corretos
+    Verify if questionnaire have right identification questions
+    and question types
     """
 
     fields_to_validate = {
@@ -1335,7 +1332,7 @@ def check_required_fields(surveys, lime_survey_id):
     if 'status' not in groups:
 
         for group in groups:
-            question_list = surveys.list_questions(lime_survey_id, group['id']['gid'])
+            question_list = surveys.list_questions_ids(lime_survey_id, group['id']['gid'])
             for question in question_list:
                 question_properties = surveys.get_question_properties(question, None)
                 if question_properties['title'] in fields_to_validate:
