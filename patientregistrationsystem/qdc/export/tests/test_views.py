@@ -8,7 +8,7 @@ from datetime import datetime, date
 import shutil
 
 from django.core.files import File
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 from django.template.defaultfilters import slugify
 from django.test import override_settings
 
@@ -17,6 +17,7 @@ from experiment.models import Component, ComponentConfiguration, \
     TMSLocalizationSystem, HotSpot, TMSData, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
+from export.views import send_to_plugin
 from export.export_utils import create_list_of_trees
 from export.tests.tests_helper import ExportTestCase
 from patient.tests.tests_orig import UtilTests
@@ -1734,10 +1735,6 @@ class ExportSelection(ExportTestCase):
     def tearDown(self):
         self.client.logout()
 
-
-    def tearDown(self):
-        self.client.logout()
-
     def test_experiment_selection_selecting_group(self):
 
         data = {
@@ -1801,92 +1798,21 @@ class ExportSelection(ExportTestCase):
         response3 = self.client.get(response2.url)
         self.assertRedirects(response3, reverse('export_menu'), status_code=302, target_status_code=200)
 
-# class UploadPaperTest(ExportTestCase):
-#
-#     # def setUp(self):
-#     #     self.user = User.objects.create_user(
-#     #         username=USER_USERNAME, email='test@dummy.com', password=USER_PWD
-#     #     )
-#     #     self.user.is_staff = True
-#     #     self.user.is_superuser = True
-#     #     self.user.save()
-#     #
-#     #     self.factory = RequestFactory()
-#     #
-#     #     logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
-#     #     self.assertEqual(logged, True)
-#     #
-#     #     self.client.session.flush()
-#     #
-#     #     # Post data to view: data style that is posted to export_view in
-#     #     # template
-#
-#
-#     def generate_file(self):
-#         try:
-#             myfile = open('test_C.csv', 'wb')
-#             wr = csv.writer(myfile)
-#             wr.writerow(('Paper ID', 'Paper Title', 'Authors'))
-#             wr.writerow(('1', 'Title1', 'Author1'))
-#             wr.writerow(('2', 'Title2', 'Author2'))
-#             wr.writerow(('3', 'Title3', 'Author3'))
-#         finally:
-#             myfile.close()
-#
-#         return myfile
-#
-#     def test_export_create(self):
-#
-#         data = {
-#             'per_questionnaire': ['on'],
-#             'per_participant': ['on'],
-#             'headings': ['code'],
-#             'patient_selected': ['age*age'],
-#             'action': ['run'],
-#             'responses': ['short'],
-#             'filesformat': ['csv']
-#         }
-#         response = self.client.post(reverse('export_view'), data)
-#
-#         participant_field_header_list = [("id", "id"), ("name", "name")]
-#
-#         questionnaires_list = [(0, 271192, "title", [("header1", "field1")]), ]
-#
-#         diagnosis_field_header_list = ""
-#
-#         output_filename = path.join(settings.MEDIA_ROOT, "export/test123.json")
-#
-#         if path.isfile(output_filename):
-#             remove(output_filename)
-#
-#         self.assertTrue(not path.isfile(output_filename))
-#         experiment_questionnaires_list = []
-#         component_list = []
-#
-#         export_instance = Export.objects.create(user=self.user)
-#
-#         build_complete_export_structure(0, 1, 0,
-#                                         participant_field_header_list,
-#                                         diagnosis_field_header_list,
-#                                         questionnaires_list,
-#                                         experiment_questionnaires_list,
-#                                         ["short"], "full", output_filename,
-#                                         component_list, "pt-BR", "tsv")
-#
-#         self.assertTrue(path.isfile(output_filename))
-#
-#         self.assertTrue(export_create(self, export_instance.id, output_filename))
-#
-#
-#     # def test_csv_export(self):
-#     #
-#     #     response = self.client.get('/my/export/api')
-#     #     self.assertEqual(response.status_code, 200)
-#     #
-#     #     content = response.content.decode('utf-8')
-#     #     cvs_reader = csv.reader(io.StringIO(content))
-#     #     body = list(cvs_reader)
-#     #     headers = body.pop(0)
-#     #
-#     #     # print(body)
-#     #     # print(headers)
+
+class PluginTest(ExportTestCase):
+
+    def setUp(self):
+        super(PluginTest, self).setUp()
+
+    def tearDown(self):
+        self.client.logout()
+
+    def test_send_to_plugin_status_code(self):
+        url = reverse('send_to_plugin')
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'export/send_to_plugin.html')
+
+    def test_animal_new_url_resolves_animal_new_view(self):
+        view = resolve('/export/send_to_plugin/')
+        self.assertEquals(view.func, send_to_plugin)
