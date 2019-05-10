@@ -1127,12 +1127,29 @@ def export_menu(request, template_name="export/export_menu.html"):
             'href': reverse("experiment_selection", args=()),
             'enabled': True
         },
+        {
+            'item': _('Send to plugin'),
+            'href': reverse("send_to_plugin", args=()),
+            'enabled': True
+        },
     ]
     if 'group_selected_list' in request.session.keys():
         del request.session['group_selected_list']
 
     context = {
         "export_type_list": export_type_list
+    }
+
+    return render(request, template_name, context)
+
+
+@login_required
+def send_to_plugin(request, template_name="export/send_to_plugin.html"):
+    participants = Patient.objects.filter(removed=False)
+
+    context = {
+        'participants': participants,
+        'patient_fields': patient_fields
     }
 
     return render(request, template_name, context)

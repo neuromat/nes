@@ -1,0 +1,123 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n static %}
+
+{% block header %}
+    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
+{% endblock %}
+
+{% block activeExport %}class="active"{% endblock %}
+
+{% block form %}
+    <div class="row">
+    <form id="user_form" method="post" data-toggle="validator">
+    {% csrf_token %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-pane fade in active" id="participantsSelectionBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/export">{% trans "Export" %}</a></li>
+                <li class="active">{% trans "Participants selection" %}</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="menuUserTab">
+        <div class="col-md-10">
+            <div class="container span6 offset3 well ">
+                {% if perms.patient.export_patient %}
+                    <h4>{% trans "Plugin" %}</h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <div class="radio">
+                                    <label><input type="radio" name="opt_floresta" checked>Floresta</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="container span6 offset3 well ">
+                <h4>{% trans "List of participants" %}</h4>
+                    <div class="panel-body">
+                        <div class="col-md-5 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Participants available:" %} </label>
+                                <select class="form-control" size="13" id="multiselect" name="from" multiple="multiple">
+                                    {% for field in participants %}
+                                        {% if not field.selected %}
+                                            <option value="{{ field.code }}">
+                                                {% if field.name %}{{ field.name }}{% else %}{{ field.code }}{% endif %}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-sm-2" style="margin-top: 30px">
+                            <button type="button" id="multiselect_rightAll"
+                                    class="btn btn-block"><i
+                                    class="glyphicon glyphicon-forward"></i></button>
+                            <button type="button" id="multiselect_rightSelected"
+                                    class="btn btn-block"><i
+                                    class="glyphicon glyphicon-chevron-right"></i></button>
+                            <button type="button" id="multiselect_leftSelected"
+                                    class="btn btn-block"><i
+                                    class="glyphicon glyphicon-chevron-left"></i></button>
+                            <button type="button" id="multiselect_leftAll"
+                                    class="btn btn-block"><i
+                                    class="glyphicon glyphicon-backward"></i></button>
+                        </div>
+
+                        <div class="col-md-5 col-sm-10">
+                            <label class="control-label">{% trans "Participants chosen:" %} </label>
+                            <select name="to" id="multiselect_to" class="form-control" size="13" multiple="multiple">
+                                {% for field in participants %}
+                                    {% if field.selected %}
+                                        <option value="{{ field.code }}">
+                                            {% if field.name %}{{ field.name }}{% else %}{{ field.code }}{% endif %}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="container span6 offset3 well ">
+                {% if perms.patient.export_patient %}
+                    <h4>{% trans "Additional info" %}</h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label">{% trans "Participant fields" %} </label>
+                                <select class="form-control" size="13" id="patient_selected" name="patient_selected"
+                                        multiple="multiple"
+                                        data-error={% trans "Please, select a patient field from the list." %}>
+                                    {% for field in patient_fields %}
+                                        <option {% if field.field in selected_participant %}selected{% endif %}
+                                                value="{{ field.field }}*{{ field.header }}"> {{ field.description }} </option>
+                                    {% endfor %}
+                                </select>
+                                <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block end_form %}
+    </form>
+    </div>
+{% endblock %}
