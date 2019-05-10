@@ -22,6 +22,7 @@ FORMATS_CHOICES = (
     ('tsv', _("Tab separated values")),
 )
 
+
 class ExportForm(Form):
     title = CharField(
         required=False,
@@ -52,6 +53,7 @@ class ExportForm(Form):
     filesformat = ChoiceField(
         widget=RadioSelect(), choices=FORMATS_CHOICES, required=False
     )
+
 
 class ParticipantsSelectionForm(ModelForm):
     class Meta:
