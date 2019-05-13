@@ -1127,11 +1127,6 @@ def export_menu(request, template_name="export/export_menu.html"):
             'href': reverse("experiment_selection", args=()),
             'enabled': True
         },
-        {
-            'item': _('Send to plugin'),
-            'href': reverse("send_to_plugin", args=()),
-            'enabled': True
-        },
     ]
     if 'group_selected_list' in request.session.keys():
         del request.session['group_selected_list']
