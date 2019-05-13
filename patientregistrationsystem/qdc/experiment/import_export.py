@@ -171,7 +171,7 @@ class ExportExperiment:
         surveys = Survey.objects.filter(id__in=questionnaire_ids)
         ls_interface = Questionnaires(settings.LIMESURVEY['URL_API'] +
                                       '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
-        if not ls_interface.session_key:
+        if ls_interface.session_key is None:
             return self.LIMESURVEY_ERROR, _('Could not export LimeSurvey data. Please try again. If problem persists '
                                             'please contact the system administator')
         archive_paths = []
@@ -254,6 +254,7 @@ class ExportExperiment:
 
 class ImportExperiment:
     BAD_JSON_FILE_ERROR_CODE = 1
+    LIMESURVEY_ERROR = 2
     FIXTURE_FILE_NAME = 'experiment.json'
 
     def __init__(self, file_path):
@@ -729,6 +730,10 @@ class ImportExperiment:
         :return: list of limsurvey surveys imported
         """
         ls_interface = Questionnaires()
+        if ls_interface.session_key is None:
+            return self.LIMESURVEY_ERROR, _('Could not import survey(s) to LimeSurvey. Only Experiment data was '
+                                            'imported. You can remove experiment imported and try again. If problem '
+                                            'persists please contact system administrator')
         limesurvey_ids = []
         # Does not add try/exception trying to open zipfile here because it
         # was done in import_all method
@@ -760,6 +765,8 @@ class ImportExperiment:
             self._remove_limesurvey_participants()
             self._update_limesurvey_identification_questions()
 
+        return 0, ''
+
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor
         try:
@@ -782,11 +789,11 @@ class ImportExperiment:
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
 
         self._upload_files()
-        self._import_limesurvey_surveys()
+        result = self._import_limesurvey_surveys()
 
         self._collect_new_objects()
 
-        return 0, ''
+        return result
 
     def get_new_objects(self):
         return self.new_objects
