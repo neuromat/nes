@@ -4,6 +4,7 @@
 
 {% block header %}
     <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
+    <script src="{% static 'quiz/js/participant_import.js' %}"></script>
 {% endblock %}
 
 {% block activeExport %}class="active"{% endblock %}
@@ -49,7 +50,7 @@
                         <div class="col-md-5 col-sm-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Participants available:" %} </label>
-                                <select class="form-control" size="13" id="multiselect" name="from" multiple="multiple">
+                                <select class="form-control" size="13" id="multiselect_" name="from[]" multiple="multiple">
                                     {% for field in participants %}
                                         {% if not field.selected %}
                                             <option value="{{ field.code }}">
@@ -62,23 +63,23 @@
                         </div>
 
                         <div class="col-md-2 col-sm-2" style="margin-top: 30px">
-                            <button type="button" id="multiselect_rightAll"
+                            <button type="button" id="multiselect__rightAll"
                                     class="btn btn-block"><i
                                     class="glyphicon glyphicon-forward"></i></button>
-                            <button type="button" id="multiselect_rightSelected"
+                            <button type="button" id="multiselect__rightSelected"
                                     class="btn btn-block"><i
                                     class="glyphicon glyphicon-chevron-right"></i></button>
-                            <button type="button" id="multiselect_leftSelected"
+                            <button type="button" id="multiselect__leftSelected"
                                     class="btn btn-block"><i
                                     class="glyphicon glyphicon-chevron-left"></i></button>
-                            <button type="button" id="multiselect_leftAll"
+                            <button type="button" id="multiselect__leftAll"
                                     class="btn btn-block"><i
                                     class="glyphicon glyphicon-backward"></i></button>
                         </div>
 
                         <div class="col-md-5 col-sm-10">
                             <label class="control-label">{% trans "Participants chosen:" %} </label>
-                            <select name="to" id="multiselect_to" class="form-control" size="13" multiple="multiple">
+                            <select name="to[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
                                 {% for field in participants %}
                                     {% if field.selected %}
                                         <option value="{{ field.code }}">
