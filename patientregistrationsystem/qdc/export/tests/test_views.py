@@ -154,9 +154,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         # See:
         # https://www.limesurvey.org/de/foren/can-i-do-this-with-limesurvey/113443-help-with-remote-control-add-response
         self.lime_survey.set_participant_properties(
-            self.sid, result['tid'],
-            {'completed': datetime.utcnow().strftime('%Y-%m-%d')}
-        )
+            self.sid, result['tid'], {'completed': datetime.utcnow().strftime('%Y-%m-%d')})
 
     def test_same_questionnaire_used_in_different_steps_return_correct_zipfile_content(self):
         # TODO: testar com sobreposição do subdiretório media
