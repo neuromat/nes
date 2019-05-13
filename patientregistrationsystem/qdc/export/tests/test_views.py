@@ -8,7 +8,7 @@ from datetime import datetime, date
 import shutil
 
 from django.core.files import File
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.test import override_settings
 
@@ -17,7 +17,6 @@ from experiment.models import Component, ComponentConfiguration, \
     TMSLocalizationSystem, HotSpot, TMSData, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
-from export.views import send_to_plugin
 from export.export_utils import create_list_of_trees
 from export.tests.tests_helper import ExportTestCase
 from patient.tests.tests_orig import UtilTests
@@ -1056,15 +1055,15 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"eeg")[0]
+        path = create_list_of_trees(self.group.experimental_protocol, "eeg")[0]
         eeg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = eeg_conf.component
         step_number = path[-1][4]
-        self.assert_per_participant_step_file_exists(step_number, component_step,'EEGData_1',
-                                                     os.path.basename(eegf.file.name),zipped_file)
+        self.assert_per_participant_step_file_exists(step_number, component_step, 'EEGData_1',
+                                                     os.path.basename(eegf.file.name), zipped_file)
 
-        self.assert_per_participant_step_file_exists(step_number, component_step,'AdditionalData_1',
-                                                     os.path.basename(adf.file.name),zipped_file)
+        self.assert_per_participant_step_file_exists(step_number, component_step, 'AdditionalData_1',
+                                                     os.path.basename(adf.file.name), zipped_file)
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -1123,7 +1122,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"emg")[0]
+        path = create_list_of_trees(self.group.experimental_protocol, "emg")[0]
         emg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = emg_conf.component
         step_number = path[-1][4]
@@ -1161,7 +1160,7 @@ class ExportDataCollectionTest(ExportTestCase):
             name="Coil Orientation"
         )
 
-        tmsdataaux=TMSData.objects.create(
+        tmsdataaux = TMSData.objects.create(
             tms_setting=tms_set,
             data_configuration_tree=dct,
             subject_of_group=self.subject_of_group,
@@ -1178,7 +1177,7 @@ class ExportDataCollectionTest(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
             f.write(b'carambola')
-        temp_file=f.name
+        temp_file = f.name
 
         tms_local_sys = TMSLocalizationSystem.objects.create(
             name="TMS name", brain_area=brainarea,
@@ -1249,7 +1248,6 @@ class ExportDataCollectionTest(ExportTestCase):
         subject1 = ObjectsFactory.create_subject(patient1)
         subject_of_group1 = \
             ObjectsFactory.create_subject_of_group(group1, subject1)
-
 
         # create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
@@ -1330,7 +1328,6 @@ class ExportDataCollectionTest(ExportTestCase):
             component_step = generic_component_configuration.component
             step_number = path[-1][4]
 
-
             self.assert_per_participant_step_file_exists(step_number, component_step,
                                                          'Generic_Data_Collection_1',
                                                          'file.bin',
@@ -1408,7 +1405,7 @@ class ExportDataCollectionTest(ExportTestCase):
             'per_goalkeeper_game_data': ['on'],
             # 'per_additional_data': ['on'],
             'headings': ['code'],
-            'filesformat':['csv'],
+            'filesformat': ['csv'],
             'responses': ['short'],
             'patient_selected': ['age*age'],
             'action': ['run']
@@ -1483,9 +1480,9 @@ class ExportDataCollectionTest(ExportTestCase):
         step_number = path[-1][4]
 
         self.assert_step_data_files_exists(step_number, component_step,
-                                               'AdditionalData',
-                                               os.path.basename(f.name),
-                                               zipped_file)
+                                           'AdditionalData',
+                                           os.path.basename(f.name),
+                                           zipped_file)
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -1539,7 +1536,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"stimulus")[0]
+        path = create_list_of_trees(self.group.experimental_protocol, "stimulus")[0]
         stimulus_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = stimulus_component_configuration.component
         step_number = path[-1][4]
@@ -1797,22 +1794,3 @@ class ExportSelection(ExportTestCase):
         # when session expires the request is made with get
         response3 = self.client.get(response2.url)
         self.assertRedirects(response3, reverse('export_menu'), status_code=302, target_status_code=200)
-
-
-class PluginTest(ExportTestCase):
-
-    def setUp(self):
-        super(PluginTest, self).setUp()
-
-    def tearDown(self):
-        self.client.logout()
-
-    def test_send_to_plugin_status_code(self):
-        url = reverse('send_to_plugin')
-        response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
-        self.assertTemplateUsed(response, 'export/send_to_plugin.html')
-
-    def test_animal_new_url_resolves_animal_new_view(self):
-        view = resolve('/export/send_to_plugin/')
-        self.assertEquals(view.func, send_to_plugin)
