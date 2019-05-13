@@ -1144,18 +1144,6 @@ def export_menu(request, template_name="export/export_menu.html"):
 
 
 @login_required
-def send_to_plugin(request, template_name="export/send_to_plugin.html"):
-    participants = Patient.objects.filter(removed=False)
-
-    context = {
-        'participants': participants,
-        'patient_fields': patient_fields
-    }
-
-    return render(request, template_name, context)
-
-
-@login_required
 def experiment_selection(request, template_name="export/experiment_selection.html"):
     research_projects = ResearchProject.objects.order_by('start_date')
     experiment_list = Experiment.objects.all()

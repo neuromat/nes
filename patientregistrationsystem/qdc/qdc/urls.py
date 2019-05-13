@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^experiment/', include('experiment.urls')),
     url(r'^survey/', include('survey.urls')),
     url(r'^export/', include('export.urls')),
+    url(r'^plugin/', include('plugin.urls')),
     url(r'^home/$', qdcviews.contact, name='contact'),
     url(r'^accounts/login/$', authviews.login, name='login'),
     url(r'^account/', include('django.contrib.auth.urls')),

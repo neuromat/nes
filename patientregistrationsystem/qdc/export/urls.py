@@ -8,7 +8,6 @@ urlpatterns = [
 
     url(r'^filter_participants/$', views.filter_participants, name='filter_participants'),
     url(r'^experiment_selection/$', views.experiment_selection, name='experiment_selection'),
-    url(r'^send_to_plugin/$', views.send_to_plugin, name='send_to_plugin'),
 
     # export (ajax)
     url(r'^get_locations/$', views.search_locations, name='search_locations'),
