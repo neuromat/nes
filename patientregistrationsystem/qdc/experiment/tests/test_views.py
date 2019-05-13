@@ -400,7 +400,8 @@ class ExportExperimentTest(TestCase):
         subject = ObjectsFactory.create_subject(patient)
         return ObjectsFactory.create_subject_of_group(self.group, subject)
 
-    def _set_export_survey_mock_value(self, mockServer, side_effect=False):
+    @staticmethod
+    def _set_export_survey_mock_value(mockServer, side_effect=False):
         first_survey = \
             'UEsDBAoAAAAIAKKGo0737UEwugoAAKk9AAARAAAAc3VydmV5XzkxNTMyNS5sc3PtW21z27gR/n6/AvWXtDM+Ky9Np83ofFVs56oZx8lZ' \
             'StLMzY0GIiEJNUXIIChbl8l/v8ULARCkQCptr0l69+FCYZ8FFosHi12QHn5/v87QlvCCsvy7o0cnD48QyROW0nz53dGb6Ytv/3r0/ek3w' \
@@ -924,14 +925,13 @@ class ExportExperimentTest(TestCase):
         self.assertIn('questionnaireresponse.json', os.listdir(export.temp_dir))
 
     @patch('survey.abc_search_engine.Server')
-    def test_export_try_to_stablish_limesurvey_connection_fails_display_warning_message(self, mockServer):
+    def test_export_survey_stablish_limesurvey_connection_fails_display_warning_message(self, mockServer):
         patient = UtilTests.create_patient(changed_by=self.user)
         self._create_minimum_objects_to_test_patient(patient)
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         survey = create_survey()
         questionnaire_step = ObjectsFactory.create_component(
-            self.experiment, Component.QUESTIONNAIRE,
-            kwargs={'survey': survey})
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
         ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
 
         mockServer.return_value.get_session_key.return_value = {'status': 'Invalid user name or password'}
@@ -944,7 +944,7 @@ class ExportExperimentTest(TestCase):
 
     # CONTINUE: keep with tests for errors in consuming LimeSurvey API
     @patch('survey.abc_search_engine.Server')
-    def test_export_try_to_export_survey_returns_error_from_api_display_warning_message(self, mockServer):
+    def test_export_survey_returns_error_from_api_display_warning_message(self, mockServer):
         patient = UtilTests.create_patient(changed_by=self.user)
         self._create_minimum_objects_to_test_patient(patient)
         rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
@@ -5258,8 +5258,7 @@ class ImportExperimentTest(TestCase):
         rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
         survey = create_survey()
         questionnaire_step = ObjectsFactory.create_component(
-            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
-        )
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
         component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         ObjectsFactory.create_questionnaire_response(dct, self.user, self.TOKEN_ID_KEEPED, subject_of_group)
@@ -5375,3 +5374,33 @@ class ImportExperimentTest(TestCase):
 
             }
         ))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_stablish_limesurvey_connection_fails_display_warning_message(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        mockServer.return_value.get_session_key.return_value = {'status': 'Invalid user name or password'}
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(
+            message, 'Could not import survey(s) to LimeSurvey. Only Experiment data was imported. You can remove '
+                     'experiment imported and try again. If problem persists please contact system administrator')
