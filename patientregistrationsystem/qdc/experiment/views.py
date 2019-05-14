@@ -9479,7 +9479,7 @@ def find_questionnaire_name(survey, language_code):
         title = titles[fallback_language]
     else:
         surveys = Questionnaires()
-        title = surveys.get_survey_title(survey.lime_survey_id, language_code)
+        title = surveys.get_survey_title(survey.lime_survey_id)
         surveys.release_session_key()
 
     return {'sid': survey.lime_survey_id, 'name': title}
