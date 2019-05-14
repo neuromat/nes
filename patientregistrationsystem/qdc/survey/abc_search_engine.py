@@ -101,13 +101,15 @@ class ABCSearchEngine(ABC):
             return None
 
     @abstractmethod
-    def delete_participant(self, survey_id, tokens_ids):
+    def delete_participants(self, survey_id, tokens_ids):
         """ Delete survey participant
         :param survey_id: survey ID
-        :param tokens_ids: token_id to put in a list
-        :return: on success, an array of deletion status for each participant; on failure, status array.
+        :param tokens_ids: list of token ids
+        :return: on success, a dict of deletion status for each participant; on failure, status dict.
         """
-        return self.server.delete_participants(self.session_key, survey_id, [tokens_ids])
+        result = self.server.delete_participants(self.session_key, survey_id, tokens_ids)
+        # In case of success RPC returs a list, otherwise a dict with error status
+        return result if 'status' not in result else None
 
     @abstractmethod
     def get_survey_title(self, sid, language):
@@ -249,6 +251,9 @@ class ABCSearchEngine(ABC):
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, doctype, token, language, 'complete')
 
+        if isinstance(responses, dict):
+            return None
+
         responses = b64decode(responses).decode()
         return re.sub('\n\n', '\n', responses)
 
@@ -389,13 +394,12 @@ class ABCSearchEngine(ABC):
     def find_tokens_by_questionnaire(self, sid):
         """
         :param sid:
-        :return: tokens for specific id
+        :return: list of tokens | dict with error status
         """
-        tokens = self.server.list_participants(
-            self.session_key, sid, 0, 99999999
-        )
+        tokens = self.server.list_participants(self.session_key, sid, 0, 99999999)
 
-        return tokens
+        # if some error occurs RPC returns a dict, so return None
+        return tokens if isinstance(tokens, list) else None
 
     def add_group(self, sid, title, description):
         return self.server.add_group(self.session_key, sid, title)
@@ -413,23 +417,30 @@ class ABCSearchEngine(ABC):
         :param base64_encoded_lsa: Base 64 encoded string from lsa archive
         :return: lime survey id of survey created
         """
-        return self.server.import_survey(self.session_key, base64_encoded_lsa, 'lsa')
+        result = self.server.import_survey(self.session_key, base64_encoded_lsa, 'lsa')
+
+        # RPC returns dict with error status if an issue occurred
+        return None if isinstance(result, dict) else result
 
     def export_survey(self, sid):
         """TODO (NES-956): insert docstring
-        :param sid:
-        :return:
+        :param sid: LimeSurvey survey id
+        :return: on success base64 encoded survey, else None
         """
         result = self.server.export_survey(self.session_key, sid)
         if isinstance(result, dict):  # Returned a dict element (error)
             return None
+
         return result
 
     def delete_responses(self, sid, responses):
+        """Delete responses from LimeSurvey survey
+        :param sid: LimeSurvey survey id
+        :param responses: list of response ids
+        :return: on success, dict with status ok, else None
+        """
         result = self.server.delete_responses(self.session_key, sid, responses)
-        if isinstance(result, dict):
-            return result['status']
-        return result
+        return result if result['status'] == 'OK' else None
 
     def update_response(self, sid, response_data):
         result = self.server.update_response(self.session_key, sid, response_data)
@@ -453,8 +464,8 @@ class Questionnaires(ABCSearchEngine):
     def add_participant(self, str_id):
         return super(Questionnaires, self).add_participant(str_id)
 
-    def delete_participant(self, survey_id, tokens_ids):
-        return super(Questionnaires, self).delete_participant(survey_id, tokens_ids)
+    def delete_participants(self, survey_id, tokens_ids):
+        return super(Questionnaires, self).delete_participants(survey_id, tokens_ids)
 
     def get_survey_properties(self, sid, prop):
         return super(Questionnaires, self).get_survey_properties(sid, prop)
