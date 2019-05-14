@@ -255,6 +255,15 @@
                     </li>
                 {% endif %}
 
+                {% if perms.plugin.can_send_data_to_plugin %}
+                    <li {% block activePlugin %}{% endblock %}>
+                        <a href="/plugin/">
+                            <span class="glyphicon glyphicon-cloud-upload"></span>
+                            {% trans "Plugin" %}
+                        </a>
+                    </li>
+                {% endif %}
+
             </ul>
         </div>
         <div id="myMenuContent" class="tab-content">

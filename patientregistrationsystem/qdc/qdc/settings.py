@@ -58,7 +58,8 @@ PROJECT_APPS = (
     'experiment',
     'survey',
     'export',
-    'configuration'
+    'configuration',
+    'plugin'
 )
 
 INSTALLED_APPS += PROJECT_APPS
