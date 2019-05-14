@@ -256,7 +256,7 @@ class ABCSearchEngineTest(TestCase):
         # tokens_to_delete = [token_id]
 
         # remover participante do questionario
-        result = surveys.delete_participant(sid, token_id)
+        result = surveys.delete_participants(sid, [token_id])
 
         self.assertEqual(result[str(token_id)], 'Deleted')
 
