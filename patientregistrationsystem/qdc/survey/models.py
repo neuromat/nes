@@ -11,6 +11,14 @@ class Survey(models.Model):
     en_title = models.CharField(null=True, max_length=255, default=None)
     is_active = models.NullBooleanField(default=None)
 
+    def __str__(self):
+        if self.en_title:
+            return self.en_title
+        elif self.pt_title:
+            return self.pt_title
+        else:
+            return self.code
+
     class Meta:
         permissions = (
             ("view_survey", "Can view survey"),

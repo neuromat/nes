@@ -4,11 +4,13 @@ import shutil
 import sys
 import tempfile
 import zipfile
-from unittest import skip
 import os
+from unittest import skip
+from unittest.mock import patch, call
 
 from django.apps import apps
 from django.contrib.auth.models import Group, User
+from django.contrib.messages import get_messages
 from django.core.exceptions import PermissionDenied
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
@@ -16,6 +18,7 @@ from django.core.files import File
 from django.test import TestCase, override_settings
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
+from django.conf import settings
 from faker import Factory
 
 from custom_user.tests_helper import create_user
@@ -35,9 +38,9 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     EMGIntramuscularPlacement, EMGNeedlePlacement, EMGSurfacePlacement, EMGAnalogFilterSetting, \
     EMGAmplifierSetting, EMGPreamplifierSetting, EMGPreamplifierFilterSetting, EEG, EMG, Instruction, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, \
-    HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, BrainArea, BrainAreaSystem, EEGFile, EEGCapSize, \
-    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, EMGData, DigitalGamePhase, \
-    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus
+    HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, EEGFile, EEGCapSize, \
+    EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, \
+    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus, QuestionnaireResponse
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -45,7 +48,7 @@ from custom_user.models import Institution
 from experiment.tests.tests_original import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
     AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases, FleshTone, Payment, \
-    Religion, Schooling, ComplementaryExam, ExamFile
+    Religion, Schooling, ExamFile
 
 from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
@@ -376,7 +379,6 @@ class CollaboratorTest(TestCase):
 
 
 class ExportExperimentTest(TestCase):
-
     TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def setUp(self):
@@ -390,20 +392,186 @@ class ExportExperimentTest(TestCase):
 
         self.client.login(username=self.user.username, password=passwd)
 
-        self.temp_dir = tempfile.mkdtemp()
-
     def tearDown(self):
         self.client.logout()
 
     def _create_minimum_objects_to_test_patient(self, patient):
         # TODO: equal to the one in ImportExperimentTest
-        research_project = ObjectsFactory.create_research_project(self.user)
-        experiment = ObjectsFactory.create_experiment(research_project)
-        group = ObjectsFactory.create_group(experiment)
         subject = ObjectsFactory.create_subject(patient)
-        ObjectsFactory.create_subject_of_group(group, subject)
+        return ObjectsFactory.create_subject_of_group(self.group, subject)
 
-        return experiment
+    @staticmethod
+    def set_export_survey_mock_value(mockServer, side_effect=False):
+        first_survey = \
+            'UEsDBAoAAAAIAKKGo0737UEwugoAAKk9AAARAAAAc3VydmV5XzkxNTMyNS5sc3PtW21z27gR/n6/AvWXtDM+Ky9Np83ofFVs56oZx8lZ' \
+            'StLMzY0GIiEJNUXIIChbl8l/v8ULARCkQCptr0l69+FCYZ8FFosHi12QHn5/v87QlvCCsvy7o0cnD48QyROW0nz53dGb6Ytv/3r0/ek3w' \
+            '5Ql5Zrk4vQbNLykazIp+Zbszlky3W3Iqf41HDQlAD9//lZ3f/r4L0+GA/cTZBnOlyVekgJ+uF+nJB8O7A+ADXzccMlZudEaC0qyVD2a5x' \
+            'yvyemSpsOB+xlIi6hUdT6Tj50gxlPCI6iUFAmnGwFzjaCqqUUgHOcpW9NfsOxqpgaPGkcyssV5EnZpfmrPcXZn/AZP6gEcS9PT4R9+Ojs' \
+            'fTUc/Pfr559PhQDZpYeEL//bo6ZPHTxWisAjnOgccp0AauqCJsl136WC+nvJmY3hPpMGeUwemyTLFKhM9kkchNdGmGwfWhMpnumU4qLyyz' \
+            'z2P/yPueUF5IZCSHOCbx5+Hb9SD2pEDuyWHtyUpZB+x/Xkb3YEbzIEzszioYxNHpQICU0xMRRaTVzOMTYGTZUS8IllsAzOxisaVNawVFoz' \
+            'vehjZGaR6hJ8iwRmZxZcD/jdLyQKXmYgFsj2RqTY7lpYZaQnAneHrthm+bu3uc6xymIcK40l6b+VYoJT0ctIrJRX6LFRiSS8n56TYwG6h' \
+            '84zQVGMVwEzJLKPDXzs8qgdXlJfrOeHP9MQrRTN7IGS1nyX7qmdFtdBY3agBlmsO9F6BnKBuaRirHtbMqYWrvrGp4l/YqW03MI+DDagvM' \
+            'xGv4mK4kk6w9yS4bZ4E/3umnXcwDSe3JS2oXAZYOdKDayOngaTKsBCc5cvTZ2ChfhrOOQIufV6Ue/TVU+7JZ0K5ruBWlPN/kUT0CmyvMR' \
+            'c0oRuci/bANpxL4s1PPy+yPfnqyfbn34xsYU5dJ9u0g2wLmUv/aBaiB+F07l21I7ZAwAu0qLXmmHLyeRHuS49u4AKb4UWKrRq9nn4hFCx' \
+            'IAofrARycKIUvj4SPv14SelWtX8s6V2AhOJ2Xgnx6iWu7iGC2OCtj8j2F279XJVnDHGRF09SsoJNqtDIx7Ew3flrq/BsPH6ZR/53hWwhV' \
+            '59CwUFemMTrFrztwuqax6whyv4EIUsTqdwHZl0rxO0Yha0yzGChn+W5NfyExexf4XrCYnPE1jt0jFHhLBAVzlrFJCbLeZPE59bj9wGmqK' \
+            'iCczewtdOzSFwYEb65jFzylPCfYDY0Om2XsDuI7LUT0/kbhpD9imFIwnUPP1EJ3QDlJgS5JFCZHheNnG70Eo7nAeXFHeMxhkPGnaWyGnC' \
+            'xKHuPcppxnNIGZCXAWPHRClxxvVjFYBh1paOwWT6yzru1QkDyFEx7O8zXuuDMU7AaOI+2ujXxDAgsfvynDRUGKQr6Vic1Fkg1vRLLCcZA' \
+            'aP9bRnJVgz6wzAlShzbuNjnWr+jO3YCQaFhQyZ64wjKLVfOCEX4pVbIFW7O7envMdQHXLTfNFbFiJy5lexw7YLezJhKWxJdY+h1DXDdpw' \
+            'lgAdICZ2QnGSwL+i4x68hl2xIhYPatgNELMvFijOd12vyGoaQNUux96RLGFRl0kUOGwJvIuZWhGD5im5j+ByvKVLRcmUZDh2L58DK3dzh' \
+            'nn0PJfRFYKwwAsI/jCVTUY6XLRkbJkRDKfUTobAQuyi7zACON7QGxKa3ZlJdpdWKmXw7hPlT4hrXJYYOqdSAA+s9rjTSHhePHry96VsPQ' \
+            'FHOCUNNJo26QiLHk+ioSr1qOoknWc4nR+Ujmmtyg+baYR9+yJTDZqEwyFNcaIrwUp6WJ3Uln9UE7DJRmibE2igzThCoBOY0fy0o+HNmtB' \
+            'TkK4IS0knMMAgCQmLuYbcqVUJScMeX+aZIxOTVtuVoKqdXXYSYmsyDddZSgg0rVXpKfOUEGJazaBBptIYOJT7ajpraVcxMsMsm72EYE9ib' \
+            'g2qHCZcPScw+yBIZEJ8Q252RHtSE2rvg5k1dXlOY1U9kWO6TnfaqG4kFqqTnhakEWign/l0xKYaVGsHCc7Ab65nMwPfazp18erLp85VRm' \
+            'aWppbCNBamLnUqNplxGs+thhM6hSqracRBX+bgVXbj4P+0cCvz/esSmHCEhtyNYo76tllXIgeuTvw2tJWZewL/5N/3NlMLtUKQAoQqod' \
+            'go2WwgnLIn8QJbS07QGnbbcLqbtjwhtLUV06qu84b9F2juYqO643BnGBGiOjr3XXoolayY6YeOLxAqcJ8PGips16ceFtjvUy4LN9QT5D5' \
+            '6i1HBIXb2hcYrYR92oMkqHM1ovqWCzOR7u0OV+uM5gaQpPXAQrXQIXqcpBw/TeeMSaJhT78BxjFYv7kEu130jVqFt+S3Puj6l90yl0zP/' \
+            'JOqayz69nirVWVgcMo5V6uMEnUd2Og18hZNV2wVKd+3TiE3tpVATFujvLQOaiEAzePekX2fqr2/rHfivoNoi2iCUeeGrITOxqtEOEaetLT' \
+            'ZMI+S4yYxlo375LxjaVJ8GCIJojjAqWmbZ7C0ynPfVDMEcfXgxvp5Mr0YvLz4em09azD87VqIVFDFoTkiOtHIasemkrj5dESNAtEBqIdJ' \
+            'nRnb0YfLm+u3FezXsUV2vkp1fTM6ux6+n41dXIWRas+EYwTmPC4ISSO5vkPQbDJ3R/AYsh4wgsGtCIaHiJNsF0/0wOn85vlIWoT/qHxcv' \
+            'R+PLj3+q47496D+jdKZMW8G40oEpUyZq71Q+MdN+c335sT7geIHkUoASBBx0Jz8SaS6CWIGTjbtxngI6f+DAUCUSCiuJ8x1aQ92oV1ORr' \
+            'Kh7T72CZTKRggxFOdHa9+r19NWb6V77MHQ7z3ByIystIAoE4r7GhmZ+onXjK2nc/q3Rviu8I9n/1FA2En7gFvT7igzWewteg0Nyke3QHb' \
+            'EbUPq69yZ8RyRpgHQrLJDd0JJHOyKQSZHlrrZ0PNYrQouVXhFprx5TdiFqmxoqgSxDeAszw/KjTCgmykyjqw4EviHK1t+jw/9LdNi/Mfb' \
+            'tCS9d9b4P0eZqKdcHon/N0j6M31V0tN578D0rjxHjqIC0gOUElbIMlz7nSPWI5D0YVM/Hem9V/bcflTkQENxmua+Jj3zChxuF2W3qL+N' \
+            'xnc9uUWAFngXU7aCOMluuvb0qQXjOSlEfDjxADdVoqrhWzTScpyQYbC1KtsZi7SZ4AA8Qzhl3e5LlkIYK5O8uXP3U++skts7tS+yXJW6Z' \
+            'zzzuyI+N1Ao6u2Ur2Ccb98f3Ws+xsXuzq+4gwSqKBxG7LVK3kUc5X82sKhpAv9AZnLyQTk/QdIUh9smeoUjwHZAvT+L8WJRcfkjVzhM1h' \
+            '+jCgoNrC3tw4I2sSCPFt4WjV5vU9T2Idyu5ryRs/BWCXIX5mhbyz/mUJ82i+KuhBox3Gx/ajfoPAhs8cM0I5eTOLfQdLrRNQvJEmrRzbE' \
+            'YPfMMeBM4/2xPd9emQMZy2HUnXF5evRufNuBLrrSBESeA0oFualjizE7D9vh1fvLu+mLx+dTW5OKx3efnX2f3F+Xi6v/u3FHzqXkOg+U5' \
+            'HWjmMPKHdgTwdTceT6fhsYg+9vcvYXOX6RcAnsQtyLLGS0yszUTTGDwaIWPA7yb4UktU78TJpZ6R5kwQFA+RxS8jqctm5tHbj/sjAdj+6' \
+            'mry7uJ6Onl+2BCtHkCC4+ldMje9SW0Edl+QtN+PDgfuz618BUEsDBAoAAAAIAKKGo04Kn8n72AYAAINUAAAbAAAAc3VydmV5XzkxNTMyN' \
+            'V9yZXNwb25zZXMubHNy7ZzpbtpKFMe/9yly8z3FKzZXlIqwBDCLy2qoqqsBD8Z4wwsG/AZ9jPuxuo+RF7uENHW2oWZKEBolQgmOzxjkn/' \
+            '5nzjLj7Oe1ZV6E0PN1x/50SX+kLi+gPXFU3dY+Xfa65Svx8nPuQ1Z1JksL2kEuW9ct2Fl6IdwUnUl3s4C5NvQXju1DP5t6eTJbvO7fXz3' \
+            'HpNlsKj7MmsDWlkCDfvw2B+1s6tdB/HZr4j18Si471aGpPvy1gQVzuppNxUePTgSOcXfJV8/5y7GlByoIIMLABH6w2H46anwAvODhGyJs' \
+            'MjTPMrxCK/TvDJjfGbD7DRiF+50B/8Qg9XAbPWd1/zuX1dVc9q+vhWK+m//KCd++ba3u/rW7i/EZxfPtyNOAVilSecPfmf00ie9pbE5nR' \
+            'OqKorevC4r6e/faDXls+3Cr41HMzib+/5O7HZtB+/5aT8/+E9/3R1f8SP362Q16YhUfMI+GUMz2e6evKO7pV39iHB+w8cgMT3Ms+gPZeN' \
+            'gWXDwMPLHbnYoP+Nhu/Mxueyq1I/gCI8OgMEq2UDR7Qt8f3NSWqwzRGGnximKvKPFQjPThCKtOkJRiASyem6JBskg9TmHYcuY3I1vaAId' \
+            'uEQ2Soa5oBkePHM8IZ6FHFoVRXw0m6Y27aEcKlZ42iMaIq0fucIR1YI3VpBwbemKQNIrjdXMNpHUjyHRaotDKk80xc0UJ29cJ/GoFmqaT' \
+            'EOPA8Uw1uSSRJBeKUglCYyR36Oqw+E7yOCTH5u2/Sf3qS9M9HDmkaw0Dc94D8AYUoJKXiQcpnibUKXl+AC/ydrByvCAh0dEK6shBe6IfF' \
+            'NrRJkyPZmJYrXJWc9wmHi2ORjESka3wfiTX6HNTNEekRDtCG9SBI8yacFyc1N45Hovj84gGjTF57MOKKIzauD0Ck7E06JRUoXJDNMa72g' \
+            'BOLkKzmfNIRXgUxXQ4nOVbosvlN5w6rRJNcStGmsKYL3kMhOY0MUX4ooqABolUY1ky+V5JYlqdbqk/7hLNkaF2lbqDneqeDzudFDkkwo' \
+            'GgNSym2V5YfVauWGQjPG2xtaTb/gFRa2KYGRRLI3KackEtAS8fGT7haYi4mxxPkoa8EUcmjRSlra3ldN4begAYrkg2SMz5EcOvWkljVfu' \
+            'AMh2Fgihoo6UaihrkBTaQObIhnk6NSzshRHUJkyccSJ+6sUy7rHSHTc11qxEgmuLd/MjjNT+oM/KrNLJ0rjHdCR0qX6J0p2126kTDxJU' \
+            'kRqCTXJJwuU4+PSIbkulVdWzJsNI326pcIztmJSB9pJENkMiWpx7dHLOaBnvl9ynySHq057f/JVXkJjlGZI1cHoldRWpExVpVoUKPeIw4' \
+            'nWWMcPUP2h/gwPYHg6wPqNFmwhUqRTAreMUWJJvt6VIRDVhJfa0KzUOcLbIDModFNnLgNqcsaxEIyCZ5OpXKnm5BD1zcLSBdQj/x4qwO1' \
+            'Ja2ih63p5iHTDmVtTYQZYtiBxXQ5cmOb7GTFVbkz6I9QiPbI5zY6dca+ci4duRS3yEaI65SceLboyNkkGWDlcIKX7ShS5VLmmGkyUaIOW' \
+            '1iRLa3Pxa+bjpJ883ooDQFWY7NXG9gqPbHXaV+M5wVyIZ5Oj1OkgZAyREiSwYFBoByNJqrG2Hqj8x3hK8gxFj8CszF7E1qBiwyxrE6HW6' \
+            '4ZqjZlKrcDDZkk8T0rBgkYZB40WRwkFdFZpbTydq/1pX1tAzT8vI9yjkSyDfLLDlksHPNu3NjUbuRQR6uMi7RJP9gDQGN0SPpJQ11igd0' \
+            'u2gkSa8PynW9S+UrurTe8ESTPGGN4Pb7QWHr6KCZEtntqrlMswuKTNiQmKBrkA0Tc6bEkeRBLLtgmTydRAY9M8Ob8w7vDtJc4GjveymPh' \
+            'PL2e+JyXfcQTTJITbIZduG1Ru5UdAMJkL1++YQgX6GDAvnK/tk9zhXZulRNFtTarlHPeCYssWSDPJ1zfaseNIcE2YWqVBNba4MeOpFLdo' \
+            'PrD2rmOAtgW/bzmBTpXVfPt17u0SSyD11eDUaZQXGyLIRuqJG9VuunJk+0OeSEO/E4JN6W0DcXopCXuJbOFwSi8WKnmVyaFs+hNcIi+9B' \
+            'jQaD7LRiVw4ZdDySyMVKYGM+lSckim5TNudzLT9r1Zr2nS9eVd4yvqpHmKYxNlQkxPm+g7HGqSDUGfXnm99wlBQUbQrIrPvhOleYy57O+' \
+            'mUU2KqMOb1jAY6R2zWZMshfG4j+pB0uTx3etPLJIYNQL1nzMVTUNVO1Sh2yMmJo8l03OHHKC/FKQ+iWd8df1Ca2QvjkW37OyZ/EYOw7pU' \
+            '62IG9cjxdczRsc2tHeMx8N4pAkydf+EydSjR3imfj1Q9MP/UEsDBAoAAAAIAKKGo06JJeyIvAUAAPpMAAAYAAAAc3VydmV5XzkxNTMyNV' \
+            '90b2tlbnMubHN07ZxZj9o6GIbv+ys4cz+HbGRBlIp9CUtKAgSq6sgkJoRsZCFAfn0hzAxDq0PPxXEtSyPNhR1/2eZx8Pe+dlL5cvTcQgq' \
+            'j2A78z0/039RTAfpGYNq+9flpqrWfxacv1U8VMzD2HvST6qdCZWB7UN1HKTw1A0M77WBVCxzox5Xiry3n8GZ9dj18leHZSvFWPbe5wLf2' \
+            'wILxuXKrVaFfKb5VzmHF93GVJD9bvsfahq6ZF1/KPvBgNbHNSvFW/al1B6LENuwd8JN/Hgau7ShOLqUHMS74bQj0gO3+rj1OQLKPH0TlN' \
+            '/3wQq7/oQchKxcYjmvHCXx01/GZ8oPmCHq2b54J/rcwI9g/jDMCb+fCx1e0j2HswvWjw6TAtc11FHi/izlfzUMY3u6XLvFSvXa4KDi8dL' \
+            'dzKS+c+6NtVit/fWs0a1rtG/39e7VSvGy6Nr51ouLLhtce81rP8d9Vrn3hdsixnB/zfdvLiS994hZXHx2BfBwmkjoWhXHteiF5yDX8guw' \
+            'WPcrb4+sznd/QO7I/h9213YfnhG/x1F38tfG6wxvqWzBD0eIzJTzTUoHmyiyX73uLu+73iv/nc7xtz3EUX3n8GxgGI5idrneT1FkqKt1b' \
+            'NAkDUypTDEowLD4wy1PKLzdi2utx3mg1IQ8MixIMhw+MKkzAAATCZgRXTaP/AeYOTAkfmLbslqYtmRmrWmu20ggCw1IFWigzFEowPD4wT' \
+            'haMlIbZAlEtc2KFGDDnP6ZA82VaQAlGwAdGsJZ7MxUtWBLYROGIA8OIKMGI+MBYjGbQqf4149WJqw6IA8Mi/SmT8IHJfGUd0aMVa1lw2i' \
+            'bviWGRpss0hY+MshQ1XR5mzX5Pp9KIJDJsgRLLLI+UDEbtv4VNNgvgIgJtKwMJeWSQjjI0RvHPieqsPzwnZfVAac0CwshIZQrpMENjVP' \
+            '9S/QRT86xi9EFnsWl8kLkng1H+NxgA2tlya56Edbx0ySJDU2Ua7TiDUf+vjWNct/Xjug15ZU/Yr9mFDFKZSWM0AKIZaA9sjap1bfl4KhF' \
+            'HhkGbNWN0ADZOtC0FpXDOc0lgSR9k7slgtABYid1F42W4FsNEBh3yyCC1mWmMHoDsC013Kszieae/P5D2zNBlCuk4w2D0AOzD3OBP4W6S' \
+            '6RS/HpJHBqnSZDB6AHaauNspgB3QgHqNpCkAhsr1DFoyGD0APl1samMx5Gonzlz3SCLDFCgBcQbAYPQA5r51VPhatIgAcEKRPDJo18xg9' \
+            'AD4Q2/lKbA7cyem0vfIIkPziN0ZBqMHYGYng2t0m2DTiJpj+EHmngxGD+Cgs8JXaxFS7ZblODx5ZGikZDB6AJ6qcosjQ23WVLczP32QuS' \
+            'eD0QPoh8xIA00mHcpMojnEkUGcAWD0AEyXBf1J6AykyIUtljwySD0AFqMH0D7Ml9K8aewbaZhagAwy0jPFPdPUZbYZMRmMHsBKEOjZGGb' \
+            'tdOgPEpkkMuKFTAlpbsZi9ABGW2VaMyaD0WBqy/UuYWSk8oviQEUGoweQqSXHAxEjT/o+4xKiNHMyDHdZbF5CmgGwGD2ANUzHwbaz9OUT' \
+            'COgxYWRExEqTxegBWKvJEhgrea62TKFLyMzZlQz/B8YZjB7AyXP9tq4tRlYY9jKScjNGymcB0L5shtED0I/WXFQ8ip13gVYiZMH5K5nLO' \
+            'IN0VROLUWlq0JT74vjo0IsgCwlxNN/I8GUa6TPDYVSaY2Hm7kShJnNju9QQCCJzed+sVGbRvqGJUWkmM2UTT8M9BQUfQkLWm70ngzRr5j' \
+            'Aqza8Nedaymfg4MGidlHc035FBq2c4jErTy7jVINNjW3JU37E+yNyTwag09Sj2s8gCVrdJ1ZyYMDLnDACpnuEwKs25YA09ZjTZeTNW6ZL' \
+            'kzvwRMhiVZr0Ubp1dv6OAGjxIIXlk0GbNGOc0nUHD2664nmWBnt9SiSPzv8xp5oX8g2HF1y+GVYq375j9AFBLAQIUAAoAAAAIAKKGo073' \
+            '7UEwugoAAKk9AAARAAAAAAAAAAAAAAAAAAAAAABzdXJ2ZXlfOTE1MzI1Lmxzc1BLAQIUAAoAAAAIAKKGo04Kn8n72AYAAINUAAAbAAAAA' \
+            'AAAAAAAAAAAAOkKAABzdXJ2ZXlfOTE1MzI1X3Jlc3BvbnNlcy5sc3JQSwECFAAKAAAACACihqNOiSXsiLwFAAD6TAAAGAAAAAAAAAAAAA' \
+            'AAAAD6EQAAc3VydmV5XzkxNTMyNV90b2tlbnMubHN0UEsFBgAAAAADAAMAzgAAAOwXAAAAAA=='
+
+        second_survey = \
+            'UEsDBAoAAAAIAKKGo0737UEwugoAAKk9AAARAAAAc3VydmV5XzkxNTMyNS5sc3PtW21z27gR/n6/AvWXtDM+Ky9Np83ofFVs56oZx8lZ' \
+            'StLMzY0GIiEJNUXIIChbl8l/v8ULARCkQCptr0l69+FCYZ8FFosHi12QHn5/v87QlvCCsvy7o0cnD48QyROW0nz53dGb6Ytv/3r0/ek3w' \
+            '5Ql5Zrk4vQbNLykazIp+Zbszlky3W3Iqf41HDQlAD9//lZ3f/r4L0+GA/cTZBnOlyVekgJ+uF+nJB8O7A+ADXzccMlZudEaC0qyVD2a5x' \
+            'yvyemSpsOB+xlIi6hUdT6Tj50gxlPCI6iUFAmnGwFzjaCqqUUgHOcpW9NfsOxqpgaPGkcyssV5EnZpfmrPcXZn/AZP6gEcS9PT4R9+Ojs' \
+            'fTUc/Pfr559PhQDZpYeEL//bo6ZPHTxWisAjnOgccp0AauqCJsl136WC+nvJmY3hPpMGeUwemyTLFKhM9kkchNdGmGwfWhMpnumU4qLyyz' \
+            'z2P/yPueUF5IZCSHOCbx5+Hb9SD2pEDuyWHtyUpZB+x/Xkb3YEbzIEzszioYxNHpQICU0xMRRaTVzOMTYGTZUS8IllsAzOxisaVNawVFoz' \
+            'vehjZGaR6hJ8iwRmZxZcD/jdLyQKXmYgFsj2RqTY7lpYZaQnAneHrthm+bu3uc6xymIcK40l6b+VYoJT0ctIrJRX6LFRiSS8n56TYwG6h' \
+            '84zQVGMVwEzJLKPDXzs8qgdXlJfrOeHP9MQrRTN7IGS1nyX7qmdFtdBY3agBlmsO9F6BnKBuaRirHtbMqYWrvrGp4l/YqW03MI+DDagvM' \
+            'xGv4mK4kk6w9yS4bZ4E/3umnXcwDSe3JS2oXAZYOdKDayOngaTKsBCc5cvTZ2ChfhrOOQIufV6Ue/TVU+7JZ0K5ruBWlPN/kUT0CmyvMR' \
+            'c0oRuci/bANpxL4s1PPy+yPfnqyfbn34xsYU5dJ9u0g2wLmUv/aBaiB+F07l21I7ZAwAu0qLXmmHLyeRHuS49u4AKb4UWKrRq9nn4hFCx' \
+            'IAofrARycKIUvj4SPv14SelWtX8s6V2AhOJ2Xgnx6iWu7iGC2OCtj8j2F279XJVnDHGRF09SsoJNqtDIx7Ew3flrq/BsPH6ZR/53hWwhV' \
+            '59CwUFemMTrFrztwuqax6whyv4EIUsTqdwHZl0rxO0Yha0yzGChn+W5NfyExexf4XrCYnPE1jt0jFHhLBAVzlrFJCbLeZPE59bj9wGmqK' \
+            'iCczewtdOzSFwYEb65jFzylPCfYDY0Om2XsDuI7LUT0/kbhpD9imFIwnUPP1EJ3QDlJgS5JFCZHheNnG70Eo7nAeXFHeMxhkPGnaWyGnC' \
+            'xKHuPcppxnNIGZCXAWPHRClxxvVjFYBh1paOwWT6yzru1QkDyFEx7O8zXuuDMU7AaOI+2ujXxDAgsfvynDRUGKQr6Vic1Fkg1vRLLCcZA' \
+            'aP9bRnJVgz6wzAlShzbuNjnWr+jO3YCQaFhQyZ64wjKLVfOCEX4pVbIFW7O7envMdQHXLTfNFbFiJy5lexw7YLezJhKWxJdY+h1DXDdpw' \
+            'lgAdICZ2QnGSwL+i4x68hl2xIhYPatgNELMvFijOd12vyGoaQNUux96RLGFRl0kUOGwJvIuZWhGD5im5j+ByvKVLRcmUZDh2L58DK3dzh' \
+            'nn0PJfRFYKwwAsI/jCVTUY6XLRkbJkRDKfUTobAQuyi7zACON7QGxKa3ZlJdpdWKmXw7hPlT4hrXJYYOqdSAA+s9rjTSHhePHry96VsPQ' \
+            'FHOCUNNJo26QiLHk+ioSr1qOoknWc4nR+Ujmmtyg+baYR9+yJTDZqEwyFNcaIrwUp6WJ3Uln9UE7DJRmibE2igzThCoBOY0fy0o+HNmtB' \
+            'TkK4IS0knMMAgCQmLuYbcqVUJScMeX+aZIxOTVtuVoKqdXXYSYmsyDddZSgg0rVXpKfOUEGJazaBBptIYOJT7ajpraVcxMsMsm72EYE9ib' \
+            'g2qHCZcPScw+yBIZEJ8Q252RHtSE2rvg5k1dXlOY1U9kWO6TnfaqG4kFqqTnhakEWign/l0xKYaVGsHCc7Ab65nMwPfazp18erLp85VRm' \
+            'aWppbCNBamLnUqNplxGs+thhM6hSqracRBX+bgVXbj4P+0cCvz/esSmHCEhtyNYo76tllXIgeuTvw2tJWZewL/5N/3NlMLtUKQAoQqod' \
+            'go2WwgnLIn8QJbS07QGnbbcLqbtjwhtLUV06qu84b9F2juYqO643BnGBGiOjr3XXoolayY6YeOLxAqcJ8PGips16ceFtjvUy4LN9QT5D5' \
+            '6i1HBIXb2hcYrYR92oMkqHM1ovqWCzOR7u0OV+uM5gaQpPXAQrXQIXqcpBw/TeeMSaJhT78BxjFYv7kEu130jVqFt+S3Puj6l90yl0zP/' \
+            'JOqayz69nirVWVgcMo5V6uMEnUd2Og18hZNV2wVKd+3TiE3tpVATFujvLQOaiEAzePekX2fqr2/rHfivoNoi2iCUeeGrITOxqtEOEaetLT' \
+            'ZMI+S4yYxlo375LxjaVJ8GCIJojjAqWmbZ7C0ynPfVDMEcfXgxvp5Mr0YvLz4em09azD87VqIVFDFoTkiOtHIasemkrj5dESNAtEBqIdJ' \
+            'nRnb0YfLm+u3FezXsUV2vkp1fTM6ux6+n41dXIWRas+EYwTmPC4ISSO5vkPQbDJ3R/AYsh4wgsGtCIaHiJNsF0/0wOn85vlIWoT/qHxcv' \
+            'R+PLj3+q47496D+jdKZMW8G40oEpUyZq71Q+MdN+c335sT7geIHkUoASBBx0Jz8SaS6CWIGTjbtxngI6f+DAUCUSCiuJ8x1aQ92oV1ORr' \
+            'Kh7T72CZTKRggxFOdHa9+r19NWb6V77MHQ7z3ByIystIAoE4r7GhmZ+onXjK2nc/q3Rviu8I9n/1FA2En7gFvT7igzWewteg0Nyke3QHb' \
+            'EbUPq69yZ8RyRpgHQrLJDd0JJHOyKQSZHlrrZ0PNYrQouVXhFprx5TdiFqmxoqgSxDeAszw/KjTCgmykyjqw4EviHK1t+jw/9LdNi/Mfb' \
+            'tCS9d9b4P0eZqKdcHon/N0j6M31V0tN578D0rjxHjqIC0gOUElbIMlz7nSPWI5D0YVM/Hem9V/bcflTkQENxmua+Jj3zChxuF2W3qL+N' \
+            'xnc9uUWAFngXU7aCOMluuvb0qQXjOSlEfDjxADdVoqrhWzTScpyQYbC1KtsZi7SZ4AA8Qzhl3e5LlkIYK5O8uXP3U++skts7tS+yXJW6Z' \
+            'zzzuyI+N1Ao6u2Ur2Ccb98f3Ws+xsXuzq+4gwSqKBxG7LVK3kUc5X82sKhpAv9AZnLyQTk/QdIUh9smeoUjwHZAvT+L8WJRcfkjVzhM1h' \
+            '+jCgoNrC3tw4I2sSCPFt4WjV5vU9T2Idyu5ryRs/BWCXIX5mhbyz/mUJ82i+KuhBox3Gx/ajfoPAhs8cM0I5eTOLfQdLrRNQvJEmrRzbE' \
+            'YPfMMeBM4/2xPd9emQMZy2HUnXF5evRufNuBLrrSBESeA0oFualjizE7D9vh1fvLu+mLx+dTW5OKx3efnX2f3F+Xi6v/u3FHzqXkOg+U5' \
+            'HWjmMPKHdgTwdTceT6fhsYg+9vcvYXOX6RcAnsQtyLLGS0yszUTTGDwaIWPA7yb4UktU78TJpZ6R5kwQFA+RxS8jqctm5tHbj/sjAdj+6' \
+            'mry7uJ6Onl+2BCtHkCC4+ldMje9SW0Edl+QtN+PDgfuz618BUEsDBAoAAAAIAKKGo04Kn8n72AYAAINUAAAbAAAAc3VydmV5XzkxNTMyN' \
+            'V9yZXNwb25zZXMubHNy7ZzpbtpKFMe/9yly8z3FKzZXlIqwBDCLy2qoqqsBD8Z4wwsG/AZ9jPuxuo+RF7uENHW2oWZKEBolQgmOzxjkn/' \
+            '5nzjLj7Oe1ZV6E0PN1x/50SX+kLi+gPXFU3dY+Xfa65Svx8nPuQ1Z1JksL2kEuW9ct2Fl6IdwUnUl3s4C5NvQXju1DP5t6eTJbvO7fXz3' \
+            'HpNlsKj7MmsDWlkCDfvw2B+1s6tdB/HZr4j18Si471aGpPvy1gQVzuppNxUePTgSOcXfJV8/5y7GlByoIIMLABH6w2H46anwAvODhGyJs' \
+            'MjTPMrxCK/TvDJjfGbD7DRiF+50B/8Qg9XAbPWd1/zuX1dVc9q+vhWK+m//KCd++ba3u/rW7i/EZxfPtyNOAVilSecPfmf00ie9pbE5nR' \
+            'OqKorevC4r6e/faDXls+3Cr41HMzib+/5O7HZtB+/5aT8/+E9/3R1f8SP362Q16YhUfMI+GUMz2e6evKO7pV39iHB+w8cgMT3Ms+gPZeN' \
+            'gWXDwMPLHbnYoP+Nhu/Mxueyq1I/gCI8OgMEq2UDR7Qt8f3NSWqwzRGGnximKvKPFQjPThCKtOkJRiASyem6JBskg9TmHYcuY3I1vaAId' \
+            'uEQ2Soa5oBkePHM8IZ6FHFoVRXw0m6Y27aEcKlZ42iMaIq0fucIR1YI3VpBwbemKQNIrjdXMNpHUjyHRaotDKk80xc0UJ29cJ/GoFmqaT' \
+            'EOPA8Uw1uSSRJBeKUglCYyR36Oqw+E7yOCTH5u2/Sf3qS9M9HDmkaw0Dc94D8AYUoJKXiQcpnibUKXl+AC/ydrByvCAh0dEK6shBe6IfF' \
+            'NrRJkyPZmJYrXJWc9wmHi2ORjESka3wfiTX6HNTNEekRDtCG9SBI8yacFyc1N45Hovj84gGjTF57MOKKIzauD0Ck7E06JRUoXJDNMa72g' \
+            'BOLkKzmfNIRXgUxXQ4nOVbosvlN5w6rRJNcStGmsKYL3kMhOY0MUX4ooqABolUY1ky+V5JYlqdbqk/7hLNkaF2lbqDneqeDzudFDkkwo' \
+            'GgNSym2V5YfVauWGQjPG2xtaTb/gFRa2KYGRRLI3KackEtAS8fGT7haYi4mxxPkoa8EUcmjRSlra3ldN4begAYrkg2SMz5EcOvWkljVfu' \
+            'AMh2Fgihoo6UaihrkBTaQObIhnk6NSzshRHUJkyccSJ+6sUy7rHSHTc11qxEgmuLd/MjjNT+oM/KrNLJ0rjHdCR0qX6J0p2126kTDxJU' \
+            'kRqCTXJJwuU4+PSIbkulVdWzJsNI326pcIztmJSB9pJENkMiWpx7dHLOaBnvl9ynySHq057f/JVXkJjlGZI1cHoldRWpExVpVoUKPeIw4' \
+            'nWWMcPUP2h/gwPYHg6wPqNFmwhUqRTAreMUWJJvt6VIRDVhJfa0KzUOcLbIDModFNnLgNqcsaxEIyCZ5OpXKnm5BD1zcLSBdQj/x4qwO1' \
+            'Ja2ih63p5iHTDmVtTYQZYtiBxXQ5cmOb7GTFVbkz6I9QiPbI5zY6dca+ci4duRS3yEaI65SceLboyNkkGWDlcIKX7ShS5VLmmGkyUaIOW' \
+            '1iRLa3Pxa+bjpJ883ooDQFWY7NXG9gqPbHXaV+M5wVyIZ5Oj1OkgZAyREiSwYFBoByNJqrG2Hqj8x3hK8gxFj8CszF7E1qBiwyxrE6HW6' \
+            '4ZqjZlKrcDDZkk8T0rBgkYZB40WRwkFdFZpbTydq/1pX1tAzT8vI9yjkSyDfLLDlksHPNu3NjUbuRQR6uMi7RJP9gDQGN0SPpJQ11igd0' \
+            'u2gkSa8PynW9S+UrurTe8ESTPGGN4Pb7QWHr6KCZEtntqrlMswuKTNiQmKBrkA0Tc6bEkeRBLLtgmTydRAY9M8Ob8w7vDtJc4GjveymPh' \
+            'PL2e+JyXfcQTTJITbIZduG1Ru5UdAMJkL1++YQgX6GDAvnK/tk9zhXZulRNFtTarlHPeCYssWSDPJ1zfaseNIcE2YWqVBNba4MeOpFLdo' \
+            'PrD2rmOAtgW/bzmBTpXVfPt17u0SSyD11eDUaZQXGyLIRuqJG9VuunJk+0OeSEO/E4JN6W0DcXopCXuJbOFwSi8WKnmVyaFs+hNcIi+9B' \
+            'jQaD7LRiVw4ZdDySyMVKYGM+lSckim5TNudzLT9r1Zr2nS9eVd4yvqpHmKYxNlQkxPm+g7HGqSDUGfXnm99wlBQUbQrIrPvhOleYy57O+' \
+            'mUU2KqMOb1jAY6R2zWZMshfG4j+pB0uTx3etPLJIYNQL1nzMVTUNVO1Sh2yMmJo8l03OHHKC/FKQ+iWd8df1Ca2QvjkW37OyZ/EYOw7pU' \
+            '62IG9cjxdczRsc2tHeMx8N4pAkydf+EydSjR3imfj1Q9MP/UEsDBAoAAAAIAKKGo06JJeyIvAUAAPpMAAAYAAAAc3VydmV5XzkxNTMyNV' \
+            '90b2tlbnMubHN07ZxZj9o6GIbv+ys4cz+HbGRBlIp9CUtKAgSq6sgkJoRsZCFAfn0hzAxDq0PPxXEtSyPNhR1/2eZx8Pe+dlL5cvTcQgq' \
+            'j2A78z0/039RTAfpGYNq+9flpqrWfxacv1U8VMzD2HvST6qdCZWB7UN1HKTw1A0M77WBVCxzox5Xiry3n8GZ9dj18leHZSvFWPbe5wLf2' \
+            'wILxuXKrVaFfKb5VzmHF93GVJD9bvsfahq6ZF1/KPvBgNbHNSvFW/al1B6LENuwd8JN/Hgau7ShOLqUHMS74bQj0gO3+rj1OQLKPH0TlN' \
+            '/3wQq7/oQchKxcYjmvHCXx01/GZ8oPmCHq2b54J/rcwI9g/jDMCb+fCx1e0j2HswvWjw6TAtc11FHi/izlfzUMY3u6XLvFSvXa4KDi8dL' \
+            'dzKS+c+6NtVit/fWs0a1rtG/39e7VSvGy6Nr51ouLLhtce81rP8d9Vrn3hdsixnB/zfdvLiS994hZXHx2BfBwmkjoWhXHteiF5yDX8guw' \
+            'WPcrb4+sznd/QO7I/h9213YfnhG/x1F38tfG6wxvqWzBD0eIzJTzTUoHmyiyX73uLu+73iv/nc7xtz3EUX3n8GxgGI5idrneT1FkqKt1b' \
+            'NAkDUypTDEowLD4wy1PKLzdi2utx3mg1IQ8MixIMhw+MKkzAAATCZgRXTaP/AeYOTAkfmLbslqYtmRmrWmu20ggCw1IFWigzFEowPD4wT' \
+            'haMlIbZAlEtc2KFGDDnP6ZA82VaQAlGwAdGsJZ7MxUtWBLYROGIA8OIKMGI+MBYjGbQqf4149WJqw6IA8Mi/SmT8IHJfGUd0aMVa1lw2i' \
+            'bviWGRpss0hY+MshQ1XR5mzX5Pp9KIJDJsgRLLLI+UDEbtv4VNNgvgIgJtKwMJeWSQjjI0RvHPieqsPzwnZfVAac0CwshIZQrpMENjVP' \
+            '9S/QRT86xi9EFnsWl8kLkng1H+NxgA2tlya56Edbx0ySJDU2Ua7TiDUf+vjWNct/Xjug15ZU/Yr9mFDFKZSWM0AKIZaA9sjap1bfl4KhF' \
+            'HhkGbNWN0ADZOtC0FpXDOc0lgSR9k7slgtABYid1F42W4FsNEBh3yyCC1mWmMHoDsC013Kszieae/P5D2zNBlCuk4w2D0AOzD3OBP4W6S' \
+            '6RS/HpJHBqnSZDB6AHaauNspgB3QgHqNpCkAhsr1DFoyGD0APl1samMx5Gonzlz3SCLDFCgBcQbAYPQA5r51VPhatIgAcEKRPDJo18xg9' \
+            'AD4Q2/lKbA7cyem0vfIIkPziN0ZBqMHYGYng2t0m2DTiJpj+EHmngxGD+Cgs8JXaxFS7ZblODx5ZGikZDB6AJ6qcosjQ23WVLczP32QuS' \
+            'eD0QPoh8xIA00mHcpMojnEkUGcAWD0AEyXBf1J6AykyIUtljwySD0AFqMH0D7Ml9K8aewbaZhagAwy0jPFPdPUZbYZMRmMHsBKEOjZGGb' \
+            'tdOgPEpkkMuKFTAlpbsZi9ABGW2VaMyaD0WBqy/UuYWSk8oviQEUGoweQqSXHAxEjT/o+4xKiNHMyDHdZbF5CmgGwGD2ANUzHwbaz9OUT' \
+            'COgxYWRExEqTxegBWKvJEhgrea62TKFLyMzZlQz/B8YZjB7AyXP9tq4tRlYY9jKScjNGymcB0L5shtED0I/WXFQ8ip13gVYiZMH5K5nLO' \
+            'IN0VROLUWlq0JT74vjo0IsgCwlxNN/I8GUa6TPDYVSaY2Hm7kShJnNju9QQCCJzed+sVGbRvqGJUWkmM2UTT8M9BQUfQkLWm70ngzRr5j' \
+            'Aqza8Nedaymfg4MGidlHc035FBq2c4jErTy7jVINNjW3JU37E+yNyTwag09Sj2s8gCVrdJ1ZyYMDLnDACpnuEwKs25YA09ZjTZeTNW6ZL' \
+            'kzvwRMhiVZr0Ubp1dv6OAGjxIIXlk0GbNGOc0nUHD2664nmWBnt9SiSPzv8xp5oX8g2HF1y+GVYq375j9AFBLAQIUAAoAAAAIAKKGo073' \
+            '7UEwugoAAKk9AAARAAAAAAAAAAAAAAAAAAAAAABzdXJ2ZXlfOTE1MzI1Lmxzc1BLAQIUAAoAAAAIAKKGo04Kn8n72AYAAINUAAAbAAAAA' \
+            'AAAAAAAAAAAAOkKAABzdXJ2ZXlfOTE1MzI1X3Jlc3BvbnNlcy5sc3JQSwECFAAKAAAACACihqNOiSXsiLwFAAD6TAAAGAAAAAAAAAAAAA' \
+            'AAAAD6EQAAc3VydmV5XzkxNTMyNV90b2tlbnMubHN0UEsFBgAAAAADAAMAzgAAAOwXAAAAAA=='
+
+        if side_effect:
+            mockServer.return_value.export_survey.side_effect = [first_survey, second_survey]
+        else:
+            mockServer.return_value.export_survey.return_value = first_survey
 
     def test_GET_experiment_export_returns_zip_file(self):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
@@ -422,16 +590,19 @@ class ExportExperimentTest(TestCase):
 
     # TODO: NES-946: see if it's deprecated or have to check for all user objects, not only one
     def test_GET_experiment_export_returns_json_file_without_user_object(self):
+        temp_dir = tempfile.mkdtemp()
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         zipped_file = zipfile.ZipFile(io.BytesIO(response.content), 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, ExportExperiment.FILE_NAME_JSON)) as file:
             data = json.loads(file.read().replace('\n', ''))
             self.assertIsNone(next((item for item in data if item['model'] == 'auth.user'), None))
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
 
     def test_remove_all_auth_user_items_before_export(self):
+        temp_dir = tempfile.mkdtemp()
+
         patient = UtilTests.create_patient(changed_by=self.user)
         user2, passwd2 = create_user(Group.objects.all())
         UtilTests.create_telephone(patient, changed_by=user2)
@@ -450,8 +621,8 @@ class ExportExperimentTest(TestCase):
         file_path = export.get_file_path()
 
         zipped_file = zipfile.ZipFile(file_path, 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -459,22 +630,24 @@ class ExportExperimentTest(TestCase):
             next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'), None)
         )
 
-        shutil.rmtree(self.temp_dir)
+        shutil.rmtree(temp_dir)
 
     def test_diagnosis_classification_of_diseases_references_points_to_natural_key_code(self):
+        temp_dir = tempfile.mkdtemp()
+
         patient = UtilTests.create_patient(changed_by=self.user)
         medical_record = UtilTests.create_medical_record(self.user, patient)
         diagnosis = UtilTests.create_diagnosis(medical_record)
 
-        experiment = self._create_minimum_objects_to_test_patient(patient)
+        self._create_minimum_objects_to_test_patient(patient)
 
-        export = ExportExperiment(experiment)
+        export = ExportExperiment(self.experiment)
         export.export_all()
         file_path = export.get_file_path()
 
         zipped_file = zipfile.ZipFile(file_path, 'r')
-        zipped_file.extractall(self.temp_dir)
-        with open(os.path.join(self.temp_dir, export.FILE_NAME_JSON)) as file:
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, export.FILE_NAME_JSON)) as file:
             data = file.read().replace('\n', '')
 
         deserialized = json.loads(data)
@@ -483,9 +656,12 @@ class ExportExperimentTest(TestCase):
         )
 
         deserialized = json.loads(data)
-        index = next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'patient.diagnosis'), None)
+        index = next((index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'patient.diagnosis'),
+                     None)
         code = deserialized[index]['fields']['classification_of_diseases'][0]
         self.assertEqual(diagnosis.classification_of_diseases.code, code)
+
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_experiment_has_file_creates_corresponding_dir_file_in_experiment_zip_file(self):
@@ -499,7 +675,6 @@ class ExportExperimentTest(TestCase):
             file_path in [subdir for subdir in zipped_file.namelist()],
             '%s not in %s' % (file_path, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_experiment_has_not_file_does_not_creates_corresponding_dir_file_in_experiment_zip_file(self):
@@ -509,8 +684,6 @@ class ExportExperimentTest(TestCase):
                 ExportExperiment.FILE_NAME_JSON in [file for file in zipped_file.namelist()],
                 '%s not in %s' % (ExportExperiment.FILE_NAME_JSON, zipped_file.namelist()))
             self.assertEqual(1, len(zipped_file.namelist()))
-
-        shutil.rmtree(self.temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_eeg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
@@ -546,7 +719,6 @@ class ExportExperimentTest(TestCase):
                 eeg_els.map_image_file.name in [subdir for subdir in zipped_file.namelist()],
                 '%s not in %s' % (eeg_els.map_image_file.name, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_eeg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
@@ -584,13 +756,13 @@ class ExportExperimentTest(TestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_emg_has_data_collection_files_creates_corresponding_file_paths_in_zip_file(self):
         patient = UtilTests.create_patient(changed_by=self.user)
-        experiment = self._create_minimum_objects_to_test_patient(patient)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         subject_of_group = SubjectOfGroup.objects.last()
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, software_version)
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
@@ -598,13 +770,13 @@ class ExportExperimentTest(TestCase):
         emg_electrode_setting = ObjectsFactory.create_emg_electrode_setting(emg_setting, electrode_model)
         emg_ep = ObjectsFactory.create_emg_electrode_placement(standardization_system, muscle_subdivision)
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
-        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        emg_step = ObjectsFactory.create_component(self.experiment, 'emg', kwargs={'emg_set': emg_setting})
         component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
         emg_file = ObjectsFactory.create_emg_data_collection_file(emg_data)
 
-        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': experiment.id}))
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertTrue(
                 emg_file.file.name in [subdir for subdir in zipped_file.namelist()],
@@ -613,19 +785,17 @@ class ExportExperimentTest(TestCase):
                 emg_ep.photo.name in [subdir for subdir in zipped_file.namelist()],
                 '%s not in %s' % (emg_ep.photo.name, zipped_file.namelist()))
 
-        shutil.rmtree(self.temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_emg_has_not_data_collection_files_does_not_create_corresponding_file_paths_in_zip_file(self):
         patient = UtilTests.create_patient(changed_by=self.user)
-        experiment = self._create_minimum_objects_to_test_patient(patient)
-        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
-        subject_of_group = SubjectOfGroup.objects.last()
+        subject_of_group = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        emg_setting = ObjectsFactory.create_emg_setting(experiment, software_version)
+        emg_setting = ObjectsFactory.create_emg_setting(self.experiment, software_version)
         standardization_system = ObjectsFactory.create_standardization_system()
         muscle = ObjectsFactory.create_muscle()
         muscle_subdivision = ObjectsFactory.create_muscle_subdivision(muscle)
@@ -635,7 +805,7 @@ class ExportExperimentTest(TestCase):
         emg_ep.photo = ''
         emg_ep.save()
         ObjectsFactory.create_emg_electrode_placement_setting(emg_electrode_setting, emg_ep)
-        emg_step = ObjectsFactory.create_component(experiment, 'emg', kwargs={'emg_set': emg_setting})
+        emg_step = ObjectsFactory.create_component(self.experiment, 'emg', kwargs={'emg_set': emg_setting})
         component_config = ObjectsFactory.create_component_configuration(rootcomponent, emg_step)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         emg_data = ObjectsFactory.create_emg_data_collection_data(dct, subject_of_group, emg_setting)
@@ -643,13 +813,161 @@ class ExportExperimentTest(TestCase):
         emg_file.file = ''
         emg_file.save()
 
-        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': experiment.id}))
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
             self.assertEqual(1, len(zipped_file.namelist()))
 
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_experiment_has_questionnaire_step_sends_base64_encoded_limesurvey_lsa_files_from_limesurvey(self, mockServer):
+        # TODO (NES-966): solve temp dir created misteriously
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+
+        # First survey
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey1})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        # Second survey
+        survey2 = create_survey(505050)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey2})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
+
+        self.set_export_survey_mock_value(mockServer, True)
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+
+        self.assertTrue(mockServer.return_value.export_survey.called)
+        self.assertTrue(
+            mockServer.return_value.export_survey.mock_calls,
+            [call(survey1.lime_survey_id), call(survey2.lime_survey_id)])
+        self.assertIn('%s.lsa' % survey1.lime_survey_id, os.listdir(export.temp_dir))
+        self.assertIn('%s.lsa' % survey2.lime_survey_id, os.listdir(export.temp_dir))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_experiment_has_questionnaire_step_add_survey_archive_in_experiment_zip_file(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+
+        # First survey
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey1})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        # Second survey
+        survey2 = create_survey(505050)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey2})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
+
+        self.set_export_survey_mock_value(mockServer, True)
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+
+        self.assertTrue(mockServer.return_value.export_survey.called)
+        self.assertTrue(mockServer.return_value.export_survey.call_args, call(survey1.lime_survey_id))
+        with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zipped_file:
+            self.assertEqual(3, len(zipped_file.namelist()))
+            self.assertIn('%s.lsa' % survey1.lime_survey_id, zipped_file.namelist())
+            self.assertIn('%s.lsa' % survey2.lime_survey_id, zipped_file.namelist())
+
+    @patch('survey.abc_search_engine.Server')
+    def test_call_export_survey_rpc_method_uses_correct_url(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        self.set_export_survey_mock_value(mockServer)
+
+        self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+
+        def check_right_url():
+            self.assertEqual(mockServer.call_args, call(
+                settings.LIMESURVEY['URL_API']
+                + '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action'))
+
+        mockServer.return_value.export_survey.side_effect = check_right_url()
+        mockServer.return_value.export_survey.assert_called_once_with(
+            mockServer.return_value.get_session_key.return_value, survey.lime_survey_id)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_export_all_generates_partial_fixture_with_questionnaire_response_data(self, mockServer):
+        patient = UtilTests.create_patient(self.user)
+        subject_of_group = self._create_minimum_objects_to_test_patient(patient)
+        survey = create_survey()
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(
+            dct, self.user, token_id=212121, subject_of_group=subject_of_group)
+
+        self.set_export_survey_mock_value(mockServer)
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+
+        self.assertIn('questionnaireresponse.json', os.listdir(export.temp_dir))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_export_survey_stablish_limesurvey_connection_fails_display_warning_message(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        mockServer.return_value.get_session_key.return_value = {'status': 'Invalid user name or password'}
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(
+            message, 'Could not export LimeSurvey data. Please try again. If problem persists please contact the '
+                     'system administator')
+
+    # CONTINUE: keep with tests for errors in consuming LimeSurvey API
+    @patch('survey.abc_search_engine.Server')
+    def test_export_survey_returns_error_from_api_display_warning_message(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(self.experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE,
+            kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        mockServer.return_value.get_session_key.return_value = 'idheugd835[djgh'
+        # API returns a series of pairs {'status': <error>}. As in
+        # ABCSearchEngine we treat all errors the same manner, we
+        # give a generic pair: {'status': 'Error'}
+        mockServer.return_value.export_survey.return_value = {'status': 'Error'}
+
+        response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(
+            message, 'Could not export LimeSurvey data. Please try again. If problem persists please contact the '
+                     'system administator')
+
 
 class ImportExperimentTest(TestCase):
-
     TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def setUp(self):
@@ -907,9 +1225,10 @@ class ImportExperimentTest(TestCase):
 
         return experiment
 
-    def _create_minimum_objects_to_test_questionnaire(self, survey_id=212121):
+    # TODO (NES-956): remove survey_id
+    def _create_minimum_objects_to_test_questionnaire(self, survey_id=None):
         ObjectsFactory.create_group(self.experiment, self.rootcomponent)
-        survey = create_survey(survey_id)
+        survey = create_survey(survey_id) if survey_id else create_survey()
         questionnaire = ObjectsFactory.create_component(self.experiment, Component.QUESTIONNAIRE,
                                                         kwargs={'survey': survey})
         ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
@@ -1009,6 +1328,24 @@ class ImportExperimentTest(TestCase):
         # as they are allegedly from simple models with only name and/or description or other simple fields
         self.assertEqual(len(new_objects), 0)
         self.assertNotEqual(len(old_model_ids), len(new_objects))
+
+    def _set_objects_to_test_limesurvey_calls(self, mockServer):
+        self._set_constants()
+
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        subject_of_group = SubjectOfGroup.objects.last()
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        component_config = ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(dct, self.user, self.TOKEN_ID_KEEPED, subject_of_group)
+
+        ExportExperimentTest.set_export_survey_mock_value(mockServer)
+
+        return experiment
 
     # Research project, Experiment and Group tests
     def test_GET_experiment_import_file_uses_correct_template(self):
@@ -1468,6 +1805,7 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
+
     # Fim dos testes a serem revisados
 
     # Log tests
@@ -1637,7 +1975,8 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertContains(response, '2 Grupos importados')
 
-    def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_returns_log_with_steps_types_and_number_of_each_step(self, mockServer):
         research_project = ObjectsFactory.create_research_project(owner=self.user)
         experiment = ObjectsFactory.create_experiment(research_project)
         ObjectsFactory.create_research_project(owner=self.user)
@@ -1652,6 +1991,8 @@ class ImportExperimentTest(TestCase):
         # Create one more component to test pluralization
         component = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
         ObjectsFactory.create_component_configuration(rootcomponent2, component)
+
+        mockServer.return_value.export_survey.return_value = {'status': 'Error: Invalid survey ID'}
 
         export = ExportExperiment(experiment)
         export.export_all()
@@ -1710,7 +2051,7 @@ class ImportExperimentTest(TestCase):
 
         with open(file_path, 'rb') as file:
             response = self.client.post(
-                reverse('experiment_import', kwargs={'research_project_id':research_project.id}),
+                reverse('experiment_import', kwargs={'research_project_id': research_project.id}),
                 {'file': file}, follow=True
             )
         self.assertRedirects(response, reverse('import_log'))
@@ -1922,9 +2263,12 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
     # Questionnaire tests
-    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_questionnaire_component_returns_successful_message(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
+
+        mockServer.return_value.export_survey.return_value = {'status': 'Error: Invalid survey ID'}
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -1942,9 +2286,12 @@ class ImportExperimentTest(TestCase):
         message = str(list(response.context['messages'])[0])
         self.assertEqual(message, 'Experimento importado com sucesso. Novo estudo criado.')
 
-    def test_POST_experiment_import_file_creates_random_code_in_surveys(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_random_code_in_surveys(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
+
+        mockServer.return_value.export_survey.return_value = {'status': 'Error: Invalid survey ID'}
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -1956,10 +2303,13 @@ class ImportExperimentTest(TestCase):
         new_survey = Survey.objects.last()
         self.assertTrue(1 <= int(new_survey.code.split('Q')[1]) <= 100000)
 
-    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_experiment_import_file_creates_dummy_reference_to_limesurvey_questionnaire(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
         self._create_minimum_objects_to_test_questionnaire(survey_id=121212)
+
+        mockServer.return_value.export_survey.return_value = {'status': 'Error: Invalid survey ID'}
 
         export = ExportExperiment(self.experiment)
         export.export_all()
@@ -1968,10 +2318,60 @@ class ImportExperimentTest(TestCase):
         with open(file_path, 'rb') as file:
             self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
-        new_survey1 = Survey.objects.all().order_by('-id')[1]
-        new_survey2 = Survey.objects.all().order_by('-id')[0]
-        self.assertEqual(-100, new_survey1.lime_survey_id)
-        self.assertEqual(-101, new_survey2.lime_survey_id)
+        new_survey1 = Survey.objects.order_by('-id')[1]
+        new_survey2 = Survey.objects.order_by('-id')[0]
+        self.assertEqual(-99, new_survey1.lime_survey_id)
+        self.assertEqual(-100, new_survey2.lime_survey_id)
+
+    @staticmethod
+    def _get_relations_questionnaire_response():
+        return {
+            ComponentConfiguration: [(DataConfigurationTree, 'component_configuration')],
+            DataConfigurationTree: [(QuestionnaireResponse, 'data_configuration_tree')],
+            SubjectOfGroup: [(QuestionnaireResponse, 'subject_of_group')],
+        }
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_questionnaire_response(self, mockServer):
+        self._create_minimum_objects_to_test_components()
+        group = ObjectsFactory.create_group(self.experiment)
+        patient = UtilTests.create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(patient)
+        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        survey = create_survey()
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey}
+        )
+        component_config = ObjectsFactory.create_component_configuration(self.rootcomponent, questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_questionnaire_response(dct, self.user, 212121, subject_of_group)
+
+        relations = self._get_relations_questionnaire_response()
+
+        # Return error for it's not necessary survey mock
+        mockServer.return_value.export_survey.return_value = {'status': 'Error: Invalid survey ID'}
+
+        export = ExportExperiment(self.experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        for model in relations:
+            self.assertEqual(2, model.objects.count(), model)
+            model_instance = model.objects.last()
+            for dependent_model in relations[model]:
+                self.assertEqual(2, dependent_model[0].objects.count(), (model, dependent_model))
+                dependent_model_instance = dependent_model[0].objects.last()
+                reference = getattr(dependent_model_instance, dependent_model[1])
+                self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
 
     # Components tests
     def test_component_and_block(self):
@@ -2126,14 +2526,16 @@ class ImportExperimentTest(TestCase):
                                                            self.experiment,
                                                            {'component_type': 'digital_game_phase'})
 
-    def test_component_and_questionnaire(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_component_and_questionnaire(self, mockServer):
         self._create_minimum_objects_to_test_components()
         self._create_minimum_objects_to_test_questionnaire()
-        self._test_creation_and_linking_between_two_models('experiment.component',
-                                                           'experiment.questionnaire',
-                                                           'component_ptr_id',
-                                                           self.experiment,
-                                                           {'component_type': 'questionnaire'})
+
+        mockServer.return_value.export_survey.return_value = {'status': 'Error: Invalid survey ID'}
+
+        self._test_creation_and_linking_between_two_models(
+            'experiment.component', 'experiment.questionnaire', 'component_ptr_id',
+            self.experiment, {'component_type': 'questionnaire'})
 
     # Participants tests
     def test_POST_experiment_import_file_creates_participants_of_groups_and_returns_successful_message(self):
@@ -2460,7 +2862,8 @@ class ImportExperimentTest(TestCase):
             session['patients_conflicts_resolved'] = True
             session['file_name'] = file.name
             session.save()
-            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': [patient.id]}, follow=True)
+            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': [patient.id]},
+                                        follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
         new_participant = Patient.objects.exclude(id=patient.id)
@@ -3252,6 +3655,7 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(new_cid10.abbreviated_description, '(imported, not recognized)')
 
     def test_error_loading_fixture_display_error_message(self):
+        # TODO: implement it!
         pass
 
     # Tests for TMS data collection
@@ -3780,7 +4184,7 @@ class ImportExperimentTest(TestCase):
         ObjectsFactory.create_eeg_electrode_position_collection_status(eeg_data, eeg_electrode_position_setting)
 
     @staticmethod
-    def _get_relations():
+    def _get_relations_eegdata():
         return {
             ComponentConfiguration: [(DataConfigurationTree, 'component_configuration')],
             # DataConfigurationTree: [(DataConfigurationTree, 'parent')],
@@ -3802,7 +4206,7 @@ class ImportExperimentTest(TestCase):
         self.subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
         self._create_eeg_data_collection_related_objects()
 
-        relations = self._get_relations()
+        relations = self._get_relations_eegdata()
         pre_loaded_models = [key[0] for key in self._get_pre_loaded_models_eeg_not_editable().keys()]
 
         export = ExportExperiment(self.experiment)
@@ -4002,7 +4406,7 @@ class ImportExperimentTest(TestCase):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             for component in dict_:
-                with open(os.path.join(tmpdirname, component[0]+'adf.bin'), 'wb') as f:
+                with open(os.path.join(tmpdirname, component[0] + 'adf.bin'), 'wb') as f:
                     f.write(b'carambola')
 
                 with File(open(f.name, 'rb')) as file:
@@ -4103,7 +4507,7 @@ class ImportExperimentTest(TestCase):
         group = ObjectsFactory.create_group(experiment)
         patient = UtilTests.create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
-        subject_of_group = ObjectsFactory.create_subject_of_group(group, subject)
+        ObjectsFactory.create_subject_of_group(group, subject)
 
         ObjectsFactory.create_exam_file(patient, self.user)
 
@@ -4136,3 +4540,488 @@ class ImportExperimentTest(TestCase):
         exam_file_imported = ExamFile.objects.last()
         filepath = os.path.join(self.TEMP_MEDIA_ROOT, exam_file_imported.content.name)
         self.assertTrue(os.path.exists(filepath))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_experiment_with_questionnaire_import_limesurvey_survey_reference(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey1}
+        )
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step1)
+        survey2 = create_survey(111111)
+        questionnaire_step2 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey2}
+        )
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step2)
+
+        ExportExperimentTest.set_export_survey_mock_value(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        mockServer.return_value.import_survey.side_effect = [505050, 100000]
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        self.assertTrue(mockServer.return_value.import_survey.called)
+        # Pass representing base64 encoded string of lsa archive
+        self.assertTrue(
+            mockServer.return_value.import_survey.mock_calls, [call('ldg69aesf0adfakhf'), call('adadfl0e9843ljfdasf')])
+        self.assertEqual(1, Survey.objects.filter(lime_survey_id=505050).count())
+        self.assertEqual(1, Survey.objects.filter(lime_survey_id=100000).count())
+
+    def test_import_has_not_limesurvey_survey_archive_import_experiment_and_display_message_that_could_not_import_limesurvey_survey(
+            self):
+        # TODO (NES-956): implement it!
+        pass
+
+    def _set_constants(self):
+        self.SESSION_KEY = 'idheugd835[djgh'
+        self.TOKEN_KEEPED = 'BNxaKxMt9SO87OA'
+        self.TOKEN_ID_KEEPED = 1
+        self.TOKEN_NOT_KEEPED = '5NxeKxMtaSOp7OA'
+        self.TOKEN_ID_NOT_KEEPED = 2
+        self.SURVEY_ID = 505050
+        self.QUESTION_SUBJECT_ID = 7
+        self.QUESTION_RESPONSIBLE_ID = 8
+        self.GROUP_ID = 1410
+        self.LIMESURVEY_RESPONSES_IDS_DELETED = [1, 2]
+
+    def _set_mock_values(self, mockServer):
+        mockServer.return_value.get_session_key.return_value = self.SESSION_KEY
+        mockServer.return_value.import_survey.return_value = self.SURVEY_ID
+        mockServer.return_value.list_participants.return_value = \
+            [
+                {
+                    'token': self.TOKEN_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.TOKEN_ID_KEEPED,
+                },
+                {
+                    'token': self.TOKEN_NOT_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.TOKEN_ID_NOT_KEEPED
+                }
+            ]
+        mockServer.return_value.get_participant_properties.return_value = {'token': self.TOKEN_KEEPED}
+        mockServer.return_value.list_groups.return_value = [
+            {
+                'group_order': 1, 'gid': self.GROUP_ID, 'grelevance': '',
+                'id': {'gid': self.GROUP_ID, 'language': 'en'},
+                'language': 'en', 'sid': self.SURVEY_ID, 'randomization_group': '',
+                'group_name': 'Identification', 'description': ''
+            },
+            {
+                'group_order': 2, 'gid': 1411, 'grelevance': '',
+                'id': {'gid': 1411, 'language': 'en'},
+                'language': 'en', 'sid': self.SURVEY_ID, 'randomization_group': '',
+                'group_name': 'First group', 'description': ''}]
+        mockServer.return_value.list_questions.return_value = [
+            {
+                'qid': self.QUESTION_RESPONSIBLE_ID, 'question_order': 0,
+                'id': {'qid': self.QUESTION_RESPONSIBLE_ID, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Responsible Identification number:',
+                'type': 'N', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'responsibleid',
+                'mandatory': 'Y',
+                'preg': ''
+            },
+            {
+                'qid': 3848, 'question_order': 1,
+                'id': {'qid': 3848, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Acquisition date<strong>:</strong><br />\n',
+                'type': 'D', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'acquisitiondate',
+                'mandatory': 'Y',
+                'preg': ''
+            },
+            {
+                'qid': self.QUESTION_SUBJECT_ID, 'question_order': 2,
+                'id': {'qid': self.QUESTION_SUBJECT_ID, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Participant Identification number<b>:</b>',
+                'type': 'N', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'subjectid', 'mandatory': 'Y',
+                'preg': ''
+            }
+        ]
+
+        mockServer.return_value.update_response.return_value = True
+
+        mockServer.return_value.delete_participants.return_value = [{'status': 'Deleted'}]
+        # Get responses from questionnaire for tokens that will be deleted
+        # The string corresponds to:
+        # b'"id","submitdate","lastpage","startlanguage","token","responsibleid","acquisitiondate","subjectid","firstQuestion","secondQuestion"\n
+        # "1","1980-01-01 00:00:00","2","en","5NxeKxMtaSOp7OA", "2","2018-03-08 00:00:00","5","c","d"\n
+        # "2","1980-01-01 00:00:00","2","en","5NxeKxMtaSOp7OA","7","2018-03-08 00:00:00", "5", "c","d"\n\n'
+        mockServer.return_value.export_responses_by_token.return_value = \
+            b'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRv' \
+            b'a2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZGF0ZSIsInN1YmplY3Rp' \
+            b'ZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIKIjEiLCIxOTgwLTAx' \
+            b'LTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiNU54ZUt4TXRhU09wN09BIiwiMiIsIjIw' \
+            b'MTgtMDMtMDggMDA6MDA6MDAiLCI1IiwiYyIsImQiCiIyIiwiMTk4MC0wMS0wMSAw' \
+            b'MDowMDowMCIsIjIiLCJlbiIsIjVOeGVLeE10YVNPcDdPQSIsIjciLCIyMDE4LTAz' \
+            b'LTA4IDAwOjAwOjAwIiwiNSIsImMiLCJkIgoK'.decode()
+
+        # Mock deleted responses ids return value. There are two ids, 1 and 2.
+        # Only two was deleted
+        mockServer.return_value.delete_responses.return_value = {'status': 'OK'}
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_keeps_only_responses_from_experiment_participants1(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # First list item corresponds to the token id 1, second item, to the token id 2
+        self.assertTrue(mockServer.return_value.list_participants.called)
+        self.assertEqual(
+            mockServer.return_value.list_participants.call_args,
+            call(self.SESSION_KEY, self.SURVEY_ID, 0, 99999999))
+
+        # Delete token of other experiments
+        self.assertTrue(mockServer.return_value.delete_participants.called)
+        self.assertEqual(mockServer.return_value.delete_participants.call_args, call(
+            self.SESSION_KEY, self.SURVEY_ID, [self.TOKEN_ID_NOT_KEEPED]))
+        # Ensures that delete_participants was called only once
+        self.assertEqual(mockServer.return_value.delete_participants.call_count, 1)
+
+        # Mock Remote Control export_responses method with B64 encoded string.
+        # This corresponds to two responses, the responses of the token that was deleted.
+        self.assertTrue(mockServer.return_value.export_responses_by_token.called)
+        self.assertEqual(
+            mockServer.return_value.export_responses_by_token.call_args, call(
+                self.SESSION_KEY, self.SURVEY_ID, 'csv', self.TOKEN_NOT_KEEPED, None, 'complete'))
+
+        self.assertTrue(mockServer.return_value.delete_responses.called)
+        self.assertEqual(mockServer.return_value.delete_responses.call_args, call(
+            self.SESSION_KEY, self.SURVEY_ID, self.LIMESURVEY_RESPONSES_IDS_DELETED))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_keeps_only_responses_from_experiment_participants2(self, mockServer):
+        """Test keeping participants with same questionnaire used in 2 groups"""
+
+        self._set_constants()
+        self.OTHER_TOKEN_ID_KEEPED = 3
+        self.OTHER_TOKEN_KEEPED = '9d6dggfllsiryt0y7df'
+
+        # First objects
+        patient1 = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient1)
+        subject_of_group1 = SubjectOfGroup.objects.last()
+        rootcomponent1 = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey1 = create_survey()
+        questionnaire_step1 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey1}
+        )
+        component_config1 = ObjectsFactory.create_component_configuration(rootcomponent1, questionnaire_step1)
+        dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
+        ObjectsFactory.create_questionnaire_response(dct1, self.user, self.TOKEN_ID_KEEPED, subject_of_group1)
+
+        # Second objects
+        patient2 = UtilTests.create_patient(changed_by=self.user)
+        group2 = ObjectsFactory.create_group(experiment)
+        subject2 = ObjectsFactory.create_subject(patient2)
+        subject_of_group2 = ObjectsFactory.create_subject_of_group(group2, subject2)
+        rootcomponent2 = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        questionnaire_step2 = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey1}
+        )
+        component_config2 = ObjectsFactory.create_component_configuration(rootcomponent2, questionnaire_step2)
+        dct2 = ObjectsFactory.create_data_configuration_tree(component_config2)
+        ObjectsFactory.create_questionnaire_response(dct2, self.user, self.OTHER_TOKEN_ID_KEEPED, subject_of_group2)
+
+        ExportExperimentTest.set_export_survey_mock_value(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # Changing some mock's
+        mockServer.return_value.list_participants.return_value = \
+            [
+                {
+                    'token': self.TOKEN_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.TOKEN_ID_KEEPED,
+                },
+                {
+                    'token': self.OTHER_TOKEN_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.OTHER_TOKEN_ID_KEEPED,
+                },
+                {
+                    'token': self.TOKEN_NOT_KEEPED,
+                    'participant_info': {'lastname': '', 'email': '', 'firstname': ''},
+                    'tid': self.TOKEN_ID_NOT_KEEPED
+                }
+            ]
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        # First list item corresponds to the token id 1, second item, to the token id 2
+        self.assertTrue(mockServer.return_value.list_participants.called)
+        self.assertEqual(
+            mockServer.return_value.list_participants.call_args,
+            call(self.SESSION_KEY, self.SURVEY_ID, 0, 99999999))
+        # Delete token of other experiments
+        self.assertTrue(mockServer.return_value.delete_participants.called)
+        # Ensures that delete_participants was called only once ...
+        self.assertEqual(mockServer.return_value.delete_participants.call_count, 1)
+        # ... with this arguments
+        self.assertEqual(mockServer.return_value.delete_participants.call_args, call(
+            self.SESSION_KEY, self.SURVEY_ID, [self.TOKEN_ID_NOT_KEEPED]))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_update_responses_call_right_url(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        def check_right_url():
+            self.assertEqual(mockServer.call_args, call(
+                settings.LIMESURVEY['URL_API']
+                + '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action'))
+
+        mockServer.return_value.update_response.side_effect = check_right_url()
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_updates_responses_subjectid_and_responsibleid(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        new_subject = Subject.objects.last()
+
+        self.assertTrue(mockServer.return_value.update_response.called)
+        self.assertEqual(mockServer.return_value.update_response.call_args, call(
+            self.SESSION_KEY, self.SURVEY_ID,
+            {
+                'token': self.TOKEN_KEEPED,
+                str(self.SURVEY_ID) + 'X' + str(self.GROUP_ID) + 'X' + str(self.QUESTION_SUBJECT_ID): new_subject.id,
+                str(self.SURVEY_ID) + 'X' + str(self.GROUP_ID) + 'X' + str(self.QUESTION_RESPONSIBLE_ID):
+                    self.user_importer.id
+
+            }
+        ))
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_stablish_limesurvey_connection_fails_display_warning_message(self, mockServer):
+        patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
+        rootcomponent = ObjectsFactory.create_component(experiment, 'block', 'root component')
+        survey = create_survey()
+        questionnaire_step = ObjectsFactory.create_component(
+            experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        ObjectsFactory.create_component_configuration(rootcomponent, questionnaire_step)
+
+        mockServer.return_value.get_session_key.return_value = {'status': 'Invalid user name or password'}
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(
+            message, 'Could not import survey(s) to LimeSurvey. Only Experiment data was imported. You can remove '
+                     'experiment imported and try again. If problem persists please contact system administrator')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_import_survey_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is another returned value with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.import_survey.return_value = {'status': 'No permission'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(
+            message, 'Could not import survey(s) to LimeSurvey. Only Experiment data was imported. You can remove '
+                     'experiment imported and try again. If problem persists please contact system administrator')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_list_participants_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is others returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_participants.return_value = {'status': 'Error: No token table'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not clear all extra survey participants data.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_delete_participant_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is others returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.delete_participants.return_value = {'status': 'Error: No token table'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not clear all extra survey participants data.')
+    
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_export_responses_by_token_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is others returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.export_responses_by_token.return_value = {'status': 'No Response found for Token'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not clear all extra survey participants data.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_delete_responses_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is others returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.delete_responses.return_value = {'status': 'Error: during response deletion'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not clear all extra survey participants data.')
