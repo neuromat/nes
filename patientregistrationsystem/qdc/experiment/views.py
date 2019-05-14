@@ -5534,9 +5534,8 @@ def questionnaire_response_edit(request, questionnaire_response_id,
 
                     # remove token from Limesurvey
                     surveys = Questionnaires()
-                    result = surveys.delete_participant(
-                        questionnaire.survey.lime_survey_id,
-                        questionnaire_response.token_id)
+                    result = surveys.delete_participants(
+                        questionnaire.survey.lime_survey_id, [questionnaire_response.token_id])
                     surveys.release_session_key()
 
                     if str(questionnaire_response.token_id) in result:
@@ -5748,9 +5747,7 @@ def delete_questionnaire_response(questionnaire: Questionnaire,
     else:
         # Remove token from LimeSurvey
         surveys = Questionnaires()
-        result = surveys.delete_participant(
-            questionnaire.survey.lime_survey_id,
-            questionnaire_response.token_id)
+        result = surveys.delete_participants(questionnaire.survey.lime_survey_id, [questionnaire_response.token_id])
         surveys.release_session_key()
 
         if str(questionnaire_response.token_id) in result:

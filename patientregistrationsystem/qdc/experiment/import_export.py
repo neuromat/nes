@@ -657,6 +657,7 @@ class ImportExperiment:
     def _remove_limesurvey_participants(self):
         """Must be called after updating Limesurvey surveys references"""
 
+        result = 0, ''
         indexes = self._get_indexes('experiment', 'questionnaire')
         ls_interface = Questionnaires()
         # As there can be same survey in more than one questionnaire component,
@@ -675,11 +676,20 @@ class ImportExperiment:
             token_ids_survey[limesurvey_id] += token_ids
         for limesurvey_id, token_ids in token_ids_survey.items():
             all_participants = ls_interface.find_tokens_by_questionnaire(limesurvey_id)
+            if all_participants is None:
+                result = self.LIMESURVEY_ERROR, _('Could not clear all extra survey participants data.')
+                continue
             # TODO (NES-956): don't remove participants of other experiment of this NES.
             for participant in all_participants:
                 if participant['tid'] not in token_ids:
-                    ls_interface.delete_participant(limesurvey_id, participant['tid'])
+                    status_delete = ls_interface.delete_participants(limesurvey_id, [participant['tid']])
+                    if status_delete is None:
+                        result = self.LIMESURVEY_ERROR, _('Could not clear all extra survey participants data.')
+                        continue
                     responses = ls_interface.get_responses_by_token(sid=limesurvey_id, token=participant['token'])
+                    if responses is None:
+                        result = self.LIMESURVEY_ERROR, _('Could not clear all extra survey participants data.')
+                        continue
                     responses = QuestionnaireUtils.responses_to_csv(responses)
                     del(responses[0])  # First line is the header line
                     response_ids = []
@@ -688,10 +698,14 @@ class ImportExperiment:
                     ls_interface = Questionnaires(
                         settings.LIMESURVEY['URL_API'] +
                         '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
-                    ls_interface.delete_responses(limesurvey_id, response_ids)
-                    ls_interface = Questionnaires()
+                    status = ls_interface.delete_responses(limesurvey_id, response_ids)
+                    if status is None:
+                        result = self.LIMESURVEY_ERROR, _('Could not clear all extra survey participants data.')
+                    ls_interface = Questionnaires()  # Return to access core RPC
 
         ls_interface.release_session_key()
+
+        return result
 
     def _update_limesurvey_identification_questions(self):
         """Must be called after updating Limesurvey surveys references
@@ -725,15 +739,19 @@ class ImportExperiment:
 
         ls_interface.release_session_key()
 
+        return 0, ''
+
     def _import_limesurvey_surveys(self):
         """Import surveys to Limesurvey server
         :return: list of limsurvey surveys imported
         """
+        result = 0, ''
         ls_interface = Questionnaires()
         if ls_interface.session_key is None:
-            return self.LIMESURVEY_ERROR, _('Could not import survey(s) to LimeSurvey. Only Experiment data was '
-                                            'imported. You can remove experiment imported and try again. If problem '
-                                            'persists please contact system administrator')
+            result = self.LIMESURVEY_ERROR, _('Could not import survey(s) to LimeSurvey. Only Experiment data was '
+                                              'imported. You can remove experiment imported and try again. If problem '
+                                              'persists please contact system administrator')
+            return result
         limesurvey_ids = []
         # Does not add try/exception trying to open zipfile here because it
         # was done in import_all method
@@ -745,27 +763,28 @@ class ImportExperiment:
                     with open(survey_archive, 'rb') as file:
                         encoded_string = b64encode(file.read())
                         encoded_string = encoded_string.decode('utf-8')
-                    try:
                         new_ls_id = ls_interface.import_survey(encoded_string)
+                        if new_ls_id is None:
+                            result = self.LIMESURVEY_ERROR, _('Could not import survey(s) to LimeSurvey. Only '
+                                                            'Experiment data was imported. You can remove experiment '
+                                                            'imported and try again. If problem persists please '
+                                                            'contact system administrator')
+                            return result
                         survey = Survey.objects.get(lime_survey_id=dummy_ls_id)
                         survey.lime_survey_id = new_ls_id
                         survey.save()
                         limesurvey_ids.append(new_ls_id)
-                        # TODO (NES-956): see if this is the value returned always when could not
-                        #  create survey
-                    except:  # TODO (NES-956): specify exception
-                        # TODO (NES-956): return with messages
-                        pass
                 else:
                     # TODO (NES-956): add information that was not a survey archive
                     #  to this survey
                     continue
 
         if limesurvey_ids:
-            self._remove_limesurvey_participants()
-            self._update_limesurvey_identification_questions()
+            result = self._remove_limesurvey_participants()
+            if not result[1]:
+                return self._update_limesurvey_identification_questions()
 
-        return 0, ''
+        return result
 
     def import_all(self, request, research_project_id=None, patients_to_update=None):
         # TODO: maybe this try in constructor

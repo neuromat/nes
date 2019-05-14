@@ -1202,9 +1202,8 @@ def questionnaire_response_update(request, questionnaire_response_id,
         elif request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
                 surveys = Questionnaires()
-                result = surveys.delete_participant(
-                    questionnaire_response.survey.lime_survey_id,
-                    questionnaire_response.token_id)
+                result = surveys.delete_participants(
+                    questionnaire_response.survey.lime_survey_id, [questionnaire_response.token_id])
                 surveys.release_session_key()
 
                 can_delete = False
@@ -1396,8 +1395,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
         if request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
                 surveys = Questionnaires()
-                result = surveys.delete_participant(questionnaire_response.survey.lime_survey_id,
-                                                    questionnaire_response.token_id)
+                result = surveys.delete_participants(questionnaire_response.survey.lime_survey_id,
+                                                     [questionnaire_response.token_id])
                 surveys.release_session_key()
 
                 can_delete = False
