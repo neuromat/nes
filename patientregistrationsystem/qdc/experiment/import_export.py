@@ -710,9 +710,11 @@ class ImportExperiment:
     def _update_limesurvey_identification_questions(self):
         """Must be called after updating Limesurvey surveys references
         """
+        result = 0, ''
         indexes = self._get_indexes('experiment', 'questionnaire')
         ls_interface = Questionnaires(
             settings.LIMESURVEY['URL_API'] + '/index.php/plugins/unsecure?plugin=extendRemoteControl&function=action')
+        questionnaire_utils = QuestionnaireUtils()
         for index in indexes:
             questionnaire = Questionnaire.objects.get(id=self.data[index]['pk'])
             questionnaire_responses = QuestionnaireResponse.objects.filter(
@@ -723,23 +725,33 @@ class ImportExperiment:
                 subject_id = response.subject_of_group.subject_id
                 token_id = response.token_id
                 token = ls_interface.get_participant_properties(limesurvey_id, token_id, 'token')
+                if token is None:
+                    result = self.LIMESURVEY_ERROR, _('Could not update identification questions for all responses.')
+                    continue
                 # TODO (NES-956): get the language. By now put 'en' to test
-                ls_subject_id_column_name = QuestionnaireUtils.get_response_column_name(
+                ls_subject_id_column_name = questionnaire_utils.get_response_column_name_for_Identification_group_questions(
                     ls_interface, limesurvey_id, 'subjectid', 'en')
-                ls_responsible_id_column_name = QuestionnaireUtils.get_response_column_name(
+                if isinstance(ls_subject_id_column_name, tuple):  # Returned error
+                    result = ls_subject_id_column_name[0], _('Could not update identification questions for all '
+                                                             'responses.')
+                    continue
+                ls_responsible_id_column_name = questionnaire_utils.get_response_column_name_for_Identification_group_questions(
                     ls_interface, limesurvey_id, 'responsibleid', 'en')
-                # TODO (NES-956): deal with errors here
-                result = ls_interface.update_response(
-                    limesurvey_id, {
+                if isinstance(ls_responsible_id_column_name, tuple):  # Returned error
+                    result = ls_responsible_id_column_name[0], _('Could not update identification questions for all '
+                                                                 'responses.')
+                    continue
+                result_update = ls_interface.update_response(limesurvey_id, {
                         'token': token,
                         ls_subject_id_column_name: subject_id,
                         ls_responsible_id_column_name: responsible_id
-                    }
-                )
+                })
+                if not result_update:
+                    return self.LIMESURVEY_ERROR, _('Could not update all responses.')
 
         ls_interface.release_session_key()
 
-        return 0, ''
+        return result
 
     def _import_limesurvey_surveys(self):
         """Import surveys to Limesurvey server
@@ -766,9 +778,9 @@ class ImportExperiment:
                         new_ls_id = ls_interface.import_survey(encoded_string)
                         if new_ls_id is None:
                             result = self.LIMESURVEY_ERROR, _('Could not import survey(s) to LimeSurvey. Only '
-                                                            'Experiment data was imported. You can remove experiment '
-                                                            'imported and try again. If problem persists please '
-                                                            'contact system administrator')
+                                                              'Experiment data was imported. You can remove experiment '
+                                                              'imported and try again. If problem persists please '
+                                                              'contact system administrator')
                             return result
                         survey = Survey.objects.get(lime_survey_id=dummy_ls_id)
                         survey.lime_survey_id = new_ls_id
@@ -781,7 +793,7 @@ class ImportExperiment:
 
         if limesurvey_ids:
             result = self._remove_limesurvey_participants()
-            if not result[1]:
+            if not result[0]:
                 return self._update_limesurvey_identification_questions()
 
         return result
