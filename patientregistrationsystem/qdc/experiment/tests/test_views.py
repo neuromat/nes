@@ -4627,7 +4627,9 @@ class ImportExperimentTest(TestCase):
                 'group_order': 2, 'gid': 1411, 'grelevance': '',
                 'id': {'gid': 1411, 'language': 'en'},
                 'language': 'en', 'sid': self.SURVEY_ID, 'randomization_group': '',
-                'group_name': 'First group', 'description': ''}]
+                'group_name': 'First group', 'description': ''
+            }
+        ]
         mockServer.return_value.list_questions.return_value = [
             {
                 'qid': self.QUESTION_RESPONSIBLE_ID, 'question_order': 0,
@@ -4657,7 +4659,7 @@ class ImportExperimentTest(TestCase):
             }
         ]
 
-        mockServer.return_value.update_response.return_value = True
+        mockServer.return_value.update_response.return_value = {'status': 'OK'}
 
         mockServer.return_value.delete_participants.return_value = [{'status': 'Deleted'}]
         # Get responses from questionnaire for tokens that will be deleted
@@ -4932,7 +4934,7 @@ class ImportExperimentTest(TestCase):
 
         self._set_mock_values(mockServer)
 
-        # There is others returned values with other error status but we treat
+        # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
         mockServer.return_value.list_participants.return_value = {'status': 'Error: No token table'}
 
@@ -4958,7 +4960,7 @@ class ImportExperimentTest(TestCase):
 
         self._set_mock_values(mockServer)
 
-        # There is others returned values with other error status but we treat
+        # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
         mockServer.return_value.delete_participants.return_value = {'status': 'Error: No token table'}
 
@@ -4984,7 +4986,7 @@ class ImportExperimentTest(TestCase):
 
         self._set_mock_values(mockServer)
 
-        # There is others returned values with other error status but we treat
+        # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
         mockServer.return_value.export_responses_by_token.return_value = {'status': 'No Response found for Token'}
 
@@ -5010,7 +5012,7 @@ class ImportExperimentTest(TestCase):
 
         self._set_mock_values(mockServer)
 
-        # There is others returned values with other error status but we treat
+        # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
         mockServer.return_value.delete_responses.return_value = {'status': 'Error: during response deletion'}
 
@@ -5025,3 +5027,182 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, 'Could not clear all extra survey participants data.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_get_participant_properties_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_groups.return_value = {'status': 'Error: Invalid tokenid'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_get_participant_properties_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_groups.return_value = {'status': 'Error: Invalid tokenid'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_list_questions_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_questions.return_value = {'status': 'No questions found'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_has_not_Identification_group_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_groups.return_value = [{
+                'group_order': 2, 'gid': 1411, 'grelevance': '',
+                'id': {'gid': 1411, 'language': 'en'},
+                'language': 'en', 'sid': self.SURVEY_ID, 'randomization_group': '',
+                'group_name': 'First group', 'description': ''
+            }]
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_has_not_Identification_question_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_questions.return_value = [
+            {
+                'qid': 3848, 'question_order': 1,
+                'id': {'qid': 3848, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Acquisition date<strong>:</strong><br />\n',
+                'type': 'D', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'acquisitiondate',
+                'mandatory': 'Y',
+                'preg': ''
+            },
+            {
+                'qid': self.QUESTION_SUBJECT_ID, 'question_order': 2,
+                'id': {'qid': self.QUESTION_SUBJECT_ID, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Participant Identification number<b>:</b>',
+                'type': 'N', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'subjectid', 'mandatory': 'Y',
+                'preg': ''
+            }
+        ]
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_update_response_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.update_response.return_value = {'status': 'Unable to edit response'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update all responses.')
