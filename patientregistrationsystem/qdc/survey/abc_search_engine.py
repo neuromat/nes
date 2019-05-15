@@ -184,18 +184,11 @@ class ABCSearchEngine(ABC):
         :param survey_id: survey ID
         :param token_id: token ID
         :param prop: property name
-        :return: value of a determined property from a participant/token
+        :return: on success, dict with value of a determined property, else dict with error status
         """
+        result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
 
-        if self.session_key:
-            result = self.server.get_participant_properties(
-                self.session_key, survey_id, token_id, {'method': prop}
-            )
-            result = result.get(prop)
-        else:
-            result = ''
-
-        return result
+        return result.get(prop) if 'status' not in result else None
 
     @abstractmethod
     def survey_has_token_table(self, sid):
@@ -344,19 +337,18 @@ class ABCSearchEngine(ABC):
     def list_groups(self, sid):
         """
         :param sid: survey ID
-        :return: ids and info of groups belonging to survey
+        :return: on success, list of ids and info of groups belonging to survey, else, None
         """
-
         groups = self.server.list_groups(self.session_key, sid)
 
-        return groups
+        return groups if isinstance(groups, list) else None
 
     @abstractmethod
     def get_group_properties(self, gid):
         """
-        :param gid: group ID
+        :param gid: LimeSurvey group id
         :param lang: group language to return correct group, as Remote
-        Control API does not do that
+        Control API does not do that (TODO (NES-956): see why lang is gone
         :return: list of group properties
         """
         return self.server.get_group_properties(self.session_key, gid)
@@ -367,19 +359,20 @@ class ABCSearchEngine(ABC):
         )
 
     def list_questions(self, sid, gid):
-        """TODO (NES-956)
-        :param sid:
-        :param gid:
+        """List questions with their properties
+        :param sid: LimeSurvey survey id
+        :param gid: LimeSurvey group id
+        :return: on success, list of question properties, else None
         """
-        result = self.server.list_questions(self.session_key, sid, gid)
-        # TODO (NES-956): deal with error
-        return result
+        questions = self.server.list_questions(self.session_key, sid, gid)
+
+        return questions if isinstance(questions, list) else None
 
     @abstractmethod
     def list_questions_ids(self, sid, gid):
         """
-        :param sid: survey ID
-        :param gid: group ID
+        :param sid: LimeSurvey survey id
+        :param gid: LimeSurvey group id
         :return: ids and info of (sub-)questions of a survey/group
         """
 
@@ -444,9 +437,7 @@ class ABCSearchEngine(ABC):
 
     def update_response(self, sid, response_data):
         result = self.server.update_response(self.session_key, sid, response_data)
-        # TODO (NES-956): deal with errors here
-
-        return result
+        return result if result['status'] == 'OK' else None
 
 
 class Questionnaires(ABCSearchEngine):

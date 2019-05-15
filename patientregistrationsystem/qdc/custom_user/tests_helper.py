@@ -13,9 +13,12 @@ def create_user(groups=Group.objects.none(), username=None, force_password_chang
     faker = Factory.create()
 
     password = 'passwd'
-    user = User.objects.create_user(
-        username=username or faker.name(), password=password
-    )
+    if username is None:
+        while True:
+            username = faker.profile()['username']
+            if not User.objects.filter(username=username):
+                break
+    user = User.objects.create_user(username=username, password=password)
     user.user_profile.login_enabled = True
     # disable force_password_change to avoid this step by now
     user.user_profile.force_password_change = force_password_change
