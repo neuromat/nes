@@ -271,12 +271,13 @@ class ABCSearchEngine(ABC):
         """ Obtain header responses
         :param sid: survey ID
         :param language: language
+        :param token: token
         :param heading_type: heading type (can be 'code' or 'full')
         :return: responses in the txt format
         """
 
         responses = self.server.export_responses_by_token(
-            self.session_key, sid, 'csv', token, language,'complete', heading_type, 'short')
+            self.session_key, sid, 'csv', token, language, 'complete', heading_type, 'short')
 
         if not isinstance(responses, str):
             responses = self.server.export_responses(
@@ -354,9 +355,7 @@ class ABCSearchEngine(ABC):
         return self.server.get_group_properties(self.session_key, gid)
 
     def set_group_properties(self, sid, data):
-        return self.server.set_group_properties(
-            self.session_key, sid, data
-        )
+        return self.server.set_group_properties(self.session_key, sid, data)
 
     def list_questions(self, sid, gid):
         """List questions with their properties
@@ -474,9 +473,7 @@ class Questionnaires(ABCSearchEngine):
         return super(Questionnaires, self).survey_has_token_table(sid)
 
     def add_survey(self, sid, title, language, survey_format):
-        return super(Questionnaires, self).add_survey(
-            sid, title, language, survey_format
-        )
+        return super(Questionnaires, self).add_survey(sid, title, language, survey_format)
 
     def delete_survey(self, sid):
         return super(Questionnaires, self).delete_survey(sid)
@@ -494,9 +491,7 @@ class Questionnaires(ABCSearchEngine):
         return super(Questionnaires, self).get_responses(sid, language, response_type, fields, heading_type)
 
     def get_header_response(self, sid, language, token=1, heading_type='code'):
-        return super(Questionnaires, self).get_header_response(
-            sid, language, token, heading_type
-        )
+        return super(Questionnaires, self).get_header_response(sid, language, token, heading_type)
 
     def get_summary(self, sid, stat_name):
         return super(Questionnaires, self).get_summary(sid, stat_name)
@@ -536,9 +531,7 @@ class Questionnaires(ABCSearchEngine):
         return super(Questionnaires, self).add_response(sid, response_data)
 
     def set_participant_properties(self, sid, tid, properties_dict):
-        return super(Questionnaires, self).set_participant_properties(
-            sid, tid, properties_dict
-        )
+        return super(Questionnaires, self).set_participant_properties(sid, tid, properties_dict)
 
     def import_survey(self, base64_encoded_lsa_file):
         return super(Questionnaires, self).import_survey(base64_encoded_lsa_file)
