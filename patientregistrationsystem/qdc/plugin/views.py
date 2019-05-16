@@ -3,9 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from export.views import patient_fields
+from patient.models import QuestionnaireResponse
 from plugin.models import RandomForests
 from survey.models import Survey
-from patient.models import QuestionnaireResponse
 
 
 def participants_dict(survey):
@@ -19,7 +19,7 @@ def participants_dict(survey):
     for response in QuestionnaireResponse.objects.filter(survey=survey).filter(patient__removed=False):
         participants[response.patient.id] = {
             'patient_id': response.patient.id,
-            'patient_name': response.patient.name,
+            'patient_name': response.patient.name if response.patient.name else response.patient.code,
         }
 
     return participants
