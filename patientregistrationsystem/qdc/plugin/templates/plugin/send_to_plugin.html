@@ -53,8 +53,8 @@
                                 <select class="form-control" size="13" id="multiselect_" name="from[]" multiple="multiple">
                                     {% for field in participants %}
                                         {% if not field.selected %}
-                                            <option value="{{ field.code }}">
-                                                {% if field.name %}{{ field.name }}{% else %}{{ field.code }}{% endif %}
+                                            <option value="{{ field.patient_id }}">
+                                                {{ field.patient_name }}
                                             </option>
                                         {% endif %}
                                     {% endfor %}
@@ -82,8 +82,8 @@
                             <select name="to[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
                                 {% for field in participants %}
                                     {% if field.selected %}
-                                        <option value="{{ field.code }}">
-                                            {% if field.name %}{{ field.name }}{% else %}{{ field.code }}{% endif %}
+                                        <option value="{{ field.patient_id }}">
+                                            {{ field.patient_name }}
                                         </option>
                                     {% endif %}
                                 {% endfor %}
