@@ -482,16 +482,16 @@ class ImportExperiment:
                     None)
                 if index is None:
                     break
-                file_format = FileFormat.objects.filter(nes_code=self.data[index]['fields']['nes_code']).first()
                 indexes_datafile = [
-                    index for (index, dict_) in enumerate(self.data)
+                    index_datafile for (index_datafile, dict_) in enumerate(self.data)
                     if (dict_['model'] == 'experiment.eegdata'
                         or dict_['model'] == 'experiment.emgdata'
                         or dict_['model'] == 'experiment.additionaldata'
                         or dict_['model'] == 'experiment.digitalgamephasedata'
                         or dict_['model'] == 'experiment.genericdatacollectiondata')
-                       and dict_['fields']['file_format'] == self.data[index]['pk']
+                        and dict_['fields']['file_format'] == self.data[index]['pk']
                 ]
+                file_format = FileFormat.objects.filter(nes_code=self.data[index]['fields']['nes_code']).first()
                 if file_format:
                     for index_datafile in indexes_datafile:
                         self.data[index_datafile]['fields']['file_format'] = file_format.id
