@@ -6,6 +6,7 @@
     {% load i18n %}
     {% load l10n %}
     {% load qdc_tags %}
+    {% load solo_tags %}
     <meta charset="utf-8">
 
     <title>{% trans "Neuroscience Experiments System - NES" %}</title>
@@ -255,7 +256,8 @@
                     </li>
                 {% endif %}
 
-                {% if perms.plugin.can_send_data_to_plugin %}
+                {% get_solo 'plugin.RandomForests' as random_forests %}
+                {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation %}
                     <li {% block activePlugin %}{% endblock %}>
                         <a href="/plugin/">
                             <span class="glyphicon glyphicon-cloud-upload"></span>
