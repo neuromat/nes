@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 from base64 import b64encode, b64decode
 
 from experiment.models import Group, ResearchProject, Experiment, \
-    Keyword, Component, Questionnaire, QuestionnaireResponse
+    Keyword, Component, Questionnaire, QuestionnaireResponse, EEGElectrodeLocalizationSystem, FileFormat
 from experiment.import_export_model_relations import ONE_TO_ONE_RELATION, FOREIGN_RELATIONS, MODEL_ROOT_NODES, \
     EXPERIMENT_JSON_FILES, PATIENT_JSON_FILES, JSON_FILES_DETACHED_MODELS, PRE_LOADED_MODELS_FOREIGN_KEYS, \
     PRE_LOADED_MODELS_INHERITANCE, PRE_LOADED_MODELS_NOT_EDITABLE, PRE_LOADED_PATIENT_MODEL, \
@@ -80,8 +80,7 @@ class ExportExperiment:
         while True:
             index = next(
                 (index for (index, dict_) in enumerate(deserialized) if dict_['model'] == 'auth.user'),
-                None
-            )
+                None)
             if index is None:
                 break
             del deserialized[index]
@@ -94,8 +93,10 @@ class ExportExperiment:
             data = f.read().replace('\n', '')
 
         deserialized = json.loads(data)
-        indexes = [index for (index, dict_) in enumerate(deserialized) if
-                   dict_['model'] == 'experiment.researchproject_keywords']
+        indexes = [
+            index for (index, dict_) in enumerate(deserialized)
+            if dict_['model'] == 'experiment.researchproject_keywords'
+        ]
         for i in sorted(indexes, reverse=True):
             del (deserialized[i])
 
@@ -142,7 +143,7 @@ class ExportExperiment:
         for index in indexes:
             pk = serialized[index]['fields']['classification_of_diseases']
             code = ClassificationOfDiseases.objects.get(id=int(pk)).code
-            # make a list with one element as natural key in dumped data has to be a list
+            # Make a list with one element as natural key in dumped data has to be a list
             serialized[index]['fields']['classification_of_diseases'] = [code]
 
         # Remove ClassificationOfDiseases items: these data are preloaded in database
@@ -157,7 +158,7 @@ class ExportExperiment:
         with open(path.join(self.temp_dir, self.FILE_NAME_JSON), 'w') as f:
             f.write(json.dumps(serialized))
 
-    def _get_indexes(self, app, model):
+    def get_indexes(self, app, model):
         with open(self.get_file_path('json')) as f:
             data = json.load(f)
         return [index for (index, dict_) in enumerate(data) if dict_['model'] == app + '.' + model]
@@ -247,7 +248,7 @@ class ExportExperiment:
         self._remove_auth_user_model_from_json()
 
         result = []
-        if self._get_indexes('experiment', 'questionnaire'):
+        if self.get_indexes('experiment', 'questionnaire'):
             result = self._export_surveys()
         return self._create_zip_file(result)
 
@@ -416,13 +417,113 @@ class ImportExperiment:
                 next_code = 'Q' + str(int(next_code.split('Q')[1]) + 1)
                 self.data[index]['fields']['code'] = next_code
 
+    def _assign_right_ids(self, match_eeg_els, match_eeg_ep_list):
+        # Need to save old pk to update other dependent models
+        old_eeg_els_pk = self.data[match_eeg_els[0]]['pk']
+
+        self.data[match_eeg_els[0]]['pk'] = match_eeg_els[1].id
+        for match in match_eeg_ep_list:
+            self.data[match[0]]['fields']['eeg_electrode_localization_system'] = self.data[match_eeg_els[0]]['pk']
+
+        # Update other dependent models references
+        # TODO (NES-965):
+        #  for dependent_model in dependent_models:
+        #      ...
+        indexes = [
+            index for index, dict_ in enumerate(self.data)
+            if dict_['model'] == 'experiment.eegelectrodenetsystem'
+            and dict_['fields']['eeg_electrode_localization_system'] == old_eeg_els_pk
+        ]
+        for i in indexes:
+            self.data[i]['fields']['eeg_electrode_localization_system'] = self.data[match_eeg_els[0]]['pk']
+
+    def _deal_with_eegelectrodelocalizationsystem(self):
+        indexes = [
+            index for (index, dict_) in enumerate(self.data)
+            if dict_['model'] == 'experiment.eegelectrodelocalizationsystem'
+        ]
+        for eeg_els_index in indexes:
+            match = True
+            eeg_els = EEGElectrodeLocalizationSystem.objects.filter(
+                name=self.data[eeg_els_index]['fields']['name'],
+                description=self.data[eeg_els_index]['fields']['description']).first()
+            if eeg_els:
+                eeg_ep_queryset = eeg_els.electrode_positions.all()
+                eeg_ep_import_indexes = [
+                    index for (index, dict_) in enumerate(self.data)
+                    if dict_['model'] == 'experiment.eegelectrodeposition'
+                       and dict_['fields']['eeg_electrode_localization_system'] == self.data[eeg_els_index]['pk']]
+                if eeg_ep_queryset.count() == len(eeg_ep_import_indexes):
+                    match_tuple_list = []  # only to intialize
+                    for eeg_ep_index in eeg_ep_import_indexes:
+                        name = self.data[eeg_ep_index]['fields']['name']
+                        coordinate_x = self.data[eeg_ep_index]['fields']['coordinate_x']
+                        coordinate_y = self.data[eeg_ep_index]['fields']['coordinate_y']
+                        channel_default_index = self.data[eeg_ep_index]['fields']['channel_default_index']
+                        match_instance = eeg_ep_queryset.filter(
+                            name=name, coordinate_x=coordinate_x, coordinate_y=coordinate_y,
+                            channel_default_index=channel_default_index).first()
+                        if match_instance:
+                            match_tuple_list.append((eeg_ep_index, match_instance))
+                            continue
+                        else:
+                            match = False
+                            break
+                    if match:
+                        self._assign_right_ids((eeg_els_index, eeg_els), match_tuple_list)
+
+    def _deal_with_fileformat(self):
+        file_formats = FileFormat.objects.all().order_by('-id')
+        if file_formats:
+            max_id = file_formats[0].id
+            while True:
+                index = next(
+                    (index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'experiment.fileformat'),
+                    None)
+                if index is None:
+                    break
+                file_format = FileFormat.objects.filter(nes_code=self.data[index]['fields']['nes_code']).first()
+                indexes_datafile = [
+                    index for (index, dict_) in enumerate(self.data)
+                    if (dict_['model'] == 'experiment.eegdata'
+                        or dict_['model'] == 'experiment.emgdata'
+                        or dict_['model'] == 'experiment.additionaldata'
+                        or dict_['model'] == 'experiment.digitalgamephasedata'
+                        or dict_['model'] == 'experiment.genericdatacollectiondata')
+                       and dict_['fields']['file_format'] == self.data[index]['pk']
+                ]
+                if file_format:
+                    for index_datafile in indexes_datafile:
+                        self.data[index_datafile]['fields']['file_format'] = file_format.id
+                    del self.data[index]
+                else:
+                    file_format = FileFormat.objects.filter(id=self.data[index]['pk']).first()
+                    if file_format:
+                        max_id += 1
+                        self.data[index]['pk'] = max_id
+                        for index_datafile in indexes_datafile:
+                            self.data[index_datafile]['fields']['file_format'] = self.data[index]['pk']
+
+    def _deal_with_models_with_unique_fields(self):
+        """Some models that have unique fields need to be treated separately
+        because the updating concept diverges from others (TODO (NES-965): explain better)
+        """
+        self._deal_with_eegelectrodelocalizationsystem()
+        self._deal_with_fileformat()
+
     def _keep_objects_pre_loaded(self):
         """For objects in fixtures initially loaded, check if the objects
         that are to be are already there. This is to avoid duplication of that objects.
         The objects checked here are the ones that can be edited. Objects that are not
         editable are simply ignored when updating indexes in _update_pks method.
         """
+        self._deal_with_models_with_unique_fields()
+
         for model, dependent_models in PRE_LOADED_MODELS_FOREIGN_KEYS.items():
+            # Treat EEGElectrodeLolizationSystem separately
+            # in self._deal_with_models_with_unique_fields method
+            if model[0] == 'experiment.eegelectrodelocalizationsystem':
+                continue
             indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == model[0]]
             app_model = model[0].split('.')
             for i in indexes:
@@ -590,8 +691,7 @@ class ImportExperiment:
                     index_to = next(
                         (index_foreign for index_foreign, dict_foreign in enumerate(self.data)
                          if dict_foreign['model'] == node_to[0] and dict_foreign['pk'] == dict_['fields'][node_to[1]]),
-                        None
-                    )
+                        None)
                     if index_to is not None:
                         digraph.add_edge(index_from, index_to)
                         digraph[index_from][index_to]['relation'] = node_to[1]

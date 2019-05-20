@@ -414,8 +414,8 @@ class EEGElectrodePosition(models.Model):
 
 class EEGElectrodeNetSystem(models.Model):
     eeg_electrode_net = models.ForeignKey(EEGElectrodeNet, related_name="set_of_electrode_net_system")
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
-                                                          related_name='set_of_electrode_net_system')
+    eeg_electrode_localization_system = models.ForeignKey(
+        EEGElectrodeLocalizationSystem, related_name='set_of_electrode_net_system')
 
 
 class CoilShape(models.Model):
@@ -1067,9 +1067,7 @@ class Group(models.Model):
     description = models.TextField(null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
-    experimental_protocol = models.ForeignKey(
-        Component, null=True, on_delete=models.SET_NULL
-    )
+    experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = _('Group')
