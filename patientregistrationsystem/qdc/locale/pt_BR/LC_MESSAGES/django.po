@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-12 13:40-0300\n"
+"POT-Creation-Date: 2019-05-20 16:23-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -648,32 +648,35 @@ msgstr "Pode registrar experimento"
 msgid "Can view sensitive patient data"
 msgstr "Pode ver dados sensíveis de participante"
 
-#: add_initial_data.py:181
+#: add_initial_data.py:178
+msgid "Can send data to plugin"
+msgstr ""
+
+#: add_initial_data.py:182
 msgid "Attendant"
 msgstr "Atendente"
 
-#: add_initial_data.py:182
+#: add_initial_data.py:183
 msgid "Physiotherapist"
 msgstr "Fisioterapeuta"
 
-#: add_initial_data.py:183
+#: add_initial_data.py:184
 msgid "Doctor"
 msgstr "Médico"
 
-#: add_initial_data.py:184
+#: add_initial_data.py:185
 msgid "Junior researcher"
 msgstr "Pesquisador júnior"
 
-#: add_initial_data.py:185
+#: add_initial_data.py:186
 msgid "Senior researcher"
 msgstr "Pesquisador sênior"
 
-#: add_initial_data.py:186
+#: add_initial_data.py:187
 msgid "Administrator"
 msgstr "Administrador"
 
-#: templates/404.html:14
-#: templates/registration/change_password_custom.html:143
+#: templates/404.html:14 templates/registration/change_password_custom.html:142
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Home"
@@ -725,7 +728,7 @@ msgstr ""
 msgid "Save"
 msgstr "Salvar"
 
-#: templates/registration/change_password_custom.html:145
+#: templates/registration/change_password_custom.html:144
 msgid "Logout"
 msgstr ""
 
