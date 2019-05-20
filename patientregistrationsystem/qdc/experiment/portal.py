@@ -1233,8 +1233,7 @@ def get_experiment_status_portal(experiment_id):
 
 def send_steps_to_portal(portal_group_id, component_tree,
                          list_of_eeg_setting, list_of_emg_setting, list_of_tms_setting, list_of_context_tree,
-                         language_code,
-                         component_configuration_id=None, parent=None,):
+                         language_code, component_configuration_id=None, parent=None):
 
     component = component_tree['component']
     component_configuration = None
@@ -1360,9 +1359,7 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
         language = survey_languages['language']
 
-        survey_metadata, survey_name = get_survey_information(
-            language, survey, surveys
-        )
+        survey_metadata, survey_name = get_survey_information(language, survey, surveys)
 
         params = {"id": portal_step['id'],
                   "survey_name": survey_name,
@@ -1403,15 +1400,11 @@ def send_steps_to_portal(portal_group_id, component_tree,
     # sending sub-steps
     if component_tree['list_of_component_configuration']:
         for component_configuration in component_tree['list_of_component_configuration']:
-            sub_step_list = send_steps_to_portal(portal_group_id,
-                                                 component_configuration['component'],
-                                                 list_of_eeg_setting,
-                                                 list_of_emg_setting,
-                                                 list_of_tms_setting,
-                                                 list_of_context_tree,
-                                                 language_code,
-                                                 component_configuration['id'],
-                                                 portal_step['id'])
+            sub_step_list = send_steps_to_portal(
+                portal_group_id, component_configuration['component'],
+                list_of_eeg_setting, list_of_emg_setting, list_of_tms_setting,
+                list_of_context_tree, language_code, component_configuration['id'],
+                portal_step['id'])
             return_dict.update(sub_step_list)
 
     return return_dict
@@ -1420,13 +1413,9 @@ def send_steps_to_portal(portal_group_id, component_tree,
 def get_survey_information(language, survey, surveys):
     survey_name = surveys.get_survey_title(survey.lime_survey_id, language)
     questionnaire_utils = QuestionnaireUtils()
-    fields = get_questionnaire_fields_for_portal(
-        surveys, survey.lime_survey_id, language
-    )
-    questionnaire_fields = \
-        questionnaire_utils.create_questionnaire_explanation_fields(
-            survey.lime_survey_id, language, surveys, fields, False
-        )
+    fields = get_questionnaire_fields_for_portal(surveys, survey.lime_survey_id, language)
+    questionnaire_fields = questionnaire_utils.create_questionnaire_explanation_fields(
+            survey.lime_survey_id, language, surveys, fields, False)
     survey_metadata = ''
     for row in questionnaire_fields:
         first = True
@@ -1449,13 +1438,10 @@ def get_questionnaire_fields_for_portal(questionnaire_lime_survey, lime_survey_i
     """
 
     fields = []
-    responses_text = \
-        questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
+    responses_text = questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
     if responses_text:
         # header
-        header_fields = next(
-            reader(StringIO(responses_text.decode()), delimiter=',')
-        )
+        header_fields = next(reader(StringIO(responses_text), delimiter=','))
         for field in header_fields:
             if field not in questionnaire_evaluation_fields_excluded:
                 fields.append(field)

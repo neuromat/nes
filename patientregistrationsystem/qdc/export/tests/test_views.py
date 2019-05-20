@@ -103,8 +103,8 @@ class ExportQuestionnaireTest(ExportTestCase):
         column_names_dict = dict()
         for question_group in question_groups:
             for question_id \
-                    in self.lime_survey.list_questions(self.sid,
-                                                       question_group):
+                    in self.lime_survey.list_questions_ids(self.sid,
+                                                           question_group):
                 key = \
                     self.lime_survey.get_question_properties(question_id,
                                                              'en')['title']
@@ -153,9 +153,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         # See:
         # https://www.limesurvey.org/de/foren/can-i-do-this-with-limesurvey/113443-help-with-remote-control-add-response
         self.lime_survey.set_participant_properties(
-            self.sid, result['tid'],
-            {'completed': datetime.utcnow().strftime('%Y-%m-%d')}
-        )
+            self.sid, result['tid'], {'completed': datetime.utcnow().strftime('%Y-%m-%d')})
 
     def test_same_questionnaire_used_in_different_steps_return_correct_zipfile_content(self):
         # TODO: testar com sobreposição do subdiretório media
@@ -693,7 +691,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         """
         # In setUp we create experiment questionnaire response. Here we
         # create a participant questionnaire response (entrance questionnaire)
-        questionnaire_response = UtilTests.create_response_survey_mock(
+        questionnaire_response = UtilTests.create_response_survey(
             responsible=self.user, patient=self.patient, survey=self.survey
         )
 
@@ -1055,15 +1053,15 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"eeg")[0]
+        path = create_list_of_trees(self.group.experimental_protocol, "eeg")[0]
         eeg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = eeg_conf.component
         step_number = path[-1][4]
-        self.assert_per_participant_step_file_exists(step_number, component_step,'EEGData_1',
-                                                     os.path.basename(eegf.file.name),zipped_file)
+        self.assert_per_participant_step_file_exists(step_number, component_step, 'EEGData_1',
+                                                     os.path.basename(eegf.file.name), zipped_file)
 
-        self.assert_per_participant_step_file_exists(step_number, component_step,'AdditionalData_1',
-                                                     os.path.basename(adf.file.name),zipped_file)
+        self.assert_per_participant_step_file_exists(step_number, component_step, 'AdditionalData_1',
+                                                     os.path.basename(adf.file.name), zipped_file)
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -1122,7 +1120,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"emg")[0]
+        path = create_list_of_trees(self.group.experimental_protocol, "emg")[0]
         emg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = emg_conf.component
         step_number = path[-1][4]
@@ -1160,7 +1158,7 @@ class ExportDataCollectionTest(ExportTestCase):
             name="Coil Orientation"
         )
 
-        tmsdataaux=TMSData.objects.create(
+        tmsdataaux = TMSData.objects.create(
             tms_setting=tms_set,
             data_configuration_tree=dct,
             subject_of_group=self.subject_of_group,
@@ -1177,7 +1175,7 @@ class ExportDataCollectionTest(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
             f.write(b'carambola')
-        temp_file=f.name
+        temp_file = f.name
 
         tms_local_sys = TMSLocalizationSystem.objects.create(
             name="TMS name", brain_area=brainarea,
@@ -1248,7 +1246,6 @@ class ExportDataCollectionTest(ExportTestCase):
         subject1 = ObjectsFactory.create_subject(patient1)
         subject_of_group1 = \
             ObjectsFactory.create_subject_of_group(group1, subject1)
-
 
         # create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
@@ -1329,7 +1326,6 @@ class ExportDataCollectionTest(ExportTestCase):
             component_step = generic_component_configuration.component
             step_number = path[-1][4]
 
-
             self.assert_per_participant_step_file_exists(step_number, component_step,
                                                          'Generic_Data_Collection_1',
                                                          'file.bin',
@@ -1407,7 +1403,7 @@ class ExportDataCollectionTest(ExportTestCase):
             'per_goalkeeper_game_data': ['on'],
             # 'per_additional_data': ['on'],
             'headings': ['code'],
-            'filesformat':['csv'],
+            'filesformat': ['csv'],
             'responses': ['short'],
             'patient_selected': ['age*age'],
             'action': ['run']
@@ -1482,9 +1478,9 @@ class ExportDataCollectionTest(ExportTestCase):
         step_number = path[-1][4]
 
         self.assert_step_data_files_exists(step_number, component_step,
-                                               'AdditionalData',
-                                               os.path.basename(f.name),
-                                               zipped_file)
+                                           'AdditionalData',
+                                           os.path.basename(f.name),
+                                           zipped_file)
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -1538,7 +1534,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         # we have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(self.group.experimental_protocol,"stimulus")[0]
+        path = create_list_of_trees(self.group.experimental_protocol, "stimulus")[0]
         stimulus_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = stimulus_component_configuration.component
         step_number = path[-1][4]
@@ -1734,10 +1730,6 @@ class ExportSelection(ExportTestCase):
     def tearDown(self):
         self.client.logout()
 
-
-    def tearDown(self):
-        self.client.logout()
-
     def test_experiment_selection_selecting_group(self):
 
         data = {
@@ -1800,93 +1792,3 @@ class ExportSelection(ExportTestCase):
         # when session expires the request is made with get
         response3 = self.client.get(response2.url)
         self.assertRedirects(response3, reverse('export_menu'), status_code=302, target_status_code=200)
-
-# class UploadPaperTest(ExportTestCase):
-#
-#     # def setUp(self):
-#     #     self.user = User.objects.create_user(
-#     #         username=USER_USERNAME, email='test@dummy.com', password=USER_PWD
-#     #     )
-#     #     self.user.is_staff = True
-#     #     self.user.is_superuser = True
-#     #     self.user.save()
-#     #
-#     #     self.factory = RequestFactory()
-#     #
-#     #     logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
-#     #     self.assertEqual(logged, True)
-#     #
-#     #     self.client.session.flush()
-#     #
-#     #     # Post data to view: data style that is posted to export_view in
-#     #     # template
-#
-#
-#     def generate_file(self):
-#         try:
-#             myfile = open('test_C.csv', 'wb')
-#             wr = csv.writer(myfile)
-#             wr.writerow(('Paper ID', 'Paper Title', 'Authors'))
-#             wr.writerow(('1', 'Title1', 'Author1'))
-#             wr.writerow(('2', 'Title2', 'Author2'))
-#             wr.writerow(('3', 'Title3', 'Author3'))
-#         finally:
-#             myfile.close()
-#
-#         return myfile
-#
-#     def test_export_create(self):
-#
-#         data = {
-#             'per_questionnaire': ['on'],
-#             'per_participant': ['on'],
-#             'headings': ['code'],
-#             'patient_selected': ['age*age'],
-#             'action': ['run'],
-#             'responses': ['short'],
-#             'filesformat': ['csv']
-#         }
-#         response = self.client.post(reverse('export_view'), data)
-#
-#         participant_field_header_list = [("id", "id"), ("name", "name")]
-#
-#         questionnaires_list = [(0, 271192, "title", [("header1", "field1")]), ]
-#
-#         diagnosis_field_header_list = ""
-#
-#         output_filename = path.join(settings.MEDIA_ROOT, "export/test123.json")
-#
-#         if path.isfile(output_filename):
-#             remove(output_filename)
-#
-#         self.assertTrue(not path.isfile(output_filename))
-#         experiment_questionnaires_list = []
-#         component_list = []
-#
-#         export_instance = Export.objects.create(user=self.user)
-#
-#         build_complete_export_structure(0, 1, 0,
-#                                         participant_field_header_list,
-#                                         diagnosis_field_header_list,
-#                                         questionnaires_list,
-#                                         experiment_questionnaires_list,
-#                                         ["short"], "full", output_filename,
-#                                         component_list, "pt-BR", "tsv")
-#
-#         self.assertTrue(path.isfile(output_filename))
-#
-#         self.assertTrue(export_create(self, export_instance.id, output_filename))
-#
-#
-#     # def test_csv_export(self):
-#     #
-#     #     response = self.client.get('/my/export/api')
-#     #     self.assertEqual(response.status_code, 200)
-#     #
-#     #     content = response.content.decode('utf-8')
-#     #     cvs_reader = csv.reader(io.StringIO(content))
-#     #     body = list(cvs_reader)
-#     #     headers = body.pop(0)
-#     #
-#     #     # print(body)
-#     #     # print(headers)

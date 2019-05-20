@@ -2839,14 +2839,10 @@ class ExportExecution:
                     data_from_lime_survey = {}
                     for language in language_list:
                         # read all data for questionnaire_id from LimeSurvey
-                        responses_string1 = \
-                            questionnaire_lime_survey.get_responses(
-                                questionnaire_id, language, response_type[0]
-                            )
+                        responses_string1 = questionnaire_lime_survey.get_responses(
+                                questionnaire_id, language, response_type[0])
                         # all the answer from the questionnaire_id in csv format
-                        fill_list1 = QuestionnaireUtils.responses_to_csv(
-                            responses_string1
-                        )
+                        fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
                         # need types of questions to make replacement just
                         # below
