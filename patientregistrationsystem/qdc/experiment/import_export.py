@@ -829,14 +829,16 @@ class ImportExperiment:
                     result = self.LIMESURVEY_ERROR, _('Could not update identification questions for all responses.')
                     continue
                 # TODO (NES-956): get the language. By now put 'en' to test
-                ls_subject_id_column_name = questionnaire_utils.get_response_column_name_for_Identification_group_questions(
-                    ls_interface, limesurvey_id, 'subjectid', 'en')
+                ls_subject_id_column_name = \
+                    questionnaire_utils.get_response_column_name_for_Identification_group_questions(
+                        ls_interface, limesurvey_id, 'subjectid', 'en')
                 if isinstance(ls_subject_id_column_name, tuple):  # Returned error
                     result = ls_subject_id_column_name[0], _('Could not update identification questions for all '
                                                              'responses.')
                     continue
-                ls_responsible_id_column_name = questionnaire_utils.get_response_column_name_for_Identification_group_questions(
-                    ls_interface, limesurvey_id, 'responsibleid', 'en')
+                ls_responsible_id_column_name = \
+                    questionnaire_utils.get_response_column_name_for_Identification_group_questions(
+                        ls_interface, limesurvey_id, 'responsibleid', 'en')
                 if isinstance(ls_responsible_id_column_name, tuple):  # Returned error
                     result = ls_responsible_id_column_name[0], _('Could not update identification questions for all '
                                                                  'responses.')
