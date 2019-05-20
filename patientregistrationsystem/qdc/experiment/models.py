@@ -414,8 +414,8 @@ class EEGElectrodePosition(models.Model):
 
 class EEGElectrodeNetSystem(models.Model):
     eeg_electrode_net = models.ForeignKey(EEGElectrodeNet, related_name="set_of_electrode_net_system")
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
-                                                          related_name='set_of_electrode_net_system')
+    eeg_electrode_localization_system = models.ForeignKey(
+        EEGElectrodeLocalizationSystem, related_name='set_of_electrode_net_system')
 
 
 class CoilShape(models.Model):
@@ -1067,9 +1067,7 @@ class Group(models.Model):
     description = models.TextField(null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
     classification_of_diseases = models.ManyToManyField(ClassificationOfDiseases)
-    experimental_protocol = models.ForeignKey(
-        Component, null=True, on_delete=models.SET_NULL
-    )
+    experimental_protocol = models.ForeignKey(Component, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = _('Group')
@@ -1214,8 +1212,7 @@ class DataCollection(models.Model):
 
 class QuestionnaireResponse(DataCollection):
     token_id = models.IntegerField(null=False)
-    questionnaire_responsible = \
-        models.ForeignKey(User, null=False, related_name="+")
+    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
     history = HistoricalRecords()
     is_completed = models.CharField(max_length=50, default="")
 
@@ -1264,7 +1261,6 @@ class EEGData(DataFile, DataCollection):
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
     eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
 
-    # Audit trail - Simple History
     history = HistoricalRecords()
 
     def __str__(self):

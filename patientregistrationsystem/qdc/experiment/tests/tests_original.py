@@ -587,25 +587,23 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_file_format():
-
         faker = Factory.create()
+        while True:  # nes_code is unique
+            nes_code = str(faker.unix_time())
+            if not FileFormat.objects.filter(nes_code=nes_code).first():
+                break
 
         return FileFormat.objects.create(
-            name=faker.file_extension(), description=faker.text()
-        )
+            nes_code=nes_code, name=faker.file_extension(), description=faker.text())
 
     @staticmethod
-    def create_generic_data_collection_data(data_conf_tree,
-                                            subj_of_group):
-
+    def create_generic_data_collection_data(data_conf_tree, subj_of_group):
         faker = Factory.create()
 
         file_format = ObjectsFactory.create_file_format()
         return GenericDataCollectionData.objects.create(
-            description=faker.text(), file_format=file_format,
-            file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group
+            description=faker.text(), file_format=file_format, file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree, subject_of_group=subj_of_group
         )
 
     @staticmethod
@@ -670,17 +668,13 @@ class ObjectsFactory(object):
         return eegf
 
     @staticmethod
-    def create_emg_data_collection_data(data_conf_tree,
-                                        subj_of_group, emg_set):
-
+    def create_emg_data_collection_data(data_conf_tree, subj_of_group, emg_set):
         faker = Factory.create()
 
         file_format = ObjectsFactory.create_file_format()
         return EMGData.objects.create(
-            description=faker.text(), file_format=file_format,
-            file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group, emg_setting=emg_set
+            description=faker.text(), file_format=file_format, file_format_description=faker.text(),
+            data_configuration_tree=data_conf_tree, subject_of_group=subj_of_group, emg_setting=emg_set
         )
 
     @staticmethod
@@ -772,10 +766,7 @@ class ObjectsFactory(object):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-
-            adf = AdditionalDataFile.objects.create(
-                additional_data=ad_data
-            )
+            adf = AdditionalDataFile.objects.create(additional_data=ad_data)
             with File(open(bin_file.name, 'rb')) as f:
                 adf.file.save('file.bin', f)
             adf.save()
@@ -1689,37 +1680,30 @@ class SubjectTest(TestCase):
         # self.tag_eeg.name =
 
     def test_subject_view_and_search(self):
-        """
-        Teste de visualizacao de participante após cadastro na base de dados
-        """
+        """Teste de visualizacao de participante após cadastro na base de dados"""
 
-        # Create a research project
         research_project = ObjectsFactory.create_research_project()
-
-        # Criar um experimento mock para ser utilizado no teste
         experiment = ObjectsFactory.create_experiment(research_project)
-
-        # Criar um grupo mock para ser utilizado no teste
         group = ObjectsFactory.create_group(experiment)
 
-        patient_mock = self.util.create_patient(changed_by=self.user)
-        patient_mock.cpf = '374.276.738-08'  # to test search for cpf
-        patient_mock.save()
+        patient = self.util.create_patient(changed_by=self.user)
+        patient.cpf = '374.276.738-08'  # To test search for cpf
+        patient.save()
         self.data = {
-            SEARCH_TEXT: 'Patient', 'experiment_id': experiment.id,
+            SEARCH_TEXT: patient.name, 'experiment_id': experiment.id,
             'group_id': group.id
         }
 
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, patient_mock.name)
+        self.assertContains(response, patient.name)
         self.assertEqual(response.context['patients'].count(), 1)
 
         self.data[SEARCH_TEXT] = 374
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['patients'].count(), 1)
-        self.assertContains(response, patient_mock.cpf)
+        self.assertContains(response, patient.cpf)
 
         self.data[SEARCH_TEXT] = ''
         response = self.client.post(reverse(SUBJECT_SEARCH), self.data)

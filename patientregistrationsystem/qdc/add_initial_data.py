@@ -175,6 +175,7 @@ PermissionTable = [
     _("Can export questionnaire response"),
     _("Can register equipment"),
     _("Can view sensitive patient data"),
+    _("Can send data to plugin"),
 ]
 
 GroupTable = [
@@ -196,6 +197,7 @@ subject_content_type = ContentType.objects.get(app_label='experiment', model='su
 questionnaireresponse_content_type = ContentType.objects.get(app_label='experiment', model='questionnaireresponse')
 equipment_content_type = ContentType.objects.get(app_label='experiment', model='equipment')
 user_content_type = ContentType.objects.get(app_label='auth', model='user')
+plugin_content_type = ContentType.objects.get(app_label='plugin', model='randomforests')
 
 
 # CREATE ATTENDANT
@@ -276,7 +278,10 @@ junior_researcher_permission_list += [Permission.objects.get(codename='add_resea
                                       Permission.objects.get(codename='change_subject',
                                                              content_type=subject_content_type),
                                       Permission.objects.get(codename='delete_subject',
-                                                             content_type=subject_content_type)]
+                                                             content_type=subject_content_type),
+                                      Permission.objects.get(codename='can_send_data_to_plugin',
+                                                             content_type=plugin_content_type)
+                                      ]
 
 for permission in junior_researcher_permission_list:
     group_junior_researcher.permissions.add(permission)

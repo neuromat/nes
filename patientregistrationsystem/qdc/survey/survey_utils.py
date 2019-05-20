@@ -1,11 +1,13 @@
 import collections
 import re
+# TODO (NES-956): see this
 from _csv import reader
 
 from operator import itemgetter
 from io import StringIO
 
 from django.utils.encoding import smart_str
+from django.utils.translation import ugettext as _
 
 from survey.models import Survey
 
@@ -57,6 +59,8 @@ question_types = {
 
 
 class QuestionnaireUtils:
+
+    LIMESURVEY_ERROR = 1
 
     def __init__(self):
         self.questionnaires_data = {}
@@ -171,16 +175,12 @@ class QuestionnaireUtils:
     def get_header_description(self, questionnaire_id, field, entrance_questionnaire):
 
         if entrance_questionnaire:
-            index = \
-                self.questionnaires_data[questionnaire_id]["fields"].index(field)
-            header_description = \
-                self.questionnaires_data[questionnaire_id]["header"][index]
+            index = self.questionnaires_data[questionnaire_id]["fields"].index(field)
+            header_description = self.questionnaires_data[questionnaire_id]["header"][index]
         else:
             questionnaire_id = str(questionnaire_id)
-            index = \
-                self.questionnaires_experiment_data[questionnaire_id]["fields"].index(field)
-            header_description = \
-                self.questionnaires_experiment_data[questionnaire_id]["header"][index]
+            index = self.questionnaires_experiment_data[questionnaire_id]["fields"].index(field)
+            header_description = self.questionnaires_experiment_data[questionnaire_id]["header"][index]
 
         return header_description
 
@@ -283,7 +283,7 @@ class QuestionnaireUtils:
             self.get_questionnaire_code_from_id(questionnaire_id)
 
         # get fields description
-        questionnaire_questions = questionnaire_lime_survey.list_questions(
+        questionnaire_questions = questionnaire_lime_survey.list_questions_ids(
             questionnaire_id, 0
         )
 
@@ -392,18 +392,12 @@ class QuestionnaireUtils:
         if len(fields_cleared) != len(fields_from_questions):
             for field in fields_cleared:
                 if field not in fields_from_questions:
-                    description = self.get_header_description(
-                        questionnaire_id, field, entrance_questionnaire
-                    )
-                    question_list = [smart_str(questionnaire_code),
-                                     smart_str(questionnaire_title),
-                                     '', '',
-                                     smart_str(field), smart_str(field),
-                                     smart_str(description)]
-
-                    questionnaire_explanation_fields_list.append(
-                        question_list
-                    )
+                    description = self.get_header_description(questionnaire_id, field, entrance_questionnaire)
+                    question_list = [
+                        smart_str(questionnaire_code), smart_str(questionnaire_title),
+                        '', '', smart_str(field), smart_str(field), smart_str(description)
+                    ]
+                    questionnaire_explanation_fields_list.append(question_list)
 
         return questionnaire_explanation_fields_list
 
@@ -421,19 +415,16 @@ class QuestionnaireUtils:
         question_list = []
         for group in groups:
             if 'id' in group and group['id']['language'] == language:
-                question_ids = survey.list_questions(
+                question_ids = survey.list_questions_ids(
                     survey_id, group['id']['gid']
                 )
                 for id_ in question_ids:
-                    properties = survey.get_question_properties(
-                        id_, group['id']['language']
-                    )
+                    properties = survey.get_question_properties(id_, group['id']['language'])
                     # Multiple question ('M' or 'P') will be question if
                     # properties['subquestions'] is a dict, otherwise will
                     # be subquestion. We only wish questions
                     if isinstance(properties['subquestions'], dict) and \
-                            (properties['type'] == 'M' or
-                             properties['type'] == 'P'):
+                            (properties['type'] == 'M' or properties['type'] == 'P'):
                         question_list.append(properties['title'])
 
         return question_list
@@ -444,9 +435,7 @@ class QuestionnaireUtils:
         :param responses_string:
         :return:
         """
-        response_reader = reader(
-            StringIO(responses_string.decode()), delimiter=','
-        )
+        response_reader = reader(StringIO(responses_string), delimiter=',')
         responses_list = []
         for row in response_reader:
             responses_list.append(row)
@@ -465,7 +454,29 @@ class QuestionnaireUtils:
         """
         groups = survey.list_groups(survey_id)
         return next(
-            (item for item in groups
-             if item['gid'] == gid and item['language'] == lang),
-            None
-        )
+            (item for item in groups if item['gid'] == gid and item['language'] == lang),
+            None)
+
+    def get_response_column_name_for_Identification_group_questions(self, survey, limesurvey_id, question_title, lang):
+        """
+        Return response table column name that is formed by <limesurvey_id>X<group_id>X<question_id>
+        :param survey: Limesurvey ABC interface
+        :param limesurvey_id: Limesurvey survey id
+        :param question_title: title of limesurvey survey question (it's unique in Limesurvey)
+        :param lang: Limesurvey survey language
+        :return: column name or string with error
+        """
+        question_groups = survey.list_groups(limesurvey_id)
+        if question_groups is None:
+            return self.LIMESURVEY_ERROR, _('Could not get list of groups from LimeSurvey')
+        group = next((item for item in question_groups if item['group_name'] == 'Identification'), None)
+        if group is None:
+            return self.LIMESURVEY_ERROR, _('There\'s no group with name Identification.')
+        questions = survey.list_questions(limesurvey_id, group['gid'])
+        if questions is None:
+            return self.LIMESURVEY_ERROR, _('Could not get list of groups from LimeSurvey')
+        index = next((index for index, dict_ in enumerate(questions) if dict_['title'] == question_title), None)
+        if index is None:
+            return self.LIMESURVEY_ERROR, _('There\'s no question with name %s' % question_title)
+        else:
+            return str(limesurvey_id) + 'X' + str(group['gid']) + 'X' + str(questions[index]['qid'])

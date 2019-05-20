@@ -117,7 +117,9 @@ FOREIGN_RELATIONS = {
         ('experiment.eegcapsize', 'eeg_cap_size')
     ],
     'experiment.eegfile': [('experiment.eegdata', 'eeg_data')],
-    'experiment.eegelectrodepositioncollectionstatus': [('experiment.eegdata', 'eeg_data')],
+    'experiment.eegelectrodepositioncollectionstatus': [
+        ('experiment.eegdata', 'eeg_data'), ('experiment.eegelectrodepositionsetting', 'eeg_electrode_position_setting')
+    ],
     'experiment.tmsdata': [
         ('experiment.dataconfigurationtree', 'data_configuration_tree'),
         ('experiment.subjectofgroup', 'subject_of_group'),
@@ -133,12 +135,12 @@ FOREIGN_RELATIONS = {
     'experiment.brainareasystem': [('', '')],
 
     'experiment.additionaldatafile': [('experiment.additionaldata', 'additional_data')],
+    'experiment.fileformat': [('', '')],  # TODO (NES-965): see why this is not in MODEL_ROOT_NODES
     'experiment.additionaldata': [
         ('experiment.subjectofgroup', 'subject_of_group'),
         ('experiment.dataconfigurationtree', 'data_configuration_tree'),
         ('experiment.fileformat', 'file_format'),
     ],
-    'experiment.fileformat': [('', '')],
     'experiment.digitalgamephasedata': [
         ('experiment.dataconfigurationtree', 'data_configuration_tree'),
         ('experiment.subjectofgroup', 'subject_of_group'),
@@ -161,6 +163,11 @@ FOREIGN_RELATIONS = {
     ],
     'experiment.emgfile': [('experiment.emgdata', 'emg_data')],
     'experiment.componentadditionalfile': [('experiment.component', 'component')],
+
+    'experiment.questionnaireresponse': [
+        ('experiment.dataconfigurationtree', 'data_configuration_tree'),
+        ('experiment.subjectofgroup', 'subject_of_group')
+    ],
 
     # Participants
     'experiment.subject': [('patient.patient', 'patient')],
@@ -284,6 +291,8 @@ EXPERIMENT_JSON_FILES = {
          'generic_data_collection_data__subject_of_group__group__experiment_id__in'),
     'emgfile': ('emgfile', 'emg_data__emg_setting__experiment_id__in'),
     'componentadditionalfile': ('componentadditionalfile', 'component__experiment_id__in'),
+    'questionnaireresponse':
+        ('questionnaireresponse', 'data_configuration_tree__component_configuration__component__experiment_id__in'),
 }
 
 # Define json file names (without extension) to map patient related models.
@@ -421,6 +430,7 @@ PRE_LOADED_PATIENT_MODEL = {
         ('patient.medicalrecorddata', 'patient'),
         ('patient.socialdemographicdata', 'patient'),
         ('patient.telephone', 'patient'),
+        # TODO: patient.questionnaireresponse is not pre_loaded_model
         ('patient.questionnaireresponse', 'patient'),
         ('experiment.subject', 'patient')
     ],
@@ -459,4 +469,5 @@ MODELS_WITH_RELATION_TO_AUTH_USER = [
     ('patient.socialdemographicdata', 'changed_by'),
     ('patient.socialhistorydata', 'changed_by'),
     ('experiment.researchproject', 'owner'),
+    ('experiment.questionnaireresponse', 'questionnaire_responsible')
 ]
