@@ -7,6 +7,7 @@ from operator import itemgetter
 from io import StringIO
 
 from django.utils.encoding import smart_str
+from django.utils.translation import ugettext as _
 
 from survey.models import Survey
 
@@ -58,6 +59,8 @@ question_types = {
 
 
 class QuestionnaireUtils:
+
+    LIMESURVEY_ERROR = 1
 
     def __init__(self):
         self.questionnaires_data = {}
@@ -451,16 +454,12 @@ class QuestionnaireUtils:
         """
         groups = survey.list_groups(survey_id)
         return next(
-            (item for item in groups
-             if item['gid'] == gid and item['language'] == lang),
-            None
-        )
+            (item for item in groups if item['gid'] == gid and item['language'] == lang),
+            None)
 
-    @staticmethod
-    def get_response_column_name(survey, limesurvey_id, question_title, lang):
+    def get_response_column_name_for_Identification_group_questions(self, survey, limesurvey_id, question_title, lang):
         """
-        Return response table column name that is formed by
-        <limesurvey_id>X<group_id>X<question_id>
+        Return response table column name that is formed by <limesurvey_id>X<group_id>X<question_id>
         :param survey: Limesurvey ABC interface
         :param limesurvey_id: Limesurvey survey id
         :param question_title: title of limesurvey survey question (it's unique in Limesurvey)
@@ -468,11 +467,16 @@ class QuestionnaireUtils:
         :return: column name or string with error
         """
         question_groups = survey.list_groups(limesurvey_id)
+        if question_groups is None:
+            return self.LIMESURVEY_ERROR, _('Could not get list of groups from LimeSurvey')
         group = next((item for item in question_groups if item['group_name'] == 'Identification'), None)
+        if group is None:
+            return self.LIMESURVEY_ERROR, _('There\'s no group with name Identification.')
         questions = survey.list_questions(limesurvey_id, group['gid'])
+        if questions is None:
+            return self.LIMESURVEY_ERROR, _('Could not get list of groups from LimeSurvey')
         index = next((index for index, dict_ in enumerate(questions) if dict_['title'] == question_title), None)
-        if index is not None:
+        if index is None:
+            return self.LIMESURVEY_ERROR, _('There\'s no question with name %s' % question_title)
+        else:
             return str(limesurvey_id) + 'X' + str(group['gid']) + 'X' + str(questions[index]['qid'])
-
-        # TODO (NES-956): deal better with errors
-        return 'Error: could not determine column name'

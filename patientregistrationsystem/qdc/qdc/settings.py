@@ -183,6 +183,9 @@ FIXTURE_DIRS = (
     'experiment.fixtures',
 )
 
+# The maximum number of parameters that may be received via GET or POST
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
@@ -199,4 +202,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.58.0'
+VERSION = '1.59.0'

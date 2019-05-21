@@ -40,7 +40,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
     StimulusType, ContextTree, EMGElectrodePlacement, Equipment, DataConfigurationTree, EEGData, \
     HotSpot, ComponentAdditionalFile, TMSLocalizationSystem, EEGFile, EEGCapSize, \
     EEGElectrodeCap, EEGElectrodePositionCollectionStatus, EMGFile, \
-    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus, QuestionnaireResponse
+    DigitalGamePhaseFile, GenericDataCollectionFile, AdditionalDataFile, Stimulus, QuestionnaireResponse, EMGData
 
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
@@ -1070,18 +1070,15 @@ class ImportExperimentTest(TestCase):
         eeg_electrode_cap = ObjectsFactory.create_eeg_electrode_cap(
             manufacturer=manufacturer, electrode_model=electrode_model, material=material)
         ObjectsFactory.create_eeg_electrode_capsize(eeg_electrode_cap)
-        electrode_net_sys = EEGElectrodeNetSystem.objects.create(eeg_electrode_net=eeg_electrode_cap,
-                                                                 eeg_electrode_localization_system=electrode_loc_sys)
-        electrode_pos = EEGElectrodePosition.objects.create(name='TEST_ELECTRODE_POSITION',
-                                                            eeg_electrode_localization_system=electrode_loc_sys)
-        electrode_layout_sys = EEGElectrodeLayoutSetting.objects.create(eeg_electrode_net_system=electrode_net_sys,
-                                                                        eeg_setting=eeg_setting)
+        electrode_net_sys = EEGElectrodeNetSystem.objects.create(
+            eeg_electrode_net=eeg_electrode_cap, eeg_electrode_localization_system=electrode_loc_sys)
+        electrode_pos = EEGElectrodePosition.objects.create(
+            name='TEST_ELECTRODE_POSITION', eeg_electrode_localization_system=electrode_loc_sys)
+        electrode_layout_sys = EEGElectrodeLayoutSetting.objects.create(
+            eeg_electrode_net_system=electrode_net_sys, eeg_setting=eeg_setting)
         EEGElectrodePositionSetting.objects.create(
-            eeg_electrode_layout_setting=electrode_layout_sys,
-            eeg_electrode_position=electrode_pos,
-            electrode_model=electrode_model,
-            used=True,
-            channel_index=1
+            eeg_electrode_layout_setting=electrode_layout_sys, eeg_electrode_position=electrode_pos,
+            electrode_model=electrode_model, used=True, channel_index=1
         )
 
         filter_type = FilterType.objects.create(name='TEST_FILTER_TYPE')
@@ -2891,10 +2888,9 @@ class ImportExperimentTest(TestCase):
 
     # Goalkeeper tests
     def test_software_version_and_digital_game_phase(self):
-        self._test_creation_and_linking_between_two_models('experiment.softwareversion',
-                                                           'experiment.digitalgamephase',
-                                                           'software_version',
-                                                           self._create_experiment_with_digital_game_phase())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.softwareversion', 'experiment.digitalgamephase',
+            'software_version', self._create_experiment_with_digital_game_phase())
 
     def test_context_tree_and_digital_game_phase(self):
         self._test_creation_and_linking_between_two_models('experiment.contexttree',
@@ -3410,7 +3406,7 @@ class ImportExperimentTest(TestCase):
             (TetheringSystem, '', 1): [(Amplifier, 'tethering_system', 1)],
             (AmplifierDetectionType, '', 1): [(Amplifier, 'amplifier_detection_type', 1)],
             (ElectrodeConfiguration, '', 1): [(ElectrodeModel, 'electrode_configuration', 1)],
-            (EEGElectrodeCap, '', 1): [(EEGCapSize, 'eeg_electrode_cap', 1)]
+            (EEGElectrodeCap, '', 1): [(EEGCapSize, 'eeg_electrode_cap', 1)],
         }
 
     def test_preloaded_object_is_equal_to_the_one_imported_keeps_object_and_references_eeg(self):
@@ -3465,6 +3461,28 @@ class ImportExperimentTest(TestCase):
                 for dependent_model_instance in dependent_model_instances:
                     reference = getattr(dependent_model_instance, dependent_model[1])
                     self.assertEqual(reference, model_instance, '%s not equal %s' % (reference, model_instance))
+
+    def test_import_eegelectrodelocalizationsystem_has_some_different_position_create_new(self):
+        experiment = self._create_experiment_with_eeg_setting()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        electrode_loc_sys = EEGElectrodeLocalizationSystem.objects.last()
+        electrode_pos = electrode_loc_sys.electrode_positions.first()
+        electrode_pos.coordinate_x = 21
+        electrode_pos.save()
+
+        with open(file_path, 'rb') as file:
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        self.assertEqual(2, EEGElectrodeLocalizationSystem.objects.count())
+        new_electrode_loc_sys = EEGElectrodeLocalizationSystem.objects.last()
+        new_electrode_pos = EEGElectrodePosition.objects.last()
+        self.assertEqual(new_electrode_pos.eeg_electrode_localization_system, new_electrode_loc_sys)
+        new_eegelectrodenetsystem = EEGElectrodeNetSystem.objects.last()
+        self.assertEqual(new_eegelectrodenetsystem.eeg_electrode_localization_system, new_electrode_loc_sys)
 
     @staticmethod
     def _get_pre_loaded_models_tms_editable():
@@ -4128,36 +4146,74 @@ class ImportExperimentTest(TestCase):
         self.assertTrue(os.path.exists(filepath1))
         self.assertTrue(os.path.exists(filepath2))
 
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_import_fileformat_nes_code_already_exists_keeps_entry_in_database(self):
+        experiment = self._create_emg_data_collection_related_objects()
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path_json = export.get_file_path('json')
+        file_path = export.get_file_path()
+
+        file_format_instance = FileFormat.objects.last()
+
+        # Open experiment.json, change experiment.fileformat pk and save in experiment.zip
+        with open(file_path_json) as file:
+            data = file.read().replace('\n', '')
+        serialized = json.loads(data)
+        index = next(index for (index, dict_) in enumerate(serialized) if dict_['model'] == 'experiment.fileformat')
+        serialized[index]['pk'] = serialized[index]['pk'] + 1
+        with open(file_path_json, 'w') as file:
+            file.write(json.dumps(serialized))
+        # Redirect sys.stderr to doesn't display warning message when write experiment.json to zip file
+        stderr_bk, sys.stderr = sys.stderr, open('/dev/null', 'w+')
+        with zipfile.ZipFile(export.get_file_path(), 'a') as zip_file:
+            zip_file.write(export.get_file_path('json').encode('utf-8'), export.FILE_NAME_JSON)
+        sys.stderr = stderr_bk
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        self.assertEqual(1, FileFormat.objects.count())
+        self.assertEqual(file_format_instance, EMGData.objects.last().file_format)
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
     def test_data_configuration_tree_and_emg_data(self):
-        self._test_creation_and_linking_between_two_models('experiment.dataconfigurationtree',
-                                                           'experiment.emgdata',
-                                                           'data_configuration_tree',
-                                                           self._create_emg_data_collection_related_objects())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.dataconfigurationtree', 'experiment.emgdata', 'data_configuration_tree',
+            self._create_emg_data_collection_related_objects())
 
     def test_subject_of_group_and_emg_data(self):
-        self._test_creation_and_linking_between_two_models('experiment.subjectofgroup',
-                                                           'experiment.emgdata',
-                                                           'subject_of_group',
-                                                           self._create_emg_data_collection_related_objects())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.subjectofgroup', 'experiment.emgdata', 'subject_of_group',
+            self._create_emg_data_collection_related_objects())
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_file_format_and_emg_data(self):
-        self._test_creation_and_linking_between_two_models('experiment.fileformat',
-                                                           'experiment.emgdata',
-                                                           'file_format',
-                                                           self._create_emg_data_collection_related_objects(),
-                                                           to_create1=False)
+        self._test_creation_and_linking_between_two_models(
+            'experiment.fileformat', 'experiment.emgdata', 'file_format',
+            self._create_emg_data_collection_related_objects(), to_create1=False)
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_emg_setting_and_emg_data(self):
-        self._test_creation_and_linking_between_two_models('experiment.emgsetting',
-                                                           'experiment.emgdata',
-                                                           'emg_setting',
-                                                           self._create_emg_data_collection_related_objects())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgsetting', 'experiment.emgdata', 'emg_setting',
+            self._create_emg_data_collection_related_objects())
 
     def test_emg_data_and_emg_file(self):
-        self._test_creation_and_linking_between_two_models('experiment.emgdata',
-                                                           'experiment.emgfile',
-                                                           'emg_data',
-                                                           self._create_emg_data_collection_related_objects())
+        self._test_creation_and_linking_between_two_models(
+            'experiment.emgdata', 'experiment.emgfile', 'emg_data',
+            self._create_emg_data_collection_related_objects())
 
     def _create_eeg_data_collection_related_objects(self):
         eeg_setting = ObjectsFactory.create_eeg_setting(self.experiment)
@@ -4193,6 +4249,7 @@ class ImportExperimentTest(TestCase):
             EEGSetting: [(EEGData, 'eeg_setting')],
             SubjectOfGroup: [(EEGData, 'subject_of_group')],
             EEGData: [(EEGFile, 'eeg_data'), (EEGElectrodePositionCollectionStatus, 'eeg_data')],
+            EEGElectrodePositionSetting: [(EEGElectrodePositionCollectionStatus, 'eeg_electrode_position_setting')],
             EEGCapSize: [(EEGData, 'eeg_cap_size')],
             EEGElectrodeCap: [(EEGCapSize, 'eeg_electrode_cap')]  # EEGElectrodeCap: preloaded model not editable
         }
@@ -4627,7 +4684,9 @@ class ImportExperimentTest(TestCase):
                 'group_order': 2, 'gid': 1411, 'grelevance': '',
                 'id': {'gid': 1411, 'language': 'en'},
                 'language': 'en', 'sid': self.SURVEY_ID, 'randomization_group': '',
-                'group_name': 'First group', 'description': ''}]
+                'group_name': 'First group', 'description': ''
+            }
+        ]
         mockServer.return_value.list_questions.return_value = [
             {
                 'qid': self.QUESTION_RESPONSIBLE_ID, 'question_order': 0,
@@ -4657,7 +4716,7 @@ class ImportExperimentTest(TestCase):
             }
         ]
 
-        mockServer.return_value.update_response.return_value = True
+        mockServer.return_value.update_response.return_value = {'status': 'OK'}
 
         mockServer.return_value.delete_participants.return_value = [{'status': 'Deleted'}]
         # Get responses from questionnaire for tokens that will be deleted
@@ -4932,7 +4991,7 @@ class ImportExperimentTest(TestCase):
 
         self._set_mock_values(mockServer)
 
-        # There is others returned values with other error status but we treat
+        # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
         mockServer.return_value.list_participants.return_value = {'status': 'Error: No token table'}
 
@@ -4958,7 +5017,7 @@ class ImportExperimentTest(TestCase):
 
         self._set_mock_values(mockServer)
 
-        # There is others returned values with other error status but we treat
+        # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
         mockServer.return_value.delete_participants.return_value = {'status': 'Error: No token table'}
 
@@ -4984,7 +5043,7 @@ class ImportExperimentTest(TestCase):
 
         self._set_mock_values(mockServer)
 
-        # There is others returned values with other error status but we treat
+        # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
         mockServer.return_value.export_responses_by_token.return_value = {'status': 'No Response found for Token'}
 
@@ -5010,7 +5069,7 @@ class ImportExperimentTest(TestCase):
 
         self._set_mock_values(mockServer)
 
-        # There is others returned values with other error status but we treat
+        # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
         mockServer.return_value.delete_responses.return_value = {'status': 'Error: during response deletion'}
 
@@ -5025,3 +5084,156 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, 'Could not clear all extra survey participants data.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_get_participant_properties_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_groups.return_value = {'status': 'Error: Invalid tokenid'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_list_questions_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_questions.return_value = {'status': 'No questions found'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_has_not_Identification_group_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_groups.return_value = [{
+                'group_order': 2, 'gid': 1411, 'grelevance': '',
+                'id': {'gid': 1411, 'language': 'en'},
+                'language': 'en', 'sid': self.SURVEY_ID, 'randomization_group': '',
+                'group_name': 'First group', 'description': ''
+            }]
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_has_not_Identification_question_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.list_questions.return_value = [
+            {
+                'qid': 3848, 'question_order': 1,
+                'id': {'qid': 3848, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Acquisition date<strong>:</strong><br />\n',
+                'type': 'D', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'acquisitiondate',
+                'mandatory': 'Y',
+                'preg': ''
+            },
+            {
+                'qid': self.QUESTION_SUBJECT_ID, 'question_order': 2,
+                'id': {'qid': self.QUESTION_SUBJECT_ID, 'language': 'en'},
+                'same_default': 0, 'relevance': '1', 'question': 'Participant Identification number<b>:</b>',
+                'type': 'N', 'help': '', 'scale_id': 0, 'parent_qid': 0, 'other': 'N', 'language': 'en',
+                'gid': self.GROUP_ID, 'modulename': None, 'sid': self.SURVEY_ID, 'title': 'subjectid', 'mandatory': 'Y',
+                'preg': ''
+            }
+        ]
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update identification questions for all responses.')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_import_survey_call_update_response_fails_display_warning_message(self, mockServer):
+        experiment = self._set_objects_to_test_limesurvey_calls(mockServer)
+
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        self._set_mock_values(mockServer)
+
+        # There is other returned values with other error status but we treat
+        # the difference between error and success considering error a dict returned.
+        mockServer.return_value.update_response.return_value = {'status': 'Unable to edit response'}
+
+        # Add session variables related to updating/overwrite patients when importing
+        session = self.client.session
+        session['patients'] = []
+        session['patients_conflicts_resolved'] = True
+        with open(file_path, 'rb') as file:
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Could not update all responses.')

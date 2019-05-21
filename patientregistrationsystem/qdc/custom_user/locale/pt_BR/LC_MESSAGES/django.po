@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-12 13:40-0300\n"
+"POT-Creation-Date: 2019-05-21 07:31-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,36 +16,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: custom_user/forms.py:15 custom_user/forms.py:105
+#: custom_user/forms.py:14 custom_user/forms.py:104
 msgid "Type first name"
 msgstr "Entrar primeiro nome"
 
-#: custom_user/forms.py:17 custom_user/forms.py:107
+#: custom_user/forms.py:16 custom_user/forms.py:106
 msgid "Type last name"
 msgstr "Entrar último nome"
 
-#: custom_user/forms.py:19 custom_user/forms.py:109
+#: custom_user/forms.py:18 custom_user/forms.py:108
 msgid "Type e-mail"
 msgstr "Entra e-mail"
 
-#: custom_user/forms.py:29
+#: custom_user/forms.py:28
 msgid "Type user name"
 msgstr "Entrar nome do usuário"
 
-#: custom_user/forms.py:31 custom_user/forms.py:49
+#: custom_user/forms.py:30 custom_user/forms.py:48
 #: custom_user/templates/custom_user/register_users.html:216
 msgid "Type password"
 msgstr "Entrar senha"
 
-#: custom_user/forms.py:42 custom_user/views.py:170
+#: custom_user/forms.py:41 custom_user/views.py:169
 msgid "E-mail already registered"
 msgstr "E-mail já cadastrado"
 
-#: custom_user/forms.py:75 custom_user/forms.py:76
+#: custom_user/forms.py:74 custom_user/forms.py:75
 msgid "E-mail is not registered"
 msgstr "E-mail não cadastrado"
 
-#: custom_user/forms.py:89 custom_user/forms.py:114
+#: custom_user/forms.py:88 custom_user/forms.py:113
 msgid "Type citation name"
 msgstr "Entrar nome para citação"
 
@@ -243,7 +243,7 @@ msgstr ""
 msgid "Deactivate"
 msgstr "Desativar"
 
-#: custom_user/tests.py:130 custom_user/views.py:68 custom_user/views.py:86
+#: custom_user/tests.py:131 custom_user/views.py:67 custom_user/views.py:85
 msgid ""
 "A researcher with this email address has already been registered before. "
 "Please contact your system administrator if you want to reactivate this "
@@ -253,43 +253,43 @@ msgstr ""
 "Entre em contato com o administrador do sistema caso queira reativar esta "
 "conta."
 
-#: custom_user/views.py:63 custom_user/views.py:81
+#: custom_user/views.py:62 custom_user/views.py:80
 msgid "Researcher created successfully."
 msgstr "Pesquisador criado com sucesso."
 
-#: custom_user/views.py:118
+#: custom_user/views.py:117
 msgid "Researcher removed successfully."
 msgstr "Pesquisador removido com sucesso."
 
-#: custom_user/views.py:159 custom_user/views.py:176
+#: custom_user/views.py:158 custom_user/views.py:175
 msgid "Researcher updated successfully."
 msgstr "Pesquisador atualizado com sucesso."
 
-#: custom_user/views.py:180 custom_user/views.py:290
+#: custom_user/views.py:179 custom_user/views.py:289
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: custom_user/views.py:188
+#: custom_user/views.py:187
 msgid "Researcher deleted successfully."
 msgstr "Pesquisador removido com sucesso."
 
-#: custom_user/views.py:197
+#: custom_user/views.py:196
 msgid "Researcher disabled successfully."
 msgstr "Pesquisador desabilitado do sistema com sucesso."
 
-#: custom_user/views.py:222
+#: custom_user/views.py:221
 msgid "Institution created successfully."
 msgstr "Instituição criada com sucesso."
 
-#: custom_user/views.py:226
+#: custom_user/views.py:225
 msgid "Information not saved."
 msgstr "Informação não salva."
 
-#: custom_user/views.py:228
+#: custom_user/views.py:227
 msgid "Action not available."
 msgstr "Ação não disponível."
 
-#: custom_user/views.py:251
+#: custom_user/views.py:250
 msgid ""
 "This institution cannot be removed because there are researchers associated "
 "with it."
@@ -297,7 +297,7 @@ msgstr ""
 "Esta instituição não pode ser removida porque existem pesquisadores "
 "associados a ela."
 
-#: custom_user/views.py:258
+#: custom_user/views.py:257
 msgid ""
 "This institution cannot be removed because there is (are) other "
 "institution(s) associated with it."
@@ -305,10 +305,10 @@ msgstr ""
 "Esta instituição não pode ser removida porque há outra instituição associada "
 "a ela."
 
-#: custom_user/views.py:265
+#: custom_user/views.py:264
 msgid "Institution removed successfully."
 msgstr "Instituição removida com sucesso."
 
-#: custom_user/views.py:288
+#: custom_user/views.py:287
 msgid "Institution updated successfully."
 msgstr "Instituição atualizada com sucesso."

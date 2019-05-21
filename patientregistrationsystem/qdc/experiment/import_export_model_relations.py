@@ -117,7 +117,9 @@ FOREIGN_RELATIONS = {
         ('experiment.eegcapsize', 'eeg_cap_size')
     ],
     'experiment.eegfile': [('experiment.eegdata', 'eeg_data')],
-    'experiment.eegelectrodepositioncollectionstatus': [('experiment.eegdata', 'eeg_data')],
+    'experiment.eegelectrodepositioncollectionstatus': [
+        ('experiment.eegdata', 'eeg_data'), ('experiment.eegelectrodepositionsetting', 'eeg_electrode_position_setting')
+    ],
     'experiment.tmsdata': [
         ('experiment.dataconfigurationtree', 'data_configuration_tree'),
         ('experiment.subjectofgroup', 'subject_of_group'),
@@ -133,12 +135,12 @@ FOREIGN_RELATIONS = {
     'experiment.brainareasystem': [('', '')],
 
     'experiment.additionaldatafile': [('experiment.additionaldata', 'additional_data')],
+    'experiment.fileformat': [('', '')],  # TODO (NES-965): see why this is not in MODEL_ROOT_NODES
     'experiment.additionaldata': [
         ('experiment.subjectofgroup', 'subject_of_group'),
         ('experiment.dataconfigurationtree', 'data_configuration_tree'),
         ('experiment.fileformat', 'file_format'),
     ],
-    'experiment.fileformat': [('', '')],
     'experiment.digitalgamephasedata': [
         ('experiment.dataconfigurationtree', 'data_configuration_tree'),
         ('experiment.subjectofgroup', 'subject_of_group'),
