@@ -489,11 +489,12 @@ def patient_view_questionnaires(request, patient, context, is_update):
                 }
 
         if patient_questionnaire_response.is_completed == "N" or patient_questionnaire_response.is_completed == "":
-            patient_questionnaire_response.is_completed = surveys.get_participant_properties(
+            is_completed = surveys.get_participant_properties(
                 limesurvey_id,
                 patient_questionnaire_response.token_id,
-                "completed")
+                "completed") or ""
 
+            patient_questionnaire_response.is_completed = is_completed
             patient_questionnaire_response.save()
 
         response_result = patient_questionnaire_response.is_completed
@@ -554,11 +555,12 @@ def patient_view_questionnaires(request, patient, context, is_update):
             limesurvey_id = component_configuration.component.questionnaire.survey.lime_survey_id
 
             if questionnaire_response.is_completed == "N" or questionnaire_response.is_completed == "":
-                questionnaire_response.is_completed = surveys.get_participant_properties(
+                is_completed = surveys.get_participant_properties(
                     limesurvey_id,
                     questionnaire_response.token_id,
-                    "completed")
+                    "completed") or ""
 
+                questionnaire_response.is_completed = is_completed
                 questionnaire_response.save()
 
             response_result = questionnaire_response.is_completed
@@ -1376,12 +1378,13 @@ def questionnaire_response_view(request, questionnaire_response_id,
     questionnaire_response = get_object_or_404(QuestionnaireResponse,
                                                pk=questionnaire_response_id)
 
-    if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == '':
+    if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == "":
         surveys = Questionnaires()
-        questionnaire_response.is_completed = surveys.get_participant_properties(
+        is_completed = surveys.get_participant_properties(
             questionnaire_response.survey.lime_survey_id,
             questionnaire_response.token_id,
-            "completed")
+            "completed") or ""
+        questionnaire_response.is_completed = is_completed
         questionnaire_response.save()
         surveys.release_session_key()
 
