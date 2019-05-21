@@ -1463,10 +1463,11 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
             if subject_response.is_completed == "N" or subject_response.is_completed == "":
                 surveys = Questionnaires()
 
-                subject_response.is_completed = surveys.get_participant_properties(
+                is_completed = surveys.get_participant_properties(
                     questionnaire.survey.lime_survey_id,
                     subject_response.token_id,
-                    "completed")
+                    "completed") or ""
+                subject_response.is_completed = is_completed
 
                 surveys.release_session_key()
                 subject_response.save()
@@ -4707,9 +4708,12 @@ def questionnaire_view(request, group_id, component_configuration_id,
 
         for subject_response in subject_responses:
             if subject_response.is_completed == "N" or subject_response.is_completed == "":
-                subject_response.is_completed = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                                                   subject_response.token_id,
-                                                                                   "completed")
+                is_completed = surveys.get_participant_properties(
+                    questionnaire.survey.lime_survey_id,
+                    subject_response.token_id,
+                    "completed") or ""
+                subject_response.is_completed = is_completed
+                subject_response.save()
             completed = False
 
             if subject_response.is_completed != "N" and subject_response.is_completed != "":
@@ -4840,12 +4844,13 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
                     for subject_response in subject_responses:
                         # Check if completed
                         if subject_response.is_completed == "N" or subject_response.is_completed == "":
-                            subject_response.is_completed = surveys.get_participant_properties(
+                            is_completed = surveys.get_participant_properties(
                                 Questionnaire.objects.get(
                                     id=questionnaire_configuration.component.id).survey.lime_survey_id,
                                 subject_response.token_id,
-                                "completed")
+                                "completed") or ""
 
+                            subject_response.is_completed = is_completed
                             subject_response.save()
 
                         if subject_response.is_completed == "N" or subject_response.is_completed == "":
@@ -5491,9 +5496,11 @@ def questionnaire_response_edit(request, questionnaire_response_id,
 
     survey_title = find_questionnaire_name(questionnaire.survey, request.LANGUAGE_CODE)["name"]
     if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == '':
-        questionnaire_response.is_completed = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                                                 questionnaire_response.token_id,
-                                                                                 "completed")
+        is_completed = surveys.get_participant_properties(
+            questionnaire.survey.lime_survey_id,
+            questionnaire_response.token_id,
+            "completed") or ""
+        questionnaire_response.is_completed = is_completed
         questionnaire_response.save()
     survey_completed = (questionnaire_response.is_completed != "N")
     surveys.release_session_key()
@@ -5792,11 +5799,12 @@ def subject_questionnaire_view(request, group_id, subject_id,
         questionnaire_responses_with_status = []
         for questionnaire_response in questionnaire_responses:
             if questionnaire_response.is_completed == "N" or questionnaire_response.is_completed == "":
-                questionnaire_response.is_completed = surveys.get_participant_properties(
+                is_completed = surveys.get_participant_properties(
                     questionnaire.survey.lime_survey_id,
                     questionnaire_response.token_id,
-                    "completed")
+                    "completed") or ""
 
+                questionnaire_response.is_completed = is_completed
                 questionnaire_response.save()
 
             questionnaire_responses_with_status.append(
@@ -5836,11 +5844,12 @@ def subject_questionnaire_view(request, group_id, subject_id,
         patient_questionnaire_responses_with_status = []
         for patient_questionnaire_response in patient_questionnaire_responses:
             if patient_questionnaire_response.is_completed == "N" or patient_questionnaire_response.is_completed == "":
-                patient_questionnaire_response.is_completed = surveys.get_participant_properties(
+                is_completed = surveys.get_participant_properties(
                     questionnaire.survey.lime_survey_id,
                     patient_questionnaire_response.token_id,
-                    "completed")
+                    "completed") or ""
 
+                patient_questionnaire_response.is_completed = is_completed
                 patient_questionnaire_response.save()
 
             if patient_questionnaire_response.is_completed is not None and \
