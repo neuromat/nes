@@ -867,18 +867,20 @@ def experiment_import(request, template_name='experiment/experiment_import.html'
 
     file_name = request.session.get('file_name')
     import_experiment = ImportExperiment(file_name)
-    err_code_experiment, err_message_experiment = \
+    result_code, result_message = \
         import_experiment.import_all(request, research_project_id, patients_to_update)
     os.remove(file_name)
 
-    if err_code_experiment:
-        messages.error(request, _(err_message_experiment))
-        if research_project_id:
-            return HttpResponseRedirect(reverse('experiment_import',
-                                                kwargs={'research_project_id': research_project_id}))
-        else:
-            return HttpResponseRedirect(reverse('experiment_import'))
-
+    if result_code:
+        if result_code == import_experiment.BAD_JSON_FILE_ERROR_CODE:
+            messages.error(request, _(result_message))
+            if research_project_id:
+                return HttpResponseRedirect(
+                    reverse('experiment_import', kwargs={'research_project_id': research_project_id}))
+            else:
+                return HttpResponseRedirect(reverse('experiment_import'))
+        if result_code == import_experiment.LIMESURVEY_ERROR:
+            messages.error(request, result_message)
     if research_project_id:
         messages.success(request, _('Experiment successfully imported.'))
     else:
