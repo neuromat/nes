@@ -910,7 +910,7 @@ class ImportExperiment:
                     # To Import Log page
                     self._set_last_objects_before_import(research_project_id)
         except (ValueError, JSONDecodeError):
-            return self.BAD_JSON_FILE_ERROR_CODE, 'Bad json file. Aborting import experiment.'
+            return self.BAD_JSON_FILE_ERROR_CODE, _('Bad json file. Aborting import experiment.')
 
         digraph = self._build_digraph()
         self._manage_pks(digraph)
@@ -921,10 +921,10 @@ class ImportExperiment:
 
         call_command('loaddata', path.join(self.temp_dir, self.FIXTURE_FILE_NAME))
 
+        self._collect_new_objects()
+
         self._upload_files()
         result = self._import_limesurvey_surveys()
-
-        self._collect_new_objects()
 
         return result
 
