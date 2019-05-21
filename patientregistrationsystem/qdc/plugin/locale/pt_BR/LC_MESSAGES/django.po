@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-21 07:31-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: plugin/templates/plugin/send_to_plugin.html:23
+msgid "Home"
+msgstr ""
+
+#: plugin/templates/plugin/send_to_plugin.html:24
+#: plugin/templates/plugin/send_to_plugin.html:34
+msgid "Plugin"
+msgstr ""
+
+#: plugin/templates/plugin/send_to_plugin.html:25
+msgid "Participants selection"
+msgstr "Seleção de participantes"
+
+#: plugin/templates/plugin/send_to_plugin.html:48
+msgid "List of participants"
+msgstr "Lista de participantes"
+
+#: plugin/templates/plugin/send_to_plugin.html:52
+msgid "Participants available:"
+msgstr "Participantes disponíveis:"
+
+#: plugin/templates/plugin/send_to_plugin.html:81
+msgid "Participants chosen:"
+msgstr "Participantes escolhidos:"
+
+#: plugin/templates/plugin/send_to_plugin.html:97
+msgid "Additional info"
+msgstr "Informação adicional"
+
+#: plugin/templates/plugin/send_to_plugin.html:101
+msgid "Participant fields"
+msgstr "Opções disponíveis"
+
+#: plugin/templates/plugin/send_to_plugin.html:104
+msgid "Please, select a patient field from the list."
+msgstr "Por favor, selecione uma opção da lista."
+
+#: plugin/templates/plugin/send_to_plugin.html:110
+msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
+msgstr "* use o botão Ctrl para selecionar mais de um campo. (command no Mac)"

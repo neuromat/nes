@@ -184,18 +184,11 @@ class ABCSearchEngine(ABC):
         :param survey_id: survey ID
         :param token_id: token ID
         :param prop: property name
-        :return: value of a determined property from a participant/token
+        :return: on success, dict with value of a determined property, else dict with error status
         """
+        result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
 
-        if self.session_key:
-            result = self.server.get_participant_properties(
-                self.session_key, survey_id, token_id, {'method': prop}
-            )
-            result = result.get(prop)
-        else:
-            result = ''
-
-        return result
+        return result.get(prop) if 'status' not in result else None
 
     @abstractmethod
     def survey_has_token_table(self, sid):
@@ -278,12 +271,13 @@ class ABCSearchEngine(ABC):
         """ Obtain header responses
         :param sid: survey ID
         :param language: language
+        :param token: token
         :param heading_type: heading type (can be 'code' or 'full')
         :return: responses in the txt format
         """
 
         responses = self.server.export_responses_by_token(
-            self.session_key, sid, 'csv', token, language,'complete', heading_type, 'short')
+            self.session_key, sid, 'csv', token, language, 'complete', heading_type, 'short')
 
         if not isinstance(responses, str):
             responses = self.server.export_responses(
@@ -344,42 +338,40 @@ class ABCSearchEngine(ABC):
     def list_groups(self, sid):
         """
         :param sid: survey ID
-        :return: ids and info of groups belonging to survey
+        :return: on success, list of ids and info of groups belonging to survey, else, None
         """
-
         groups = self.server.list_groups(self.session_key, sid)
 
-        return groups
+        return groups if isinstance(groups, list) else None
 
     @abstractmethod
     def get_group_properties(self, gid):
         """
-        :param gid: group ID
+        :param gid: LimeSurvey group id
         :param lang: group language to return correct group, as Remote
-        Control API does not do that
+        Control API does not do that (TODO (NES-956): see why lang is gone
         :return: list of group properties
         """
         return self.server.get_group_properties(self.session_key, gid)
 
     def set_group_properties(self, sid, data):
-        return self.server.set_group_properties(
-            self.session_key, sid, data
-        )
+        return self.server.set_group_properties(self.session_key, sid, data)
 
     def list_questions(self, sid, gid):
-        """TODO (NES-956)
-        :param sid:
-        :param gid:
+        """List questions with their properties
+        :param sid: LimeSurvey survey id
+        :param gid: LimeSurvey group id
+        :return: on success, list of question properties, else None
         """
-        result = self.server.list_questions(self.session_key, sid, gid)
-        # TODO (NES-956): deal with error
-        return result
+        questions = self.server.list_questions(self.session_key, sid, gid)
+
+        return questions if isinstance(questions, list) else None
 
     @abstractmethod
     def list_questions_ids(self, sid, gid):
         """
-        :param sid: survey ID
-        :param gid: group ID
+        :param sid: LimeSurvey survey id
+        :param gid: LimeSurvey group id
         :return: ids and info of (sub-)questions of a survey/group
         """
 
@@ -444,9 +436,7 @@ class ABCSearchEngine(ABC):
 
     def update_response(self, sid, response_data):
         result = self.server.update_response(self.session_key, sid, response_data)
-        # TODO (NES-956): deal with errors here
-
-        return result
+        return result if result['status'] == 'OK' else None
 
 
 class Questionnaires(ABCSearchEngine):
@@ -483,9 +473,7 @@ class Questionnaires(ABCSearchEngine):
         return super(Questionnaires, self).survey_has_token_table(sid)
 
     def add_survey(self, sid, title, language, survey_format):
-        return super(Questionnaires, self).add_survey(
-            sid, title, language, survey_format
-        )
+        return super(Questionnaires, self).add_survey(sid, title, language, survey_format)
 
     def delete_survey(self, sid):
         return super(Questionnaires, self).delete_survey(sid)
@@ -503,9 +491,7 @@ class Questionnaires(ABCSearchEngine):
         return super(Questionnaires, self).get_responses(sid, language, response_type, fields, heading_type)
 
     def get_header_response(self, sid, language, token=1, heading_type='code'):
-        return super(Questionnaires, self).get_header_response(
-            sid, language, token, heading_type
-        )
+        return super(Questionnaires, self).get_header_response(sid, language, token, heading_type)
 
     def get_summary(self, sid, stat_name):
         return super(Questionnaires, self).get_summary(sid, stat_name)
@@ -545,9 +531,7 @@ class Questionnaires(ABCSearchEngine):
         return super(Questionnaires, self).add_response(sid, response_data)
 
     def set_participant_properties(self, sid, tid, properties_dict):
-        return super(Questionnaires, self).set_participant_properties(
-            sid, tid, properties_dict
-        )
+        return super(Questionnaires, self).set_participant_properties(sid, tid, properties_dict)
 
     def import_survey(self, base64_encoded_lsa_file):
         return super(Questionnaires, self).import_survey(base64_encoded_lsa_file)
