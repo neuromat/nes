@@ -869,8 +869,7 @@ class ExportExecution:
 
     def get_participant_row_data(self, subject_code):
         participant_rows = []
-        participant_data_list = \
-            self.get_input_data('participants')['data_list']
+        participant_data_list = self.get_input_data('participants')['data_list']
         header = participant_data_list[0]
         for sublist in participant_data_list[1:len(participant_data_list)]:
             if subject_code in sublist:
