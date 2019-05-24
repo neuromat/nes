@@ -86,17 +86,10 @@ class ABCSearchEngine(ABC):
 
         participant_data = {'email': '', 'firstname': '', 'lastname': ''}
 
-        result = self.server.add_participants(
-            self.session_key, sid, [participant_data], True
-        )
+        result = self.server.add_participants(self.session_key, sid, [participant_data], True)
 
-        if result \
-                and isinstance(result, list) \
-                and isinstance(result[0], dict) \
-                and 'error' not in result[0]:
-
-            return {'token': result[0]['token'],
-                    'tid': result[0]['tid']}
+        if result and isinstance(result, list) and isinstance(result[0], dict) and 'error' not in result[0]:
+            return {'token': result[0]['token'], 'tid': result[0]['tid']}
         else:
             return None
 
@@ -210,9 +203,8 @@ class ABCSearchEngine(ABC):
         :return: survey ID generated
         """
 
-        survey_id_generated = self.server.add_survey(
-            self.session_key, sid, title, language, survey_format
-        )
+        survey_id_generated = self.server.add_survey(self.session_key, sid, title, language, survey_format)
+
         return survey_id_generated
 
     @abstractmethod
@@ -307,15 +299,9 @@ class ABCSearchEngine(ABC):
         """
         questions_data_b64 = b64encode(questions_data.encode('utf-8'))
         result = self.server.import_group(
-            self.session_key, sid, questions_data_b64.decode('utf-8'),
-            format_import_file
-        )
+            self.session_key, sid, questions_data_b64.decode('utf-8'), format_import_file)
 
-        if isinstance(result, dict):
-            if 'status' in result:
-                return None
-        else:
-            return result
+        return None if isinstance(result, dict) else result
 
     @abstractmethod
     def get_question_properties(self, question_id, language):
@@ -326,8 +312,7 @@ class ABCSearchEngine(ABC):
         """
 
         properties = self.server.get_question_properties(
-            self.session_key, question_id, self.QUESTION_PROPERTIES, language
-        )
+            self.session_key, question_id, self.QUESTION_PROPERTIES, language)
 
         return properties
 
@@ -352,10 +337,16 @@ class ABCSearchEngine(ABC):
         Control API does not do that (TODO (NES-956): see why lang is gone
         :return: list of group properties
         """
-        return self.server.get_group_properties(self.session_key, gid)
+        result = self.server.get_group_properties(self.session_key, gid)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def set_group_properties(self, sid, data):
-        return self.server.set_group_properties(self.session_key, sid, data)
+        result = self.server.set_group_properties(self.session_key, sid, data)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def list_questions(self, sid, gid):
         """List questions with their properties
@@ -390,19 +381,26 @@ class ABCSearchEngine(ABC):
         """
         tokens = self.server.list_participants(self.session_key, sid, 0, 99999999)
 
-        # if some error occurs RPC returns a dict, so return None
+        # If some error occurs RPC returns a dict, so return None
         return tokens if isinstance(tokens, list) else None
 
     def add_group(self, sid, title, description):
-        return self.server.add_group(self.session_key, sid, title)
+        result = self.server.add_group(self.session_key, sid, title)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def add_response(self, sid, response_data):
-        return self.server.add_response(self.session_key, sid, response_data)
+        result = self.server.add_response(self.session_key, sid, response_data)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def set_participant_properties(self, sid, tid, properties_dict):
-        return self.server.set_participant_properties(
-            self.session_key, sid, tid, properties_dict
-        )
+        result = self.server.set_participant_properties(self.session_key, sid, tid, properties_dict)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def import_survey(self, base64_encoded_lsa):
         """
