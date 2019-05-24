@@ -75,12 +75,12 @@ def build_questionnaires_list(language_code):
     return questionnaires
 
 
-def build_zip_file(request, participants, questionnaires):
+def build_zip_file(request, participants_headers, questionnaires):
     """Define components to use as the component list argument of
     build_complete_export_structure export method
-    :param request:
-    :param participants:
-    :param questionnaires:
+    :param request: Request object
+    :param participants_headers: list
+    :param questionnaires: list
     :return:
     """
     components = {
@@ -93,7 +93,7 @@ def build_zip_file(request, participants, questionnaires):
     os.makedirs(export_dir)
     input_filename = path.join(export_dir, 'json_export.json')
     build_complete_export_structure(
-        True, True, False, participants, [], questionnaires, [], ['short'], 'code',
+        True, True, False, participants_headers, [], questionnaires, [], ['short'], 'code',
         input_filename, components, request.LANGUAGE_CODE, 'csv')
     zip_file = export_create(request, export.id, input_filename)
 
@@ -103,9 +103,9 @@ def build_zip_file(request, participants, questionnaires):
 @login_required
 def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
     if request.method == 'POST':
-        participants = update_patient_attributes(request.POST.getlist('patient_selected'))
+        participants_headers = update_patient_attributes(request.POST.getlist('patient_selected'))
         questionnaires = build_questionnaires_list(request.LANGUAGE_CODE)
-        zip_file = build_zip_file(request, participants, questionnaires)
+        zip_file = build_zip_file(request, participants_headers, questionnaires)
         if zip_file:
             messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
             with open(zip_file, 'rb') as file:
@@ -141,16 +141,16 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
             intersection_dict[i] = admission_participants[i]
 
     # Transform the intersection dictionary into a list, so that we can sort it by patient name
-    participants = []
+    participants_headers = []
 
     for key, dictionary in list(intersection_dict.items()):
         dictionary['patient_id'] = key
-        participants.append(dictionary)
+        participants_headers.append(dictionary)
 
-    participants = sorted(participants, key=itemgetter('patient_name'))
+    participants_headers = sorted(participants_headers, key=itemgetter('patient_name'))
 
     context = {
-        'participants': participants,
+        'participants': participants_headers,
         'patient_fields': patient_fields
     }
 
