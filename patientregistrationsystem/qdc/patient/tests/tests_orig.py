@@ -153,8 +153,7 @@ class UtilTests:
 
     @staticmethod
     def create_limesurvey_participant(survey, lime_survey):
-        result = \
-            lime_survey.add_participant(survey.lime_survey_id)
+        result = lime_survey.add_participant(survey.lime_survey_id)
 
         return result
 
@@ -165,8 +164,7 @@ class UtilTests:
 
         return QuestionnaireResponse.objects.create(
             patient=patient, survey=survey, token_id=token_id,
-            questionnaire_responsible=responsible
-        )
+            questionnaire_responsible=responsible)
 
 
 class CpfValidationTest(TestCase):

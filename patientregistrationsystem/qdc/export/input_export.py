@@ -43,7 +43,6 @@ class InputExport:
             dump(self.data, outfile)
 
     def build_header(self, export_per_experiment):
-        # print("header")
         # /NES_EXPORT
         self.data["base_directory"] = BASE_DIRECTORY
         self.data["per_participant_directory"] = PER_PARTICIPANT_DIRECTORY
@@ -59,11 +58,7 @@ class InputExport:
         self.data[variable_name] = variable_data
 
     def build_diagnosis_participant(self, strut_name, output_filename, field_header_list):
-        self.data[strut_name] = {
-            "output_filename": output_filename,
-            "output_list": [],
-            "data_list": []
-        }
+        self.data[strut_name] = {"output_filename": output_filename, "output_list": [], "data_list": []}
         for field, header in field_header_list:
             output_data = {"header": header, "field": field}
             self.data[strut_name]["output_list"].append(output_data)
@@ -147,8 +142,8 @@ class InputExport:
         questionnaire_lime_survey.release_session_key()
 
 
-def build_partial_export_structure(export_per_participant, participant_field_header_list, output_filename,
-                                   language=DEFAULT_LANGUAGE):
+def build_partial_export_structure(
+        export_per_participant, participant_field_header_list, output_filename, language=DEFAULT_LANGUAGE):
 
     json_data = InputExport()
 
@@ -158,11 +153,11 @@ def build_partial_export_structure(export_per_participant, participant_field_hea
     json_data.write(output_filename)
 
 
-def build_complete_export_structure(export_per_participant, export_per_questionnaire, export_per_experiment,
-                                    participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
-                                    experiment_questionnaires_list, response_type, heading_type,
-                                    output_filename, component_list, language, filesformat_type
-                                    ):
+def build_complete_export_structure(
+        export_per_participant, export_per_questionnaire, export_per_experiment,
+        participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
+        experiment_questionnaires_list, response_type, heading_type,
+        output_filename, component_list, language, filesformat_type):
 
     json_data = InputExport()
 

@@ -304,8 +304,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         else:
             # Export method: filter by entrance questionnaire
             if export.get_input_data('questionnaires'):
-                # Process per questionnaire data - entrance evaluation
-                # questionnaires
+                # Process per questionnaire data - entrance evaluation questionnaires
                 error_msg = export.process_per_questionnaire()
                 if error_msg != "":
                     messages.error(request, error_msg)
@@ -329,17 +328,11 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             with ZipFile(export_complete_filename, 'w') as zip_file:
                 for filename, directory in export.files_to_zip_list:
                     fdir, fname = path.split(filename)
-                    zip_file.write(
-                        filename.encode('utf-8'), path.join(directory, fname)
-                    )
+                    zip_file.write(filename.encode('utf-8'), path.join(directory, fname))
 
             output_export_file = path.join(
-                "export", path.join(
-                    str(export_instance.user.id),
-                    str(export_instance.id),
-                    str(export_filename)
-                )
-            )
+                "export",
+                path.join(str(export_instance.user.id), str(export_instance.id), str(export_filename)))
 
             update_export_instance(
                 input_export_file, output_export_file, export_instance
@@ -479,9 +472,7 @@ def export_view(request, template_name="export/export_data.html"):
 
                     if questionnaires_selected_list:
                         questionnaires_list = update_questionnaire_list(
-                            questionnaires_list, heading_type, False,
-                            request.LANGUAGE_CODE
-                        )
+                            questionnaires_list, heading_type, False, request.LANGUAGE_CODE)
 
                     if experiment_questionnaires_list:
                         per_experiment = True
@@ -499,12 +490,9 @@ def export_view(request, template_name="export/export_data.html"):
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
                 build_complete_export_structure(
-                    per_participant, per_questionnaire, per_experiment,
-                    participants_list, diagnosis_list, questionnaires_list,
-                    experiment_questionnaires_list, responses_type,
-                    heading_type, input_filename, component_list,
-                    language_code, filesformat_type
-                )
+                    per_participant, per_questionnaire, per_experiment, participants_list,
+                    diagnosis_list, questionnaires_list, experiment_questionnaires_list, responses_type,
+                    heading_type, input_filename, component_list, language_code, filesformat_type)
 
                 complete_filename = export_create(request, export_instance.id, input_filename)
 
@@ -644,8 +632,7 @@ def export_view(request, template_name="export/export_data.html"):
             # Get the questionnaire fields from the
             # questionnaires_list_final and show them for selection
             questionnaires_fields_list = get_questionnaire_fields(
-                questionnaires_list_final, request.LANGUAGE_CODE
-            )
+                [dict_['sid'] for index, dict_ in enumerate(questionnaires_list_final)], request.LANGUAGE_CODE)
 
             if len(selected_ev_quest):
                 questionnaire_ids, field_id = zip(*selected_ev_quest)
@@ -965,9 +952,7 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
     questionnaires_included = []
 
     questionnaire_lime_survey = Questionnaires()
-    for questionnaire in questionnaire_code_list:
-
-        questionnaire_id = questionnaire["sid"]
+    for questionnaire_id in questionnaire_code_list:
 
         language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
 
@@ -981,8 +966,6 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
         responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
 
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language_new)
-
-        # print("id: %d " % questionnaire_id)
 
         if not isinstance(responses_string, dict):
 

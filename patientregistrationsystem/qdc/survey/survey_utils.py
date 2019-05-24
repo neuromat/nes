@@ -288,40 +288,22 @@ class QuestionnaireUtils:
         )
 
         for question in questionnaire_questions:
-            properties = questionnaire_lime_survey.get_question_properties(
-                    question, language
-                )
-            question_code = \
-                properties['title'] if 'title' in properties else None
+            properties = questionnaire_lime_survey.get_question_properties(question, language)
+            question_code = properties['title'] if 'title' in properties else None
             if question_code and question_code in fields_cleared:
                 fields_from_questions.append(question_code)
                 # clean the question description that came from limesurvey
-                question_description = \
-                    re.sub(
-                        '{.*?}', '',
-                        re.sub('<.*?>', '', properties['question'])
-                    ).replace('&nbsp;', '').strip()
+                question_description = re.sub(
+                    '{.*?}', '',re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
                 question_type = smart_str(properties['type'])
-                question_type_description = question_types[question_type] \
-                    if question_type in question_types else ''
-                question_group = \
-                    self.get_group_properties(
-                        questionnaire_lime_survey,
-                        questionnaire_id,
-                        properties['gid'],
-                        language
-                    )
+                question_type_description = question_types[question_type] if question_type in question_types else ''
+                question_group = self.get_group_properties(
+                        questionnaire_lime_survey, questionnaire_id, properties['gid'], language)
                 question_order = properties['question_order']
 
-                questionnaire_list = \
-                    [smart_str(questionnaire_code),
-                     smart_str(questionnaire_title)]
-                question_type_list = \
-                    [smart_str(question_order), question_type,
-                     question_type_description]
-                question_list = \
-                    [smart_str(question_code),
-                     smart_str(question_description)]
+                questionnaire_list = [smart_str(questionnaire_code), smart_str(questionnaire_title)]
+                question_type_list = [smart_str(question_order), question_type, question_type_description]
+                question_list = [smart_str(question_code), smart_str(question_description)]
 
                 scales = [""]
                 # "1": "Array Dual Scale"
@@ -329,11 +311,9 @@ class QuestionnaireUtils:
                     if isinstance(properties['attributes_lang'], dict):
                         scales = [
                             properties['attributes_lang']['dualscale_headerA']
-                            if 'dualscale_headerA' in properties[
-                                'attributes_lang'] else "",
+                            if 'dualscale_headerA' in properties['attributes_lang'] else "",
                             properties['attributes_lang']['dualscale_headerB']
-                            if 'dualscale_headerB' in properties[
-                                'attributes_lang'] else ""
+                            if 'dualscale_headerB' in properties['attributes_lang'] else ""
                         ]
                     else:
                         scales = ["", ""]
@@ -369,25 +349,18 @@ class QuestionnaireUtils:
                     sub_questions_list = [[""] * 2]
 
                 for scale_index, scale_label in enumerate(scales):
-                    scale = [scale_index + 1, scale_label] \
-                        if scale_label else [""] * 2
+                    scale = [scale_index + 1, scale_label] if scale_label else [""] * 2
                     for sub_question in sub_questions_list:
                         for option in options_list:
-
                             question_index = question_code
                             if sub_question[0]:
                                 question_index += '[' + sub_question[0] + ']'
                             if scale_label:
-                                question_index += \
-                                    '[' + str(scale_index + 1) + ']'
-
+                                question_index += '[' + str(scale_index + 1) + ']'
                             questionnaire_explanation_fields_list.append(
-                                questionnaire_list +
-                                [question_group['group_name']] +
-                                question_type_list +
-                                [question_index] + question_list +
-                                sub_question + scale + option
-                            )
+                                questionnaire_list + [question_group['group_name']]
+                                + question_type_list + [question_index] + question_list
+                                + sub_question + scale + option)
 
         if len(fields_cleared) != len(fields_from_questions):
             for field in fields_cleared:

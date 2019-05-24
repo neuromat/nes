@@ -21,23 +21,18 @@ class ExportTestCase(TestCase):
         # return user password to use when necessary in subclasses
         self.user, self.user_passwd = create_user(Group.objects.all())
         self.client.login(
-            username=self.user.username, password=self.user_passwd
-        )
+            username=self.user.username, password=self.user_passwd)
 
         # create experiment/experimental protocol/group
         self.experiment = ObjectsFactory.create_experiment(
-            ObjectsFactory.create_research_project(self.user)
-        )
+            ObjectsFactory.create_research_project(self.user))
         self.root_component = ObjectsFactory.create_block(self.experiment)
-        self.group = ObjectsFactory.create_group(
-            self.experiment, self.root_component
-        )
+        self.group = ObjectsFactory.create_group(self.experiment, self.root_component)
 
         # create patient/subject/subject_of_group
         self.patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(self.patient)
-        self.subject_of_group = \
-            ObjectsFactory.create_subject_of_group(self.group, subject)
+        self.subject_of_group = ObjectsFactory.create_subject_of_group(self.group, subject)
 
     def append_session_variable(self, key, value):
         """

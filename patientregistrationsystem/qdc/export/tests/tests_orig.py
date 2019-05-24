@@ -296,9 +296,7 @@ class InputExportTest(TestCase):
 
         self.assertNotIn("questionnaires", input_data.data)
 
-        input_data.build_questionnaire(
-            questionnaire_list, "pt-BR", entrance_questionnaire=True
-        )
+        input_data.build_questionnaire(questionnaire_list, "pt-BR", entrance_questionnaire=True)
 
         self.assertIn("questionnaires", input_data.data)
 
