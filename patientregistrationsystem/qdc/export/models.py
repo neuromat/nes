@@ -5,9 +5,9 @@ from django.contrib.auth.models import User
 
 
 def get_export_dir(instance, filename):
-    return "export/%(user)s/%(export)s/%(filename)s" % \
-        {'user': instance.export.user.id,
-         'export': instance.export.pk, 'filename': filename}
+    return "export/%(user)s/%(export)s/%(filename)s" % {
+        'user': instance.export.user.id, 'export': instance.export.pk, 'filename': filename
+    }
 
 
 class Export(models.Model):
