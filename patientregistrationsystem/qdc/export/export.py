@@ -110,10 +110,7 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
     else:
         separator = ','
 
-    with open(
-            complete_filename.encode('utf-8'), mode, newline='',
-            encoding='UTF-8'
-    ) as csv_file:
+    with open(complete_filename.encode('utf-8'), mode, newline='', encoding='UTF-8') as csv_file:
         export_writer = csv.writer(
             csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC, delimiter=separator
         )
@@ -1227,8 +1224,7 @@ class ExportExecution:
                 fields_description = self.define_questionnaire(
                     questionnaire, questionnaire_lime_survey, language
                 )
-                if self.get_input_data("export_per_questionnaire") and \
-                        (len(fields_description) > 1):
+                if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
                     export_filename = "%s_%s_%s.%s" % \
                                       (questionnaire["prefix_filename_responses"],
                                        str(questionnaire_code), language, filesformat_type)
@@ -3025,22 +3021,17 @@ class ExportExecution:
 
         headers, fields = self.questionnaire_utils.set_questionnaire_header_and_fields(questionnaire, True)
 
-        questionnaire_exists = QuestionnaireResponse.objects.filter(
-            survey__lime_survey_id=questionnaire_id).exists()
+        questionnaire_exists = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id).exists()
         # filter data (participants)
         questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
 
         #  include new filter that come from advanced search
         filtered_data = self.get_participants_filtered_data()
-        questionnaire_responses = questionnaire_responses.filter(
-            patient_id__in=filtered_data
-        )
+        questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
 
         if questionnaire_exists and available:
             # read all data for questionnaire_id from LimeSurvey
-            responses_string1 = questionnaire_lime_survey.get_responses(
-                questionnaire_id, language, response_type[0]
-            )
+            responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
             fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
             # need types of questions to make replacement just
