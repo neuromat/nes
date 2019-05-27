@@ -185,16 +185,15 @@ def update_diagnosis_list(diagnosis_list, heading_type):
             diagnosis_list.insert(0, [field, abbreviated_data(header_translated, heading_type)])
 
 
-def export_create(request, export_id, input_filename, template_name="export/export_data.html"):
+def export_create(request, export_id, input_filename, template_name="export/export_data.html", participants_plugin=[]):
     try:
         export_instance = Export.objects.get(user=request.user, id=export_id)
-
         export = ExportExecution(export_instance.user.id, export_instance.id)
-
         language_code = request.LANGUAGE_CODE
 
-        # all participants filtered
-        if 'filtered_participant_data' in request.session:
+        if participants_plugin:
+            participants_filtered_list = participants_plugin
+        elif 'filtered_participant_data' in request.session:
             participants_filtered_list = request.session['filtered_participant_data']
         else:
             participants_filtered_list = Patient.objects.filter(removed=False)

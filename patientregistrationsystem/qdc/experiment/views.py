@@ -1294,11 +1294,7 @@ def send_all_experiments_to_portal():
                                 {'questions': '', 'answers': ''}
 
                             if isinstance(responses_string, bytes):
-                                reader = \
-                                    csv.reader(
-                                        StringIO(responses_string.decode()),
-                                        delimiter=','
-                                    )
+                                reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
                                 responses_list = []
                                 for row in reader:
                                     responses_list.append(row)

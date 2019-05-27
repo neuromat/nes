@@ -75,10 +75,11 @@ def build_questionnaires_list(language_code):
     return questionnaires
 
 
-def build_zip_file(request, participants_headers, questionnaires):
+def build_zip_file(request, participants_plugin, participants_headers, questionnaires):
     """Define components to use as the component list argument of
     build_complete_export_structure export method
     :param request: Request object
+    :param participants_plugin: list - list of participants selected to send to Plugin
     :param participants_headers: list
     :param questionnaires: list
     :return:
@@ -95,7 +96,7 @@ def build_zip_file(request, participants_headers, questionnaires):
     build_complete_export_structure(
         True, True, False, participants_headers, [], questionnaires, [], ['short'], 'code',
         input_filename, components, request.LANGUAGE_CODE, 'csv')
-    zip_file = export_create(request, export.id, input_filename)
+    zip_file = export_create(request, export.id, input_filename, participants_plugin=participants_plugin)
 
     return zip_file
 
@@ -103,9 +104,10 @@ def build_zip_file(request, participants_headers, questionnaires):
 @login_required
 def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
     if request.method == 'POST':
+        participants = request.POST.getlist('patients_selected[]')
         participants_headers = update_patient_attributes(request.POST.getlist('patient_selected'))
         questionnaires = build_questionnaires_list(request.LANGUAGE_CODE)
-        zip_file = build_zip_file(request, participants_headers, questionnaires)
+        zip_file = build_zip_file(request, participants, participants_headers, questionnaires)
         if zip_file:
             messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
             with open(zip_file, 'rb') as file:
