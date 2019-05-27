@@ -50,7 +50,8 @@
                         <div class="col-md-5 col-sm-12">
                             <div class="form-group">
                                 <label class="control-label">{% trans "Participants available:" %} </label>
-                                <select class="form-control" size="13" id="multiselect_" name="from[]" multiple="multiple">
+                                <select class="form-control" size="13" id="multiselect_" name="from[]"
+                                        multiple="multiple">
                                     {% for field in participants %}
                                         {% if not field.selected %}
                                             <option value="{{ field.patient_id }}">
@@ -79,7 +80,8 @@
 
                         <div class="col-md-5 col-sm-10">
                             <label class="control-label">{% trans "Participants chosen:" %} </label>
-                            <select name="to[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
+                            <select name="patients_selected[]" id="multiselect__to" class="form-control" size="13"
+                                    multiple="multiple">
                                 {% for field in participants %}
                                     {% if field.selected %}
                                         <option value="{{ field.patient_id }}">

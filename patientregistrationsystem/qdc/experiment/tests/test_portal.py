@@ -155,8 +155,6 @@ class PortalAPITest(TestCase):
             mockRestApiClientClass.return_value.client.action.call_args
         for field in HEADER_EXPLANATION_FIELDS:
             self.assertIn(field, kwargs['params']['survey_metadata'])
-        survey_metadata = csv.reader(
-            StringIO(kwargs['params']['survey_metadata'])
-        )
+        survey_metadata = csv.reader(StringIO(kwargs['params']['survey_metadata']))
         for row in survey_metadata:
             self.assertEqual(len(row), len(HEADER_EXPLANATION_FIELDS))
