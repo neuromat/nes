@@ -507,6 +507,7 @@ class PluginTest(ExportTestCase):
         response = self.client.post(
             reverse('send_to_plugin'),
             data={
+                # TODO (NES-963): about 'patient_selected see TODO (NES-963) in export.views
                 'opt_floresta': ['on'], 'patient_selected': ['age*age'],
                 'patients_selected[]': [str(self.patient.id)],
             })

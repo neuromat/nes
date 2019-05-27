@@ -413,6 +413,8 @@ def export_view(request, template_name="export/export_data.html"):
 
                 output_list.append((field, header))
 
+        # TODO (NES-963): participant_selected_list in fact is the attributes list not
+        #  participants per se
         participant_selected_list = request.POST.getlist('patient_selected')
 
         participants_list = []
