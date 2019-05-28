@@ -112,7 +112,6 @@
                         </div>
                     </div>
             </div>
-
             <div class="container span6 offset3 well ">
                 {% if perms.patient.export_patient %}
                     <h4>{% trans "Additional info" %}</h4>
@@ -124,8 +123,13 @@
                                         multiple="multiple"
                                         data-error={% trans "Please, select a patient field from the list." %}>
                                     {% for field in patient_fields %}
-                                        <option {% if field.field in selected_participant %}selected{% endif %}
+                                        {% if field.field == 'gender__name' %}
+                                            <option id="gender_field" value="{{ field.field }}*{{ field.header }}" selected>
+                                                {{ field.description }} </option>
+                                        {% else %}
+                                            <option {% if field.field in selected_participant %} selected {% endif %}
                                                 value="{{ field.field }}*{{ field.header }}"> {{ field.description }} </option>
+                                        {% endif %}
                                     {% endfor %}
                                 </select>
                                 <label class="control-label">{% trans "* use ctrl-click to select more than one field. (command-click on Mac)" %} </label>
@@ -161,11 +165,14 @@
                 return false;
             }
             if (!$("select[name='patient_selected'] option:selected").length) {
-                showWarningMessage(gettext("At least one field from participant have to be set"));
+                showWarningMessage(gettext("At least one field from participants have to be set"));
                 return false;
             }
             return true;
 
         }
+        $("#patient_selected").click(function () {
+            $("#gender_field").prop('selected', true);
+        });
     </script>
 {% endblock %}
