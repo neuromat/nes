@@ -54,7 +54,7 @@ class PluginTest(ExportTestCase):
         response = self.client.post(
             reverse('send_to_plugin'),
             data={
-                'opt_floresta': ['on'], 'patient_selected': ['age*age'],
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id), str(patient2.id)]
             })
         self.assertEqual(response.status_code, 200)
@@ -90,7 +90,7 @@ class PluginTest(ExportTestCase):
             reverse('send_to_plugin'),
             data={
                 # TODO (NES-963): about 'patient_selected see TODO (NES-963) in export.views
-                'opt_floresta': ['on'], 'patient_selected': ['age*age'],
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)],
             })
         self.assertEqual(response.status_code, 200)
@@ -149,8 +149,6 @@ class PluginTest(ExportTestCase):
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, 'Please select at least Gender participant attribute')
 
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
-
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_patient_display_warning_message(self, mockServer):
@@ -170,3 +168,25 @@ class PluginTest(ExportTestCase):
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, 'Please select at least one patient')
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_does_not_patient_gender_display_warning_message(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        survey1 = create_survey()
+        survey2 = create_survey(505050)
+        RandomForests.objects.create(admission_assessment=survey1, surgical_evaluation=survey2)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, 21)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, 21)
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'The Floresta Plugin needs to send at least Gender attribute')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)

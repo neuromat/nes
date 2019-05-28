@@ -108,11 +108,14 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
         if not request.POST.getlist('patients_selected[]'):
             messages.warning(request, _('Please select at least one patient'))
             return redirect(reverse('send_to_plugin'))
-        # Export requires at least one patient attribute selected (patient_selected
-        # is the list of attributes).
+        # Export experiment (from export app) requires at least one patient
+        # attribute selected (patient_selected is the list of attributes).
         # This may be changed.
         if not request.POST.getlist('patient_selected'):
             messages.warning(request, _('Please select at least Gender participant attribute'))
+            return redirect(reverse('send_to_plugin'))
+        if 'gender__name*gender' not in request.POST.getlist('patient_selected'):
+            messages.warning(request, _('The Floresta Plugin needs to send at least Gender attribute'))
             return redirect(reverse('send_to_plugin'))
         participants = request.POST.getlist('patients_selected[]')
         participants_headers = update_patient_attributes(request.POST.getlist('patient_selected'))
