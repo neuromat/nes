@@ -6,7 +6,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from export.input_export import build_complete_export_structure
@@ -104,6 +105,15 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
 @login_required
 def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
     if request.method == 'POST':
+        if not request.POST.getlist('patients_selected[]'):
+            messages.warning(request, _('Please select at least one patient'))
+            return redirect(reverse('send_to_plugin'))
+        # Export requires at least one patient attribute selected (patient_selected
+        # is the list of attributes).
+        # This may be changed.
+        if not request.POST.getlist('patient_selected'):
+            messages.warning(request, _('Please select at least Gender participant attribute'))
+            return redirect(reverse('send_to_plugin'))
         participants = request.POST.getlist('patients_selected[]')
         participants_headers = update_patient_attributes(request.POST.getlist('patient_selected'))
         questionnaires = build_questionnaires_list(request.LANGUAGE_CODE)
