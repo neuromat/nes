@@ -1001,9 +1001,9 @@ class ExportExecution:
 
         # building questionnaire_answer_list with row_participant data
         subject_code = row_participant_data[0]
-        age = row_participant_data[1]
+        attribute = row_participant_data[1]
         for sublist in answer_list:
-            answer = [subject_code, age]
+            answer = [subject_code, attribute]
             for item in sublist:
                 answer.append(item)
             for item in row_participant_data[2:len(row_participant_data)]:
@@ -1200,9 +1200,7 @@ class ExportExecution:
             if error_msg != "":
                 return error_msg
             # path ex. NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/
-            export_directory = path.join(
-                export_per_questionnaire_directory, path_questionnaire
-            )
+            export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
 
             # path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa
             error_msg, export_metadata_path = create_directory(path_per_questionnaire_metadata, path_questionnaire)
