@@ -185,7 +185,8 @@ def update_diagnosis_list(diagnosis_list, heading_type):
             diagnosis_list.insert(0, [field, abbreviated_data(header_translated, heading_type)])
 
 
-def export_create(request, export_id, input_filename, template_name="export/export_data.html", participants_plugin=[]):
+def export_create(request, export_id, input_filename, template_name="export/export_data.html",
+                  participants_plugin=None):
     try:
         export_instance = Export.objects.get(user=request.user, id=export_id)
         export = ExportExecution(export_instance.user.id, export_instance.id)
