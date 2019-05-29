@@ -20,7 +20,7 @@
     <div class="tab-pane fade in active" id="participantsSelectionBreadCrumb">
         <div class="col-md-10">
             <ol class="breadcrumb">
-                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="/">{% trans "Home" %}</a></li>
                 <li><a href="/plugin">{% trans "Plugin" %}</a></li>
                 <li class="active">{% trans "Participants selection" %}</li>
             </ol>
@@ -81,7 +81,7 @@
                     <div class="panel-body">
                         <div class="col-md-5 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Participants available:" %} </label>
+                                <label for="multiselect_" class="control-label">{% trans "Participants available:" %} </label>
                                 <select class="form-control" size="13" id="multiselect_" name="from[]"
                                         multiple="multiple">
                                     {% for field in participants %}
@@ -109,7 +109,7 @@
                                     class="glyphicon glyphicon-backward"></i></button>
                         </div>
                         <div class="col-md-5 col-sm-10">
-                            <label class="control-label">{% trans "Participants chosen:" %} </label>
+                            <label for="multiselect__to" class="control-label">{% trans "Participants chosen:" %} </label>
                             <select name="patients_selected[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
                                 {% for field in participants %}
                                     {% if field.selected %}
@@ -129,7 +129,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12">
                             <div class="form-group">
-                                <label class="control-label">{% trans "Participant fields" %} </label>
+                                <label for="patient_selected" class="control-label">{% trans "Participant fields" %} </label>
                                 <select class="form-control" size="13" id="patient_selected" name="patient_selected"
                                         multiple="multiple"
                                         data-error={% trans "Please, select a patient field from the list." %}>
