@@ -138,16 +138,19 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
 
     admission_participants = {}
     surgical_participants = {}
+    admission_title = None
+    surgical_title = None
 
-    # Patients that answered the admission assessment questionnaire
-    if random_forests and random_forests.admission_assessment:
+    # Patients that answered the admission assessment questionnaire and surgical evaluation questionnaire
+    if random_forests and random_forests.admission_assessment and random_forests.surgical_evaluation:
         admission = Survey.objects.get(pk=random_forests.admission_assessment.pk)
         admission_participants = participants_dict(admission)
-
-    # Patients that answered the surgical evaluation questionnaire
-    if random_forests and random_forests.surgical_evaluation:
         surgical = Survey.objects.get(pk=random_forests.surgical_evaluation.pk)
         surgical_participants = participants_dict(surgical)
+        if admission:
+            admission_title = admission.en_title if request.LANGUAGE_CODE == 'en' else admission.pt_title
+        if surgical:
+            surgical_title = surgical.en_title if request.LANGUAGE_CODE == 'en' else surgical.pt_title
 
     # The intersection of admission assessment and surgical evaluation questionnaires
     intersection_dict = {}
@@ -166,7 +169,9 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
 
     context = {
         'participants': participants_headers,
-        'patient_fields': patient_fields
+        'patient_fields': patient_fields,
+        'admission_title': admission_title,
+        'surgical_title': surgical_title
     }
 
     return render(request, template_name, context)
