@@ -80,50 +80,46 @@ def build_questionnaires_list(language_code):
 
 
 def clear_zipfile(zip_file_path):
-    """Clear zipfile from unnecessary directories files that are created
-    for Export app
-    :param zip_file_path: zip file
+    """Clear zipfile from unnecessary directories that are created
+    in Export app.
+    :param zip_file_path: str
+    :return: str new zip file cleared path
     """
     work_dir = os.path.dirname(zip_file_path)
     old_zipfile_path = os.path.join(work_dir, 'old_export.zip')
     os.rename(zip_file_path, old_zipfile_path)
     with zipfile.ZipFile(old_zipfile_path) as old_zipfile:
         old_zipfile.extractall(work_dir)
-        # Per_participant subdir
-        pattern = re.compile('NES_EXPORT/Per_participant/Participant_(.+)/(.+)/(.+)')
+        # Per_participant
+        files_pattern = os.path.join('NES_EXPORT', 'Per_participant', 'Participant_(.+)', '(.+)', '(.+)')
+        dest_path_base = os.path.join(work_dir, 'NES_EXPORT', 'Per_participant', 'Participant_')
+        pattern = re.compile(files_pattern)
         files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
         for file_path in files_to_move:
-            dest_path = os.path.join(
-                work_dir, 'NES_EXPORT/Per_participant/Participant_%s' % pattern.match(file_path).group(1))
+            dest_path = dest_path_base + '%s' % pattern.match(file_path).group(1)
             shutil.move(os.path.join(work_dir, file_path), dest_path)
             shutil.rmtree(
-                os.path.join(
-                    work_dir,
-                    'NES_EXPORT/Per_participant/Participant_%s/%s/' % (
-                        pattern.match(file_path).group(1), pattern.match(file_path).group(2))))
-        # Per questionnaire subdir
-        pattern = re.compile('NES_EXPORT/Per_questionnaire/(.+)/(.+)')
+                dest_path_base + '%s/%s/' % (pattern.match(file_path).group(1), pattern.match(file_path).group(2)))
+
+        # Per_questionnaire subdir
+        files_pattern = os.path.join('NES_EXPORT', 'Per_questionnaire', '(.+)', '(.+)')
+        dest_path_base = os.path.join(work_dir, 'NES_EXPORT', 'Per_questionnaire')
+        pattern = re.compile(files_pattern)
         files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
         for file_path in files_to_move:
-            dest_path = os.path.join(
-                work_dir, 'NES_EXPORT/Per_questionnaire/%s' % pattern.match(file_path).group(2))
+            dest_path = os.path.join(dest_path_base, '%s' % pattern.match(file_path).group(2))
             shutil.move(os.path.join(work_dir, file_path), dest_path)
-            shutil.rmtree(
-                os.path.join(
-                    work_dir,
-                    'NES_EXPORT/Per_questionnaire/%s/' % pattern.match(file_path).group(1)))
+            shutil.rmtree(os.path.join(dest_path_base, '%s' % pattern.match(file_path).group(1)))
+
         # Questionnaire_metadata subdir
-        pattern = re.compile('NES_EXPORT/Questionnaire_metadata/(.+)/(.+)')
+        files_pattern = os.path.join('NES_EXPORT', 'Questionnaire_metadata', '(.+)', '(.+)')
+        dest_path_base = os.path.join(work_dir, 'NES_EXPORT', 'Questionnaire_metadata')
+        pattern = re.compile(files_pattern)
         files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
         for file_path in files_to_move:
-            dest_path = os.path.join(
-                work_dir, 'NES_EXPORT/Questionnaire_metadata/'
-            )
+            dest_path = dest_path_base
             shutil.move(os.path.join(work_dir, file_path), dest_path)
-            shutil.rmtree(
-                os.path.join(
-                    work_dir,
-                    'NES_EXPORT/Questionnaire_metadata/%s/' % pattern.match(file_path).group(1)))
+            shutil.rmtree(os.path.join(dest_path_base, '%s' % pattern.match(file_path).group(1)))
 
     shutil.make_archive(os.path.join(work_dir, 'export'), 'zip', os.path.join(work_dir, 'NES_EXPORT'))
     return os.path.join(work_dir, 'export.zip')
