@@ -1,4 +1,7 @@
 import os
+import re
+import shutil
+import zipfile
 from operator import itemgetter
 from os import path
 
@@ -13,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from export.input_export import build_complete_export_structure
 from export.models import Export
 from export.views import patient_fields, get_questionnaire_fields, export_create
-from patient.models import QuestionnaireResponse
+from patient.models import QuestionnaireResponse, Patient
 from plugin.models import RandomForests
 from survey.models import Survey
 
@@ -76,6 +79,56 @@ def build_questionnaires_list(language_code):
     return questionnaires
 
 
+def clear_zipfile(zip_file_path):
+    """Clear zipfile from unnecessary directories files that are created
+    for Export app
+    :param zip_file_path: zip file
+    """
+    work_dir = os.path.dirname(zip_file_path)
+    old_zipfile_path = os.path.join(work_dir, 'old_export.zip')
+    os.rename(zip_file_path, old_zipfile_path)
+    with zipfile.ZipFile(old_zipfile_path) as old_zipfile:
+        old_zipfile.extractall(work_dir)
+        # Per_participant subdir
+        pattern = re.compile('NES_EXPORT/Per_participant/Participant_(.+)/(.+)/(.+)')
+        files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
+        for file_path in files_to_move:
+            dest_path = os.path.join(
+                work_dir, 'NES_EXPORT/Per_participant/Participant_%s' % pattern.match(file_path).group(1))
+            shutil.move(os.path.join(work_dir, file_path), dest_path)
+            shutil.rmtree(
+                os.path.join(
+                    work_dir,
+                    'NES_EXPORT/Per_participant/Participant_%s/%s/' % (
+                        pattern.match(file_path).group(1), pattern.match(file_path).group(2))))
+        # Per questionnaire subdir
+        pattern = re.compile('NES_EXPORT/Per_questionnaire/(.+)/(.+)')
+        files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
+        for file_path in files_to_move:
+            dest_path = os.path.join(
+                work_dir, 'NES_EXPORT/Per_questionnaire/%s' % pattern.match(file_path).group(2))
+            shutil.move(os.path.join(work_dir, file_path), dest_path)
+            shutil.rmtree(
+                os.path.join(
+                    work_dir,
+                    'NES_EXPORT/Per_questionnaire/%s/' % pattern.match(file_path).group(1)))
+        # Questionnaire_metadata subdir
+        pattern = re.compile('NES_EXPORT/Questionnaire_metadata/(.+)/(.+)')
+        files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
+        for file_path in files_to_move:
+            dest_path = os.path.join(
+                work_dir, 'NES_EXPORT/Questionnaire_metadata/'
+            )
+            shutil.move(os.path.join(work_dir, file_path), dest_path)
+            shutil.rmtree(
+                os.path.join(
+                    work_dir,
+                    'NES_EXPORT/Questionnaire_metadata/%s/' % pattern.match(file_path).group(1)))
+
+    shutil.make_archive(os.path.join(work_dir, 'export'), 'zip', os.path.join(work_dir, 'NES_EXPORT'))
+    return os.path.join(work_dir, 'export.zip')
+
+
 def build_zip_file(request, participants_plugin, participants_headers, questionnaires):
     """Define components to use as the component list argument of
     build_complete_export_structure export method
@@ -97,9 +150,10 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     build_complete_export_structure(
         True, True, False, participants_headers, [], questionnaires, [], ['short'], 'code',
         input_filename, components, request.LANGUAGE_CODE, 'csv')
-    zip_file = export_create(request, export.id, input_filename, participants_plugin=participants_plugin)
+    zip_file_path = export_create(request, export.id, input_filename, participants_plugin=participants_plugin)
+    zip_file_path = clear_zipfile(zip_file_path)
 
-    return zip_file
+    return zip_file_path
 
 
 @login_required
