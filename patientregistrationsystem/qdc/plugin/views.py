@@ -79,6 +79,25 @@ def build_questionnaires_list(language_code):
     return questionnaires
 
 
+def rename_file(file_path, dest_path, code=True):
+    """Rename file: original file are identified by survey code or survey limesurvey id.
+    Rename them so that they get easy identified.
+    :param file_path: str -- file path
+    :param dest_path: str -- destination path
+    :param code: bool -- True: survey code / False: limesurvey id
+    """
+    old_file_name = os.path.basename(file_path)
+    pattern_filename = re.compile('(.+)_(.+)_(.+)')
+    survey_identification = pattern_filename.match(old_file_name).group(2)
+    survey = Survey.objects.get(code=survey_identification) \
+        if code else Survey.objects.get(lime_survey_id=survey_identification)
+    survey_name = 'admission-assessment' \
+        if RandomForests.objects.filter(admission_assessment=survey.id) else 'surgical-evaluation'
+    new_filename = pattern_filename.match(old_file_name).group(1) + '_' \
+                   + survey_name + '_' + pattern_filename.match(old_file_name).group(3)
+    os.rename(os.path.join(dest_path, old_file_name), os.path.join(dest_path, new_filename))
+
+
 def clear_zipfile(zip_file_path):
     """Clear zipfile from unnecessary directories that are created
     in Export app.
@@ -100,6 +119,7 @@ def clear_zipfile(zip_file_path):
             shutil.move(os.path.join(work_dir, file_path), dest_path)
             shutil.rmtree(
                 dest_path_base + '%s/%s/' % (pattern.match(file_path).group(1), pattern.match(file_path).group(2)))
+            rename_file(file_path, dest_path)
 
         # Per_questionnaire subdir
         files_pattern = os.path.join('NES_EXPORT', 'Per_questionnaire', '(.+)', '(.+)')
@@ -107,9 +127,10 @@ def clear_zipfile(zip_file_path):
         pattern = re.compile(files_pattern)
         files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
         for file_path in files_to_move:
-            dest_path = os.path.join(dest_path_base, '%s' % pattern.match(file_path).group(2))
+            dest_path = dest_path_base
             shutil.move(os.path.join(work_dir, file_path), dest_path)
             shutil.rmtree(os.path.join(dest_path_base, '%s' % pattern.match(file_path).group(1)))
+            rename_file(file_path, dest_path, code=False)
 
         # Questionnaire_metadata subdir
         files_pattern = os.path.join('NES_EXPORT', 'Questionnaire_metadata', '(.+)', '(.+)')
@@ -120,6 +141,8 @@ def clear_zipfile(zip_file_path):
             dest_path = dest_path_base
             shutil.move(os.path.join(work_dir, file_path), dest_path)
             shutil.rmtree(os.path.join(dest_path_base, '%s' % pattern.match(file_path).group(1)))
+            # Rename file
+            rename_file(file_path, dest_path, code=False)
 
     shutil.make_archive(os.path.join(work_dir, 'export'), 'zip', os.path.join(work_dir, 'NES_EXPORT'))
     return os.path.join(work_dir, 'export.zip')

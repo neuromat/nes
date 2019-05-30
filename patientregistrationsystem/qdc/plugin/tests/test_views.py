@@ -114,12 +114,14 @@ class PluginTest(ExportTestCase):
         out_items = [item for item in out_items if item is not None]
         self.assertEqual(0, len(out_items))
         # Tests for Per_questionnaire subdir
-        questionnaire1 = zipped_file.extract('Per_questionnaire/Responses_212121_en.csv', self.TEMP_MEDIA_ROOT)
+        questionnaire1 = zipped_file.extract(
+            'Per_questionnaire/Responses_admission-assessment_en.csv', self.TEMP_MEDIA_ROOT)
         with open(questionnaire1) as file:
             reader = list(csv.reader(file))
             self.assertEqual(2, len(reader))
             self.assertEqual(self.patient.code, reader[1][0])
-        questionnaire2 = zipped_file.extract('Per_questionnaire/Responses_505050_en.csv', self.TEMP_MEDIA_ROOT)
+        questionnaire2 = zipped_file.extract(
+            'Per_questionnaire/Responses_surgical-evaluation_en.csv', self.TEMP_MEDIA_ROOT)
         with open(questionnaire2) as file:
             reader = list(csv.reader(file))
             self.assertEqual(2, len(reader))
@@ -196,17 +198,17 @@ class PluginTest(ExportTestCase):
         file = io.BytesIO(response.content)
         zipped_file = zipfile.ZipFile(file, 'r')
         list_items = zipped_file.namelist()
-        for survey in Survey.objects.all():
+        for patient in [self.patient, patient2]:
             self.assertIn(
-                'Per_participant/Participant_%s/Responses_%s_en.csv' % (self.patient.code, survey.code),
-                list_items)
+                'Per_participant/Participant_%s/Responses_admission-assessment_en.csv' % patient.code, list_items)
             self.assertIn(
-                'Per_participant/Participant_%s/Responses_%s_en.csv' % (patient2.code, survey.code),
-                list_items)
-            self.assertIn('Per_questionnaire/Responses_%s_en.csv' % survey.lime_survey_id, list_items)
-            self.assertIn('Questionnaire_metadata/Fields_%s_en.csv' % survey.lime_survey_id, list_items)
-            # 14 is the number of elements of the archive in the new organization
-            # of file/dirs
-            self.assertEqual(14, len(list_items))
+                'Per_participant/Participant_%s/Responses_surgical-evaluation_en.csv' % patient.code, list_items)
+        self.assertIn('Per_questionnaire/Responses_admission-assessment_en.csv', list_items)
+        self.assertIn('Per_questionnaire/Responses_surgical-evaluation_en.csv', list_items)
+        self.assertIn('Questionnaire_metadata/Fields_admission-assessment_en.csv', list_items)
+        self.assertIn('Questionnaire_metadata/Fields_surgical-evaluation_en.csv', list_items)
+        # 14 is the number of elements of the archive in the new organization
+        # of file/dirs
+        self.assertEqual(14, len(list_items))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
