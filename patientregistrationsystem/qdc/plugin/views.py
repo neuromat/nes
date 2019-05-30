@@ -1,4 +1,7 @@
 import os
+import re
+import shutil
+import zipfile
 from operator import itemgetter
 from os import path
 
@@ -13,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from export.input_export import build_complete_export_structure
 from export.models import Export
 from export.views import patient_fields, get_questionnaire_fields, export_create
-from patient.models import QuestionnaireResponse
+from patient.models import QuestionnaireResponse, Patient
 from plugin.models import RandomForests
 from survey.models import Survey
 
@@ -76,6 +79,75 @@ def build_questionnaires_list(language_code):
     return questionnaires
 
 
+def rename_file(file_path, dest_path, code=True):
+    """Rename file: original file are identified by survey code or survey limesurvey id.
+    Rename them so that they get easy identified.
+    :param file_path: str -- file path
+    :param dest_path: str -- destination path
+    :param code: bool -- True: survey code / False: limesurvey id
+    """
+    old_file_name = os.path.basename(file_path)
+    pattern_filename = re.compile('(.+)_(.+)_(.+)')
+    survey_identification = pattern_filename.match(old_file_name).group(2)
+    survey = Survey.objects.get(code=survey_identification) \
+        if code else Survey.objects.get(lime_survey_id=survey_identification)
+    survey_name = 'admission-assessment' \
+        if RandomForests.objects.filter(admission_assessment=survey.id) else 'surgical-evaluation'
+    new_filename = pattern_filename.match(old_file_name).group(1) + '_' \
+                   + survey_name + '_' + pattern_filename.match(old_file_name).group(3)
+    os.rename(os.path.join(dest_path, old_file_name), os.path.join(dest_path, new_filename))
+
+
+def clear_zipfile(zip_file_path):
+    """Clear zipfile from unnecessary directories that are created
+    in Export app.
+    :param zip_file_path: str
+    :return: str new zip file cleared path
+    """
+    work_dir = os.path.dirname(zip_file_path)
+    old_zipfile_path = os.path.join(work_dir, 'old_export.zip')
+    os.rename(zip_file_path, old_zipfile_path)
+    with zipfile.ZipFile(old_zipfile_path) as old_zipfile:
+        old_zipfile.extractall(work_dir)
+        # Per_participant
+        files_pattern = os.path.join('NES_EXPORT', 'Per_participant', 'Participant_(.+)', '(.+)', '(.+)')
+        dest_path_base = os.path.join(work_dir, 'NES_EXPORT', 'Per_participant', 'Participant_')
+        pattern = re.compile(files_pattern)
+        files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
+        for file_path in files_to_move:
+            dest_path = dest_path_base + '%s' % pattern.match(file_path).group(1)
+            shutil.move(os.path.join(work_dir, file_path), dest_path)
+            shutil.rmtree(
+                dest_path_base + '%s/%s/' % (pattern.match(file_path).group(1), pattern.match(file_path).group(2)))
+            rename_file(file_path, dest_path)
+
+        # Per_questionnaire subdir
+        files_pattern = os.path.join('NES_EXPORT', 'Per_questionnaire', '(.+)', '(.+)')
+        dest_path_base = os.path.join(work_dir, 'NES_EXPORT', 'Per_questionnaire')
+        pattern = re.compile(files_pattern)
+        files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
+        for file_path in files_to_move:
+            dest_path = dest_path_base
+            shutil.move(os.path.join(work_dir, file_path), dest_path)
+            shutil.rmtree(os.path.join(dest_path_base, '%s' % pattern.match(file_path).group(1)))
+            rename_file(file_path, dest_path, code=False)
+
+        # Questionnaire_metadata subdir
+        files_pattern = os.path.join('NES_EXPORT', 'Questionnaire_metadata', '(.+)', '(.+)')
+        dest_path_base = os.path.join(work_dir, 'NES_EXPORT', 'Questionnaire_metadata')
+        pattern = re.compile(files_pattern)
+        files_to_move = [file for file in old_zipfile.namelist() if pattern.match(file)]
+        for file_path in files_to_move:
+            dest_path = dest_path_base
+            shutil.move(os.path.join(work_dir, file_path), dest_path)
+            shutil.rmtree(os.path.join(dest_path_base, '%s' % pattern.match(file_path).group(1)))
+            # Rename file
+            rename_file(file_path, dest_path, code=False)
+
+    shutil.make_archive(os.path.join(work_dir, 'export'), 'zip', os.path.join(work_dir, 'NES_EXPORT'))
+    return os.path.join(work_dir, 'export.zip')
+
+
 def build_zip_file(request, participants_plugin, participants_headers, questionnaires):
     """Define components to use as the component list argument of
     build_complete_export_structure export method
@@ -97,9 +169,10 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     build_complete_export_structure(
         True, True, False, participants_headers, [], questionnaires, [], ['short'], 'code',
         input_filename, components, request.LANGUAGE_CODE, 'csv')
-    zip_file = export_create(request, export.id, input_filename, participants_plugin=participants_plugin)
+    zip_file_path = export_create(request, export.id, input_filename, participants_plugin=participants_plugin)
+    zip_file_path = clear_zipfile(zip_file_path)
 
-    return zip_file
+    return zip_file_path
 
 
 @login_required
