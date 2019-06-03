@@ -256,7 +256,7 @@ class ABCSearchEngine(ABC):
         responses = self.server.export_responses(
             self.session_key, sid, 'csv', language, 'complete', heading_type, response_type)
 
-        return b64decode(responses).decode()
+        return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     def get_header_response(self, sid, language, token, heading_type):
         """ Obtain header responses
@@ -264,7 +264,7 @@ class ABCSearchEngine(ABC):
         :param language: language
         :param token: token
         :param heading_type: heading type (can be 'code' or 'full')
-        :return: responses in the txt format
+        :return: str - responses in the txt format
         """
 
         responses = self.server.export_responses_by_token(
@@ -274,7 +274,7 @@ class ABCSearchEngine(ABC):
             responses = self.server.export_responses(
                 self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
 
-        return b64decode(responses).decode()
+        return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     @abstractmethod
     def get_summary(self, sid, stat_name):
