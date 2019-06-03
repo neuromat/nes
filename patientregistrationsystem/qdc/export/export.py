@@ -1099,18 +1099,20 @@ class ExportExecution:
             for language in language_list:
                 # Per_participant_data is updated by define_questionnaire
                 # method
-                fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
+                result = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
+                if result == Questionnaires.ERROR_CODE:
+                    return result
 
                 # create directory for questionnaire:
                 # <per_questionnaire>/<q_code_title>
-                if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
+                if self.get_input_data("export_per_questionnaire") and (len(result) > 1):
                     export_filename = \
                         "%s_%s_%s.%s" % (questionnaire["prefix_filename_responses"], str(questionnaire_code),
                                          language, filesformat_type)
                     # path ex. NES_EXPORT/Per_questionnaire.Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename)
 
-                    save_to_csv(complete_filename, fields_description, filesformat_type)
+                    save_to_csv(complete_filename, result, filesformat_type)
                     self.files_to_zip_list.append([complete_filename, export_directory])
 
             # questionnaire metadata
@@ -3029,8 +3031,11 @@ class ExportExecution:
 
         if questionnaire_exists and available:
             # read all data for questionnaire_id from LimeSurvey
-            responses_string1 = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
-            fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
+            result = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
+            if result is None:
+                return Questionnaires.ERROR_CODE
+
+            fill_list1 = QuestionnaireUtils.responses_to_csv(result)
 
             # need types of questions to make replacement just
             # below

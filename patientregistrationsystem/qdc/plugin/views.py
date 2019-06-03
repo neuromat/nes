@@ -15,6 +15,7 @@ from export.models import Export
 from export.views import patient_fields, get_questionnaire_fields, export_create
 from patient.models import QuestionnaireResponse
 from plugin.models import RandomForests
+from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
 
@@ -85,7 +86,7 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     :param participants_plugin: list - list of participants selected to send to Plugin
     :param participants_headers: list
     :param questionnaires: list
-    :return:
+    :return: str = zip file path
     """
     components = {
         'per_additional_data': False, 'per_eeg_nwb_data': False, 'per_eeg_raw_data': False,
@@ -99,9 +100,12 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     build_complete_export_structure(
         True, True, False, participants_headers, [], questionnaires, [], ['short'], 'code',
         input_filename, components, request.LANGUAGE_CODE, 'csv')
-    zip_file_path = export_create(request, export.id, input_filename, participants_plugin=participants_plugin)
+    result = export_create(
+        request, export.id, input_filename, participants_plugin=participants_plugin)
+    if result == Questionnaires.ERROR_CODE:
+        return result, None
 
-    return zip_file_path
+    return 0, result
 
 
 @login_required
@@ -128,7 +132,13 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
                 _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
                   'If problem persists please contact System Administrator.'))
             return redirect(reverse('send_to_plugin'))
-        zip_file = build_zip_file(request, participants, participants_headers, questionnaires)
+        limesurvey_error, zip_file = build_zip_file(request, participants, participants_headers, questionnaires)
+        if limesurvey_error:
+            messages.error(
+                request,
+                _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
+                  'If problem persists please contact System Administrator.'))
+            return redirect(reverse('send_to_plugin'))
         if zip_file:
             messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
             with open(zip_file, 'rb') as file:
