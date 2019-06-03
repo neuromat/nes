@@ -954,49 +954,39 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
     questionnaires_included = []
 
     questionnaire_lime_survey = Questionnaires()
+    if questionnaire_lime_survey is None:
+        return Questionnaires.ERROR_CODE, []
     for questionnaire_id in questionnaire_code_list:
-
-        language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
-
-        # get a valid token (anyone)
+        result = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
+        if result == Questionnaires.ERROR_CODE:
+            return Questionnaires.ERROR_CODE, []
+        # Get a valid token (anyone)
         survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
-
         token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
-
         token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
-
-        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
-
-        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language_new)
+        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, result, token)
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, result)
 
         if not isinstance(responses_string, dict):
-
             record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
-
             questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
-
-            responses_full = questionnaire_lime_survey.get_header_response(questionnaire_id,
-                                                                           language_new, token, heading_type='full')
+            responses_full = questionnaire_lime_survey.get_header_response(
+                questionnaire_id, result, token, heading_type='full')
             questionnaire_questions_full = QuestionnaireUtils.responses_to_csv(responses_full)
-
             index = 0
             # line 0 - header information
             for question in questionnaire_questions[0]:
                 if question not in questionnaire_evaluation_fields_excluded:
-
                     description = questionnaire_questions_full[0][index]
                     record_question["output_list"].append({"field": question,
                                                            "header": question,
                                                            "description": description
                                                            })
-
                 index += 1
-
             questionnaires_included.append(record_question)
-
     questionnaire_lime_survey.release_session_key()
 
-    return questionnaires_included
+    return 0, questionnaires_included
 
 
 @login_required

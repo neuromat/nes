@@ -58,7 +58,9 @@ def build_questionnaires_list(language_code):
     surveys = [
         random_forests.admission_assessment.lime_survey_id, random_forests.surgical_evaluation.lime_survey_id
     ]
-    questionnaires = get_questionnaire_fields(surveys, language_code)
+    limesurvey_error, questionnaires = get_questionnaire_fields(surveys, language_code)
+    if limesurvey_error:
+        return limesurvey_error, questionnaires
     # Transform questionnaires (to get the format of build_complete_export_structure
     # questionnaires list argument)
     for i, questionnaire in enumerate(questionnaires):
@@ -73,7 +75,7 @@ def build_questionnaires_list(language_code):
         for index, dict0 in enumerate(questionnaires)
     ]
 
-    return questionnaires
+    return 0, questionnaires
 
 
 def build_zip_file(request, participants_plugin, participants_headers, questionnaires):
@@ -119,7 +121,13 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
             return redirect(reverse('send_to_plugin'))
         participants = request.POST.getlist('patients_selected[]')
         participants_headers = update_patient_attributes(request.POST.getlist('patient_selected'))
-        questionnaires = build_questionnaires_list(request.LANGUAGE_CODE)
+        limesurvey_error, questionnaires = build_questionnaires_list(request.LANGUAGE_CODE)
+        if limesurvey_error:
+            messages.error(
+                request,
+                _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
+                  'If problem persists please contact System Administrator.'))
+            return redirect(reverse('send_to_plugin'))
         zip_file = build_zip_file(request, participants, participants_headers, questionnaires)
         if zip_file:
             messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))

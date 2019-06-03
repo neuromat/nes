@@ -181,3 +181,43 @@ class PluginTest(ExportTestCase):
         self.assertEqual(message, 'The Floresta Plugin needs to send at least Gender attribute')
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message1(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get session key
+        mockServer.return_value.get_session_key.return_value = {'status': 'Invalid user name or password'}
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message2(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get survey properties
+        mockServer.return_value.get_survey_properties.return_value = {'status': 'Error: Invalid survey ID'}
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)

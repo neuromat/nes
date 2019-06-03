@@ -21,7 +21,6 @@ class ABCSearchEngine(ABC):
 
     def get_session_key(self):
         self.server = Server(self.limesurvey_rpc)
-
         try:
             self.session_key = self.server.get_session_key(
                 settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
@@ -145,8 +144,8 @@ class ABCSearchEngine(ABC):
         """
 
         result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
-
-        return result
+        # If failed to consume API, it return a dict with one element with 'status' as key
+        return None if 'status' in result else result
 
     @abstractmethod
     def activate_survey(self, sid):
@@ -439,6 +438,8 @@ class ABCSearchEngine(ABC):
 
 class Questionnaires(ABCSearchEngine):
     """ Wrapper class for LimeSurvey API"""
+
+    ERROR_CODE = 1
 
     def find_all_questionnaires(self):
         return super(Questionnaires, self).find_all_questionnaires()

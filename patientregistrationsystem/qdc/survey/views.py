@@ -953,19 +953,21 @@ def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, lang
     if questionnaire_lime_survey.session_key:
 
         # defining language to be showed
-        languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+        result = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+        if result is None:
+            return Questionnaires.ERROR_CODE
 
         # language to be showed can be the base language, or...
-        if "language" in languages:
+        if "language" in result:
 
-            language = languages['language']
+            language = result['language']
 
             # ...can be one of the additional languages
-            if language.lower() != language_code.lower() and languages['additional_languages']:
+            if language.lower() != language_code.lower() and result['additional_languages']:
 
                 # search for the right language in addional languages,
                 # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
-                additional_languages_list = languages['additional_languages'].split(' ')
+                additional_languages_list = result['additional_languages'].split(' ')
                 additional_languages_list_lower = [item.lower() for item in additional_languages_list]
                 if language_code.lower() in additional_languages_list_lower:
                     index = additional_languages_list_lower.index(language_code.lower())
