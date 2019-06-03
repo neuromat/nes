@@ -105,23 +105,26 @@ class PluginTest(ExportTestCase):
         self.assertIsNone(zipped_file.testzip())
         # Tests for Per_participant subdir
         list_items = zipped_file.namelist()
-        in_items = re.compile('Per_participant/Participant_%s' % self.patient.code)
+        in_items = re.compile('NES_EXPORT/Per_participant/Participant_%s' % self.patient.code)
         in_items = [in_items.match(item) for item in list_items]
         in_items = [item for item in in_items if item is not None]
-        self.assertEqual(3, len(in_items))
-        out_items = re.compile('Per_participant/Participant_%s' % patient2.code)
+        self.assertEqual(2, len(in_items))
+        out_items = re.compile('NES_EXPORT/Per_participant/Participant_%s' % patient2.code)
         out_items = [out_items.match(item) for item in list_items]
         out_items = [item for item in out_items if item is not None]
         self.assertEqual(0, len(out_items))
+
         # Tests for Per_questionnaire subdir
         questionnaire1 = zipped_file.extract(
-            'Per_questionnaire/Responses_admission-assessment_en.csv', self.TEMP_MEDIA_ROOT)
+            'NES_EXPORT/Per_questionnaire/212121_admission-assessment-plugin/Responses_212121_en.csv',
+            self.TEMP_MEDIA_ROOT)
         with open(questionnaire1) as file:
             reader = list(csv.reader(file))
             self.assertEqual(2, len(reader))
             self.assertEqual(self.patient.code, reader[1][0])
         questionnaire2 = zipped_file.extract(
-            'Per_questionnaire/Responses_surgical-evaluation_en.csv', self.TEMP_MEDIA_ROOT)
+            'NES_EXPORT/Per_questionnaire/505050_surgical-evaluation-plugin/Responses_505050_en.csv',
+            self.TEMP_MEDIA_ROOT)
         with open(questionnaire2) as file:
             reader = list(csv.reader(file))
             self.assertEqual(2, len(reader))
@@ -176,39 +179,5 @@ class PluginTest(ExportTestCase):
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, 'The Floresta Plugin needs to send at least Gender attribute')
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
-
-    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_have_right_directories_and_files_in_zip_file(self, mockServer):
-        set_limesurvey_api_mocks(mockServer)
-        self._create_basic_objects()
-
-        patient2 = UtilTests.create_patient(self.user)
-        for survey in Survey.objects.all():
-            UtilTests.create_response_survey(self.user, patient2, survey, 50)
-        response = self.client.post(
-            reverse('send_to_plugin'),
-            data={
-                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
-                'patients_selected[]': [str(self.patient.id), str(patient2.id)],
-            })
-
-        file = io.BytesIO(response.content)
-        zipped_file = zipfile.ZipFile(file, 'r')
-        list_items = zipped_file.namelist()
-        for patient in [self.patient, patient2]:
-            self.assertIn(
-                'Per_participant/Participant_%s/Responses_admission-assessment_en.csv' % patient.code, list_items)
-            self.assertIn(
-                'Per_participant/Participant_%s/Responses_surgical-evaluation_en.csv' % patient.code, list_items)
-        self.assertIn('Per_questionnaire/Responses_admission-assessment_en.csv', list_items)
-        self.assertIn('Per_questionnaire/Responses_surgical-evaluation_en.csv', list_items)
-        self.assertIn('Questionnaire_metadata/Fields_admission-assessment_en.csv', list_items)
-        self.assertIn('Questionnaire_metadata/Fields_surgical-evaluation_en.csv', list_items)
-        # 14 is the number of elements of the archive in the new organization
-        # of file/dirs
-        self.assertEqual(14, len(list_items))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
