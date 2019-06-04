@@ -363,8 +363,9 @@ class ABCSearchEngine(ABC):
 
         question_list = []
         questions = self.list_questions(sid, gid)
-        for question in questions:
-            question_list.append(question['id']['qid'])
+        if questions is not None:
+            for question in questions:
+                question_list.append(question['id']['qid'])
 
         return question_list
 
