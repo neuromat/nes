@@ -1127,10 +1127,7 @@ class ExportExecution:
             for language in questionnaire_language['language_list']:
                     error, questionnaire_fields = \
                         self.questionnaire_utils.create_questionnaire_explanation_fields(
-                            questionnaire_id, language,
-                            questionnaire_lime_survey, fields,
-                            entrance_questionnaire
-                        )
+                            questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
                     if error:
                         return Questionnaires.ERROR_CODE  # TODO (NES-971): patternalize this
 
@@ -1225,9 +1222,7 @@ class ExportExecution:
             for language in language_list:
                 # per_participant_data is updated by define_questionnaire
                 # method
-                fields_description = self.define_questionnaire(
-                    questionnaire, questionnaire_lime_survey, language
-                )
+                fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
                 if self.get_input_data("export_per_questionnaire") and (len(fields_description) > 1):
                     export_filename = "%s_%s_%s.%s" % \
                                       (questionnaire["prefix_filename_responses"],
@@ -1248,7 +1243,7 @@ class ExportExecution:
             )
 
             for language in questionnaire_language['language_list']:
-                questionnaire_fields = \
+                error, questionnaire_fields = \
                     self.questionnaire_utils.create_questionnaire_explanation_fields(
                         questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
                 export_filename = "%s_%s_%s.%s" % (
@@ -2801,13 +2796,9 @@ class ExportExecution:
 
                         # need types of questions to make replacement just
                         # below
-                        question_list = QuestionnaireUtils.get_question_list(
-                            questionnaire_lime_survey, questionnaire_id,
-                            language
-                        )
-                        replace_multiple_question_answers(
-                            fill_list1, question_list
-                        )
+                        error, question_list = QuestionnaireUtils.get_question_list(
+                            questionnaire_lime_survey, questionnaire_id, language)
+                        replace_multiple_question_answers(fill_list1, question_list)
 
                         # read "long" information, if necessary
                         if len(response_type) > 1:
@@ -2821,11 +2812,8 @@ class ExportExecution:
                             )
                             # need types of questions to make replacement just
                             # below
-                            question_list = \
-                                QuestionnaireUtils.get_question_list(
-                                    questionnaire_lime_survey, questionnaire_id,
-                                    language
-                                )
+                            error, question_list = QuestionnaireUtils.get_question_list(
+                                    questionnaire_lime_survey, questionnaire_id, language)
                             replace_multiple_question_answers(fill_list2, question_list)
                         else:
                             fill_list2 = fill_list1
@@ -3051,7 +3039,7 @@ class ExportExecution:
                 fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
                 # need types of questions to make replacement just
                 # below
-                question_list = QuestionnaireUtils.get_question_list(
+                error, question_list = QuestionnaireUtils.get_question_list(
                     questionnaire_lime_survey, questionnaire_id, language)
                 replace_multiple_question_answers(
                     fill_list2, question_list

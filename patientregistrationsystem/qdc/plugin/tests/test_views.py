@@ -351,7 +351,7 @@ class PluginTest(ExportTestCase):
         if os.path.exists(self.TEMP_MEDIA_ROOT):
             shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
-    @skip  # get_language_properties deal with errors returned by LimeSurvey
+    @skip  # get_language_properties already deal with errors returned by LimeSurvey
     def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message9(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
         # Could not get language properties
