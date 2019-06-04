@@ -306,6 +306,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             if export.get_input_data('questionnaires'):
                 # Process per questionnaire data - entrance evaluation questionnaires
                 error_msg = export.process_per_questionnaire()
+                if error_msg == Questionnaires.ERROR_CODE:  # TODO (NES-971): ??
+                    return error_msg
                 if error_msg != "":
                     messages.error(request, error_msg)
                     return render(request, template_name)
@@ -541,20 +543,12 @@ def export_view(request, template_name="export/export_data.html"):
                 component_list = get_component_with_data_and_metadata(
                     group, component_list
                 )
-                questionnaire_response_list = \
-                    ExperimentQuestionnaireResponse.objects.filter(
-                        subject_of_group__group=group
-                    )
+                questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                    subject_of_group__group=group)
                 questionnaire_in_list = []
-                for path_experiment in \
-                        create_list_of_trees(group.experimental_protocol,
-                                             "questionnaire"):
-                    questionnaire_configuration = get_object_or_404(
-                        ComponentConfiguration, pk=path_experiment[-1][0]
-                    )
-                    questionnaire = Questionnaire.objects.get(
-                        id=questionnaire_configuration.component.id
-                    )
+                for path_experiment in create_list_of_trees(group.experimental_protocol, 'questionnaire'):
+                    questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
+                    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     questionnaire_id = questionnaire.survey.lime_survey_id
 
                     for questionnaire_response in questionnaire_response_list:
@@ -573,15 +567,11 @@ def export_view(request, template_name="export/export_data.html"):
                             }
                             if questionnaire_id not in questionnaire_in_list:
                                 questionnaire_in_list.append(questionnaire_id)
-                                questionnaires_experiment_list_final.append(
-                                    questionnaire_dic
-                                )
+                                questionnaires_experiment_list_final.append(questionnaire_dic)
 
         if questionnaires_experiment_list_final:
-            questionnaires_experiment_fields_list = \
-                get_questionnaire_experiment_fields(
-                    questionnaires_experiment_list_final, language_code
-                )
+            questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
+                questionnaires_experiment_list_final, language_code)
 
     if surveys:
         # If called from expired session return to fist export options.
@@ -633,7 +623,7 @@ def export_view(request, template_name="export/export_data.html"):
 
             # Get the questionnaire fields from the
             # questionnaires_list_final and show them for selection
-            questionnaires_fields_list = get_questionnaire_fields(
+            error, questionnaires_fields_list = get_questionnaire_fields(
                 [dict_['sid'] for index, dict_ in enumerate(questionnaires_list_final)], request.LANGUAGE_CODE)
 
             if len(selected_ev_quest):
@@ -954,49 +944,44 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
     questionnaires_included = []
 
     questionnaire_lime_survey = Questionnaires()
+    if questionnaire_lime_survey.session_key is None:
+        return Questionnaires.ERROR_CODE, []
     for questionnaire_id in questionnaire_code_list:
-
-        language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
-
-        # get a valid token (anyone)
+        result = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
+        if result == Questionnaires.ERROR_CODE:
+            return Questionnaires.ERROR_CODE, []
+        # Get a valid token (anyone)
         survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
-
         token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
-
         token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
-
-        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
-
-        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language_new)
-
+        if token is None:
+            return Questionnaires.ERROR_CODE, []
+        responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, result, token)
+        if responses_string is None:
+            return Questionnaires.ERROR_CODE, []
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, result)
         if not isinstance(responses_string, dict):
-
             record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
-
             questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
-
-            responses_full = questionnaire_lime_survey.get_header_response(questionnaire_id,
-                                                                           language_new, token, heading_type='full')
+            responses_full = questionnaire_lime_survey.get_header_response(
+                questionnaire_id, result, token, heading_type='full')
+            if responses_full is None:
+                return Questionnaires.ERROR_CODE, []
             questionnaire_questions_full = QuestionnaireUtils.responses_to_csv(responses_full)
-
             index = 0
             # line 0 - header information
             for question in questionnaire_questions[0]:
                 if question not in questionnaire_evaluation_fields_excluded:
-
                     description = questionnaire_questions_full[0][index]
                     record_question["output_list"].append({"field": question,
                                                            "header": question,
                                                            "description": description
                                                            })
-
                 index += 1
-
             questionnaires_included.append(record_question)
-
     questionnaire_lime_survey.release_session_key()
 
-    return questionnaires_included
+    return 0, questionnaires_included
 
 
 @login_required

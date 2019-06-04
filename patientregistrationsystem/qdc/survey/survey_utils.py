@@ -9,6 +9,7 @@ from io import StringIO
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
+from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
 HEADER_EXPLANATION_FIELDS = [
@@ -253,42 +254,34 @@ class QuestionnaireUtils:
 
         return questionnaire_code
 
-    def create_questionnaire_explanation_fields(self, questionnaire_id,
-                                                language,
-                                                questionnaire_lime_survey,
-                                                fields,
-                                                entrance_questionnaire):
+    def create_questionnaire_explanation_fields(
+            self, questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire):
         """
         :param questionnaire_id:
         :param language:
         :param questionnaire_lime_survey:
         :param fields: fields from questionnaire that are to be exported
         :param entrance_questionnaire: boolean
-        :return: header, formatted according to fields
-                 data_rows, formatted according to fields
-                 if error, both data are []
+        :return: tupple: (int, list) - list: header, formatted according to fields
+                 data_rows, formatted according to fields, in case of success, else empty []
+
         """
-        # clear fields
+        # Clear fields
         fields_cleared = [field.split("[")[0] for field in fields]
-
         questionnaire_explanation_fields_list = [HEADER_EXPLANATION_FIELDS]
-
         fields_from_questions = []
-
-        # for each field, verify the question description
-        questionnaire_title = questionnaire_lime_survey.get_survey_title(
-            questionnaire_id, language
-        )
-        questionnaire_code = \
-            self.get_questionnaire_code_from_id(questionnaire_id)
-
-        # get fields description
-        questionnaire_questions = questionnaire_lime_survey.list_questions_ids(
-            questionnaire_id, 0
-        )
+        # For each field, verify the question description
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
+        questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
+        # Get fields description
+        questionnaire_questions = questionnaire_lime_survey.list_questions_ids(questionnaire_id, 0)
+        if not questionnaire_questions:
+            return Questionnaires.ERROR_CODE, []
 
         for question in questionnaire_questions:
             properties = questionnaire_lime_survey.get_question_properties(question, language)
+            if properties is None:
+                return Questionnaires.ERROR_CODE, []
             question_code = properties['title'] if 'title' in properties else None
             if question_code and question_code in fields_cleared:
                 fields_from_questions.append(question_code)
@@ -299,6 +292,8 @@ class QuestionnaireUtils:
                 question_type_description = question_types[question_type] if question_type in question_types else ''
                 question_group = self.get_group_properties(
                         questionnaire_lime_survey, questionnaire_id, properties['gid'], language)
+                if question_group is None:
+                    return Questionnaires.ERROR_CODE, []
                 question_order = properties['question_order']
 
                 questionnaire_list = [smart_str(questionnaire_code), smart_str(questionnaire_title)]
@@ -372,7 +367,7 @@ class QuestionnaireUtils:
                     ]
                     questionnaire_explanation_fields_list.append(question_list)
 
-        return questionnaire_explanation_fields_list
+        return 0, questionnaire_explanation_fields_list
 
     @staticmethod
     def get_question_list(survey, survey_id, language):
@@ -382,25 +377,32 @@ class QuestionnaireUtils:
         :param survey:
         :param survey_id:
         :param language:
-        :return: list
+        :return: tupple: (int, list) - (0, list) in case of success,
+        else (Questionnaires.ERROR_code, empty list)
         """
-        groups = survey.list_groups(survey_id)
+        result = survey.list_groups(survey_id)
+        if result is None:
+            return Questionnaires.ERROR_CODE, []
         question_list = []
-        for group in groups:
+        for group in result:
             if 'id' in group and group['id']['language'] == language:
                 question_ids = survey.list_questions_ids(
                     survey_id, group['id']['gid']
                 )
+                if not question_ids:
+                    return Questionnaires.ERROR_CODE, []
                 for id_ in question_ids:
                     properties = survey.get_question_properties(id_, group['id']['language'])
                     # Multiple question ('M' or 'P') will be question if
                     # properties['subquestions'] is a dict, otherwise will
                     # be subquestion. We only wish questions
+                    if properties is None:
+                        return Questionnaires.ERROR_CODE, []
                     if isinstance(properties['subquestions'], dict) and \
                             (properties['type'] == 'M' or properties['type'] == 'P'):
                         question_list.append(properties['title'])
 
-        return question_list
+        return 0, question_list
 
     @staticmethod
     def responses_to_csv(responses_string):

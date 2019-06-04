@@ -70,15 +70,13 @@ class SurveyUtilsTest(TestCase):
               'language': language, 'grelevance': ''}]
 
         lime_survey = Questionnaires()
-        questionnaire_fields = survey_utils.create_questionnaire_explanation_fields(
+        error, questionnaire_fields = survey_utils.create_questionnaire_explanation_fields(
                 questionnaire_id, language, lime_survey, fields, entrance_survey)
 
         # First line contains metadata column headers, subsequent lines
         # contains the metadata column values.
         # Assert for correct length for metadata headers and values
-        self.assertTrue(
-            len(questionnaire_fields[0]), len(questionnaire_fields[1])
-        )
+        self.assertTrue(len(questionnaire_fields[0]), len(questionnaire_fields[1]))
 
         # asserts for question_order field
         self.assertTrue('question_order' in questionnaire_fields[0])

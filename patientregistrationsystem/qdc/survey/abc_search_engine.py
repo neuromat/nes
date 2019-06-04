@@ -21,7 +21,6 @@ class ABCSearchEngine(ABC):
 
     def get_session_key(self):
         self.server = Server(self.limesurvey_rpc)
-
         try:
             self.session_key = self.server.get_session_key(
                 settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
@@ -113,9 +112,8 @@ class ABCSearchEngine(ABC):
         """
 
         if self.session_key:
-            survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'},
-                                                               language)
-
+            survey_title = self.server.get_language_properties(
+                self.session_key, sid, {'method': 'surveyls_title'}, language)
             if 'surveyls_title' in survey_title:
                 survey_title = survey_title.get('surveyls_title')
             else:
@@ -145,8 +143,8 @@ class ABCSearchEngine(ABC):
         """
 
         result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
-
-        return result
+        # If failed to consume API, it return a dict with one element with 'status' as key
+        return None if 'status' in result else result
 
     @abstractmethod
     def activate_survey(self, sid):
@@ -257,7 +255,7 @@ class ABCSearchEngine(ABC):
         responses = self.server.export_responses(
             self.session_key, sid, 'csv', language, 'complete', heading_type, response_type)
 
-        return b64decode(responses).decode()
+        return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     def get_header_response(self, sid, language, token, heading_type):
         """ Obtain header responses
@@ -265,17 +263,13 @@ class ABCSearchEngine(ABC):
         :param language: language
         :param token: token
         :param heading_type: heading type (can be 'code' or 'full')
-        :return: responses in the txt format
+        :return: str - responses in the txt format in case of success, else None
         """
 
         responses = self.server.export_responses_by_token(
             self.session_key, sid, 'csv', token, language, 'complete', heading_type, 'short')
 
-        if not isinstance(responses, str):
-            responses = self.server.export_responses(
-                self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
-
-        return b64decode(responses).decode()
+        return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     @abstractmethod
     def get_summary(self, sid, stat_name):
@@ -313,6 +307,11 @@ class ABCSearchEngine(ABC):
 
         properties = self.server.get_question_properties(
             self.session_key, question_id, self.QUESTION_PROPERTIES, language)
+        if 'status' in properties and properties['status'] in [
+            'Error: Invalid questionid', 'Error: Invalid language', 'Error: Invalid questionid', 'No valid Data',
+            'No permission', 'Invalid session key'
+        ]:
+            return None
 
         return properties
 
@@ -368,8 +367,9 @@ class ABCSearchEngine(ABC):
 
         question_list = []
         questions = self.list_questions(sid, gid)
-        for question in questions:
-            question_list.append(question['id']['qid'])
+        if questions is not None:
+            for question in questions:
+                question_list.append(question['id']['qid'])
 
         return question_list
 
@@ -439,6 +439,11 @@ class ABCSearchEngine(ABC):
 
 class Questionnaires(ABCSearchEngine):
     """ Wrapper class for LimeSurvey API"""
+
+    ERROR_CODE = 1
+    ERROR_MESSAGE = \
+        'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+    'problem persists please contact System Administrator.'
 
     def find_all_questionnaires(self):
         return super(Questionnaires, self).find_all_questionnaires()
