@@ -3108,6 +3108,8 @@ class ExportExecution:
                     token_id = questionnaire_response.token_id
 
                     token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+                    if token is None:
+                        return Questionnaires.ERROR_CODE
 
                     if token in data_from_lime_survey:
                         lm_data_row = data_from_lime_survey[token]

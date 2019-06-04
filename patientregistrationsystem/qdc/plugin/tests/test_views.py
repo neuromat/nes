@@ -328,3 +328,24 @@ class PluginTest(ExportTestCase):
                                   'problem persists please contact System Administrator.')
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message8(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get question properties
+        mockServer.return_value.get_participant_properties.side_effect = 6 * [{'status': 'Error: No token table'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        if os.path.exists(self.TEMP_MEDIA_ROOT):
+            shutil.rmtree(self.TEMP_MEDIA_ROOT)

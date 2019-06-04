@@ -966,6 +966,8 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
         survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
         token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
         token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
+        if token is None:
+            return Questionnaires.ERROR_CODE, []
         responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, result, token)
         if responses_string is None:
             return Questionnaires.ERROR_CODE, []
