@@ -112,9 +112,8 @@ class ABCSearchEngine(ABC):
         """
 
         if self.session_key:
-            survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'},
-                                                               language)
-
+            survey_title = self.server.get_language_properties(
+                self.session_key, sid, {'method': 'surveyls_title'}, language)
             if 'surveyls_title' in survey_title:
                 survey_title = survey_title.get('surveyls_title')
             else:

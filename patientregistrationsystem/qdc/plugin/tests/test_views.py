@@ -5,6 +5,7 @@ import re
 import shutil
 import tempfile
 import zipfile
+from unittest import skip
 from unittest.mock import patch
 
 from django.contrib.messages import get_messages
@@ -349,3 +350,22 @@ class PluginTest(ExportTestCase):
 
         if os.path.exists(self.TEMP_MEDIA_ROOT):
             shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @skip  # get_language_properties deal with errors returned by LimeSurvey
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message9(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get language properties
+        mockServer.return_value.get_language_properties.side_effect = 4 * [{'status': 'No valid Data'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
