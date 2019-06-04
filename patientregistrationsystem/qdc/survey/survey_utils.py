@@ -287,6 +287,8 @@ class QuestionnaireUtils:
         questionnaire_questions = questionnaire_lime_survey.list_questions_ids(
             questionnaire_id, 0
         )
+        if not questionnaire_questions:
+            return Questionnaires.ERROR_CODE, []
 
         for question in questionnaire_questions:
             properties = questionnaire_lime_survey.get_question_properties(question, language)
@@ -397,6 +399,8 @@ class QuestionnaireUtils:
                 question_ids = survey.list_questions_ids(
                     survey_id, group['id']['gid']
                 )
+                if not question_ids:
+                    return Questionnaires.ERROR_CODE, []
                 for id_ in question_ids:
                     properties = survey.get_question_properties(id_, group['id']['language'])
                     # Multiple question ('M' or 'P') will be question if
