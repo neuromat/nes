@@ -1,9 +1,11 @@
 import csv
 import io
+import os
 import re
 import shutil
 import tempfile
 import zipfile
+from unittest import skip
 from unittest.mock import patch
 
 from django.contrib.messages import get_messages
@@ -179,5 +181,191 @@ class PluginTest(ExportTestCase):
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, 'The Floresta Plugin needs to send at least Gender attribute')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message1(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get session key
+        mockServer.return_value.get_session_key.return_value = {'status': 'Invalid user name or password'}
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        # TODO (NES-971): put here and below because if clause does not work when running all class suit.
+        #  Verify why!
+        if os.path.exists(self.TEMP_MEDIA_ROOT):
+            shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message2(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get survey properties
+        mockServer.return_value.get_survey_properties.return_value = {'status': 'Error: Invalid survey ID'}
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        if os.path.exists(self.TEMP_MEDIA_ROOT):
+            shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message3(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get responses
+        mockServer.return_value.export_responses.side_effect = 2*[{'status': 'No Data, survey table does not exist.'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message4(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get responses by token
+        mockServer.return_value.export_responses_by_token.side_effect = \
+            4 * [{'status': 'No Data, survey table does not exist.'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        if os.path.exists(self.TEMP_MEDIA_ROOT):
+            shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message5(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not list groups
+        mockServer.return_value.list_groups.side_effect = 8 * [{'status': 'No groups found'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message6(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not list questions
+        mockServer.return_value.list_questions.side_effect = 6 * [{'status': 'No questions found'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message7(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get question properties
+        mockServer.return_value.get_question_properties.side_effect = 4 * [{'status': 'Error: Invalid questionid'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message8(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get question properties
+        mockServer.return_value.get_participant_properties.side_effect = 6 * [{'status': 'Error: No token table'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
+
+        if os.path.exists(self.TEMP_MEDIA_ROOT):
+            shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @skip  # get_language_properties already deal with errors returned by LimeSurvey
+    def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message9(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+        # Could not get language properties
+        mockServer.return_value.get_language_properties.side_effect = 4 * [{'status': 'No valid Data'}]
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send_to_plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        self.assertRedirects(response, reverse('send_to_plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                  'problem persists please contact System Administrator.')
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
