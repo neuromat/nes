@@ -254,11 +254,8 @@ class QuestionnaireUtils:
 
         return questionnaire_code
 
-    def create_questionnaire_explanation_fields(self, questionnaire_id,
-                                                language,
-                                                questionnaire_lime_survey,
-                                                fields,
-                                                entrance_questionnaire):
+    def create_questionnaire_explanation_fields(
+            self, questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire):
         """
         :param questionnaire_id:
         :param language:

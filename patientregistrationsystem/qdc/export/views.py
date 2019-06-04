@@ -306,7 +306,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             if export.get_input_data('questionnaires'):
                 # Process per questionnaire data - entrance evaluation questionnaires
                 error_msg = export.process_per_questionnaire()
-                if error_msg == Questionnaires.ERROR_CODE:
+                if error_msg == Questionnaires.ERROR_CODE:  # TODO (NES-971): ??
                     return error_msg
                 if error_msg != "":
                     messages.error(request, error_msg)

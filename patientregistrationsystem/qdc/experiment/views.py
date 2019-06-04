@@ -1301,12 +1301,8 @@ def send_all_experiments_to_portal():
 
                                 # Need multiple choice questions types to
                                 # make replacement just below.
-                                question_list = \
-                                    QuestionnaireUtils.get_question_list(
-                                        surveys,
-                                        limesurvey_id,
-                                        questionnaire_language
-                                    )
+                                error, question_list = QuestionnaireUtils.get_question_list(
+                                        surveys, limesurvey_id, questionnaire_language)
                                 if question_list:
                                     # Import here because of ImportError
                                     # (cannot import name) exception
