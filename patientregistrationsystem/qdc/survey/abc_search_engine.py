@@ -264,15 +264,11 @@ class ABCSearchEngine(ABC):
         :param language: language
         :param token: token
         :param heading_type: heading type (can be 'code' or 'full')
-        :return: str - responses in the txt format
+        :return: str - responses in the txt format in case of success, else None
         """
 
         responses = self.server.export_responses_by_token(
             self.session_key, sid, 'csv', token, language, 'complete', heading_type, 'short')
-
-        if not isinstance(responses, str):
-            responses = self.server.export_responses(
-                self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
 
         return None if isinstance(responses, dict) else b64decode(responses).decode()
 
@@ -440,6 +436,9 @@ class Questionnaires(ABCSearchEngine):
     """ Wrapper class for LimeSurvey API"""
 
     ERROR_CODE = 1
+    ERROR_MESSAGE = \
+        'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+    'problem persists please contact System Administrator.'
 
     def find_all_questionnaires(self):
         return super(Questionnaires, self).find_all_questionnaires()

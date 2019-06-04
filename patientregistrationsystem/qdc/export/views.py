@@ -956,7 +956,7 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
     questionnaires_included = []
 
     questionnaire_lime_survey = Questionnaires()
-    if questionnaire_lime_survey is None:
+    if questionnaire_lime_survey.session_key is None:
         return Questionnaires.ERROR_CODE, []
     for questionnaire_id in questionnaire_code_list:
         result = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
@@ -967,13 +967,16 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
         token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
         token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
         responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, result, token)
+        if responses_string is None:
+            return Questionnaires.ERROR_CODE, []
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, result)
-
         if not isinstance(responses_string, dict):
             record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
             questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
             responses_full = questionnaire_lime_survey.get_header_response(
                 questionnaire_id, result, token, heading_type='full')
+            if responses_full is None:
+                return Questionnaires.ERROR_CODE, []
             questionnaire_questions_full = QuestionnaireUtils.responses_to_csv(responses_full)
             index = 0
             # line 0 - header information
