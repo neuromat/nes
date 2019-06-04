@@ -269,24 +269,15 @@ class QuestionnaireUtils:
                  data_rows, formatted according to fields, in case of success, else empty []
 
         """
-        # clear fields
+        # Clear fields
         fields_cleared = [field.split("[")[0] for field in fields]
-
         questionnaire_explanation_fields_list = [HEADER_EXPLANATION_FIELDS]
-
         fields_from_questions = []
-
-        # for each field, verify the question description
-        questionnaire_title = questionnaire_lime_survey.get_survey_title(
-            questionnaire_id, language
-        )
-        questionnaire_code = \
-            self.get_questionnaire_code_from_id(questionnaire_id)
-
-        # get fields description
-        questionnaire_questions = questionnaire_lime_survey.list_questions_ids(
-            questionnaire_id, 0
-        )
+        # For each field, verify the question description
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
+        questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
+        # Get fields description
+        questionnaire_questions = questionnaire_lime_survey.list_questions_ids(questionnaire_id, 0)
         if not questionnaire_questions:
             return Questionnaires.ERROR_CODE, []
 

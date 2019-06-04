@@ -1380,15 +1380,11 @@ class ExportExecution:
                     prefix_filename_fields = questionnaire_data[
                         'prefix_filename_fields']
                     # ex. Q123_aaa
-                    directory_questionnaire_name = "%s_%s" % (
-                        str(questionnaire_code), questionnaire_title
-                    )
+                    directory_questionnaire_name = "%s_%s" % (str(questionnaire_code), questionnaire_title)
 
                     # metadata directory for export
                     # path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/
-                    metadata_directory = \
-                    self.per_group_data[group_id]['group'][
-                        'questionnaire_metadata_directory']
+                    metadata_directory = self.per_group_data[group_id]['group']['questionnaire_metadata_directory']
                     # path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
                     export_metadata_directory = path.join(
                         self.per_group_data[group_id]['group'][
@@ -1505,12 +1501,12 @@ class ExportExecution:
                     # Questionnaire_metadata directory
                     fields = self.questionnaire_utils.get_questionnaire_experiment_fields(questionnaire_id)
                     for language in questionnaire_language['language_list']:
-                        questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
+                        error, questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
                             str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
                         # # build metadata export - Fields_Q123.csv
                         export_filename = "%s_%s_%s.%s" % (prefix_filename_fields, str(questionnaire_code),
-                                                            language, filesformat_type)
+                                                           language, filesformat_type)
 
                         complete_filename = path.join(complete_export_metadata_path, export_filename)
 

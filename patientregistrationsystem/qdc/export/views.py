@@ -543,20 +543,12 @@ def export_view(request, template_name="export/export_data.html"):
                 component_list = get_component_with_data_and_metadata(
                     group, component_list
                 )
-                questionnaire_response_list = \
-                    ExperimentQuestionnaireResponse.objects.filter(
-                        subject_of_group__group=group
-                    )
+                questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
+                    subject_of_group__group=group)
                 questionnaire_in_list = []
-                for path_experiment in \
-                        create_list_of_trees(group.experimental_protocol,
-                                             "questionnaire"):
-                    questionnaire_configuration = get_object_or_404(
-                        ComponentConfiguration, pk=path_experiment[-1][0]
-                    )
-                    questionnaire = Questionnaire.objects.get(
-                        id=questionnaire_configuration.component.id
-                    )
+                for path_experiment in create_list_of_trees(group.experimental_protocol, 'questionnaire'):
+                    questionnaire_configuration = get_object_or_404(ComponentConfiguration, pk=path_experiment[-1][0])
+                    questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
                     questionnaire_id = questionnaire.survey.lime_survey_id
 
                     for questionnaire_response in questionnaire_response_list:
@@ -575,15 +567,11 @@ def export_view(request, template_name="export/export_data.html"):
                             }
                             if questionnaire_id not in questionnaire_in_list:
                                 questionnaire_in_list.append(questionnaire_id)
-                                questionnaires_experiment_list_final.append(
-                                    questionnaire_dic
-                                )
+                                questionnaires_experiment_list_final.append(questionnaire_dic)
 
         if questionnaires_experiment_list_final:
-            questionnaires_experiment_fields_list = \
-                get_questionnaire_experiment_fields(
-                    questionnaires_experiment_list_final, language_code
-                )
+            questionnaires_experiment_fields_list = get_questionnaire_experiment_fields(
+                questionnaires_experiment_list_final, language_code)
 
     if surveys:
         # If called from expired session return to fist export options.
@@ -635,7 +623,7 @@ def export_view(request, template_name="export/export_data.html"):
 
             # Get the questionnaire fields from the
             # questionnaires_list_final and show them for selection
-            questionnaires_fields_list = get_questionnaire_fields(
+            error, questionnaires_fields_list = get_questionnaire_fields(
                 [dict_['sid'] for index, dict_ in enumerate(questionnaires_list_final)], request.LANGUAGE_CODE)
 
             if len(selected_ev_quest):
