@@ -308,6 +308,11 @@ class ABCSearchEngine(ABC):
 
         properties = self.server.get_question_properties(
             self.session_key, question_id, self.QUESTION_PROPERTIES, language)
+        if 'status' in properties and properties['status'] in [
+            'Error: Invalid questionid', 'Error: Invalid language', 'Error: Invalid questionid', 'No valid Data',
+            'No permission', 'Invalid session key'
+        ]:
+            return None
 
         return properties
 
