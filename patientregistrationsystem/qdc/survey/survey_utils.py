@@ -292,6 +292,8 @@ class QuestionnaireUtils:
 
         for question in questionnaire_questions:
             properties = questionnaire_lime_survey.get_question_properties(question, language)
+            if properties is None:
+                return Questionnaires.ERROR_CODE, []
             question_code = properties['title'] if 'title' in properties else None
             if question_code and question_code in fields_cleared:
                 fields_from_questions.append(question_code)
@@ -406,6 +408,8 @@ class QuestionnaireUtils:
                     # Multiple question ('M' or 'P') will be question if
                     # properties['subquestions'] is a dict, otherwise will
                     # be subquestion. We only wish questions
+                    if properties is None:
+                        return Questionnaires.ERROR_CODE, []
                     if isinstance(properties['subquestions'], dict) and \
                             (properties['type'] == 'M' or properties['type'] == 'P'):
                         question_list.append(properties['title'])
