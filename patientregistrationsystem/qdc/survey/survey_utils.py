@@ -9,6 +9,7 @@ from io import StringIO
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
+from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
 HEADER_EXPLANATION_FIELDS = [
@@ -264,9 +265,9 @@ class QuestionnaireUtils:
         :param questionnaire_lime_survey:
         :param fields: fields from questionnaire that are to be exported
         :param entrance_questionnaire: boolean
-        :return: header, formatted according to fields
-                 data_rows, formatted according to fields
-                 if error, both data are []
+        :return: tupple: (int, list) - list: header, formatted according to fields
+                 data_rows, formatted according to fields, in case of success, else empty []
+
         """
         # clear fields
         fields_cleared = [field.split("[")[0] for field in fields]
@@ -299,6 +300,8 @@ class QuestionnaireUtils:
                 question_type_description = question_types[question_type] if question_type in question_types else ''
                 question_group = self.get_group_properties(
                         questionnaire_lime_survey, questionnaire_id, properties['gid'], language)
+                if question_group is None:
+                    return Questionnaires.ERROR_CODE, []
                 question_order = properties['question_order']
 
                 questionnaire_list = [smart_str(questionnaire_code), smart_str(questionnaire_title)]
@@ -372,7 +375,7 @@ class QuestionnaireUtils:
                     ]
                     questionnaire_explanation_fields_list.append(question_list)
 
-        return questionnaire_explanation_fields_list
+        return 0, questionnaire_explanation_fields_list
 
     @staticmethod
     def get_question_list(survey, survey_id, language):
@@ -382,11 +385,14 @@ class QuestionnaireUtils:
         :param survey:
         :param survey_id:
         :param language:
-        :return: list
+        :return: tupple: (int, list) - (0, list) in case of success,
+        else (Questionnaires.ERROR_code, empty list)
         """
-        groups = survey.list_groups(survey_id)
+        result = survey.list_groups(survey_id)
+        if result is None:
+            return Questionnaires.ERROR_CODE, []
         question_list = []
-        for group in groups:
+        for group in result:
             if 'id' in group and group['id']['language'] == language:
                 question_ids = survey.list_questions_ids(
                     survey_id, group['id']['gid']
@@ -400,7 +406,7 @@ class QuestionnaireUtils:
                             (properties['type'] == 'M' or properties['type'] == 'P'):
                         question_list.append(properties['title'])
 
-        return question_list
+        return 0, question_list
 
     @staticmethod
     def responses_to_csv(responses_string):

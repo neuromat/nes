@@ -1037,7 +1037,9 @@ class ExportExecution:
         return export_fields_list
 
     def process_per_questionnaire(self):
-
+        """
+        :return: str - error message
+        """
         error_msg = ""
         export_per_questionnaire_directory = ''
         export_metadata_directory = ''
@@ -1123,12 +1125,14 @@ class ExportExecution:
                 questionnaire_id, entrance_questionnaire, self.get_input_data('questionnaires_from_experiments'))
 
             for language in questionnaire_language['language_list']:
-                    questionnaire_fields = \
+                    error, questionnaire_fields = \
                         self.questionnaire_utils.create_questionnaire_explanation_fields(
                             questionnaire_id, language,
                             questionnaire_lime_survey, fields,
                             entrance_questionnaire
                         )
+                    if error:
+                        return Questionnaires.ERROR_CODE  # TODO (NES-971): patternalize this
 
                     export_filename = "%s_%s_%s.%s" % (questionnaire["prefix_filename_fields"],
                                                        str(questionnaire_code), language, filesformat_type)
@@ -3008,8 +3012,7 @@ class ExportExecution:
     def define_questionnaire(self, questionnaire, questionnaire_lime_survey, language):
         """
         :param questionnaire:
-        :return: fields_description: (list)
-
+        :return: list - fields_description, in case of success, else error code
         """
         # questionnaire exportation - evaluation questionnaire
         questionnaire_id = questionnaire["id"]
@@ -3022,43 +3025,38 @@ class ExportExecution:
         headers, fields = self.questionnaire_utils.set_questionnaire_header_and_fields(questionnaire, True)
 
         questionnaire_exists = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id).exists()
-        # filter data (participants)
+        # Filter data (participants)
         questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
 
-        #  include new filter that come from advanced search
+        #  Include new filter that come from advanced search
         filtered_data = self.get_participants_filtered_data()
         questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
 
         if questionnaire_exists and available:
-            # read all data for questionnaire_id from LimeSurvey
+            # Read all data for questionnaire_id from LimeSurvey
             result = questionnaire_lime_survey.get_responses(questionnaire_id, language, response_type[0])
             if result is None:
                 return Questionnaires.ERROR_CODE
 
             fill_list1 = QuestionnaireUtils.responses_to_csv(result)
 
-            # need types of questions to make replacement just
-            # below
-            question_list = QuestionnaireUtils.get_question_list(
-                questionnaire_lime_survey, questionnaire_id,
-                language
-            )
-            replace_multiple_question_answers(
-                fill_list1, question_list
-            )
+            # Need types of questions to make replacement just below
+            error, question_list = QuestionnaireUtils.get_question_list(
+                questionnaire_lime_survey, questionnaire_id, language)
+            if error:
+                return error
+
+            replace_multiple_question_answers(fill_list1, question_list)
 
             # read "long" information, if necessary
             if len(response_type) > 1:
                 responses_string2 = questionnaire_lime_survey.get_responses(
-                    questionnaire_id, language, response_type[1]
-                )
+                    questionnaire_id, language, response_type[1])
                 fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
                 # need types of questions to make replacement just
                 # below
                 question_list = QuestionnaireUtils.get_question_list(
-                    questionnaire_lime_survey, questionnaire_id,
-                    language
-                )
+                    questionnaire_lime_survey, questionnaire_id, language)
                 replace_multiple_question_answers(
                     fill_list2, question_list
                 )
