@@ -954,11 +954,12 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
         survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
         token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
         token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, "token")
-        if token is None:
-            return Questionnaires.ERROR_CODE, []
         responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, result, token)
-        if responses_string is None:
-            return Questionnaires.ERROR_CODE, []
+        if token is None:
+            # (NES-971) In current version of export views responses_string accepts None token.
+            # So we allow to token being None by now.
+            if responses_string is None:
+                return Questionnaires.ERROR_CODE, []
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, result)
         if not isinstance(responses_string, dict):
             record_question = {'sid': questionnaire_id, "title": questionnaire_title, "output_list": []}
@@ -973,10 +974,9 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
             for question in questionnaire_questions[0]:
                 if question not in questionnaire_evaluation_fields_excluded:
                     description = questionnaire_questions_full[0][index]
-                    record_question["output_list"].append({"field": question,
-                                                           "header": question,
-                                                           "description": description
-                                                           })
+                    record_question["output_list"].append({
+                        "field": question, "header": question, "description": description
+                    })
                 index += 1
             questionnaires_included.append(record_question)
     questionnaire_lime_survey.release_session_key()
