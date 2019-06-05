@@ -273,7 +273,7 @@ class ABCSearchEngine(ABC):
         # {'status': 'No Response found by Token'} export view call export_responses,
         # that returns a string to responses variable and can mount the screen with the
         # possible data to export
-        if isinstance(responses, dict) and responses['status'] == 'No Response found by Token':
+        if isinstance(responses, dict) and responses['status'] == 'No Response found for Token':
             responses = self.server.export_responses(
                 self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
 
