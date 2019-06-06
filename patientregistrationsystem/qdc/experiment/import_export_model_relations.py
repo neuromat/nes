@@ -423,7 +423,7 @@ PRE_LOADED_MODELS_NOT_EDITABLE_INHERITANCE = {
     'experiment.eegelectrodecap': ('experiment.eegelectrodenet', 'experiment.equipment')
 }
 
-# TODO: Éder: insert comment here
+# TODO: Éder: insert comment here!
 PRE_LOADED_PATIENT_MODEL = {
     ('patient.patient', ('cpf', 'name',)): [
         ('patient.socialhistorydata', 'patient'),

@@ -9129,7 +9129,7 @@ def subjects_insert(request, group_id, patient_id):
         subject.patient = patient
         subject.save()
 
-    if not SubjectOfGroup.objects.all().filter(group=group, subject=subject):
+    if not SubjectOfGroup.objects.filter(group=group, subject=subject):
         SubjectOfGroup(subject=subject, group=group).save()
     else:
         messages.warning(request, _('Participant has already been inserted in this group.'))
