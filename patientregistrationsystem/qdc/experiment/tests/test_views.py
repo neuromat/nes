@@ -2845,7 +2845,7 @@ class ImportExperimentTest(TestCase):
         self.assertEqual(1, new_telephone.count())
         self.assertEqual(new_telephone[0].changed_by, self.user_importer)
 
-    def test_POST_experiment_import_file_updates_overwriting_database_participant(self):
+    def test_POST_experiment_import_file_overwrites_participant(self):
         patient = UtilTests.create_patient(changed_by=self.user)
 
         experiment = self._create_minimum_objects_to_test_patient(patient)
@@ -2866,9 +2866,27 @@ class ImportExperimentTest(TestCase):
         new_participant = Patient.objects.exclude(id=patient.id)
         self.assertEqual(0, new_participant.count())
 
-    def test_POST_experiment_import_file_duplicates_database_participant(self):
+    def test_POST_experiment_import_file_overwrites_participant_and_does_not_create_new_subject(self):
         patient = UtilTests.create_patient(changed_by=self.user)
+        experiment = self._create_minimum_objects_to_test_patient(patient)
 
+        export = ExportExperiment(experiment)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            session = self.client.session
+            session['patients_conflicts_resolved'] = True
+            session['file_name'] = file.name
+            session.save()
+            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': [patient.id]},
+                                        follow=True)
+        self.assertRedirects(response, reverse('import_log'))
+
+        self.assertEqual(1, Subject.objects.count())
+
+    def test_POST_experiment_import_file_duplicates_participant(self):
+        patient = UtilTests.create_patient(changed_by=self.user)
         experiment = self._create_minimum_objects_to_test_patient(patient)
 
         export = ExportExperiment(experiment)

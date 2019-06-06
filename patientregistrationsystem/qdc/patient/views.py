@@ -510,13 +510,12 @@ def patient_view_questionnaires(request, patient, context, is_update):
         )
 
     patient_questionnaires_data_list = []
-
-    # transforming the dictionary to a list in order to sort
+    # Transforming the dictionary to a list in order to sort
     for key, dictionary in list(patient_questionnaires_data_dictionary.items()):
         dictionary['limesurvey_id'] = key
         patient_questionnaires_data_list.append(dictionary)
 
-    # sorting by questionnaire_title and is_initial_evaluation (reversed),
+    # Sorting by questionnaire_title and is_initial_evaluation (reversed),
     # where is_initial_evaluation is more relevant.
     patient_questionnaires_data_list = \
         sorted(patient_questionnaires_data_list, key=itemgetter('questionnaire_title'))
@@ -526,60 +525,41 @@ def patient_view_questionnaires(request, patient, context, is_update):
     # additional survey list
 
     additional_survey_list = []
-
     if is_update:
-
         for survey in Survey.objects.exclude(
                 lime_survey_id__in=[item['limesurvey_id'] for item in patient_questionnaires_data_list]):
+            additional_survey_list.append({
+                'id': survey.id, 'lime_survey_id': survey.lime_survey_id,
+                'title': find_questionnaire_name(survey, language_code)["name"]
+            })
 
-            additional_survey_list.append({'id': survey.id,
-                                           'lime_survey_id': survey.lime_survey_id,
-                                           'title': find_questionnaire_name(survey, language_code)["name"]})
-
-    # Questionnaires filled in an experimental group
-
+    # Questionnaires filled in an experiment group
     questionnaires_data = []
-
     subject = Subject.objects.filter(patient=patient)
     subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
-
     for subject_of_group in subject_of_group_list:
-
         experiment_questionnaire_response_list = \
             ExperimentQuestionnaireResponse.objects.filter(subject_of_group=subject_of_group)
-
         for questionnaire_response in experiment_questionnaire_response_list:
-
             component_configuration = questionnaire_response.data_configuration_tree.component_configuration
-
             limesurvey_id = component_configuration.component.questionnaire.survey.lime_survey_id
-
             if questionnaire_response.is_completed == "N" or questionnaire_response.is_completed == "":
                 is_completed = surveys.get_participant_properties(
-                    limesurvey_id,
-                    questionnaire_response.token_id,
-                    "completed") or ""
-
+                    limesurvey_id, questionnaire_response.token_id, "completed") \
+                               or ""
                 questionnaire_response.is_completed = is_completed
                 questionnaire_response.save()
-
             response_result = questionnaire_response.is_completed
-
-            questionnaires_data.append(
-                {
+            questionnaires_data.append({
                     'research_project_title': subject_of_group.group.experiment.research_project.title,
                     'experiment_title': subject_of_group.group.experiment.title,
                     'group_title': subject_of_group.group.title,
-                    'questionnaire_title':
-                        find_questionnaire_name(
+                    'questionnaire_title': find_questionnaire_name(
                             component_configuration.component.questionnaire.survey, language_code)["name"],
                     'questionnaire_response': questionnaire_response,
                     'completed': None if response_result is None else response_result != "N" and response_result != ""
-                }
-            )
-
+                })
     surveys.release_session_key()
-
     context.update({
         'patient_questionnaires_data_list': patient_questionnaires_data_list,
         'questionnaires_data': questionnaires_data,
