@@ -329,7 +329,8 @@
                 {% endif %}
                 {% if updating or creating or component_configuration %}
                     <div class="btn-group pull-right">
-                        <button {% if not can_change %}disabled{% endif %} type="submit" name="action" value="save" class="btn btn-primary" id="submit_button">
+                        <button id="submit_button" class="btn btn-primary" style="margin-left: 5px;" {% if not can_change %}disabled{% endif %} type="submit"
+                                name="action" value="save">
                             {% if reusing or can_reuse %}
                                 {% trans "Insert" %}
                             {% else %}
