@@ -506,7 +506,7 @@ class ImportExperiment:
 
     def _deal_with_models_with_unique_fields(self):
         """Some models that have unique fields need to be treated separately
-        because the updating concept diverges from others (TODO (NES-965): explain better)
+        because the updating concept diverges from others. TODO (NES-965): explain better
         """
         self._deal_with_eegelectrodelocalizationsystem()
         self._deal_with_fileformat()
@@ -585,7 +585,7 @@ class ImportExperiment:
 
                 instances = Patient.objects.filter(reduce(or_, list_of_filters))
                 for instance in instances:
-                    if instance and str(instance.id) in patients_to_update:
+                    if str(instance.id) in patients_to_update:
                         self.data[i]['pk'], old_id = instance.id, self.data[i]['pk']
                         for dependent_model in dependent_models:
                             dependent_indexes = [
@@ -609,16 +609,14 @@ class ImportExperiment:
 
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
-        # For each participant in the json file, check if there are any participant with the same CPF
-        # or same name already in the database and return the list of the ones in conflict
         participants_with_conflict = []
         for i in indexes:
-            list_of_filters = []
+            # Check if the patient is already there
             if data[i]['fields']['cpf']:
-                list_of_filters.append(Q(**{'cpf': data[i]['fields']['cpf']}))
-            list_of_filters.append(Q(**{'name': data[i]['fields']['name']}))
-
-            patient_already_in_database = Patient.objects.filter(reduce(or_, list_of_filters)).first()
+                patient_already_in_database = Patient.objects.get(
+                    name=data[i]['fields']['name'], cpf=data[i]['fields']['cpf'])
+            else:
+                patient_already_in_database = Patient.objects.get(code=data[i]['fields']['code'])
 
             if patient_already_in_database:
                 participants_with_conflict.append({
