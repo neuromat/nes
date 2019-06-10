@@ -407,8 +407,8 @@ PRE_LOADED_MODELS_INHERITANCE = {
 
 # Map models pre-loaded using initial data from fixtures.
 # Not editable models are considered with the same id
-# presented in fixtures when importing. So it's necessary
-# loading fixtures before importing.
+# presented in fixtures when importing. Therefore it's necessary to
+# load fixtures before importing.
 PRE_LOADED_MODELS_NOT_EDITABLE = [
     'experiment.eegelectrodenetsystem', 'experiment.stimulustype', 'experiment.tetheringsystem',
     'experiment.amplifierdetectiontype', 'experiment.electrodeconfiguration', 'experiment.coilshape',
