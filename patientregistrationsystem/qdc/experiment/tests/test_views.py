@@ -939,8 +939,8 @@ class ExportExperimentTest(TestCase):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(
-            message, 'Could not export LimeSurvey data. Please try again. If problem persists please contact the '
-                     'system administator')
+            message, 'Não foi possível exportar dados do LimeSurvey. Por favor tente novamente. Se '
+                     'o problema persistir entre em contato com o administrador de sistemas.')
 
     # CONTINUE: keep with tests for errors in consuming LimeSurvey API
     @patch('survey.abc_search_engine.Server')
@@ -963,8 +963,8 @@ class ExportExperimentTest(TestCase):
         response = self.client.get(reverse('experiment_export', kwargs={'experiment_id': self.experiment.id}))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(
-            message, 'Could not export LimeSurvey data. Please try again. If problem persists please contact the '
-                     'system administator')
+            message, 'Não foi possível exportar dados do LimeSurvey. Por favor tente novamente. Se '
+                     'o problema persistir entre em contato com o administrador de sistemas.')
 
 
 class ImportExperimentTest(TestCase):
@@ -1367,7 +1367,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
         self.assertRedirects(response, reverse('experiment_import'))
         message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Bad json file. Aborting import experiment.')
+        self.assertEqual(message, 'Arquivo json danificado. Abortando importação do experimento.')
 
         shutil.rmtree(temp_dir)
 
@@ -2847,7 +2847,6 @@ class ImportExperimentTest(TestCase):
 
     def test_POST_experiment_import_file_overwrites_participant(self):
         patient = UtilTests.create_patient(changed_by=self.user)
-
         experiment = self._create_minimum_objects_to_test_patient(patient)
 
         export = ExportExperiment(experiment)
@@ -2859,12 +2858,36 @@ class ImportExperimentTest(TestCase):
             session['patients_conflicts_resolved'] = True
             session['file_name'] = file.name
             session.save()
-            response = self.client.post(reverse('experiment_import'), {'file': file, 'from[]': [patient.id]},
-                                        follow=True)
+            response = self.client.post(
+                reverse('experiment_import'), {'file': file, 'from[]': [patient.id]}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
 
         new_participant = Patient.objects.exclude(id=patient.id)
         self.assertEqual(0, new_participant.count())
+
+    def test_POST_experiment_import_file_brings_right_partincipants_in_conflict_page(self):
+        patient1 = UtilTests.create_patient(changed_by=self.user)
+        patient1.cpf = None
+        patient1.save()
+        self._create_minimum_objects_to_test_patient(patient1)
+        patient2 = UtilTests.create_patient(changed_by=self.user)
+        patient2.name = patient1.name
+        patient2.cpf = None
+        patient2.save()
+        experiment2 = self._create_minimum_objects_to_test_patient(patient2)
+
+        export = ExportExperiment(experiment2)
+        export.export_all()
+        file_path = export.get_file_path()
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(
+                reverse('experiment_import'), {'file': file}, follow=True)
+        existing_patients = response.context['patients']
+        self.assertEqual(patient2.id, existing_patients[0]['id_db'])
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        # TODO (NES-977): remove temp dir that left
 
     def test_POST_experiment_import_file_overwrites_participant_and_does_not_create_new_subject(self):
         patient = UtilTests.create_patient(changed_by=self.user)
@@ -4968,8 +4991,10 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(
-            message, 'Could not import survey(s) to LimeSurvey. Only Experiment data was imported. You can remove '
-                     'experiment imported and try again. If problem persists please contact system administrator')
+            message, 'Não foi possível importar os questionários do LimeSurvey. Somente os dados '
+                     'do Experimento foram importados. Você pode remover o experimento importado e '
+                     'tentar novamente. Se o problemapersistir por favor entre em contato com o '
+                     'administrador de sistemas.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_call_import_survey_fails_display_warning_message(self, mockServer):
@@ -4996,8 +5021,10 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(
-            message, 'Could not import survey(s) to LimeSurvey. Only Experiment data was imported. You can remove '
-                     'experiment imported and try again. If problem persists please contact system administrator')
+            message, 'Não foi possível importar os questionários do LimeSurvey. Somente os dados '
+                     'do Experimento foram importados. Você pode remover o experimento importado e '
+                     'tentar novamente. Se o problemapersistir por favor entre em contato com o '
+                     'administrador de sistemas.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_call_list_participants_fails_display_warning_message(self, mockServer):
@@ -5023,7 +5050,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not clear all extra survey participants data.')
+        self.assertEqual(message, 'Não foi possível remove todos os dados de participantes extras.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_call_delete_participant_fails_display_warning_message(self, mockServer):
@@ -5049,7 +5076,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not clear all extra survey participants data.')
+        self.assertEqual(message, 'Não foi possível remove todos os dados de participantes extras.')
     
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_call_export_responses_by_token_fails_display_warning_message(self, mockServer):
@@ -5075,7 +5102,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not clear all extra survey participants data.')
+        self.assertEqual(message, 'Não foi possível remove todos os dados de participantes extras.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_call_delete_responses_fails_display_warning_message(self, mockServer):
@@ -5101,7 +5128,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not clear all extra survey participants data.')
+        self.assertEqual(message, 'Não foi possível remove todos os dados de participantes extras.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_call_get_participant_properties_fails_display_warning_message(self, mockServer):
@@ -5127,7 +5154,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not update identification questions for all responses.')
+        self.assertEqual(message, 'Não foi possível atualizar as questões de identificação para todas as respostas.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_call_list_questions_fails_display_warning_message(self, mockServer):
@@ -5153,7 +5180,8 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not update identification questions for all responses.')
+        self.assertEqual(message, 'Não foi possível atualizar as questões de identificação para todas as '
+                                  'respostas.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_has_not_Identification_group_display_warning_message(self, mockServer):
@@ -5184,7 +5212,7 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not update identification questions for all responses.')
+        self.assertEqual(message, 'Não foi possível atualizar as questões de identificação para todas as respostas.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_has_not_Identification_question_display_warning_message(self, mockServer):
@@ -5228,7 +5256,8 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not update identification questions for all responses.')
+        self.assertEqual(message, 'Não foi possível atualizar as questões de identificação para todas as '
+                                  'respostas.')
 
     @patch('survey.abc_search_engine.Server')
     def test_import_survey_call_update_response_fails_display_warning_message(self, mockServer):
@@ -5254,4 +5283,4 @@ class ImportExperimentTest(TestCase):
             response = self.client.post(reverse('experiment_import'), {'file': file}, follow=True)
 
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Could not update all responses.')
+        self.assertEqual(message, 'Não foi possível atualizar todas as respostas.')
