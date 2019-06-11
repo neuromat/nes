@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import ugettext as ug_, ugettext_lazy as _
 from django.db.models import Q
 
@@ -209,13 +209,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             return render(request, template_name)
 
         # read initial json file
-        input_export_file = path.join(
-            "export",
-            path.join(
-                str(request.user.id),
-                path.join(str(export_instance.id), str(input_filename))
-            )
-        )
+        input_export_file = path.join('export', str(request.user.id), str(export_instance.id), str(input_filename))
 
         # prepare data to be processed
         input_data = export.read_configuration_data(input_filename)
@@ -244,8 +238,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     request.session['group_selected_list']
                 )
             export_rows_participants = export.process_participant_data(
-                participants_input_data, participants_list, language_code
-            )
+                participants_input_data, participants_list, language_code)
             export.get_input_data('participants')['data_list'] = export_rows_participants
             # create file participants.csv and diagnosis.csv
             error_msg = export.build_participant_export_data('group_selected_list' in request.session)
@@ -357,8 +350,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
 def export_view(request, template_name="export/export_data.html"):
     export_form = ExportForm(
         request.POST or None,
-        initial={'title': 'title', 'responses': ['short'], 'headings': 'code', 'filesformat': 'csv'}
-    )
+        initial={'title': 'title', 'responses': ['short'], 'headings': 'code', 'filesformat': 'csv'})
 
     selected_ev_quest = []
     selected_participant = []
@@ -371,6 +363,11 @@ def export_view(request, template_name="export/export_data.html"):
     component_list = []
 
     if request.method == "POST":
+        # Test for at least one patient attribute selected
+        if 'patient_selected' not in request.POST or request.POST.get('patient_selected') is None:
+            messages.warning(request, _('Please select at least one patient attribute'))
+            return redirect(reverse('export_view'))
+
         questionnaires_selected_list = request.POST.getlist('to[]')
         experiment_questionnaires_selected_list = []
 
@@ -386,19 +383,13 @@ def export_view(request, template_name="export/export_data.html"):
             if index != previous_questionnaire_id:
                 if previous_questionnaire_id != 0:
                     output_list = []
-
-                questionnaires_list.append(
-                    [index, int(sid), title, output_list]
-                )
-
+                questionnaires_list.append([index, int(sid), title, output_list])
                 previous_questionnaire_id = index
-
             output_list.append((field, header))
 
         # for experiment questionnaires
         if request.POST.getlist('to_experiment[]'):
-            experiment_questionnaires_selected_list = \
-                request.POST.getlist('to_experiment[]')
+            experiment_questionnaires_selected_list = request.POST.getlist('to_experiment[]')
             previous_questionnaire_id = -1
             output_list = []
             for questionnaire in experiment_questionnaires_selected_list:
@@ -407,17 +398,12 @@ def export_view(request, template_name="export/export_data.html"):
                 if index != previous_questionnaire_id:
                     if previous_questionnaire_id != 0:
                         output_list = []
-
-                    experiment_questionnaires_list.append(
-                        [index, group_id, int(sid), title, output_list]
-                    )
-
+                    experiment_questionnaires_list.append([index, group_id, int(sid), title, output_list])
                     previous_questionnaire_id = index
-
                 output_list.append((field, header))
 
         # TODO (NES-963): participant_selected_list in fact is the attributes list not
-        #  participants per se
+        #  participants per se. Give a better name?
         participant_selected_list = request.POST.getlist('patient_selected')
 
         participants_list = []
@@ -525,24 +511,18 @@ def export_view(request, template_name="export/export_data.html"):
                 for diagnosis in diagnosis_list:
                     selected_diagnosis.append(diagnosis[0])
         else:
-            messages.error(
-                request,
-                _("No data was select. Export data was not generated.")
-            )
+            messages.error(request, _("No data was select. Export data was not generated."))
 
     surveys = Questionnaires()
     questionnaires_experiment_list_final = []
     # experiments export
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
-
         component_list = []
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol is not None:
-                component_list = get_component_with_data_and_metadata(
-                    group, component_list
-                )
+                component_list = get_component_with_data_and_metadata(group, component_list)
                 questionnaire_response_list = ExperimentQuestionnaireResponse.objects.filter(
                     subject_of_group__group=group)
                 questionnaire_in_list = []
@@ -553,10 +533,7 @@ def export_view(request, template_name="export/export_data.html"):
 
                     for questionnaire_response in questionnaire_response_list:
                         completed = surveys.get_participant_properties(
-                            questionnaire_id,
-                            questionnaire_response.token_id,
-                            "completed"
-                        )
+                            questionnaire_id, questionnaire_response.token_id, "completed")
                         if completed is not None and completed != "N" \
                                 and completed != "":
                             questionnaire_dic = {
@@ -582,16 +559,13 @@ def export_view(request, template_name="export/export_data.html"):
 
         # Obter a lista dos participantes filtrados que têm questionários de
         # entrada preenchidos.
-        patient_questionnaire_response_list = \
-            QuestionnaireResponse.objects.filter(
-                patient_id__in=request.session['filtered_participant_data']
-            )
+        patient_questionnaire_response_list = QuestionnaireResponse.objects.filter(
+                patient_id__in=request.session['filtered_participant_data'])
 
         surveys_with_ev_list = []
         surveys_id_list = []
-        # verificar se os questionnarios estão completos
+        # Verify if questionnaires are completed
         for patient_questionnaire_response in patient_questionnaire_response_list:
-
             lime_survey_id = patient_questionnaire_response.survey.lime_survey_id
             if lime_survey_id not in surveys_id_list:
                 completed = surveys.get_participant_properties(lime_survey_id,

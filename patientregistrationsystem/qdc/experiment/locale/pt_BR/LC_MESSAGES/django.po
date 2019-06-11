@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-07 07:31-0300\n"
+"POT-Creation-Date: 2019-06-11 14:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -270,23 +270,23 @@ msgstr ""
 "Não foi possível exportar dados do LimeSurvey. Por favor tente novamente. Se "
 "o problema persistir entre em contato com o administrador de sistemas."
 
-#: experiment/import_export.py:796 experiment/import_export.py:803
-#: experiment/import_export.py:807 experiment/import_export.py:819
+#: experiment/import_export.py:794 experiment/import_export.py:801
+#: experiment/import_export.py:805 experiment/import_export.py:817
 msgid "Could not clear all extra survey participants data."
 msgstr "Não foi possível remove todos os dados de participantes extras."
 
-#: experiment/import_export.py:845 experiment/import_export.py:852
-#: experiment/import_export.py:859
+#: experiment/import_export.py:843 experiment/import_export.py:850
+#: experiment/import_export.py:857
 msgid "Could not update identification questions for all responses."
 msgstr ""
 "Não foi possível atualizar as questões de identificação para todas as "
 "respostas."
 
-#: experiment/import_export.py:868
+#: experiment/import_export.py:866
 msgid "Could not update all responses."
 msgstr "Não foi possível atualizar todas as respostas."
 
-#: experiment/import_export.py:881 experiment/import_export.py:898
+#: experiment/import_export.py:879 experiment/import_export.py:896
 msgid ""
 "Could not import survey(s) to LimeSurvey. Only Experiment data was imported. "
 "You can remove experiment imported and try again. If problem persists please "
@@ -297,7 +297,7 @@ msgstr ""
 "tentar novamente. Se o problemapersistir por favor entre em contato com o "
 "administrador de sistemas."
 
-#: experiment/import_export.py:929
+#: experiment/import_export.py:927
 msgid "Bad json file. Aborting import experiment."
 msgstr "Arquivo json danificado. Abortando importação do experimento."
 

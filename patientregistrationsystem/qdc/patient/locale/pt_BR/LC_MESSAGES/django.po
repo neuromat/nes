@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-07 07:31-0300\n"
+"POT-Creation-Date: 2019-06-11 14:22-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Anonymous participant?"
 msgstr "Participante anônimo?"
 
-#: patient/forms.py:35 patient/forms.py:68 patient/tests/tests_orig.py:643
+#: patient/forms.py:35 patient/forms.py:68 patient/tests/tests_orig.py:639
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
@@ -42,7 +42,7 @@ msgstr "Data de nascimento deve ser preenchida"
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:57 patient/tests/tests_orig.py:628
+#: patient/forms.py:57 patient/tests/tests_orig.py:624
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
@@ -1720,34 +1720,34 @@ msgstr "*Aparelho independente ou parte da geladeira duplex."
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: patient/tests/tests_orig.py:315
+#: patient/tests/tests_orig.py:311
 msgid " is not valid"
 msgstr " não é válido"
 
-#: patient/tests/tests_orig.py:455 patient/tests/tests_orig.py:474
-#: patient/tests/tests_orig.py:482
+#: patient/tests/tests_orig.py:451 patient/tests/tests_orig.py:470
+#: patient/tests/tests_orig.py:478
 msgid "Social class was not calculated"
 msgstr "Classe Social não calculada"
 
-#: patient/tests/tests_orig.py:472 patient/views.py:249
+#: patient/tests/tests_orig.py:468 patient/views.py:249
 msgid "Social demographic data successfully written."
 msgstr "Dados sociodemográficos gravados com sucesso."
 
-#: patient/tests/tests_orig.py:485 patient/tests/tests_orig.py:533
+#: patient/tests/tests_orig.py:481 patient/tests/tests_orig.py:529
 msgid "Less than 1 pack"
 msgstr "Menos de 1 maço"
 
-#: patient/tests/tests_orig.py:488 patient/tests/tests_orig.py:556
+#: patient/tests/tests_orig.py:484 patient/tests/tests_orig.py:552
 msgid "Sporadically"
 msgstr "Esporadicamente"
 
-#: patient/tests/tests_orig.py:491 patient/tests/tests_orig.py:579
+#: patient/tests/tests_orig.py:487 patient/tests/tests_orig.py:575
 msgid "Less than 1 year"
 msgstr "Menos de 1 ano"
 
-#: patient/tests/tests_orig.py:519 patient/tests/tests_orig.py:542
-#: patient/tests/tests_orig.py:565 patient/tests/tests_orig.py:588
-#: patient/tests/tests_orig.py:613 patient/views.py:279
+#: patient/tests/tests_orig.py:515 patient/tests/tests_orig.py:538
+#: patient/tests/tests_orig.py:561 patient/tests/tests_orig.py:584
+#: patient/tests/tests_orig.py:609 patient/views.py:279
 msgid "Social history successfully recorded."
 msgstr "História social gravada com sucesso."
 
