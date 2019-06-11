@@ -1735,7 +1735,6 @@ class ExportSelection(ExportTestCase):
         self.client.logout()
 
     def test_experiment_selection_selecting_group(self):
-
         data = {
             'id_research_projects': self.experiment.research_project.id,
             'id_experiments': self.experiment.id,
