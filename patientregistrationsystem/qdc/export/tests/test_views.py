@@ -1685,11 +1685,9 @@ class ExportParticipants(ExportTestCase):
         self.client.logout()
 
     def test_export_participants_without_questionnaires_returns_zipped_file(self):
-        """
-        Test created when exporting participants, without questionnaires
+        """Test created when exporting participants, without questionnaires
         avulsely answered by them, gave yellow screen. See Jira Issue NES-864.
         """
-
         data = {'patient_selected': ['age*age'], 'action': ['run']}
         response = self.client.post(reverse('export_view'), data)
         self.assertEqual(response.status_code, 200)
@@ -1702,11 +1700,8 @@ class ExportParticipants(ExportTestCase):
         self.assertEqual(response.status_code, 200)
 
         temp_dir = tempfile.mkdtemp()
-
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(
-            os.path.join('NES_EXPORT', 'Participants.csv'), temp_dir
-        )
+        zipped_file.extract(os.path.join('NES_EXPORT', 'Participants.csv'), temp_dir)
 
         with open(os.path.join(temp_dir, 'NES_EXPORT', 'Participants.csv')) \
                 as file:
@@ -1714,11 +1709,20 @@ class ExportParticipants(ExportTestCase):
             rows = []
             for row in csvreader:
                 rows.append(row)
-            self.assertEqual(
-                rows[1][1], self.subject_age(self.patient.date_birth)
-            )
+            self.assertEqual(rows[1][1], self.subject_age(self.patient.date_birth))
 
         shutil.rmtree(temp_dir)
+
+    def test_export_participants_does_not_select_any_attribute_returns_redirect_and_display_warning_message(self):
+        response = self.client.post(reverse('export_view'), {'action': ['run']}, follow=True)
+        # After POSTing without 'patient_selected' as key for data nargs, the
+        # system first redirects to export/view, then to export/, so take
+        # the first redirection url and status code.
+        first_redirect_url, status_code = response.redirect_chain[0]
+        self.assertEqual(status_code, 302)
+        self.assertEqual(first_redirect_url, reverse('export_view'))
+        message = str(list(response.context['messages'])[0])
+        self.assertEqual(message, 'Please select at least one patient attribute')
 
 
 class ExportSelection(ExportTestCase):
