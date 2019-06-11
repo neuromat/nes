@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-11 14:22-0300\n"
+"POT-Creation-Date: 2019-06-11 15:31-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,7 +132,7 @@ msgid "Next"
 msgstr "Próximo"
 
 #: export/templates/export/experiment_selection.html:118
-#: export/templates/export/export_data.html:292
+#: export/templates/export/export_data.html:291
 #: export/templates/export/export_experiment_data.html:482
 #: export/templates/export/participant_selection.html:197
 #: export/templates/export/show_selected_participants.html:100
@@ -241,7 +241,7 @@ msgstr "Campos de diagnóstico"
 msgid "Please, select a diagnosis field from the list."
 msgstr "Por favor, selecione um campo de diagnóstico da lista"
 
-#: export/templates/export/export_data.html:288
+#: export/templates/export/export_data.html:287
 #: export/templates/export/export_experiment_data.html:486
 msgid "Run"
 msgstr "Executar"
@@ -530,7 +530,6 @@ msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
 
 #: export/views.py:368
-#| msgid "Please, select a questionnaire from the list."
 msgid "Please select at least one patient attribute"
 msgstr "Por favor, selecione um questionário da lista"
 
