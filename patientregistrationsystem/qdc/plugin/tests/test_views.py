@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 from django.contrib.messages import get_messages
 from django.core.urlresolvers import reverse, resolve
+from django.utils.translation import ugettext_lazy as _
 from django.test import override_settings
 from django.utils.encoding import smart_str
 
@@ -149,7 +150,7 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Please select at least Gender participant attribute')
+        self.assertEqual(message, _('Please select at least Gender participant attribute'))
 
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_patient_display_warning_message(self, mockServer):
@@ -164,7 +165,7 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Please select at least one patient')
+        self.assertEqual(message, _('Please select at least one patient'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -180,7 +181,7 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'The Floresta Plugin needs to send at least Gender attribute')
+        self.assertEqual(message, _('The Floresta Plugin needs to send at least Gender attribute'))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -199,8 +200,8 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         # TODO (NES-971): put here and below because if clause does not work when running all class suit.
         #  Verify why!
@@ -222,8 +223,8 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         if os.path.exists(self.TEMP_MEDIA_ROOT):
             shutil.rmtree(self.TEMP_MEDIA_ROOT)
@@ -243,8 +244,8 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -264,8 +265,8 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         if os.path.exists(self.TEMP_MEDIA_ROOT):
             shutil.rmtree(self.TEMP_MEDIA_ROOT)
@@ -285,8 +286,8 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -305,8 +306,8 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -325,8 +326,8 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
@@ -345,8 +346,8 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         if os.path.exists(self.TEMP_MEDIA_ROOT):
             shutil.rmtree(self.TEMP_MEDIA_ROOT)
@@ -365,7 +366,7 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send_to_plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                  'problem persists please contact System Administrator.')
+        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+                                    'problem persists please contact System Administrator.'))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)

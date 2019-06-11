@@ -9,6 +9,7 @@ import shutil
 
 from django.core.files import File
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.test import override_settings
 
@@ -1722,7 +1723,7 @@ class ExportParticipants(ExportTestCase):
         self.assertEqual(status_code, 302)
         self.assertEqual(first_redirect_url, reverse('export_view'))
         message = str(list(response.context['messages'])[0])
-        self.assertEqual(message, 'Please select at least one patient attribute')
+        self.assertEqual(message, _('Please select at least one patient attribute'))
 
 
 class ExportSelection(ExportTestCase):
