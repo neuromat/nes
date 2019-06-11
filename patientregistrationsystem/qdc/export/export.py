@@ -1444,15 +1444,9 @@ class ExportExecution:
                             )
                             token_id = token['token_id']
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
-                            rows_participant_data = \
-                                self.get_participant_row_data(
-                                    token['subject_code']
-                                )
-                            participant_response_list = \
-                                self.merge_questionnaire_answer_list_per_participant(
-                                    rows_participant_data[1],
-                                    answer_list[1:len(answer_list)]
-                                )
+                            rows_participant_data = self.get_participant_row_data(token['subject_code'])
+                            participant_response_list = self.merge_questionnaire_answer_list_per_participant(
+                                    rows_participant_data[1], answer_list[1:len(answer_list)])
                             for sublist in participant_response_list:
                                 index = len(fields_description) + 1
                                 fields_description.insert(index, sublist)

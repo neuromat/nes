@@ -272,12 +272,8 @@ class PatientFormValidation(TestCase):
     util = UtilTests()
 
     def setUp(self):
+        """Set up authentication and variables to start each test
         """
-        Configura autenticacao e variaveis para iniciar cada teste
-
-        """
-        # print 'Set up for', self._testMethodName
-
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
