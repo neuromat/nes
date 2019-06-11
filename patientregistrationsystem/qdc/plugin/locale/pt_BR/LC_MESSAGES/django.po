@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-11 14:22-0300\n"
+"POT-Creation-Date: 2019-06-11 15:31-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgstr "Seleção de participantes"
 
 #: plugin/templates/plugin/send_to_plugin.html:68
 msgid "Questionnaires data to be sent"
-msgstr ""
+msgstr "Dados de questionários a serem enviados"
 
 #: plugin/templates/plugin/send_to_plugin.html:80
 msgid "List of participants"
@@ -65,11 +65,11 @@ msgstr "* use o botão Ctrl para selecionar mais de um campo. (command no Mac)"
 
 #: plugin/templates/plugin/send_to_plugin.html:154
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: plugin/templates/plugin/send_to_plugin.html:157
 msgid "Send"
-msgstr ""
+msgstr "Enviar"
 
 #: plugin/views.py:115
 #, fuzzy
@@ -79,22 +79,27 @@ msgstr "Por favor, selecione uma opção da lista."
 
 #: plugin/views.py:121
 msgid "Please select at least Gender participant attribute"
-msgstr ""
+msgstr "Selecione ao menos o atributo Gênero do participante"
 
 #: plugin/views.py:124
 msgid "The Floresta Plugin needs to send at least Gender attribute"
 msgstr ""
+"O plugin floresta precisa enviar ao menos o atributo gênero do participante"
 
 #: plugin/views.py:132 plugin/views.py:139
 msgid ""
 "Error: some thing went wrong consuming LimeSurvey API. Please try again. If "
 "problem persists please contact System Administrator."
 msgstr ""
+"Erro: alguma coisa errada aconteceu ao consumir a API do LimeSurvey. Por "
+"favor tente novamente. Se o problema persistir por favor entre em contato "
+"com o administrador do sistema."
 
 #: plugin/views.py:143
 msgid "Data from questionnaires was sent to Forest Plugin"
-msgstr ""
+msgstr "Os dados dos questionários foram enviados para o plugin Floresta"
 
 #: plugin/views.py:150
 msgid "Could not open zip file to send to Forest Plugin"
 msgstr ""
+"Não foi possível abrir o arquivo zip para enviar para o plugin Floresta"
