@@ -4167,8 +4167,8 @@ class ExportQuestionnaireTest(ExportTestCase):
         }
         response = self.client.post(reverse('export_view'), data)
 
+        temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-
         zipped_file.extract(
             os.path.join(
                 'NES_EXPORT',
@@ -4177,12 +4177,12 @@ class ExportQuestionnaireTest(ExportTestCase):
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
                 self.survey.code + '_test-questionnaire_en.csv'
             ),
-            '/tmp'  # TODO: 1) use os.sep; 2) use tempfile
+            temp_dir
         )
 
         with open(
                 os.path.join(
-                    os.sep, 'tmp',  # TODO: use tempfile
+                    temp_dir,
                     'NES_EXPORT',
                     'Experiment_data',
                     'Group_' + self.group.title.lower(),
@@ -4195,6 +4195,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             file.seek(0)
             self.assertEqual(dialect.delimiter, ",")
 
+        shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -4614,8 +4615,8 @@ class ExportQuestionnaireTest(ExportTestCase):
         }
         response = self.client.post(reverse('export_view'), data)
 
+        temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-
         zipped_file.extract(
             os.path.join(
                 'NES_EXPORT',
@@ -4624,12 +4625,12 @@ class ExportQuestionnaireTest(ExportTestCase):
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
                 self.survey.code + '_test-questionnaire_en.tsv'
             ),
-            '/tmp'  # TODO: 1) use os.sep; 2) use tempfile
+            temp_dir
         )
 
         with open(
                 os.path.join(
-                    os.sep, 'tmp',  # TODO: use tempfile
+                    temp_dir,
                     'NES_EXPORT',
                     'Experiment_data',
                     'Group_' + self.group.title.lower(),
@@ -4642,6 +4643,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             file.seek(0)
             self.assertEqual(dialect.delimiter, "\t")
 
+        shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
 

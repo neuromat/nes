@@ -115,8 +115,6 @@ class ABCSearchEngine(ABC):
             survey_title = self.server.get_language_properties(
                 self.session_key, sid, {'method': 'surveyls_title'}, language)
 
-            print('\n', 'get_language_properties\n', survey_title)  # DEBUG
-
             if 'surveyls_title' in survey_title:
                 survey_title = survey_title.get('surveyls_title')
             else:
@@ -136,8 +134,6 @@ class ABCSearchEngine(ABC):
 
         result = self.server.get_survey_properties(self.session_key, sid, {'method': prop})
 
-        print('\n', 'get_survey_properties', result)  # DEBUG
-
         return result.get(prop)
 
     @abstractmethod
@@ -149,8 +145,6 @@ class ABCSearchEngine(ABC):
 
         result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
         # If failed to consume API, it return a dict with one element with 'status' as key
-
-        print('\n', 'get_survey_properties', result)  # DEBUG
 
         return None if 'status' in result else result
 
@@ -186,8 +180,6 @@ class ABCSearchEngine(ABC):
         :return: on success, dict with value of a determined property, else dict with error status
         """
         result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
-
-        print('\n', 'get_participant_properties', result)  # DEBUG
 
         return result.get(prop) if 'status' not in result else None
 
@@ -265,8 +257,6 @@ class ABCSearchEngine(ABC):
         responses = self.server.export_responses(
             self.session_key, sid, 'csv', language, 'complete', heading_type, response_type)
 
-        print('\n', 'export_responses\n', responses)  # DEBUG
-
         return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     def get_header_response(self, sid, language, token, heading_type):
@@ -281,8 +271,6 @@ class ABCSearchEngine(ABC):
         responses = self.server.export_responses_by_token(
             self.session_key, sid, 'csv', token, language, 'complete', heading_type, 'short')
 
-        print('\n', 'export_responses_by_token\n', responses)  # DEBUG
-
         # For compatibility with export view call: when export_responses returns
         # {'status': 'No Response found by Token'} export view call export_responses,
         # that returns a string to responses variable and can mount the screen with the
@@ -290,8 +278,6 @@ class ABCSearchEngine(ABC):
         if isinstance(responses, dict) and responses['status'] == 'No Response found for Token':
             responses = self.server.export_responses(
                 self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
-
-            print('\n', 'export_responses\n', responses)  # DEBUG
 
         return None if isinstance(responses, dict) else b64decode(responses).decode()
 
@@ -332,8 +318,6 @@ class ABCSearchEngine(ABC):
         properties = self.server.get_question_properties(
             self.session_key, question_id, self.QUESTION_PROPERTIES, language)
 
-        print('\n', 'get_question_properties\n', properties)  # DEBUG
-
         if 'status' in properties and properties['status'] in [
             'Error: Invalid questionid', 'Error: Invalid language', 'Error: Invalid questionid', 'No valid Data',
             'No permission', 'Invalid session key'
@@ -352,8 +336,6 @@ class ABCSearchEngine(ABC):
         :return: on success, list of ids and info of groups belonging to survey, else, None
         """
         groups = self.server.list_groups(self.session_key, sid)
-
-        print('\n', 'list_groups\n', groups)  # DEBUG
 
         return groups if isinstance(groups, list) else None
 
@@ -383,8 +365,6 @@ class ABCSearchEngine(ABC):
         :return: on success, list of question properties, else None
         """
         questions = self.server.list_questions(self.session_key, sid, gid)
-
-        print('\n', 'list_questions\n', questions)  # DEBUG
 
         return questions if isinstance(questions, list) else None
 
