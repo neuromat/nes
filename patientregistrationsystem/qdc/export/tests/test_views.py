@@ -3393,16 +3393,314 @@ class ExportQuestionnaireTest(ExportTestCase):
         shutil.rmtree(temp_dir)
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
-    def test_participant_age_in_responses_is_age_when_questionnaire_was_filled_2(self):
-        """
-        Test over participant questionnaire responses
-        """
-        # In setUp we create experiment questionnaire response. Here we
-        # create a participant questionnaire response (entrance questionnaire)
-        questionnaire_response = UtilTests.create_response_survey(
-            responsible=self.user, patient=self.patient, survey=self.survey
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_participant_age_in_responses_is_age_when_questionnaire_was_filled_2(self, mockServer):
+        """Test over participant questionnaire responses"""
+
+        mockServer.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
+        mockServer.return_value.get_participant_properties.side_effect = [
+            {'token': 'ceBAtUYdVXOF3ie'}
+
+        ]
+        mockServer.return_value.export_responses.return_value = \
+            'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZGF0ZSIsInN1YmplY3RpZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIsImZpbGVVcGxvYWQiLCJmaWxlVXBsb2FkW2ZpbGVjb3VudF0iCiIxIiwiMjAxOS0wNi0yNiAxNjozNzoyOSIsIjIiLCJlbiIsIkFhMEdYbG5DYWw2Zmt6ZCIsIjU0MDAwIiwiMjAxOS0wNi0yNiAxNjozNzoyOS40OTUyOCIsIjE3NzUzNCIsIk9sw6EgTXVuZG8hIiwiSGFsbG8gV2VsdCEiLCIiLCIiCgo='
+        mockServer.return_value.list_groups.side_effect = [
+            [{'grelevance': '', 'id': {'gid': 1855, 'language': 'en'}, 'language': 'en', 'randomization_group': '',
+              'gid': 1855, 'group_order': 2, 'group_name': 'First group', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'en'}, 'language': 'en', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'zh-Hans'}, 'language': 'zh-Hans',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'nl'}, 'language': 'nl', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'fr'}, 'language': 'fr', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'de'}, 'language': 'de', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'pt-BR'}, 'language': 'pt-BR',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'el'}, 'language': 'el', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'hi'}, 'language': 'hi', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'it'}, 'language': 'it', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'ja'}, 'language': 'ja', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'pt'}, 'language': 'pt', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'ru'}, 'language': 'ru', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es'}, 'language': 'es', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-AR'}, 'language': 'es-AR',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-CL'}, 'language': 'es-CL',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-MX'}, 'language': 'es-MX',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111}],
+            [{'grelevance': '', 'id': {'gid': 1855, 'language': 'en'}, 'language': 'en', 'randomization_group': '',
+              'gid': 1855, 'group_order': 2, 'group_name': 'First group', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'en'}, 'language': 'en', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'zh-Hans'}, 'language': 'zh-Hans',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'nl'}, 'language': 'nl', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'fr'}, 'language': 'fr', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'de'}, 'language': 'de', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'pt-BR'}, 'language': 'pt-BR',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'el'}, 'language': 'el', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'hi'}, 'language': 'hi', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'it'}, 'language': 'it', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'ja'}, 'language': 'ja', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'pt'}, 'language': 'pt', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'ru'}, 'language': 'ru', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es'}, 'language': 'es', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-AR'}, 'language': 'es-AR',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-CL'}, 'language': 'es-CL',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-MX'}, 'language': 'es-MX',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111}],
+            [{'grelevance': '', 'id': {'gid': 1855, 'language': 'en'}, 'language': 'en', 'randomization_group': '',
+              'gid': 1855, 'group_order': 2, 'group_name': 'First group', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'en'}, 'language': 'en', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'zh-Hans'}, 'language': 'zh-Hans',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'nl'}, 'language': 'nl', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'fr'}, 'language': 'fr', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'de'}, 'language': 'de', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'pt-BR'}, 'language': 'pt-BR',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'el'}, 'language': 'el', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'hi'}, 'language': 'hi', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'it'}, 'language': 'it', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'ja'}, 'language': 'ja', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'pt'}, 'language': 'pt', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'ru'}, 'language': 'ru', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es'}, 'language': 'es', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-AR'}, 'language': 'es-AR',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-CL'}, 'language': 'es-CL',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-MX'}, 'language': 'es-MX',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111}],
+            [{'grelevance': '', 'id': {'gid': 1855, 'language': 'en'}, 'language': 'en', 'randomization_group': '',
+              'gid': 1855, 'group_order': 2, 'group_name': 'First group', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'en'}, 'language': 'en', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'zh-Hans'}, 'language': 'zh-Hans',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'nl'}, 'language': 'nl', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'fr'}, 'language': 'fr', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'de'}, 'language': 'de', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'pt-BR'}, 'language': 'pt-BR',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'el'}, 'language': 'el', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'hi'}, 'language': 'hi', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'it'}, 'language': 'it', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'ja'}, 'language': 'ja', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'pt'}, 'language': 'pt', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'ru'}, 'language': 'ru', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es'}, 'language': 'es', 'randomization_group': '',
+              'gid': 1854, 'group_order': 1, 'group_name': 'Identification', 'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-AR'}, 'language': 'es-AR',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-CL'}, 'language': 'es-CL',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111},
+             {'grelevance': '', 'id': {'gid': 1854, 'language': 'es-MX'}, 'language': 'es-MX',
+              'randomization_group': '', 'gid': 1854, 'group_order': 1, 'group_name': 'Identification',
+              'description': '', 'sid': 913111}]
+        ]
+        mockServer.return_value.list_questions.side_effect = [
+            [{'id': {'qid': 5865, 'language': 'en'}, 'language': 'en', 'title': 'fileUpload', 'help': '', 'preg': '',
+              'type': '|', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': None, 'parent_qid': 0,
+              'question': 'Has fileupload?', 'scale_id': 0, 'gid': 1855, 'qid': 5865, 'mandatory': 'N',
+              'question_order': 3, 'sid': 913111},
+             {'id': {'qid': 5864, 'language': 'en'}, 'language': 'en', 'title': 'secondQuestion', 'help': '',
+              'preg': '', 'type': 'T', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': '',
+              'parent_qid': 0, 'question': 'Second question', 'scale_id': 0, 'gid': 1855, 'qid': 5864, 'mandatory': 'Y',
+              'question_order': 2, 'sid': 913111},
+             {'id': {'qid': 5863, 'language': 'en'}, 'language': 'en', 'title': 'firstQuestion', 'help': '', 'preg': '',
+              'type': 'T', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': '', 'parent_qid': 0,
+              'question': 'First question', 'scale_id': 0, 'gid': 1855, 'qid': 5863, 'mandatory': 'Y',
+              'question_order': 1, 'sid': 913111}],
+            [{'id': {'qid': 5862, 'language': 'en'}, 'language': 'en', 'title': 'subjectid', 'help': '', 'preg': '',
+              'type': 'N', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': None, 'parent_qid': 0,
+              'question': 'Participant Identification number<b>:</b>', 'scale_id': 0, 'gid': 1854, 'qid': 5862,
+              'mandatory': 'Y', 'question_order': 3, 'sid': 913111},
+             {'id': {'qid': 5861, 'language': 'en'}, 'language': 'en', 'title': 'acquisitiondate', 'help': '',
+              'preg': '', 'type': 'D', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': None,
+              'parent_qid': 0, 'question': 'Acquisition date<strong>:</strong><br />\n', 'scale_id': 0, 'gid': 1854,
+              'qid': 5861, 'mandatory': 'Y', 'question_order': 1, 'sid': 913111},
+             {'id': {'qid': 5860, 'language': 'en'}, 'language': 'en', 'title': 'responsibleid', 'help': '', 'preg': '',
+              'type': 'N', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': None, 'parent_qid': 0,
+              'question': 'Responsible Identification number:', 'scale_id': 0, 'gid': 1854, 'qid': 5860,
+              'mandatory': 'Y', 'question_order': 0, 'sid': 913111}],
+            [{'id': {'qid': 5865, 'language': 'en'}, 'language': 'en', 'title': 'fileUpload', 'help': '', 'preg': '',
+              'type': '|', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': None, 'parent_qid': 0,
+              'question': 'Has fileupload?', 'scale_id': 0, 'gid': 1855, 'qid': 5865, 'mandatory': 'N',
+              'question_order': 3, 'sid': 913111},
+             {'id': {'qid': 5864, 'language': 'en'}, 'language': 'en', 'title': 'secondQuestion', 'help': '',
+              'preg': '', 'type': 'T', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': '',
+              'parent_qid': 0, 'question': 'Second question', 'scale_id': 0, 'gid': 1855, 'qid': 5864, 'mandatory': 'Y',
+              'question_order': 2, 'sid': 913111},
+             {'id': {'qid': 5863, 'language': 'en'}, 'language': 'en', 'title': 'firstQuestion', 'help': '', 'preg': '',
+              'type': 'T', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': '', 'parent_qid': 0,
+              'question': 'First question', 'scale_id': 0, 'gid': 1855, 'qid': 5863, 'mandatory': 'Y',
+              'question_order': 1, 'sid': 913111},
+             {'id': {'qid': 5862, 'language': 'en'}, 'language': 'en', 'title': 'subjectid', 'help': '', 'preg': '',
+              'type': 'N', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': None, 'parent_qid': 0,
+              'question': 'Participant Identification number<b>:</b>', 'scale_id': 0, 'gid': 1854, 'qid': 5862,
+              'mandatory': 'Y', 'question_order': 3, 'sid': 913111},
+             {'id': {'qid': 5861, 'language': 'en'}, 'language': 'en', 'title': 'acquisitiondate', 'help': '',
+              'preg': '', 'type': 'D', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': None,
+              'parent_qid': 0, 'question': 'Acquisition date<strong>:</strong><br />\n', 'scale_id': 0, 'gid': 1854,
+              'qid': 5861, 'mandatory': 'Y', 'question_order': 1, 'sid': 913111},
+             {'id': {'qid': 5860, 'language': 'en'}, 'language': 'en', 'title': 'responsibleid', 'help': '', 'preg': '',
+              'type': 'N', 'same_default': 0, 'relevance': '1', 'other': 'N', 'modulename': None, 'parent_qid': 0,
+              'question': 'Responsible Identification number:', 'scale_id': 0, 'gid': 1854, 'qid': 5860,
+              'mandatory': 'Y', 'question_order': 0, 'sid': 913111}]
+        ]
+        mockServer.return_value.get_question_properties.side_effect = [
+            {'attributes_lang': 'No available attributes', 'title': 'fileUpload',
+             'attributes': 'No available attributes', 'question': 'Has fileupload?', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1855, 'answeroptions': 'No available answer options',
+             'question_order': 3, 'type': '|'},
+            {'attributes_lang': 'No available attributes', 'title': 'secondQuestion',
+             'attributes': 'No available attributes', 'question': 'Second question', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1855, 'answeroptions': 'No available answer options',
+             'question_order': 2, 'type': 'T'},
+            {'attributes_lang': 'No available attributes', 'title': 'firstQuestion',
+             'attributes': 'No available attributes', 'question': 'First question', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1855, 'answeroptions': 'No available answer options',
+             'question_order': 1, 'type': 'T'},
+            {'attributes_lang': 'No available attributes', 'title': 'subjectid', 'attributes': {'hidden': '1'},
+             'question': 'Participant Identification number<b>:</b>', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1854, 'answeroptions': 'No available answer options',
+             'question_order': 3, 'type': 'N'},
+            {'attributes_lang': 'No available attributes', 'title': 'acquisitiondate', 'attributes': {'hidden': '1'},
+             'question': 'Acquisition date<strong>:</strong><br />\n', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1854, 'answeroptions': 'No available answer options',
+             'question_order': 1, 'type': 'D'},
+            {'attributes_lang': 'No available attributes', 'title': 'responsibleid', 'attributes': {'hidden': '1'},
+             'question': 'Responsible Identification number:', 'other': 'N', 'subquestions': 'No available answers',
+             'gid': 1854, 'answeroptions': 'No available answer options', 'question_order': 0, 'type': 'N'},
+            {'attributes_lang': 'No available attributes', 'title': 'fileUpload',
+             'attributes': 'No available attributes', 'question': 'Has fileupload?', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1855, 'answeroptions': 'No available answer options',
+             'question_order': 3, 'type': '|'},
+            {'attributes_lang': 'No available attributes', 'title': 'secondQuestion',
+             'attributes': 'No available attributes', 'question': 'Second question', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1855, 'answeroptions': 'No available answer options',
+             'question_order': 2, 'type': 'T'},
+            {'attributes_lang': 'No available attributes', 'title': 'firstQuestion',
+             'attributes': 'No available attributes', 'question': 'First question', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1855, 'answeroptions': 'No available answer options',
+             'question_order': 1, 'type': 'T'},
+            {'attributes_lang': 'No available attributes', 'title': 'subjectid', 'attributes': {'hidden': '1'},
+             'question': 'Participant Identification number<b>:</b>', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1854, 'answeroptions': 'No available answer options',
+             'question_order': 3, 'type': 'N'},
+            {'attributes_lang': 'No available attributes', 'title': 'acquisitiondate', 'attributes': {'hidden': '1'},
+             'question': 'Acquisition date<strong>:</strong><br />\n', 'other': 'N',
+             'subquestions': 'No available answers', 'gid': 1854, 'answeroptions': 'No available answer options',
+             'question_order': 1, 'type': 'D'},
+            {'attributes_lang': 'No available attributes', 'title': 'responsibleid', 'attributes': {'hidden': '1'},
+             'question': 'Responsible Identification number:', 'other': 'N', 'subquestions': 'No available answers',
+             'gid': 1854, 'answeroptions': 'No available answer options', 'question_order': 0, 'type': 'N'}
+        ]
+        mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Test questionnaire'}
+        mockServer.return_value.add_participants.return_value = [
+            {
+                'token': 'GQ5rP7eMjbTaNVf', 'sent': 'N', 'language': None, 'participant_id': None, 'mpid': None,
+                'tid': '2', 'validuntil': None, 'completed': 'N', 'emailstatus': 'OK', 'validfrom': None,
+                'lastname': '', 'email': '', 'usesleft': 1, 'blacklisted': None, 'remindersent': 'N', 'firstname': '',
+                'remindercount': 0
+            }
+        ]
+
+        ## Ínicio - Estava no setUp
+        # self.lime_survey = Questionnaires()
+
+        # self.sid = self.create_limesurvey_questionnaire()
+
+        # create questionnaire data collection in NES
+        # TODO: use method already existent in patient.tests. See other places
+        self.survey = create_survey(913111)
+        self.data_configuration_tree = self.create_nes_questionnaire(
+            self.root_component
         )
 
+        # Add response's participant to limesurvey survey and the references
+        # in our db
+        # result = self.lime_survey.add_participant(self.survey.lime_survey_id)
+        # self.add_responses_to_limesurvey_survey(
+        #     result, self.subject_of_group.subject
+        # )
+        self.questionnaire_response = \
+            ObjectsFactory.create_questionnaire_response(
+                dct=self.data_configuration_tree,
+                responsible=self.user, token_id=1,
+                subject_of_group=self.subject_of_group
+            )
+        ## Fim - Estava no setUp
+
+        # In setUp we created experiment questionnaire response. Here we
+        # create a participant questionnaire response (entrance questionnaire)
+        questionnaire_response = UtilTests.create_response_survey(
+            responsible=self.user, patient=self.patient, survey=self.survey)
         # change questionnaire respose date for testing
         questionnaire_response.date = date(2016, 4, 17)
         questionnaire_response.save()
@@ -3415,13 +3713,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'action': ['run'],
             'headings': ['code'],
             'to[]': [
-                '0*' + str(self.sid) +
+                '0*' + str(913111) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.sid) +
+                '0*' + str(913111) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.sid) +
+                '0*' + str(913111) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.sid) +
+                '0*' + str(913111) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -3450,6 +3748,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             )
 
         shutil.rmtree(temp_dir)
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_export_create_file_csv_separated_with_commas(self):
         self.append_session_variable(
