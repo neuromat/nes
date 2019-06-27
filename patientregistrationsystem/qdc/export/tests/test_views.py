@@ -63,7 +63,6 @@ class ExportQuestionnaireTest(ExportTestCase):
         # self.lime_survey.delete_survey(self.sid)
         # self.lime_survey.release_session_key()
         self.client.logout()
-        199237
 
     def create_limesurvey_questionnaire(self):
         # create questionnaire at LiveSurvey
