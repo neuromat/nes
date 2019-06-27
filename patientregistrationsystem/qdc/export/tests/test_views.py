@@ -63,6 +63,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         # self.lime_survey.delete_survey(self.sid)
         # self.lime_survey.release_session_key()
         self.client.logout()
+        199237
 
     def create_limesurvey_questionnaire(self):
         # create questionnaire at LiveSurvey
@@ -597,7 +598,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             # there's 3 lines, header line + 2 responses lines
             self.assertEqual(len(file.readlines()), 3)
 
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -1014,8 +1014,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             ) +
             'not in: ' + str(zipped_file.namelist())
         )
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     def test_same_questionnaire_used_in_different_steps_return_correct_responses_content_2(self):
         """
@@ -1737,7 +1735,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             str(zipped_file.namelist())
         )
 
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -2183,7 +2180,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             self.assertEqual(len(csv_line1), 6)
 
         shutil.rmtree(temp_dir)
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -2934,7 +2930,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             ) + ' is in: ' + str(zipped_file.namelist())
         )
 
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3391,7 +3386,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             )
 
         shutil.rmtree(temp_dir)
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3748,7 +3742,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             )
 
         shutil.rmtree(temp_dir)
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -4196,7 +4189,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             self.assertEqual(dialect.delimiter, ",")
 
         shutil.rmtree(temp_dir)
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -4644,7 +4636,6 @@ class ExportQuestionnaireTest(ExportTestCase):
             self.assertEqual(dialect.delimiter, "\t")
 
         shutil.rmtree(temp_dir)
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
 
 class ExportDataCollectionTest(ExportTestCase):
