@@ -5,6 +5,7 @@ import sys
 import tempfile
 
 from datetime import date, datetime
+from unittest.mock import patch
 
 from xml.etree.ElementTree import XML
 from xml.etree import ElementTree
@@ -1249,6 +1250,137 @@ class MedicalRecordFormValidation(TestCase):
         self.assertEqual(response.context['cid_10_list'], '')
 
 
+def _set_mocks(mockServer):
+    mockServer.return_value.get_session_key.return_value = 'gvq89d8y3nn8m9um5makg6qiixkqwai9'
+    mockServer.return_value.add_participants.return_value = [
+        {
+            'completed': 'N', 'email': '', 'mpid': None, 'lastname': '', 'participant_id': None,
+            'token': 'xryiz4rvoh78z9v', 'usesleft': 1, 'remindercount': 0, 'remindersent': 'N', 'sent': 'N',
+            'language': None, 'emailstatus': 'OK', 'validfrom': None, 'tid': '4221', 'blacklisted': None,
+            'firstname': '', 'validuntil': None
+        }
+    ]
+    mockServer.return_value.get_participant_properties.side_effect = [
+        {'completed': '2018-05-15 15:51'},
+        {'token': 'y32dlEFm9J1MTH4'}
+    ]
+    mockServer.return_value.get_survey_properties.return_value = {'language': 'pt-BR', 'additional_languages': ''}
+    mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Rapid Turn Test'}
+    mockServer.return_value.list_groups.return_value = [
+        {'description': '<p>O Rapid Turn Test é uma medida de equilíbrio dinâmico em que a pessoa deve '
+                        'completar três voltas completas no mesmo lugar enquanto o tempo é registrado. Giros '
+                        'para os dois lados são registrados, e também verifica-se a presença de '
+                        '<em>Freezing</em>.</p>\n',
+         'gid': 2617, 'grelevance': '1', 'sid': 247189, 'language': 'pt-BR',
+         'id': {'language': 'pt-BR', 'gid': 2617}, 'randomization_group': '', 'group_order': 0, 'group_name':
+             'RT-Test'},
+        {'description': '', 'gid': 2618, 'grelevance': '', 'sid': 247189, 'language': 'pt-BR',
+         'id': {'language': 'pt-BR', 'gid': 2618}, 'randomization_group': '', 'group_order': 1,
+         'group_name': 'Identification'}
+    ]
+    mockServer.return_value.list_questions.side_effect = [
+        [
+            {'question': 'Presença de freezing?', 'parent_qid': 0, 'qid': 59414, 'modulename': '', 'mandatory': 'Y',
+             'id': {'language': 'pt-BR', 'qid': 59414}, 'title': 'ynFreezingLeft', 'gid': 2617, 'scale_id': 0,
+             'same_default': 0, 'type': 'Y', 'sid': 247189, 'preg': '',
+             'help': 'O freezing pode ocorrer enquanto o indivíduo muda de direção, tendo a sensação de que o pé fica preso ao chão.',
+             'other': 'N', 'question_order': 3, 'language': 'pt-BR', 'relevance': '1'},
+            {'question': 'Presença de freezing?', 'parent_qid': 0, 'qid': 59413, 'modulename': '', 'mandatory': 'Y',
+             'id': {'language': 'pt-BR', 'qid': 59413}, 'title': 'ynFreezingRight', 'gid': 2617, 'scale_id': 0,
+             'same_default': 0, 'type': 'Y', 'sid': 247189, 'preg': '',
+             'help': 'O freezing pode ocorrer enquanto o indivíduo muda de direção, tendo a sensação de que o pé fica preso ao chão.',
+             'other': 'N', 'question_order': 1, 'language': 'pt-BR', 'relevance': '1'}, {
+            'question': 'Em pé, no mesmo lugar, o(a) senhor(a) poderia dar 3 voltas completas, pela esquerda, o mais rápido possível?',
+            'parent_qid': 0, 'qid': 59412, 'modulename': '', 'mandatory': 'Y',
+            'id': {'language': 'pt-BR', 'qid': 59412}, 'title': 'decRTLeft', 'gid': 2617, 'scale_id': 0,
+            'same_default': 0, 'type': 'N', 'sid': 247189, 'preg': '',
+            'help': 'Instrução: Agora em\xa0 pé, parado, vire no lugar para o lado esquerdo\xa0 o mais rápido possível completando 3\xa0 voltas (Registre o tempo, em segundos, decorrido para que o indivíduo realize as três voltas completas).',
+            'other': 'N', 'question_order': 2, 'language': 'pt-BR', 'relevance': '1'}, {
+            'question': '<p style="text-align:justify;">Em pé, no mesmo lugar, o(a) senhor(a) poderia dar 3 voltas completas, pela direita, o mais rápido possível?</p>\n',
+            'parent_qid': 0, 'qid': 59411, 'modulename': '', 'mandatory': 'Y',
+            'id': {'language': 'pt-BR', 'qid': 59411}, 'title': 'decRTRight', 'gid': 2617, 'scale_id': 0,
+            'same_default': 0, 'type': 'N', 'sid': 247189, 'preg': '',
+            'help': '<p style="text-align:justify;">Instrução: Em pé, parado, vire no lugar para o lado direito o mais rápido possível completando 3\xa0 voltas (Registre o tempo, em segundos, decorrido para que o indivíduo realize as três voltas completas).</p>\n',
+            'other': 'N', 'question_order': 0, 'language': 'pt-BR', 'relevance': '1'}
+        ],
+        [
+            {'question': 'Participant Identification number<b>:</b>', 'parent_qid': 0, 'qid': 59417, 'modulename': None,
+             'mandatory': 'Y', 'id': {'language': 'pt-BR', 'qid': 59417}, 'title': 'subjectid', 'gid': 2618,
+             'scale_id': 0, 'same_default': 0, 'type': 'N', 'sid': 247189, 'preg': '', 'help': '', 'other': 'N',
+             'question_order': 3, 'language': 'pt-BR', 'relevance': '1'},
+            {'question': 'Acquisition date<strong>:</strong><br />', 'parent_qid': 0, 'qid': 59416, 'modulename': None,
+             'mandatory': 'Y', 'id': {'language': 'pt-BR', 'qid': 59416}, 'title': 'acquisitiondate', 'gid': 2618,
+             'scale_id': 0, 'same_default': 0, 'type': 'D', 'sid': 247189, 'preg': '', 'help': '', 'other': 'N',
+             'question_order': 1, 'language': 'pt-BR', 'relevance': '1'},
+            {'question': 'Responsible Identification number:', 'parent_qid': 0, 'qid': 59415, 'modulename': None,
+             'mandatory': 'Y', 'id': {'language': 'pt-BR', 'qid': 59415}, 'title': 'responsibleid', 'gid': 2618,
+             'scale_id': 0, 'same_default': 0, 'type': 'N', 'sid': 247189, 'preg': '', 'help': '', 'other': 'N',
+             'question_order': 0, 'language': 'pt-BR', 'relevance': '1'}
+        ],
+        [
+            {'id': {'language': 'pt-BR', 'qid': 59417}, 'help': '', 'qid': 59417, 'sid': 247189, 'same_default': 0,
+             'mandatory': 'Y', 'question_order': 3, 'gid': 2618, 'relevance': '1', 'scale_id': 0, 'preg': '',
+             'parent_qid': 0, 'modulename': None, 'title': 'subjectid', 'language': 'pt-BR',
+             'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'other': 'N'},
+            {'id': {'language': 'pt-BR', 'qid': 59416}, 'help': '', 'qid': 59416, 'sid': 247189, 'same_default': 0,
+             'mandatory': 'Y', 'question_order': 1, 'gid': 2618, 'relevance': '1', 'scale_id': 0, 'preg': '',
+             'parent_qid': 0, 'modulename': None, 'title': 'acquisitiondate', 'language': 'pt-BR',
+             'question': 'Acquisition date<strong>:</strong><br />', 'type': 'D', 'other': 'N'},
+            {'id': {'language': 'pt-BR', 'qid': 59415}, 'help': '', 'qid': 59415, 'sid': 247189, 'same_default': 0,
+             'mandatory': 'Y', 'question_order': 0, 'gid': 2618, 'relevance': '1', 'scale_id': 0, 'preg': '',
+             'parent_qid': 0, 'modulename': None, 'title': 'responsibleid', 'language': 'pt-BR',
+             'question': 'Responsible Identification number:', 'type': 'N', 'other': 'N'}]
+    ]
+    mockServer.return_value.get_question_properties.side_effect = [
+        {
+            'question_order': 0, 'type': 'N',
+            'question': '<p style="text-align:justify;">Em pé, no mesmo lugar, o(a) senhor(a) poderia dar 3 voltas '
+                        'completas, pela direita, o mais rápido possível?</p>\n',
+            'title': 'decRTRight', 'attributes': 'No available attributes', 'other': 'N', 'gid': 2617,
+            'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+            'attributes_lang': 'No available attributes'
+        },
+        {
+            'question_order': 2, 'type': 'N',
+            'question': 'Em pé, no mesmo lugar, o(a) senhor(a) poderia dar 3 voltas completas, pela esquerda, o mais rápido possível?',
+            'title': 'decRTLeft', 'attributes': 'No available attributes', 'other': 'N', 'gid': 2617,
+            'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+            'attributes_lang': 'No available attributes'
+        },
+        {
+            'question_order': 1, 'type': 'Y', 'question': 'Presença de freezing?', 'title': 'ynFreezingRight',
+            'attributes': 'No available attributes', 'other': 'N', 'gid': 2617,
+            'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+            'attributes_lang': 'No available attributes'
+        },
+        {
+            'question_order': 3, 'type': 'Y', 'question': 'Presença de freezing?', 'title': 'ynFreezingLeft',
+            'attributes': 'No available attributes', 'other': 'N', 'gid': 2617,
+            'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+            'attributes_lang': 'No available attributes'
+        },
+        {
+            'question_order': 0, 'type': 'N', 'question': 'Responsible Identification number:',
+            'title': 'responsibleid', 'attributes': {'hidden': '1'}, 'other': 'N', 'gid': 2618,
+            'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+            'attributes_lang': 'No available attributes'},
+        {
+            'question_order': 1, 'type': 'D', 'question': 'Acquisition date<strong>:</strong><br />',
+            'title': 'acquisitiondate', 'attributes': {'hidden': '1'}, 'other': 'N', 'gid': 2618,
+            'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+            'attributes_lang': 'No available attributes'
+        },
+        {
+            'question_order': 3, 'type': 'N', 'question': 'Participant Identification number<b>:</b>',
+            'title': 'subjectid', 'attributes': {'hidden': '1'}, 'other': 'N', 'gid': 2618,
+            'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+            'attributes_lang': 'No available attributes'
+        }
+    ]
+    mockServer.return_value.export_responses_by_token.return_value = \
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwiZGVjUlRSaWdodCIsInluRnJlZXppbmdSaWdodCIsImRlY1JUTGVmdCIsInluRnJlZXppbmdMZWZ0IiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZGF0ZSIsInN1YmplY3RpZCIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMSIsInB0LUJSIiwieTMyZGxFRm05SjFNVEg0IiwiNCIsIk4iLCIxMCIsIk4iLCI1NSIsIiIsIjYiCgo='
+
+
 class QuestionnaireFormValidation(TestCase):
     """
     For this test to be executed, it is necessary to
@@ -1279,11 +1411,23 @@ class QuestionnaireFormValidation(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def test_entrance_evaluation_response_view(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_entrance_evaluation_response_view(self, mockServer):
+        """Test list of entrance evaluation of the entrance
+        evaluation questionnaire type
         """
-        Test list of entrance evaluation
-        of the entrance evaluation questionnaire type
-        """
+        mockServer.return_value.get_session_key.return_value = 'gvq89d8y3nn8m9um5makg6qiixkqwai9'
+        mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Rapid Turn Test'}
+        mockServer.return_value.add_participants.return_value = [
+            {
+                'completed': 'N', 'email': '', 'mpid': None, 'lastname': '', 'participant_id': None,
+                'token': 'xryiz4rvoh78z9v', 'usesleft': 1, 'remindercount': 0, 'remindersent': 'N', 'sent': 'N',
+                'language': None, 'emailstatus': 'OK', 'validfrom': None, 'tid': '4221', 'blacklisted': None,
+                'firstname': '', 'validuntil': None
+            }
+        ]
+        mockServer.return_value.get_participant_properties.return_value = {'completed': 'N'}
+
         patient = self.util.create_patient(self.user)
 
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
@@ -1398,11 +1542,28 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-    def test_entrance_evaluation_response_delete(self):
-        """
-        Test delete from 2 views: update and view
+    @patch('survey.abc_search_engine.Server')
+    def test_entrance_evaluation_response_delete(self, mockServer):
+        """Test delete from 2 views: update and view
         of the type: entrance evaluation questionnaire
         """
+        mockServer.return_value.get_session_key.return_value = 'smq6aggip5w97mccxhxete7fwfwfs6pr'
+        mockServer.return_value.add_participants.side_effect = [
+            [{'token': 'HjZIlSstGrKqzmV', 'blacklisted': None,
+              'remindersent': 'N', 'email': '', 'mpid': None, 'remindercount': 0, 'lastname': '', 'language': None,
+              'firstname': '', 'validuntil': None, 'validfrom': None, 'completed': 'N', 'tid': '4228', 'sent': 'N',
+              'usesleft': 1, 'emailstatus': 'OK', 'participant_id': None}],
+            [{'token': '81Um8LUYGob4f2p', 'blacklisted': None, 'remindersent': 'N', 'email': '', 'mpid': None,
+              'remindercount': 0, 'lastname': '', 'language': None, 'firstname': '', 'validuntil': None,
+              'validfrom': None, 'completed': 'N', 'tid': '4229', 'sent': 'N', 'usesleft': 1, 'emailstatus': 'OK',
+              'participant_id': None}]
+        ]
+
+        mockServer.return_value.get_participant_properties.return_value = {'completed': 'N'}
+        mockServer.return_value.delete_participants.side_effect = [{'4228': 'Deleted'}, {'4229': 'Deleted'}]
+        mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Rapid Turn Test'}
+        mockServer.return_value.get_survey_properties.return_value = {'language': 'pt-BR', 'additional_languages': ''}
+
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
         response_survey = self.util.create_response_survey(self.user, patient, survey)
@@ -1432,11 +1593,13 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 200)  # Now it is deleted
 
-    def test_entrance_ev_response_complete(self):
-        """
-        Test view of questionnaire response when questionnaire is complete
+    @patch('survey.abc_search_engine.Server')
+    def test_entrance_ev_response_complete(self, mockServer):
+        """Test view of questionnaire response when questionnaire is complete
         of the type: entrance evaluation questionnaire
         """
+        _set_mocks(mockServer)
+
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
         response_survey = self.util.create_response_survey(self.user, patient, survey, 2)
@@ -1447,15 +1610,17 @@ class QuestionnaireFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_survey.token_id, response.context["questionnaire_response"].token_id)
 
+    @patch('survey.abc_search_engine.Server')
     @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
                                            'LOCATION': 'limesurveycache',
                                            'TIMEOUT': 0}})
-    def test_entrance_ev_response_complete_without_cache(self):
-        """
-        Test view of questionnaire response when questionnaire is complete
+    def test_entrance_ev_response_complete_without_cache(self, mockServer):
+        """Test view of questionnaire response when questionnaire is complete
         of the type: entrance evaluation questionnaire and no information
         is saved in the cache
         """
+        _set_mocks(mockServer)
+
         usermethod = self.user
         patient_mock = self.util.create_patient(usermethod)
         survey_mock = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
@@ -1475,15 +1640,17 @@ class QuestionnaireFormValidation(TestCase):
         )
         self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
 
+    @patch('survey.abc_search_engine.Server')
     @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
                                            'LOCATION': 'limesurveycache',
                                            'TIMEOUT': 60}})
-    def test_entrance_ev_response_complete_with_cache(self):
-        """
-        Test view of questionnaire response when questionnaire is complete
+    def test_entrance_ev_response_complete_with_cache(self, mockServer):
+        """Test view of questionnaire response when questionnaire is complete
         of the type: entrance evaluation questionnaire getting information
         from a cache
         """
+        _set_mocks(mockServer)
+
         usermethod = self.user
         patient_mock = self.util.create_patient(usermethod)
         survey_mock = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
@@ -1503,10 +1670,17 @@ class QuestionnaireFormValidation(TestCase):
         )
         self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
 
-    def test_experiment_response_view(self):
-        """
-        Testa a visualizacao completa do questionario respondido no Lime Survey
-        """
+    @patch('survey.abc_search_engine.Server')
+    def test_experiment_response_view(self, mockServer):
+    # def test_experiment_response_view(self):
+        """Test complete visualization of answered questionnaire in LimeSurvey"""
+        
+        mockServer.return_value.get_session_key.return_value = 'smq6aggip5w97mccxhxete7fwfwfs6pr'
+        mockServer.return_value.add_survey.return_value = 99999
+        mockServer.return_value.delete_survey.return_value = {'status': 'OK'}
+        mockServer.return_value.get_language_properties.return_value = {
+            'surveyls_title': 'Questionario de teste - DjangoTests'
+        }
 
         # Create a research project
         research_project = ResearchProject.objects.create(
