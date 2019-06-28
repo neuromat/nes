@@ -314,7 +314,6 @@ class ABCSearchEngine(ABC):
         :param language: language of the answer
         :return: properties of a question of a survey
         """
-
         properties = self.server.get_question_properties(
             self.session_key, question_id, self.QUESTION_PROPERTIES, language)
 
