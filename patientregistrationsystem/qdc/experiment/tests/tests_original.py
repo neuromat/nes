@@ -2265,7 +2265,9 @@ class SubjectTest(TestCase):
              'question': 'Quem?', 'type': 'S', 'answeroptions': 'No available answer options', 'gid': 1140,
              'attributes': 'No available attributes', 'subquestions': 'No available answers'}
         ]
-        mockServer.return_value.add_participants.return_value = [{'remindersent': 'N', 'completed': 'N', 'blacklisted': None, 'participant_id': None, 'remindercount': 0, 'lastname': '', 'sent': 'N', 'usesleft': 1, 'validuntil': None, 'language': None, 'emailstatus': 'OK', 'validfrom': None, 'token': 'kMR34vg97KnCOOK', 'tid': '867', 'mpid': None, 'email': '', 'firstname': ''}]
+        mockServer.return_value.add_participants.return_value = [
+            {'remindersent': 'N', 'completed': 'N', 'blacklisted': None, 'participant_id': None, 'remindercount': 0, 'lastname': '', 'sent': 'N', 'usesleft': 1, 'validuntil': None, 'language': None, 'emailstatus': 'OK', 'validfrom': None, 'token': 'kMR34vg97KnCOOK', 'tid': '867', 'mpid': None, 'email': '', 'firstname': ''}
+        ]
         mockServer.return_value.get_participant_properties.side_effect = [
             {'token': 'kMR34vg97KnCOOK'},
             {'completed': 'N'},
@@ -2286,7 +2288,7 @@ class SubjectTest(TestCase):
         # Create the root of the experimental protocol
         block = ObjectsFactory.create_block(Experiment.objects.first())
 
-e        # Using a known questionnaires at LimeSurvey to use in this test.
+        # Using a known questionnaires at LimeSurvey to use in this test.
         new_survey, created = \
             Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
         new_survey_without_access_table, created = \

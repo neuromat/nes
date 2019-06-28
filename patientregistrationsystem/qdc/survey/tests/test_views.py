@@ -215,9 +215,13 @@ class SurveyTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def test_survey_list(self):
+    @patch('survey.abc_search_engine.Server')
+    # def test_survey_list(self):
+    def test_survey_list(self, mockServer):
+        mockServer.return_value.get_session_key.return_value = 'vz224sb7jzkvh8i4kpx8fxbcxd67meht'
+        mockServer.return_value.get_language_properties.return_value = {'status': 'Error: Invalid survey ID'}
 
-        # Check if list of survey is empty before inserting anything
+    # Check if list of survey is empty before inserting anything
         response = self.client.get(reverse('survey_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['questionnaires_list']), 0)
@@ -262,6 +266,8 @@ class SurveyTest(TestCase):
     @patch('survey.abc_search_engine.Server')
     def test_survey_update(self, mockServer):
         mockServer.return_value.get_session_key.return_value = 'vz224sb7jzkvh8i4kpx8fxbcxd67meht'
+        # TODO (NES-981): probably this errors are due to running without LIMESURVEY=remote.
+        #  Run with it.
         mockServer.return_value.get_survey_properties.return_value = {'status': 'Error: Invalid survey ID'}
         mockServer.return_value.get_language_properties.return_value = {'status': 'Error: Invalid survey ID'}
 
@@ -285,11 +291,15 @@ class SurveyTest(TestCase):
         response = self.client.post(reverse('survey_edit', args=(survey.pk,)), self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-    def test_survey_view(self):
-
-        # Create a survey to be used in the test
-        # survey = Survey.objects.create(lime_survey_id=1)
-        # survey.save()
+    @patch('survey.abc_search_engine.Server')
+    # def test_survey_view(self):
+    def test_survey_view(self, mockServer):
+        mockServer.return_value.get_session_key.return_value = 'vz224sb7jzkvh8i4kpx8fxbcxd67meht'
+        mockServer.return_value.get_survey_properties.return_value = {'additional_languages': '', 'language': 'pt-BR'}
+        mockServer.return_value.get_language_properties.return_value = {
+            'surveyls_title': 'NES-TestCase (used by automated tests)'
+        }
+        mockServer.return_value.get_participant_properties.return_value = {'completed': '2018-10-16 17:29'}
 
         # Create a research project
         research_project = ResearchProject.objects.create(title="Research project title",
@@ -367,7 +377,12 @@ class SurveyTest(TestCase):
         response = self.client.get(reverse('survey_view', args=(survey.pk,)))
         self.assertEqual(response.status_code, 200)
 
-    def test_survey_without_pt_title_gets_pt_title_filled_with_limesurvey_code_when_there_is_not_en_title(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_survey_without_pt_title_gets_pt_title_filled_with_limesurvey_code_when_there_is_not_en_title(
+            self, mockServer):
+        mockServer.return_value.get_session_key.return_value = 'vz224sb7jzkvh8i4kpx8fxbcxd67meht'
+        mockServer.return_value.get_language_properties.return_value = {'status': 'Error: Invalid survey ID'}
+
         # Check if list of survey is empty before inserting anything
         response = self.client.get(reverse('survey_list'))
         self.assertEqual(response.status_code, 200)
@@ -384,13 +399,18 @@ class SurveyTest(TestCase):
         self.assertEqual(len(response.context['questionnaires_list']), 1)
 
     @override_settings(LANGUAGE_CODE='en')
-    def test_survey_without_en_title_gets_en_title_filled_with_limesurvey_code_when_there_is_not_pt_title(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_survey_without_en_title_gets_en_title_filled_with_limesurvey_code_when_there_is_not_pt_title(
+            self, mockServer):
+        mockServer.return_value.get_session_key.return_value = 'vz224sb7jzkvh8i4kpx8fxbcxd67meht'
+        mockServer.return_value.get_language_properties.return_value = {'status': 'Error: Invalid survey ID'}
+
         # Check if list of survey is empty before inserting anything
         response = self.client.get(reverse('survey_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['questionnaires_list']), 0)
 
-        # Create an survey with a dummy lime survey id and without any code
+        # Create a survey with a dummy lime survey id and without any code
         survey = Survey.objects.create(lime_survey_id=-1)
         self.assertIsNone(survey.en_title)
 
@@ -400,7 +420,10 @@ class SurveyTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['questionnaires_list']), 1)
 
-    def test_survey_without_pt_title_gets_listed_with_en_title_instead_but_remains_without_pt_title(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_survey_without_pt_title_gets_listed_with_en_title_instead_but_remains_without_pt_title(self, mockServer):
+        mockServer.return_value.get_session_key.return_value = 'vz224sb7jzkvh8i4kpx8fxbcxd67meht'
+
         # Check if list of survey is empty before inserting anything
         response = self.client.get(reverse('survey_list'))
         self.assertEqual(response.status_code, 200)
@@ -421,7 +444,10 @@ class SurveyTest(TestCase):
         self.assertIsNone(Survey.objects.last().pt_title)
 
     @override_settings(LANGUAGE_CODE='en')
-    def test_survey_without_en_title_gets_listed_with_pt_title_instead_but_remains_without_en_title(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_survey_without_en_title_gets_listed_with_pt_title_instead_but_remains_without_en_title(self, mockServer):
+        mockServer.return_value.get_session_key.return_value = 'vz224sb7jzkvh8i4kpx8fxbcxd67meht'
+
         # Check if list of survey is empty before inserting anything
         response = self.client.get(reverse('survey_list'))
         self.assertEqual(response.status_code, 200)
