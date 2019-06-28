@@ -1155,9 +1155,9 @@ def questionnaire_response_update(request, questionnaire_response_id,
     surveys = Questionnaires()
     language = get_questionnaire_language(surveys, questionnaire_response.survey.lime_survey_id, request.LANGUAGE_CODE)
     survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id, language)
-    survey_completed = (surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
-                                                           questionnaire_response.token_id,
-                                                           "completed") != "N")
+    survey_completed = surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
+                                                          questionnaire_response.token_id,
+                                                          "completed") != "N"
     surveys.release_session_key()
 
     patient = get_object_or_404(Patient, pk=questionnaire_response.patient_id)

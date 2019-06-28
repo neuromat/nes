@@ -1505,10 +1505,16 @@ class QuestionnaireFormValidation(TestCase):
 
         settings.LIMESURVEY['URL_API'] = 'https://survey.numec.prp.usp.br/'  # without error
 
-    def test_entrance_evaluation_response_create(self):
+    @patch('survey.abc_search_engine.Server')
+    # def test_entrance_evaluation_response_create(self):
+    def test_entrance_evaluation_response_create(self, mockServer):
         """Test inclusion of questionnaire response to a clear survey
         of the type: entrance evaluation questionnaire
         """
+
+        # NES-981 Setting default mocks just passed the test. Not sure if mocks
+        # are overloaded
+        _set_mocks(mockServer)
 
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
@@ -1521,19 +1527,27 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.post(url + "?origin=subject", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-    def test_entrance_evaluation_response_update(self):
+    @patch('survey.abc_search_engine.Server')
+    # def test_entrance_evaluation_response_update(self):
+    def test_entrance_evaluation_response_update(self, mockServer):
         """Test update of questionnaire response to a clear survey
         of the type: entrance evaluation questionnaire
         """
+        _set_mocks(mockServer)
+        # Extend get_participant_properties to calls for self.client.post
+        mockServer.return_value.get_participant_properties.side_effect = [
+            {'completed': '2018-05-15 15:51'},
+            {'token': 'y32dlEFm9J1MTH4'},
+            {'completed': 'N'},
+            {'token': 'OFapcaLkOd9QlN1'}
+        ]
+
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
-        response_survey = self.util.create_response_survey(
-            self.user, patient, survey, 12
-        )
+        response_survey = self.util.create_response_survey(self.user, patient, survey, 21)
 
         url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')
         url2 = url1.replace('experiment', 'patient')
-
         response = self.client.get(url2 + "?origin=subject&status=edit")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_survey.token_id, response.context["questionnaire_response"].token_id)
@@ -1672,7 +1686,6 @@ class QuestionnaireFormValidation(TestCase):
 
     @patch('survey.abc_search_engine.Server')
     def test_experiment_response_view(self, mockServer):
-    # def test_experiment_response_view(self):
         """Test complete visualization of answered questionnaire in LimeSurvey"""
         
         mockServer.return_value.get_session_key.return_value = 'smq6aggip5w97mccxhxete7fwfwfs6pr'
