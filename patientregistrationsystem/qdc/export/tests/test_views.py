@@ -153,7 +153,6 @@ class ExportQuestionnaireTest(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_same_questionnaire_used_in_different_steps_return_correct_zipfile_content(self, mockServer):
-        # TODO (NES-981): remover diretórios temporários criados
         set_mocks2(mockServer)
 
         # Create other component (step) QUESTIONNAIRE in same experimental
