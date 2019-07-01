@@ -1835,7 +1835,6 @@ class SubjectTest(TestCase):
 
     @patch('survey.abc_search_engine.Server')
     def test_questionnaire_fill(self, mockServer):
-    # def test_questionnaire_fill(self):
         """Test of a questionnaire fill"""
 
         mockServer.return_value.get_session_key.return_value = 'fmhcr2qv7tz37b3zpkhfz3t6rjj26eri'
@@ -2454,9 +2453,7 @@ class SubjectTest(TestCase):
         self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
     def test_eeg_data_file(self):
-        """
-        Test of a EEG data file upload
-        """
+        """Test of an EEG data file upload"""
 
         research_project = ObjectsFactory.create_research_project()
 
