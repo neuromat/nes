@@ -4697,7 +4697,7 @@ class ImportExperimentTest(TestCase):
         self.GROUP_ID = 1410
         self.LIMESURVEY_RESPONSES_IDS_DELETED = [1, 2]
 
-    def _set_mock_values(self, mockServer):
+    def _set_mocks(self, mockServer):
         mockServer.return_value.get_session_key.return_value = self.SESSION_KEY
         mockServer.return_value.import_survey.return_value = self.SURVEY_ID
         mockServer.return_value.list_participants.return_value = \
@@ -4786,7 +4786,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # Add session variables related to updating/overwrite patients when importing
         session = self.client.session
@@ -4861,7 +4861,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # Changing some mock's
         mockServer.return_value.list_participants.return_value = \
@@ -4913,7 +4913,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # Add session variables related to updating/overwrite patients when importing
         session = self.client.session
@@ -4939,7 +4939,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # Add session variables related to updating/overwrite patients when importing
         session = self.client.session
@@ -5004,7 +5004,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is another returned value with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5034,7 +5034,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5060,7 +5060,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5086,7 +5086,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5112,7 +5112,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5138,7 +5138,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5164,7 +5164,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5191,7 +5191,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5222,7 +5222,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
@@ -5267,7 +5267,7 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        self._set_mock_values(mockServer)
+        self._set_mocks(mockServer)
 
         # There is other returned values with other error status but we treat
         # the difference between error and success considering error a dict returned.
