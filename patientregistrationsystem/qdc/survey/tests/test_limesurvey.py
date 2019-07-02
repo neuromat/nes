@@ -9,7 +9,7 @@ from survey.survey_utils import QuestionnaireUtils
 class LimeSurveyAPITest(TestCase):
 
     @patch('survey.abc_search_engine.Server')
-    def test_get_question_properties(self, mockServerClass):
+    def test_get_question_properties(self, mockServer):
         lime_survey = Questionnaires()
         lime_survey.get_question_properties(1, 'en')
 
@@ -19,7 +19,7 @@ class LimeSurveyAPITest(TestCase):
             'attributes', 'other'
         }
         (session_key, question_id, properties, language), kwargs = \
-            mockServerClass.return_value.get_question_properties.call_args
+            mockServer.return_value.get_question_properties.call_args
         self.assertTrue(
             set(question_properties).issubset(properties),
             str(set(question_properties)) + ' is not a subset of ' +

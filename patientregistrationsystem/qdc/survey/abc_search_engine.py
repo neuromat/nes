@@ -114,6 +114,7 @@ class ABCSearchEngine(ABC):
         if self.session_key:
             survey_title = self.server.get_language_properties(
                 self.session_key, sid, {'method': 'surveyls_title'}, language)
+
             if 'surveyls_title' in survey_title:
                 survey_title = survey_title.get('surveyls_title')
             else:
@@ -144,6 +145,7 @@ class ABCSearchEngine(ABC):
 
         result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
         # If failed to consume API, it return a dict with one element with 'status' as key
+
         return None if 'status' in result else result
 
     @abstractmethod
@@ -312,9 +314,9 @@ class ABCSearchEngine(ABC):
         :param language: language of the answer
         :return: properties of a question of a survey
         """
-
         properties = self.server.get_question_properties(
             self.session_key, question_id, self.QUESTION_PROPERTIES, language)
+
         if 'status' in properties and properties['status'] in [
             'Error: Invalid questionid', 'Error: Invalid language', 'Error: Invalid questionid', 'No valid Data',
             'No permission', 'Invalid session key'
