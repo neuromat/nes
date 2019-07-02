@@ -20,8 +20,8 @@ from experiment.models import Component, ComponentConfiguration, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
-from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, set_mocks5, \
-    set_mocks6, set_mocks7, set_mocks8, set_mocks9
+from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
+    set_mocks5
 from export.tests.tests_helper import ExportTestCase
 from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
@@ -437,7 +437,7 @@ class ExportQuestionnaireTest(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_reusing_experimental_protocol_in_two_groups_returns_correct_directory_structure(self, mockServer):
-        set_mocks5(mockServer)
+        set_mocks3(mockServer)
 
         # Create other group and associate the same experimental protocol
         group2 = ObjectsFactory.create_group(self.experiment, self.root_component)
@@ -517,7 +517,7 @@ class ExportQuestionnaireTest(ExportTestCase):
     def test_participant_age_in_responses_is_age_when_questionnaire_was_filled_1(self, mockServer):
         """Test over experiment questionnaire response"""
 
-        set_mocks6(mockServer)
+        set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
 
@@ -584,7 +584,7 @@ class ExportQuestionnaireTest(ExportTestCase):
     def test_participant_age_in_responses_is_age_when_questionnaire_was_filled_2(self, mockServer):
         """Test over participant questionnaire responses"""
 
-        set_mocks7(mockServer)
+        set_mocks5(mockServer)
 
         # In setUp we created experiment questionnaire response. Here we
         # create a participant questionnaire response (entrance questionnaire)
@@ -641,7 +641,7 @@ class ExportQuestionnaireTest(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_create_csv_file(self, mockServer):
-        set_mocks8(mockServer)
+        set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
 
@@ -701,7 +701,7 @@ class ExportQuestionnaireTest(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_create_tsv_file(self, mockServer):
-        set_mocks9(mockServer)
+        set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
 
