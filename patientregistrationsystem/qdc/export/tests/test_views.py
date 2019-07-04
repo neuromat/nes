@@ -904,17 +904,13 @@ class ExportDataCollectionTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_eeg(self):
-        # create eeg component
+        # Create eeg component
         eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
-        eeg_comp = ObjectsFactory.create_component(
-            self.experiment, Component.EEG,
-            kwargs={'eeg_set': eeg_set}
-        )
+        eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
 
-        # include eeg component in experimental protocol
+        # Include eeg component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, eeg_comp
-        )
+            self.root_component, eeg_comp)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' eeg file
