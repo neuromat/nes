@@ -46,7 +46,7 @@ EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 MAX_STRING_LENGTH = 17
 
-patient_fields = [
+PATIENT_FIELDS = [
     {"field": 'age', "header": 'age', "description": _("Age")},
     {"field": 'gender__name', "header": 'gender', "description": _("Gender")},
     {"field": 'date_birth', "header": 'date_birth', "description": _("Date of birth")},
@@ -82,7 +82,7 @@ patient_fields = [
     {"field": 'socialhistorydata__drugs', "header": 'drugs', "description": _("Drugs")},
 ]
 
-diagnosis_fields = [
+DIAGNOSIS_FIELDS = [
     {"field": "medicalrecorddata__diagnosis__date", "header": 'diagnosis_date', "description": _("Date")},
     {"field": "medicalrecorddata__diagnosis__description", "header": 'diagnosis_description',
      "description": _("Observation")},
@@ -94,17 +94,18 @@ diagnosis_fields = [
      "header": 'classification_of_diseases_description', "description": _("Disease Abbreviated Description")},
 ]
 
-PATIENT_FIELDS_INCLUSION = [
-    ["code", {"code": "participant_code", "full": _("Participant code"),
-              "abbreviated": _("Participant code")}],
+FIELDS_INCLUSION = [
+    [
+        "code",
+        {
+            "code": "participant_code",
+            "full": _("Participant code"),
+            "abbreviated": _("Participant code")
+        }
+    ],
 ]
 
-diagnosis_fields_inclusion = [
-    ["code", {"code": "participant_code", "full": _("Participant code"),
-              "abbreviated": _("Participant code")}],
-]
-
-questionnaire_evaluation_fields_excluded = [
+QUESTIONNAIRE_EVALUATION_FIELDS_EXCLUDED = [
     "subjectid",
     "responsibleid",
     "id",
@@ -118,7 +119,7 @@ questionnaire_evaluation_fields_excluded = [
     "refurl"
 ]
 
-header_explanation_fields = ['questionnaire_id',
+HEADER_EXPLANATION_FIELDS = ['questionnaire_id',
                              'questionnaire_title',
                              'question_code',
                              'question_description',
@@ -145,44 +146,28 @@ def find_description(field_to_find, fields_inclusion):
 
 def abbreviated_data(data_to_abbreviate, heading_type):
 
-    if heading_type == 'abbreviated' and len(data_to_abbreviate) > \
-            MAX_STRING_LENGTH:
+    if heading_type == 'abbreviated' and len(data_to_abbreviate) > MAX_STRING_LENGTH:
         return data_to_abbreviate[:MAX_STRING_LENGTH] + '..'
     else:
         return data_to_abbreviate
 
 
-def update_participants_list(participants_list, heading_type):
+def update_fields(list_, heading_type, fields):
+    """Update participants attributes or diagnosis attributes according
+    to the type of header for csv file
+    :param list_: participant attributes or diagnosis attributes list
+    :param heading_type: header type (code, abbreviated, or full)
+    :param fields: list of dictionnaires for participants attributes or diagnosis attributes
+    """
+    if heading_type != 'code':
+        for item in list_:
+            header_translated = find_description(item[0], fields)
+            item[1] = abbreviated_data(header_translated, heading_type)
 
-    if participants_list:
-
-        # update header, if necessary
-        if heading_type != "code":
-            for participant in participants_list:
-                header_translated = find_description(participant[0], patient_fields)
-                participant[1] = abbreviated_data(header_translated, heading_type)
-
-        # include participant_code
-        for field, header in PATIENT_FIELDS_INCLUSION:
-            header_translated = ug_(header[heading_type])
-            participants_list.insert(
-                0, [field, abbreviated_data(header_translated, heading_type)]
-            )
-
-
-def update_diagnosis_list(diagnosis_list, heading_type):
-
-    if diagnosis_list:
-        # update header, if necessary
-        if heading_type != "code":
-            for diagnosis in diagnosis_list:
-                header_translated = find_description(diagnosis[0], diagnosis_fields)
-                diagnosis[1] = abbreviated_data(header_translated, heading_type)
-
-        # include participant_code
-        for field, header in diagnosis_fields_inclusion:
-            header_translated = ug_(header[heading_type])
-            diagnosis_list.insert(0, [field, abbreviated_data(header_translated, heading_type)])
+    # Include participant code
+    for field, header in FIELDS_INCLUSION:
+        header_translated = ug_(header[heading_type])
+        list_.insert(0, [field, abbreviated_data(header_translated, heading_type)])
 
 
 def export_create(request, export_id, input_filename, template_name="export/export_data.html",
@@ -443,8 +428,10 @@ def export_view(request, template_name="export/export_data.html"):
                 filesformat_type = export_form.cleaned_data['filesformat'] or 'csv'
                 heading_type = export_form.cleaned_data['headings'] or 'code'
 
-                update_participants_list(participants_list, heading_type)
-                update_diagnosis_list(diagnosis_list, heading_type)
+                if participants_list:
+                    update_fields(participants_list, heading_type, PATIENT_FIELDS)
+                if diagnosis_list:
+                    update_fields(diagnosis_list, heading_type, DIAGNOSIS_FIELDS)
 
                 component_list['per_eeg_raw_data'] = export_form.cleaned_data['per_eeg_raw_data']
                 component_list['per_eeg_nwb_data'] = export_form.cleaned_data['per_eeg_nwb_data']
@@ -631,8 +618,8 @@ def export_view(request, template_name="export/export_data.html"):
 
     context = {
         "export_form": export_form,
-        "patient_fields": patient_fields,
-        "diagnosis_fields": diagnosis_fields,
+        "PATIENT_FIELDS": PATIENT_FIELDS,
+        "DIAGNOSIS_FIELDS": DIAGNOSIS_FIELDS,
         "questionnaires_fields_list": questionnaires_fields_list,
         "questionnaires_experiment_fields_list":
             questionnaires_experiment_fields_list,
@@ -890,7 +877,7 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
 
             index = 0
             for question in questionnaire_questions[0]:
-                if question not in questionnaire_evaluation_fields_excluded:
+                if question not in QUESTIONNAIRE_EVALUATION_FIELDS_EXCLUDED:
 
                     description = questionnaire_questions_full[0][index]
 
@@ -946,7 +933,7 @@ def get_questionnaire_fields(questionnaire_code_list, current_language="pt-BR"):
             index = 0
             # line 0 - header information
             for question in questionnaire_questions[0]:
-                if question not in questionnaire_evaluation_fields_excluded:
+                if question not in QUESTIONNAIRE_EVALUATION_FIELDS_EXCLUDED:
                     description = questionnaire_questions_full[0][index]
                     record_question["output_list"].append({
                         "field": question, "header": question, "description": description

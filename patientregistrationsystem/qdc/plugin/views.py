@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from export.input_export import build_complete_export_structure
 from export.models import Export
-from export.views import patient_fields, get_questionnaire_fields, export_create
+from export.views import PATIENT_FIELDS, get_questionnaire_fields, export_create
 from patient.models import QuestionnaireResponse
 from plugin.models import RandomForests
 from survey.abc_search_engine import Questionnaires
@@ -187,7 +187,7 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
 
     context = {
         'participants': participants_headers,
-        'patient_fields': patient_fields,
+        'PATIENT_FIELDS': PATIENT_FIELDS,
         'admission_title': admission_title,
         'surgical_title': surgical_title
     }
