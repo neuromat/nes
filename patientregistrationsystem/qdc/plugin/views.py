@@ -187,7 +187,7 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
 
     context = {
         'participants': participants_headers,
-        'PATIENT_FIELDS': PATIENT_FIELDS,
+        'patient_fields': PATIENT_FIELDS,
         'admission_title': admission_title,
         'surgical_title': surgical_title
     }
