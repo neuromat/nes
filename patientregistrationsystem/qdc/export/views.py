@@ -154,7 +154,7 @@ def abbreviated_data(data_to_abbreviate, heading_type):
 
 def update_fields(list_, heading_type, fields):
     """Update participants attributes or diagnosis attributes according
-    to the type of header for csv file
+    to the type of header in csv file
     :param list_: participant attributes or diagnosis attributes list
     :param heading_type: header type (code, abbreviated, or full)
     :param fields: list of dictionnaires for participants attributes or diagnosis attributes
@@ -314,9 +314,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 "export",
                 path.join(str(export_instance.user.id), str(export_instance.id), str(export_filename)))
 
-            update_export_instance(
-                input_export_file, output_export_file, export_instance
-            )
+            update_export_instance(input_export_file, output_export_file, export_instance)
 
         # delete temporary directory: from base_directory and below
         base_export_directory = export.get_export_directory()
