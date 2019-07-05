@@ -1432,15 +1432,11 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
     return render(request, template_name, context)
 
 
-def recursively_create_list_of_questionnaires_and_statistics(block_id,
-                                                             list_of_questionnaires_configuration,
-                                                             num_participants,
-                                                             language_code):
+def recursively_create_list_of_questionnaires_and_statistics(
+        block_id, list_of_questionnaires_configuration, num_participants, language_code):
 
     for questionnaire_configuration in ComponentConfiguration.objects.filter(
-            parent_id=block_id, component__component_type="questionnaire"
-    ):
-
+            parent_id=block_id, component__component_type="questionnaire"):
         if questionnaire_configuration.number_of_repetitions is not None:
             fills_per_participant = questionnaire_configuration.number_of_repetitions
             total_fills_needed = num_participants * fills_per_participant
@@ -1509,8 +1505,7 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     # in this group.
     if group.experimental_protocol is not None:
         list_of_questionnaires_configuration = recursively_create_list_of_questionnaires_and_statistics(
-            group.experimental_protocol,
-            [],
+            group.experimental_protocol, [],
             SubjectOfGroup.objects.filter(group_id=group_id).count(),
             request.LANGUAGE_CODE)
     else:
@@ -9465,9 +9460,9 @@ def find_questionnaire_name(survey, language_code):
     titles = {'pt-br': survey.pt_title, 'en': survey.en_title}
     fallback_language = 'en' if language_code == 'pt-br' else 'pt-br'
 
-    if titles[language_code] != None and titles[language_code] != "":
+    if titles[language_code] is not None and titles[language_code] != "":
         title = titles[language_code]
-    elif titles[fallback_language] != None and titles[fallback_language] != "":
+    elif titles[fallback_language] is not None and titles[fallback_language] != "":
         title = titles[fallback_language]
     else:
         surveys = Questionnaires()
