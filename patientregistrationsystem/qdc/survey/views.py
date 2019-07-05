@@ -91,7 +91,7 @@ def get_survey_title_based_on_the_user_language(survey, language_code, update=Fa
 @permission_required('survey.view_survey')
 def survey_list(request, template_name='survey/survey_list.html'):
     surveys = Questionnaires()
-    limesurvey_available = check_limesurvey_access(request, surveys)
+    limesurvey_available_ = check_limesurvey_access(request, surveys)
 
     questionnaires_list = []
 
@@ -135,7 +135,7 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     context = {
         'questionnaires_list': questionnaires_list,
-        'limesurvey_available': limesurvey_available,
+        'limesurvey_available': limesurvey_available_,
     }
 
     return render(request, template_name, context)

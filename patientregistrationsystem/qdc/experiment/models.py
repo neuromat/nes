@@ -930,9 +930,7 @@ class Stimulus(Component):
 
 
 class Questionnaire(Component):
-    survey = models.ForeignKey(
-        Survey, null=False, blank=False, on_delete=models.PROTECT
-    )
+    survey = models.ForeignKey(Survey, null=False, blank=False, on_delete=models.PROTECT)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -942,9 +940,7 @@ class Block(Component):
     SEQUENCE = 'sequence'
     PARALLEL_BLOCK = 'parallel_block'
     BLOCK_TYPES = ((SEQUENCE, _("Sequence")), (PARALLEL_BLOCK, _("Parallel")))
-    number_of_mandatory_components = models.IntegerField(
-        null=True, blank=True, validators=[MinValueValidator(0)]
-    )
+    number_of_mandatory_components = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     type = models.CharField(null=False, max_length=20,
                             choices=BLOCK_TYPES)
 
