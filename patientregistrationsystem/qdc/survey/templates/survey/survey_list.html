@@ -74,7 +74,12 @@
                     <form id="survey_form" method="post">
                         {% csrf_token %}
                         <div class="btn-group pull-right">
-                            <button type="submit" class="btn btn-default" name="action" value="update" {% if not limesurvey_available  %} disabled {% endif %} title={% trans "Update informations about the questionnaires" %}><i class="fa fa-refresh"></i> {% trans "Update" %}</button>
+                            <button data-toggle="tooltip" title="{% trans "Update survey title if you added title in current NES language to your survey in LimeSurvey" %}"
+                                    type="submit" class="btn
+                            btn-default"
+                                    name="action"
+                                    value="update"
+                                    {% if not limesurvey_available  %} disabled {% endif %} title={% trans "Update informations about the questionnaires" %}><i class="fa fa-refresh"></i> {% trans "Update" %}</button>
                         </div>
                     </form>
                 {% endif %}
