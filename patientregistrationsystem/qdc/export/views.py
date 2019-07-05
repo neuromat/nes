@@ -616,8 +616,8 @@ def export_view(request, template_name="export/export_data.html"):
 
     context = {
         "export_form": export_form,
-        "PATIENT_FIELDS": PATIENT_FIELDS,
-        "DIAGNOSIS_FIELDS": DIAGNOSIS_FIELDS,
+        "patient_fields": PATIENT_FIELDS,
+        "diagnosis_fields": DIAGNOSIS_FIELDS,
         "questionnaires_fields_list": questionnaires_fields_list,
         "questionnaires_experiment_fields_list":
             questionnaires_experiment_fields_list,
