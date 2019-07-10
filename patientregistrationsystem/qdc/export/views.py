@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
+import shutil
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -185,15 +187,15 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             participants_filtered_list = Patient.objects.filter(removed=False)
         export.set_participants_filtered_data(participants_filtered_list)
 
-        # set path of the directory base
+        # Set path of the directory base
         base_directory, path_to_create = path.split(export.get_directory_base())
-        # create directory base
+        # Create directory base
         error_msg, base_directory_name = create_directory(base_directory, path_to_create)
         if error_msg != '':
             messages.error(request, error_msg)
             return render(request, template_name)
 
-        # read initial json file
+        # Read initial json file
         input_export_file = path.join('export', str(request.user.id), str(export_instance.id), str(input_filename))
 
         # prepare data to be processed
@@ -469,14 +471,18 @@ def export_view(request, template_name="export/export_data.html"):
                     diagnosis_list, questionnaires_list, experiment_questionnaires_list, responses_type,
                     heading_type, input_filename, component_list, language_code, filesformat_type)
 
-                complete_filename = export_create(request, export_instance.id, input_filename)
+                result = export_create(request, export_instance.id, input_filename)
 
-                if complete_filename:
+                if isinstance(result, HttpResponse):
+                    # export_create method failed
+                    shutil.rmtree(path.dirname(input_filename))
+                    return result
+                elif path.exists(result):
                     messages.success(request, _("Export was finished correctly"))
-                    zip_file = open(complete_filename, 'rb')
+                    zip_file = open(result, 'rb')
                     response = HttpResponse(zip_file, content_type='application/zip')
                     response['Content-Disposition'] = 'attachment; filename="export.zip"'
-                    response['Content-Length'] = path.getsize(complete_filename)
+                    response['Content-Length'] = path.getsize(result)
                     return response
                 else:
                     messages.error(request, _("Export data was not generated."))
