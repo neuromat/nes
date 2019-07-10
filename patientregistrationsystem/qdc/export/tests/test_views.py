@@ -20,9 +20,11 @@ from experiment.models import Component, ComponentConfiguration, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
 from export.export_utils import create_list_of_trees
+from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
     set_mocks5
 from export.tests.tests_helper import ExportTestCase
+from export.views import EXPORT_DIRECTORY
 from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
 
@@ -1292,7 +1294,7 @@ class ExportDataCollectionTest(ExportTestCase):
             'patient_selected': ['age*age'],
             'action': ['run']
         }
-        response = self.client.post(reverse('export_view'), data)
+        self.client.post(reverse('export_view'), data)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_step_additional_data(self):
@@ -1569,17 +1571,36 @@ class ExportParticipants(ExportTestCase):
 
         self.get_zipped_file(response)
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('export.export.ExportExecution.get_directory_base')
+    def test_create_directory_fails_returns_error_message(self, get_directory_base_mock):
+        get_directory_base_mock.return_value = '/non/existent/path'
+        data = {'patient_selected': ['age*age'], 'action': ['run']}
+        response = self.client.post(reverse('export_view'), data, follow=True)
+        message = str(list(response.context['messages'])[0])
+
+        self.assertEqual(message, _('Base path does not exist'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('export.export.ExportExecution.get_directory_base')
+    def test_create_directory_fails_removes_export_directory(self, get_directory_base_mock):
+        get_directory_base_mock.return_value = '/non/existent/path'
+        data = {'patient_selected': ['age*age'], 'action': ['run']}
+        self.client.post(reverse('export_view'), data, follow=True)
+
+        export = Export.objects.first()
+        self.assertFalse(os.path.exists(
+            os.path.join(TEMP_MEDIA_ROOT, EXPORT_DIRECTORY, str(self.user.id), str(export.id))))
+
     def test_export_participants_age_is_age_at_export_date_if_no_questionnaire_response(self):
         data = {'patient_selected': ['age*age'], 'action': ['run']}
         response = self.client.post(reverse('export_view'), data)
-        self.assertEqual(response.status_code, 200)
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(os.path.join('NES_EXPORT', 'Participants.csv'), temp_dir)
 
-        with open(os.path.join(temp_dir, 'NES_EXPORT', 'Participants.csv')) \
-                as file:
+        with open(os.path.join(temp_dir, 'NES_EXPORT', 'Participants.csv')) as file:
             csvreader = csv.reader(file)
             rows = []
             for row in csvreader:
@@ -1624,7 +1645,7 @@ class ExportSelection(ExportTestCase):
 
         self.assertRedirects(response, '/export/view/', status_code=302, target_status_code=200)
 
-    def test_experiment_selection_withou_select_group(self):
+    def test_experiment_selection_without_select_group(self):
 
         data = {
             'id_research_projects': self.experiment.research_project.id,

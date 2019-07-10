@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import csv
-import fileinput
 import json
 import random
 import re
@@ -157,27 +156,21 @@ def replace_multiple_question_answers(responses, question_list):
 
 
 def create_directory(basedir, path_to_create):
-    """
-    Create a directory
-
+    """Create a directory
     :param basedir: directory that already exists (parent path where new path must be included)
     :param path_to_create: directory to be created
     :return:
-            - "" if path was correctly created or error message if there was an error
+            - '' if path was correctly created or error message if there was an error
             - complete_path -> basedir + path created
     """
-
-    complete_path = ""
-
     if not path.exists(basedir.encode('utf-8')):
-        return _("Base path does not exist"), complete_path
+        return _('Base path does not exist'), ''
 
     complete_path = path.join(basedir, path_to_create)
-
     if not path.exists(complete_path.encode('utf-8')):
         makedirs(complete_path.encode('utf-8'))
 
-    return "", complete_path
+    return '', complete_path
 
 
 def is_patient_active(subject_id):
