@@ -202,7 +202,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         input_data = export.read_configuration_data(input_filename)
 
         if not export.is_input_data_consistent() or not input_data:
-            messages.error(request, _("Inconsistent data read from json file"))
+            messages.error(request, _('Inconsistent data read from json file'))
             return render(request, template_name)
 
         # create directory base for export: /NES_EXPORT
@@ -403,13 +403,11 @@ def export_view(request, template_name="export/export_data.html"):
         for diagnosis in diagnosis_selected_list:
             diagnosis_list.append(diagnosis.split("*"))
 
-        selected_data_available = \
-            (
-                    len(questionnaires_selected_list) or
-                    len(experiment_questionnaires_selected_list) or
-                    len(participant_selected_list) or
-                    len(diagnosis_selected_list)
-            )
+        selected_data_available = (
+                len(questionnaires_selected_list) or
+                len(experiment_questionnaires_selected_list) or
+                len(participant_selected_list) or
+                len(diagnosis_selected_list))
 
         if selected_data_available:
             component_list = {}
