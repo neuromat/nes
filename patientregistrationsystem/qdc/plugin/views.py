@@ -94,6 +94,7 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
         'per_stimulus_data': False, 'per_tms_data': False
     }
     export = Export.objects.create(user=request.user)
+    # TODO (NES-983): creation of export_dir is made calling export_create bellow
     export_dir = path.join(settings.MEDIA_ROOT, 'export', str(request.user.id), str(export.id))
     os.makedirs(export_dir)
     input_filename = path.join(export_dir, 'json_export.json')
