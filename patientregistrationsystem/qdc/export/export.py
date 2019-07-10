@@ -47,7 +47,7 @@ DEFAULT_LANGUAGE = "pt-BR"
 
 metadata_directory = "Questionnaire_metadata"
 
-input_data_keys = [
+INPUT_DATA_KEYS = [
     "base_directory",
     "export_per_participant",
     "export_per_questionnaire",
@@ -263,8 +263,10 @@ class ExportExecution:
         return input_data_temp
 
     def is_input_data_consistent(self):
-        # verify if important tags from input_data are available
-        for data_key in input_data_keys:
+        """Verify if important tags from input_data are available
+        :return: bool
+        """
+        for data_key in INPUT_DATA_KEYS:
             if data_key not in self.input_data.keys():
                 return False
         return True

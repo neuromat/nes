@@ -1561,6 +1561,7 @@ class ExportParticipants(ExportTestCase):
     def tearDown(self):
         self.client.logout()
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_participants_without_questionnaires_returns_zipped_file(self):
         """Test created when exporting participants, without questionnaires
         avulsely answered by them, gave yellow screen. See Jira Issue NES-864.
@@ -1583,7 +1584,7 @@ class ExportParticipants(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('export.export.ExportExecution.get_directory_base')
-    def test_create_directory_fails_removes_export_directory(self, get_directory_base_mock):
+    def test_create_directory_fails_removes_export_dir(self, get_directory_base_mock):
         get_directory_base_mock.return_value = '/non/existent/path'
         data = {'patient_selected': ['age*age'], 'action': ['run']}
         self.client.post(reverse('export_view'), data, follow=True)
@@ -1592,6 +1593,28 @@ class ExportParticipants(ExportTestCase):
         self.assertFalse(os.path.exists(
             os.path.join(TEMP_MEDIA_ROOT, EXPORT_DIRECTORY, str(self.user.id), str(export.id))))
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('export.export.ExportExecution.is_input_data_consistent')
+    def test_input_data_is_inconsistent_returns_error_message(self, is_input_data_consistent_mock):
+        is_input_data_consistent_mock.return_value = False
+        data = {'patient_selected': ['age*age'], 'action': ['run']}
+        response = self.client.post(reverse('export_view'), data, follow=True)
+        message = str(list(response.context['messages'])[0])
+
+        self.assertEqual(message, _('Inconsistent data read from json file'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('export.export.ExportExecution.is_input_data_consistent')
+    def test_input_data_is_inconsistent_removes_export_dir(self, is_input_data_consistent_mock):
+        is_input_data_consistent_mock.return_value = False
+        data = {'patient_selected': ['age*age'], 'action': ['run']}
+        self.client.post(reverse('export_view'), data, follow=True)
+
+        export = Export.objects.first()
+        self.assertFalse(os.path.exists(
+            os.path.join(TEMP_MEDIA_ROOT, EXPORT_DIRECTORY, str(self.user.id), str(export.id))))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_participants_age_is_age_at_export_date_if_no_questionnaire_response(self):
         data = {'patient_selected': ['age*age'], 'action': ['run']}
         response = self.client.post(reverse('export_view'), data)
