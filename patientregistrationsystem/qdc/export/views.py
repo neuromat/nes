@@ -1079,7 +1079,7 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
 
     if request.method == "POST":
         participants_list = Patient.objects.filter(removed=False)
-        request.session['license'] = int(request.POST.get('license'))
+        request.session['license'] = request.POST.get('license')
         if request.POST['action'] == "next-step-participants":
             subject_list = []
             groups_selected = request.POST.getlist('group_selected')
