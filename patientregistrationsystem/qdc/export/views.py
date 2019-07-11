@@ -198,20 +198,20 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         # Read initial json file
         input_export_file = path.join('export', str(request.user.id), str(export_instance.id), str(input_filename))
 
-        # prepare data to be processed
+        # Prepare data to be processed
         input_data = export.read_configuration_data(input_filename)
 
         if not export.is_input_data_consistent() or not input_data:
             messages.error(request, _('Inconsistent data read from json file'))
             return render(request, template_name)
 
-        # create directory base for export: /NES_EXPORT
+        # Create directory base for export: /NES_EXPORT
         error_msg = export.create_export_directory()
-
         if error_msg != '':
             messages.error(request, error_msg)
             return render(request, template_name)
-        # export participants data
+
+        # Export participants data
         if export.get_input_data('participants')['output_list']:
             participants_input_data = export.get_input_data("participants")['output_list']
             participants_list = export.get_participants_filtered_data()
@@ -220,7 +220,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             # age based on first data collection
             if 'group_selected_list' in request.session:
                 participants_list = export.add_subject_of_group(
-                    # required convertion from ValuesListQuerySet to list
+                    # Required convertion from ValuesListQuerySet to list
                     list(participants_list),
                     request.session['group_selected_list']
                 )

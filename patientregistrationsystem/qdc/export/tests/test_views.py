@@ -1615,6 +1615,11 @@ class ExportParticipants(ExportTestCase):
             os.path.join(TEMP_MEDIA_ROOT, EXPORT_DIRECTORY, str(self.user.id), str(export.id))))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('export.export.ExportExecution.create_export_directory')
+    def test_create_export_directory_fails_return_error_message(self, create_export_directory_mock):
+        pass  # continue here when come back to NES-983
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_participants_age_is_age_at_export_date_if_no_questionnaire_response(self):
         data = {'patient_selected': ['age*age'], 'action': ['run']}
         response = self.client.post(reverse('export_view'), data)
