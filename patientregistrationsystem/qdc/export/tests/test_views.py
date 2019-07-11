@@ -1719,6 +1719,20 @@ class ExportSelection(ExportTestCase):
         response3 = self.client.get(response2.url)
         self.assertRedirects(response3, reverse('export_menu'), status_code=302, target_status_code=200)
 
+    def test_experiment_selection_appends_license_to_request_session_and_redirects_to_export_view(self):
+        data = {
+            'id_research_projects': self.experiment.research_project.id,
+            'id_experiments': self.experiment.id,
+            'group_selected': self.group.id,
+            'license': 0,
+            'action': 'next-step-participants'
+        }
+        response = self.client.post(reverse('experiment_selection'), data)
+
+        self.assertRedirects(response, '/export/view/', status_code=302, target_status_code=200)
+        self.assertIn('license', self.client.session)
+        self.assertEqual(self.client.session['license'], 0)
+
 
 def tearDownModule():
     shutil.rmtree(TEMP_MEDIA_ROOT)

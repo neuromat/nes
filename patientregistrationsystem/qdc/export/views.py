@@ -1064,9 +1064,7 @@ def export_menu(request, template_name="export/export_menu.html"):
     if 'group_selected_list' in request.session.keys():
         del request.session['group_selected_list']
 
-    context = {
-        "export_type_list": export_type_list
-    }
+    context = {"export_type_list": export_type_list}
 
     return render(request, template_name, context)
 
@@ -1081,13 +1079,13 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
 
     if request.method == "POST":
         participants_list = Patient.objects.filter(removed=False)
+        request.session['license'] = int(request.POST.get('license'))
         if request.POST['action'] == "next-step-participants":
             subject_list = []
-            group_selected_list = request.POST.getlist('group_selected')
-            request.session['group_selected_list'] = group_selected_list
-
-            if len(group_selected_list) > 0:
-                for group_selected_id in group_selected_list:
+            groups_selected = request.POST.getlist('group_selected')
+            request.session['group_selected_list'] = groups_selected
+            if groups_selected:
+                for group_selected_id in groups_selected:
                     group_selected = Group.objects.filter(pk=group_selected_id)
                     subject_of_group = SubjectOfGroup.objects.filter(group=group_selected)
                     for subject in subject_of_group:
