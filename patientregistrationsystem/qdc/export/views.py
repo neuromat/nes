@@ -1079,7 +1079,6 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
 
     if request.method == "POST":
         participants_list = Patient.objects.filter(removed=False)
-        request.session['license'] = request.POST.get('license')
         if request.POST['action'] == "next-step-participants":
             subject_list = []
             groups_selected = request.POST.getlist('group_selected')
@@ -1095,6 +1094,7 @@ def experiment_selection(request, template_name="export/experiment_selection.htm
 
                 participants_list = participants_list.filter(pk__in=subject_list)
                 request.session['filtered_participant_data'] = [item.id for item in participants_list]
+                request.session['license'] = request.POST.get('license')
                 redirect_url = reverse("export_view", args=())
                 return HttpResponseRedirect(redirect_url)
             else:
