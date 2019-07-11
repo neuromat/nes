@@ -234,15 +234,11 @@ class ExportExecution:
         self.directory_base = path.join(self.base_directory_name, str(user_id), str(export_id))
 
     def get_directory_base(self):
-
         return self.directory_base  # MEDIA_ROOT/export/username_id/export_id
 
     def create_export_directory(self):
-
-        base_directory = self.get_input_data("base_directory")
-
+        base_directory = self.get_input_data('base_directory')
         error_msg, self.base_export_directory = create_directory(self.get_directory_base(), base_directory)
-
         return error_msg
 
     def get_export_directory(self):
