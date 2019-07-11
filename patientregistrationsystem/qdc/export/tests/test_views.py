@@ -1731,7 +1731,7 @@ class ExportSelection(ExportTestCase):
 
         self.assertRedirects(response, '/export/view/', status_code=302, target_status_code=200)
         self.assertIn('license', self.client.session)
-        self.assertEqual(self.client.session['license'], 0)
+        self.assertEqual(self.client.session['license'], '0')
 
 
 def tearDownModule():
