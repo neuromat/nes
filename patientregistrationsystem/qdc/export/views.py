@@ -121,16 +121,18 @@ QUESTIONNAIRE_EVALUATION_FIELDS_EXCLUDED = [
     "refurl"
 ]
 
-HEADER_EXPLANATION_FIELDS = ['questionnaire_id',
-                             'questionnaire_title',
-                             'question_code',
-                             'question_description',
-                             'subquestion_code',
-                             'subquestion_description',
-                             'option_code',
-                             'option_description',
-                             'option_value',
-                             'column_title']
+HEADER_EXPLANATION_FIELDS = [
+    'questionnaire_id',
+    'questionnaire_title',
+    'question_code',
+    'question_description',
+    'subquestion_code',
+    'subquestion_description',
+    'option_code',
+    'option_description',
+    'option_value',
+    'column_title'
+]
 
 
 def update_export_instance(input_file, output_export, export_instance):

@@ -104,7 +104,7 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
     :return:
     """
 
-    if filesformat_type =='tsv':
+    if filesformat_type == 'tsv':
         separator = '\t'
     else:
         separator = ','
@@ -215,9 +215,9 @@ class ExportExecution:
     def __init__(self, user_id, export_id):
         self.files_to_zip_list = []
         self.directory_base = ''
-        self.base_directory_name = path.join(settings.MEDIA_ROOT, "export")
+        self.base_directory_name = path.join(settings.MEDIA_ROOT, 'export')
         self.set_directory_base(user_id, export_id)
-        self.base_export_directory = ""
+        self.base_export_directory = ''
         self.user_name = None
         self.input_data = {}
         self.per_participant_data = {}

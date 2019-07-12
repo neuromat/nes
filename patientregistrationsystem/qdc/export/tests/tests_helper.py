@@ -55,11 +55,8 @@ class ExportTestCase(TestCase):
 
         return zipped_file
 
-    def assert_per_participant_step_file_exists(self, step_number,
-                                                component_step,
-                                                data_collection_folder,
-                                                filename,
-                                                zipped_file):
+    def assert_per_participant_step_file_exists(
+            self, step_number, component_step, data_collection_folder, filename, zipped_file):
         self.assertTrue(
             any(os.path.join(
                 'Per_participant', 'Participant_' + self.patient.code,
