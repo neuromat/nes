@@ -225,7 +225,7 @@ class ExportExecution:
         self.participants_per_entrance_questionnaire = {}
         self.participants_per_experiment_questionnaire = {}
         self.questionnaires_experiment_responses = {}
-        self.root_directory = ""
+        self.root_directory = ''
         self.participants_filtered_data = []
         self.per_group_data = {}
         self.questionnaire_utils = QuestionnaireUtils()
@@ -1470,9 +1470,7 @@ class ExportExecution:
                             # save array list into a file to export
                             if not file_exists:
                                 save_to_csv(complete_filename, fields_description, filesformat_type)
-                                self.files_to_zip_list.append(
-                                    [complete_filename, export_directory]
-                                )
+                                self.files_to_zip_list.append([complete_filename, export_directory])
 
                     # questionnaire metadata directory
                     entrance_questionnaire = False
@@ -1699,11 +1697,8 @@ class ExportExecution:
                         questionnaire_title = self.get_input_data('questionnaires_from_experiments')[group_id][
                             str(questionnaire_id)]['questionnaire_name']
                         # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
-                        error_msg, directory_step_participant = \
-                            create_directory(
-                                path_per_participant,
-                                token_data['directory_step_name']
-                            )
+                        error_msg, directory_step_participant = create_directory(
+                                path_per_participant, token_data['directory_step_name'])
                         if error_msg != "":
                             return error_msg
 
@@ -2419,8 +2414,6 @@ class ExportExecution:
 
         complete_filename = path.join(base_export_directory, export_filename)
 
-        # save_to_csv(complete_filename, export_rows_participants)
-
         self.files_to_zip_list.append([complete_filename, base_directory])
 
         export_rows_participants = self.get_input_data('participants')['data_list']
@@ -2446,7 +2439,6 @@ class ExportExecution:
 
             complete_filename = path.join(base_export_directory, export_filename)
 
-            # files_to_zip_list.append(complete_filename)
             self.files_to_zip_list.append([complete_filename, base_directory])
 
             with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
@@ -2681,15 +2673,13 @@ class ExportExecution:
                             path_stimulus_data = path.join(group_file_directory, stimulus_data['directory_step_name'])
                             if not path.exists(path_stimulus_data):
                                 error_msg, directory_stimulus_data = create_directory(
-                                    group_file_directory,
-                                    stimulus_data['directory_step_name']
-                                )
+                                    group_file_directory, stimulus_data['directory_step_name'])
                                 if error_msg != "":
                                     return error_msg
 
                             # path ex. NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
-                            export_directory_stimulus_data = path.join(export_group_directory,
-                                                                       stimulus_data['directory_step_name'])
+                            export_directory_stimulus_data = path.join(
+                                export_group_directory, stimulus_data['directory_step_name'])
                             stimulus_file_name = stimulus_data['stimulus_file'].split("/")[-1]
                             stimulus_data_file_name = path.join(settings.MEDIA_ROOT) + "/" +\
                                                       stimulus_data['stimulus_file'] # data['stimulus_file']
@@ -2701,10 +2691,16 @@ class ExportExecution:
                             with open(complete_stimulus_data_filename, "wb") as f:
                                 f.write(data)
 
-                            self.files_to_zip_list.append([complete_stimulus_data_filename,
-                                                           export_directory_stimulus_data])
+                            self.files_to_zip_list.append(
+                                [complete_stimulus_data_filename, export_directory_stimulus_data])
 
         return error_msg
+
+    def process_datapackage_json_file(self):
+        file_path = path.join(self.get_directory_base(), 'datapackage.json')
+        with open(file_path, 'w') as file:
+            file.write('abc')
+        self.files_to_zip_list.append([file_path, ''])
 
     @staticmethod
     def find_duplicates(fill_list1, fill_list2):

@@ -1749,6 +1749,39 @@ class ExportFrictionlessData(ExportTestCase):
             all(data_dir.match(element) for element in zipped_file.namelist()),
             'data dir not found in: ' + str(zipped_file.namelist()))
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_creates_datapackage_json_file(self):
+        # Create eeg component (could be other component type or more than one component)
+        eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
+        eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
+
+        # Include eeg component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, eeg_comp)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' eeg file
+        eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
+        ObjectsFactory.create_eeg_file(eegdata)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+
+        # Post data to view: data style that is posted to export_view in template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_eeg_raw_data ': ['on'],
+            'per_additional_data': ['on'],
+            'headings': ['abbreviated'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+        self.assertTrue(any('datapackage.json' in element for element in zipped_file.namelist()),
+                        'datapackage.json not found in: ' + str(zipped_file.namelist()))
+
 
 def tearDownModule():
     shutil.rmtree(TEMP_MEDIA_ROOT)
