@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.test import override_settings
 from django.utils.encoding import smart_str
 
+from export import input_export
 from export.tests.tests_helper import ExportTestCase
 from plugin.models import RandomForests
 from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks
@@ -108,7 +109,7 @@ class PluginTest(ExportTestCase):
         self.assertIsNone(zipped_file.testzip())
         # Tests for Per_participant subdir
         list_items = zipped_file.namelist()
-        in_items = re.compile('NES_EXPORT/Per_participant/Participant_%s' % self.patient.code)
+        in_items = re.compile(input_export.BASE_DIRECTORY + '/Per_participant/Participant_%s' % self.patient.code)
         in_items = [in_items.match(item) for item in list_items]
         in_items = [item for item in in_items if item is not None]
         self.assertEqual(2, len(in_items))
@@ -119,14 +120,16 @@ class PluginTest(ExportTestCase):
 
         # Tests for Per_questionnaire subdir
         questionnaire1 = zipped_file.extract(
-            'NES_EXPORT/Per_questionnaire/212121_admission-assessment-plugin/Responses_212121_en.csv',
+            input_export.BASE_DIRECTORY +
+            '/Per_questionnaire/212121_admission-assessment-plugin/Responses_212121_en.csv',
             self.TEMP_MEDIA_ROOT)
         with open(questionnaire1) as file:
             reader = list(csv.reader(file))
             self.assertEqual(2, len(reader))
             self.assertEqual(self.patient.code, reader[1][0])
         questionnaire2 = zipped_file.extract(
-            'NES_EXPORT/Per_questionnaire/505050_surgical-evaluation-plugin/Responses_505050_en.csv',
+            input_export.BASE_DIRECTORY +
+            '/Per_questionnaire/505050_surgical-evaluation-plugin/Responses_505050_en.csv',
             self.TEMP_MEDIA_ROOT)
         with open(questionnaire2) as file:
             reader = list(csv.reader(file))

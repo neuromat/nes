@@ -1,6 +1,7 @@
 import csv
 import os
 import io
+import re
 import tempfile
 import zipfile
 from datetime import date
@@ -19,6 +20,7 @@ from experiment.models import Component, ComponentConfiguration, \
     TMSLocalizationSystem, HotSpot, TMSData, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
+from export import input_export
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
@@ -129,7 +131,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_2_QUESTIONNAIRE',
@@ -140,7 +142,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         with open(
             os.path.join(
                 temp_dir,
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_2_QUESTIONNAIRE',
@@ -166,14 +168,12 @@ class ExportQuestionnaireTest(ExportTestCase):
         # setUp
         patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
-        subject_of_group = \
-            ObjectsFactory.create_subject_of_group(self.group, subject)
+        subject_of_group = ObjectsFactory.create_subject_of_group(self.group, subject)
 
         ObjectsFactory.create_questionnaire_response(
             dct=dct,
             responsible=self.user, token_id=2,
-            subject_of_group=subject_of_group
-        )
+            subject_of_group=subject_of_group)
 
         self.append_session_variable(
             'group_selected_list', [str(self.group.id)]
@@ -412,7 +412,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -423,7 +423,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         with open(
                 os.path.join(
                     temp_dir,
-                    'NES_EXPORT',
+                    input_export.BASE_DIRECTORY,
                     'Experiment_data',
                     'Group_' + self.group.title.lower(),
                     'Per_questionnaire',
@@ -553,7 +553,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -563,7 +563,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         with open(os.path.join(
                 temp_dir,
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -620,12 +620,10 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(
-            os.path.join('NES_EXPORT', 'Participants.csv'), temp_dir
-        )
+        zipped_file.extract(os.path.join(input_export.BASE_DIRECTORY, 'Participants.csv'), temp_dir)
 
         with open(os.path.join(
-                temp_dir, 'NES_EXPORT', 'Participants.csv'
+                temp_dir, input_export.BASE_DIRECTORY, 'Participants.csv'
         )) as file:
             csvreader = csv.reader(file)
             rows = []
@@ -674,7 +672,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -686,7 +684,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         with open(
                 os.path.join(
                     temp_dir,
-                    'NES_EXPORT',
+                    input_export.BASE_DIRECTORY,
                     'Experiment_data',
                     'Group_' + self.group.title.lower(),
                     'Per_questionnaire',
@@ -734,7 +732,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -746,7 +744,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         with open(
                 os.path.join(
                     temp_dir,
-                    'NES_EXPORT',
+                    input_export.BASE_DIRECTORY,
                     'Experiment_data',
                     'Group_' + self.group.title.lower(),
                     'Per_questionnaire',
@@ -775,19 +773,16 @@ class ExportDataCollectionTest(ExportTestCase):
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(
             self.experiment, Component.GENERIC_DATA_COLLECTION,
-            kwargs={'it': it}
-        )
+            kwargs={'it': it})
 
         # Include gdc component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, gdc
-        )
+            self.root_component, gdc)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' generic data collection file
         gdc_data = ObjectsFactory.create_generic_data_collection_data(
-            dct, self.subject_of_group
-        )
+            dct, self.subject_of_group)
         gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
         # Create additional data to this step
@@ -795,9 +790,7 @@ class ExportDataCollectionTest(ExportTestCase):
 
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -815,25 +808,20 @@ class ExportDataCollectionTest(ExportTestCase):
 
         zipped_file = self.get_zipped_file(response)
 
-        # we have only the generic_data_collection step, so we get the first
+        # We have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(
-            self.group.experimental_protocol, "generic_data_collection"
-        )[0]
+        path = create_list_of_trees(self.group.experimental_protocol, "generic_data_collection")[0]
 
-        generic_component_configuration = \
-            ComponentConfiguration.objects.get(pk=path[-1][0])
+        generic_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = generic_component_configuration.component
         step_number = path[-1][4]
 
         self.assert_per_participant_step_file_exists(
             step_number, component_step, 'Generic_Data_Collection_1',
-            os.path.basename(gdcf.file.name), zipped_file
-        )
+            os.path.basename(gdcf.file.name), zipped_file)
         self.assert_per_participant_step_file_exists(
             step_number, component_step, 'AdditionalData_1',
-            os.path.basename(adf.file.name), zipped_file
-        )
+            os.path.basename(adf.file.name), zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_digital_game_phase_data_colletion(self):
@@ -911,25 +899,18 @@ class ExportDataCollectionTest(ExportTestCase):
         eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
 
         # Include eeg component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, eeg_comp)
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, eeg_comp)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' eeg file
-        eegdata = ObjectsFactory.create_eeg_data(
-            dct, self.subject_of_group, eeg_set
-        )
-
+        eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
         eegf = ObjectsFactory.create_eeg_file(eegdata)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
-
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -947,17 +928,19 @@ class ExportDataCollectionTest(ExportTestCase):
 
         zipped_file = self.get_zipped_file(response)
 
-        # we have only the generic_data_collection step, so we get the first
+        # We have only the generic_data_collection step, so we get the first
         # element: [0]
         path = create_list_of_trees(self.group.experimental_protocol, "eeg")[0]
         eeg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = eeg_conf.component
         step_number = path[-1][4]
-        self.assert_per_participant_step_file_exists(step_number, component_step, 'EEGData_1',
-                                                     os.path.basename(eegf.file.name), zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'EEGData_1',
+            os.path.basename(eegf.file.name), zipped_file)
 
-        self.assert_per_participant_step_file_exists(step_number, component_step, 'AdditionalData_1',
-                                                     os.path.basename(adf.file.name), zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'AdditionalData_1',
+            os.path.basename(adf.file.name), zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_emg(self):
@@ -1484,14 +1467,9 @@ class ExportDataCollectionTest(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
-            os.path.join(
-                'NES_EXPORT', 'Participant_data', 'Participants.csv'
-            ), temp_dir
-        )
+            os.path.join(input_export.BASE_DIRECTORY, 'Participant_data', 'Participants.csv'), temp_dir)
 
-        with open(os.path.join(
-                temp_dir, 'NES_EXPORT', 'Participant_data', 'Participants.csv'
-        )) as file:
+        with open(os.path.join(temp_dir, input_export.BASE_DIRECTORY, 'Participant_data', 'Participants.csv')) as file:
             csvreader = csv.reader(file)
             rows = []
             for row in csvreader:
@@ -1533,15 +1511,9 @@ class ExportDataCollectionTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(
-            os.path.join(
-                'NES_EXPORT', 'Participant_data', 'Participants.csv'
-            ), temp_dir
-        )
+        zipped_file.extract(os.path.join(input_export.BASE_DIRECTORY, 'Participant_data', 'Participants.csv'), temp_dir)
 
-        with open(os.path.join(
-                temp_dir, 'NES_EXPORT', 'Participant_data', 'Participants.csv'
-        )) as file:
+        with open(os.path.join(temp_dir, input_export.BASE_DIRECTORY, 'Participant_data', 'Participants.csv')) as file:
             csvreader = csv.reader(file)
             rows = []
             for row in csvreader:
@@ -1626,9 +1598,9 @@ class ExportParticipants(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(os.path.join('NES_EXPORT', 'Participants.csv'), temp_dir)
+        zipped_file.extract(os.path.join(input_export.BASE_DIRECTORY, 'Participants.csv'), temp_dir)
 
-        with open(os.path.join(temp_dir, 'NES_EXPORT', 'Participants.csv')) as file:
+        with open(os.path.join(temp_dir, input_export.BASE_DIRECTORY, 'Participants.csv')) as file:
             csvreader = csv.reader(file)
             rows = []
             for row in csvreader:
@@ -1732,6 +1704,50 @@ class ExportSelection(ExportTestCase):
         self.assertRedirects(response, '/export/view/', status_code=302, target_status_code=200)
         self.assertIn('license', self.client.session)
         self.assertEqual(self.client.session['license'], '0')
+
+
+class ExportFrictionlessData(ExportTestCase):
+
+    def setUp(self):
+        super(ExportFrictionlessData, self).setUp()
+
+    def tearDown(self):
+        self.client.logout()
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_creates_content_dirs_in_data_directory(self):
+        # Create eeg component (could be other component type or more than one component)
+        eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
+        eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
+
+        # Include eeg component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, eeg_comp)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' eeg file
+        eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
+        ObjectsFactory.create_eeg_file(eegdata)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+
+        # Post data to view: data style that is posted to export_view in template
+        data = {
+            'per_questionnaire': ['on'],
+            'per_participant': ['on'],
+            'per_eeg_raw_data ': ['on'],
+            'per_additional_data': ['on'],
+            'headings': ['abbreviated'],
+            'patient_selected': ['age*age'],
+            'action': ['run'],
+            'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+        data_dir = re.compile('^data')
+        self.assertTrue(
+            all(data_dir.match(element) for element in zipped_file.namelist()),
+            'data dir not found in: ' + str(zipped_file.namelist()))
 
 
 def tearDownModule():
