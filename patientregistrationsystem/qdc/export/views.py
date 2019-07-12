@@ -207,7 +207,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             messages.error(request, _('Inconsistent data read from json file'))
             return render(request, template_name)
 
-        # Create directory base for export: /NES_EXPORT
+        # Create directory base for export: NES_EXPORT
+        # TODO (NES-987): change NES_EXPORT dir in comments to data dir
         error_msg = export.create_export_directory()
         if error_msg != '':
             messages.error(request, error_msg)
@@ -277,11 +278,14 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     if error_msg != "":
                         messages.error(request, error_msg)
                         return render(request, template_name)
-            # build export data by each component
+            # Build export data for each component
             error_msg = export.process_per_participant_per_experiment()
             if error_msg != "":
                 messages.error(request, error_msg)
                 return render(request, template_name)
+
+            # Build datapackage.json file
+            error_msg = export.process_datapackage_json_file()
 
         else:
             # Export method: filter by entrance questionnaire
@@ -304,10 +308,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         if export.files_to_zip_list:
             # export.zip file
             export_filename = export.get_input_data('export_filename')
-            export_complete_filename = path.join(
-                base_directory_name, export_filename
-            )
-            # print(export.files_to_zip_list)  # DEBUG
+            export_complete_filename = path.join(base_directory_name, export_filename)
 
             with ZipFile(export_complete_filename, 'w') as zip_file:
                 for filename, directory in export.files_to_zip_list:
@@ -315,8 +316,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     zip_file.write(filename.encode('utf-8'), path.join(directory, fname))
 
             output_export_file = path.join(
-                "export",
-                path.join(str(export_instance.user.id), str(export_instance.id), str(export_filename)))
+                "export", path.join(str(export_instance.user.id), str(export_instance.id), str(export_filename)))
 
             update_export_instance(input_export_file, output_export_file, export_instance)
 
