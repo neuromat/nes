@@ -1728,8 +1728,6 @@ class ExportFrictionlessData(ExportTestCase):
         eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
         ObjectsFactory.create_eeg_file(eegdata)
 
-        self.append_session_variable('group_selected_list', [str(self.group.id)])
-
     def assert_basic_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
             self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
@@ -1756,6 +1754,8 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_creates_content_dirs_in_data_directory(self):
         self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
@@ -1769,6 +1769,8 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_creates_datapackage_json_file(self):
         self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
@@ -1780,6 +1782,8 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_basic_content_to_datapackage_json_file(self):
         self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
@@ -1799,6 +1803,8 @@ class ExportFrictionlessData(ExportTestCase):
         self._create_sample_export_data()
         contributor1 = self.research_project.owner
         contributor2 = ObjectsFactory.create_experiment_researcher(self.experiment).researcher
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
@@ -1818,6 +1824,29 @@ class ExportFrictionlessData(ExportTestCase):
             'title': contributor2.first_name + ' ' + contributor2.last_name,
             'email': contributor2.email
         }, json_data['contributors'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_default_license_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+        temp_dir = tempfile.mkdtemp()
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, 'datapackage.json')) as file:
+            json_data = load(file)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright',
+            'title': 'Copyright'
+        }, json_data['licenses'])
 
         shutil.rmtree(temp_dir)
 

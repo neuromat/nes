@@ -285,7 +285,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 return render(request, template_name)
 
             # Build datapackage.json file
-            error_msg = export.process_datapackage_json_file(request.get_host())
+            error_msg = export.process_datapackage_json_file(request)
 
         else:
             # Export method: filter by entrance questionnaire
