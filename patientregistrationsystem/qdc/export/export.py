@@ -82,7 +82,8 @@ included_questionnaire_fields = [
 ]
 
 LICENSES = {
-    0: {'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'}
+    0: {'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'},
+    1: {'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'}
 }
 
 
@@ -1445,11 +1446,8 @@ class ExportExecution:
 
                         # header
                         if fields_description:
-                            header = \
-                                self.build_header_questionnaire_per_participant(
-                                    rows_participant_data[0],
-                                    answer_list[0]
-                                )
+                            header = self.build_header_questionnaire_per_participant(
+                                rows_participant_data[0], answer_list[0])
                             fields_description.insert(0, header)
 
                             ###
@@ -1457,13 +1455,9 @@ class ExportExecution:
                             file_exists = False
                             for item in self.files_to_zip_list:
                                 if complete_filename in item[0]:
-                                    # Append in complete_filename
-                                    # fields_description in the file that
-                                    # already exists
-                                    save_to_csv(complete_filename,
-                                                fields_description[1:],
-                                                filesformat_type,
-                                                mode='a')
+                                    # Append in complete_filename fields_description in the file
+                                    # that already exists
+                                    save_to_csv(complete_filename, fields_description[1:], filesformat_type, mode='a')
                                     file_exists = True
                                     break
                             ###
@@ -2460,24 +2454,26 @@ class ExportExecution:
         study = group.experiment.research_project
         experiment = group.experiment
 
-        experiment_resume_header = ['Study', 'Study description', 'Start date', 'End date', 'Experiment Title',
-                                    'Experiment description']
+        experiment_resume_header = [
+            'Study', 'Study description', 'Start date', 'End date', 'Experiment Title',
+            'Experiment description'
+        ]
 
-        experiment_resume = [study.title, study.description, str(study.start_date), str(study.end_date),
-                             experiment.title, experiment.description]
+        experiment_resume = [
+            study.title, study.description, str(study.start_date), str(study.end_date),
+            experiment.title, experiment.description
+        ]
 
-        if 'tsv' in self.get_input_data('filesformat_type'):
-            filename_experiment_resume = "%s.tsv" % "Experiment"
-        else:
-            filename_experiment_resume = "%s.csv" % "Experiment"
+        file_extension = 'tsv' if 'tsv' in self.get_input_data('filesformat_type') else 'csv'
+        filename_experiment_resume = 'Experiment' + '.' + file_extension
 
         # path ex. NES_EXPORT/Experiment_data
-        export_experiment_data = path.join(self.get_input_data("base_directory"),
-                                           self.get_input_data("experiment_data_directory"))
+        export_experiment_data = path.join(
+            self.get_input_data("base_directory"), self.get_input_data("experiment_data_directory"))
 
         # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data
-        experiment_resume_directory = path.join(self.get_export_directory(),
-                                                self.get_input_data("experiment_data_directory"))
+        experiment_resume_directory = path.join(
+            self.get_export_directory(), self.get_input_data("experiment_data_directory"))
 
         # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Experiment.csv
         complete_filename_experiment_resume = path.join(experiment_resume_directory, filename_experiment_resume)
@@ -2487,9 +2483,16 @@ class ExportExecution:
         experiment_description_fields.insert(1, experiment_resume)
         save_to_csv(complete_filename_experiment_resume, experiment_description_fields, filesformat_type)
 
-        self.files_to_zip_list.append([complete_filename_experiment_resume, export_experiment_data])
-
-        # process of filename for description of each group
+        self.files_to_zip_list.append([
+            complete_filename_experiment_resume, export_experiment_data,
+            {
+                'name': 'Experiment', 'title': 'Experiment',
+                'path': path.join(export_experiment_data, filename_experiment_resume),
+                'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8'
+            }
+        ])
+        
+        # Process of filename for description of each group
         for group_id in self.per_group_data:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol:
@@ -2696,8 +2699,12 @@ class ExportExecution:
 
         return error_msg
 
-    @staticmethod
-    def _build_datapackage_dict(experiment, request):
+    def _build_resources(self, datapackage):
+        for file in self.files_to_zip_list:
+            if len(file) == 3:  # just by now
+                datapackage['resources'].append(file[2])
+
+    def _build_datapackage_dict(self, experiment, request):
         name = slugify(experiment.title)
         researcher_owner = experiment.research_project.owner
 
@@ -2712,7 +2719,8 @@ class ExportExecution:
                     'email': researcher_owner.email
                 }
             ],
-            'licenses': [LICENSES[int(request.session['license'])]]
+            'licenses': [LICENSES[int(request.session['license'])]],
+            'resources': []  # Will be built below
         }
         # Add the other contributors (besides research project owner)
         for contributor in experiment.researchers.all():
@@ -2720,6 +2728,8 @@ class ExportExecution:
                 'title': contributor.researcher.first_name + ' ' + contributor.researcher.last_name,
                 'email': contributor.researcher.email
             })
+        # Add resources
+        self._build_resources(datapackage)
 
         return datapackage
 

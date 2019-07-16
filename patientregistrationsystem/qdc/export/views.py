@@ -311,7 +311,7 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             export_complete_filename = path.join(base_directory_name, export_filename)
 
             with ZipFile(export_complete_filename, 'w') as zip_file:
-                for filename, directory in export.files_to_zip_list:
+                for filename, directory, *resource in export.files_to_zip_list:  # just by now
                     fdir, fname = path.split(filename)
                     zip_file.write(filename.encode('utf-8'), path.join(directory, fname))
 
