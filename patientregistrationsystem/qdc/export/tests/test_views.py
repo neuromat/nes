@@ -101,10 +101,10 @@ class ExportQuestionnaireTest(ExportTestCase):
         subject_of_group2 = ObjectsFactory.create_subject_of_group(self.group, subject)
 
         ObjectsFactory.create_questionnaire_response(
-            dct=dct,
-            responsible=self.user, token_id=3,
-            subject_of_group=subject_of_group2)
+            dct=dct, responsible=self.user, token_id=3, subject_of_group=subject_of_group2)
+
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -176,9 +176,8 @@ class ExportQuestionnaireTest(ExportTestCase):
             responsible=self.user, token_id=2,
             subject_of_group=subject_of_group)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -253,14 +252,10 @@ class ExportQuestionnaireTest(ExportTestCase):
         subject_of_group2 = ObjectsFactory.create_subject_of_group(group2, subject)
 
         ObjectsFactory.create_questionnaire_response(
-            dct=dct2,
-            responsible=self.user, token_id=2,
-            subject_of_group=subject_of_group2
-        )
+            dct=dct2, responsible=self.user, token_id=2, subject_of_group=subject_of_group2)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id), str(group2.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id), str(group2.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -386,6 +381,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -456,9 +452,8 @@ class ExportQuestionnaireTest(ExportTestCase):
             subject_of_group=subject_of_group2
         )
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id), str(group2.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id), str(group2.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -523,6 +518,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Change questionnaire respose date for testing
         self.questionnaire_response.date = date(2016, 7, 7)
@@ -645,6 +641,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -705,6 +702,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -792,6 +790,7 @@ class ExportDataCollectionTest(ExportTestCase):
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -856,9 +855,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -912,6 +910,7 @@ class ExportDataCollectionTest(ExportTestCase):
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -976,9 +975,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1070,9 +1068,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1155,9 +1152,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id), str(group1.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id), str(group1.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1261,9 +1257,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id), str(group1.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id), str(group1.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1312,11 +1307,10 @@ class ExportDataCollectionTest(ExportTestCase):
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
 
-        adf = ObjectsFactory.create_additional_data_file(additional_data)
+        ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1370,11 +1364,10 @@ class ExportDataCollectionTest(ExportTestCase):
             self.root_component, stimulus
         )
 
-        dtc = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_data_configuration_tree(component_config)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1448,9 +1441,8 @@ class ExportDataCollectionTest(ExportTestCase):
         eeg_data.save()
         ObjectsFactory.create_eeg_file(eeg_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1493,9 +1485,8 @@ class ExportDataCollectionTest(ExportTestCase):
             self.root_component, eeg_comp
         )
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1738,7 +1729,8 @@ class ExportFrictionlessData(ExportTestCase):
         self.assertEqual(self.experiment.description, json_data['description'])
         day = json_data['created'].split(' ')[0]  # Get only the day to avoid test not passing
         self.assertEqual(datetime.now().strftime('%Y-%m-%d'), day)
-        # TODO (NES-987): see how to get testserver from TestCase class or other place
+        # TODO (NES-987): see how to get testserver from TestCase class or other place,
+        #  and https/http url part
         self.assertIn('testserver/experiments/' + name, json_data['homepage'])
 
     @staticmethod
@@ -1750,6 +1742,14 @@ class ExportFrictionlessData(ExportTestCase):
             'headings': ['abbreviated'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
+
+    def _get_datapackage_json_data(self, dir_, response):
+        zipped_file = self.get_zipped_file(response)
+        zipped_file.extractall(dir_)
+        with open(os.path.join(dir_, 'datapackage.json')) as file:
+            json_data = load(file)
+
+        return json_data
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_creates_content_dirs_in_data_directory(self):
@@ -1788,12 +1788,8 @@ class ExportFrictionlessData(ExportTestCase):
         data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
 
-        zipped_file = self.get_zipped_file(response)
         temp_dir = tempfile.mkdtemp()
-        zipped_file.extractall(temp_dir)
-        with open(os.path.join(temp_dir, 'datapackage.json')) as file:
-            json_data = load(file)
-
+        json_data = self._get_datapackage_json_data(temp_dir, response)
         self.assert_basic_experiment_data(json_data)
 
         shutil.rmtree(temp_dir)
@@ -1809,11 +1805,8 @@ class ExportFrictionlessData(ExportTestCase):
         data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
 
-        zipped_file = self.get_zipped_file(response)
         temp_dir = tempfile.mkdtemp()
-        zipped_file.extractall(temp_dir)
-        with open(os.path.join(temp_dir, 'datapackage.json')) as file:
-            json_data = load(file)
+        json_data = self._get_datapackage_json_data(temp_dir, response)
 
         self.assertIn('contributors', json_data)
         self.assertIn({
@@ -1836,11 +1829,8 @@ class ExportFrictionlessData(ExportTestCase):
         data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
 
-        zipped_file = self.get_zipped_file(response)
         temp_dir = tempfile.mkdtemp()
-        zipped_file.extractall(temp_dir)
-        with open(os.path.join(temp_dir, 'datapackage.json')) as file:
-            json_data = load(file)
+        json_data = self._get_datapackage_json_data(temp_dir, response)
 
         self.assertIn('licenses', json_data)
         self.assertIn({
@@ -1849,6 +1839,59 @@ class ExportFrictionlessData(ExportTestCase):
         }, json_data['licenses'])
 
         shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_creative_commons_license_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '1')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'
+        }, json_data['licenses'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_resource_field_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('resources', json_data)
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_basic_experiment_data_file_info_to_datapackage_json_resources_field(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        # TODO (NES-987): will it have 'bytes' field?
+        self.assertIn({
+            'name': 'Experiment', 'title': 'Experiment', 'path': 'data/Experiment_data/Experiment.csv',
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }, json_data['resources'])
 
 
 def tearDownModule():
