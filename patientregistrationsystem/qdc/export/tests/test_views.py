@@ -4,9 +4,10 @@ import io
 import re
 import tempfile
 import zipfile
-from datetime import date
+from datetime import date, datetime
 
 import shutil
+from json import load
 from unittest.mock import patch
 
 from django.core.files import File
@@ -1714,8 +1715,7 @@ class ExportFrictionlessData(ExportTestCase):
     def tearDown(self):
         self.client.logout()
 
-    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_creates_content_dirs_in_data_directory(self):
+    def _create_sample_export_data(self):
         # Create eeg component (could be other component type or more than one component)
         eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
         eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
@@ -1730,17 +1730,34 @@ class ExportFrictionlessData(ExportTestCase):
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
 
-        # Post data to view: data style that is posted to export_view in template
-        data = {
-            'per_questionnaire': ['on'],
-            'per_participant': ['on'],
-            'per_eeg_raw_data ': ['on'],
-            'per_additional_data': ['on'],
-            'headings': ['abbreviated'],
-            'patient_selected': ['age*age'],
-            'action': ['run'],
-            'responses': ['short']
+    def assert_basic_experiment_data(self, json_data):
+        for item in ['title', 'name', 'description', 'created', 'homepage']:
+            self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
+
+        name = slugify(self.experiment.title)
+        self.assertEqual(self.experiment.title, json_data['title'])
+        self.assertEqual(name, json_data['name'])
+        self.assertEqual(self.experiment.description, json_data['description'])
+        day = json_data['created'].split(' ')[0]  # Get only the day to avoid test not passing
+        self.assertEqual(datetime.now().strftime('%Y-%m-%d'), day)
+        # TODO (NES-987): see how to get testserver from TestCase class or other place
+        self.assertIn('testserver/experiments/' + name, json_data['homepage'])
+
+    @staticmethod
+    def _set_post_data():
+        # Data style that is posted to export_view in template
+        return {
+            'per_questionnaire': ['on'], 'per_participant': ['on'],
+            'per_eeg_raw_data ': ['on'], 'per_additional_data': ['on'],
+            'headings': ['abbreviated'], 'patient_selected': ['age*age'],
+            'action': ['run'], 'responses': ['short']
         }
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_creates_content_dirs_in_data_directory(self):
+        self._create_sample_export_data()
+
+        data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
 
         zipped_file = self.get_zipped_file(response)
@@ -1751,36 +1768,58 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_creates_datapackage_json_file(self):
-        # Create eeg component (could be other component type or more than one component)
-        eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
-        eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
+        self._create_sample_export_data()
 
-        # Include eeg component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(self.root_component, eeg_comp)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
-
-        # 'upload' eeg file
-        eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
-        ObjectsFactory.create_eeg_file(eegdata)
-
-        self.append_session_variable('group_selected_list', [str(self.group.id)])
-
-        # Post data to view: data style that is posted to export_view in template
-        data = {
-            'per_questionnaire': ['on'],
-            'per_participant': ['on'],
-            'per_eeg_raw_data ': ['on'],
-            'per_additional_data': ['on'],
-            'headings': ['abbreviated'],
-            'patient_selected': ['age*age'],
-            'action': ['run'],
-            'responses': ['short']
-        }
+        data = self._set_post_data()
         response = self.client.post(reverse('export_view'), data)
 
         zipped_file = self.get_zipped_file(response)
         self.assertTrue(any('datapackage.json' in element for element in zipped_file.namelist()),
                         'datapackage.json not found in: ' + str(zipped_file.namelist()))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_basic_content_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+        temp_dir = tempfile.mkdtemp()
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, 'datapackage.json')) as file:
+            json_data = load(file)
+
+        self.assert_basic_experiment_data(json_data)
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experiment_contributors_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        contributor1 = self.research_project.owner
+        contributor2 = ObjectsFactory.create_experiment_researcher(self.experiment).researcher
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+        temp_dir = tempfile.mkdtemp()
+        zipped_file.extractall(temp_dir)
+        with open(os.path.join(temp_dir, 'datapackage.json')) as file:
+            json_data = load(file)
+
+        self.assertIn('contributors', json_data)
+        self.assertIn({
+            'title': contributor1.first_name + ' ' + contributor1.last_name,
+            'email': contributor1.email
+        }, json_data['contributors'])
+        self.assertIn({
+            'title': contributor2.first_name + ' ' + contributor2.last_name,
+            'email': contributor2.email
+        }, json_data['contributors'])
+
+        shutil.rmtree(temp_dir)
 
 
 def tearDownModule():
