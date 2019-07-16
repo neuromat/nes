@@ -81,6 +81,10 @@ included_questionnaire_fields = [
     },
 ]
 
+LICENSES = {
+    0: {'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'}
+}
+
 
 def is_number(s):
     try:
@@ -2693,7 +2697,7 @@ class ExportExecution:
         return error_msg
 
     @staticmethod
-    def _build_datapackage_dict(experiment, host):
+    def _build_datapackage_dict(experiment, request):
         name = slugify(experiment.title)
         researcher_owner = experiment.research_project.owner
 
@@ -2701,15 +2705,16 @@ class ExportExecution:
             'title': experiment.title, 'name': name,
             'description': experiment.description,
             'created': str(datetime.now().replace(microsecond=0)),
-            'homepage': host + '/experiments/' + name,
+            'homepage': request.get_host() + '/experiments/' + name,
             'contributors': [
                 {
                     'title': researcher_owner.first_name + ' ' + researcher_owner.last_name,
                     'email': researcher_owner.email
                 }
-            ]
+            ],
+            'licenses': [LICENSES[int(request.session['license'])]]
         }
-        # Add the other contributors
+        # Add the other contributors (besides research project owner)
         for contributor in experiment.researchers.all():
             datapackage['contributors'].append({
                 'title': contributor.researcher.first_name + ' ' + contributor.researcher.last_name,
@@ -2718,13 +2723,13 @@ class ExportExecution:
 
         return datapackage
 
-    def process_datapackage_json_file(self, host):
+    def process_datapackage_json_file(self, request):
         """TODO (NES-987)
         :param host:
         """
         # Get arbitrary key: all groups pertain to same experiment
         group = Group.objects.get(id=int(list(self.per_group_data.keys())[0]))
-        datapackage_dict = self._build_datapackage_dict(group.experiment, host)
+        datapackage_dict = self._build_datapackage_dict(group.experiment, request)
         file_path = path.join(self.get_directory_base(), 'datapackage.json')
         with open(file_path, 'w') as file:
             json.dump(datapackage_dict, file)
