@@ -248,12 +248,9 @@ class ExportExecution:
 
     def read_configuration_data(self, json_file, update_input_data=True):
         json_data = open(json_file)
-
         input_data_temp = json.load(json_data)
-
         if update_input_data:
             self.input_data = input_data_temp
-
         json_data.close()
 
         return input_data_temp
@@ -1817,7 +1814,6 @@ class ExportExecution:
                                                                export_eeg_data_directory])
 
                             for eeg_file in eeg_data['eeg_file_list']:
-                                # path_eeg_data_file = settings.BASE_DIR + settings.MEDIA_URL + eeg_file.file.name
                                 path_eeg_data_file = str(eeg_file.file.file)
 
                                 eeg_data_filename = eeg_file.file.name.split('/')[-1]
@@ -2696,10 +2692,42 @@ class ExportExecution:
 
         return error_msg
 
-    def process_datapackage_json_file(self):
+    @staticmethod
+    def _build_datapackage_dict(experiment, host):
+        name = slugify(experiment.title)
+        researcher_owner = experiment.research_project.owner
+
+        datapackage = {
+            'title': experiment.title, 'name': name,
+            'description': experiment.description,
+            'created': str(datetime.now().replace(microsecond=0)),
+            'homepage': host + '/experiments/' + name,
+            'contributors': [
+                {
+                    'title': researcher_owner.first_name + ' ' + researcher_owner.last_name,
+                    'email': researcher_owner.email
+                }
+            ]
+        }
+        # Add the other contributors
+        for contributor in experiment.researchers.all():
+            datapackage['contributors'].append({
+                'title': contributor.researcher.first_name + ' ' + contributor.researcher.last_name,
+                'email': contributor.researcher.email
+            })
+
+        return datapackage
+
+    def process_datapackage_json_file(self, host):
+        """TODO (NES-987)
+        :param host:
+        """
+        # Get arbitrary key: all groups pertain to same experiment
+        group = Group.objects.get(id=int(list(self.per_group_data.keys())[0]))
+        datapackage_dict = self._build_datapackage_dict(group.experiment, host)
         file_path = path.join(self.get_directory_base(), 'datapackage.json')
         with open(file_path, 'w') as file:
-            file.write('abc')
+            json.dump(datapackage_dict, file)
         self.files_to_zip_list.append([file_path, ''])
 
     @staticmethod
