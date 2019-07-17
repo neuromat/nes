@@ -11,6 +11,7 @@ from os import path, makedirs
 
 from django.conf import settings
 from django.core.files import File
+from django.db.models import CharField, DateField, TextField
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 from django.apps import apps
@@ -32,7 +33,7 @@ from experiment.models import \
     ContextTree, SubjectStepData, EEGElectrodePositionSetting, \
     SurfaceElectrode, IntramuscularElectrode, \
     NeedleElectrode, EMGElectrodeSetting, EMGIntramuscularPlacement, \
-    EMGSurfacePlacement, EMGNeedlePlacement, ComponentAdditionalFile
+    EMGSurfacePlacement, EMGNeedlePlacement, ComponentAdditionalFile, ResearchProject, Experiment
 
 from experiment.views import get_block_tree, get_experimental_protocol_image, \
     get_description_from_experimental_protocol_tree, get_sensors_position, \
@@ -2442,6 +2443,23 @@ class ExportExecution:
 
         return error_msg
 
+    @staticmethod
+    def _get_type(model_field):
+        if model_field is CharField or model_field is TextField:
+            return 'string'
+        elif model_field is DateField:
+            return 'date'
+
+    def _set_datapackage_table_schema(self, headers, model_fields):
+        fields = []
+        for header, field in zip(headers, model_fields):
+            field_info = {
+                'name': slugify(header), 'title': header, 'format': 'default', 'type': self._get_type(field)
+            }
+            fields.append(field_info)
+
+        return fields
+
     def process_experiment_data(self, language_code):
         error_msg = ""
 
@@ -2454,14 +2472,21 @@ class ExportExecution:
         study = group.experiment.research_project
         experiment = group.experiment
 
-        experiment_resume_header = [
+        experiment_summary_header = [
             'Study', 'Study description', 'Start date', 'End date', 'Experiment Title',
             'Experiment description'
         ]
-
-        experiment_resume = [
+        experiment_summary = [
             study.title, study.description, str(study.start_date), str(study.end_date),
             experiment.title, experiment.description
+        ]
+        experiment_summary_field_types = [
+            ResearchProject._meta.get_field('title').__class__,
+            ResearchProject._meta.get_field('description').__class__,
+            ResearchProject._meta.get_field('start_date').__class__,
+            ResearchProject._meta.get_field('end_date').__class__,
+            Experiment._meta.get_field('title').__class__,
+            Experiment._meta.get_field('description').__class__
         ]
 
         file_extension = 'tsv' if 'tsv' in self.get_input_data('filesformat_type') else 'csv'
@@ -2479,8 +2504,8 @@ class ExportExecution:
         complete_filename_experiment_resume = path.join(experiment_resume_directory, filename_experiment_resume)
 
         experiment_description_fields = []
-        experiment_description_fields.insert(0, experiment_resume_header)
-        experiment_description_fields.insert(1, experiment_resume)
+        experiment_description_fields.insert(0, experiment_summary_header)
+        experiment_description_fields.insert(1, experiment_summary)
         save_to_csv(complete_filename_experiment_resume, experiment_description_fields, filesformat_type)
 
         self.files_to_zip_list.append([
@@ -2488,7 +2513,11 @@ class ExportExecution:
             {
                 'name': 'Experiment', 'title': 'Experiment',
                 'path': path.join(export_experiment_data, filename_experiment_resume),
-                'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8'
+                'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
+                'schema': {
+                    'fields': self._set_datapackage_table_schema(
+                        experiment_summary_header, experiment_summary_field_types)
+                }
             }
         ])
         

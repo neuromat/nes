@@ -1719,7 +1719,7 @@ class ExportFrictionlessData(ExportTestCase):
         eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
         ObjectsFactory.create_eeg_file(eegdata)
 
-    def assert_basic_experiment_data(self, json_data):
+    def _assert_basic_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
             self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
 
@@ -1732,6 +1732,28 @@ class ExportFrictionlessData(ExportTestCase):
         # TODO (NES-987): see how to get testserver from TestCase class or other place,
         #  and https/http url part
         self.assertIn('testserver/experiments/' + name, json_data['homepage'])
+
+    def _assert_experiment_table_schema(self, json_data):
+        self.assertIn(
+            {'name': 'study', 'title': 'Study', 'type': 'string', 'format': 'default'},
+            json_data['resources'][0]['schema']['fields'])
+        self.assertIn(
+            {'name': 'study-description', 'title': 'Study description', 'type': 'string', 'format': 'default'},
+            json_data['resources'][0]['schema']['fields'])
+        self.assertIn(
+            {'name': 'experiment-title', 'title': 'Experiment Title', 'type': 'string', 'format': 'default'},
+            json_data['resources'][0]['schema']['fields'])
+        self.assertIn(
+            {
+                'name': 'experiment-description', 'title': 'Experiment description', 'type': 'string',
+                'format': 'default'
+            }, json_data['resources'][0]['schema']['fields'])
+        self.assertIn(
+            {'name': 'start-date', 'title': 'Start date', 'type': 'date', 'format': 'default'},
+            json_data['resources'][0]['schema']['fields'])
+        self.assertIn(
+            {'name': 'end-date', 'title': 'End date', 'type': 'date', 'format': 'default'},
+            json_data['resources'][0]['schema']['fields'])
 
     @staticmethod
     def _set_post_data():
@@ -1790,7 +1812,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
-        self.assert_basic_experiment_data(json_data)
+        self._assert_basic_experiment_data(json_data)
 
         shutil.rmtree(temp_dir)
 
@@ -1860,7 +1882,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_resource_field_to_datapackage_json_file(self):
+    def test_export_experiment_add_resources_field_to_datapackage_json_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -1887,11 +1909,37 @@ class ExportFrictionlessData(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
 
+        # As Experiment.csv/tsv resource has 'schema' key, that is
+        # itself a dict with other data, we test key/value pairs for all
+        # keys except 'schema'.
         # TODO (NES-987): will it have 'bytes' field?
-        self.assertIn({
+        test_dict = {
             'name': 'Experiment', 'title': 'Experiment', 'path': 'data/Experiment_data/Experiment.csv',
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
-        }, json_data['resources'])
+        }
+        self.assertTrue(all(
+            item in json_data['resources'][0].items() for item in test_dict.items()),
+            str(test_dict) + ' is not subdict of ' + str(json_data['resources'][0]))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experiment_table_schema_info_to_datapackage_json_experiment_resource(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('schema', json_data['resources'][0])
+        self.assertIn('fields', json_data['resources'][0]['schema'])
+        self._assert_experiment_table_schema(json_data)
+
+        shutil.rmtree(temp_dir)
 
 
 def tearDownModule():
