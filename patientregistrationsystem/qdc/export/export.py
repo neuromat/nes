@@ -11,7 +11,7 @@ from os import path, makedirs
 
 from django.conf import settings
 from django.core.files import File
-from django.db.models import CharField, DateField, TextField
+from django.db.models import CharField, DateField, TextField, FloatField, BooleanField, NullBooleanField
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 from django.apps import apps
@@ -22,7 +22,8 @@ from export.export_utils import create_list_of_trees, can_export_nwb
 
 from survey.survey_utils import QuestionnaireUtils
 
-from patient.models import Patient, QuestionnaireResponse
+from patient.models import Patient, QuestionnaireResponse, Gender, MaritalStatus, SocialDemographicData, Schooling, \
+    Religion, FleshTone, Payment, SocialHistoryData, AmountCigarettes, AlcoholFrequency, AlcoholPeriod
 from experiment.models import \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, \
     Group, \
@@ -880,7 +881,6 @@ class ExportExecution:
         self.participants_filtered_data = participants.filter(id__in=participants_filtered_list)
 
     def get_participants_filtered_data(self):
-
         return self.participants_filtered_data
 
     def update_questionnaire_rules(self, questionnaire_id):
@@ -2153,8 +2153,7 @@ class ExportExecution:
                             with open(complete_generic_data_filename, 'wb') as f:
                                 f.write(data)
                             self.files_to_zip_list.append(
-                                [complete_generic_data_filename, export_generic_data_directory]
-                            )
+                                [complete_generic_data_filename, export_generic_data_directory])
 
                 if 'additional_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
@@ -2208,8 +2207,8 @@ class ExportExecution:
                             with open(complete_additional_data_filename, 'wb') as f:
                                 f.write(data)
 
-                            self.files_to_zip_list.append([complete_additional_data_filename,
-                                                           export_additional_data_directory])
+                            self.files_to_zip_list.append(
+                                [complete_additional_data_filename, export_additional_data_directory])
 
         return error_msg
 
@@ -2224,14 +2223,11 @@ class ExportExecution:
 
     def get_headers_and_fields(self, output_list):
         """
-
         :param output_list:
         :return: list of headers and list of fields
         """
-
         headers = []
         fields = []
-
         for element in output_list:
             if element["field"]:
                 headers.append(element["header"])
@@ -2321,7 +2317,6 @@ class ExportExecution:
 
     def process_participant_data(self, participants_output_fields, participants, language):
         # TODO: fix translation model functionality
-        # for participant in participants_output_fields:
         age_value_dict = {}
         headers, fields = self.get_headers_and_fields(participants_output_fields)
         model_to_export = getattr(modules['patient.models'], 'Patient')
@@ -2332,7 +2327,7 @@ class ExportExecution:
         if language != 'pt-br':  # read english fields
             fields = self.get_field_en(fields)
 
-        # pick up the first terms of participants: required because
+        # Pick up the first terms of participants: required because
         # participants list of tupples can have subject of groups elements
         # corresponding to participants when we have to consider in case of
         # calculating based in data collections
@@ -2380,9 +2375,8 @@ class ExportExecution:
 
     def build_participant_export_data(self, per_experiment):
         error_msg = ""
-        export_rows_participants = []
         participants_filtered_list = self.get_participants_filtered_data()
-        # process participants/diagnosis (Per_participant directory)
+        # Process participants/diagnosis (Per_participant directory)
         # path ex. Users/.../NES_EXPORT/
         base_export_directory = self.get_export_directory()
         # /NES_EXPORT/
@@ -2396,22 +2390,36 @@ class ExportExecution:
             base_directory = path.join(base_directory, participant_data_directory)
             if not path.exists(participant_base_export_directory):
                 error_msg, base_export_directory = create_directory(base_export_directory, participant_data_directory)
-
-                if error_msg != "":
+                if error_msg != '':
                     return error_msg
 
         if 'tsv' in self.get_input_data('filesformat_type'):
+            file_extension = 'tsv'
             separator = '\t'
-            export_filename = "%s.tsv" % self.get_input_data('participants')["output_filename"]  # "participants.tsv"
+            export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
         else:
+            file_extension = 'csv'
             separator = ','
-            export_filename = "%s.csv" % self.get_input_data('participants')["output_filename"]  # "participants.csv"
+            export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
 
         complete_filename = path.join(base_export_directory, export_filename)
 
-        self.files_to_zip_list.append([complete_filename, base_directory])
-
         export_rows_participants = self.get_input_data('participants')['data_list']
+        participants_headers, participants_field_types = self._set_participants_fields()
+
+        self.files_to_zip_list.append([
+            complete_filename, base_directory,
+            {
+                # For datapackages.json resources
+                'name': 'Participants', 'title': 'Participants',
+                'path': path.join(base_directory, export_filename),
+                'format': file_extension, 'mediatype': 'text/%s' % file_extension,
+                'encoding': 'UTF-8',
+                'schema': {
+                    'fields': self._set_datapackage_table_schema(participants_headers, participants_field_types)
+                }
+            }
+        ])
 
         with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
             export_writer = csv.writer(csv_file, quotechar='"', delimiter=separator, quoting=csv.QUOTE_NONNUMERIC)
@@ -2423,9 +2431,7 @@ class ExportExecution:
 
         if diagnosis_input_data['output_list'] and participants_filtered_list:
             export_rows_diagnosis = self.process_diagnosis_data(
-                diagnosis_input_data['output_list'],
-                participants_filtered_list
-            )
+                diagnosis_input_data['output_list'], participants_filtered_list)
 
             if 'tsv' in self.get_input_data('filesformat_type'):
                 export_filename = "%s.tsv" % self.get_input_data('diagnosis')["output_filename"]  # "Diagnosis.tsv"
@@ -2449,6 +2455,11 @@ class ExportExecution:
             return 'string'
         elif model_field is DateField:
             return 'date'
+        elif model_field is FloatField:
+            # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
+            return 'float'
+        elif model_field is BooleanField or NullBooleanField:
+            return 'boolean'
 
     def _set_datapackage_table_schema(self, headers, model_fields):
         fields = []
@@ -2511,9 +2522,11 @@ class ExportExecution:
         self.files_to_zip_list.append([
             complete_filename_experiment_resume, export_experiment_data,
             {
+                # For datapackages.json resources
                 'name': 'Experiment', 'title': 'Experiment',
                 'path': path.join(export_experiment_data, filename_experiment_resume),
-                'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
+                'format': file_extension, 'mediatype': 'text/%s' % file_extension,
+                'encoding': 'UTF-8',
                 'schema': {
                     'fields': self._set_datapackage_table_schema(
                         experiment_summary_header, experiment_summary_field_types)
@@ -2562,20 +2575,17 @@ class ExportExecution:
                 experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
                 if experimental_protocol_image:
                     filename_protocol_image = "Protocol_image.png"
-                    complete_protocol_image_filename = path.join(directory_experimental_protocol,
-                                                                 filename_protocol_image)
-
+                    complete_protocol_image_filename = path.join(
+                        directory_experimental_protocol, filename_protocol_image)
                     image_protocol = experimental_protocol_image
                     with open(image_protocol, 'rb') as f:
                         data = f.read()
-
                     with open(complete_protocol_image_filename, 'wb') as f:
                         f.write(data)
+                    self.files_to_zip_list.append(
+                        [complete_protocol_image_filename, export_directory_experimental_protocol])
 
-                    self.files_to_zip_list.append([complete_protocol_image_filename,
-                                                   export_directory_experimental_protocol])
-
-                # save eeg, emg, tms, context tree setting default in Experimental Protocol directory
+                # Save eeg, emg, tms, context tree setting default in Experimental Protocol directory
                 if 'eeg_default_setting_id' in self.per_group_data[group_id]:
                     eeg_default_setting_description = get_eeg_setting_description(self.per_group_data[group_id][
                                                                                   'eeg_default_setting_id'])
@@ -2730,7 +2740,7 @@ class ExportExecution:
 
     def _build_resources(self, datapackage):
         for file in self.files_to_zip_list:
-            if len(file) == 3:  # just by now
+            if len(file) == 3:  # TODO (NES-987): just by now
                 datapackage['resources'].append(file[2])
 
     def _build_datapackage_dict(self, experiment, request):
@@ -2757,7 +2767,7 @@ class ExportExecution:
                 'title': contributor.researcher.first_name + ' ' + contributor.researcher.last_name,
                 'email': contributor.researcher.email
             })
-        # Add resources
+        # Add to datapackage resources
         self._build_resources(datapackage)
 
         return datapackage
@@ -3182,6 +3192,44 @@ class ExportExecution:
 
             export_rows.insert(0, header)
         return export_rows
+
+    def _set_participants_fields(self):
+        field_types = {
+            'participant_code': Patient._meta.get_field('code').__class__, 'age': FloatField,
+            'gender': Gender._meta.get_field('name').__class__,
+            'date_birth': Patient._meta.get_field('date_birth').__class__,
+            'marital_status': MaritalStatus._meta.get_field('name').__class__,
+            'origin': Patient._meta.get_field('origin').__class__,
+            'city': Patient._meta.get_field('city').__class__,
+            'state': Patient._meta.get_field('state').__class__,
+            'country': Patient._meta.get_field('country').__class__,
+            'natural_of': SocialDemographicData._meta.get_field('natural_of').__class__,
+            'schooling': Schooling._meta.get_field('name').__class__,
+            'patient_schooling': Schooling._meta.get_field('name').__class__,
+            'profession': SocialDemographicData._meta.get_field('profession').__class__,
+            'social_class': SocialDemographicData._meta.get_field('social_class').__class__,
+            'occupation': SocialDemographicData._meta.get_field('occupation').__class__,
+            'benefit_government': SocialDemographicData._meta.get_field('benefit_government').__class__,
+            'religion': Religion._meta.get_field('name').__class__,
+            'flesh_tone': FleshTone._meta.get_field('name').__class__,
+            'citizenship': SocialDemographicData._meta.get_field('citizenship').__class__,
+            'payment': Payment._meta.get_field('name').__class__,
+            'smoker': SocialHistoryData._meta.get_field('smoker').__class__,
+            'amount_cigarettes': AmountCigarettes._meta.get_field('name').__class__,
+            'former_smoker': SocialHistoryData._meta.get_field('ex_smoker').__class__,
+            'alcoholic': SocialHistoryData._meta.get_field('alcoholic').__class__,
+            'alcohol_frequency': AlcoholFrequency._meta.get_field('name').__class__,
+            'alcohol_period': AlcoholPeriod._meta.get_field('name').__class__,
+            'drugs': SocialHistoryData._meta.get_field('drugs').__class__
+        }
+        participants_headers = []
+        participants_field_types = []
+        for field in self.get_input_data('participants')['output_list']:
+            participants_headers.append(field['header'])
+        for field in participants_headers:
+            participants_field_types.append(field_types[field])
+
+        return participants_headers, participants_field_types
 
 
 def handling_values(dictionary_object):

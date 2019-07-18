@@ -1733,35 +1733,120 @@ class ExportFrictionlessData(ExportTestCase):
         #  and https/http url part
         self.assertIn('testserver/experiments/' + name, json_data['homepage'])
 
-    def _assert_experiment_table_schema(self, json_data):
+    def _assert_experiment_table_schema(self, resource_schema):
         self.assertIn(
             {'name': 'study', 'title': 'Study', 'type': 'string', 'format': 'default'},
-            json_data['resources'][0]['schema']['fields'])
+            resource_schema['fields'])
         self.assertIn(
             {'name': 'study-description', 'title': 'Study description', 'type': 'string', 'format': 'default'},
-            json_data['resources'][0]['schema']['fields'])
+            resource_schema['fields'])
         self.assertIn(
             {'name': 'experiment-title', 'title': 'Experiment Title', 'type': 'string', 'format': 'default'},
-            json_data['resources'][0]['schema']['fields'])
+            resource_schema['fields'])
         self.assertIn(
             {
                 'name': 'experiment-description', 'title': 'Experiment description', 'type': 'string',
                 'format': 'default'
-            }, json_data['resources'][0]['schema']['fields'])
+            }, resource_schema['fields'])
         self.assertIn(
             {'name': 'start-date', 'title': 'Start date', 'type': 'date', 'format': 'default'},
-            json_data['resources'][0]['schema']['fields'])
+            resource_schema['fields'])
         self.assertIn(
             {'name': 'end-date', 'title': 'End date', 'type': 'date', 'format': 'default'},
-            json_data['resources'][0]['schema']['fields'])
+            resource_schema['fields'])
+
+    def _assert_participants_table_schema(self, resource_schema):
+        self.assertIn(
+            {'name': 'participant_code', 'title': 'participant_code', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            # TODO (NES-987): see if type is float; what 'format': 'default' means
+            {'name': 'age', 'title': 'age', 'type': 'float', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'gender', 'title': 'gender', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'date_birth', 'title': 'date_birth', 'type': 'date', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'marital_status', 'title': 'marital_status', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'origin', 'title': 'origin', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'city', 'title': 'city', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'state', 'title': 'state', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'country', 'title': 'country', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'natural_of', 'title': 'natural_of', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'schooling', 'title': 'schooling', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'patient_schooling', 'title': 'patient_schooling', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'profession', 'title': 'profession', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'social_class', 'title': 'social_class', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'occupation', 'title': 'occupation', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'benefit_government', 'title': 'benefit_government', 'type': 'boolean', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'religion', 'title': 'religion', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'flesh_tone', 'title': 'flesh_tone', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'citizenship', 'title': 'citizenship', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'payment', 'title': 'payment', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'smoker', 'title': 'smoker', 'type': 'boolean', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'amount_cigarettes', 'title': 'amount_cigarettes', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'former_smoker', 'title': 'former_smoker', 'type': 'boolean', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'alcoholic', 'title': 'alcoholic', 'type': 'boolean', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'alcohol_frequency', 'title': 'alcohol_frequency', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'alcohol_period', 'title': 'alcohol_period', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'drugs', 'title': 'drugs', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
 
     @staticmethod
     def _set_post_data():
         # Data style that is posted to export_view in template
+        # TODO (NES-987): test for 'headings': ['short'] and 'headings': ['abbreviated']
         return {
             'per_questionnaire': ['on'], 'per_participant': ['on'],
             'per_eeg_raw_data ': ['on'], 'per_additional_data': ['on'],
-            'headings': ['abbreviated'], 'patient_selected': ['age*age'],
+            'headings': ['code'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
 
@@ -1908,18 +1993,20 @@ class ExportFrictionlessData(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
+        experiment_resource = next(item for item in json_data['resources'] if item['name'] == 'Experiment')
 
         # As Experiment.csv/tsv resource has 'schema' key, that is
         # itself a dict with other data, we test key/value pairs for all
         # keys except 'schema'.
         # TODO (NES-987): will it have 'bytes' field?
+        # TODO (NES-987): test for tsv format
         test_dict = {
             'name': 'Experiment', 'title': 'Experiment', 'path': 'data/Experiment_data/Experiment.csv',
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
         self.assertTrue(all(
-            item in json_data['resources'][0].items() for item in test_dict.items()),
-            str(test_dict) + ' is not subdict of ' + str(json_data['resources'][0]))
+            item in experiment_resource.items() for item in test_dict.items()),
+            str(test_dict) + ' is not subdict of ' + str(experiment_resource))
 
         shutil.rmtree(temp_dir)
 
@@ -1934,12 +2021,72 @@ class ExportFrictionlessData(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
+        experiment_resource = next(item for item in json_data['resources'] if item['name'] == 'Experiment')
 
-        self.assertIn('schema', json_data['resources'][0])
-        self.assertIn('fields', json_data['resources'][0]['schema'])
-        self._assert_experiment_table_schema(json_data)
+        self.assertIn('schema', experiment_resource)
+        self.assertIn('fields', experiment_resource['schema'])
+        self._assert_experiment_table_schema(experiment_resource['schema'])
 
         shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participant_data_file_info_to_datapackage_json_resources_field(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        # As Participants.csv/tsv resource has 'schema' key, that is
+        # itself a dict with other data, we test key/value pairs for all
+        # keys except 'schema'.
+        # TODO (NES-987): will it have 'bytes' field?
+        # TODO (NES-987): test for tsv format
+        test_dict = {
+            'name': 'Participants', 'title': 'Participants', 'path': 'data/Group_' + self.group.title,
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+        self.assertTrue(
+            all(item in participants_resource for item in test_dict),
+            str(test_dict) + ' is not subdict of ' + str(participants_resource))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participants_table_schema_info_to_datapackage_json_participants_resource(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Append all possible patient attributes
+        data['patient_selected'].extend([
+            'gender*gender', 'date_birth*date_birth', 'marital_status__name*marital_status',
+            'origin*origin', 'city*city', 'state*state', 'country*country',
+            'socialdemographicdata__natural_of*natural_of', 'socialdemographicdata__schooling__name*schooling',
+            'socialdemographicdata__patient_schooling__name*patient_schooling',
+            'socialdemographicdata__profession*profession', 'socialdemographicdata__social_class*social_class',
+            'socialdemographicdata__occupation*occupation',
+            'socialdemographicdata__benefit_government*benefit_government',
+            'socialdemographicdata__religion__name*religion', 'socialdemographicdata__flesh_tone__name*flesh_tone',
+            'socialdemographicdata__citizenship*citizenship', 'socialdemographicdata__payment__name*payment',
+            'socialhistorydata__smoker*smoker', 'socialhistorydata__amount_cigarettes__name*amount_cigarettes',
+            'socialhistorydata__ex_smoker*former_smoker', 'socialhistorydata__alcoholic*alcoholic',
+            'socialhistorydata__alcohol_frequency__name*alcohol_frequency',
+            'socialhistorydata__alcohol_period__name*alcohol_period', 'socialhistorydata__drugs*drugs'
+        ])
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+
+        self.assertIn('schema', participants_resource)
+        self.assertIn('fields', participants_resource['schema'])
+        self._assert_participants_table_schema(participants_resource['schema'])
 
 
 def tearDownModule():
