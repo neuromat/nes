@@ -225,14 +225,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 participants_list = export.add_subject_of_group(
                     # Required convertion from ValuesListQuerySet to list
                     list(participants_list),
-                    request.session['group_selected_list']
-                )
+                    request.session['group_selected_list'])
             export_rows_participants = export.process_participant_data(
                 participants_input_data, participants_list, language_code)
             export.get_input_data('participants')['data_list'] = export_rows_participants
-            # create file participants.csv and diagnosis.csv
+            # Create file participants.csv and diagnosis.csv
             error_msg = export.build_participant_export_data('group_selected_list' in request.session)
-            if error_msg != "":
+            if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
