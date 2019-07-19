@@ -148,7 +148,7 @@ def find_description(field_to_find, fields_inclusion):
     return ""
 
 
-def abbreviated_data(data_to_abbreviate, heading_type):
+def abbreviated_data(data_to_abbreviate, heading_type='abbreviated'):
 
     if heading_type == 'abbreviated' and len(data_to_abbreviate) > MAX_STRING_LENGTH:
         return data_to_abbreviate[:MAX_STRING_LENGTH] + '..'

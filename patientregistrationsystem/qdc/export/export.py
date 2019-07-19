@@ -2457,7 +2457,7 @@ class ExportExecution:
             return 'date'
         elif model_field is FloatField:
             # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
-            return 'float'
+            return 'number'
         elif model_field is BooleanField or NullBooleanField:
             return 'boolean'
 
@@ -2812,12 +2812,9 @@ class ExportExecution:
         return response_type
 
     def get_heading_type(self):
-
         heading_type = self.get_input_data("heading_type")
-
         if not heading_type:
             heading_type = ["code"]
-
         return heading_type
 
     def get_filesformat_type(self):
@@ -3195,39 +3192,38 @@ class ExportExecution:
 
     def _set_participants_fields(self):
         field_types = {
-            'participant_code': Patient._meta.get_field('code').__class__, 'age': FloatField,
-            'gender': Gender._meta.get_field('name').__class__,
+            'code': Patient._meta.get_field('code').__class__, 'age': FloatField,
+            'gender__name': Gender._meta.get_field('name').__class__,
             'date_birth': Patient._meta.get_field('date_birth').__class__,
-            'marital_status': MaritalStatus._meta.get_field('name').__class__,
+            'marital_status__name': MaritalStatus._meta.get_field('name').__class__,
             'origin': Patient._meta.get_field('origin').__class__,
             'city': Patient._meta.get_field('city').__class__,
             'state': Patient._meta.get_field('state').__class__,
             'country': Patient._meta.get_field('country').__class__,
-            'natural_of': SocialDemographicData._meta.get_field('natural_of').__class__,
-            'schooling': Schooling._meta.get_field('name').__class__,
-            'patient_schooling': Schooling._meta.get_field('name').__class__,
-            'profession': SocialDemographicData._meta.get_field('profession').__class__,
-            'social_class': SocialDemographicData._meta.get_field('social_class').__class__,
-            'occupation': SocialDemographicData._meta.get_field('occupation').__class__,
-            'benefit_government': SocialDemographicData._meta.get_field('benefit_government').__class__,
-            'religion': Religion._meta.get_field('name').__class__,
-            'flesh_tone': FleshTone._meta.get_field('name').__class__,
-            'citizenship': SocialDemographicData._meta.get_field('citizenship').__class__,
-            'payment': Payment._meta.get_field('name').__class__,
-            'smoker': SocialHistoryData._meta.get_field('smoker').__class__,
-            'amount_cigarettes': AmountCigarettes._meta.get_field('name').__class__,
-            'former_smoker': SocialHistoryData._meta.get_field('ex_smoker').__class__,
-            'alcoholic': SocialHistoryData._meta.get_field('alcoholic').__class__,
-            'alcohol_frequency': AlcoholFrequency._meta.get_field('name').__class__,
-            'alcohol_period': AlcoholPeriod._meta.get_field('name').__class__,
-            'drugs': SocialHistoryData._meta.get_field('drugs').__class__
+            'socialdemographicdata__natural_of': SocialDemographicData._meta.get_field('natural_of').__class__,
+            'socialdemographicdata__schooling__name': Schooling._meta.get_field('name').__class__,
+            'socialdemographicdata__patient_schooling__name': Schooling._meta.get_field('name').__class__,
+            'socialdemographicdata__profession': SocialDemographicData._meta.get_field('profession').__class__,
+            'socialdemographicdata__social_class': SocialDemographicData._meta.get_field('social_class').__class__,
+            'socialdemographicdata__occupation': SocialDemographicData._meta.get_field('occupation').__class__,
+            'socialdemographicdata__benefit_government': SocialDemographicData._meta.get_field('benefit_government').__class__,
+            'socialdemographicdata__religion__name': Religion._meta.get_field('name').__class__,
+            'socialdemographicdata__flesh_tone__name': FleshTone._meta.get_field('name').__class__,
+            'socialdemographicdata__citizenship': SocialDemographicData._meta.get_field('citizenship').__class__,
+            'socialdemographicdata__payment__name': Payment._meta.get_field('name').__class__,
+            'socialhistorydata__smoker': SocialHistoryData._meta.get_field('smoker').__class__,
+            'socialhistorydata__amount_cigarettes__name': AmountCigarettes._meta.get_field('name').__class__,
+            'socialhistorydata__ex_smoker': SocialHistoryData._meta.get_field('ex_smoker').__class__,
+            'socialhistorydata__alcoholic': SocialHistoryData._meta.get_field('alcoholic').__class__,
+            'socialhistorydata__alcohol_frequency__name': AlcoholFrequency._meta.get_field('name').__class__,
+            'socialhistorydata__alcohol_period__name': AlcoholPeriod._meta.get_field('name').__class__,
+            'socialhistorydata__drugs': SocialHistoryData._meta.get_field('drugs').__class__
         }
         participants_headers = []
         participants_field_types = []
         for field in self.get_input_data('participants')['output_list']:
             participants_headers.append(field['header'])
-        for field in participants_headers:
-            participants_field_types.append(field_types[field])
+            participants_field_types.append(field_types[field['field']])
 
         return participants_headers, participants_field_types
 
