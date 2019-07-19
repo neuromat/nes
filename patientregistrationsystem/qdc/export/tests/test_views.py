@@ -27,7 +27,7 @@ from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
     set_mocks5
 from export.tests.tests_helper import ExportTestCase
-from export.views import EXPORT_DIRECTORY
+from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS
 from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
 
@@ -1755,88 +1755,164 @@ class ExportFrictionlessData(ExportTestCase):
             {'name': 'end-date', 'title': 'End date', 'type': 'date', 'format': 'default'},
             resource_schema['fields'])
 
-    def _assert_participants_table_schema(self, resource_schema):
+    @staticmethod
+    def _get_name_title(heading_type, field):
+        title = ''
+        if field == 'code':  # Participant code
+            if heading_type == 'code':
+                title = 'participant_code'
+            elif heading_type == 'full':
+                title = _('Código de Participante')
+            elif heading_type == 'abbreviated':
+                title = abbreviated_data(_('Código de Participante'))
+        else:
+            patient_field = next(item for item in PATIENT_FIELDS if item['header'] == field)
+            if heading_type == 'code':
+                title = patient_field['header']
+            elif heading_type == 'full':
+                title = patient_field['description']
+            elif heading_type == 'abbreviated':
+                title = abbreviated_data(patient_field['description'])
+
+        name = slugify(title)
+
+        return name, title
+
+    def _assert_participants_table_schema(self, resource_schema, heading_type):
+        name, title = self._get_name_title(heading_type, 'code')
         self.assertIn(
-            {'name': 'participant_code', 'title': 'participant_code', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'age')
         self.assertIn(
-            # TODO (NES-987): see if type is float; what 'format': 'default' means
-            {'name': 'age', 'title': 'age', 'type': 'float', 'format': 'default'},
+            # TODO (NES-987): see what 'format': 'default' means
+            {'name': name, 'title': title, 'type': 'number', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'gender')
         self.assertIn(
-            {'name': 'gender', 'title': 'gender', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'date_birth')
         self.assertIn(
-            {'name': 'date_birth', 'title': 'date_birth', 'type': 'date', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'date', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'marital_status')
         self.assertIn(
-            {'name': 'marital_status', 'title': 'marital_status', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'origin')
         self.assertIn(
-            {'name': 'origin', 'title': 'origin', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'city')
         self.assertIn(
-            {'name': 'city', 'title': 'city', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'state')
         self.assertIn(
-            {'name': 'state', 'title': 'state', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'country')
         self.assertIn(
-            {'name': 'country', 'title': 'country', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'natural_of')
         self.assertIn(
-            {'name': 'natural_of', 'title': 'natural_of', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'schooling')
         self.assertIn(
-            {'name': 'schooling', 'title': 'schooling', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'patient_schooling')
         self.assertIn(
-            {'name': 'patient_schooling', 'title': 'patient_schooling', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'profession')
         self.assertIn(
-            {'name': 'profession', 'title': 'profession', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'social_class')
         self.assertIn(
-            {'name': 'social_class', 'title': 'social_class', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'occupation')
         self.assertIn(
-            {'name': 'occupation', 'title': 'occupation', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'benefit_government')
         self.assertIn(
-            {'name': 'benefit_government', 'title': 'benefit_government', 'type': 'boolean', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'religion')
         self.assertIn(
-            {'name': 'religion', 'title': 'religion', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'flesh_tone')
         self.assertIn(
-            {'name': 'flesh_tone', 'title': 'flesh_tone', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'citizenship')
         self.assertIn(
-            {'name': 'citizenship', 'title': 'citizenship', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'payment')
         self.assertIn(
-            {'name': 'payment', 'title': 'payment', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'smoker')
         self.assertIn(
-            {'name': 'smoker', 'title': 'smoker', 'type': 'boolean', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'amount_cigarettes')
         self.assertIn(
-            {'name': 'amount_cigarettes', 'title': 'amount_cigarettes', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'former_smoker')
         self.assertIn(
-            {'name': 'former_smoker', 'title': 'former_smoker', 'type': 'boolean', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'alcoholic')
         self.assertIn(
-            {'name': 'alcoholic', 'title': 'alcoholic', 'type': 'boolean', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'alcohol_frequency')
         self.assertIn(
-            {'name': 'alcohol_frequency', 'title': 'alcohol_frequency', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'alcohol_period')
         self.assertIn(
-            {'name': 'alcohol_period', 'title': 'alcohol_period', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'drugs')
         self.assertIn(
-            {'name': 'drugs', 'title': 'drugs', 'type': 'string', 'format': 'default'},
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
 
     @staticmethod
@@ -2055,6 +2131,8 @@ class ExportFrictionlessData(ExportTestCase):
             all(item in participants_resource for item in test_dict),
             str(test_dict) + ' is not subdict of ' + str(participants_resource))
 
+        shutil.rmtree(temp_dir)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_participants_table_schema_info_to_datapackage_json_participants_resource(self):
         self._create_sample_export_data()
@@ -2064,7 +2142,7 @@ class ExportFrictionlessData(ExportTestCase):
         data = self._set_post_data()
         # Append all possible patient attributes
         data['patient_selected'].extend([
-            'gender*gender', 'date_birth*date_birth', 'marital_status__name*marital_status',
+            'gender__name*gender', 'date_birth*date_birth', 'marital_status__name*marital_status',
             'origin*origin', 'city*city', 'state*state', 'country*country',
             'socialdemographicdata__natural_of*natural_of', 'socialdemographicdata__schooling__name*schooling',
             'socialdemographicdata__patient_schooling__name*patient_schooling',
@@ -2078,15 +2156,22 @@ class ExportFrictionlessData(ExportTestCase):
             'socialhistorydata__alcohol_frequency__name*alcohol_frequency',
             'socialhistorydata__alcohol_period__name*alcohol_period', 'socialhistorydata__drugs*drugs'
         ])
-        response = self.client.post(reverse('export_view'), data)
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
-        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+        # Test for Question code, Full question text and Abbreviated question text
+        # in Headings head, General informtion export tab
+        for heading_type in [['code'], ['full'], ['abbreviated']]:
+            data['headings'] = heading_type
+            response = self.client.post(reverse('export_view'), data)
 
-        self.assertIn('schema', participants_resource)
-        self.assertIn('fields', participants_resource['schema'])
-        self._assert_participants_table_schema(participants_resource['schema'])
+            temp_dir = tempfile.mkdtemp()
+            json_data = self._get_datapackage_json_data(temp_dir, response)
+            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+
+            self.assertIn('schema', participants_resource)
+            self.assertIn('fields', participants_resource['schema'])
+            self._assert_participants_table_schema(participants_resource['schema'], heading_type[0])
+
+        shutil.rmtree(temp_dir)
 
 
 def tearDownModule():
