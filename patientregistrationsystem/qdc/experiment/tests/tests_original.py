@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from faker import Factory
 
+from custom_user.tests_helper import create_user
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, \
     ResearchProject, Keyword, StimulusType, \
@@ -89,46 +90,37 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_experiment(research_project):
-        """
-        Create an experiment to be used in the test
+        """Create an experiment to be used in the test
         :param research_project: research project
         :return: experiment
         """
         experiment = Experiment.objects.create(
             research_project_id=research_project.id,
             title="Experimento-Update",
-            description="Descricao do Experimento-Update"
-        )
+            description="Descricao do Experimento-Update")
         experiment.changed_by = None
         experiment.save()
         return experiment
 
     @staticmethod
     def create_experiment_researcher(experiment):
-        """
-        Create an experiment researcher to be used in tests
+        """Create an experiment researcher to be used in tests
         :param experiment: researcher's experiment
         :return: ExperimentResearcher model instance
         """
-        user = User.objects.create_user(
-            username='toninho', email='toninho@example.com', password='toninho',
-        )
-        user.user_profile.citation_name = "VESPOLI, Toninho"
+        user, passwd = create_user()
 
-        return ExperimentResearcher.objects.create(
-            experiment=experiment, researcher=user
-        )
+        return ExperimentResearcher.objects.create(experiment=experiment, researcher=user)
 
     @staticmethod
     def create_publication(list_of_experiments):
-        """
-        Create a publication to be used in the test
+        """Create a publication to be used in the test
         :param list_of_experiments: list of experiments
         :return: publication
         """
 
-        publication = Publication.objects.create(title="Publication-Update",
-                                                 citation="Citation-Update")
+        publication = Publication.objects.create(
+            title="Publication-Update", citation="Citation-Update")
         publication.save()
         for experiment in list_of_experiments:
             publication.experiments.add(experiment)

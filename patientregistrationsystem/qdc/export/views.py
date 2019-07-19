@@ -121,16 +121,18 @@ QUESTIONNAIRE_EVALUATION_FIELDS_EXCLUDED = [
     "refurl"
 ]
 
-HEADER_EXPLANATION_FIELDS = ['questionnaire_id',
-                             'questionnaire_title',
-                             'question_code',
-                             'question_description',
-                             'subquestion_code',
-                             'subquestion_description',
-                             'option_code',
-                             'option_description',
-                             'option_value',
-                             'column_title']
+HEADER_EXPLANATION_FIELDS = [
+    'questionnaire_id',
+    'questionnaire_title',
+    'question_code',
+    'question_description',
+    'subquestion_code',
+    'subquestion_description',
+    'option_code',
+    'option_description',
+    'option_value',
+    'column_title'
+]
 
 
 def update_export_instance(input_file, output_export, export_instance):
@@ -146,7 +148,7 @@ def find_description(field_to_find, fields_inclusion):
     return ""
 
 
-def abbreviated_data(data_to_abbreviate, heading_type):
+def abbreviated_data(data_to_abbreviate, heading_type='abbreviated'):
 
     if heading_type == 'abbreviated' and len(data_to_abbreviate) > MAX_STRING_LENGTH:
         return data_to_abbreviate[:MAX_STRING_LENGTH] + '..'
@@ -205,7 +207,8 @@ def export_create(request, export_id, input_filename, template_name="export/expo
             messages.error(request, _('Inconsistent data read from json file'))
             return render(request, template_name)
 
-        # Create directory base for export: /NES_EXPORT
+        # Create directory base for export: NES_EXPORT
+        # TODO (NES-987): change NES_EXPORT dir in comments to data dir
         error_msg = export.create_export_directory()
         if error_msg != '':
             messages.error(request, error_msg)
@@ -222,14 +225,13 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                 participants_list = export.add_subject_of_group(
                     # Required convertion from ValuesListQuerySet to list
                     list(participants_list),
-                    request.session['group_selected_list']
-                )
+                    request.session['group_selected_list'])
             export_rows_participants = export.process_participant_data(
                 participants_input_data, participants_list, language_code)
             export.get_input_data('participants')['data_list'] = export_rows_participants
-            # create file participants.csv and diagnosis.csv
+            # Create file participants.csv and diagnosis.csv
             error_msg = export.build_participant_export_data('group_selected_list' in request.session)
-            if error_msg != "":
+            if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
@@ -275,11 +277,14 @@ def export_create(request, export_id, input_filename, template_name="export/expo
                     if error_msg != "":
                         messages.error(request, error_msg)
                         return render(request, template_name)
-            # build export data by each component
+            # Build export data for each component
             error_msg = export.process_per_participant_per_experiment()
             if error_msg != "":
                 messages.error(request, error_msg)
                 return render(request, template_name)
+
+            # Build datapackage.json file
+            error_msg = export.process_datapackage_json_file(request)
 
         else:
             # Export method: filter by entrance questionnaire
@@ -302,19 +307,15 @@ def export_create(request, export_id, input_filename, template_name="export/expo
         if export.files_to_zip_list:
             # export.zip file
             export_filename = export.get_input_data('export_filename')
-            export_complete_filename = path.join(
-                base_directory_name, export_filename
-            )
-            # print(export.files_to_zip_list)  # DEBUG
+            export_complete_filename = path.join(base_directory_name, export_filename)
 
             with ZipFile(export_complete_filename, 'w') as zip_file:
-                for filename, directory in export.files_to_zip_list:
+                for filename, directory, *resource in export.files_to_zip_list:  # just by now
                     fdir, fname = path.split(filename)
                     zip_file.write(filename.encode('utf-8'), path.join(directory, fname))
 
             output_export_file = path.join(
-                "export",
-                path.join(str(export_instance.user.id), str(export_instance.id), str(export_filename)))
+                "export", path.join(str(export_instance.user.id), str(export_instance.id), str(export_filename)))
 
             update_export_instance(input_export_file, output_export_file, export_instance)
 

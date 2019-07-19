@@ -4,7 +4,7 @@ from survey.abc_search_engine import Questionnaires
 from survey.views import get_questionnaire_language
 
 
-BASE_DIRECTORY = "NES_EXPORT"
+BASE_DIRECTORY = "data"
 PER_PARTICIPANT_DIRECTORY = "Per_participant"
 PER_QUESTIONNAIRE_DIRECTORY = "Per_questionnaire"
 QUESTIONNAIRE_METADATA_DIRECTORY = "Questionnaire_metadata"

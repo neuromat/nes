@@ -1,11 +1,13 @@
 import csv
 import os
 import io
+import re
 import tempfile
 import zipfile
-from datetime import date
+from datetime import date, datetime
 
 import shutil
+from json import load
 from unittest.mock import patch
 
 from django.core.files import File
@@ -19,12 +21,13 @@ from experiment.models import Component, ComponentConfiguration, \
     TMSLocalizationSystem, HotSpot, TMSData, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
+from export import input_export
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
     set_mocks5
 from export.tests.tests_helper import ExportTestCase
-from export.views import EXPORT_DIRECTORY
+from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS
 from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
 
@@ -98,10 +101,10 @@ class ExportQuestionnaireTest(ExportTestCase):
         subject_of_group2 = ObjectsFactory.create_subject_of_group(self.group, subject)
 
         ObjectsFactory.create_questionnaire_response(
-            dct=dct,
-            responsible=self.user, token_id=3,
-            subject_of_group=subject_of_group2)
+            dct=dct, responsible=self.user, token_id=3, subject_of_group=subject_of_group2)
+
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -129,7 +132,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_2_QUESTIONNAIRE',
@@ -140,7 +143,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         with open(
             os.path.join(
                 temp_dir,
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_2_QUESTIONNAIRE',
@@ -166,18 +169,15 @@ class ExportQuestionnaireTest(ExportTestCase):
         # setUp
         patient = UtilTests().create_patient(changed_by=self.user)
         subject = ObjectsFactory.create_subject(patient)
-        subject_of_group = \
-            ObjectsFactory.create_subject_of_group(self.group, subject)
+        subject_of_group = ObjectsFactory.create_subject_of_group(self.group, subject)
 
         ObjectsFactory.create_questionnaire_response(
             dct=dct,
             responsible=self.user, token_id=2,
-            subject_of_group=subject_of_group
-        )
+            subject_of_group=subject_of_group)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -252,14 +252,10 @@ class ExportQuestionnaireTest(ExportTestCase):
         subject_of_group2 = ObjectsFactory.create_subject_of_group(group2, subject)
 
         ObjectsFactory.create_questionnaire_response(
-            dct=dct2,
-            responsible=self.user, token_id=2,
-            subject_of_group=subject_of_group2
-        )
+            dct=dct2, responsible=self.user, token_id=2, subject_of_group=subject_of_group2)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id), str(group2.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id), str(group2.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -385,6 +381,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -412,7 +409,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -423,7 +420,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         with open(
                 os.path.join(
                     temp_dir,
-                    'NES_EXPORT',
+                    input_export.BASE_DIRECTORY,
                     'Experiment_data',
                     'Group_' + self.group.title.lower(),
                     'Per_questionnaire',
@@ -455,9 +452,8 @@ class ExportQuestionnaireTest(ExportTestCase):
             subject_of_group=subject_of_group2
         )
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id), str(group2.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id), str(group2.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -522,6 +518,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Change questionnaire respose date for testing
         self.questionnaire_response.date = date(2016, 7, 7)
@@ -553,7 +550,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -563,7 +560,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         with open(os.path.join(
                 temp_dir,
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -620,12 +617,10 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(
-            os.path.join('NES_EXPORT', 'Participants.csv'), temp_dir
-        )
+        zipped_file.extract(os.path.join(input_export.BASE_DIRECTORY, 'Participants.csv'), temp_dir)
 
         with open(os.path.join(
-                temp_dir, 'NES_EXPORT', 'Participants.csv'
+                temp_dir, input_export.BASE_DIRECTORY, 'Participants.csv'
         )) as file:
             csvreader = csv.reader(file)
             rows = []
@@ -646,6 +641,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -674,7 +670,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -686,7 +682,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         with open(
                 os.path.join(
                     temp_dir,
-                    'NES_EXPORT',
+                    input_export.BASE_DIRECTORY,
                     'Experiment_data',
                     'Group_' + self.group.title.lower(),
                     'Per_questionnaire',
@@ -706,6 +702,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks4(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -734,7 +731,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
             os.path.join(
-                'NES_EXPORT',
+                input_export.BASE_DIRECTORY,
                 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
@@ -746,7 +743,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         with open(
                 os.path.join(
                     temp_dir,
-                    'NES_EXPORT',
+                    input_export.BASE_DIRECTORY,
                     'Experiment_data',
                     'Group_' + self.group.title.lower(),
                     'Per_questionnaire',
@@ -775,19 +772,16 @@ class ExportDataCollectionTest(ExportTestCase):
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(
             self.experiment, Component.GENERIC_DATA_COLLECTION,
-            kwargs={'it': it}
-        )
+            kwargs={'it': it})
 
         # Include gdc component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, gdc
-        )
+            self.root_component, gdc)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' generic data collection file
         gdc_data = ObjectsFactory.create_generic_data_collection_data(
-            dct, self.subject_of_group
-        )
+            dct, self.subject_of_group)
         gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
         # Create additional data to this step
@@ -795,9 +789,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -815,25 +808,20 @@ class ExportDataCollectionTest(ExportTestCase):
 
         zipped_file = self.get_zipped_file(response)
 
-        # we have only the generic_data_collection step, so we get the first
+        # We have only the generic_data_collection step, so we get the first
         # element: [0]
-        path = create_list_of_trees(
-            self.group.experimental_protocol, "generic_data_collection"
-        )[0]
+        path = create_list_of_trees(self.group.experimental_protocol, "generic_data_collection")[0]
 
-        generic_component_configuration = \
-            ComponentConfiguration.objects.get(pk=path[-1][0])
+        generic_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = generic_component_configuration.component
         step_number = path[-1][4]
 
         self.assert_per_participant_step_file_exists(
             step_number, component_step, 'Generic_Data_Collection_1',
-            os.path.basename(gdcf.file.name), zipped_file
-        )
+            os.path.basename(gdcf.file.name), zipped_file)
         self.assert_per_participant_step_file_exists(
             step_number, component_step, 'AdditionalData_1',
-            os.path.basename(adf.file.name), zipped_file
-        )
+            os.path.basename(adf.file.name), zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_digital_game_phase_data_colletion(self):
@@ -867,9 +855,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -911,25 +898,19 @@ class ExportDataCollectionTest(ExportTestCase):
         eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
 
         # Include eeg component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, eeg_comp)
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, eeg_comp)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' eeg file
-        eegdata = ObjectsFactory.create_eeg_data(
-            dct, self.subject_of_group, eeg_set
-        )
-
+        eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
         eegf = ObjectsFactory.create_eeg_file(eegdata)
 
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
-
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -947,17 +928,19 @@ class ExportDataCollectionTest(ExportTestCase):
 
         zipped_file = self.get_zipped_file(response)
 
-        # we have only the generic_data_collection step, so we get the first
+        # We have only the generic_data_collection step, so we get the first
         # element: [0]
         path = create_list_of_trees(self.group.experimental_protocol, "eeg")[0]
         eeg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = eeg_conf.component
         step_number = path[-1][4]
-        self.assert_per_participant_step_file_exists(step_number, component_step, 'EEGData_1',
-                                                     os.path.basename(eegf.file.name), zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'EEGData_1',
+            os.path.basename(eegf.file.name), zipped_file)
 
-        self.assert_per_participant_step_file_exists(step_number, component_step, 'AdditionalData_1',
-                                                     os.path.basename(adf.file.name), zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'AdditionalData_1',
+            os.path.basename(adf.file.name), zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_emg(self):
@@ -992,9 +975,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         adf = ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1086,9 +1068,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1171,9 +1152,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id), str(group1.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id), str(group1.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1277,9 +1257,8 @@ class ExportDataCollectionTest(ExportTestCase):
 
         ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id), str(group1.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id), str(group1.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1328,11 +1307,10 @@ class ExportDataCollectionTest(ExportTestCase):
         # Create additional data to this step
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
 
-        adf = ObjectsFactory.create_additional_data_file(additional_data)
+        ObjectsFactory.create_additional_data_file(additional_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1386,11 +1364,10 @@ class ExportDataCollectionTest(ExportTestCase):
             self.root_component, stimulus
         )
 
-        dtc = ObjectsFactory.create_data_configuration_tree(component_config)
+        ObjectsFactory.create_data_configuration_tree(component_config)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1464,9 +1441,8 @@ class ExportDataCollectionTest(ExportTestCase):
         eeg_data.save()
         ObjectsFactory.create_eeg_file(eeg_data)
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1484,14 +1460,9 @@ class ExportDataCollectionTest(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
         zipped_file.extract(
-            os.path.join(
-                'NES_EXPORT', 'Participant_data', 'Participants.csv'
-            ), temp_dir
-        )
+            os.path.join(input_export.BASE_DIRECTORY, 'Participant_data', 'Participants.csv'), temp_dir)
 
-        with open(os.path.join(
-                temp_dir, 'NES_EXPORT', 'Participant_data', 'Participants.csv'
-        )) as file:
+        with open(os.path.join(temp_dir, input_export.BASE_DIRECTORY, 'Participant_data', 'Participants.csv')) as file:
             csvreader = csv.reader(file)
             rows = []
             for row in csvreader:
@@ -1514,9 +1485,8 @@ class ExportDataCollectionTest(ExportTestCase):
             self.root_component, eeg_comp
         )
 
-        self.append_session_variable(
-            'group_selected_list', [str(self.group.id)]
-        )
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
@@ -1533,15 +1503,9 @@ class ExportDataCollectionTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(
-            os.path.join(
-                'NES_EXPORT', 'Participant_data', 'Participants.csv'
-            ), temp_dir
-        )
+        zipped_file.extract(os.path.join(input_export.BASE_DIRECTORY, 'Participant_data', 'Participants.csv'), temp_dir)
 
-        with open(os.path.join(
-                temp_dir, 'NES_EXPORT', 'Participant_data', 'Participants.csv'
-        )) as file:
+        with open(os.path.join(temp_dir, input_export.BASE_DIRECTORY, 'Participant_data', 'Participants.csv')) as file:
             csvreader = csv.reader(file)
             rows = []
             for row in csvreader:
@@ -1626,9 +1590,9 @@ class ExportParticipants(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(os.path.join('NES_EXPORT', 'Participants.csv'), temp_dir)
+        zipped_file.extract(os.path.join(input_export.BASE_DIRECTORY, 'Participants.csv'), temp_dir)
 
-        with open(os.path.join(temp_dir, 'NES_EXPORT', 'Participants.csv')) as file:
+        with open(os.path.join(temp_dir, input_export.BASE_DIRECTORY, 'Participants.csv')) as file:
             csvreader = csv.reader(file)
             rows = []
             for row in csvreader:
@@ -1732,6 +1696,482 @@ class ExportSelection(ExportTestCase):
         self.assertRedirects(response, '/export/view/', status_code=302, target_status_code=200)
         self.assertIn('license', self.client.session)
         self.assertEqual(self.client.session['license'], '0')
+
+
+class ExportFrictionlessData(ExportTestCase):
+
+    def setUp(self):
+        super(ExportFrictionlessData, self).setUp()
+
+    def tearDown(self):
+        self.client.logout()
+
+    def _create_sample_export_data(self):
+        # Create eeg component (could be other component type or more than one component)
+        eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
+        eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
+
+        # Include eeg component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, eeg_comp)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' eeg file
+        eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
+        ObjectsFactory.create_eeg_file(eegdata)
+
+    def _assert_basic_experiment_data(self, json_data):
+        for item in ['title', 'name', 'description', 'created', 'homepage']:
+            self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
+
+        name = slugify(self.experiment.title)
+        self.assertEqual(self.experiment.title, json_data['title'])
+        self.assertEqual(name, json_data['name'])
+        self.assertEqual(self.experiment.description, json_data['description'])
+        day = json_data['created'].split(' ')[0]  # Get only the day to avoid test not passing
+        self.assertEqual(datetime.now().strftime('%Y-%m-%d'), day)
+        # TODO (NES-987): see how to get testserver from TestCase class or other place,
+        #  and https/http url part
+        self.assertIn('testserver/experiments/' + name, json_data['homepage'])
+
+    def _assert_experiment_table_schema(self, resource_schema):
+        self.assertIn(
+            {'name': 'study', 'title': 'Study', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'study-description', 'title': 'Study description', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'experiment-title', 'title': 'Experiment Title', 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {
+                'name': 'experiment-description', 'title': 'Experiment description', 'type': 'string',
+                'format': 'default'
+            }, resource_schema['fields'])
+        self.assertIn(
+            {'name': 'start-date', 'title': 'Start date', 'type': 'date', 'format': 'default'},
+            resource_schema['fields'])
+        self.assertIn(
+            {'name': 'end-date', 'title': 'End date', 'type': 'date', 'format': 'default'},
+            resource_schema['fields'])
+
+    @staticmethod
+    def _get_name_title(heading_type, field):
+        title = ''
+        if field == 'code':  # Participant code
+            if heading_type == 'code':
+                title = 'participant_code'
+            elif heading_type == 'full':
+                title = _('Código de Participante')
+            elif heading_type == 'abbreviated':
+                title = abbreviated_data(_('Código de Participante'))
+        else:
+            patient_field = next(item for item in PATIENT_FIELDS if item['header'] == field)
+            if heading_type == 'code':
+                title = patient_field['header']
+            elif heading_type == 'full':
+                title = patient_field['description']
+            elif heading_type == 'abbreviated':
+                title = abbreviated_data(patient_field['description'])
+
+        name = slugify(title)
+
+        return name, title
+
+    def _assert_participants_table_schema(self, resource_schema, heading_type):
+        name, title = self._get_name_title(heading_type, 'code')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'age')
+        self.assertIn(
+            # TODO (NES-987): see what 'format': 'default' means
+            {'name': name, 'title': title, 'type': 'number', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'gender')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'date_birth')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'date', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'marital_status')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'origin')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'city')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'state')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'country')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'natural_of')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'schooling')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'patient_schooling')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'profession')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'social_class')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'occupation')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'benefit_government')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'religion')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'flesh_tone')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'citizenship')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'payment')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'smoker')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'amount_cigarettes')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'former_smoker')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'alcoholic')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'alcohol_frequency')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'alcohol_period')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+        name, title = self._get_name_title(heading_type, 'drugs')
+        self.assertIn(
+            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
+            resource_schema['fields'])
+
+    @staticmethod
+    def _set_post_data():
+        # Data style that is posted to export_view in template
+        # TODO (NES-987): test for 'headings': ['short'] and 'headings': ['abbreviated']
+        return {
+            'per_questionnaire': ['on'], 'per_participant': ['on'],
+            'per_eeg_raw_data ': ['on'], 'per_additional_data': ['on'],
+            'headings': ['code'], 'patient_selected': ['age*age'],
+            'action': ['run'], 'responses': ['short']
+        }
+
+    def _get_datapackage_json_data(self, dir_, response):
+        zipped_file = self.get_zipped_file(response)
+        zipped_file.extractall(dir_)
+        with open(os.path.join(dir_, 'datapackage.json')) as file:
+            json_data = load(file)
+
+        return json_data
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_creates_content_dirs_in_data_directory(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+        data_dir = re.compile('^data')
+        self.assertTrue(
+            all(data_dir.match(element) for element in zipped_file.namelist()),
+            'data dir not found in: ' + str(zipped_file.namelist()))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_creates_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+        self.assertTrue(any('datapackage.json' in element for element in zipped_file.namelist()),
+                        'datapackage.json not found in: ' + str(zipped_file.namelist()))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_basic_content_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        self._assert_basic_experiment_data(json_data)
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experiment_contributors_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        contributor1 = self.research_project.owner
+        contributor2 = ObjectsFactory.create_experiment_researcher(self.experiment).researcher
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('contributors', json_data)
+        self.assertIn({
+            'title': contributor1.first_name + ' ' + contributor1.last_name,
+            'email': contributor1.email
+        }, json_data['contributors'])
+        self.assertIn({
+            'title': contributor2.first_name + ' ' + contributor2.last_name,
+            'email': contributor2.email
+        }, json_data['contributors'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_default_license_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright',
+            'title': 'Copyright'
+        }, json_data['licenses'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_creative_commons_license_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '1')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'
+        }, json_data['licenses'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_resources_field_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('resources', json_data)
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_basic_experiment_data_file_info_to_datapackage_json_resources_field(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        experiment_resource = next(item for item in json_data['resources'] if item['name'] == 'Experiment')
+
+        # As Experiment.csv/tsv resource has 'schema' key, that is
+        # itself a dict with other data, we test key/value pairs for all
+        # keys except 'schema'.
+        # TODO (NES-987): will it have 'bytes' field?
+        # TODO (NES-987): test for tsv format
+        test_dict = {
+            'name': 'Experiment', 'title': 'Experiment', 'path': 'data/Experiment_data/Experiment.csv',
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+        self.assertTrue(all(
+            item in experiment_resource.items() for item in test_dict.items()),
+            str(test_dict) + ' is not subdict of ' + str(experiment_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experiment_table_schema_info_to_datapackage_json_experiment_resource(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        experiment_resource = next(item for item in json_data['resources'] if item['name'] == 'Experiment')
+
+        self.assertIn('schema', experiment_resource)
+        self.assertIn('fields', experiment_resource['schema'])
+        self._assert_experiment_table_schema(experiment_resource['schema'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participant_data_file_info_to_datapackage_json_resources_field(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        # As Participants.csv/tsv resource has 'schema' key, that is
+        # itself a dict with other data, we test key/value pairs for all
+        # keys except 'schema'.
+        # TODO (NES-987): will it have 'bytes' field?
+        # TODO (NES-987): test for tsv format
+        test_dict = {
+            'name': 'Participants', 'title': 'Participants', 'path': 'data/Group_' + self.group.title,
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+        self.assertTrue(
+            all(item in participants_resource for item in test_dict),
+            str(test_dict) + ' is not subdict of ' + str(participants_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participants_table_schema_info_to_datapackage_json_participants_resource(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Append all possible patient attributes
+        data['patient_selected'].extend([
+            'gender__name*gender', 'date_birth*date_birth', 'marital_status__name*marital_status',
+            'origin*origin', 'city*city', 'state*state', 'country*country',
+            'socialdemographicdata__natural_of*natural_of', 'socialdemographicdata__schooling__name*schooling',
+            'socialdemographicdata__patient_schooling__name*patient_schooling',
+            'socialdemographicdata__profession*profession', 'socialdemographicdata__social_class*social_class',
+            'socialdemographicdata__occupation*occupation',
+            'socialdemographicdata__benefit_government*benefit_government',
+            'socialdemographicdata__religion__name*religion', 'socialdemographicdata__flesh_tone__name*flesh_tone',
+            'socialdemographicdata__citizenship*citizenship', 'socialdemographicdata__payment__name*payment',
+            'socialhistorydata__smoker*smoker', 'socialhistorydata__amount_cigarettes__name*amount_cigarettes',
+            'socialhistorydata__ex_smoker*former_smoker', 'socialhistorydata__alcoholic*alcoholic',
+            'socialhistorydata__alcohol_frequency__name*alcohol_frequency',
+            'socialhistorydata__alcohol_period__name*alcohol_period', 'socialhistorydata__drugs*drugs'
+        ])
+
+        # Test for Question code, Full question text and Abbreviated question text
+        # in Headings head, General informtion export tab
+        for heading_type in [['code'], ['full'], ['abbreviated']]:
+            data['headings'] = heading_type
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self._get_datapackage_json_data(temp_dir, response)
+            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+
+            self.assertIn('schema', participants_resource)
+            self.assertIn('fields', participants_resource['schema'])
+            self._assert_participants_table_schema(participants_resource['schema'], heading_type[0])
+
+        shutil.rmtree(temp_dir)
 
 
 def tearDownModule():
