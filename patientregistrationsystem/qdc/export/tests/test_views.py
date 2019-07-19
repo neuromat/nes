@@ -27,7 +27,7 @@ from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
     set_mocks5
 from export.tests.tests_helper import ExportTestCase
-from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS
+from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, FIELDS_INCLUSION
 from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
 
@@ -1759,12 +1759,10 @@ class ExportFrictionlessData(ExportTestCase):
     def _get_name_title(heading_type, field):
         title = ''
         if field == 'code':  # Participant code
-            if heading_type == 'code':
-                title = 'participant_code'
-            elif heading_type == 'full':
-                title = _('Código de Participante')
-            elif heading_type == 'abbreviated':
-                title = abbreviated_data(_('Código de Participante'))
+            code_data = next(item for item in FIELDS_INCLUSION if item[0] == 'code')
+            title = code_data[1][heading_type] \
+                if heading_type != 'abbreviated'\
+                else abbreviated_data(code_data[1][heading_type])
         else:
             patient_field = next(item for item in PATIENT_FIELDS if item['header'] == field)
             if heading_type == 'code':
@@ -1781,139 +1779,16 @@ class ExportFrictionlessData(ExportTestCase):
     def _assert_participants_table_schema(self, resource_schema, heading_type):
         name, title = self._get_name_title(heading_type, 'code')
         self.assertIn(
+            # TODO (NES-987): test for formats that are not default
             {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
 
-        name, title = self._get_name_title(heading_type, 'age')
-        self.assertIn(
-            # TODO (NES-987): see what 'format': 'default' means
-            {'name': name, 'title': title, 'type': 'number', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'gender')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'date_birth')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'date', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'marital_status')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'origin')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'city')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'state')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'country')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'natural_of')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'schooling')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'patient_schooling')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'profession')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'social_class')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'occupation')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'benefit_government')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'religion')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'flesh_tone')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'citizenship')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'payment')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'smoker')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'amount_cigarettes')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'former_smoker')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'alcoholic')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'boolean', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'alcohol_frequency')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'alcohol_period')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
-        name, title = self._get_name_title(heading_type, 'drugs')
-        self.assertIn(
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
+        for field in PATIENT_FIELDS:
+            name, title = self._get_name_title(heading_type, field['header'])
+            self.assertIn(
+                {'name': name, 'title': title, 'type': field['json_data_type'], 'format': 'default'},
+                resource_schema['fields']
+            )
 
     @staticmethod
     def _set_post_data():
@@ -2140,22 +2015,13 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('license', '0')
 
         data = self._set_post_data()
-        # Append all possible patient attributes
-        data['patient_selected'].extend([
-            'gender__name*gender', 'date_birth*date_birth', 'marital_status__name*marital_status',
-            'origin*origin', 'city*city', 'state*state', 'country*country',
-            'socialdemographicdata__natural_of*natural_of', 'socialdemographicdata__schooling__name*schooling',
-            'socialdemographicdata__patient_schooling__name*patient_schooling',
-            'socialdemographicdata__profession*profession', 'socialdemographicdata__social_class*social_class',
-            'socialdemographicdata__occupation*occupation',
-            'socialdemographicdata__benefit_government*benefit_government',
-            'socialdemographicdata__religion__name*religion', 'socialdemographicdata__flesh_tone__name*flesh_tone',
-            'socialdemographicdata__citizenship*citizenship', 'socialdemographicdata__payment__name*payment',
-            'socialhistorydata__smoker*smoker', 'socialhistorydata__amount_cigarettes__name*amount_cigarettes',
-            'socialhistorydata__ex_smoker*former_smoker', 'socialhistorydata__alcoholic*alcoholic',
-            'socialhistorydata__alcohol_frequency__name*alcohol_frequency',
-            'socialhistorydata__alcohol_period__name*alcohol_period', 'socialhistorydata__drugs*drugs'
-        ])
+        # age field is already included in POST data. Include only the others
+        patient_fields = PATIENT_FIELDS.copy()
+        age_field = next(item for item in patient_fields if item['field'] == 'age')
+        del(patient_fields[patient_fields.index(age_field)])
+        # Append all possible patient attributes in POST data
+        for field in patient_fields:
+            data['patient_selected'].append(field['field'] + '*' + field['header'])
 
         # Test for Question code, Full question text and Abbreviated question text
         # in Headings head, General informtion export tab
@@ -2171,7 +2037,7 @@ class ExportFrictionlessData(ExportTestCase):
             self.assertIn('fields', participants_resource['schema'])
             self._assert_participants_table_schema(participants_resource['schema'], heading_type[0])
 
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
 
 def tearDownModule():
