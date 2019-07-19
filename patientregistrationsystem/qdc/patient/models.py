@@ -549,8 +549,7 @@ class SocialHistoryData(models.Model):
         self.changed_by = value
 
     def __str__(self):
-        return \
-            str(self.patient)
+        return str(self.patient)
 
     def clean(self):
         if self.smoker and self.ex_smoker:

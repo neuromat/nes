@@ -11,6 +11,7 @@ from os import path, makedirs
 
 from django.conf import settings
 from django.core.files import File
+from django.db.models import CharField, DateField, TextField, FloatField, BooleanField, NullBooleanField
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 from django.apps import apps
@@ -21,7 +22,8 @@ from export.export_utils import create_list_of_trees, can_export_nwb
 
 from survey.survey_utils import QuestionnaireUtils
 
-from patient.models import Patient, QuestionnaireResponse
+from patient.models import Patient, QuestionnaireResponse, Gender, MaritalStatus, SocialDemographicData, Schooling, \
+    Religion, FleshTone, Payment, SocialHistoryData, AmountCigarettes, AlcoholFrequency, AlcoholPeriod
 from experiment.models import \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, \
     Group, \
@@ -32,7 +34,7 @@ from experiment.models import \
     ContextTree, SubjectStepData, EEGElectrodePositionSetting, \
     SurfaceElectrode, IntramuscularElectrode, \
     NeedleElectrode, EMGElectrodeSetting, EMGIntramuscularPlacement, \
-    EMGSurfacePlacement, EMGNeedlePlacement, ComponentAdditionalFile
+    EMGSurfacePlacement, EMGNeedlePlacement, ComponentAdditionalFile, ResearchProject, Experiment
 
 from experiment.views import get_block_tree, get_experimental_protocol_image, \
     get_description_from_experimental_protocol_tree, get_sensors_position, \
@@ -81,6 +83,11 @@ included_questionnaire_fields = [
     },
 ]
 
+LICENSES = {
+    0: {'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'},
+    1: {'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'}
+}
+
 
 def is_number(s):
     try:
@@ -104,7 +111,7 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
     :return:
     """
 
-    if filesformat_type =='tsv':
+    if filesformat_type == 'tsv':
         separator = '\t'
     else:
         separator = ','
@@ -215,9 +222,9 @@ class ExportExecution:
     def __init__(self, user_id, export_id):
         self.files_to_zip_list = []
         self.directory_base = ''
-        self.base_directory_name = path.join(settings.MEDIA_ROOT, "export")
+        self.base_directory_name = path.join(settings.MEDIA_ROOT, 'export')
         self.set_directory_base(user_id, export_id)
-        self.base_export_directory = ""
+        self.base_export_directory = ''
         self.user_name = None
         self.input_data = {}
         self.per_participant_data = {}
@@ -225,7 +232,7 @@ class ExportExecution:
         self.participants_per_entrance_questionnaire = {}
         self.participants_per_experiment_questionnaire = {}
         self.questionnaires_experiment_responses = {}
-        self.root_directory = ""
+        self.root_directory = ''
         self.participants_filtered_data = []
         self.per_group_data = {}
         self.questionnaire_utils = QuestionnaireUtils()
@@ -248,12 +255,9 @@ class ExportExecution:
 
     def read_configuration_data(self, json_file, update_input_data=True):
         json_data = open(json_file)
-
         input_data_temp = json.load(json_data)
-
         if update_input_data:
             self.input_data = input_data_temp
-
         json_data.close()
 
         return input_data_temp
@@ -877,7 +881,6 @@ class ExportExecution:
         self.participants_filtered_data = participants.filter(id__in=participants_filtered_list)
 
     def get_participants_filtered_data(self):
-
         return self.participants_filtered_data
 
     def update_questionnaire_rules(self, questionnaire_id):
@@ -1444,11 +1447,8 @@ class ExportExecution:
 
                         # header
                         if fields_description:
-                            header = \
-                                self.build_header_questionnaire_per_participant(
-                                    rows_participant_data[0],
-                                    answer_list[0]
-                                )
+                            header = self.build_header_questionnaire_per_participant(
+                                rows_participant_data[0], answer_list[0])
                             fields_description.insert(0, header)
 
                             ###
@@ -1456,13 +1456,9 @@ class ExportExecution:
                             file_exists = False
                             for item in self.files_to_zip_list:
                                 if complete_filename in item[0]:
-                                    # Append in complete_filename
-                                    # fields_description in the file that
-                                    # already exists
-                                    save_to_csv(complete_filename,
-                                                fields_description[1:],
-                                                filesformat_type,
-                                                mode='a')
+                                    # Append in complete_filename fields_description in the file
+                                    # that already exists
+                                    save_to_csv(complete_filename, fields_description[1:], filesformat_type, mode='a')
                                     file_exists = True
                                     break
                             ###
@@ -1470,9 +1466,7 @@ class ExportExecution:
                             # save array list into a file to export
                             if not file_exists:
                                 save_to_csv(complete_filename, fields_description, filesformat_type)
-                                self.files_to_zip_list.append(
-                                    [complete_filename, export_directory]
-                                )
+                                self.files_to_zip_list.append([complete_filename, export_directory])
 
                     # questionnaire metadata directory
                     entrance_questionnaire = False
@@ -1699,11 +1693,8 @@ class ExportExecution:
                         questionnaire_title = self.get_input_data('questionnaires_from_experiments')[group_id][
                             str(questionnaire_id)]['questionnaire_name']
                         # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
-                        error_msg, directory_step_participant = \
-                            create_directory(
-                                path_per_participant,
-                                token_data['directory_step_name']
-                            )
+                        error_msg, directory_step_participant = create_directory(
+                                path_per_participant, token_data['directory_step_name'])
                         if error_msg != "":
                             return error_msg
 
@@ -1822,7 +1813,6 @@ class ExportExecution:
                                                                export_eeg_data_directory])
 
                             for eeg_file in eeg_data['eeg_file_list']:
-                                # path_eeg_data_file = settings.BASE_DIR + settings.MEDIA_URL + eeg_file.file.name
                                 path_eeg_data_file = str(eeg_file.file.file)
 
                                 eeg_data_filename = eeg_file.file.name.split('/')[-1]
@@ -2163,8 +2153,7 @@ class ExportExecution:
                             with open(complete_generic_data_filename, 'wb') as f:
                                 f.write(data)
                             self.files_to_zip_list.append(
-                                [complete_generic_data_filename, export_generic_data_directory]
-                            )
+                                [complete_generic_data_filename, export_generic_data_directory])
 
                 if 'additional_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
@@ -2218,8 +2207,8 @@ class ExportExecution:
                             with open(complete_additional_data_filename, 'wb') as f:
                                 f.write(data)
 
-                            self.files_to_zip_list.append([complete_additional_data_filename,
-                                                           export_additional_data_directory])
+                            self.files_to_zip_list.append(
+                                [complete_additional_data_filename, export_additional_data_directory])
 
         return error_msg
 
@@ -2234,14 +2223,11 @@ class ExportExecution:
 
     def get_headers_and_fields(self, output_list):
         """
-
         :param output_list:
         :return: list of headers and list of fields
         """
-
         headers = []
         fields = []
-
         for element in output_list:
             if element["field"]:
                 headers.append(element["header"])
@@ -2331,7 +2317,6 @@ class ExportExecution:
 
     def process_participant_data(self, participants_output_fields, participants, language):
         # TODO: fix translation model functionality
-        # for participant in participants_output_fields:
         age_value_dict = {}
         headers, fields = self.get_headers_and_fields(participants_output_fields)
         model_to_export = getattr(modules['patient.models'], 'Patient')
@@ -2342,7 +2327,7 @@ class ExportExecution:
         if language != 'pt-br':  # read english fields
             fields = self.get_field_en(fields)
 
-        # pick up the first terms of participants: required because
+        # Pick up the first terms of participants: required because
         # participants list of tupples can have subject of groups elements
         # corresponding to participants when we have to consider in case of
         # calculating based in data collections
@@ -2390,9 +2375,8 @@ class ExportExecution:
 
     def build_participant_export_data(self, per_experiment):
         error_msg = ""
-        export_rows_participants = []
         participants_filtered_list = self.get_participants_filtered_data()
-        # process participants/diagnosis (Per_participant directory)
+        # Process participants/diagnosis (Per_participant directory)
         # path ex. Users/.../NES_EXPORT/
         base_export_directory = self.get_export_directory()
         # /NES_EXPORT/
@@ -2406,24 +2390,36 @@ class ExportExecution:
             base_directory = path.join(base_directory, participant_data_directory)
             if not path.exists(participant_base_export_directory):
                 error_msg, base_export_directory = create_directory(base_export_directory, participant_data_directory)
-
-                if error_msg != "":
+                if error_msg != '':
                     return error_msg
 
         if 'tsv' in self.get_input_data('filesformat_type'):
+            file_extension = 'tsv'
             separator = '\t'
-            export_filename = "%s.tsv" % self.get_input_data('participants')["output_filename"]  # "participants.tsv"
+            export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
         else:
+            file_extension = 'csv'
             separator = ','
-            export_filename = "%s.csv" % self.get_input_data('participants')["output_filename"]  # "participants.csv"
+            export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
 
         complete_filename = path.join(base_export_directory, export_filename)
 
-        # save_to_csv(complete_filename, export_rows_participants)
-
-        self.files_to_zip_list.append([complete_filename, base_directory])
-
         export_rows_participants = self.get_input_data('participants')['data_list']
+        participants_headers, participants_field_types = self._set_participants_fields()
+
+        self.files_to_zip_list.append([
+            complete_filename, base_directory,
+            {
+                # For datapackages.json resources
+                'name': 'Participants', 'title': 'Participants',
+                'path': path.join(base_directory, export_filename),
+                'format': file_extension, 'mediatype': 'text/%s' % file_extension,
+                'encoding': 'UTF-8',
+                'schema': {
+                    'fields': self._set_datapackage_table_schema(participants_headers, participants_field_types)
+                }
+            }
+        ])
 
         with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
             export_writer = csv.writer(csv_file, quotechar='"', delimiter=separator, quoting=csv.QUOTE_NONNUMERIC)
@@ -2435,9 +2431,7 @@ class ExportExecution:
 
         if diagnosis_input_data['output_list'] and participants_filtered_list:
             export_rows_diagnosis = self.process_diagnosis_data(
-                diagnosis_input_data['output_list'],
-                participants_filtered_list
-            )
+                diagnosis_input_data['output_list'], participants_filtered_list)
 
             if 'tsv' in self.get_input_data('filesformat_type'):
                 export_filename = "%s.tsv" % self.get_input_data('diagnosis')["output_filename"]  # "Diagnosis.tsv"
@@ -2446,7 +2440,6 @@ class ExportExecution:
 
             complete_filename = path.join(base_export_directory, export_filename)
 
-            # files_to_zip_list.append(complete_filename)
             self.files_to_zip_list.append([complete_filename, base_directory])
 
             with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
@@ -2455,6 +2448,28 @@ class ExportExecution:
                     export_writer.writerow(row)
 
         return error_msg
+
+    @staticmethod
+    def _get_type(model_field):
+        if model_field is CharField or model_field is TextField:
+            return 'string'
+        elif model_field is DateField:
+            return 'date'
+        elif model_field is FloatField:
+            # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
+            return 'number'
+        elif model_field is BooleanField or NullBooleanField:
+            return 'boolean'
+
+    def _set_datapackage_table_schema(self, headers, model_fields):
+        fields = []
+        for header, field in zip(headers, model_fields):
+            field_info = {
+                'name': slugify(header), 'title': header, 'format': 'default', 'type': self._get_type(field)
+            }
+            fields.append(field_info)
+
+        return fields
 
     def process_experiment_data(self, language_code):
         error_msg = ""
@@ -2468,36 +2483,58 @@ class ExportExecution:
         study = group.experiment.research_project
         experiment = group.experiment
 
-        experiment_resume_header = ['Study', 'Study description', 'Start date', 'End date', 'Experiment Title',
-                                    'Experiment description']
+        experiment_summary_header = [
+            'Study', 'Study description', 'Start date', 'End date', 'Experiment Title',
+            'Experiment description'
+        ]
+        experiment_summary = [
+            study.title, study.description, str(study.start_date), str(study.end_date),
+            experiment.title, experiment.description
+        ]
+        experiment_summary_field_types = [
+            ResearchProject._meta.get_field('title').__class__,
+            ResearchProject._meta.get_field('description').__class__,
+            ResearchProject._meta.get_field('start_date').__class__,
+            ResearchProject._meta.get_field('end_date').__class__,
+            Experiment._meta.get_field('title').__class__,
+            Experiment._meta.get_field('description').__class__
+        ]
 
-        experiment_resume = [study.title, study.description, str(study.start_date), str(study.end_date),
-                             experiment.title, experiment.description]
-
-        if 'tsv' in self.get_input_data('filesformat_type'):
-            filename_experiment_resume = "%s.tsv" % "Experiment"
-        else:
-            filename_experiment_resume = "%s.csv" % "Experiment"
+        file_extension = 'tsv' if 'tsv' in self.get_input_data('filesformat_type') else 'csv'
+        filename_experiment_resume = 'Experiment' + '.' + file_extension
 
         # path ex. NES_EXPORT/Experiment_data
-        export_experiment_data = path.join(self.get_input_data("base_directory"),
-                                           self.get_input_data("experiment_data_directory"))
+        export_experiment_data = path.join(
+            self.get_input_data("base_directory"), self.get_input_data("experiment_data_directory"))
 
         # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data
-        experiment_resume_directory = path.join(self.get_export_directory(),
-                                                self.get_input_data("experiment_data_directory"))
+        experiment_resume_directory = path.join(
+            self.get_export_directory(), self.get_input_data("experiment_data_directory"))
 
         # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Experiment.csv
         complete_filename_experiment_resume = path.join(experiment_resume_directory, filename_experiment_resume)
 
         experiment_description_fields = []
-        experiment_description_fields.insert(0, experiment_resume_header)
-        experiment_description_fields.insert(1, experiment_resume)
+        experiment_description_fields.insert(0, experiment_summary_header)
+        experiment_description_fields.insert(1, experiment_summary)
         save_to_csv(complete_filename_experiment_resume, experiment_description_fields, filesformat_type)
 
-        self.files_to_zip_list.append([complete_filename_experiment_resume, export_experiment_data])
-
-        # process of filename for description of each group
+        self.files_to_zip_list.append([
+            complete_filename_experiment_resume, export_experiment_data,
+            {
+                # For datapackages.json resources
+                'name': 'Experiment', 'title': 'Experiment',
+                'path': path.join(export_experiment_data, filename_experiment_resume),
+                'format': file_extension, 'mediatype': 'text/%s' % file_extension,
+                'encoding': 'UTF-8',
+                'schema': {
+                    'fields': self._set_datapackage_table_schema(
+                        experiment_summary_header, experiment_summary_field_types)
+                }
+            }
+        ])
+        
+        # Process of filename for description of each group
         for group_id in self.per_group_data:
             group = get_object_or_404(Group, pk=group_id)
             if group.experimental_protocol:
@@ -2538,20 +2575,17 @@ class ExportExecution:
                 experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
                 if experimental_protocol_image:
                     filename_protocol_image = "Protocol_image.png"
-                    complete_protocol_image_filename = path.join(directory_experimental_protocol,
-                                                                 filename_protocol_image)
-
+                    complete_protocol_image_filename = path.join(
+                        directory_experimental_protocol, filename_protocol_image)
                     image_protocol = experimental_protocol_image
                     with open(image_protocol, 'rb') as f:
                         data = f.read()
-
                     with open(complete_protocol_image_filename, 'wb') as f:
                         f.write(data)
+                    self.files_to_zip_list.append(
+                        [complete_protocol_image_filename, export_directory_experimental_protocol])
 
-                    self.files_to_zip_list.append([complete_protocol_image_filename,
-                                                   export_directory_experimental_protocol])
-
-                # save eeg, emg, tms, context tree setting default in Experimental Protocol directory
+                # Save eeg, emg, tms, context tree setting default in Experimental Protocol directory
                 if 'eeg_default_setting_id' in self.per_group_data[group_id]:
                     eeg_default_setting_description = get_eeg_setting_description(self.per_group_data[group_id][
                                                                                   'eeg_default_setting_id'])
@@ -2681,15 +2715,13 @@ class ExportExecution:
                             path_stimulus_data = path.join(group_file_directory, stimulus_data['directory_step_name'])
                             if not path.exists(path_stimulus_data):
                                 error_msg, directory_stimulus_data = create_directory(
-                                    group_file_directory,
-                                    stimulus_data['directory_step_name']
-                                )
+                                    group_file_directory, stimulus_data['directory_step_name'])
                                 if error_msg != "":
                                     return error_msg
 
                             # path ex. NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
-                            export_directory_stimulus_data = path.join(export_group_directory,
-                                                                       stimulus_data['directory_step_name'])
+                            export_directory_stimulus_data = path.join(
+                                export_group_directory, stimulus_data['directory_step_name'])
                             stimulus_file_name = stimulus_data['stimulus_file'].split("/")[-1]
                             stimulus_data_file_name = path.join(settings.MEDIA_ROOT) + "/" +\
                                                       stimulus_data['stimulus_file'] # data['stimulus_file']
@@ -2701,10 +2733,56 @@ class ExportExecution:
                             with open(complete_stimulus_data_filename, "wb") as f:
                                 f.write(data)
 
-                            self.files_to_zip_list.append([complete_stimulus_data_filename,
-                                                           export_directory_stimulus_data])
+                            self.files_to_zip_list.append(
+                                [complete_stimulus_data_filename, export_directory_stimulus_data])
 
         return error_msg
+
+    def _build_resources(self, datapackage):
+        for file in self.files_to_zip_list:
+            if len(file) == 3:  # TODO (NES-987): just by now
+                datapackage['resources'].append(file[2])
+
+    def _build_datapackage_dict(self, experiment, request):
+        name = slugify(experiment.title)
+        researcher_owner = experiment.research_project.owner
+
+        datapackage = {
+            'title': experiment.title, 'name': name,
+            'description': experiment.description,
+            'created': str(datetime.now().replace(microsecond=0)),
+            'homepage': request.get_host() + '/experiments/' + name,
+            'contributors': [
+                {
+                    'title': researcher_owner.first_name + ' ' + researcher_owner.last_name,
+                    'email': researcher_owner.email
+                }
+            ],
+            'licenses': [LICENSES[int(request.session['license'])]],
+            'resources': []  # Will be built below
+        }
+        # Add the other contributors (besides research project owner)
+        for contributor in experiment.researchers.all():
+            datapackage['contributors'].append({
+                'title': contributor.researcher.first_name + ' ' + contributor.researcher.last_name,
+                'email': contributor.researcher.email
+            })
+        # Add to datapackage resources
+        self._build_resources(datapackage)
+
+        return datapackage
+
+    def process_datapackage_json_file(self, request):
+        """TODO (NES-987)
+        :param host:
+        """
+        # Get arbitrary key: all groups pertain to same experiment
+        group = Group.objects.get(id=int(list(self.per_group_data.keys())[0]))
+        datapackage_dict = self._build_datapackage_dict(group.experiment, request)
+        file_path = path.join(self.get_directory_base(), 'datapackage.json')
+        with open(file_path, 'w') as file:
+            json.dump(datapackage_dict, file)
+        self.files_to_zip_list.append([file_path, ''])
 
     @staticmethod
     def find_duplicates(fill_list1, fill_list2):
@@ -2734,12 +2812,9 @@ class ExportExecution:
         return response_type
 
     def get_heading_type(self):
-
         heading_type = self.get_input_data("heading_type")
-
         if not heading_type:
             heading_type = ["code"]
-
         return heading_type
 
     def get_filesformat_type(self):
@@ -3114,6 +3189,43 @@ class ExportExecution:
 
             export_rows.insert(0, header)
         return export_rows
+
+    def _set_participants_fields(self):
+        field_types = {
+            'code': Patient._meta.get_field('code').__class__, 'age': FloatField,
+            'gender__name': Gender._meta.get_field('name').__class__,
+            'date_birth': Patient._meta.get_field('date_birth').__class__,
+            'marital_status__name': MaritalStatus._meta.get_field('name').__class__,
+            'origin': Patient._meta.get_field('origin').__class__,
+            'city': Patient._meta.get_field('city').__class__,
+            'state': Patient._meta.get_field('state').__class__,
+            'country': Patient._meta.get_field('country').__class__,
+            'socialdemographicdata__natural_of': SocialDemographicData._meta.get_field('natural_of').__class__,
+            'socialdemographicdata__schooling__name': Schooling._meta.get_field('name').__class__,
+            'socialdemographicdata__patient_schooling__name': Schooling._meta.get_field('name').__class__,
+            'socialdemographicdata__profession': SocialDemographicData._meta.get_field('profession').__class__,
+            'socialdemographicdata__social_class': SocialDemographicData._meta.get_field('social_class').__class__,
+            'socialdemographicdata__occupation': SocialDemographicData._meta.get_field('occupation').__class__,
+            'socialdemographicdata__benefit_government': SocialDemographicData._meta.get_field('benefit_government').__class__,
+            'socialdemographicdata__religion__name': Religion._meta.get_field('name').__class__,
+            'socialdemographicdata__flesh_tone__name': FleshTone._meta.get_field('name').__class__,
+            'socialdemographicdata__citizenship': SocialDemographicData._meta.get_field('citizenship').__class__,
+            'socialdemographicdata__payment__name': Payment._meta.get_field('name').__class__,
+            'socialhistorydata__smoker': SocialHistoryData._meta.get_field('smoker').__class__,
+            'socialhistorydata__amount_cigarettes__name': AmountCigarettes._meta.get_field('name').__class__,
+            'socialhistorydata__ex_smoker': SocialHistoryData._meta.get_field('ex_smoker').__class__,
+            'socialhistorydata__alcoholic': SocialHistoryData._meta.get_field('alcoholic').__class__,
+            'socialhistorydata__alcohol_frequency__name': AlcoholFrequency._meta.get_field('name').__class__,
+            'socialhistorydata__alcohol_period__name': AlcoholPeriod._meta.get_field('name').__class__,
+            'socialhistorydata__drugs': SocialHistoryData._meta.get_field('drugs').__class__
+        }
+        participants_headers = []
+        participants_field_types = []
+        for field in self.get_input_data('participants')['output_list']:
+            participants_headers.append(field['header'])
+            participants_field_types.append(field_types[field['field']])
+
+        return participants_headers, participants_field_types
 
 
 def handling_values(dictionary_object):
