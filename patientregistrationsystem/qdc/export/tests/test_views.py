@@ -22,6 +22,7 @@ from experiment.models import Component, ComponentConfiguration, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
+from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
@@ -1991,17 +1992,19 @@ class ExportFrictionlessData(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
 
         # As Participants.csv/tsv resource has 'schema' key, that is
         # itself a dict with other data, we test key/value pairs for all
         # keys except 'schema'.
         # TODO (NES-987): will it have 'bytes' field?
-        # TODO (NES-987): test for tsv format
+        # TODO (NES-987): test for tsv format? It's implemented already
         test_dict = {
-            'name': 'Participants', 'title': 'Participants', 'path': 'data/Group_' + self.group.title,
+            # TODO (NES-987): Changes 'Participants.csv' to a constant in code
+            'name': 'Participants', 'title': 'Participants',
+            'path': 'data/Group_' + self.group.title + 'Participants.csv',
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
-        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
         self.assertTrue(
             all(item in participants_resource for item in test_dict),
             str(test_dict) + ' is not subdict of ' + str(participants_resource))
@@ -2038,6 +2041,50 @@ class ExportFrictionlessData(ExportTestCase):
             self._assert_participants_table_schema(participants_resource['schema'], heading_type[0])
 
             shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experimental_protocol_image_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = PROTOCOL_IMAGE_FILENAME.split('.')
+
+        protocol_image_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
+                PROTOCOL_IMAGE_FILENAME),
+            'format': extension, 'mediatype': 'image/png'
+        }
+        self.assertIn(protocol_image_resource, json_data['resources'])
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experimental_protocol_description_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = PROTOCOL_DESCRIPTION_FILENAME.split('.')
+
+        protocol_description_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
+                PROTOCOL_DESCRIPTION_FILENAME),
+            'format': extension, 'mediatype': 'text/txt'
+        }
+        self.assertIn(protocol_description_resource, json_data['resources'])
 
 
 def tearDownModule():

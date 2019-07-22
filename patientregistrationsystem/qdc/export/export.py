@@ -88,7 +88,8 @@ LICENSES = {
     1: {'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'}
 }
 
-PROTOCOL_IMAGE_FILE_NAME = 'Protocol_image.png'
+PROTOCOL_IMAGE_FILENAME = 'Protocol_image.png'
+PROTOCOL_DESCRIPTION_FILENAME = 'Experimental_protocol_description.txt'
 
 
 def is_number(s):
@@ -2552,7 +2553,15 @@ class ExportExecution:
                     # Experimental_protocol_description.txt
                     complete_group_filename = path.join(directory_experimental_protocol, filename_group_for_export)
 
-                    self.files_to_zip_list.append([complete_group_filename, export_directory_experimental_protocol])
+                    filename, extension = PROTOCOL_DESCRIPTION_FILENAME.split('.')
+                    self.files_to_zip_list.append([
+                        complete_group_filename, export_directory_experimental_protocol,
+                        {
+                            'name': filename, 'title': filename,
+                            'path': path.join(export_directory_experimental_protocol, PROTOCOL_DESCRIPTION_FILENAME),
+                            'format': extension, 'mediatype': 'text/%s' % extension
+                        }
+                    ])
 
                     with open(complete_group_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as txt_file:
                         txt_file.writelines(group_resume)
@@ -2562,28 +2571,33 @@ class ExportExecution:
                 experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
                 if experimental_protocol_image:
                     complete_protocol_image_filename = path.join(
-                        directory_experimental_protocol, PROTOCOL_IMAGE_FILE_NAME)
+                        directory_experimental_protocol, PROTOCOL_IMAGE_FILENAME)
                     image_protocol = experimental_protocol_image
                     with open(image_protocol, 'rb') as f:
                         data = f.read()
                     with open(complete_protocol_image_filename, 'wb') as f:
                         f.write(data)
-                    self.files_to_zip_list.append(
-                        [complete_protocol_image_filename, export_directory_experimental_protocol])
+                    filename, extension = PROTOCOL_IMAGE_FILENAME.split('.')
+                    self.files_to_zip_list.append([
+                        complete_protocol_image_filename, export_directory_experimental_protocol,
+                        {
+                            'name': filename, 'title': filename,
+                            'path': path.join(export_directory_experimental_protocol, PROTOCOL_IMAGE_FILENAME),
+                            'format': extension, 'mediatype': 'image/%s' % extension
+                        }
+                    ])
 
                 # Save eeg, emg, tms, context tree setting default in Experimental Protocol directory
                 if 'eeg_default_setting_id' in self.per_group_data[group_id]:
-                    eeg_default_setting_description = get_eeg_setting_description(self.per_group_data[group_id][
-                                                                                  'eeg_default_setting_id'])
+                    eeg_default_setting_description = get_eeg_setting_description(
+                        self.per_group_data[group_id]['eeg_default_setting_id'])
 
                     if eeg_default_setting_description:
                         eeg_setting_description = '%s.json' % 'eeg_default_setting'
                         complete_filename_eeg_setting = path.join(
-                            directory_experimental_protocol,
-                            eeg_setting_description
-                        )
-                        self.files_to_zip_list.append([complete_filename_eeg_setting,
-                                                       export_directory_experimental_protocol])
+                            directory_experimental_protocol, eeg_setting_description)
+                        self.files_to_zip_list.append(
+                            [complete_filename_eeg_setting, export_directory_experimental_protocol])
 
                         with open(complete_filename_eeg_setting.encode('utf-8'), 'w', newline='',
                                   encoding='UTF-8') as outfile:
