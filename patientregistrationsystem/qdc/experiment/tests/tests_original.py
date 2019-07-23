@@ -646,8 +646,7 @@ class ObjectsFactory(object):
             file_format_description=faker.text(),
             data_configuration_tree=data_conf_tree,
             subject_of_group=subj_of_group, eeg_setting=eeg_set,
-            eeg_cap_size=eeg_cap_size
-        )
+            eeg_cap_size=eeg_cap_size)
 
     @staticmethod
     def create_eeg_file(eeg_data):
