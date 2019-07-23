@@ -93,6 +93,8 @@ PROTOCOL_DESCRIPTION_FILENAME = 'Experimental_protocol_description.txt'
 EEG_DEFAULT_SETTING_FILENAME = 'eeg_default_setting.json'
 EEG_SETTING_FILENAME = 'eeg_setting_description.json'
 TMS_DATA_FILENAME = 'tms_data_description.json'
+HOTSPOT_MAP = 'hotspot_map.png'
+EMG_SETTING_FILENAME = 'emg_setting_description.json'
 
 
 def is_number(s):
@@ -1923,13 +1925,18 @@ class ExportExecution:
                             emg_setting_description = get_emg_setting_description(emg_data['setting_id'])
 
                             if emg_setting_description:
-
-                                emg_setting_filename = '%s.json' % 'emg_setting_description'
-
-                                # path ex. NES_EXPORT/Experiment_data/Group_xxxx/emg_setting_description.txt 
-                                complete_setting_filename = path.join(path_per_emg_data, emg_setting_filename)
-
-                                self.files_to_zip_list.append([complete_setting_filename, export_emg_data_directory])
+                                filename, extension = EMG_SETTING_FILENAME.split('.')
+                                # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/emg_setting_description.txt 
+                                complete_setting_filename = path.join(path_per_emg_data, EMG_SETTING_FILENAME)
+                                self.files_to_zip_list.append([
+                                    complete_setting_filename, export_emg_data_directory,
+                                    {
+                                        'name': filename, 'title': filename,
+                                        'path': path.join(export_emg_data_directory, EMG_SETTING_FILENAME),
+                                        # TODO (NES-987): implement get_mediatype(extension) method
+                                        'format': extension, 'mediatype': 'application/%s' % extension
+                                    }
+                                ])
 
                                 with open(complete_setting_filename.encode('utf-8'), 'w', newline='',
                                           encoding='UTF-8') as outfile:
@@ -1983,20 +1990,25 @@ class ExportExecution:
                             if hasattr(tms_data, 'hotspot'):
                                 hotspot_image = tms_data.hotspot.hot_spot_map.name
                                 if hotspot_image:
-                                    hotspot_map_filename = '%s.png' % 'hotspot_map'
-                                    complete_hotspot_filename = path.join(
-                                        path_per_tms_participant, hotspot_map_filename)
+                                    filename, extension = HOTSPOT_MAP.split('.')
+                                    complete_hotspot_filename = path.join(path_per_tms_participant, HOTSPOT_MAP)
                                     path_hot_spot_image = path.join(
                                         settings.MEDIA_ROOT,
                                         hotspot_image)
                                     with open(path_hot_spot_image, 'rb') as f:
                                         data = f.read()
-
                                     with open(complete_hotspot_filename, 'wb') as f:
                                         f.write(data)
 
-                                    self.files_to_zip_list.append([complete_hotspot_filename,
-                                                                   export_tms_step_directory])
+                                    self.files_to_zip_list.append([
+                                        complete_hotspot_filename, export_tms_step_directory,
+                                        {
+                                            'name': filename, 'title': filename,
+                                            'path': path.join(export_tms_step_directory, HOTSPOT_MAP),
+                                            # TODO (NES-987): implement get_mediatype(extension) method
+                                            'format': extension, 'mediatype': 'image/%s' % extension
+                                        }
+                                    ])
 
                 if 'digital_game_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
                     # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
