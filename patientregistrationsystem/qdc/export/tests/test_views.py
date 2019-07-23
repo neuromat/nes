@@ -22,6 +22,8 @@ from experiment.models import Component, ComponentConfiguration, \
     CoilOrientation, DirectionOfTheInducedCurrent
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
+from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
+    EEG_SETTING_FILENAME, TMS_DATA_FILENAME
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
@@ -1011,39 +1013,22 @@ class ExportDataCollectionTest(ExportTestCase):
     def test_export_experiment_with_tms(self):
         # Create tms component
         tms_set = ObjectsFactory.create_tms_setting(self.experiment)
-
-        tms_comp = ObjectsFactory.create_component(
-            self.experiment, Component.TMS,
-            kwargs={'tms_set': tms_set}
-        )
+        tms_comp = ObjectsFactory.create_component(self.experiment, Component.TMS, kwargs={'tms_set': tms_set})
 
         # Include tms component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, tms_comp
-        )
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, tms_comp)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
-        doic = DirectionOfTheInducedCurrent.objects.create(
-            name="Direction of Induced Current"
-        )
-
-        coilor = CoilOrientation.objects.create(
-            name="Coil Orientation"
-        )
+        doic = DirectionOfTheInducedCurrent.objects.create(name="Direction of Induced Current")
+        coilor = CoilOrientation.objects.create(name="Coil Orientation")
 
         tmsdataaux = TMSData.objects.create(
-            tms_setting=tms_set,
-            data_configuration_tree=dct,
-            subject_of_group=self.subject_of_group,
-            coil_orientation=coilor,
-            description="Teste TMS",
-            direction_of_induced_current=doic
-        )
+            tms_setting=tms_set, data_configuration_tree=dct, subject_of_group=self.subject_of_group,
+            coil_orientation=coilor, description="Teste TMS", direction_of_induced_current=doic)
 
         brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
 
-        brainarea = BrainArea.objects.create(name='Lobo frontal',
-                                             brain_area_system=brainareasystem)
+        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
 
         temp_dir = tempfile.mkdtemp()
         with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
@@ -1051,15 +1036,10 @@ class ExportDataCollectionTest(ExportTestCase):
         temp_file = f.name
 
         tms_local_sys = TMSLocalizationSystem.objects.create(
-            name="TMS name", brain_area=brainarea,
-            tms_localization_system_image=temp_file
-        )
+            name="TMS name", brain_area=brainarea, tms_localization_system_image=temp_file)
 
         hotspot = HotSpot.objects.create(
-            tms_data=tmsdataaux,
-            name="TMS Data Collection File",
-            tms_localization_system=tms_local_sys
-        )
+            tms_data=tmsdataaux, name="TMS Data Collection File", tms_localization_system=tms_local_sys)
 
         ObjectsFactory.create_hotspot_data_collection_file(hotspot)
 
@@ -1719,6 +1699,34 @@ class ExportFrictionlessData(ExportTestCase):
         eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
         ObjectsFactory.create_eeg_file(eegdata)
 
+    def _create_tms_export_data(self, temp_dir):
+        tms_set = ObjectsFactory.create_tms_setting(self.experiment)
+        tms_comp = ObjectsFactory.create_component(self.experiment, Component.TMS, kwargs={'tms_set': tms_set})
+
+        # Include tms component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, tms_comp)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        doic = DirectionOfTheInducedCurrent.objects.create(name="Direction of Induced Current")
+        coilor = CoilOrientation.objects.create(name="Coil Orientation")
+
+        tmsdata = TMSData.objects.create(
+            tms_setting=tms_set, data_configuration_tree=dct, subject_of_group=self.subject_of_group,
+            coil_orientation=coilor, description="Teste TMS", direction_of_induced_current=doic)
+
+        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
+        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
+
+        with open(os.path.join(temp_dir, 'image.bin'), 'wb') as f:
+            f.write(b'carambola')
+        temp_file = f.name
+        tms_local_sys = TMSLocalizationSystem.objects.create(
+            name="TMS name", brain_area=brainarea, tms_localization_system_image=temp_file)
+
+        hotspot = HotSpot.objects.create(
+            tms_data=tmsdata, name="TMS Data Collection File", tms_localization_system=tms_local_sys)
+        ObjectsFactory.create_hotspot_data_collection_file(hotspot)
+
     def _assert_basic_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
             self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
@@ -1796,7 +1804,7 @@ class ExportFrictionlessData(ExportTestCase):
         # TODO (NES-987): test for 'headings': ['short'] and 'headings': ['abbreviated']
         return {
             'per_questionnaire': ['on'], 'per_participant': ['on'],
-            'per_eeg_raw_data ': ['on'], 'per_additional_data': ['on'],
+            'per_eeg_raw_data': ['on'], 'per_additional_data': ['on'],
             'headings': ['code'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
@@ -1991,17 +1999,19 @@ class ExportFrictionlessData(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
 
         # As Participants.csv/tsv resource has 'schema' key, that is
         # itself a dict with other data, we test key/value pairs for all
         # keys except 'schema'.
         # TODO (NES-987): will it have 'bytes' field?
-        # TODO (NES-987): test for tsv format
+        # TODO (NES-987): test for tsv format? It's implemented already
         test_dict = {
-            'name': 'Participants', 'title': 'Participants', 'path': 'data/Group_' + self.group.title,
+            # TODO (NES-987): Changes 'Participants.csv' to a constant in code
+            'name': 'Participants', 'title': 'Participants',
+            'path': 'data/Group_' + self.group.title + 'Participants.csv',
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
-        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
         self.assertTrue(
             all(item in participants_resource for item in test_dict),
             str(test_dict) + ' is not subdict of ' + str(participants_resource))
@@ -2039,6 +2049,134 @@ class ExportFrictionlessData(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experimental_protocol_image_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = PROTOCOL_IMAGE_FILENAME.split('.')
+
+        protocol_image_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
+                PROTOCOL_IMAGE_FILENAME),
+            'format': extension, 'mediatype': 'image/png'
+        }
+        self.assertIn(protocol_image_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experimental_protocol_description_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = PROTOCOL_DESCRIPTION_FILENAME.split('.')
+
+        protocol_description_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
+                PROTOCOL_DESCRIPTION_FILENAME),
+            'format': extension, 'mediatype': 'text/txt'
+        }
+        self.assertIn(protocol_description_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_eeg_default_setting_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = EEG_DEFAULT_SETTING_FILENAME.split('.')
+
+        eeg_default_setting_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
+                EEG_DEFAULT_SETTING_FILENAME),
+            'format': extension, 'mediatype': 'application/json'
+        }
+        self.assertIn(eeg_default_setting_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_eeg_setting_description_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = EEG_SETTING_FILENAME.split('.')
+
+        eeg_setting_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
+                'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_1', EEG_SETTING_FILENAME),
+            'format': extension, 'mediatype': 'application/json'
+        }
+        self.assertIn(eeg_setting_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_sensor_position_image(self):
+        self._create_sample_export_data()
+        # TODO (NES-987): leave to the last
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_tms_data_description_file(self):
+        temp_dir = tempfile.mkdtemp()
+        self._create_tms_export_data(temp_dir)  # pass temp_dir for hotspot file creation
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export TMS data
+        data.pop('per_eeg_raw_data')
+        data['per_tms_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = TMS_DATA_FILENAME.split('.')
+
+        tms_data_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
+                'Participant_' + self.patient.code, 'Step_1_TMS', TMS_DATA_FILENAME),
+            'format': extension, 'mediatype': 'application/json'
+        }
+        self.assertIn(tms_data_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
 
 def tearDownModule():
     shutil.rmtree(TEMP_MEDIA_ROOT)
