@@ -90,6 +90,9 @@ LICENSES = {
 
 PROTOCOL_IMAGE_FILENAME = 'Protocol_image.png'
 PROTOCOL_DESCRIPTION_FILENAME = 'Experimental_protocol_description.txt'
+EEG_DEFAULT_SETTING_FILENAME = 'eeg_default_setting.json'
+EEG_SETTING_FILENAME = 'eeg_setting_description.json'
+TMS_DATA_FILENAME = 'tms_data_description.json'
 
 
 def is_number(s):
@@ -575,8 +578,7 @@ class ExportExecution:
                                 sensors_positions_image = get_sensors_position(eeg_data)
                                 sensors_positions_filename = None
                                 if sensors_positions_image:
-                                    sensors_positions_filename = \
-                                        settings.BASE_DIR + str(sensors_positions_image)
+                                    sensors_positions_filename = settings.BASE_DIR + str(sensors_positions_image)
 
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
@@ -584,7 +586,7 @@ class ExportExecution:
                                 if 'eeg_data_list' not in self.per_group_data[group_id]['data_per_participant'][
                                         subject_code]:
                                     self.per_group_data[group_id]['data_per_participant'][
-                                        subject_code]['eeg_data_list']= []
+                                        subject_code]['eeg_data_list'] = []
                                     self.per_group_data[group_id]['data_per_participant'][
                                         subject_code]['data_index'] = 1
                                 else:
@@ -1772,25 +1774,31 @@ class ExportExecution:
                                 if error_msg != '':
                                     return error_msg
 
-                            # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_a
+                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_a
                             # /EEGData_#
                             export_eeg_data_directory = path.join(export_eeg_step_directory, directory_data_name)
 
                             eeg_setting_description = get_eeg_setting_description(eeg_data['setting_id'])
 
                             if eeg_setting_description:
-                                eeg_setting_filename = '%s.json' % 'eeg_setting_description'
-
-                                # path ex. NES_EXPORT/Experiment_data/Group_xxxx/eeg_setting_description.json
-                                complete_setting_filename = path.join(path_per_eeg_data, eeg_setting_filename)
-
-                                self.files_to_zip_list.append([complete_setting_filename, export_eeg_data_directory])
+                                filename, extension = EEG_SETTING_FILENAME.split('.')
+                                # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/eeg_setting_description.json
+                                complete_setting_filename = path.join(path_per_eeg_data, EEG_SETTING_FILENAME)
+                                self.files_to_zip_list.append([
+                                    complete_setting_filename, export_eeg_data_directory,
+                                    {
+                                        'name': filename, 'title': filename,
+                                        'path': path.join(export_eeg_data_directory, EEG_SETTING_FILENAME),
+                                        # TODO (NES-987): implement get_mediatype(extension) method
+                                        'format': extension, 'mediatype': 'application/%s' % extension
+                                    }
+                                ])
 
                                 with open(complete_setting_filename.encode('utf-8'), 'w', newline='',
                                           encoding='UTF-8') as outfile:
                                     json.dump(eeg_setting_description, outfile, indent=4)
 
-                            # if sensor position image exist
+                            # If sensor position image exist
                             sensors_positions_image = eeg_data['sensor_filename']
                             if sensors_positions_image:
                                 sensor_position_filename = '%s.png' % 'sensor_position'
@@ -1952,11 +1960,18 @@ class ExportExecution:
                             # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_tms_step_directory = path.join(participant_export_directory, directory_step_name)
 
-                            tms_data_filename = '%s.json' % 'tms_data_description'
-                            # path ex. NES_EXPORT/Experiment_data/Group_xxxx/tms_data_description.txt
-                            complete_data_filename = path.join(path_per_tms_participant, tms_data_filename)
-
-                            self.files_to_zip_list.append([complete_data_filename, export_tms_step_directory])
+                            filename, extension = TMS_DATA_FILENAME.split('.')
+                            # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/tms_data_description.txt
+                            complete_data_filename = path.join(path_per_tms_participant, TMS_DATA_FILENAME)
+                            self.files_to_zip_list.append([
+                                complete_data_filename, export_tms_step_directory,
+                                {
+                                    'name': filename, 'title': filename,
+                                    'path': path.join(export_tms_step_directory, TMS_DATA_FILENAME),
+                                    # TODO (NES-987): implement get_mediatype(extension) method
+                                    'format': extension, 'mediatype': 'application/%s' % extension
+                                }
+                            ])
 
                             with open(complete_data_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as \
                                     outfile:
@@ -2593,11 +2608,18 @@ class ExportExecution:
                         self.per_group_data[group_id]['eeg_default_setting_id'])
 
                     if eeg_default_setting_description:
-                        eeg_setting_description = '%s.json' % 'eeg_default_setting'
+                        filename, extension = EEG_DEFAULT_SETTING_FILENAME.split('.')
                         complete_filename_eeg_setting = path.join(
-                            directory_experimental_protocol, eeg_setting_description)
-                        self.files_to_zip_list.append(
-                            [complete_filename_eeg_setting, export_directory_experimental_protocol])
+                            directory_experimental_protocol, EEG_DEFAULT_SETTING_FILENAME)
+                        self.files_to_zip_list.append([
+                            complete_filename_eeg_setting, export_directory_experimental_protocol,
+                            {
+                                'name': filename, 'title': filename,
+                                'path': path.join(export_directory_experimental_protocol, EEG_DEFAULT_SETTING_FILENAME),
+                                # TODO (NES-987): implement get_mediatype(extension) method
+                                'format': extension, 'mediatype': 'application/%s' % extension
+                            }
+                        ])
 
                         with open(complete_filename_eeg_setting.encode('utf-8'), 'w', newline='',
                                   encoding='UTF-8') as outfile:
