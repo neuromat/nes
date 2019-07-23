@@ -6187,15 +6187,11 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
 # v1.5
 def get_sensors_position(eeg_data):
-    # Geração da imagem de localização dos electrodos
-    # Validate if EGI
-    # raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
+    # Electrode localization image generation. Validate if EGI
     reading = None
     file_path = None
-    file_plot_path = None
-    file_power_espectral_path = None
 
-    # getting the eeg_file, if exists
+    # Getting the eeg_file, if exists
     eeg_files = eeg_data.eeg_files.all()
 
     if len(eeg_files) == 1:
@@ -6236,9 +6232,9 @@ def get_sensors_position(eeg_data):
                         i = i + 1
                         if i < 10:
                             label = 'EEG' + ' 00' + str(i)
-                        if i > 9 and i < 100:
+                        if 9 < i < 100:
                             label = 'EEG' + ' 0' + str(i)
-                        if i > 99 and i < channels:
+                        if 99 < i < channels:
                             label = 'EEG' + ' ' + str(i)
 
                         if ch_name == label:
@@ -6253,24 +6249,22 @@ def get_sensors_position(eeg_data):
             if nes_code == 'MNE-RawFromBrainVision':
                 montage = mne.channels.read_montage('standard_1020')
 
-            # label_names = montage.ch_names
             if montage != "":
 
                 raw.set_montage(montage)
 
                 file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
-                # writing
                 errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
 
-                # the operation below ensures that the properly backend is set
+                # The operation below ensures that the properly backend is set
                 import matplotlib as mpl
                 mpl.use('agg')
 
-                fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False,
-                                       title="Sensor positions", ch_groups='position')
+                fig = raw.plot_sensors(
+                    ch_type='eeg', show_names=True, show=False, title="Sensor positions", ch_groups='position')
                 fig.savefig(path.join(path_complete, file_name))
 
-                file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+                file_path = path.join(settings.MEDIA_URL, "temp", file_name)
 
     return file_path
 
@@ -6283,7 +6277,6 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False):
 
     # v1.5
     if eeg_file.eeg_data.file_format.nes_code == "MNE-RawFromEGI":
-
         eeg_reading.file_format = eeg_file.eeg_data.file_format
 
         try:
@@ -6342,9 +6335,7 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
         if positions.__len__() > 0:
             image = True
 
-    # Geração da imagem de localização dos electrodos
-    # v1.5
-    # sensors_positions_image = None
+    # Geração da imagem de localização dos electrodos (NES v1.5)
     sensors_positions_image = get_sensors_position(eeg_data)
 
     if request.method == "POST":
@@ -6365,19 +6356,20 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
                             group_id=subject_of_group.group_id,
                             subject_id=subject_of_group.subject_id)
 
-    context = {"can_change": get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project),
-               "editing": False,
-               "group": eeg_data.subject_of_group.group,
-               "subject": eeg_data.subject_of_group.subject,
-               "eeg_data_form": eeg_data_form,
-               "eeg_data": eeg_data,
-               "eeg_setting_default_id": eeg_step.eeg_setting_id,
-               "file_format_list": file_format_list,
-               "tab": tab,
-               "json_list": json.dumps(positions),
-               "image": image,
-               "sensors_image": sensors_positions_image,
-               }
+    context = {
+        "can_change": get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project),
+        "editing": False,
+        "group": eeg_data.subject_of_group.group,
+        "subject": eeg_data.subject_of_group.subject,
+        "eeg_data_form": eeg_data_form,
+        "eeg_data": eeg_data,
+        "eeg_setting_default_id": eeg_step.eeg_setting_id,
+        "file_format_list": file_format_list,
+        "tab": tab,
+        "json_list": json.dumps(positions),
+        "image": image,
+        "sensors_image": sensors_positions_image,
+    }
 
     return render(request, template_name, context)
 
