@@ -12,7 +12,6 @@ function init(){
 
     var eeg_positions = document.getElementById("eeg_electrode_position");
     if(eeg_positions) positions = eval(eeg_positions.value);
-    //positions.sort(compare);
 
     var imageObj = new Image();
 
@@ -44,7 +43,7 @@ function pintar(){
             context.stroke();
         }
     }
-}; //fim function pintar
+}; //End function pintar
 
 function refresh_Screen(){
     var canvas = document.getElementById("electrodeMapCanvas");
@@ -112,23 +111,11 @@ function getPosition(event){
     var canvas = document.getElementById("electrodeMapCanvas");
     context = canvas.getContext("2d");
 
-
-    // if (event.layerX || event.layerX == 0) { // Firefox
-    //     event._x = event.layerX;
-    //     event._y = event.layerY;
-    // } else if (event.offsetX || event.offsetX == 0) { // Opera
-    //     event._x = event.offsetX;
-    //     event._y = event.offsetY;
-    // }
-    
     var rect = this.getBoundingClientRect();
     var coords = {
         x: event.clientX - rect.left,
         y: event.clientY - rect.top
     };
-
-    // x = parseInt(event._x);
-    // y = parseInt(event._y);
 
     x = parseInt(coords.x);
     y = parseInt(coords.y);

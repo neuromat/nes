@@ -7,13 +7,13 @@ import csv
 import os
 import sys
 
+
 class Command(BaseCommand):
     help = 'Import ICD for translation'
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            '--file', nargs='?', type=str, help='codes filename'
-        )
+        parser.add_argument('--file', nargs='?', type=str, help='codes filename')
+
     def handle(self, *args, **options):
         # filename = 'icd10cid10v2017.csv'
         if options['file']:
@@ -21,20 +21,16 @@ class Command(BaseCommand):
             try:
                 import_classification_of_icd_cid(filename)
             except IOError:
-                raise CommandError(
-                'Filename "%s" does not exist.' % filename
-                )
+                raise CommandError('Filename "%s" does not exist.' % filename)
             except UnicodeDecodeError:
-                raise CommandError(
-                'Filename "%s" has incorrect format.' % filename
-                )
+                raise CommandError('Filename "%s" has incorrect format.' % filename)
 
 
 def import_classification_of_icd_cid(file_name):
-    filename = os.path.join(settings.BASE_DIR,
-                            os.path.join("..", "..", os.path.join("resources", "load-idc-table", file_name)))
+    filename = os.path.join(
+        settings.BASE_DIR, os.path.join("..", "..", os.path.join("resources", "load-idc-table", file_name)))
 
-    increment = 2  #start of second line, without header
+    increment = 2  # start of second line, without header
 
     with open(filename) as csvfile:
         total_lines = sum(1 for row in csvfile)
