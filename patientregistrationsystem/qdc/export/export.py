@@ -95,6 +95,8 @@ EEG_SETTING_FILENAME = 'eeg_setting_description.json'
 TMS_DATA_FILENAME = 'tms_data_description.json'
 HOTSPOT_MAP = 'hotspot_map.png'
 EMG_SETTING_FILENAME = 'emg_setting_description.json'
+EMG_DEFAULT_SETTING = 'emg_default_setting.json'
+TMS_DEFAULT_SETTING_FILENAME = 'tms_default_setting.json'
 
 
 def is_number(s):
@@ -2638,36 +2640,50 @@ class ExportExecution:
                             json.dump(eeg_default_setting_description, outfile, indent=4)
 
                 if 'emg_default_setting_id' in self.per_group_data[group_id]:
-                    emg_default_setting_description = get_emg_setting_description(self.per_group_data[group_id][
-                                                                                  'emg_default_setting_id'])
+                    emg_default_setting_description = get_emg_setting_description(
+                        self.per_group_data[group_id]['emg_default_setting_id'])
                     if emg_default_setting_description:
-                        emg_setting_description = '%s.json' % 'emg_default_setting'
-                        complete_filename_emg_setting = path.join(directory_experimental_protocol,
-                                                                          emg_setting_description)
-                        self.files_to_zip_list.append([complete_filename_emg_setting,
-                                                       export_directory_experimental_protocol])
+                        filename, extension = EMG_DEFAULT_SETTING.split('.')
+                        complete_filename_emg_setting = path.join(
+                            directory_experimental_protocol, EMG_DEFAULT_SETTING)
+                        self.files_to_zip_list.append([
+                            complete_filename_emg_setting, export_directory_experimental_protocol,
+                            {
+                                'name': filename, 'title': filename,
+                                'path': path.join(export_directory_experimental_protocol, EMG_DEFAULT_SETTING),
+                                # TODO (NES-987): implement get_mediatype(extension) method
+                                'format': extension, 'mediatype': 'application/%s' % extension
+                            }
+                        ])
 
                         with open(complete_filename_emg_setting.encode('utf-8'), 'w', newline='',
                                   encoding='UTF-8') as outfile:
                             json.dump(emg_default_setting_description, outfile, indent=4)
 
                 if 'tms_default_setting_id' in self.per_group_data[group_id]:
-                    tms_default_setting_description = get_tms_setting_description(self.per_group_data[group_id][
-                                                                                      'tms_default_setting_id'])
+                    tms_default_setting_description = get_tms_setting_description(
+                        self.per_group_data[group_id]['tms_default_setting_id'])
                     if tms_default_setting_description:
-                        tms_setting_description = '%s.json' % 'tms_default_setting'
-                        complete_filename_tms_setting = path.join(directory_experimental_protocol,
-                                                                  tms_setting_description)
-                        self.files_to_zip_list.append([complete_filename_tms_setting,
-                                                       export_directory_experimental_protocol])
+                        filename, extension = TMS_DEFAULT_SETTING_FILENAME.split('.')
+                        complete_filename_tms_setting = path.join(
+                            directory_experimental_protocol, TMS_DEFAULT_SETTING_FILENAME)
+                        self.files_to_zip_list.append([
+                            complete_filename_tms_setting, export_directory_experimental_protocol,
+                            {
+                                'name': filename, 'title': filename,
+                                'path': path.join(export_directory_experimental_protocol, TMS_DEFAULT_SETTING_FILENAME),
+                                # TODO (NES-987): implement get_mediatype(extension) method
+                                'format': extension, 'mediatype': 'application/%s' % extension
+                            }
+                        ])
 
                         with open(complete_filename_tms_setting.encode('utf-8'), 'w', newline='',
                                   encoding='UTF-8') as outfile:
                             json.dump(tms_default_setting_description, outfile, indent=4)
 
                 if 'context_tree_default_id' in self.per_group_data[group_id]:
-                    context_tree_default_description = get_context_tree_description(self.per_group_data[group_id][
-                                                                                   'context_tree_default_id'])
+                    context_tree_default_description = get_context_tree_description(
+                        self.per_group_data[group_id]['context_tree_default_id'])
                     if context_tree_default_description:
                         context_tree_description = '%s.json' % 'context_tree_default'
                         complete_filename_context_tree = path.join(directory_experimental_protocol,
