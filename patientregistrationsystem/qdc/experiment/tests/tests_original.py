@@ -722,8 +722,7 @@ class ObjectsFactory(object):
             description=faker.text(), file_format=file_format,
             file_format_description=faker.text(),
             data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group
-        )
+            subject_of_group=subj_of_group)
 
     @staticmethod
     def create_digital_game_phase_file(dgp_data):
@@ -731,9 +730,7 @@ class ObjectsFactory(object):
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
-            dgpf = DigitalGamePhaseFile.objects.create(
-                digital_game_phase_data=dgp_data
-            )
+            dgpf = DigitalGamePhaseFile.objects.create(digital_game_phase_data=dgp_data)
             with File(open(bin_file.name, 'rb')) as f:
                 dgpf.file.save('file.bin', f)
             dgpf.save()
