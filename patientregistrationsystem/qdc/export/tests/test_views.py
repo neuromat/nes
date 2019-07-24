@@ -23,7 +23,8 @@ from experiment.models import Component, ComponentConfiguration, \
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
-    EEG_SETTING_FILENAME, TMS_DATA_FILENAME
+    EEG_SETTING_FILENAME, TMS_DATA_FILENAME, HOTSPOT_MAP, EMG_SETTING_FILENAME, EMG_DEFAULT_SETTING, \
+    TMS_DEFAULT_SETTING_FILENAME, CONTEXT_TREE_DEFAULT
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
@@ -949,27 +950,17 @@ class ExportDataCollectionTest(ExportTestCase):
         # Create emg component
         self.manufacturer = ObjectsFactory.create_manufacturer()
         self.software = ObjectsFactory.create_software(self.manufacturer)
-        self.software_version = ObjectsFactory.create_software_version(
-            self.software)
+        self.software_version = ObjectsFactory.create_software_version(self.software)
         self.tag_emg = ObjectsFactory.create_tag('EMG')
-        emg_set = ObjectsFactory.create_emg_setting(self.experiment,
-                                                    self.software_version)
-        emg_comp = ObjectsFactory.create_component(self.experiment,
-                                                   Component.EMG,
-                                                   kwargs={'emg_set': emg_set}
-                                                   )
+        emg_set = ObjectsFactory.create_emg_setting(self.experiment, self.software_version)
+        emg_comp = ObjectsFactory.create_component(self.experiment, Component.EMG, kwargs={'emg_set': emg_set})
 
-        # include emg component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, emg_comp
-        )
+        # Include emg component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, emg_comp)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' emg file
-        emgdata = ObjectsFactory.create_emg_data_collection_data(
-            dct, self.subject_of_group, emg_set
-        )
-
+        emgdata = ObjectsFactory.create_emg_data_collection_data(dct, self.subject_of_group, emg_set)
         emgf = ObjectsFactory.create_emg_data_collection_file(emgdata)
 
         # Create additional data to this step
@@ -996,18 +987,18 @@ class ExportDataCollectionTest(ExportTestCase):
 
         zipped_file = self.get_zipped_file(response)
 
-        # we have only the generic_data_collection step, so we get the first
+        # We have only the generic_data_collection step, so we get the first
         # element: [0]
         path = create_list_of_trees(self.group.experimental_protocol, "emg")[0]
         emg_conf = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = emg_conf.component
         step_number = path[-1][4]
 
-        self.assert_per_participant_step_file_exists(step_number, component_step, 'EMGData_1',
-                                                     os.path.basename(emgf.file.name), zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'EMGData_1', os.path.basename(emgf.file.name), zipped_file)
 
-        self.assert_per_participant_step_file_exists(step_number, component_step, 'AdditionalData_1',
-                                                     os.path.basename(adf.file.name), zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'AdditionalData_1', os.path.basename(adf.file.name), zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_tms(self):
@@ -1090,39 +1081,25 @@ class ExportDataCollectionTest(ExportTestCase):
     def test_export_experiment_with_generic_data_colletion_2_groups(self):
         # Create second group; create patient/subject/subject_of_group
         root_component1 = ObjectsFactory.create_block(self.experiment)
-        group1 = ObjectsFactory.create_group(
-            self.experiment, root_component1
-        )
+        group1 = ObjectsFactory.create_group(self.experiment, root_component1)
         patient1 = UtilTests().create_patient(changed_by=self.user)
         subject1 = ObjectsFactory.create_subject(patient1)
-        subject_of_group1 = \
-            ObjectsFactory.create_subject_of_group(group1, subject1)
+        subject_of_group1 = ObjectsFactory.create_subject_of_group(group1, subject1)
 
-        # create generic data collection (gdc) component
+        # Create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
-        gdc = ObjectsFactory.create_component(
-            self.experiment, Component.GENERIC_DATA_COLLECTION,
-            kwargs={'it': it}
-        )
+        gdc = ObjectsFactory.create_component(self.experiment, Component.GENERIC_DATA_COLLECTION,kwargs={'it': it})
 
-        # include gdc component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, gdc
-        )
-        component_config1 = ObjectsFactory.create_component_configuration(
-            root_component1, gdc
-        )
+        # Include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, gdc)
+        component_config1 = ObjectsFactory.create_component_configuration(root_component1, gdc)
 
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
 
         # 'upload' generic data collection file
-        gdc_data = ObjectsFactory.create_generic_data_collection_data(
-            dct, self.subject_of_group
-        )
-        gdc_data1 = ObjectsFactory.create_generic_data_collection_data(
-            dct1, subject_of_group1
-        )
+        gdc_data = ObjectsFactory.create_generic_data_collection_data(dct, self.subject_of_group)
+        gdc_data1 = ObjectsFactory.create_generic_data_collection_data(dct1, subject_of_group1)
 
         ObjectsFactory.create_generic_data_collection_file(gdc_data)
         ObjectsFactory.create_generic_data_collection_file(gdc_data1)
@@ -1138,67 +1115,47 @@ class ExportDataCollectionTest(ExportTestCase):
         # Post data to view: data style that is posted to export_view in
         # template
         data = {
-            'per_questionnaire': ['on'],
-            'per_participant': ['on'],
-            'per_generic_data': ['on'],
-            'per_additional_data': ['on'],
-            'headings': ['code'],
-            'patient_selected': ['age*age'],
-            'action': ['run'],
-            'responses': ['short']
+            'per_questionnaire': ['on'], 'per_participant': ['on'], 'per_generic_data': ['on'],
+            'per_additional_data': ['on'], 'headings': ['code'], 'patient_selected': ['age*age'],
+            'action': ['run'], 'responses': ['short']
         }
 
         response = self.client.post(reverse('export_view'), data)
-
         zipped_file = self.get_zipped_file(response)
 
-        for path in create_list_of_trees(self.group.experimental_protocol,
-                                         "generic_data_collection"):
-            generic_component_configuration = \
-                ComponentConfiguration.objects.get(pk=path[-1][0])
+        for path in create_list_of_trees(self.group.experimental_protocol,'generic_data_collection'):
+            generic_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
             component_step = generic_component_configuration.component
             step_number = path[-1][4]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'Generic_Data_Collection_1',
-                                                         'file.bin',
-                                                         zipped_file)
+            self.assert_per_participant_step_file_exists(
+                step_number, component_step, 'Generic_Data_Collection_1', 'file.bin', zipped_file)
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'AdditionalData_1',
-                                                         'file.bin',
-                                                         zipped_file)
+            self.assert_per_participant_step_file_exists(
+                step_number, component_step, 'AdditionalData_1', 'file.bin', zipped_file)
 
-        for path in create_list_of_trees(group1.experimental_protocol,
-                                         "generic_data_collection"):
-            generic_component_configuration = \
-                ComponentConfiguration.objects.get(pk=path[-1][0])
+        for path in create_list_of_trees(
+                group1.experimental_protocol, 'generic_data_collection'):
+            generic_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
             component_step = generic_component_configuration.component
             step_number = path[-1][4]
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'Generic_Data_Collection_1',
-                                                         'file.bin',
-                                                         zipped_file)
+            self.assert_per_participant_step_file_exists(
+                step_number, component_step, 'Generic_Data_Collection_1', 'file.bin', zipped_file)
 
-            self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                         'AdditionalData_1',
-                                                         'file.bin',
-                                                         zipped_file)
+            self.assert_per_participant_step_file_exists(
+                step_number, component_step, 'AdditionalData_1', 'file.bin', zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_goalkeeper_game_data_2_groups(self):
         # Create second group; create patient/subject/subject_of_group
         root_component1 = ObjectsFactory.create_block(self.experiment)
-        group1 = ObjectsFactory.create_group(
-            self.experiment, root_component1
-        )
+        group1 = ObjectsFactory.create_group(self.experiment, root_component1)
         patient1 = UtilTests().create_patient(changed_by=self.user)
         subject1 = ObjectsFactory.create_subject(patient1)
-        subject_of_group1 = \
-            ObjectsFactory.create_subject_of_group(group1, subject1)
+        subject_of_group1 = ObjectsFactory.create_subject_of_group(group1, subject1)
 
-        # create digital game phase (dgp) component
+        # Create digital game phase (dgp) component
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
@@ -1206,28 +1163,19 @@ class ExportDataCollectionTest(ExportTestCase):
 
         dgp = ObjectsFactory.create_component(
             self.experiment, Component.DIGITAL_GAME_PHASE,
-            kwargs={'software_version': software_version, 'context_tree': context_tree}
-        )
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
 
-        # include gdc component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, dgp
-        )
-        component_config1 = ObjectsFactory.create_component_configuration(
-            root_component1, dgp
-        )
+        # Include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, dgp)
+        component_config1 = ObjectsFactory.create_component_configuration(root_component1, dgp)
 
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
         dct1 = ObjectsFactory.create_data_configuration_tree(component_config1)
 
         # 'upload' data game phase collection file
-        dgp_data = ObjectsFactory.create_digital_game_phase_data(
-            dct, self.subject_of_group
-        )
+        dgp_data = ObjectsFactory.create_digital_game_phase_data(dct, self.subject_of_group)
 
-        dgp_data1 = ObjectsFactory.create_digital_game_phase_data(
-            dct1, subject_of_group1
-        )
+        dgp_data1 = ObjectsFactory.create_digital_game_phase_data(dct1, subject_of_group1)
 
         ObjectsFactory.create_digital_game_phase_file(dgp_data)
         ObjectsFactory.create_digital_game_phase_file(dgp_data1)
@@ -1243,14 +1191,8 @@ class ExportDataCollectionTest(ExportTestCase):
         # Post data to view: data style that is posted to export_view in
         # template
         data = {
-            'per_questionnaire': ['on'],
-            'per_participant': ['on'],
-            'per_goalkeeper_game_data': ['on'],
-            # 'per_additional_data': ['on'],
-            'headings': ['code'],
-            'filesformat': ['csv'],
-            'responses': ['short'],
-            'patient_selected': ['age*age'],
+            'per_questionnaire': ['on'], 'per_participant': ['on'], 'per_goalkeeper_game_data': ['on'],
+            'headings': ['code'], 'filesformat': ['csv'], 'responses': ['short'], 'patient_selected': ['age*age'],
             'action': ['run']
         }
         self.client.post(reverse('export_view'), data)
@@ -1727,6 +1669,21 @@ class ExportFrictionlessData(ExportTestCase):
             tms_data=tmsdata, name="TMS Data Collection File", tms_localization_system=tms_local_sys)
         ObjectsFactory.create_hotspot_data_collection_file(hotspot)
 
+    def _create_emg_export_data(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        emg_set = ObjectsFactory.create_emg_setting(self.experiment, software_version)
+        emg_comp = ObjectsFactory.create_component(self.experiment, Component.EMG, kwargs={'emg_set': emg_set})
+
+        # Include emg component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, emg_comp)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' emg file
+        emgdata = ObjectsFactory.create_emg_data_collection_data(dct, self.subject_of_group, emg_set)
+        ObjectsFactory.create_emg_data_collection_file(emgdata)
+
     def _assert_basic_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
             self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
@@ -2147,11 +2104,39 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_sensor_position_image(self):
-        self._create_sample_export_data()
+        pass
+        # self._create_sample_export_data()
         # TODO (NES-987): leave to the last
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_tms_data_description_file(self):
+    def test_export_experiment_add_tms_default_setting_file(self):
+        temp_dir = tempfile.mkdtemp()
+        self._create_tms_export_data(temp_dir)  # pass temp_dir for hotspot file creation
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export TMS data
+        data.pop('per_eeg_raw_data')
+        data['per_tms_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = TMS_DEFAULT_SETTING_FILENAME.split('.')
+        tms_default_setting_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
+                TMS_DEFAULT_SETTING_FILENAME),
+            'format': extension, 'mediatype': 'application/json'
+        }
+        self.assertIn(tms_default_setting_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_tms_data_description_and_hotspot_map_files(self):
         temp_dir = tempfile.mkdtemp()
         self._create_tms_export_data(temp_dir)  # pass temp_dir for hotspot file creation
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2166,7 +2151,6 @@ class ExportFrictionlessData(ExportTestCase):
 
         json_data = self._get_datapackage_json_data(temp_dir, response)
         filename, extension = TMS_DATA_FILENAME.split('.')
-
         tms_data_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
@@ -2176,7 +2160,113 @@ class ExportFrictionlessData(ExportTestCase):
         }
         self.assertIn(tms_data_resource, json_data['resources'])
 
+        filename, extension = HOTSPOT_MAP.split('.')
+        hotspot_map_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
+                                           'Participant_' + self.patient.code, 'Step_1_TMS', HOTSPOT_MAP),
+            'format': extension, 'mediatype': 'image/png'
+        }
+        self.assertIn(hotspot_map_resource, json_data['resources'])
+
         shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_emg_default_setting_file(self):
+        self._create_emg_export_data()
+        self._create_emg_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export EMG data
+        data.pop('per_eeg_raw_data')
+        data['per_emg_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = EMG_DEFAULT_SETTING.split('.')
+
+        emg_default_setting_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol', EMG_DEFAULT_SETTING),
+            'format': extension, 'mediatype': 'application/json'
+        }
+        self.assertIn(emg_default_setting_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_emg_setting_description_file(self):
+        self._create_emg_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export EMG data
+        data.pop('per_eeg_raw_data')
+        data['per_emg_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = EMG_SETTING_FILENAME.split('.')
+
+        emg_setting_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
+                'Participant_' + self.patient.code, 'Step_1_EMG', 'EMGData_1', EMG_SETTING_FILENAME),
+            'format': extension, 'mediatype': 'application/json'
+        }
+        self.assertIn(emg_setting_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_goalkeeper_context_tree_default_file(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        context_tree = ObjectsFactory.create_context_tree(self.experiment)
+        dgp = ObjectsFactory.create_component(
+            self.experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, dgp)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        dgp_data = ObjectsFactory.create_digital_game_phase_data(dct, self.subject_of_group)
+        ObjectsFactory.create_digital_game_phase_file(dgp_data)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export EMG data
+        data.pop('per_eeg_raw_data')
+        data['per_goalkeeper_game_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        filename, extension = CONTEXT_TREE_DEFAULT.split('.')
+
+        context_tree_resource = {
+            'name': filename, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
+                CONTEXT_TREE_DEFAULT),
+            'format': extension, 'mediatype': 'application/json'
+        }
+        self.assertIn(context_tree_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
 
 def tearDownModule():
     shutil.rmtree(TEMP_MEDIA_ROOT)
