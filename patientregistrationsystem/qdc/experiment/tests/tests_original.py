@@ -834,14 +834,13 @@ class ObjectsFactory(object):
         faker = Factory.create()
 
         cid10 = ClassificationOfDiseases.objects.create(
-            code=faker.word(),
-            description=faker.text(),
+            # Limit faker.word because len(faker.word) can be more than 10
+            code=faker.word(['A021', 'B050', 'C111']), description=faker.text(),
             abbreviated_description=faker.word())
         medical_record = MedicalRecordData.objects.create(patient=patient, record_responsible=user)
         diagnosis = Diagnosis.objects.create(medical_record_data=medical_record, classification_of_diseases=cid10)
-        complementary_exam = ComplementaryExam.objects.create(diagnosis=diagnosis,
-                                                              date=datetime.date.today(),
-                                                              description=faker.text())
+        complementary_exam = ComplementaryExam.objects.create(
+            diagnosis=diagnosis, date=datetime.date.today(), description=faker.text())
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
