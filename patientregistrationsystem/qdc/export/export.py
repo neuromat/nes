@@ -44,7 +44,6 @@ from experiment.views import get_block_tree, get_experimental_protocol_image, \
 from survey.abc_search_engine import Questionnaires
 from survey.views import limesurvey_available
 
-
 DEFAULT_LANGUAGE = 'pt-BR'
 
 METADATA_DIRECTORY = 'Questionnaire_metadata'
@@ -368,7 +367,7 @@ class ExportExecution:
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             subjects_of_group = SubjectOfGroup.objects.filter(group=group)
-            title = '_'.join(slugify(group.title).split('-'))
+            title = slugify(group.title).replace('-', '_')
 
             description = group.description  # TODO: code bloat
             if group_id not in self.per_group_data:
@@ -437,7 +436,8 @@ class ExportExecution:
                                             step_number = path_experiment[0][4]
                                             step_identification = questionnaire_configuration.component.identification
                                             protocol_step_list = [
-                                                header_step_list, [step_number, step_identification, path_questionnaire, completed]
+                                                header_step_list,
+                                                [step_number, step_identification, path_questionnaire, completed]
                                             ]
                                             questionnaire_response_dic = {
                                                 'token_id': token_id,
@@ -537,9 +537,9 @@ class ExportExecution:
                                         self.per_group_data[group_id]['data_per_participant'][subject_code][
                                             'additional_data_list'] = []
                                     if component_type not in self.per_group_data[group_id]['data_per_participant'][
-                                            subject_code]:
-                                            self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                                component_type] = {'data_index': 1}
+                                        subject_code]:
+                                        self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                            component_type] = {'data_index': 1}
                                     else:
                                         self.per_group_data[group_id]['data_per_participant'][subject_code][
                                             component_type]['data_index'] += 1
@@ -548,14 +548,14 @@ class ExportExecution:
                                                     component_type]['data_index'])
                                     self.per_group_data[group_id]['data_per_participant'][subject_code][
                                         'additional_data_list'].append({
-                                            'description': additional_data.description,
-                                            'step_number': step_number,
-                                            'component_type': component_type,
-                                            'directory_step_name': 'Step_' + str(step_number) + '_' +
-                                                                   component_type.upper(),
-                                            'additional_data_directory': 'AdditionalData_' + index,
-                                            'additional_data_file_list': additional_data_file_list,
-                                        })
+                                        'description': additional_data.description,
+                                        'step_number': step_number,
+                                        'component_type': component_type,
+                                        'directory_step_name': 'Step_' + str(step_number) + '_' +
+                                                               component_type.upper(),
+                                        'additional_data_directory': 'AdditionalData_' + index,
+                                        'additional_data_file_list': additional_data_file_list,
+                                    })
 
                 if self.get_input_data('component_list')['per_eeg_raw_data'] or \
                         self.get_input_data('component_list')['per_eeg_nwb_data']:
@@ -588,8 +588,8 @@ class ExportExecution:
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
 
-                                if 'eeg_data_list' not in self.per_group_data[group_id]['data_per_participant'][
-                                        subject_code]:
+                                if 'eeg_data_list' not in \
+                                        self.per_group_data[group_id]['data_per_participant'][subject_code]:
                                     self.per_group_data[group_id]['data_per_participant'][
                                         subject_code]['eeg_data_list'] = []
                                     self.per_group_data[group_id]['data_per_participant'][
@@ -654,14 +654,14 @@ class ExportExecution:
                                                 'data_index'])
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                     'emg_data_list'].append({
-                                        'step_number': step_number,
-                                        'step_identification': step_identification,
-                                        'emg_data_directory_name': 'EMGData_' + index,
-                                        'setting_id': emg_data.emg_setting.id,
-                                        'directory_step_name': 'Step_' + str(step_number) + '_' +
-                                                               component_step.component_type.upper(),
-                                        'emg_file_list': emg_file_list,
-                                    })
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
+                                    'emg_data_directory_name': 'EMGData_' + index,
+                                    'setting_id': emg_data.emg_setting.id,
+                                    'directory_step_name': 'Step_' + str(step_number) + '_' +
+                                                           component_step.component_type.upper(),
+                                    'emg_file_list': emg_file_list,
+                                })
 
                 if self.get_input_data('component_list')['per_tms_data']:
                     for path_tms in create_list_of_trees(group.experimental_protocol, 'tms'):
@@ -692,14 +692,14 @@ class ExportExecution:
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                     'tms_data_list'].append({
-                                        'step_number': step_number,
-                                        'step_identification': step_identification,
-                                        'setting_id': tms_data.tms_setting_id,
-                                        'tms_data_id': tms_data.id,
-                                        'data_configuration_tree_id': data_configuration_tree_id,
-                                        'directory_step_name': 'Step_' + str(step_number) + '_' +
-                                                               component_step.component_type.upper()
-                                    })
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
+                                    'setting_id': tms_data.tms_setting_id,
+                                    'tms_data_id': tms_data.id,
+                                    'data_configuration_tree_id': data_configuration_tree_id,
+                                    'directory_step_name': 'Step_' + str(step_number) + '_' +
+                                                           component_step.component_type.upper()
+                                })
 
                 if self.get_input_data('component_list')['per_goalkeeper_game_data']:
                     for path_goalkeeper_game in create_list_of_trees(group.experimental_protocol, 'digital_game_phase'):
@@ -748,13 +748,13 @@ class ExportExecution:
                                                 'data_index'])
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                     'digital_game_data_list'].append({
-                                        'step_number': step_number,
-                                        'step_identification': step_identification,
-                                        'directory_step_name': 'Step_' + str(step_number) + '_' +
-                                                               component_step.component_type.upper(),
-                                        'digital_game_data_directory': 'DigitalGamePhaseData_' + index,
-                                        'digital_game_file_list': digital_game_file_list,
-                                    })
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
+                                    'directory_step_name': 'Step_' + str(step_number) + '_' +
+                                                           component_step.component_type.upper(),
+                                    'digital_game_data_directory': 'DigitalGamePhaseData_' + index,
+                                    'digital_game_file_list': digital_game_file_list,
+                                })
 
                 if self.get_input_data('component_list')['per_stimulus_data']:
                     for path_stimulus in create_list_of_trees(group.experimental_protocol, 'stimulus'):
@@ -797,18 +797,14 @@ class ExportExecution:
                                 generic_data_collection_data_list = []
                                 for generic_data in generic_data_collection_data.generic_data_collection_files.all():
                                     generic_data_collection_data_list.append({
-                                        'generic_data_filename':
-                                        path.join(
-                                            settings.MEDIA_ROOT,
-                                            generic_data.file.name
-                                        )
+                                        'generic_data_filename': path.join(settings.MEDIA_ROOT, generic_data.file.name)
                                     })
 
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
 
-                                if 'generic_data_collection_data_list' not in self.per_group_data[group_id][
-                                        'data_per_participant'][subject_code]:
+                                if 'generic_data_collection_data_list' not in \
+                                        self.per_group_data[group_id]['data_per_participant'][subject_code]:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code][
                                         'generic_data_collection_data_list'] = []
                                     self.per_group_data[group_id]['data_per_participant'][subject_code][
@@ -820,13 +816,13 @@ class ExportExecution:
                                                 'data_index'])
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                     'generic_data_collection_data_list'].append({
-                                        'step_number': step_number,
-                                        'step_identification': step_identification,
-                                        'directory_step_name': 'Step_' + str(step_number) + '_' +
-                                                               component_step.component_type.upper(),
-                                        'generic_data_collection_directory': 'Generic_Data_Collection_' + index,
-                                        'generic_data_collection_file_list': generic_data_collection_data_list,
-                                    })
+                                    'step_number': step_number,
+                                    'step_identification': step_identification,
+                                    'directory_step_name': 'Step_' + str(step_number) + '_' +
+                                                           component_step.component_type.upper(),
+                                    'generic_data_collection_directory': 'Generic_Data_Collection_' + index,
+                                    'generic_data_collection_file_list': generic_data_collection_data_list,
+                                })
 
         surveys.release_session_key()
 
@@ -1106,12 +1102,11 @@ class ExportExecution:
                 if result == Questionnaires.ERROR_CODE:
                     return result
 
-                # create directory for questionnaire:
+                # Create directory for questionnaire:
                 # <per_questionnaire>/<q_code_title>
                 if self.get_input_data('export_per_questionnaire') and (len(result) > 1):
-                    export_filename = \
-                        '%s_%s_%s.%s' % (questionnaire['prefix_filename_responses'], str(questionnaire_code),
-                                         language, filesformat_type)
+                    export_filename = '%s_%s_%s.%s' % (
+                        questionnaire['prefix_filename_responses'], str(questionnaire_code), language, filesformat_type)
                     # path ex. NES_EXPORT/Per_questionnaire.Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename)
 
@@ -1126,20 +1121,19 @@ class ExportExecution:
                 questionnaire_id, entrance_questionnaire, self.get_input_data('questionnaires_from_experiments'))
 
             for language in questionnaire_language['language_list']:
-                    error, questionnaire_fields = \
-                        self.questionnaire_utils.create_questionnaire_explanation_fields(
-                            questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
-                    if error:
-                        return Questionnaires.ERROR_CODE  # TODO (NES-971): patternalize this
+                error, questionnaire_fields = self.questionnaire_utils.create_questionnaire_explanation_fields(
+                        questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
+                if error:
+                    return Questionnaires.ERROR_CODE  # TODO (NES-971): patternalize this
 
-                    export_filename = '%s_%s_%s.%s' % (questionnaire['prefix_filename_fields'],
-                                                       str(questionnaire_code), language, filesformat_type)
+                export_filename = '%s_%s_%s.%s' % (
+                    questionnaire['prefix_filename_fields'], str(questionnaire_code), language, filesformat_type)
 
-                    complete_filename = path.join(export_metadata_path, export_filename)
+                complete_filename = path.join(export_metadata_path, export_filename)
 
-                    save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
+                save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
-                    self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
+                self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
 
         questionnaire_lime_survey.release_session_key()
 
@@ -1401,33 +1395,25 @@ class ExportExecution:
                         language_list = [
                             questionnaire_language['output_language']]
 
-                    # getting unique steps for each questionnaire so we can
+                    # Getting unique steps for each questionnaire so we can
                     # aggregate directories by steps if there are same
                     # questionnaire in more than one step
                     for token in questionnaires['token_list']:
-                        dir_questionnaire_step[questionnaire_id].add(
-                            token['directory_step_name']
-                        )
+                        dir_questionnaire_step[questionnaire_id].add(token['directory_step_name'])
 
                     for token in questionnaires['token_list']:
                         path_group_per_questionnaire = \
-                            self.per_group_data[group_id]['group'][
-                                'questionnaire_data_directory']
+                            self.per_group_data[group_id]['group']['questionnaire_data_directory']
                         error_msg, complete_export_path = create_directory(
-                            path_group_per_questionnaire,
-                            token['directory_step_name']
-                        )
+                            path_group_per_questionnaire, token['directory_step_name'])
                         if error_msg != '':
                             return error_msg
 
                         export_directory_per_questionnaire = \
                             self.per_group_data[group_id]['group']['questionnaire_data_export_directory']
-                        export_directory = path.join(
-                            export_directory_per_questionnaire,
-                            token['directory_step_name']
-                        )
+                        export_directory = path.join(export_directory_per_questionnaire, token['directory_step_name'])
 
-                        # save file with data
+                        # Save file with data
                         fields_description = []
 
                         for language in language_list:
@@ -1443,7 +1429,7 @@ class ExportExecution:
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
                             rows_participant_data = self.get_participant_row_data(token['subject_code'])
                             participant_response_list = self.merge_questionnaire_answer_list_per_participant(
-                                    rows_participant_data[1], answer_list[1:len(answer_list)])
+                                rows_participant_data[1], answer_list[1:len(answer_list)])
                             for sublist in participant_response_list:
                                 index = len(fields_description) + 1
                                 fields_description.insert(index, sublist)
@@ -1466,15 +1452,15 @@ class ExportExecution:
                                     break
                             ###
 
-                            # save array list into a file to export
+                            # Save array list into a file to export
                             if not file_exists:
                                 save_to_csv(complete_filename, fields_description, filesformat_type)
                                 self.files_to_zip_list.append([complete_filename, export_directory])
 
-                    # questionnaire metadata directory
+                    # Questionnaire metadata directory
                     entrance_questionnaire = False
                     questionnaire_lime_survey = Questionnaires()
-                    # create questionnaire fields file ('fields.csv') in
+                    # Create questionnaire fields file ('fields.csv') in
                     # Questionnaire_metadata directory
                     fields = self.questionnaire_utils.get_questionnaire_experiment_fields(questionnaire_id)
                     for language in questionnaire_language['language_list']:
@@ -1534,9 +1520,7 @@ class ExportExecution:
                     questionnaire_header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
                     participant_data_header = self.get_input_data('participants')['data_list'][0]
                     header = self.build_header_questionnaire_per_participant(
-                        participant_data_header,
-                        questionnaire_header[0:len(questionnaire_header)-1]
-                    )
+                        participant_data_header, questionnaire_header[0:len(questionnaire_header) - 1])
 
                     # select language list
                     questionnaire_language = self.get_input_data('questionnaire_language')[str(questionnaire_id)]
@@ -1550,12 +1534,11 @@ class ExportExecution:
                     for language in language_list:
                         export_filename = '%s_%s_%s.%s' \
                                           % ('Responses', str(questionnaire_code), language, filesformat_type)
-
-                        participant_rows = self.get_per_participant_data(participant_code, questionnaire_code)[
-                            language][0]
+                        participant_rows = \
+                            self.get_per_participant_data(participant_code, questionnaire_code)[language][0]
                         per_participant_rows = [header, participant_rows]
 
-                        # path ex. NES_EXPORT/Per_participant/Participant_P123/QCode_Title
+                        # Path ex. NES_EXPORT/Per_participant/Participant_P123/QCode_Title
                         # /Responses_Q123_aaa.csv
                         complete_filename = path.join(path_per_questionnaire, export_filename)
 
@@ -1621,7 +1604,7 @@ class ExportExecution:
                                     language_list = questionnaire_language['language_list']
                                 else:
                                     language_list = [questionnaire_language['output_language']]
-                                # create questionnaire directory
+                                # Create questionnaire directory
                                 path_questionnaire = '%s_%s' % (str(questionnaire_code), title)
                                 # /NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
                                 error_msg, questionnaire_path_directory = create_directory(participant_path,
@@ -1633,27 +1616,22 @@ class ExportExecution:
                                 export_directory = path.join(export_participant_directory, path_questionnaire)
 
                                 for language in language_list:
-                                    export_filename = '%s_%s_%s.%s' % \
-                                        (questionnaire['prefix_filename_responses'],
-                                         str(questionnaire_code), language, filesformat_type)
+                                    export_filename = '%s_%s_%s.%s' % (
+                                        questionnaire['prefix_filename_responses'],
+                                        str(questionnaire_code), language, filesformat_type)
 
-                                    # add participant personal data header
+                                    # Add participant personal data header
                                     questionnaire_header = \
-                                        self.questionnaire_utils.get_header_questionnaire(
-                                            questionnaire_id
-                                        )
-                                    participant_data_header = \
-                                        self.get_input_data('participants')['data_list'][0]
-                                    header = \
-                                        self.build_header_questionnaire_per_participant(
+                                        self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
+                                    participant_data_header = self.get_input_data('participants')['data_list'][0]
+                                    header = self.build_header_questionnaire_per_participant(
                                             participant_data_header,
-                                            questionnaire_header[0:len(questionnaire_header) - 1]
-                                        )
+                                            questionnaire_header[0:len(questionnaire_header) - 1])
 
-                                    per_participant_rows = self.per_participant_data[participant_code][
-                                        questionnaire_code][language]
+                                    per_participant_rows = \
+                                        self.per_participant_data[participant_code][questionnaire_code][language]
                                     per_participant_rows.insert(0, header)
-                                    # path ex. NES_EXPORT/Participant_data/Per_participant/Q123_title
+                                    # Path ex. NES_EXPORT/Participant_data/Per_participant/Q123_title
                                     complete_filename = path.join(questionnaire_path_directory, export_filename)
 
                                     save_to_csv(complete_filename, per_participant_rows, filesformat_type)
@@ -1669,21 +1647,21 @@ class ExportExecution:
         for group_id in self.per_group_data:
             header_saved = False
             participant_list = self.per_group_data[group_id]['data_per_participant']
-            # participant data
+            # Participant data
             for participant_code in participant_list:
                 prefix_filename_participant = 'Participant_'
-                # ex. Participant_P123
+                # Ex. Participant_P123
                 participant_name = prefix_filename_participant + str(participant_code)
                 participant_data_directory = self.per_group_data[group_id]['group']['participant_data_directory']
-                # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                 path_per_participant = path.join(participant_data_directory, participant_name)
 
-                # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                 participant_data_export_directory = self.per_group_data[group_id]['group'][
                     'participant_data_export_directory']
                 participant_export_directory = path.join(participant_data_export_directory, participant_name)
                 if 'token_list' in participant_list[participant_code] and self.get_input_data('export_per_participant'):
-                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
@@ -1692,20 +1670,20 @@ class ExportExecution:
                     for token_data in participant_list[participant_code]['token_list']:
                         questionnaire_code = token_data['questionnaire_code']
                         questionnaire_id = token_data['questionnaire_id']
-                        questionnaire_title = self.get_input_data('questionnaires_from_experiments')[group_id][
-                            str(questionnaire_id)]['questionnaire_name']
+                        questionnaire_title = self.get_input_data(
+                            'questionnaires_from_experiments')[group_id][str(questionnaire_id)]['questionnaire_name']
                         # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         error_msg, directory_step_participant = create_directory(
-                                path_per_participant, token_data['directory_step_name'])
+                            path_per_participant, token_data['directory_step_name'])
                         if error_msg != '':
                             return error_msg
 
-                        # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
+                        # Ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         step_participant_export_directory = path.join(
                             participant_export_directory,
                             token_data['directory_step_name']
                         )
-                        # select questionnaire language
+                        # Select questionnaire language
                         questionnaire_language = self.get_input_data('questionnaire_language')[str(questionnaire_id)]
 
                         filesformat_type = self.get_input_data('filesformat_type')
@@ -1719,34 +1697,30 @@ class ExportExecution:
                             export_filename = '%s_%s_%s.%s' % (str(questionnaire_code), slugify(questionnaire_title),
                                                                language, filesformat_type)
 
-                            # path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/\
+                            # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/\
                             # Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
                             complete_filename = path.join(directory_step_participant, export_filename)
 
                             export_rows_participants = self.get_participant_row_data(token_data['subject_code'])
 
-                            # questionnaire response by participant
+                            # Questionnaire response by participant
                             token_id = token_data['token_id']
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
 
                             per_participant_rows = self.merge_questionnaire_answer_list_per_participant(
-                                export_rows_participants[1], answer_list[1: len(answer_list)]
-                            )
+                                export_rows_participants[1], answer_list[1: len(answer_list)])
 
-                            header = \
-                                self.build_header_questionnaire_per_participant(
-                                    export_rows_participants[0],
-                                    answer_list[0]
-                                )
+                            header = self.build_header_questionnaire_per_participant(
+                                export_rows_participants[0], answer_list[0])
                             per_participant_rows.insert(0, header)
 
                             save_to_csv(complete_filename, per_participant_rows, filesformat_type)
 
                             self.files_to_zip_list.append([complete_filename, step_participant_export_directory])
 
-                # for component_list
+                # For component_list
                 if 'eeg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
@@ -1807,32 +1781,42 @@ class ExportExecution:
                             sensors_positions_image = eeg_data['sensor_filename']
                             if sensors_positions_image:
                                 sensor_position_filename = '%s.png' % 'sensor_position'
-
                                 complete_sensor_position_filename = path.join(
                                     path_per_eeg_data, sensor_position_filename)
 
                                 with open(sensors_positions_image, 'rb') as f:
                                     data = f.read()
-
                                 with open(complete_sensor_position_filename, 'wb') as f:
                                     f.write(data)
 
-                                self.files_to_zip_list.append([complete_sensor_position_filename,
-                                                               export_eeg_data_directory])
+                                self.files_to_zip_list.append(
+                                    [complete_sensor_position_filename, export_eeg_data_directory])
 
                             for eeg_file in eeg_data['eeg_file_list']:
                                 path_eeg_data_file = str(eeg_file.file.file)
 
-                                eeg_data_filename = eeg_file.file.name.split('/')[-1]
+                                # eeg_data_filename = eeg_file.file.name.split('/')[-1]
+                                eeg_data_filename = path.basename(eeg_file.file.name)
+
                                 complete_eeg_data_filename = path.join(path_per_eeg_data, eeg_data_filename)
+
+                                # For datapackage resources
+                                unique_name = slugify(eeg_data_filename)
+                                file_format_nes_code = eeg_file.eeg_data.file_format.nes_code
+                                datapackage_resource = {
+                                    'name': unique_name, 'title': unique_name,
+                                    'path': path.join(export_eeg_data_directory, eeg_data_filename),
+                                    'description': 'Data Collection (format: %s)' % file_format_nes_code
+                                }
 
                                 with open(path_eeg_data_file, 'rb') as f:
                                     data = f.read()
-
                                 with open(complete_eeg_data_filename, 'wb') as f:
                                     f.write(data)
 
-                                self.files_to_zip_list.append([complete_eeg_data_filename, export_eeg_data_directory])
+                                self.files_to_zip_list.append([
+                                    complete_eeg_data_filename, export_eeg_data_directory, datapackage_resource
+                                ])
 
                                 # v1.5
                                 # can export to nwb?
@@ -1856,8 +1840,8 @@ class ExportExecution:
                                                                                  process_requisition, req,
                                                                                  complete_nwb_file_name)
                                         if complete_nwb_file_name:
-                                            self.files_to_zip_list.append([complete_nwb_file_name,
-                                                                           export_eeg_data_directory])
+                                            self.files_to_zip_list.append(
+                                                [complete_nwb_file_name, export_eeg_data_directory])
                                         else:
                                             return error_msg
 
@@ -1882,34 +1866,32 @@ class ExportExecution:
                                 if error_msg != '':
                                     return error_msg
 
-                            # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_emg_step_directory = path.join(participant_export_directory, directory_step_name)
 
-                            # to create EMGData directory
+                            # To create EMGData directory
                             directory_data_name = emg_data['emg_data_directory_name']
                             path_per_emg_data = path.join(path_per_emg_participant, directory_data_name)
                             if not path.exists(path_per_emg_data):
-                                # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/EMGDATA_#
                                 error_msg, path_per_emg_data = create_directory(path_per_emg_participant,
                                                                                 directory_data_name)
                                 if error_msg != '':
                                     return error_msg
 
-                            # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             # /EMGData_#
                             export_emg_data_directory = path.join(export_emg_step_directory, directory_data_name)
 
-                            url_segment1 = path_per_emg_data.rpartition(
-                                'export')
+                            url_segment1 = path_per_emg_data.rpartition('export')
                             url1 = url_segment1[0]
 
-                            url_parcial = emg_data['emg_file_list'][0][
-                                'file_name']
-                            url_segment2=url_parcial.rpartition('media/')
+                            url_parcial = emg_data['emg_file_list'][0]['file_name']
+                            url_segment2 = url_parcial.rpartition('media/')
                             url2 = url_segment2[2]
 
-                            url = url1+url2
+                            url = url1 + url2
 
                             for emg_file in emg_data['emg_file_list']:
                                 path_emg_data_file = emg_file['file_name']
@@ -1918,7 +1900,7 @@ class ExportExecution:
                                 complete_emg_data_filename = path.join(path_per_emg_data, emg_data_filename)
 
                                 with open(url, 'rb') as f:
-                                        data = f.read()
+                                    data = f.read()
                                 with open(complete_emg_data_filename, 'wb') as f:
                                     f.write(data)
 
@@ -2085,8 +2067,8 @@ class ExportExecution:
                                     with open(complete_goalkeeper_game_filename, 'wb') as f:
                                         f.write(data)
 
-                                    self.files_to_zip_list.append([complete_goalkeeper_game_filename,
-                                                                   export_goalkeeper_data_directory])
+                                    self.files_to_zip_list.append(
+                                        [complete_goalkeeper_game_filename, export_goalkeeper_data_directory])
 
                                     if 'tsv' in self.get_input_data('filesformat_type'):
                                         export_filename = '%s.tsv' % file_name_digital  # '.tsv'
@@ -2096,7 +2078,7 @@ class ExportExecution:
                                     complete_digital_filename = path.join(goalkeeper_game_directory, export_filename)
 
                                     with open(complete_goalkeeper_game_filename, 'r') as infile, \
-                                        open(complete_digital_filename, 'a') as outfile:
+                                            open(complete_digital_filename, 'a') as outfile:
                                         header = next(infile)
 
                                         if not header_saved:
@@ -2104,7 +2086,7 @@ class ExportExecution:
                                             header_saved = True
 
                                         for line in infile:
-                                          outfile.write(line)
+                                            outfile.write(line)
 
                     goalkeeper_game_data_export_directory = self.per_group_data[group_id]['group'][
                         'goalkeeper_game_data_export_directory']
@@ -2131,9 +2113,8 @@ class ExportExecution:
                         )
                         if not path.exists(
                                 path_generic_data_collection_data):
-                            error_msg, path_generic_data_collection_data\
-                                = create_directory(path_per_participant,
-                                                   directory_step_name)
+                            error_msg, path_generic_data_collection_data = create_directory(
+                                path_per_participant, directory_step_name)
                             if error_msg:
                                 return error_msg
                         export_generic_data_directory = path.join(
@@ -2381,7 +2362,7 @@ class ExportExecution:
         return export_rows_participants
 
     def get_participant_data_per_code(self, subject_code, questionnaire_response_fields):
-        db_data =[]
+        db_data = []
         for record in self.get_input_data('participants')['data_list']:
             if record[-1] == subject_code:
                 db_data = record
@@ -2552,7 +2533,7 @@ class ExportExecution:
                 }
             }
         ])
-        
+
         # Process of filename for description of each group
         for group_id in self.per_group_data:
             group = get_object_or_404(Group, pk=group_id)
@@ -2572,7 +2553,7 @@ class ExportExecution:
                     export_group_directory = self.per_group_data[group_id]['group']['export_directory']
                     # path ex. NES_EXPORT/Experiment_data/Group_xxx/Experimental_protocol
                     error_msg, directory_experimental_protocol = create_directory(
-                        group_file_directory,'Experimental_protocol')
+                        group_file_directory, 'Experimental_protocol')
                     if error_msg != '':
                         return error_msg
 
@@ -2707,8 +2688,8 @@ class ExportExecution:
                             'context_tree_default_id'])
 
                     if context_tree.setting_file.name:
-                        context_tree_filename = path.join(settings.BASE_DIR, 'media') + '/' +\
-                                                context_tree.setting_file.name
+                        context_tree_filename = path.join(
+                            settings.BASE_DIR, 'media') + '/' + context_tree.setting_file.name
                         complete_context_tree_filename = path.join(directory_experimental_protocol,
                                                                    context_tree.setting_file.name.split('/')[-1])
                         with open(context_tree_filename, 'rb') as f:
@@ -2716,46 +2697,44 @@ class ExportExecution:
                         with open(complete_context_tree_filename, 'wb') as f:
                             f.write(data)
 
-                        self.files_to_zip_list.append([complete_context_tree_filename,
-                                                       export_directory_experimental_protocol])
+                        self.files_to_zip_list.append(
+                            [complete_context_tree_filename, export_directory_experimental_protocol])
 
                 for component in tree['list_of_component_configuration']:
-                    for additionalfile in ComponentAdditionalFile.objects.filter(component=component['component'][
-                        'component']):
+                    for additionalfile in ComponentAdditionalFile.objects.filter(
+                            component=component['component']['component']):
                         step_number = str(component['component']['numeration'])
 
                         step_name = additionalfile.component.component_type.upper()
 
-                        path_additional_data = path.join(group_file_directory,'Experimental_protocol','Step_'+
-                                                         step_number+'_'+step_name,'AdditionalData')
+                        path_additional_data = path.join(
+                            group_file_directory, 'Experimental_protocol',
+                            'Step_' + step_number + '_' + step_name, 'AdditionalData')
                         if not path.exists(path_additional_data):
                             error_msg, directory_additional_data = create_directory(
-                                group_file_directory, path.join(
-                                    'Experimental_protocol',
-                                    'Step_' + step_number + '_' + step_name,
-                                    'AdditionalData'))
+                                group_file_directory,
+                                path.join(
+                                    'Experimental_protocol', 'Step_' + step_number + '_' + step_name, 'AdditionalData'))
                             if error_msg != '':
                                 return error_msg
 
                         export_directory_additional_data = path.join(
-                            export_group_directory, 'Experimental_protocol',
-                            'Step_' + step_number + '_' + step_name,
+                            export_group_directory, 'Experimental_protocol', 'Step_' + step_number + '_' + step_name,
                             'AdditionalData')
                         additional_data_file_name = additionalfile.file.name.split('/')[-1]
                         additional_data_data_file_name = path.join(settings.MEDIA_ROOT) + '/' + additionalfile.file.name
 
-                        complete_additional_data_filename = path.join(path_additional_data,additional_data_file_name)
+                        complete_additional_data_filename = path.join(path_additional_data, additional_data_file_name)
 
                         with open(additional_data_data_file_name, 'rb') as f:
                             data = f.read()
-
                         with open(complete_additional_data_filename, 'wb') as f:
                             f.write(data)
 
-                        self.files_to_zip_list.append([complete_additional_data_filename,
-                                                       export_directory_additional_data])
+                        self.files_to_zip_list.append(
+                            [complete_additional_data_filename, export_directory_additional_data])
 
-                    # process participant/diagnosis per Participant of each group
+                # Process participant/diagnosis per Participant of each group
                 participant_group_list = []
                 subject_of_group = SubjectOfGroup.objects.filter(group=group)
                 for subject in subject_of_group:
@@ -2777,13 +2756,12 @@ class ExportExecution:
                             export_directory_stimulus_data = path.join(
                                 export_group_directory, stimulus_data['directory_step_name'])
                             stimulus_file_name = stimulus_data['stimulus_file'].split('/')[-1]
-                            stimulus_data_file_name = path.join(settings.MEDIA_ROOT) + '/' +\
-                                                      stimulus_data['stimulus_file'] # data['stimulus_file']
+                            stimulus_data_file_name = path.join(settings.MEDIA_ROOT) + '/' + \
+                                                      stimulus_data['stimulus_file']  # data['stimulus_file']
                             complete_stimulus_data_filename = path.join(path_stimulus_data, stimulus_file_name)
 
                             with open(stimulus_data_file_name, 'rb') as f:
                                 data = f.read()
-
                             with open(complete_stimulus_data_filename, 'wb') as f:
                                 f.write(data)
 
@@ -2904,7 +2882,7 @@ class ExportExecution:
                     for language in language_list:
                         # read all data for questionnaire_id from LimeSurvey
                         responses_string1 = questionnaire_lime_survey.get_responses(
-                                questionnaire_id, language, response_type[0])
+                            questionnaire_id, language, response_type[0])
                         # all the answer from the questionnaire_id in csv format
                         fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
@@ -2927,7 +2905,7 @@ class ExportExecution:
                             # need types of questions to make replacement just
                             # below
                             error, question_list = QuestionnaireUtils.get_question_list(
-                                    questionnaire_lime_survey, questionnaire_id, language)
+                                questionnaire_lime_survey, questionnaire_id, language)
                             replace_multiple_question_answers(fill_list2, question_list)
                         else:
                             fill_list2 = fill_list1
@@ -3233,13 +3211,13 @@ class ExportExecution:
                             self.include_participant_per_questionnaire(token_id, survey_code)
 
                 headers, fields = self.questionnaire_utils.redefine_header_and_fields(
-                        questionnaire_id, header_filtered, fields)
+                    questionnaire_id, header_filtered, fields)
 
             # build header
             participant_data_header = self.get_input_data('participants')['data_list'][0]
 
             header = self.build_header_questionnaire_per_participant(
-                participant_data_header, headers[0:len(headers)-1])
+                participant_data_header, headers[0:len(headers) - 1])
 
             export_rows.insert(0, header)
         return export_rows
@@ -3260,7 +3238,8 @@ class ExportExecution:
             'socialdemographicdata__profession': SocialDemographicData._meta.get_field('profession').__class__,
             'socialdemographicdata__social_class': SocialDemographicData._meta.get_field('social_class').__class__,
             'socialdemographicdata__occupation': SocialDemographicData._meta.get_field('occupation').__class__,
-            'socialdemographicdata__benefit_government': SocialDemographicData._meta.get_field('benefit_government').__class__,
+            'socialdemographicdata__benefit_government': SocialDemographicData._meta.get_field(
+                'benefit_government').__class__,
             'socialdemographicdata__religion__name': Religion._meta.get_field('name').__class__,
             'socialdemographicdata__flesh_tone__name': FleshTone._meta.get_field('name').__class__,
             'socialdemographicdata__citizenship': SocialDemographicData._meta.get_field('citizenship').__class__,
@@ -3426,7 +3405,7 @@ def get_eeg_setting_description(eeg_setting_id):
                     'electrode_mode': eeg_surface_placement.electrode_mode,
                     'electrode_shape': eeg_surface_placement.electrode_shape.name,
                     'conduction_type': eeg_surface_placement.conduction_type,
-                    }
+                }
 
             if electrode_model_attributes['electrode_type'] == 'intramuscular' and hasattr(
                     eeg_electrode_position_setting.electrode_model, 'intramuscularelectrode'):
@@ -3441,7 +3420,7 @@ def get_eeg_setting_description(eeg_setting_id):
             if electrode_model_attributes['electrode_type'] == 'needle' and hasattr(
                     eeg_electrode_position_setting.electrode_model, 'needleelectrode'):
                 eeg_needle_placement = get_object_or_404(NeedleElectrode,
-                                                          pk=eeg_electrode_position_setting.electrode_model.id)
+                                                         pk=eeg_electrode_position_setting.electrode_model.id)
                 eeg_needle_placement_attributes = vars(eeg_needle_placement)
                 eeg_needle_placement_attributes = handling_values(eeg_needle_placement_attributes)
                 electrode_type_description = {
@@ -3705,9 +3684,9 @@ def get_emg_setting_description(emg_setting_id):
                 emg_intramuscular_placement_attributes = handling_values(emg_intramuscular_placement_attributes)
                 emg_electrode_setting_dict['emg_electrode_placement_setting']['electrode_placement'][
                     'placement_type_description'] = {
-                        'method_of_insertion': emg_intramuscular_placement_attributes['method_of_insertion'],
-                        'depth_of_insertion': emg_intramuscular_placement_attributes['depth_of_insertion'],
-                    }
+                    'method_of_insertion': emg_intramuscular_placement_attributes['method_of_insertion'],
+                    'depth_of_insertion': emg_intramuscular_placement_attributes['depth_of_insertion'],
+                }
 
             if emg_electrode_placement.placement_type == 'needle':
                 emg_needle_placement = get_object_or_404(EMGNeedlePlacement, pk=emg_electrode_placement.id)
@@ -3715,8 +3694,8 @@ def get_emg_setting_description(emg_setting_id):
                 emg_needle_placement_attributes = handling_values(emg_needle_placement_attributes)
                 emg_electrode_setting_dict['emg_electrode_placement_setting']['electrode_placement'][
                     'placement_type_description'] = {
-                        'depth_of_insertion': emg_needle_placement_attributes['depth_of_insertion'],
-                    }
+                    'depth_of_insertion': emg_needle_placement_attributes['depth_of_insertion'],
+                }
 
             if emg_electrode_placement.placement_type == 'surface':
                 emg_surface_placement = get_object_or_404(EMGSurfacePlacement, pk=emg_electrode_placement.id)
@@ -3724,12 +3703,12 @@ def get_emg_setting_description(emg_setting_id):
                 emg_surface_placement_attributes = handling_values(emg_surface_placement_attributes)
                 emg_electrode_setting_dict['emg_electrode_placement_setting']['electrode_placement'][
                     'placement_type_description'] = {
-                        'start_posture': emg_surface_placement_attributes['start_posture'],
-                        'orientation': emg_surface_placement_attributes['orientation'],
-                        'fixation_on_the_skin': emg_surface_placement_attributes['fixation_on_the_skin'],
-                        'reference_electrode': emg_surface_placement_attributes['reference_electrode'],
-                        'clinical_test': emg_surface_placement_attributes['clinical_test'],
-                    }
+                    'start_posture': emg_surface_placement_attributes['start_posture'],
+                    'orientation': emg_surface_placement_attributes['orientation'],
+                    'fixation_on_the_skin': emg_surface_placement_attributes['fixation_on_the_skin'],
+                    'reference_electrode': emg_surface_placement_attributes['reference_electrode'],
+                    'clinical_test': emg_surface_placement_attributes['clinical_test'],
+                }
 
         description['emg_electrode_setting_list'].append(emg_electrode_setting_dict)
 
@@ -3743,7 +3722,6 @@ def get_tms_data_description(tms_data_id):
     tms_data_attributes = vars(tms_data)
     tms_data_attributes = handling_values(tms_data_attributes)
     coil_orientation = tms_data.coil_orientation
-    coil_orientation_name = ''
     if coil_orientation:
         coil_orientation_name = coil_orientation.name
         tms_description['stimulation_description'] = {
@@ -3824,11 +3802,7 @@ def get_tms_data_description(tms_data_id):
 
 def get_tms_setting_description(tms_setting_id):
     tms_setting = get_object_or_404(TMSSetting, pk=tms_setting_id)
-
-    tms_setting_description = {
-        'name': tms_setting.name,
-        'description': tms_setting.description,
-    }
+    tms_setting_description = {'name': tms_setting.name, 'description': tms_setting.description}
 
     return tms_setting_description
 
@@ -3836,7 +3810,9 @@ def get_tms_setting_description(tms_setting_id):
 def get_context_tree_description(context_tree_id):
     context_tree = get_object_or_404(ContextTree, pk=context_tree_id)
     if context_tree:
-        context_tree_description = {'name': context_tree.name, 'description': context_tree.description,
-                                    'setting_text': context_tree.setting_text}
+        context_tree_description = {
+            'name': context_tree.name, 'description': context_tree.description,
+            'setting_text': context_tree.setting_text
+        }
 
     return context_tree_description

@@ -1134,6 +1134,7 @@ def get_data_file_dir(instance, filename):
                 if instance.digital_game_phase_data.data_configuration_tree else 0),
             'digital_game_phase')
 
+    # TODO (NES-987): see backlog
     # elif isinstance(instance, HotSpot):
     #     directory = path.join(
     #         'data_collection_files',

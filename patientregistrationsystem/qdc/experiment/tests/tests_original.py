@@ -582,7 +582,9 @@ class ObjectsFactory(object):
     def create_file_format():
         faker = Factory.create()
         while True:  # nes_code is unique
-            nes_code = str(faker.unix_time())
+            # Change this for changes in real FileFormat objects
+            # Mading this way because this data is loaded on NES instalation
+            nes_code = random.choice(['txt', 'MNE-RawFromBrainVision', 'other', 'MNE-NEO-RawBinarySignalIO'])
             if not FileFormat.objects.filter(nes_code=nes_code).first():
                 break
 
@@ -637,7 +639,6 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_data(data_conf_tree, subj_of_group, eeg_set, eeg_cap_size=None):
-
         faker = Factory.create()
 
         file_format = ObjectsFactory.create_file_format()
