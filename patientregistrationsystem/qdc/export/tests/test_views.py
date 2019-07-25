@@ -17,9 +17,8 @@ from django.template.defaultfilters import slugify
 from django.test import override_settings
 
 from experiment.models import Component, ComponentConfiguration, \
-    ComponentAdditionalFile, BrainAreaSystem, BrainArea,\
-    TMSLocalizationSystem, HotSpot, TMSData, \
-    CoilOrientation, DirectionOfTheInducedCurrent
+    ComponentAdditionalFile, BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
+    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
@@ -1630,15 +1629,16 @@ class ExportFrictionlessData(ExportTestCase):
 
     def _create_sample_export_data(self):
         # Create eeg component (could be other component type or more than one component)
-        eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
-        eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': eeg_set})
+        self.eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
+        eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': self.eeg_set})
 
         # Include eeg component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(self.root_component, eeg_comp)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        # self.dct to be used in other test
+        self.dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' eeg file
-        eegdata = ObjectsFactory.create_eeg_data(dct, self.subject_of_group, eeg_set)
+        eegdata = ObjectsFactory.create_eeg_data(self.dct, self.subject_of_group, self.eeg_set)
         ObjectsFactory.create_eeg_file(eegdata)
 
     def _create_tms_export_data(self, temp_dir):
@@ -2099,6 +2099,40 @@ class ExportFrictionlessData(ExportTestCase):
             'format': extension, 'mediatype': 'application/json'
         }
         self.assertIn(eeg_setting_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_eeg_data_collection_files(self):
+        self._create_sample_export_data()
+        # Adds one more eeg data collection
+        eegdata = ObjectsFactory.create_eeg_data(self.dct, self.subject_of_group, self.eeg_set)
+        ObjectsFactory.create_eeg_file(eegdata)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        i = 1  # For EEGData_<str(i)> subdirs
+        for eeg_file in EEGFile.objects.all().order_by('id'):
+            filename = os.path.basename(eeg_file.file.name)
+            unique_name = slugify(filename)
+            file_format_nes_code = eeg_file.eeg_data.file_format.nes_code
+            eeg_file_resource = {
+                'name': unique_name, 'title': unique_name,
+                'path': os.path.join(
+                    'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
+                    'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_' + str(i), filename),
+                'description': 'Data Collection (format: %s)' % file_format_nes_code
+            }
+            i += 1
+
+            self.assertIn(eeg_file_resource, json_data['resources'])
 
         shutil.rmtree(temp_dir)
 
