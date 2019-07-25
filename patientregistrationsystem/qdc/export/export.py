@@ -367,7 +367,7 @@ class ExportExecution:
         for group_id in group_list:
             group = get_object_or_404(Group, pk=group_id)
             subjects_of_group = SubjectOfGroup.objects.filter(group=group)
-            title = '_'.join(slugify(group.title).split('-'))
+            title = slugify(group.title).replace('-', '_')
 
             description = group.description  # TODO: code bloat
             if group_id not in self.per_group_data:
@@ -588,7 +588,7 @@ class ExportExecution:
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
 
-                                if 'eeg_data_list' not in
+                                if 'eeg_data_list' not in \
                                         self.per_group_data[group_id]['data_per_participant'][subject_code]:
                                     self.per_group_data[group_id]['data_per_participant'][
                                         subject_code]['eeg_data_list'] = []
