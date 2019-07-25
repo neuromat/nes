@@ -1966,7 +1966,7 @@ class ExportFrictionlessData(ExportTestCase):
         test_dict = {
             # TODO (NES-987): Changes 'Participants.csv' to a constant in code
             'name': 'Participants', 'title': 'Participants',
-            'path': 'data/Group_' + self.group.title + 'Participants.csv',
+            'path': 'data/Group_' + slugify(self.group.title).replace('-', '_') + 'Participants.csv',
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
         self.assertTrue(
@@ -2022,8 +2022,8 @@ class ExportFrictionlessData(ExportTestCase):
         protocol_image_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
-                PROTOCOL_IMAGE_FILENAME),
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', PROTOCOL_IMAGE_FILENAME),
             'format': extension, 'mediatype': 'image/png'
         }
         self.assertIn(protocol_image_resource, json_data['resources'])
@@ -2046,8 +2046,8 @@ class ExportFrictionlessData(ExportTestCase):
         protocol_description_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
-                PROTOCOL_DESCRIPTION_FILENAME),
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', PROTOCOL_DESCRIPTION_FILENAME),
             'format': extension, 'mediatype': 'text/txt'
         }
         self.assertIn(protocol_description_resource, json_data['resources'])
@@ -2070,8 +2070,8 @@ class ExportFrictionlessData(ExportTestCase):
         eeg_default_setting_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
-                EEG_DEFAULT_SETTING_FILENAME),
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', EEG_DEFAULT_SETTING_FILENAME),
             'format': extension, 'mediatype': 'application/json'
         }
         self.assertIn(eeg_default_setting_resource, json_data['resources'])
@@ -2094,8 +2094,8 @@ class ExportFrictionlessData(ExportTestCase):
         eeg_setting_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
-                'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_1', EEG_SETTING_FILENAME),
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_1', EEG_SETTING_FILENAME),
             'format': extension, 'mediatype': 'application/json'
         }
         self.assertIn(eeg_setting_resource, json_data['resources'])
@@ -2126,8 +2126,8 @@ class ExportFrictionlessData(ExportTestCase):
             eeg_file_resource = {
                 'name': unique_name, 'title': unique_name,
                 'path': os.path.join(
-                    'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
-                    'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_' + str(i), filename),
+                    'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                    'Per_participant', 'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_' + str(i), filename),
                 'description': 'Data Collection (format: %s)' % file_format_nes_code
             }
             i += 1
@@ -2161,8 +2161,8 @@ class ExportFrictionlessData(ExportTestCase):
         tms_default_setting_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
-                TMS_DEFAULT_SETTING_FILENAME),
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', TMS_DEFAULT_SETTING_FILENAME),
             'format': extension, 'mediatype': 'application/json'
         }
         self.assertIn(tms_default_setting_resource, json_data['resources'])
@@ -2188,7 +2188,7 @@ class ExportFrictionlessData(ExportTestCase):
         tms_data_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Per_participant',
                 'Participant_' + self.patient.code, 'Step_1_TMS', TMS_DATA_FILENAME),
             'format': extension, 'mediatype': 'application/json'
         }
@@ -2198,7 +2198,7 @@ class ExportFrictionlessData(ExportTestCase):
         hotspot_map_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),'Per_participant',
                                            'Participant_' + self.patient.code, 'Step_1_TMS', HOTSPOT_MAP),
             'format': extension, 'mediatype': 'image/png'
         }
@@ -2227,7 +2227,8 @@ class ExportFrictionlessData(ExportTestCase):
         emg_default_setting_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol', EMG_DEFAULT_SETTING),
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', EMG_DEFAULT_SETTING),
             'format': extension, 'mediatype': 'application/json'
         }
         self.assertIn(emg_default_setting_resource, json_data['resources'])
@@ -2254,7 +2255,7 @@ class ExportFrictionlessData(ExportTestCase):
         emg_setting_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Per_participant',
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Per_participant',
                 'Participant_' + self.patient.code, 'Step_1_EMG', 'EMGData_1', EMG_SETTING_FILENAME),
             'format': extension, 'mediatype': 'application/json'
         }
@@ -2293,8 +2294,8 @@ class ExportFrictionlessData(ExportTestCase):
         context_tree_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + self.group.title, 'Experimental_protocol',
-                CONTEXT_TREE_DEFAULT),
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', CONTEXT_TREE_DEFAULT),
             'format': extension, 'mediatype': 'application/json'
         }
         self.assertIn(context_tree_resource, json_data['resources'])
