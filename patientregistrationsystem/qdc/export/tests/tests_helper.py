@@ -34,10 +34,9 @@ class ExportTestCase(TestCase):
         self.subject_of_group = ObjectsFactory.create_subject_of_group(self.group, subject)
 
     def append_session_variable(self, key, value):
-        """
-        See:
-        # https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
-        # for the form that it is done
+        """See:
+        https://docs.djangoproject.com/en/1.8/topics/testing/tools/#django.test.Client.session
+        for the form that it is done
 
         :param key: key to be appended to session
         :param value: list of group ids (strings) as the value of the
