@@ -1167,8 +1167,7 @@ class SubjectOfGroup(models.Model):
 
 class DataConfigurationTree(models.Model):
     component_configuration = models.ForeignKey(
-        ComponentConfiguration, on_delete=models.PROTECT
-    )
+        ComponentConfiguration, on_delete=models.PROTECT)
     parent = models.ForeignKey('self', null=True, related_name='children')
     code = models.IntegerField(null=True, blank=True)
 
@@ -1411,8 +1410,8 @@ class DigitalGamePhaseFile(models.Model):
 
 
 class GenericDataCollectionFile(models.Model):
-    generic_data_collection_data = models.ForeignKey(GenericDataCollectionData,
-                                                     related_name='generic_data_collection_files')
+    generic_data_collection_data = models.ForeignKey(
+        GenericDataCollectionData, related_name='generic_data_collection_files')
     file = models.FileField(upload_to=get_data_file_dir)
 
 
