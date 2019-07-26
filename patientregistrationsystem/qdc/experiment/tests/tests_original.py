@@ -628,9 +628,7 @@ class ObjectsFactory(object):
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
-            gdcf = GenericDataCollectionFile.objects.create(
-                generic_data_collection_data=gdc_data
-            )
+            gdcf = GenericDataCollectionFile.objects.create(generic_data_collection_data=gdc_data)
             with File(open(bin_file.name, 'rb')) as f:
                 gdcf.file.save('file.bin', f)
             gdcf.save()
@@ -826,8 +824,7 @@ class ObjectsFactory(object):
         ObjectsFactory.create_component_configuration(rootcomponent, component12)
         information_type = ObjectsFactory.create_information_type()
         component13 = ObjectsFactory.create_component(
-            experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type}
-        )
+            experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type})
         ObjectsFactory.create_component_configuration(rootcomponent, component13)
 
     @staticmethod

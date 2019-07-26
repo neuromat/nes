@@ -773,12 +773,10 @@ class ExportDataCollectionTest(ExportTestCase):
         # Create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(
-            self.experiment, Component.GENERIC_DATA_COLLECTION,
-            kwargs={'it': it})
+            self.experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': it})
 
         # Include gdc component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, gdc)
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, gdc)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' generic data collection file
@@ -2308,7 +2306,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('license', '0')
 
         data = self._set_post_data()
-        # Change POST data to export EMG data
+        # Change POST data to export Goalkeeper game data
         data.pop('per_eeg_raw_data')
         data['per_goalkeeper_game_data'] = ['on']
 
@@ -2348,7 +2346,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('license', '0')
 
         data = self._set_post_data()
-        # Change POST data to export EMG data
+        # Change POST data to export Stimulus media file
         data.pop('per_eeg_raw_data')
         data['per_stimulus_data'] = ['on']
 
@@ -2369,6 +2367,52 @@ class ExportFrictionlessData(ExportTestCase):
         }
 
         self.assertIn(stimulus_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_generic_data_collection_file(self):
+        # Create generic data collection (gdc) component
+        it = ObjectsFactory.create_information_type()
+        gdc = ObjectsFactory.create_component(
+            self.experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': it})
+
+        # Include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, gdc)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' generic data collection file
+        gdc_data = ObjectsFactory.create_generic_data_collection_data(
+            dct, self.subject_of_group)
+        gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export Generic Data Collection data
+        data.pop('per_eeg_raw_data')
+        data['per_generic_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        filename = os.path.basename(gdcf.file.name)
+        unique_name = slugify(filename)
+        file_format_nes_code = gdcf.generic_data_collection_data.file_format.nes_code
+        gdc_resource = {
+            'name': unique_name, 'title': unique_name,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_GENERIC_DATA_COLLECTION',
+                'Generic_Data_Collection_1', filename),
+            'description': 'Data Collection (format: %s), information type: %s'
+                           % (file_format_nes_code, gdc.information_type.name)
+        }
+
+        self.assertIn(gdc_resource, json_data['resources'])
 
         shutil.rmtree(temp_dir)
 
