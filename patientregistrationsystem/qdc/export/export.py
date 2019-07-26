@@ -484,38 +484,33 @@ class ExportExecution:
             if group.experimental_protocol is not None:
                 if self.get_input_data('component_list')['per_additional_data']:
                     for subject_of_group in subjects_of_group:
-                        subject_step_data_query = \
-                            SubjectStepData.objects.filter(subject_of_group=subject_of_group,
-                                                           data_configuration_tree=None)
-                        data_collections = [
-                            {'component_configuration': None,
-                             'path': None,
-                             'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
-                             'additional_data_list': AdditionalData.objects.filter(
-                                 subject_of_group=subject_of_group, data_configuration_tree=None),
-                             }
-                        ]
+                        subject_step_data_query = SubjectStepData.objects.filter(
+                            subject_of_group=subject_of_group, data_configuration_tree=None)
+                        data_collections = [{
+                            'component_configuration': None,
+                            'path': None,
+                            'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
+                            'additional_data_list': AdditionalData.objects.filter(
+                                subject_of_group=subject_of_group, data_configuration_tree=None),
+                        }]
                         for additional_data_path in create_list_of_trees(group.experimental_protocol, None):
                             component_configuration = ComponentConfiguration.objects.get(pk=additional_data_path[-1][0])
-                            data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
-                                                                                      [item[0] for item in
-                                                                                       additional_data_path])
+                            data_configuration_tree_id = list_data_configuration_tree(
+                                component_configuration.id, [item[0] for item in additional_data_path])
 
                             additional_data_list = None
                             if data_configuration_tree_id:
-                                additional_data_list = \
-                                    AdditionalData.objects.filter(
+                                additional_data_list = AdditionalData.objects.filter(
                                         subject_of_group=subject_of_group,
                                         data_configuration_tree_id=data_configuration_tree_id)
 
-                            data_collections.append(
-                                {'component_configuration': component_configuration,
-                                 'path': path,
-                                 'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
-                                 'additional_data_list': additional_data_list,
-                                 'step_number': additional_data_path[-1][-1],
-                                 }
-                            )
+                            data_collections.append({
+                                'component_configuration': component_configuration,
+                                'path': path,
+                                'subject_step_data': subject_step_data_query[0] if subject_step_data_query else None,
+                                'additional_data_list': additional_data_list,
+                                'step_number': additional_data_path[-1][-1],
+                            })
 
                         for data in data_collections:
                             if data['additional_data_list']:
@@ -538,11 +533,13 @@ class ExportExecution:
                                         self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
 
                                     if 'additional_data_list' not in self.per_group_data[group_id][
-                                        'data_per_participant'][subject_code]:
+                                        'data_per_participant'
+                                    ][subject_code]:
                                         self.per_group_data[group_id]['data_per_participant'][subject_code][
                                             'additional_data_list'] = []
                                     if component_type not in self.per_group_data[group_id]['data_per_participant'][
-                                        subject_code]:
+                                        subject_code
+                                    ]:
                                         self.per_group_data[group_id]['data_per_participant'][subject_code][
                                             component_type] = {'data_index': 1}
                                     else:
@@ -552,7 +549,8 @@ class ExportExecution:
                                     index = str(self.per_group_data[group_id]['data_per_participant'][subject_code][
                                                     component_type]['data_index'])
                                     self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                        'additional_data_list'].append({
+                                        'additional_data_list'
+                                    ].append({
                                         'description': additional_data.description,
                                         'step_number': step_number,
                                         'component_type': component_type,
@@ -687,19 +685,21 @@ class ExportExecution:
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
                                 if 'tms_data_list' not in self.per_group_data[group_id]['data_per_participant'][
-                                    subject_code]:
+                                    subject_code
+                                ]:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code][
                                         'tms_data_list'] = []
 
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                    'tms_data_list'].append({
+                                    'tms_data_list'
+                                ].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
                                     'setting_id': tms_data.tms_setting_id,
                                     'tms_data_id': tms_data.id,
                                     'data_configuration_tree_id': data_configuration_tree_id,
-                                    'directory_step_name': 'Step_' + str(step_number) + '_' +
-                                                           component_step.component_type.upper()
+                                    'directory_step_name': 'Step_' + str(step_number) + '_'
+                                                           + component_step.component_type.upper()
                                 })
 
                 if self.get_input_data('component_list')['per_goalkeeper_game_data']:
@@ -748,7 +748,8 @@ class ExportExecution:
                                 index = str(self.per_group_data[group_id]['data_per_participant'][subject_code][
                                                 'data_index'])
                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                    'digital_game_data_list'].append({
+                                    'digital_game_data_list'
+                                ].append({
                                     'step_number': step_number,
                                     'step_identification': step_identification,
                                     'directory_step_name': 'Step_' + str(step_number) + '_' +
@@ -775,7 +776,7 @@ class ExportExecution:
                                 'step_identification': step_identification,
                                 'directory_step_name': 'Experimental_protocol/' + 'Step_' + str(step_number) + '_' +
                                                        component_step.component_type.upper(),
-                                'stimulus_file': stimulus_data.media_file.name
+                                'stimulus_file': stimulus_data
                             })
 
                 if self.get_input_data('component_list')['per_generic_data']:
@@ -1825,7 +1826,7 @@ class ExportExecution:
                                     complete_nwb_file_name = path.join(path_per_eeg_data, nwb_file_name)
                                     req = None
 
-                                    # was it open properly?
+                                    # Was it open properly?
                                     ok_opening = False
 
                                     if eeg_file.eeg_reading.file_format:
@@ -2752,7 +2753,7 @@ class ExportExecution:
                     stimulus_data_list = self.per_group_data[group_id]['stimulus_data']
                     for stimulus_data in stimulus_data_list:
                         if stimulus_data['stimulus_file']:
-                            # path ex. NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
+                            # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
                             path_stimulus_data = path.join(group_file_directory, stimulus_data['directory_step_name'])
                             if not path.exists(path_stimulus_data):
                                 error_msg, directory_stimulus_data = create_directory(
@@ -2760,21 +2761,32 @@ class ExportExecution:
                                 if error_msg != '':
                                     return error_msg
 
-                            # path ex. NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
+                            # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
                             export_directory_stimulus_data = path.join(
                                 export_group_directory, stimulus_data['directory_step_name'])
-                            stimulus_file_name = stimulus_data['stimulus_file'].split('/')[-1]
-                            stimulus_data_file_name = path.join(settings.MEDIA_ROOT) + '/' + \
-                                                      stimulus_data['stimulus_file']  # data['stimulus_file']
-                            complete_stimulus_data_filename = path.join(path_stimulus_data, stimulus_file_name)
+                            # stimulus_file_name = stimulus_data['stimulus_file'].split('/')[-1]
+                            path_stimulus_filename = path.join(
+                                settings.MEDIA_ROOT, stimulus_data['stimulus_file'].media_file.name)
+                            stimulus_filename = path.basename(path_stimulus_filename)
+                            # stimulus_data_filename = path.join(settings.MEDIA_ROOT, stimulus_filename)
+                            complete_stimulus_data_filename = path.join(path_stimulus_data, stimulus_filename)
 
-                            with open(stimulus_data_file_name, 'rb') as f:
+                            # For datapackage resources
+                            unique_name = slugify(stimulus_filename)
+                            datapackage_resource = {
+                                'name': unique_name, 'title': unique_name,
+                                'path': path.join(export_directory_stimulus_data, stimulus_filename),
+                                'description': 'Stimulus type: %s' % stimulus_data['stimulus_file'].stimulus_type.name
+                            }
+
+                            with open(path_stimulus_filename, 'rb') as f:
                                 data = f.read()
                             with open(complete_stimulus_data_filename, 'wb') as f:
                                 f.write(data)
 
-                            self.files_to_zip_list.append(
-                                [complete_stimulus_data_filename, export_directory_stimulus_data])
+                            self.files_to_zip_list.append([
+                                complete_stimulus_data_filename, export_directory_stimulus_data, datapackage_resource
+                            ])
 
         return error_msg
 

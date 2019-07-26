@@ -18,7 +18,7 @@ from django.test import override_settings
 
 from experiment.models import Component, ComponentConfiguration, \
     ComponentAdditionalFile, BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
-    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile
+    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile, Stimulus
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
@@ -1276,15 +1276,10 @@ class ExportDataCollectionTest(ExportTestCase):
             with File(open(f.name, 'rb')) as file:
                 stimulus = ObjectsFactory.create_component(
                     self.experiment, Component.STIMULUS,
-                    kwargs={'stimulus_type': stimulus_type,
-                            'media_file': file}
-                )
+                    kwargs={'stimulus_type': stimulus_type, 'media_file': file})
 
-        # include gdc component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, stimulus
-        )
-
+        # Include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, stimulus)
         ObjectsFactory.create_data_configuration_tree(component_config)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -1293,33 +1288,27 @@ class ExportDataCollectionTest(ExportTestCase):
         # Post data to view: data style that is posted to export_view in
         # template
         data = {
-            'per_questionnaire': ['on'],
-            'per_participant': ['on'],
-            'per_generic_data': ['on'],
-            'per_stimulus_data': ['on'],
-            'per_additional_data': ['on'],
-            'headings': ['code'],
-            'patient_selected': ['age*age'],
-            'action': ['run'],
-            'responses': ['short']
+            'per_questionnaire': ['on'], 'per_participant': ['on'], 'per_generic_data': ['on'],
+            'per_stimulus_data': ['on'], 'per_additional_data': ['on'], 'headings': ['code'],
+            'patient_selected': ['age*age'], 'action': ['run'], 'responses': ['short']
         }
 
         response = self.client.post(reverse('export_view'), data)
 
-        # get the zipped file to test against its content
+        # Get the zipped file to test against its content
         file = io.BytesIO(response.content)
         zipped_file = zipfile.ZipFile(file, 'r')
         self.assertIsNone(zipped_file.testzip())
 
-        # we have only the generic_data_collection step, so we get the first
+        # We have only the generic_data_collection step, so we get the first
         # element: [0]
         path = create_list_of_trees(self.group.experimental_protocol, "stimulus")[0]
         stimulus_component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
         component_step = stimulus_component_configuration.component
         step_number = path[-1][4]
 
-        self.assert_step_data_files_exists(step_number, component_step, '',
-                                           os.path.basename(f.name), zipped_file)
+        self.assert_step_data_files_exists(
+            step_number, component_step, '', os.path.basename(f.name), zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_participants_age_is_age_at_first_data_collection(self):
@@ -2121,7 +2110,7 @@ class ExportFrictionlessData(ExportTestCase):
         i = 1  # For EEGData_<str(i)> subdirs
         for eeg_file in EEGFile.objects.order_by('id'):
             filename = os.path.basename(eeg_file.file.name)
-            unique_name = slugify(filename)
+            unique_name = slugify(filename)  # TODO (NES-987): make unique
             file_format_nes_code = eeg_file.eeg_data.file_format.nes_code
             eeg_file_resource = {
                 'name': unique_name, 'title': unique_name,
@@ -2337,6 +2326,49 @@ class ExportFrictionlessData(ExportTestCase):
             'format': extension, 'mediatype': 'application/json'
         }
         self.assertIn(context_tree_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_stimulus_file(self):
+        # Create a stimulus component
+        stimulus_type = ObjectsFactory.create_stimulus_type()
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            f = ObjectsFactory.create_binary_file(tmpdirname)
+
+            with File(open(f.name, 'rb')) as file:
+                stimulus = ObjectsFactory.create_component(
+                    self.experiment, Component.STIMULUS,
+                    kwargs={'stimulus_type': stimulus_type, 'media_file': file})
+        # Include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, stimulus)
+        ObjectsFactory.create_data_configuration_tree(component_config)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export EMG data
+        data.pop('per_eeg_raw_data')
+        data['per_stimulus_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        stimulus = Stimulus.objects.first()
+        filename = os.path.basename(stimulus.media_file.file.name)
+        unique_name = slugify(filename)
+        stimulus_resource = {
+            'name': unique_name, 'title': unique_name,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', 'Step_1_STIMULUS', filename),
+            'description': 'Stimulus type: %s' % stimulus.stimulus_type.name
+        }
+
+        self.assertIn(stimulus_resource, json_data['resources'])
 
         shutil.rmtree(temp_dir)
 
