@@ -18,7 +18,7 @@ from django.test import override_settings
 
 from experiment.models import Component, ComponentConfiguration, \
     ComponentAdditionalFile, BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
-    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile
+    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
@@ -1673,16 +1673,16 @@ class ExportFrictionlessData(ExportTestCase):
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
         software_version = ObjectsFactory.create_software_version(software)
-        emg_set = ObjectsFactory.create_emg_setting(self.experiment, software_version)
-        emg_comp = ObjectsFactory.create_component(self.experiment, Component.EMG, kwargs={'emg_set': emg_set})
+        self.emg_set = ObjectsFactory.create_emg_setting(self.experiment, software_version)
+        emg_comp = ObjectsFactory.create_component(self.experiment, Component.EMG, kwargs={'emg_set': self.emg_set})
 
         # Include emg component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(self.root_component, emg_comp)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        self.dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' emg file
-        emgdata = ObjectsFactory.create_emg_data_collection_data(dct, self.subject_of_group, emg_set)
-        ObjectsFactory.create_emg_data_collection_file(emgdata)
+        self.emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct, self.subject_of_group, self.emg_set)
+        ObjectsFactory.create_emg_data_collection_file(self.emgdata)
 
     def _assert_basic_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
@@ -2119,7 +2119,7 @@ class ExportFrictionlessData(ExportTestCase):
         json_data = self._get_datapackage_json_data(temp_dir, response)
 
         i = 1  # For EEGData_<str(i)> subdirs
-        for eeg_file in EEGFile.objects.all().order_by('id'):
+        for eeg_file in EEGFile.objects.order_by('id'):
             filename = os.path.basename(eeg_file.file.name)
             unique_name = slugify(filename)
             file_format_nes_code = eeg_file.eeg_data.file_format.nes_code
@@ -2198,8 +2198,8 @@ class ExportFrictionlessData(ExportTestCase):
         hotspot_map_resource = {
             'name': filename, 'title': filename,
             'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),'Per_participant',
-                                           'Participant_' + self.patient.code, 'Step_1_TMS', HOTSPOT_MAP),
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Per_participant',
+                'Participant_' + self.patient.code, 'Step_1_TMS', HOTSPOT_MAP),
             'format': extension, 'mediatype': 'image/png'
         }
         self.assertIn(hotspot_map_resource, json_data['resources'])
@@ -2260,6 +2260,44 @@ class ExportFrictionlessData(ExportTestCase):
             'format': extension, 'mediatype': 'application/json'
         }
         self.assertIn(emg_setting_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_emg_data_collection_files(self):
+        self._create_emg_export_data()
+        # Adds one more emg data collection
+        emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct, self.subject_of_group, self.emg_set)
+        ObjectsFactory.create_emg_data_collection_file(emgdata)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export EMG data
+        data.pop('per_eeg_raw_data')
+        data['per_emg_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        i = 1  # For EMGData_<str(i)> subdirs
+        for emg_file in EMGFile.objects.order_by('id'):
+            filename = os.path.basename(emg_file.file.name)
+            unique_name = slugify(filename)
+            file_format_nes_code = emg_file.emg_data.file_format.nes_code
+            emg_file_resource = {
+                'name': unique_name, 'title': unique_name,
+                'path': os.path.join(
+                    'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                    'Per_participant', 'Participant_' + self.patient.code, 'Step_1_EMG', 'EMGData_' + str(i), filename),
+                'description': 'Data Collection (format: %s)' % file_format_nes_code
+            }
+            i += 1
+
+            self.assertIn(emg_file_resource, json_data['resources'])
 
         shutil.rmtree(temp_dir)
 
