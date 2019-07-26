@@ -6009,11 +6009,8 @@ def subject_eeg_view(request, group_id, subject_id,
                                                data_configuration_tree__id=data_configuration_tree_id)
 
         for eeg_data in eeg_data_list:
-
             eeg_data.eeg_file_list = []
-
             for eeg_file in eeg_data.eeg_files.all():
-
                 eeg_file.eeg_reading = eeg_data_reading(eeg_file, preload=False)
                 eeg_file.can_export_to_nwb = False
 
@@ -6030,18 +6027,19 @@ def subject_eeg_view(request, group_id, subject_id,
 
                 eeg_data.eeg_file_list.append(eeg_file)
 
-        eeg_collections.append(
-            {'eeg_configuration': eeg_configuration,
-             'path': path,
-             'eeg_data_list': eeg_data_list
-             }
-        )
+        eeg_collections.append({
+            'eeg_configuration': eeg_configuration,
+            'path': path,
+            'eeg_data_list': eeg_data_list
+        })
 
-    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
-               'group': group,
-               'subject': subject,
-               'eeg_collections': eeg_collections,
-               'process_requisition': int(random.random() * 10000)}
+    context = {
+        'can_change': get_can_change(request.user, group.experiment.research_project),
+        'group': group,
+        'subject': subject,
+        'eeg_collections': eeg_collections,
+        'process_requisition': int(random.random() * 10000)
+    }
 
     return render(request, template_name, context)
 
