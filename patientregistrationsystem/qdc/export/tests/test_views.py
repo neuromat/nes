@@ -1197,34 +1197,26 @@ class ExportDataCollectionTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_step_additional_data(self):
-        # Create generic data collection (gdc) component, it could've been any data collection
+        # Create generic data collection (gdc) component, it could been any data collection
         it = ObjectsFactory.create_information_type()
-        gdc = ObjectsFactory.create_component(
-            self.experiment, Component.GENERIC_DATA_COLLECTION,
-            kwargs={'it': it}
-        )
+        gdc = ObjectsFactory.create_component(self.experiment, Component.GENERIC_DATA_COLLECTION,kwargs={'it': it})
 
         # Create a file and add it as an additional file of the step
         with tempfile.TemporaryDirectory() as tmpdirname:
             with open(os.path.join(tmpdirname, 'stepadditionaldata.bin'), 'wb') as f:
                 f.write(b'carambola')
-
                 with File(open(f.name, 'rb')) as file:
                     ComponentAdditionalFile.objects.create(component=gdc, file=file)
 
         # Include gdc component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, gdc
-        )
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, gdc)
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' generic data collection file
-        gdc_data = ObjectsFactory.create_generic_data_collection_data(
-            dct, self.subject_of_group
-        )
-        gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
+        gdc_data = ObjectsFactory.create_generic_data_collection_data(dct, self.subject_of_group)
+        ObjectsFactory.create_generic_data_collection_file(gdc_data)
 
-        # Create additional data to this step
+        # Create additional data to this subject of group
         additional_data = ObjectsFactory.create_additional_data_data(dct, self.subject_of_group)
 
         ObjectsFactory.create_additional_data_file(additional_data)
@@ -1235,14 +1227,9 @@ class ExportDataCollectionTest(ExportTestCase):
         # Post data to view: data style that is posted to export_view in
         # template
         data = {
-            'per_questionnaire': ['on'],
-            'per_participant': ['on'],
-            'per_generic_data': ['on'],
-            'per_additional_data': ['on'],
-            'headings': ['code'],
-            'patient_selected': ['age*age'],
-            'action': ['run'],
-            'responses': ['short']
+            'per_questionnaire': ['on'], 'per_participant': ['on'], 'per_generic_data': ['on'],
+            'per_additional_data': ['on'], 'headings': ['code'], 'patient_selected': ['age*age'],
+            'action': ['run'], 'responses': ['short']
         }
 
         response = self.client.post(reverse('export_view'), data)
@@ -1259,10 +1246,8 @@ class ExportDataCollectionTest(ExportTestCase):
         component_step = generic_component_configuration.component
         step_number = path[-1][4]
 
-        self.assert_step_data_files_exists(step_number, component_step,
-                                           'AdditionalData',
-                                           os.path.basename(f.name),
-                                           zipped_file)
+        self.assert_step_data_files_exists(
+            step_number, component_step, 'AdditionalData', os.path.basename(f.name), zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_stimulus_media_file(self):
@@ -1744,12 +1729,12 @@ class ExportFrictionlessData(ExportTestCase):
             )
 
     @staticmethod
-    def _set_post_data():
+    def _set_post_data(data_collection='per_eeg_raw_data'):
         # Data style that is posted to export_view in template
         # TODO (NES-987): test for 'headings': ['short'] and 'headings': ['abbreviated']
         return {
             'per_questionnaire': ['on'], 'per_participant': ['on'],
-            'per_eeg_raw_data': ['on'], 'per_additional_data': ['on'],
+            data_collection: ['on'], 'per_additional_data': ['on'],
             'headings': ['code'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
@@ -2137,10 +2122,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export TMS data
-        data.pop('per_eeg_raw_data')
-        data['per_tms_data'] = ['on']
+        data = self._set_post_data('per_tms_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2164,10 +2146,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export TMS data
-        data.pop('per_eeg_raw_data')
-        data['per_tms_data'] = ['on']
+        data = self._set_post_data('per_tms_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2201,10 +2180,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export EMG data
-        data.pop('per_eeg_raw_data')
-        data['per_emg_data'] = ['on']
+        data = self._set_post_data('per_emg_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2229,10 +2205,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export EMG data
-        data.pop('per_eeg_raw_data')
-        data['per_emg_data'] = ['on']
+        data = self._set_post_data('per_emg_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2261,10 +2234,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export EMG data
-        data.pop('per_eeg_raw_data')
-        data['per_emg_data'] = ['on']
+        data = self._set_post_data('per_emg_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2306,10 +2276,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export Goalkeeper game data
-        data.pop('per_eeg_raw_data')
-        data['per_goalkeeper_game_data'] = ['on']
+        data = self._set_post_data('per_goalkeeper_game_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2346,10 +2313,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export Stimulus media file
-        data.pop('per_eeg_raw_data')
-        data['per_stimulus_data'] = ['on']
+        data = self._set_post_data('per_stimulus_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2390,10 +2354,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export Generic Data Collection data
-        data.pop('per_eeg_raw_data')
-        data['per_generic_data'] = ['on']
+        data = self._set_post_data('per_generic_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2436,10 +2397,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export Generic Data Collection data
-        data.pop('per_eeg_raw_data')
-        data['per_generic_data'] = ['on']
+        data = self._set_post_data('per_generic_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2465,6 +2423,7 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_goalkeeper_game_files(self):
+        # TODO (NES-987): so many lines of code. Create objects outside.
         # Create digital game phase (dgp) component
         manufacturer = ObjectsFactory.create_manufacturer()
         software = ObjectsFactory.create_software(manufacturer)
@@ -2486,11 +2445,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
-        # Change POST data to export Generic Data Collection data
-        # TODO (NES-987): adds data item as needed
-        data.pop('per_eeg_raw_data')
-        data['per_goalkeeper_game_data'] = ['on']
+        data = self._set_post_data('per_goalkeeper_game_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2522,6 +2477,67 @@ class ExportFrictionlessData(ExportTestCase):
         self.assertIn(dgp_resource2, json_data['resources'])
 
         shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_experimental_protocol_additional_file(self):
+        # Create a file and add it as an additional file of the root component
+        # with tempfile.TemporaryDirectory() as tmpdirname:
+        #     with open(os.path.join(tmpdirname, 'stepadditionaldata.bin'), 'wb') as f:
+        #         f.write(b'carambola')
+        #         with File(open(f.name, 'rb')) as file:
+        #             additional_file = ComponentAdditionalFile.objects.create(component=self.root_component, file=file)
+        #
+        # self.append_session_variable('group_selected_list', [str(self.group.id)])
+        # self.append_session_variable('license', '0')
+        #
+        # data = self._set_post_data('per_additional_data')
+        #
+        # response = self.client.post(reverse('export_view'), data)
+        #
+        # temp_dir = tempfile.mkdtemp()
+        # json_data = self._get_datapackage_json_data(temp_dir, response)
+        pass  # by now, additional data from Experimental Protocol (set of steps) appear to not been exported
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_step_additional_file(self):
+        # Create generic data collection (gdc) component, it could been any data collection
+        it = ObjectsFactory.create_information_type()
+        gdc = ObjectsFactory.create_component(self.experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': it})
+
+        # Create a file and add it as an additional file of the step
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            with open(os.path.join(tmpdirname, 'stepadditionaldata.bin'), 'wb') as f:
+                f.write(b'carambola')
+                with File(open(f.name, 'rb')) as file:
+                    additional_file = ComponentAdditionalFile.objects.create(component=gdc, file=file)
+
+        # Include gdc component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, gdc)
+        ObjectsFactory.create_data_configuration_tree(component_config)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        filename = os.path.basename(additional_file.file.name)
+        unique_name = slugify(filename)
+
+        additional_data_resource = {
+            'name': unique_name, 'title': unique_name,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', 'Step_1_GENERIC_DATA_COLLECTION', 'AdditionalData', filename
+            ),
+            'description': 'Step additional file'
+        }
+        self.assertIn(additional_data_resource, json_data['resources'])
+
 
 def tearDownModule():
     shutil.rmtree(TEMP_MEDIA_ROOT)
