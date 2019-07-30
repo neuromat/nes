@@ -724,14 +724,14 @@ class ObjectsFactory(object):
             subject_of_group=subj_of_group)
 
     @staticmethod
-    def create_digital_game_phase_file(dgp_data):
+    def create_digital_game_phase_file(dgp_data, filename=None):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             bin_file = ObjectsFactory.create_binary_file(tmpdirname)
 
             dgpf = DigitalGamePhaseFile.objects.create(digital_game_phase_data=dgp_data)
             with File(open(bin_file.name, 'rb')) as f:
-                dgpf.file.save('file.bin', f)
+                dgpf.file.save(filename if filename else 'file.bin', f)
             dgpf.save()
 
         return dgpf
