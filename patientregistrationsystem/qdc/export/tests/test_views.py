@@ -1146,6 +1146,7 @@ class ExportDataCollectionTest(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_goalkeeper_game_data_2_groups(self):
         # Create second group; create patient/subject/subject_of_group
+        # TODO (NES-987): use objects created in setUp
         root_component1 = ObjectsFactory.create_block(self.experiment)
         group1 = ObjectsFactory.create_group(self.experiment, root_component1)
         patient1 = UtilTests().create_patient(changed_by=self.user)
@@ -1162,7 +1163,7 @@ class ExportDataCollectionTest(ExportTestCase):
             self.experiment, Component.DIGITAL_GAME_PHASE,
             kwargs={'software_version': software_version, 'context_tree': context_tree})
 
-        # Include gdc component in experimental protocol
+        # Include dgp component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(self.root_component, dgp)
         component_config1 = ObjectsFactory.create_component_configuration(root_component1, dgp)
 
@@ -2415,6 +2416,64 @@ class ExportFrictionlessData(ExportTestCase):
         self.assertIn(gdc_resource, json_data['resources'])
 
         shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_goalkeeper_game_files(self):
+        # Create digital game phase (dgp) component
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        context_tree = ObjectsFactory.create_context_tree(self.experiment)
+        dgp = ObjectsFactory.create_component(
+            self.experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
+
+        # Include dgp component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, dgp)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # 'upload' data game phase collection file
+        dgp_data = ObjectsFactory.create_digital_game_phase_data(dct, self.subject_of_group)
+        dgp_file = ObjectsFactory.create_digital_game_phase_file(dgp_data, 'file_dgp.bin')
+        # Change filename to test for spliting bellow
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Change POST data to export Generic Data Collection data
+        # TODO (NES-987): adds data item as needed
+        data.pop('per_eeg_raw_data')
+        data['per_goalkeeper_game_data'] = ['on']
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        filename = os.path.basename(dgp_file.file.name)
+        filename_goalkeeper_game_data_dir = filename.split('_')[0]
+        unique_name_filename_goalkeeper_game_data_dir = slugify(filename_goalkeeper_game_data_dir)
+        unique_name = slugify(filename)
+
+        file_format_nes_code = dgp_file.digital_game_phase_data.file_format.nes_code
+        dgp_resource1 = {
+            'name': unique_name_filename_goalkeeper_game_data_dir,
+            'title': unique_name_filename_goalkeeper_game_data_dir,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Goalkeeper_game_data', filename_goalkeeper_game_data_dir + '.csv'),
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+        dgp_resource2 = {
+            'name': unique_name, 'title': unique_name,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Per_participant',
+                'Participant_' + self.patient.code, 'Step_1_DIGITAL_GAME_PHASE', 'DigitalGamePhaseData_1', filename),
+            'description': 'Data Collection (format: %s)' % file_format_nes_code
+        }
+        self.assertIn(dgp_resource1, json_data['resources'])
+        self.assertIn(dgp_resource2, json_data['resources'])
 
 
 def tearDownModule():
