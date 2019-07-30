@@ -725,19 +725,14 @@ class ExportExecution:
                                 subject_code = digital_game_data.subject_of_group.subject.patient.code
                                 digital_game_file_list = []
                                 for digital_game_file in digital_game_data.digital_game_phase_files.all():
-                                    digital_game_file_list.append({
-                                        'digital_game_filename':
-                                            path.join(
-                                                settings.MEDIA_ROOT,
-                                                digital_game_file.file.name
-                                            )
-                                    })
+                                    digital_game_file_list.append({'digital_game_file': digital_game_file})
 
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
 
-                                if 'digital_game_data_list' not in self.per_group_data[group_id][
-                                    'data_per_participant'][subject_code]:
+                                if 'digital_game_data_list' not in self.per_group_data[
+                                    group_id
+                                ]['data_per_participant'][subject_code]:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code][
                                         'digital_game_data_list'] = []
                                     self.per_group_data[group_id]['data_per_participant'][subject_code][
@@ -2018,72 +2013,78 @@ class ExportExecution:
                         if error_msg != '':
                             return error_msg
 
-                    goalkeeper_game_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
-                        'digital_game_data_list']
+                    goalkeeper_game_data_list = self.per_group_data[
+                        group_id
+                    ]['data_per_participant'][participant_code]['digital_game_data_list']
 
                     for goalkeeper_game_data in goalkeeper_game_data_list:
                         if goalkeeper_game_data['digital_game_file_list']:
                             directory_step_name = goalkeeper_game_data['directory_step_name']
                             path_goalkeeper_game_data = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_goalkeeper_game_data):
-                                # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_COMPONENT_TYPE
                                 error_msg, path_goalkeeper_game_data = create_directory(path_per_participant,
                                                                                         directory_step_name)
                                 if error_msg != '':
                                     return error_msg
 
-                                # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_COMPONENT_TYPE
                                 export_goalkeeper_game_directory = path.join(participant_export_directory,
                                                                              directory_step_name)
 
-                                # to create Game_digital_dataData directory 
+                                # To create Game_digital_dataData directory 
                                 directory_data_name = goalkeeper_game_data['digital_game_data_directory']
 
                                 path_per_goalkeeper_game_data = path.join(
-                                    path_goalkeeper_game_data,
-                                    directory_data_name
-                                )
+                                    path_goalkeeper_game_data, directory_data_name)
                                 if not path.exists(path_per_goalkeeper_game_data):
-                                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
+                                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
                                     #  /Step_X_aaa/GoalkeeperDATA_
                                     error_msg, path_per_goalkeeper_game_data = create_directory(
                                         path_goalkeeper_game_data, directory_data_name)
-
                                     if error_msg != '':
                                         return error_msg
 
-                                # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/GoalkeeperDATA_
-                                export_goalkeeper_data_directory = path.join(export_goalkeeper_game_directory,
-                                                                             directory_data_name)
+                                export_goalkeeper_data_directory = path.join(
+                                    export_goalkeeper_game_directory, directory_data_name)
 
                                 for context_tree_file in goalkeeper_game_data['digital_game_file_list']:
-                                    path_context_tree_file = context_tree_file['digital_game_filename']
-                                    filename = path_context_tree_file.split('/')[-1]
+                                    digital_game_file = context_tree_file['digital_game_file']
+                                    path_context_tree_file = path.join(settings.MEDIA_ROOT, digital_game_file.file.name)
+                                    filename = path.basename(path_context_tree_file)
+                                    unique_name1 = slugify(filename)
 
-                                    # Arquivo CSV geral
+                                    # General csv file
                                     file_name_digital = filename.split('_')[0]
+                                    unique_name2 = slugify(file_name_digital)
 
-                                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
+                                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
                                     #  /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
                                     complete_goalkeeper_game_filename = path.join(
                                         path_per_goalkeeper_game_data, filename)
 
                                     with open(path_context_tree_file, 'rb') as f:
                                         data = f.read()
-
                                     with open(complete_goalkeeper_game_filename, 'wb') as f:
                                         f.write(data)
 
-                                    self.files_to_zip_list.append(
-                                        [complete_goalkeeper_game_filename, export_goalkeeper_data_directory])
+                                    self.files_to_zip_list.append([
+                                        complete_goalkeeper_game_filename, export_goalkeeper_data_directory,
+                                        {
+                                            'name': unique_name1, 'title': unique_name1,
+                                            'path': path.join(export_goalkeeper_data_directory, filename),
+                                            'description': 'Data Collection (format: %s)'
+                                                           % digital_game_file.digital_game_phase_data.file_format.nes_code
+                                        }
+                                    ])
 
-                                    if 'tsv' in self.get_input_data('filesformat_type'):
-                                        export_filename = '%s.tsv' % file_name_digital  # '.tsv'
-                                    else:
-                                        export_filename = '%s.csv' % file_name_digital  # '.csv'
+                                    file_extension = 'tsv' if 'tsv' in self.get_input_data(
+                                        'filesformat_type') else 'csv'
+                                    export_filename = file_name_digital + '.' + file_extension
 
                                     complete_digital_filename = path.join(goalkeeper_game_directory, export_filename)
 
@@ -2098,9 +2099,18 @@ class ExportExecution:
                                         for line in infile:
                                             outfile.write(line)
 
-                    goalkeeper_game_data_export_directory = self.per_group_data[group_id]['group'][
-                        'goalkeeper_game_data_export_directory']
-                    self.files_to_zip_list.append([complete_digital_filename, goalkeeper_game_data_export_directory])
+                    goalkeeper_game_data_export_directory = self.per_group_data[
+                        group_id
+                    ]['group']['goalkeeper_game_data_export_directory']
+                    self.files_to_zip_list.append([
+                        complete_digital_filename, goalkeeper_game_data_export_directory,
+                        {
+                            'name': unique_name2, 'title': unique_name2,
+                            'path': path.join(
+                                goalkeeper_game_data_export_directory, export_filename),
+                            'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
+                        }
+                    ])
 
                 if 'generic_data_collection_data_list' \
                         in self.per_group_data[group_id]['data_per_participant'][participant_code]:
