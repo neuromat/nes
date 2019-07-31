@@ -525,9 +525,7 @@ class ExportExecution:
                                     additional_data_file_list = []
                                     for additional_data_file in additional_data.additional_data_files.all():
                                         additional_data_file_list.append({
-                                            'additional_data_filename':
-                                                settings.MEDIA_ROOT + '/' +
-                                                additional_data_file.file.name
+                                            'additional_data_filename': additional_data_file
                                         })
                                     if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                         self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
@@ -2165,14 +2163,15 @@ class ExportExecution:
                             ])
 
                 if 'additional_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
                             return error_msg
 
-                    additional_data_list = self.per_group_data[group_id]['data_per_participant'][participant_code][
-                        'additional_data_list']
+                    additional_data_list = self.per_group_data[
+                        group_id
+                    ]['data_per_participant'][participant_code]['additional_data_list']
 
                     for additional_data in additional_data_list:
                         directory_step_name = additional_data['directory_step_name']
@@ -2203,8 +2202,11 @@ class ExportExecution:
                                                                      directory_data_name)
 
                         for additional_file in additional_data['additional_data_file_list']:
-                            path_additional_data_file = additional_file['additional_data_filename']
-                            filename = path_additional_data_file.split('/')[-1]
+                            additional_file_object =  additional_file['additional_data_filename']
+                            path_additional_data_file = path.join(settings.MEDIA_ROOT, additional_file_object.file.name)
+                            filename = path.basename(path_additional_data_file)
+                            unique_name = slugify(filename)
+                            file_format_nes_code = additional_file_object.additional_data.file_format.nes_code
 
                             # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
                             # Step_X_COMPONENT_TYPE/file_name.format_type
@@ -2214,8 +2216,15 @@ class ExportExecution:
                             with open(complete_additional_data_filename, 'wb') as f:
                                 f.write(data)
 
-                            self.files_to_zip_list.append(
-                                [complete_additional_data_filename, export_additional_data_directory])
+                            self.files_to_zip_list.append([
+                                complete_additional_data_filename, export_additional_data_directory,
+                                {
+                                    'name': unique_name, 'title': unique_name,
+                                    'path': path.join(export_additional_data_directory, filename),
+                                    'description': 'Data Collection (additional file, format: %s)'
+                                                   % file_format_nes_code
+                                }
+                            ])
 
         return error_msg
 
@@ -2696,17 +2705,25 @@ class ExportExecution:
                             'context_tree_default_id'])
 
                     if context_tree.setting_file.name:
-                        context_tree_filename = path.join(
-                            settings.BASE_DIR, 'media') + '/' + context_tree.setting_file.name
-                        complete_context_tree_filename = path.join(directory_experimental_protocol,
-                                                                   context_tree.setting_file.name.split('/')[-1])
-                        with open(context_tree_filename, 'rb') as f:
+                        file_path = context_tree.setting_file.name
+                        filename = path.basename(file_path)
+                        context_tree_filename = path.join(settings.MEDIA_ROOT, file_path)
+                        unique_name = slugify(filename)
+                        # TODO (NES-987): change context_tree.setting_file.name.split('/')[-1]
+                        complete_context_tree_filename = path.join(directory_experimental_protocol, filename)
+                        with open(path.join(context_tree_filename), 'rb') as f:
                             data = f.read()
                         with open(complete_context_tree_filename, 'wb') as f:
                             f.write(data)
 
-                        self.files_to_zip_list.append(
-                            [complete_context_tree_filename, export_directory_experimental_protocol])
+                        self.files_to_zip_list.append([
+                            complete_context_tree_filename, export_directory_experimental_protocol,
+                            {
+                                'name': unique_name, 'title': unique_name,
+                                'path': path.join(export_directory_experimental_protocol, filename),
+                                'description': 'Context tree setting file'
+                            }
+                        ])
 
                 for component in tree['list_of_component_configuration']:
                     for additionalfile in ComponentAdditionalFile.objects.filter(
@@ -2729,13 +2746,13 @@ class ExportExecution:
                         export_directory_additional_data = path.join(
                             export_group_directory, 'Experimental_protocol', 'Step_' + step_number + '_' + step_name,
                             'AdditionalData')
-                        additional_data_file_name = additionalfile.file.name.split('/')[-1]
-                        unique_name = slugify(additional_data_file_name)
-                        additional_data_data_file_name = path.join(settings.MEDIA_ROOT) + '/' + additionalfile.file.name
+                        filename = path.basename(additionalfile.file.name)
+                        unique_name = slugify(filename)
+                        path_additional_file = path.join(settings.MEDIA_ROOT, additionalfile.file.name)
 
-                        complete_additional_data_filename = path.join(path_additional_data, additional_data_file_name)
+                        complete_additional_data_filename = path.join(path_additional_data, filename)
 
-                        with open(additional_data_data_file_name, 'rb') as f:
+                        with open(path_additional_file, 'rb') as f:
                             data = f.read()
                         with open(complete_additional_data_filename, 'wb') as f:
                             f.write(data)
@@ -2744,7 +2761,7 @@ class ExportExecution:
                             complete_additional_data_filename, export_directory_additional_data,
                             {
                                 'name': unique_name, 'title': unique_name,
-                                'path': path.join(export_directory_additional_data, additional_data_file_name),
+                                'path': path.join(export_directory_additional_data, filename),
                                 'description': 'Step additional file'
                             }
                         ])
