@@ -2147,9 +2147,8 @@ class ExportExecution:
                             # For datapackage resources
                             unique_name = slugify(filename)
                             file_format_nes_code = generic_data_file.generic_data_collection_data.file_format.nes_code
-                            information_type = \
-                                generic_data_file.generic_data_collection_data.data_configuration_tree\
-                                    .component_configuration.component.genericdatacollection.information_type.name
+                            information_type = generic_data_file.generic_data_collection_data.data_configuration_tree.\
+                                component_configuration.component.genericdatacollection.information_type.name
                             datapackage_resource = {
                                 'name': unique_name, 'title': unique_name,
                                 'path': path.join(export_generic_data_directory, filename),
@@ -2179,24 +2178,24 @@ class ExportExecution:
                         directory_step_name = additional_data['directory_step_name']
                         path_additional_data = path.join(path_per_participant, directory_step_name)
                         if not path.exists(path_additional_data):
-                            # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                             # /Step_X_COMPONENT_TYPE
-                            error_msg, path_additional_data = create_directory(path_per_participant,
-                                                                               directory_step_name)
+                            error_msg, path_additional_data = create_directory(
+                                path_per_participant, directory_step_name)
 
                             if error_msg != '':
                                 return error_msg
 
-                        # path ex. NES_EXPORT/Experiment_data/Group_XX/Per_participant/Participant_123/Step_X_COMP._TYPE
-                        export_step_additional_data_directory = path.join(participant_export_directory,
-                                                                          directory_step_name)
+                        # Path ex. NES_EXPORT/Experiment_data/Group_XX/Per_participant/Participant_123/Step_X_COMP._TYPE
+                        export_step_additional_data_directory = path.join(
+                            participant_export_directory, directory_step_name)
 
-                        # to create AdditionalData directory
+                        # To create AdditionalData directory
                         directory_data_name = additional_data['additional_data_directory']
                         path_per_additional_data = path.join(path_additional_data, directory_data_name)
                         if not path.exists(path_per_additional_data):
-                            error_msg, path_per_additional_data = create_directory(path_additional_data,
-                                                                                   directory_data_name)
+                            error_msg, path_per_additional_data = create_directory(
+                                path_additional_data, directory_data_name)
                             if error_msg != '':
                                 return error_msg
 
@@ -2205,15 +2204,13 @@ class ExportExecution:
 
                         for additional_file in additional_data['additional_data_file_list']:
                             path_additional_data_file = additional_file['additional_data_filename']
-
                             filename = path_additional_data_file.split('/')[-1]
 
-                            # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
+                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
                             # Step_X_COMPONENT_TYPE/file_name.format_type
                             complete_additional_data_filename = path.join(path_per_additional_data, filename)
                             with open(path_additional_data_file, 'rb') as f:
                                 data = f.read()
-
                             with open(complete_additional_data_filename, 'wb') as f:
                                 f.write(data)
 
@@ -2222,7 +2219,8 @@ class ExportExecution:
 
         return error_msg
 
-    def handle_exported_field(self, field):
+    @staticmethod
+    def handle_exported_field(field):
         if field is None:
             result = ''
         elif isinstance(field, bool):
@@ -2732,6 +2730,7 @@ class ExportExecution:
                             export_group_directory, 'Experimental_protocol', 'Step_' + step_number + '_' + step_name,
                             'AdditionalData')
                         additional_data_file_name = additionalfile.file.name.split('/')[-1]
+                        unique_name = slugify(additional_data_file_name)
                         additional_data_data_file_name = path.join(settings.MEDIA_ROOT) + '/' + additionalfile.file.name
 
                         complete_additional_data_filename = path.join(path_additional_data, additional_data_file_name)
@@ -2741,8 +2740,14 @@ class ExportExecution:
                         with open(complete_additional_data_filename, 'wb') as f:
                             f.write(data)
 
-                        self.files_to_zip_list.append(
-                            [complete_additional_data_filename, export_directory_additional_data])
+                        self.files_to_zip_list.append([
+                            complete_additional_data_filename, export_directory_additional_data,
+                            {
+                                'name': unique_name, 'title': unique_name,
+                                'path': path.join(export_directory_additional_data, additional_data_file_name),
+                                'description': 'Step additional file'
+                            }
+                        ])
 
                 # Process participant/diagnosis per Participant of each group
                 participant_group_list = []
