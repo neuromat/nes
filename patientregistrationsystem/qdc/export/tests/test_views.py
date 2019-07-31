@@ -1935,6 +1935,7 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_participant_data_file_info_to_datapackage_json_resources_field(self):
+        # TODO (NES-987): change method name to _create_eeg_export_data
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -1944,6 +1945,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
+        # TODO (NES-987): refactor to go similar the test for Diagnosis
         participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
 
         # As Participants.csv/tsv resource has 'schema' key, that is
@@ -1954,12 +1956,51 @@ class ExportFrictionlessData(ExportTestCase):
         test_dict = {
             # TODO (NES-987): Changes 'Participants.csv' to a constant in code
             'name': 'Participants', 'title': 'Participants',
-            'path': 'data/Group_' + slugify(self.group.title).replace('-', '_') + 'Participants.csv',
+            # TODO (NES-987): 'path' is wrong (test is wrong), fix this (required)!
+            'path': os.path.join('data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Participants.csv'),
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
         self.assertTrue(
             all(item in participants_resource for item in test_dict),
             str(test_dict) + ' is not subdict of ' + str(participants_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Add selected diagnosis (all here)
+        data['diagnosis_selected'] = [
+            'medicalrecorddata__diagnosis__date*diagnosis_date',
+            'medicalrecorddata__diagnosis__description*diagnosis_description',
+            'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
+            'medicalrecorddata__diagnosis__classification_of_diseases__description'
+            '*classification_of_diseases_description',
+            'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
+            '*classification_of_diseases_description'
+        ]
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'Diagnosis')
+        # Remove schema field if it exists. The test was wrote before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in diagnosis_resource:
+            diagnosis_resource.pop('schema')
+
+        test_dict = {
+            'name': 'Diagnosis', 'title': 'Diagnosis',
+            'path': os.path.join('data', 'Participant_data', 'Diagnosis.csv'),
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+
+        self.assertEqual(test_dict, diagnosis_resource, str(test_dict) + ' not equal ' + str(diagnosis_resource))
 
         shutil.rmtree(temp_dir)
 
