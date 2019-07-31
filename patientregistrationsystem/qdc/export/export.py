@@ -2705,12 +2705,12 @@ class ExportExecution:
                             'context_tree_default_id'])
 
                     if context_tree.setting_file.name:
-                        filename = context_tree.setting_file.name
-                        context_tree_filename = path.join(settings.MEDIA_ROOT, filename)
-                        unique_name = slugify(filename.split('/')[-1])
+                        file_path = context_tree.setting_file.name
+                        filename = path.basename(file_path)
+                        context_tree_filename = path.join(settings.MEDIA_ROOT, file_path)
+                        unique_name = slugify(filename)
                         # TODO (NES-987): change context_tree.setting_file.name.split('/')[-1]
-                        complete_context_tree_filename = path.join(
-                            directory_experimental_protocol, filename.split('/')[-1])
+                        complete_context_tree_filename = path.join(directory_experimental_protocol, filename)
                         with open(path.join(context_tree_filename), 'rb') as f:
                             data = f.read()
                         with open(complete_context_tree_filename, 'wb') as f:
@@ -2720,7 +2720,7 @@ class ExportExecution:
                             complete_context_tree_filename, export_directory_experimental_protocol,
                             {
                                 'name': unique_name, 'title': unique_name,
-                                'path': path.join(export_directory_experimental_protocol, filename.split('/')[-1]),
+                                'path': path.join(export_directory_experimental_protocol, filename),
                                 'description': 'Context tree setting file'
                             }
                         ])
