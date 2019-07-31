@@ -2451,13 +2451,8 @@ class ExportExecution:
                 diagnosis_input_data['output_list'], participants_filtered_list)
 
             # TODO (NES-987): refactor this as in other places
-            if 'tsv' in self.get_input_data('filesformat_type'):
-                file_extension = 'tsv'
-                export_filename = ('%s.' + file_extension) % self.get_input_data('diagnosis')['output_filename']
-            else:
-                file_extension = 'csv'
-                export_filename = ('%s.' + file_extension) % self.get_input_data('diagnosis')['output_filename']
-
+            file_extension = 'tsv' if 'tsv' in self.get_input_data('filesformat_type') else 'csv'
+            export_filename = ('%s.' + file_extension) % self.get_input_data('diagnosis')['output_filename']
             complete_filename = path.join(base_export_directory, export_filename)
 
             self.files_to_zip_list.append([
