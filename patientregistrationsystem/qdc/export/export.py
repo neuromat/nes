@@ -2705,17 +2705,25 @@ class ExportExecution:
                             'context_tree_default_id'])
 
                     if context_tree.setting_file.name:
-                        context_tree_filename = path.join(
-                            settings.BASE_DIR, 'media') + '/' + context_tree.setting_file.name
-                        complete_context_tree_filename = path.join(directory_experimental_protocol,
-                                                                   context_tree.setting_file.name.split('/')[-1])
-                        with open(context_tree_filename, 'rb') as f:
+                        filename = context_tree.setting_file.name
+                        context_tree_filename = path.join(settings.MEDIA_ROOT, filename)
+                        unique_name = slugify(filename.split('/')[-1])
+                        # TODO (NES-987): change context_tree.setting_file.name.split('/')[-1]
+                        complete_context_tree_filename = path.join(
+                            directory_experimental_protocol, filename.split('/')[-1])
+                        with open(path.join(context_tree_filename), 'rb') as f:
                             data = f.read()
                         with open(complete_context_tree_filename, 'wb') as f:
                             f.write(data)
 
-                        self.files_to_zip_list.append(
-                            [complete_context_tree_filename, export_directory_experimental_protocol])
+                        self.files_to_zip_list.append([
+                            complete_context_tree_filename, export_directory_experimental_protocol,
+                            {
+                                'name': unique_name, 'title': unique_name,
+                                'path': path.join(export_directory_experimental_protocol, filename.split('/')[-1]),
+                                'description': 'Context tree setting file'
+                            }
+                        ])
 
                 for component in tree['list_of_component_configuration']:
                     for additionalfile in ComponentAdditionalFile.objects.filter(

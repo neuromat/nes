@@ -218,6 +218,7 @@ class ObjectsFactory(object):
                 placement_type=random.choice(EMGElectrodePlacement.PLACEMENT_TYPES)[0]
             )
             with File(open(bin_file.name, 'rb')) as f:
+                # TODO (NES-987): get os.path.basename(f.name) instead of 'file.bin'
                 emg_ep.photo.save('file.bin', f)
             emg_ep.save()
         return emg_ep

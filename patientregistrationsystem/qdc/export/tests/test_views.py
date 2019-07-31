@@ -18,7 +18,7 @@ from django.test import override_settings
 
 from experiment.models import Component, ComponentConfiguration, \
     ComponentAdditionalFile, BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
-    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile, Stimulus
+    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile, Stimulus, ContextTree
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
@@ -1657,6 +1657,21 @@ class ExportFrictionlessData(ExportTestCase):
         self.emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct_emg, self.subject_of_group, self.emg_set)
         ObjectsFactory.create_emg_data_collection_file(self.emgdata)
 
+    def _create_goalkeeper_game_export_data(self):
+        manufacturer = ObjectsFactory.create_manufacturer()
+        software = ObjectsFactory.create_software(manufacturer)
+        software_version = ObjectsFactory.create_software_version(software)
+        context_tree = ObjectsFactory.create_context_tree(self.experiment)
+        dgp = ObjectsFactory.create_component(
+            self.experiment, Component.DIGITAL_GAME_PHASE,
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, dgp)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        dgp_data = ObjectsFactory.create_digital_game_phase_data(dct, self.subject_of_group)
+        dgp_file = ObjectsFactory.create_digital_game_phase_file(dgp_data, 'file_dgp.bin')
+
+        return dgp_file
+
     def _assert_basic_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
             self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
@@ -2261,17 +2276,7 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_goalkeeper_context_tree_default_file(self):
-        manufacturer = ObjectsFactory.create_manufacturer()
-        software = ObjectsFactory.create_software(manufacturer)
-        software_version = ObjectsFactory.create_software_version(software)
-        context_tree = ObjectsFactory.create_context_tree(self.experiment)
-        dgp = ObjectsFactory.create_component(
-            self.experiment, Component.DIGITAL_GAME_PHASE,
-            kwargs={'software_version': software_version, 'context_tree': context_tree})
-        component_config = ObjectsFactory.create_component_configuration(self.root_component, dgp)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
-        dgp_data = ObjectsFactory.create_digital_game_phase_data(dct, self.subject_of_group)
-        ObjectsFactory.create_digital_game_phase_file(dgp_data)
+        self._create_goalkeeper_game_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2423,24 +2428,7 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_goalkeeper_game_files(self):
-        # TODO (NES-987): so many lines of code. Create objects outside.
-        # Create digital game phase (dgp) component
-        manufacturer = ObjectsFactory.create_manufacturer()
-        software = ObjectsFactory.create_software(manufacturer)
-        software_version = ObjectsFactory.create_software_version(software)
-        context_tree = ObjectsFactory.create_context_tree(self.experiment)
-        dgp = ObjectsFactory.create_component(
-            self.experiment, Component.DIGITAL_GAME_PHASE,
-            kwargs={'software_version': software_version, 'context_tree': context_tree})
-
-        # Include dgp component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(self.root_component, dgp)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
-
-        # 'upload' data game phase collection file
-        dgp_data = ObjectsFactory.create_digital_game_phase_data(dct, self.subject_of_group)
-        dgp_file = ObjectsFactory.create_digital_game_phase_file(dgp_data, 'file_dgp.bin')
-        # Change filename to test for spliting bellow
+        dgp_file = self._create_goalkeeper_game_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2473,13 +2461,50 @@ class ExportFrictionlessData(ExportTestCase):
                 'Participant_' + self.patient.code, 'Step_1_DIGITAL_GAME_PHASE', 'DigitalGamePhaseData_1', filename),
             'description': 'Data Collection (format: %s)' % file_format_nes_code
         }
+
         self.assertIn(dgp_resource1, json_data['resources'])
         self.assertIn(dgp_resource2, json_data['resources'])
 
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_goalkeeper_game_context_tree_file(self):
+        self._create_goalkeeper_game_export_data()
+
+        # Add file to context tree setting file
+        context_tree = ContextTree.objects.first()
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
+            with File(open(bin_file.name, 'rb')) as f:
+                context_tree.setting_file.save(os.path.basename(bin_file.name), f)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data('per_goalkeeper_game_data')
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        filename = os.path.basename(context_tree.setting_file.name)
+        unique_name = slugify(filename)
+        dgp_settingfile_resource = {
+            'name': unique_name, 'title': unique_name,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Experimental_protocol', filename),
+            'description': 'Context tree setting file'
+        }
+
+        self.assertIn(dgp_settingfile_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_experimental_protocol_additional_file(self):
+        pass  # by now, additional data from Experimental Protocol (set of steps) appear to have not being exported
         # Create a file and add it as an additional file of the root component
         # with tempfile.TemporaryDirectory() as tmpdirname:
         #     with open(os.path.join(tmpdirname, 'stepadditionaldata.bin'), 'wb') as f:
@@ -2496,7 +2521,6 @@ class ExportFrictionlessData(ExportTestCase):
         #
         # temp_dir = tempfile.mkdtemp()
         # json_data = self._get_datapackage_json_data(temp_dir, response)
-        pass  # by now, additional data from Experimental Protocol (set of steps) appear to have not being exported
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_step_additional_file(self):
