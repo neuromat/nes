@@ -1608,10 +1608,10 @@ class ExportFrictionlessData(ExportTestCase):
         # Include eeg component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(self.root_component, eeg_comp)
         # self.dct to be used in other test
-        self.dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        self.dct_eeg = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' eeg file
-        eegdata = ObjectsFactory.create_eeg_data(self.dct, self.subject_of_group, self.eeg_set)
+        eegdata = ObjectsFactory.create_eeg_data(self.dct_eeg, self.subject_of_group, self.eeg_set)
         ObjectsFactory.create_eeg_file(eegdata)
 
     def _create_tms_export_data(self, temp_dir):
@@ -1651,10 +1651,10 @@ class ExportFrictionlessData(ExportTestCase):
 
         # Include emg component in experimental protocol
         component_config = ObjectsFactory.create_component_configuration(self.root_component, emg_comp)
-        self.dct = ObjectsFactory.create_data_configuration_tree(component_config)
+        self.dct_emg = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' emg file
-        self.emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct, self.subject_of_group, self.emg_set)
+        self.emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct_emg, self.subject_of_group, self.emg_set)
         ObjectsFactory.create_emg_data_collection_file(self.emgdata)
 
     def _assert_basic_experiment_data(self, json_data):
@@ -2079,7 +2079,7 @@ class ExportFrictionlessData(ExportTestCase):
     def test_export_experiment_add_eeg_data_collection_files(self):
         self._create_sample_export_data()
         # Adds one more eeg data collection
-        eegdata = ObjectsFactory.create_eeg_data(self.dct, self.subject_of_group, self.eeg_set)
+        eegdata = ObjectsFactory.create_eeg_data(self.dct_eeg, self.subject_of_group, self.eeg_set)
         ObjectsFactory.create_eeg_file(eegdata)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2228,7 +2228,7 @@ class ExportFrictionlessData(ExportTestCase):
     def test_export_experiment_add_emg_data_collection_files(self):
         self._create_emg_export_data()
         # Adds one more emg data collection
-        emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct, self.subject_of_group, self.emg_set)
+        emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct_emg, self.subject_of_group, self.emg_set)
         ObjectsFactory.create_emg_data_collection_file(emgdata)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2496,7 +2496,7 @@ class ExportFrictionlessData(ExportTestCase):
         #
         # temp_dir = tempfile.mkdtemp()
         # json_data = self._get_datapackage_json_data(temp_dir, response)
-        pass  # by now, additional data from Experimental Protocol (set of steps) appear to not been exported
+        pass  # by now, additional data from Experimental Protocol (set of steps) appear to have not being exported
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_step_additional_file(self):
@@ -2518,7 +2518,7 @@ class ExportFrictionlessData(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
+        data = self._set_post_data('per_generic_data')
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2537,6 +2537,39 @@ class ExportFrictionlessData(ExportTestCase):
             'description': 'Step additional file'
         }
         self.assertIn(additional_data_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participant_data_collection_additional_file(self):
+        self._create_sample_export_data()
+        additional_data = ObjectsFactory.create_additional_data_data(self.dct_eeg, self.subject_of_group)
+        additional_file = ObjectsFactory.create_additional_data_file(additional_data)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        filename = os.path.basename(additional_file.file.name)
+        unique_name = slugify(filename)
+        file_format_nes_code = additional_file.additional_data.file_format.nes_code
+        additional_data_resource = {
+            'name': unique_name, 'title': unique_name,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_EEG' ,
+                'AdditionalData_1', filename),
+            'description': 'Data Collection (additional file, format: %s)' % file_format_nes_code
+        }
+
+        self.assertIn(additional_data_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
 
 
 def tearDownModule():
