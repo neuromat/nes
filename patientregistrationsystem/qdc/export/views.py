@@ -131,14 +131,22 @@ PATIENT_FIELDS = [
 
 DIAGNOSIS_FIELDS = [
     {'field': 'medicalrecorddata__diagnosis__date', 'header': 'diagnosis_date', 'description': _('Date')},
-    {'field': 'medicalrecorddata__diagnosis__description', 'header': 'diagnosis_description',
-     'description': _('Observation')},
-    {'field': 'medicalrecorddata__diagnosis__classification_of_diseases__code',
-     'header': 'classification_of_diseases_code', 'description': _('Disease code (ICD)')},
-    {'field': 'medicalrecorddata__diagnosis__classification_of_diseases__description',
-     'header': 'classification_of_diseases_description', 'description': _('Disease Description')},
-    {'field': 'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description',
-     'header': 'classification_of_diseases_description', 'description': _('Disease Abbreviated Description')},
+    {
+        'field': 'medicalrecorddata__diagnosis__description', 'header': 'diagnosis_description',
+        'description': _('Observation')
+    },
+    {
+        'field': 'medicalrecorddata__diagnosis__classification_of_diseases__code',
+        'header': 'classification_of_diseases_code', 'description': _('Disease code (ICD)')
+    },
+    {
+        'field': 'medicalrecorddata__diagnosis__classification_of_diseases__description',
+        'header': 'classification_of_diseases_description', 'description': _('Disease Description')
+    },
+    {
+        'field': 'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description',
+        'header': 'classification_of_diseases_description', 'description': _('Disease Abbreviated Description')
+    },
 ]
 
 FIELDS_INCLUSION = [(

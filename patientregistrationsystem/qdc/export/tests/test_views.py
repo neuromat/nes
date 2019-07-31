@@ -1945,7 +1945,6 @@ class ExportFrictionlessData(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
-        # TODO (NES-987): refactor to go similar the test for Diagnosis
         participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
 
         # As Participants.csv/tsv resource has 'schema' key, that is
@@ -1957,6 +1956,7 @@ class ExportFrictionlessData(ExportTestCase):
             # TODO (NES-987): Changes 'Participants.csv' to a constant in code
             'name': 'Participants', 'title': 'Participants',
             # TODO (NES-987): 'path' is wrong (test is wrong), fix this (required)!
+            #  Refactor to go similar the test for Diagnosis
             'path': os.path.join('data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Participants.csv'),
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
@@ -1965,6 +1965,37 @@ class ExportFrictionlessData(ExportTestCase):
             str(test_dict) + ' is not subdict of ' + str(participants_resource))
 
         shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participants_table_schema_info_to_datapackage_json_participants_resource(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # age field is already included in POST data. Include only the others
+        patient_fields = PATIENT_FIELDS.copy()
+        age_field = next(item for item in patient_fields if item['field'] == 'age')
+        del(patient_fields[patient_fields.index(age_field)])
+        # Append all possible patient attributes in POST data
+        for field in patient_fields:
+            data['patient_selected'].append(field['field'] + '*' + field['header'])
+
+        # Test for Question code, Full question text and Abbreviated question text
+        # in Headings head, General informtion export tab
+        for heading_type in [['code'], ['full'], ['abbreviated']]:
+            data['headings'] = heading_type
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self._get_datapackage_json_data(temp_dir, response)
+            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+
+            self.assertIn('schema', participants_resource)
+            self.assertIn('fields', participants_resource['schema'])
+            self._assert_participants_table_schema(participants_resource['schema'], heading_type[0])
+
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(self):
@@ -2000,40 +2031,28 @@ class ExportFrictionlessData(ExportTestCase):
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
 
-        self.assertEqual(test_dict, diagnosis_resource, str(test_dict) + ' not equal ' + str(diagnosis_resource))
+        self.assertEqual(test_dict, diagnosis_resource,
+                         str(test_dict) + ' not equal ' + str(diagnosis_resource))
 
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_participants_table_schema_info_to_datapackage_json_participants_resource(self):
+    def test_export_experiment_add_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
         data = self._set_post_data()
-        # age field is already included in POST data. Include only the others
-        patient_fields = PATIENT_FIELDS.copy()
-        age_field = next(item for item in patient_fields if item['field'] == 'age')
-        del(patient_fields[patient_fields.index(age_field)])
-        # Append all possible patient attributes in POST data
-        for field in patient_fields:
-            data['patient_selected'].append(field['field'] + '*' + field['header'])
-
-        # Test for Question code, Full question text and Abbreviated question text
-        # in Headings head, General informtion export tab
-        for heading_type in [['code'], ['full'], ['abbreviated']]:
-            data['headings'] = heading_type
-            response = self.client.post(reverse('export_view'), data)
-
-            temp_dir = tempfile.mkdtemp()
-            json_data = self._get_datapackage_json_data(temp_dir, response)
-            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
-
-            self.assertIn('schema', participants_resource)
-            self.assertIn('fields', participants_resource['schema'])
-            self._assert_participants_table_schema(participants_resource['schema'], heading_type[0])
-
-            shutil.rmtree(temp_dir)
+        # Add selected diagnosis (all here)
+        data['diagnosis_selected'] = [
+            'medicalrecorddata__diagnosis__date*diagnosis_date',
+            'medicalrecorddata__diagnosis__description*diagnosis_description',
+            'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
+            'medicalrecorddata__diagnosis__classification_of_diseases__description'
+            '*classification_of_diseases_description',
+            'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
+            '*classification_of_diseases_description'
+        ]
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_experimental_protocol_image_file(self):
