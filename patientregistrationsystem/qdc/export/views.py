@@ -150,11 +150,6 @@ DIAGNOSIS_FIELDS = [
     },
 ]
 
-FIELDS_INCLUSION = [(
-        'code',
-        {'code': 'participant_code', 'full': _('Participant code'), 'abbreviated': _('Participant code')}
-)]
-
 QUESTIONNAIRE_EVALUATION_FIELDS_EXCLUDED = [
     'subjectid',
     'responsibleid',
