@@ -29,7 +29,7 @@ from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
     set_mocks5
 from export.tests.tests_helper import ExportTestCase
-from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, FIELDS_INCLUSION
+from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS
 from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
 
@@ -833,20 +833,15 @@ class ExportDataCollectionTest(ExportTestCase):
 
         dgp = ObjectsFactory.create_component(
             self.experiment, Component.DIGITAL_GAME_PHASE,
-            kwargs={'software_version': software_version, 'context_tree': context_tree}
-        )
+            kwargs={'software_version': software_version, 'context_tree': context_tree})
 
-        # include dgp component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(
-            self.root_component, dgp
-        )
+        # Include dgp component in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, dgp)
 
         dct = ObjectsFactory.create_data_configuration_tree(component_config)
 
         # 'upload' digital game data file
-        dgp_data = ObjectsFactory.create_digital_game_phase_data(
-            dct, self.subject_of_group
-        )
+        dgp_data = ObjectsFactory.create_digital_game_phase_data(dct, self.subject_of_group)
 
         dgpf = ObjectsFactory.create_digital_game_phase_file(dgp_data)
 
@@ -861,20 +856,15 @@ class ExportDataCollectionTest(ExportTestCase):
         # Post data to view: data style that is posted to export_view in
         # template
         data = {
-            'per_questionnaire': ['on'],
-            'per_participant': ['on'],
-            'per_goalkeeper_game_data': ['on'],
-            'per_additional_data': ['on'],
-            'headings': ['code'],
-            'patient_selected': ['age*age'],
-            'action': ['run'],
-            'responses': ['short']
+            'per_questionnaire': ['on'], 'per_participant': ['on'], 'per_goalkeeper_game_data': ['on'],
+            'per_additional_data': ['on'], 'headings': ['code'], 'patient_selected': ['age*age'],
+            'action': ['run'], 'responses': ['short']
         }
         response = self.client.post(reverse('export_view'), data)
 
         zipped_file = self.get_zipped_file(response)
 
-        # we have only the digital_game_phase step, so we get the first
+        # We have only the digital_game_phase step, so we get the first
         # element: [0]
         path = create_list_of_trees(self.group.experimental_protocol, "digital_game_phase")[0]
 
@@ -882,14 +872,10 @@ class ExportDataCollectionTest(ExportTestCase):
         component_step = digital_game_phase_component_configuration.component
         step_number = path[-1][4]
 
-        self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                     'DigitalGamePhaseData_1',
-                                                     os.path.basename(dgpf.file.name),
-                                                     zipped_file)
-        self.assert_per_participant_step_file_exists(step_number, component_step,
-                                                     'AdditionalData_1',
-                                                     os.path.basename(adf.file.name),
-                                                     zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'DigitalGamePhaseData_1', os.path.basename(dgpf.file.name), zipped_file)
+        self.assert_per_participant_step_file_exists(
+            step_number, component_step, 'AdditionalData_1', os.path.basename(adf.file.name), zipped_file)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_with_eeg(self):
@@ -1711,34 +1697,23 @@ class ExportFrictionlessData(ExportTestCase):
     @staticmethod
     def _get_name_title(heading_type, field):
         title = ''
-        if field == 'code':  # Participant code
-            code_data = next(item for item in FIELDS_INCLUSION if item[0] == 'code')
-            title = code_data[1][heading_type] \
-                if heading_type != 'abbreviated'\
-                else abbreviated_data(code_data[1][heading_type])
-        else:
-            patient_field = next(item for item in PATIENT_FIELDS if item['header'] == field)
-            if heading_type == 'code':
-                title = patient_field['header']
-            elif heading_type == 'full':
-                title = patient_field['description']
-            elif heading_type == 'abbreviated':
-                title = abbreviated_data(patient_field['description'])
+        patient_field = next(item for item in PATIENT_FIELDS if item['header'] == field)
+        if heading_type == 'code':
+            title = patient_field['header']
+        elif heading_type == 'full':
+            title = patient_field['description']
+        elif heading_type == 'abbreviated':
+            title = abbreviated_data(patient_field['description'])
 
         name = slugify(title)
 
         return name, title
 
     def _assert_participants_table_schema(self, resource_schema, heading_type):
-        name, title = self._get_name_title(heading_type, 'code')
-        self.assertIn(
-            # TODO (NES-987): test for formats that are not default
-            {'name': name, 'title': title, 'type': 'string', 'format': 'default'},
-            resource_schema['fields'])
-
         for field in PATIENT_FIELDS:
             name, title = self._get_name_title(heading_type, field['header'])
             self.assertIn(
+                # TODO (NES-987): test for formats that are not default
                 {'name': name, 'title': title, 'type': field['json_data_type'], 'format': 'default'},
                 resource_schema['fields']
             )
@@ -1935,6 +1910,7 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_participant_data_file_info_to_datapackage_json_resources_field(self):
+        # TODO (NES-987): change method name to _create_eeg_export_data
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -1954,7 +1930,9 @@ class ExportFrictionlessData(ExportTestCase):
         test_dict = {
             # TODO (NES-987): Changes 'Participants.csv' to a constant in code
             'name': 'Participants', 'title': 'Participants',
-            'path': 'data/Group_' + slugify(self.group.title).replace('-', '_') + 'Participants.csv',
+            # TODO (NES-987): 'path' is wrong (test is wrong), fix this (required)!
+            #  Refactor to go similar the test for Diagnosis
+            'path': os.path.join('data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Participants.csv'),
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
         self.assertTrue(
@@ -1980,7 +1958,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         # Test for Question code, Full question text and Abbreviated question text
         # in Headings head, General informtion export tab
-        for heading_type in [['code'], ['full'], ['abbreviated']]:
+        for heading_type in ['code'], ['full'], ['abbreviated']:
             data['headings'] = heading_type
             response = self.client.post(reverse('export_view'), data)
 
@@ -1993,6 +1971,72 @@ class ExportFrictionlessData(ExportTestCase):
             self._assert_participants_table_schema(participants_resource['schema'], heading_type[0])
 
             shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        # Add selected diagnosis (all here)
+        data['diagnosis_selected'] = [
+            'medicalrecorddata__diagnosis__date*diagnosis_date',
+            'medicalrecorddata__diagnosis__description*diagnosis_description',
+            'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
+            'medicalrecorddata__diagnosis__classification_of_diseases__description'
+            '*classification_of_diseases_description',
+            'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
+            '*classification_of_diseases_description'
+        ]
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+        diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'Diagnosis')
+        # Remove schema field if it exists. The test was wrote before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in diagnosis_resource:
+            diagnosis_resource.pop('schema')
+
+        test_dict = {
+            'name': 'Diagnosis', 'title': 'Diagnosis',
+            'path': os.path.join('data', 'Participant_data', 'Diagnosis.csv'),
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+
+        self.assertEqual(test_dict, diagnosis_resource,
+                         str(test_dict) + ' not equal ' + str(diagnosis_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_experiment_add_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(self):
+        pass
+        # self._create_sample_export_data()
+        # self.append_session_variable('group_selected_list', [str(self.group.id)])
+        # self.append_session_variable('license', '0')
+        #
+        # data = self._set_post_data()
+        # # Append al possible diagnosis attributes in POST data
+        # for field in DIAGNOSIS_FIELDS:  # TODO (NES-987): do the same in the other diagnosis test
+        #     data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
+        #
+        # # Test for Question code, Full question text and Abbreviated question text
+        # # in Headings head, General informtion export tab
+        # for heading_type in ['code'], ['full'], ['abbreviated']:
+        #     data['headings'] = heading_type
+        #     response = self.client.post(reverse('export_view'), data)
+        #
+        #     temp_dir = tempfile.mkdtemp()
+        #     json_data = self._get_datapackage_json_data(temp_dir, response)
+        #     diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'Diagnosis')
+        #     self.assertIn('schema', diagnosis_resource)
+        #     self.assertIn('fields', diagnosis_resource['schema'])
+        #     self._assert_participant_diagnosis_table_schema(diagnosis_resource['schema'], heading_type)
+        #
+        #     shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_add_experimental_protocol_image_file(self):

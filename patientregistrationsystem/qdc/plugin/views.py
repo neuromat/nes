@@ -186,9 +186,15 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
 
     participants_headers = sorted(participants_headers, key=itemgetter('patient_name'))
 
+    # Exclude PATIENT_FIELDS item correspondent to patient code
+    # Did that as of NES-987 issue refactorings (this was a major refactoring)
+    patient_fields = PATIENT_FIELDS.copy()
+    item = next(item for item in PATIENT_FIELDS if item['field'] == 'code')
+    del patient_fields[patient_fields.index(item)]
+
     context = {
         'participants': participants_headers,
-        'patient_fields': PATIENT_FIELDS,
+        'patient_fields': patient_fields,
         'admission_title': admission_title,
         'surgical_title': surgical_title
     }

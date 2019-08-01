@@ -49,12 +49,8 @@ DEFAULT_LANGUAGE = 'pt-BR'
 METADATA_DIRECTORY = 'Questionnaire_metadata'
 
 INPUT_DATA_KEYS = [
-    'base_directory',
-    'export_per_participant',
-    'export_per_questionnaire',
-    'per_participant_directory',
-    'per_questionnaire_directory',
-    'export_filename',
+    'base_directory', 'export_per_participant', 'export_per_questionnaire',
+    'per_participant_directory', 'per_questionnaire_directory', 'export_filename',
     'questionnaires'
 ]
 
@@ -1764,7 +1760,8 @@ class ExportExecution:
                                     {
                                         'name': filename, 'title': filename,
                                         'path': path.join(export_eeg_data_directory, EEG_SETTING_FILENAME),
-                                        # TODO (NES-987): implement get_mediatype(extension) method
+                                        # TODO (NES-987): implement get_mediatype(extension) method and apply in the
+                                        #  other places
                                         'format': extension, 'mediatype': 'application/%s' % extension
                                     }
                                 ])
@@ -2411,6 +2408,7 @@ class ExportExecution:
                     return error_msg
 
         if 'tsv' in self.get_input_data('filesformat_type'):
+            # TODO (NES-987): change this like in other places
             file_extension = 'tsv'
             separator = '\t'
             export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
@@ -2430,8 +2428,7 @@ class ExportExecution:
                 # For datapackages.json resources
                 'name': 'Participants', 'title': 'Participants',
                 'path': path.join(base_directory, export_filename),
-                'format': file_extension, 'mediatype': 'text/%s' % file_extension,
-                'encoding': 'UTF-8',
+                'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
                 'schema': {
                     'fields': self._set_datapackage_table_schema(participants_headers, participants_field_types)
                 }
@@ -2450,14 +2447,19 @@ class ExportExecution:
             export_rows_diagnosis = self.process_diagnosis_data(
                 diagnosis_input_data['output_list'], participants_filtered_list)
 
-            if 'tsv' in self.get_input_data('filesformat_type'):
-                export_filename = '%s.tsv' % self.get_input_data('diagnosis')['output_filename']  # 'Diagnosis.tsv'
-            else:
-                export_filename = '%s.csv' % self.get_input_data('diagnosis')['output_filename']  # 'Diagnosis.csv'
-
+            # TODO (NES-987): refactor this as in other places
+            file_extension = 'tsv' if 'tsv' in self.get_input_data('filesformat_type') else 'csv'
+            export_filename = ('%s.' + file_extension) % self.get_input_data('diagnosis')['output_filename']
             complete_filename = path.join(base_export_directory, export_filename)
 
-            self.files_to_zip_list.append([complete_filename, base_directory])
+            self.files_to_zip_list.append([
+                complete_filename, base_directory,
+                {
+                    'name': 'Diagnosis', 'title': 'Diagnosis',
+                    'path': path.join(base_directory, export_filename),
+                    'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
+                }
+            ])
 
             with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
                 export_writer = writer(csv_file, quotechar='"', delimiter=separator, quoting=csv.QUOTE_NONNUMERIC)
