@@ -46,10 +46,11 @@ JSON_EXPERIMENT_FILENAME = 'json_experiment_export.json'
 EXPORT_DIRECTORY = 'export'
 EXPORT_FILENAME = 'export.zip'
 EXPORT_EXPERIMENT_FILENAME = 'export_experiment.zip'
-MAX_STRING_LENGTH = 17
+MAX_STRING_LENGTH = 17  # For abbreviated fields
 
 PATIENT_FIELDS = [
-    {'field': 'age', 'header': 'age', 'description': _('Age'), 'json_data_type':'number'},
+    {'field': 'code', 'header': 'participant_code', 'description': _('Participant code'), 'json_data_type': 'string'},
+    {'field': 'age', 'header': 'age', 'description': _('Age'), 'json_data_type': 'number'},
     {'field': 'gender__name', 'header': 'gender', 'description': _('Gender'), 'json_data_type': 'string'},
     {'field': 'date_birth', 'header': 'date_birth', 'description': _('Date of birth'), 'json_data_type': 'date'},
     {
@@ -131,14 +132,22 @@ PATIENT_FIELDS = [
 
 DIAGNOSIS_FIELDS = [
     {'field': 'medicalrecorddata__diagnosis__date', 'header': 'diagnosis_date', 'description': _('Date')},
-    {'field': 'medicalrecorddata__diagnosis__description', 'header': 'diagnosis_description',
-     'description': _('Observation')},
-    {'field': 'medicalrecorddata__diagnosis__classification_of_diseases__code',
-     'header': 'classification_of_diseases_code', 'description': _('Disease code (ICD)')},
-    {'field': 'medicalrecorddata__diagnosis__classification_of_diseases__description',
-     'header': 'classification_of_diseases_description', 'description': _('Disease Description')},
-    {'field': 'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description',
-     'header': 'classification_of_diseases_description', 'description': _('Disease Abbreviated Description')},
+    {
+        'field': 'medicalrecorddata__diagnosis__description', 'header': 'diagnosis_description',
+        'description': _('Observation')
+    },
+    {
+        'field': 'medicalrecorddata__diagnosis__classification_of_diseases__code',
+        'header': 'classification_of_diseases_code', 'description': _('Disease code (ICD)')
+    },
+    {
+        'field': 'medicalrecorddata__diagnosis__classification_of_diseases__description',
+        'header': 'classification_of_diseases_description', 'description': _('Disease Description')
+    },
+    {
+        'field': 'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description',
+        'header': 'classification_of_diseases_description', 'description': _('Disease Abbreviated Description')
+    },
 ]
 
 FIELDS_INCLUSION = [(
@@ -188,7 +197,6 @@ def find_description(field_to_find, fields_inclusion):
 
 
 def abbreviated_data(data_to_abbreviate, heading_type='abbreviated'):
-
     if heading_type == 'abbreviated' and len(data_to_abbreviate) > MAX_STRING_LENGTH:
         return data_to_abbreviate[:MAX_STRING_LENGTH] + '..'
     else:
@@ -208,9 +216,8 @@ def update_fields(list_, heading_type, fields):
             item[1] = abbreviated_data(header_translated, heading_type)
 
     # Include participant code
-    for field, header in FIELDS_INCLUSION:
-        header_translated = ug_(header[heading_type])
-        list_.insert(0, [field, abbreviated_data(header_translated, heading_type)])
+    participant_code = PATIENT_FIELDS[0]
+    list_.insert(0, [participant_code['field'], abbreviated_data(participant_code['header'], heading_type)])
 
 
 def export_create(request, export_id, input_filename, template_name='export/export_data.html',
@@ -658,9 +665,15 @@ def export_view(request, template_name='export/export_data.html'):
                 if (questionnaire['sid'], output_list['field']) in selected_ev_quest_experiments:
                     output_list['selected'] = True
 
+    # Exclude PATIENT_FIELDS item correspondent to patient code
+    # Did that as of NES-987 issue refactorings (this was a major refactoring)
+    patient_fields = PATIENT_FIELDS.copy()
+    item = next(item for item in PATIENT_FIELDS if item['field'] == 'code')
+    del patient_fields[patient_fields.index(item)]
+
     context = {
         'export_form': export_form,
-        'patient_fields': PATIENT_FIELDS,
+        'patient_fields': patient_fields,
         'diagnosis_fields': DIAGNOSIS_FIELDS,
         'questionnaires_fields_list': questionnaires_fields_list,
         'questionnaires_experiment_fields_list':
