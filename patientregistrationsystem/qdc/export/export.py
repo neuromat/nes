@@ -49,12 +49,8 @@ DEFAULT_LANGUAGE = 'pt-BR'
 METADATA_DIRECTORY = 'Questionnaire_metadata'
 
 INPUT_DATA_KEYS = [
-    'base_directory',
-    'export_per_participant',
-    'export_per_questionnaire',
-    'per_participant_directory',
-    'per_questionnaire_directory',
-    'export_filename',
+    'base_directory', 'export_per_participant', 'export_per_questionnaire',
+    'per_participant_directory', 'per_questionnaire_directory', 'export_filename',
     'questionnaires'
 ]
 
@@ -2412,6 +2408,7 @@ class ExportExecution:
                     return error_msg
 
         if 'tsv' in self.get_input_data('filesformat_type'):
+            # TODO (NES-987): change this like in other places
             file_extension = 'tsv'
             separator = '\t'
             export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
