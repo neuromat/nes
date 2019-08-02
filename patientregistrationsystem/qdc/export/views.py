@@ -52,7 +52,7 @@ PATIENT_FIELDS = [
     {'field': 'code', 'header': 'participant_code', 'description': _('Participant code'), 'json_data_type': 'string'},
     {'field': 'age', 'header': 'age', 'description': _('Age'), 'json_data_type': 'number'},
     {'field': 'gender__name', 'header': 'gender', 'description': _('Gender'), 'json_data_type': 'string'},
-    {'field': 'date_birth', 'header': 'date_birth', 'description': _('Date of birth'), 'json_data_type': 'date'},
+    {'field': 'date_birth', 'header': 'date_birth', 'description': _('Date of birth'), 'json_data_type': 'string'},
     {
         'field': 'marital_status__name', 'header': 'marital_status', 'description': _('Marital status'),
         'json_data_type': 'string'
@@ -131,22 +131,27 @@ PATIENT_FIELDS = [
 ]
 
 DIAGNOSIS_FIELDS = [
-    {'field': 'medicalrecorddata__diagnosis__date', 'header': 'diagnosis_date', 'description': _('Date')},
+    {
+        'field': 'medicalrecorddata__diagnosis__date', 'header': 'diagnosis_date', 'description': _('Date'),
+        'json_data_type': 'string'
+    },
     {
         'field': 'medicalrecorddata__diagnosis__description', 'header': 'diagnosis_description',
-        'description': _('Observation')
+        'description': _('Observation'), 'json_data_type': 'string'
     },
     {
         'field': 'medicalrecorddata__diagnosis__classification_of_diseases__code',
-        'header': 'classification_of_diseases_code', 'description': _('Disease code (ICD)')
+        'header': 'classification_of_diseases_code', 'description': _('Disease code (ICD)'), 'json_data_type': 'string'
     },
     {
         'field': 'medicalrecorddata__diagnosis__classification_of_diseases__description',
-        'header': 'classification_of_diseases_description', 'description': _('Disease Description')
+        'header': 'classification_of_diseases_description', 'description': _('Disease Description'),
+        'json_data_type': 'string'
     },
     {
         'field': 'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description',
-        'header': 'classification_of_diseases_description', 'description': _('Disease Abbreviated Description')
+        'header': 'classification_of_diseases_description', 'description': _('Disease Abbreviated Description'),
+        'json_data_type': 'string'
     },
 ]
 
