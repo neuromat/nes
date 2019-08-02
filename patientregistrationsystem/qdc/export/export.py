@@ -23,7 +23,8 @@ from export.export_utils import create_list_of_trees, can_export_nwb
 from survey.survey_utils import QuestionnaireUtils
 
 from patient.models import Patient, QuestionnaireResponse, Gender, MaritalStatus, SocialDemographicData, Schooling, \
-    Religion, FleshTone, Payment, SocialHistoryData, AmountCigarettes, AlcoholFrequency, AlcoholPeriod
+    Religion, FleshTone, Payment, SocialHistoryData, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, Diagnosis, \
+    ClassificationOfDiseases
 from experiment.models import \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, \
     Group, \
@@ -2440,7 +2441,7 @@ class ExportExecution:
             for row in export_rows_participants:
                 export_writer.writerow(row)
 
-        # process  diagnosis file
+        # Process diagnosis file
         diagnosis_input_data = self.get_input_data('diagnosis')
 
         if diagnosis_input_data['output_list'] and participants_filtered_list:
@@ -2452,12 +2453,17 @@ class ExportExecution:
             export_filename = ('%s.' + file_extension) % self.get_input_data('diagnosis')['output_filename']
             complete_filename = path.join(base_export_directory, export_filename)
 
+            diagnosis_headers, diagnosis_field_types = self._set_diagnosis_fields()
+
             self.files_to_zip_list.append([
                 complete_filename, base_directory,
                 {
                     'name': 'Diagnosis', 'title': 'Diagnosis',
                     'path': path.join(base_directory, export_filename),
                     'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
+                    'schema': {
+                        'fields': self._set_datapackage_table_schema(diagnosis_headers, diagnosis_field_types)
+                    }
                 }
             ])
 
@@ -2470,14 +2476,12 @@ class ExportExecution:
 
     @staticmethod
     def _get_type(model_field):
-        if model_field is CharField or model_field is TextField:
+        if model_field is CharField or model_field is TextField or model_field is DateField:
             return 'string'
-        elif model_field is DateField:
-            return 'date'
         elif model_field is FloatField:
             # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
             return 'number'
-        elif model_field is BooleanField or NullBooleanField:
+        elif model_field is BooleanField or model_field is NullBooleanField:
             return 'boolean'
 
     def _set_datapackage_table_schema(self, headers, model_fields):
@@ -2489,6 +2493,65 @@ class ExportExecution:
             fields.append(field_info)
 
         return fields
+
+    def _set_participants_fields(self):
+        field_types = {
+            'code': Patient._meta.get_field('code').__class__,
+            'age': FloatField,
+            'gender__name': Gender._meta.get_field('name').__class__,
+            'date_birth': Patient._meta.get_field('date_birth').__class__,
+            'marital_status__name': MaritalStatus._meta.get_field('name').__class__,
+            'origin': Patient._meta.get_field('origin').__class__,
+            'city': Patient._meta.get_field('city').__class__,
+            'state': Patient._meta.get_field('state').__class__,
+            'country': Patient._meta.get_field('country').__class__,
+            'socialdemographicdata__natural_of': SocialDemographicData._meta.get_field('natural_of').__class__,
+            'socialdemographicdata__schooling__name': Schooling._meta.get_field('name').__class__,
+            'socialdemographicdata__patient_schooling__name': Schooling._meta.get_field('name').__class__,
+            'socialdemographicdata__profession': SocialDemographicData._meta.get_field('profession').__class__,
+            'socialdemographicdata__social_class': SocialDemographicData._meta.get_field('social_class').__class__,
+            'socialdemographicdata__occupation': SocialDemographicData._meta.get_field('occupation').__class__,
+            'socialdemographicdata__benefit_government': SocialDemographicData._meta.get_field(
+                'benefit_government').__class__,
+            'socialdemographicdata__religion__name': Religion._meta.get_field('name').__class__,
+            'socialdemographicdata__flesh_tone__name': FleshTone._meta.get_field('name').__class__,
+            'socialdemographicdata__citizenship': SocialDemographicData._meta.get_field('citizenship').__class__,
+            'socialdemographicdata__payment__name': Payment._meta.get_field('name').__class__,
+            'socialhistorydata__smoker': SocialHistoryData._meta.get_field('smoker').__class__,
+            'socialhistorydata__amount_cigarettes__name': AmountCigarettes._meta.get_field('name').__class__,
+            'socialhistorydata__ex_smoker': SocialHistoryData._meta.get_field('ex_smoker').__class__,
+            'socialhistorydata__alcoholic': SocialHistoryData._meta.get_field('alcoholic').__class__,
+            'socialhistorydata__alcohol_frequency__name': AlcoholFrequency._meta.get_field('name').__class__,
+            'socialhistorydata__alcohol_period__name': AlcoholPeriod._meta.get_field('name').__class__,
+            'socialhistorydata__drugs': SocialHistoryData._meta.get_field('drugs').__class__
+        }
+        participants_headers = []
+        participants_field_types = []
+        for field in self.get_input_data('participants')['output_list']:
+            participants_headers.append(field['header'])
+            participants_field_types.append(field_types[field['field']])
+
+        return participants_headers, participants_field_types
+
+    def _set_diagnosis_fields(self):
+        field_types = {
+            'code': Patient._meta.get_field('code').__class__,
+            'medicalrecorddata__diagnosis__date': Diagnosis._meta.get_field('date').__class__,
+            'medicalrecorddata__diagnosis__description': Diagnosis._meta.get_field('description').__class__,
+            'medicalrecorddata__diagnosis__classification_of_diseases__code':
+                ClassificationOfDiseases._meta.get_field('code').__class__,
+            'medicalrecorddata__diagnosis__classification_of_diseases__description':
+                ClassificationOfDiseases._meta.get_field('description').__class__,
+            'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description':
+                ClassificationOfDiseases._meta.get_field('abbreviated_description').__class__
+        }
+        diagnosis_headers = []
+        diagnosis_field_types = []
+        for field in self.get_input_data('diagnosis')['output_list']:
+            diagnosis_headers.append(field['header'])
+            diagnosis_field_types.append(field_types[field['field']])
+
+        return diagnosis_headers, diagnosis_field_types
 
     def process_experiment_data(self, language_code):
         error_msg = ''
@@ -3264,44 +3327,6 @@ class ExportExecution:
 
             export_rows.insert(0, header)
         return export_rows
-
-    def _set_participants_fields(self):
-        field_types = {
-            'code': Patient._meta.get_field('code').__class__, 'age': FloatField,
-            'gender__name': Gender._meta.get_field('name').__class__,
-            'date_birth': Patient._meta.get_field('date_birth').__class__,
-            'marital_status__name': MaritalStatus._meta.get_field('name').__class__,
-            'origin': Patient._meta.get_field('origin').__class__,
-            'city': Patient._meta.get_field('city').__class__,
-            'state': Patient._meta.get_field('state').__class__,
-            'country': Patient._meta.get_field('country').__class__,
-            'socialdemographicdata__natural_of': SocialDemographicData._meta.get_field('natural_of').__class__,
-            'socialdemographicdata__schooling__name': Schooling._meta.get_field('name').__class__,
-            'socialdemographicdata__patient_schooling__name': Schooling._meta.get_field('name').__class__,
-            'socialdemographicdata__profession': SocialDemographicData._meta.get_field('profession').__class__,
-            'socialdemographicdata__social_class': SocialDemographicData._meta.get_field('social_class').__class__,
-            'socialdemographicdata__occupation': SocialDemographicData._meta.get_field('occupation').__class__,
-            'socialdemographicdata__benefit_government': SocialDemographicData._meta.get_field(
-                'benefit_government').__class__,
-            'socialdemographicdata__religion__name': Religion._meta.get_field('name').__class__,
-            'socialdemographicdata__flesh_tone__name': FleshTone._meta.get_field('name').__class__,
-            'socialdemographicdata__citizenship': SocialDemographicData._meta.get_field('citizenship').__class__,
-            'socialdemographicdata__payment__name': Payment._meta.get_field('name').__class__,
-            'socialhistorydata__smoker': SocialHistoryData._meta.get_field('smoker').__class__,
-            'socialhistorydata__amount_cigarettes__name': AmountCigarettes._meta.get_field('name').__class__,
-            'socialhistorydata__ex_smoker': SocialHistoryData._meta.get_field('ex_smoker').__class__,
-            'socialhistorydata__alcoholic': SocialHistoryData._meta.get_field('alcoholic').__class__,
-            'socialhistorydata__alcohol_frequency__name': AlcoholFrequency._meta.get_field('name').__class__,
-            'socialhistorydata__alcohol_period__name': AlcoholPeriod._meta.get_field('name').__class__,
-            'socialhistorydata__drugs': SocialHistoryData._meta.get_field('drugs').__class__
-        }
-        participants_headers = []
-        participants_field_types = []
-        for field in self.get_input_data('participants')['output_list']:
-            participants_headers.append(field['header'])
-            participants_field_types.append(field_types[field['field']])
-
-        return participants_headers, participants_field_types
 
 
 def handling_values(dictionary_object):
