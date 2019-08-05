@@ -47,7 +47,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         # Create questionnaire data collection in NES
         # TODO: use method already existent in patient.tests. See other places
         self.survey = create_survey(LIMESURVEY_SURVEY_ID)
-        self.data_configuration_tree = self.create_nes_questionnaire(self.root_component)
+        self.data_configuration_tree = self._create_nes_questionnaire(self.root_component)
 
         # Add response's participant to limesurvey survey and the references
         # in our db
