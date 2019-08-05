@@ -13,15 +13,12 @@ from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
 HEADER_EXPLANATION_FIELDS = [
-    'questionnaire_code', 'questionnaire_title',
-    'question_group', 'question_order',
-    'question_type', 'question_type_description',
-    'question_index',
-    'question_code', 'question_description',
-    'subquestion_code', 'subquestion_description',
-    'question_scale', 'question_scale_label',
-    'option_code', 'option_description'
-    ]
+    ('questionnaire_code', 'string'), ('questionnaire_title', 'string'), ('question_group', 'string'),
+    ('question_order', 'integer'), ('question_type', 'string'), ('question_type_description', 'string'),
+    ('question_index', 'string'), ('question_code', 'string'), ('question_description', 'string'),
+    ('subquestion_code', 'string'), ('subquestion_description', 'string'), ('question_scale', 'string'),
+    ('question_scale_label', 'string'), ('option_code', 'string'), ('option_description', 'string')
+]
 
 question_types = {
     '1': 'Array Dual Scale',
@@ -268,7 +265,7 @@ class QuestionnaireUtils:
         """
         # Clear fields
         fields_cleared = [field.split("[")[0] for field in fields]
-        questionnaire_explanation_fields_list = [HEADER_EXPLANATION_FIELDS]
+        questionnaire_explanation_fields_list = [[item[0] for item in HEADER_EXPLANATION_FIELDS]]
         fields_from_questions = []
         # For each field, verify the question description
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
