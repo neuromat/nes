@@ -46,7 +46,7 @@ JSON_EXPERIMENT_FILENAME = 'json_experiment_export.json'
 EXPORT_DIRECTORY = 'export'
 EXPORT_FILENAME = 'export.zip'
 EXPORT_EXPERIMENT_FILENAME = 'export_experiment.zip'
-MAX_STRING_LENGTH = 17  # For abbreviated fields
+ABBREVIATED_FIELDS_LENGTH = 17
 
 PATIENT_FIELDS = [
     {'field': 'code', 'header': 'participant_code', 'description': _('Participant code'), 'json_data_type': 'string'},
@@ -197,8 +197,8 @@ def find_description(field_to_find, fields_inclusion):
 
 
 def abbreviated_data(data_to_abbreviate, heading_type='abbreviated'):
-    if heading_type == 'abbreviated' and len(data_to_abbreviate) > MAX_STRING_LENGTH:
-        return data_to_abbreviate[:MAX_STRING_LENGTH] + '..'
+    if heading_type == 'abbreviated' and len(data_to_abbreviate) > ABBREVIATED_FIELDS_LENGTH:
+        return data_to_abbreviate[:ABBREVIATED_FIELDS_LENGTH] + '..'
     else:
         return data_to_abbreviate
 

@@ -100,6 +100,7 @@ class ABCSearchEngine(ABC):
         :return: on success, a dict of deletion status for each participant; on failure, status dict.
         """
         result = self.server.delete_participants(self.session_key, survey_id, tokens_ids)
+
         # In case of success RPC returs a list, otherwise a dict with error status
         return result if 'status' not in result else None
 
@@ -213,8 +214,8 @@ class ABCSearchEngine(ABC):
         :param sid: survey ID
         :return: status of the operation
         """
-
         status = self.server.delete_survey(self.session_key, sid)
+
         return status['status']
 
     @abstractmethod
@@ -260,7 +261,7 @@ class ABCSearchEngine(ABC):
         return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     def get_header_response(self, sid, language, token, heading_type):
-        """ Obtain header responses
+        """Obtain header responses
         :param sid: survey ID
         :param language: language
         :param token: token
@@ -451,8 +452,7 @@ class Questionnaires(ABCSearchEngine):
     """ Wrapper class for LimeSurvey API"""
 
     ERROR_CODE = 1
-    ERROR_MESSAGE = \
-        'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+    ERROR_MESSAGE = 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
     'problem persists please contact System Administrator.'
 
     def find_all_questionnaires(self):
