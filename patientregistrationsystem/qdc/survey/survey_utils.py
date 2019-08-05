@@ -265,7 +265,7 @@ class QuestionnaireUtils:
         """
         # Clear fields
         fields_cleared = [field.split("[")[0] for field in fields]
-        questionnaire_explanation_fields_list = [HEADER_EXPLANATION_FIELDS]
+        questionnaire_explanation_fields_list = [[item[0] for item in HEADER_EXPLANATION_FIELDS]]
         fields_from_questions = []
         # For each field, verify the question description
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
