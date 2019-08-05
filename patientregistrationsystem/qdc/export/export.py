@@ -20,7 +20,7 @@ from django.template.defaultfilters import slugify
 
 from export.export_utils import create_list_of_trees, can_export_nwb
 
-from survey.survey_utils import QuestionnaireUtils
+from survey.survey_utils import QuestionnaireUtils, HEADER_EXPLANATION_FIELDS
 
 from patient.models import Patient, QuestionnaireResponse, Gender, MaritalStatus, SocialDemographicData, Schooling, \
     Religion, FleshTone, Payment, SocialHistoryData, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, Diagnosis, \
@@ -1464,7 +1464,10 @@ class ExportExecution:
                                 'title': prefix_filename_fields + '_' + questionnaire_code,
                                 'path': path.join(export_metadata_directory, export_filename),
                                 'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
-                                'description': 'Questionnaire metadata'
+                                'description': 'Questionnaire metadata',
+                                'schema': {
+                                    'fields': self._set_questionnaire_metadata_fields()
+                                }
                             }
                         ])
 
@@ -2550,6 +2553,13 @@ class ExportExecution:
             diagnosis_field_types.append(field_types[field['field']])
 
         return diagnosis_headers, diagnosis_field_types
+
+    @staticmethod
+    def _set_questionnaire_metadata_fields():
+        fields = []
+        for field in HEADER_EXPLANATION_FIELDS:
+            fields.append({'name': field[0], 'title': field[0], 'type': field[1], 'format': 'default'})
+        return fields
 
     def process_experiment_data(self, language_code):
         error_msg = ''

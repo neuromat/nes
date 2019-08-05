@@ -13,15 +13,12 @@ from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
 HEADER_EXPLANATION_FIELDS = [
-    'questionnaire_code', 'questionnaire_title',
-    'question_group', 'question_order',
-    'question_type', 'question_type_description',
-    'question_index',
-    'question_code', 'question_description',
-    'subquestion_code', 'subquestion_description',
-    'question_scale', 'question_scale_label',
-    'option_code', 'option_description'
-    ]
+    ('questionnaire_code', 'string'), ('questionnaire_title', 'string'), ('question_group', 'string'),
+    ('question_order', 'integer'), ('question_type', 'string'), ('question_type_description', 'string'),
+    ('question_index', 'string'), ('question_code', 'string'), ('question_description', 'string'),
+    ('subquestion_code', 'string'), ('subquestion_description', 'string'), ('question_scale', 'string'),
+    ('question_scale_label', 'string'), ('option_code', 'string'), ('option_description', 'string')
+]
 
 question_types = {
     '1': 'Array Dual Scale',
