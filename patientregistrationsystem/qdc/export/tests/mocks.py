@@ -566,3 +566,78 @@ def set_mocks5(mockServer):
             'remindercount': 0
         }
     ]
+
+
+def set_mocks6(mockServer):
+    mockServer.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
+    mockServer.return_value.get_participant_properties.side_effect = [
+        {'completed': '2019-08-02 15:48'}, {'completed': '2019-08-02 15:48'}, {'token': 'q3qEpwISYsxsOHf'}
+    ]
+    mockServer.return_value.export_responses.return_value = \
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9u' \
+        'ZGF0ZSIsInN1YmplY3RpZCIsIlRleHRmcmFnZSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwicTNxRXB3SVNZc3hzT0hm' \
+        'IiwiMiIsIjIwMTktMDItMDggMDA6MDA6MDAiLCIyIiwiRWluZmFjaCBBbnR3b3J0IgoK'
+    mockServer.return_value.list_groups.return_value = [
+        {'description': '', 'group_name': 'Gruppe Eins', 'gid': 1950, 'sid': LIMESURVEY_SURVEY_ID,
+         'id': {'language': 'en', 'gid': 1950}, 'group_order': 2, 'language': 'en', 'grelevance': '',
+         'randomization_group': ''},
+        {'description': '', 'group_name': 'Identification', 'gid': 1949, 'sid': LIMESURVEY_SURVEY_ID,
+         'id': {'language': 'pt-BR', 'gid': 1949}, 'group_order': 1, 'language': 'pt-BR', 'grelevance': '',
+         'randomization_group': ''},
+        {'description': '', 'group_name': 'Identification', 'gid': 1949, 'sid': LIMESURVEY_SURVEY_ID,
+         'id': {'language': 'en', 'gid': 1949}, 'group_order': 1, 'language': 'en', 'grelevance': '',
+         'randomization_group': ''}
+    ]
+    mockServer.return_value.list_questions.side_effect = [
+        [{'question_order': 1, 'title': 'Textfrage', 'parent_qid': 0, 'sid': LIMESURVEY_SURVEY_ID, 'modulename': None, 'mandatory':
+            'N', 'language': 'en', 'scale_id': 0, 'qid': 6158, 'other': 'N', 'preg': '', 'same_default': 0,
+          'relevance': '1', 'gid': 1950, 'help': '', 'id': {'language': 'en', 'qid': 6158},
+          'question': '', 'type': 'S'}],
+        [{'question_order': 0, 'title': 'responsibleid', 'parent_qid': 0, 'sid': LIMESURVEY_SURVEY_ID, 'modulename': None,
+          'mandatory': 'Y', 'language': 'en', 'scale_id': 0, 'qid': 6155, 'other': 'N', 'preg': '', 'same_default': 0,
+          'relevance': '1', 'gid': 1949, 'help': '', 'id': {'language': 'en', 'qid': 6155},
+          'question': 'Responsible Identification number:', 'type': 'N'},
+         {'question_order': 1, 'title': 'acquisitiondate', 'parent_qid': 0, 'sid': LIMESURVEY_SURVEY_ID, 'modulename': None,
+          'mandatory': 'Y', 'language': 'en', 'scale_id': 0, 'qid': 6156, 'other': 'N', 'preg': '', 'same_default': 0,
+          'relevance': '1', 'gid': 1949, 'help': '', 'id': {'language': 'en', 'qid': 6156},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D'},
+         {'question_order': 3, 'title': 'subjectid', 'parent_qid': 0, 'sid': LIMESURVEY_SURVEY_ID, 'modulename': None,
+          'mandatory': 'Y', 'language': 'en', 'scale_id': 0, 'qid': 6157, 'other': 'N', 'preg': '', 'same_default': 0,
+          'relevance': '1', 'gid': 1949, 'help': '', 'id': {'language': 'en', 'qid': 6157},
+          'question': 'Participant Identification number<b>:</b>', 'type': 'N'}],
+        [{'question_order': 0, 'title': 'responsibleid', 'parent_qid': 0, 'sid': LIMESURVEY_SURVEY_ID, 'modulename': None,
+          'mandatory': 'Y', 'language': 'en', 'scale_id': 0, 'qid': 6155, 'other': 'N', 'preg': '', 'same_default': 0,
+          'relevance': '1', 'gid': 1949, 'help': '', 'id': {'language': 'en', 'qid': 6155},
+          'question': 'Responsible Identification number:', 'type': 'N'},
+         {'question_order': 1, 'title': 'acquisitiondate', 'parent_qid': 0, 'sid': LIMESURVEY_SURVEY_ID, 'modulename': None,
+          'mandatory': 'Y', 'language': 'en', 'scale_id': 0, 'qid': 6156, 'other': 'N', 'preg': '', 'same_default': 0,
+          'relevance': '1', 'gid': 1949, 'help': '', 'id': {'language': 'en', 'qid': 6156},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D'},
+         {'question_order': 3, 'title': 'subjectid', 'parent_qid': 0, 'sid': LIMESURVEY_SURVEY_ID, 'modulename': None,
+          'mandatory': 'Y', 'language': 'en', 'scale_id': 0, 'qid': 6157, 'other': 'N', 'preg': '', 'same_default': 0,
+          'relevance': '1', 'gid': 1949, 'help': '', 'id': {'language': 'en', 'qid': 6157},
+          'question': 'Participant Identification number<b>:</b>', 'type': 'N'},
+         {'question_order': 1, 'title': 'Textfrage', 'parent_qid': 0, 'sid': LIMESURVEY_SURVEY_ID, 'modulename': None,
+          'mandatory': 'N', 'language': 'en', 'scale_id': 0, 'qid': 6158, 'other': 'N', 'preg': '', 'same_default': 0,
+          'relevance': '1', 'gid': 1950, 'help': '', 'id': {'language': 'en', 'qid': 6158}, 'question': '',
+          'type': 'S'}]
+        ]
+    mockServer.return_value.get_question_properties.side_effect = 2 * [
+        {'question_order': 1, 'title': 'Textfrage', 'other': 'N', 'gid': 1950,
+         'attributes_lang': 'No available attributes', 'subquestions': 'No available answers',
+         'question': '', 'answeroptions': 'No available answer options', 'type': 'S',
+         'attributes': 'No available attributes'},
+        {'question_order': 0, 'title': 'responsibleid', 'other': 'N', 'gid': 1949,
+         'attributes_lang': 'No available attributes', 'subquestions': 'No available answers',
+         'question': 'Responsible Identification number:', 'answeroptions': 'No available answer options', 'type': 'N',
+         'attributes': {'hidden': '1'}},
+        {'question_order': 1, 'title': 'acquisitiondate', 'other': 'N', 'gid': 1949,
+         'attributes_lang': 'No available attributes', 'subquestions': 'No available answers',
+         'question': 'Acquisition date<strong>:</strong><br />\n', 'answeroptions': 'No available answer options',
+         'type': 'D', 'attributes': {'hidden': '1'}},
+        {'question_order': 3, 'title': 'subjectid', 'other': 'N', 'gid': 1949,
+         'attributes_lang': 'No available attributes', 'subquestions': 'No available answers',
+         'question': 'Participant Identification number<b>:</b>', 'answeroptions': 'No available answer options',
+         'type': 'N', 'attributes': {'hidden': '1'}},
+    ]
+    mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Einfacher Fragebogen'}
