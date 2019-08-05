@@ -32,6 +32,7 @@ from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
+from survey.survey_utils import HEADER_EXPLANATION_FIELDS
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
@@ -2648,7 +2649,10 @@ class ExportFrictionlessData(ExportTestCase):
         unique_name = slugify('Fields_' + code)
         title = 'Fields_' + code
 
-        questionnaire_metadata_resource = {
+        questionnaire_metadata_resource = next(
+            item for item in json_data['resources'] if item['title'] == 'Fields_' + code)
+
+        test_dict = {
             'name': unique_name, 'title': title,
             'path': os.path.join(
                 'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
@@ -2656,7 +2660,57 @@ class ExportFrictionlessData(ExportTestCase):
             'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
         }
         
-        self.assertIn(questionnaire_metadata_resource, json_data['resources'])
+        self.assertTrue(all(
+            item in questionnaire_metadata_resource.items() for item in test_dict.items()),
+            str(test_dict) + ' is not subdict of ' + str(questionnaire_metadata_resource))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_experiment_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(self, mockServer):
+        # Create questionnaire data collection in NES
+        # TODO: use method already existent in patient.tests. See other places
+        survey = create_survey(LIMESURVEY_SURVEY_ID)
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        # Include questionnaire in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # Add response's participant to limesurvey survey and the references
+        # in our db
+        ObjectsFactory.create_questionnaire_response(
+            dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
+
+        set_mocks6(mockServer)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + questionnaire.survey.en_title + '*Textfrage*Textfrage',
+            ],
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        code = questionnaire.survey.code
+        questionnaire_metadata_resource = next(
+            item for item in json_data['resources'] if item['title'] == 'Fields_' + code)
+
+        for item in HEADER_EXPLANATION_FIELDS:
+            self.assertIn(
+                {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
+                questionnaire_metadata_resource['schema']['fields'])
 
 
 def tearDownModule():
