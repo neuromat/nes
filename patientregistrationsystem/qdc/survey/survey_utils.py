@@ -111,10 +111,9 @@ class QuestionnaireUtils:
 
         return headers, fields
 
-    def append_questionnaire_header_and_field(self, questionnaire_id, header, fields,
-                                              considers_questionnaires,
-                                              considers_questionnaires_from_experiment):
-        # only one header, field instance
+    def append_questionnaire_header_and_field(
+            self, questionnaire_id, header, fields, considers_questionnaires, considers_questionnaires_from_experiment):
+        # Only one header, field instance
         for field in fields:
             if considers_questionnaires:
                 if field not in self.questionnaires_data[questionnaire_id]["fields"]:
@@ -367,7 +366,7 @@ class QuestionnaireUtils:
         return 0, questionnaire_explanation_fields_list
 
     @staticmethod
-    def get_question_list(survey, survey_id, language):
+    def get_questions(survey, survey_id, language):
         """
         Return limesurvey multiple question types list
         TODO: make returns all question types
