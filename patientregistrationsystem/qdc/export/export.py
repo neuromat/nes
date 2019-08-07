@@ -131,7 +131,7 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
             export_writer.writerow(row)
 
 
-def replace_multiple_question_answers(responses, question_list):
+def replace_multiple_choice_question_answers(responses, question_list):
     """Get responses list - after limesurvey participants answers obtained from
     get_responses_by_token or get_responses limesurvey api methods - that
     are multiple choices/multiple choices with comments question types (from
@@ -304,8 +304,8 @@ class ExportExecution:
         for element in to_be_included_list:
             self.per_participant_data[participant_id][questionnaire_id][language].append(element)
 
-    def include_in_per_participant_data_from_experiment(self, to_be_included_list, participant_id, questionnaire_id,
-                                                        token_id, step):
+    def include_in_per_participant_data_from_experiment(
+            self, to_be_included_list, participant_id, questionnaire_id, token_id, step):
         """
         :param to_be_included_list: list with information to be included in include_data dict
         :param participant_id: participant identification (number)
@@ -989,7 +989,7 @@ class ExportExecution:
     def merge_questionnaire_answer_list_per_participant(row_participant_data, answer_list):
         questionnaire_answer_list = []
 
-        # building questionnaire_answer_list with row_participant data
+        # Building questionnaire_answer_list with row_participant data
         subject_code = row_participant_data[0]
         attribute = row_participant_data[1]
         for sublist in answer_list:
@@ -1450,8 +1450,8 @@ class ExportExecution:
                             str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
                         # Build metadata export - Fields_Q123.csv
-                        export_filename = '%s_%s_%s.%s' % (prefix_filename_fields, str(questionnaire_code), language,
-                                                           filesformat_type)
+                        export_filename = '%s_%s_%s.%s' % \
+                                          (prefix_filename_fields, str(questionnaire_code), language, filesformat_type)
 
                         complete_filename = path.join(complete_export_metadata_path, export_filename)
 
@@ -1674,9 +1674,7 @@ class ExportExecution:
 
                         # Ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         step_participant_export_directory = path.join(
-                            participant_export_directory,
-                            token_data['directory_step_name']
-                        )
+                            participant_export_directory, token_data['directory_step_name'])
                         # Select questionnaire language
                         questionnaire_language = self.get_input_data('questionnaire_language')[str(questionnaire_id)]
 
@@ -2977,54 +2975,41 @@ class ExportExecution:
         response_type = self.get_response_type()
         self.questionnaires_responses = {}
         for group_id in self.get_input_data('questionnaires_from_experiments'):
-            for questionnaire_id in self.get_input_data(
-                    'questionnaires_from_experiments')[group_id]:
-                language_list = self.get_input_data(
-                    'questionnaire_language'
-                )[questionnaire_id]['language_list']
-                questionnaire = self.get_input_data(
-                    'questionnaires_from_experiments')[group_id][str(questionnaire_id)]
-                headers, fields = \
-                    self.questionnaire_utils.set_questionnaire_experiment_header_and_fields(
-                        questionnaire_id, questionnaire
-                    )
+            for questionnaire_id in self.get_input_data('questionnaires_from_experiments')[group_id]:
+                language_list = self.get_input_data('questionnaire_language')[questionnaire_id]['language_list']
+                questionnaire = self.get_input_data('questionnaires_from_experiments')[group_id][str(questionnaire_id)]
+                headers, fields = self.questionnaire_utils.set_questionnaire_experiment_header_and_fields(
+                        questionnaire_id, questionnaire)
 
                 # TODO: This if is the first thing to do not inside for.
                 # TODO: Put this as the first line of method.
                 if limesurvey_available(questionnaire_lime_survey):
                     data_from_lime_survey = {}
                     for language in language_list:
-                        # read all data for questionnaire_id from LimeSurvey
+                        # Read all data for questionnaire_id from LimeSurvey
                         responses_string1 = questionnaire_lime_survey.get_responses(
                             questionnaire_id, language, response_type[0])
-                        # all the answer from the questionnaire_id in csv format
+                        # All the answer from the questionnaire_id in csv format
                         fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
-                        # need types of questions to make replacement just
-                        # below
-                        error, question_list = QuestionnaireUtils.get_question_list(
+                        # Need multiple choice questions to make replacements just below
+                        error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                             questionnaire_lime_survey, questionnaire_id, language)
-                        replace_multiple_question_answers(fill_list1, question_list)
+                        replace_multiple_choice_question_answers(fill_list1, multiple_choice_questions)
 
-                        # read 'long' information, if necessary
+                        # Read 'long' information, if necessary
                         if len(response_type) > 1:
-                            responses_string2 = \
-                                questionnaire_lime_survey.get_responses(
-                                    questionnaire_id, language,
-                                    response_type[1]
-                                )
-                            fill_list2 = QuestionnaireUtils.responses_to_csv(
-                                responses_string2
-                            )
-                            # need types of questions to make replacement just
-                            # below
-                            error, question_list = QuestionnaireUtils.get_question_list(
+                            responses_string2 = questionnaire_lime_survey.get_responses(
+                                questionnaire_id, language,response_type[1])
+                            fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
+                            # Need multiple choice questions to make replacements just below
+                            error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                                 questionnaire_lime_survey, questionnaire_id, language)
-                            replace_multiple_question_answers(fill_list2, question_list)
+                            replace_multiple_choice_question_answers(fill_list2, multiple_choice_questions)
                         else:
                             fill_list2 = fill_list1
 
-                        # filter fields
+                        # Filter fields
                         subscripts = []
 
                         for field in fields:
@@ -3052,8 +3037,8 @@ class ExportExecution:
                             token = line1[fill_list1[0].index('token')]
                             data_from_lime_survey[language][token] = list(data_fields_filtered)
                             line_index += 1
-                    self.questionnaire_utils.redefine_header_and_fields_experiment(questionnaire_id, header_filtered,
-                                                                                   fields, headers)
+                    self.questionnaire_utils.redefine_header_and_fields_experiment(
+                        questionnaire_id, header_filtered, fields, headers)
 
                     if self.per_group_data[group_id]['questionnaires_per_group']:
                         questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group'][int(
@@ -3063,10 +3048,11 @@ class ExportExecution:
                             completed = questionnaire_lime_survey.get_participant_properties(
                                 questionnaire_id, token_id, 'completed')
                             if completed is not None and completed != 'N' and completed != '':
-                                token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id,
-                                                                                             'token')
-                                new_header = self.questionnaire_utils.questionnaires_experiment_data[questionnaire_id][
-                                    'header_questionnaire']
+                                token = questionnaire_lime_survey.get_participant_properties(
+                                    questionnaire_id, token_id, 'token')
+                                new_header = self.questionnaire_utils.questionnaires_experiment_data[
+                                    questionnaire_id
+                                ]['header_questionnaire']
 
                                 if questionnaire_id not in self.questionnaires_responses:
                                     self.questionnaires_responses[questionnaire_id] = {}
@@ -3231,12 +3217,12 @@ class ExportExecution:
             fill_list1 = QuestionnaireUtils.responses_to_csv(result)
 
             # Need types of questions to make replacement just below
-            error, question_list = QuestionnaireUtils.get_question_list(
+            error, question_list = QuestionnaireUtils.get_questions(
                 questionnaire_lime_survey, questionnaire_id, language)
             if error:
                 return error
 
-            replace_multiple_question_answers(fill_list1, question_list)
+            replace_multiple_choice_question_answers(fill_list1, question_list)
 
             # Read 'long' information, if necessary
             if len(response_type) > 1:
@@ -3245,11 +3231,9 @@ class ExportExecution:
                 fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
                 # need types of questions to make replacement just
                 # below
-                error, question_list = QuestionnaireUtils.get_question_list(
+                error, question_list = QuestionnaireUtils.get_questions(
                     questionnaire_lime_survey, questionnaire_id, language)
-                replace_multiple_question_answers(
-                    fill_list2, question_list
-                )
+                replace_multiple_choice_question_answers(fill_list2, question_list)
             else:
                 fill_list2 = fill_list1
 

@@ -376,13 +376,13 @@ class ABCSearchEngine(ABC):
         :return: ids and info of (sub-)questions of a survey/group
         """
 
-        question_list = []
+        question_ids = []
         questions = self.list_questions(sid, gid)
         if questions is not None:
             for question in questions:
-                question_list.append(question['id']['qid'])
+                question_ids.append(question['id']['qid'])
 
-        return question_list
+        return question_ids
 
     @abstractmethod
     def find_tokens_by_questionnaire(self, sid):

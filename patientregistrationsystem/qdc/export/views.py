@@ -888,9 +888,7 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
         group_title = questionnaire['group_title']
 
         language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, language_current)
-
         responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
-
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language_new)
 
         if not isinstance(responses_string, dict):
