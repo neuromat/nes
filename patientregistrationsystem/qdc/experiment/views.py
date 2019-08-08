@@ -1284,6 +1284,7 @@ def send_all_experiments_to_portal():
                                     responses_list.append(row)
 
                                 # Need multiple choice questions types to make replacement just below
+                                # TODO (NES-991): make a test for getting multiple choice questions
                                 error, question_list = QuestionnaireUtils.get_questions(
                                         surveys, limesurvey_id, questionnaire_language)
                                 if question_list:
