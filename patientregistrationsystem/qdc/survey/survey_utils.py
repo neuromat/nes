@@ -283,7 +283,7 @@ class QuestionnaireUtils:
                 fields_from_questions.append(question_code)
                 # clean the question description that came from limesurvey
                 question_description = re.sub(
-                    '{.*?}', '',re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
+                    '{.*?}', '', re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
                 question_type = smart_str(properties['type'])
                 question_type_description = question_types[question_type] if question_type in question_types else ''
                 question_group = self.get_group_properties(
@@ -414,9 +414,7 @@ class QuestionnaireUtils:
         :return: group dict or None
         """
         groups = survey.list_groups(survey_id)
-        return next(
-            (item for item in groups if item['gid'] == gid and item['language'] == lang),
-            None)
+        return next((item for item in groups if item['gid'] == gid and item['language'] == lang), None)
 
     def get_response_column_name_for_Identification_group_questions(self, survey, limesurvey_id, question_title, lang):
         """

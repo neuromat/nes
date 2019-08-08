@@ -3001,6 +3001,7 @@ class ExportExecution:
                         fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
                         # Multiple choice answers need replacement
+                        # TODO (NES-991): make a test for getting multiple choice questions
                         error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                             questionnaire_lime_survey, questionnaire_id, language)
                         replace_multiple_choice_question_answers(fill_list1, multiple_choice_questions)
@@ -3011,6 +3012,7 @@ class ExportExecution:
                                 questionnaire_id, language,response_type[1])
                             fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
                             # Multiple choice answers need replacement
+                            # TODO (NES-991): make a test for getting multiple choice questions
                             error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                                 questionnaire_lime_survey, questionnaire_id, language)
                             replace_multiple_choice_question_answers(fill_list2, multiple_choice_questions)
@@ -3225,12 +3227,13 @@ class ExportExecution:
             fill_list1 = QuestionnaireUtils.responses_to_csv(result)
 
             # Need types of questions to make replacement just below
-            error, question_list = QuestionnaireUtils.get_questions(
+            # TODO (NES-991): make a test for getting multiple choice questions
+            error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                 questionnaire_lime_survey, questionnaire_id, language)
             if error:
                 return error
 
-            replace_multiple_choice_question_answers(fill_list1, question_list)
+            replace_multiple_choice_question_answers(fill_list1, multiple_choice_questions)
 
             # Read 'long' information, if necessary
             if len(response_type) > 1:
@@ -3239,9 +3242,10 @@ class ExportExecution:
                 fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
                 # need types of questions to make replacement just
                 # below
-                error, question_list = QuestionnaireUtils.get_questions(
+                # TODO (NES-991): make a test for getting multiple choice questions
+                error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                     questionnaire_lime_survey, questionnaire_id, language)
-                replace_multiple_choice_question_answers(fill_list2, question_list)
+                replace_multiple_choice_question_answers(fill_list2, multiple_choice_questions)
             else:
                 fill_list2 = fill_list1
 
