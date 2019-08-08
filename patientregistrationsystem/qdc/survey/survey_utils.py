@@ -366,39 +366,29 @@ class QuestionnaireUtils:
         return 0, questionnaire_explanation_fields_list
 
     @staticmethod
-    def get_questions(survey, survey_id, language):
-        """
-        Return limesurvey multiple question types list
-        TODO: make returns all question types
-        :param survey:
+    # TODO (NES-991): maybe get questions by group. Getting all questions
+    def get_questions(limesurvey_connection, survey_id, language, types=None):
+        """Return limesurvey multiple question types list
+        :param limesurvey_connection: survey.Questionnaires instance
         :param survey_id:
         :param language:
+        :param types: list of question types
         :return: tupple: (int, list) - (0, list) in case of success,
         else (Questionnaires.ERROR_code, empty list)
         """
-        result = survey.list_groups(survey_id)
+        result = limesurvey_connection.list_groups(survey_id)
         if result is None:
             return Questionnaires.ERROR_CODE, []
-        question_list = []
+        questions = []
         for group in result:
-            if 'id' in group and group['id']['language'] == language:
-                question_ids = survey.list_questions_ids(
-                    survey_id, group['id']['gid']
-                )
-                if not question_ids:
+            if group['id']['language'] == language:
+                questions = limesurvey_connection.list_questions(survey_id, group['id']['gid'])
+                if not questions:
                     return Questionnaires.ERROR_CODE, []
-                for id_ in question_ids:
-                    properties = survey.get_question_properties(id_, group['id']['language'])
-                    # Multiple question ('M' or 'P') will be question if
-                    # properties['subquestions'] is a dict, otherwise will
-                    # be subquestion. We only wish questions
-                    if properties is None:
-                        return Questionnaires.ERROR_CODE, []
-                    if isinstance(properties['subquestions'], dict) and \
-                            (properties['type'] == 'M' or properties['type'] == 'P'):
-                        question_list.append(properties['title'])
+                elif types is not None:
+                    questions = [item for item in questions if item['type'] not in types]
 
-        return 0, question_list
+        return 0, questions
 
     @staticmethod
     def responses_to_csv(responses_string):
