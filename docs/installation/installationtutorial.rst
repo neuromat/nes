@@ -8,7 +8,7 @@ In this guide, we will demonstrate how to install and configure NES in a Python 
 
 Important technical information
 -------------------------------
-* This guide walks through an installation by using packages available through Dwebian 9 (code name: Stretch), but can easily be adapted to other Unix operating systems.
+* This guide walks through an installation by using packages available through Debian 9 (code name: Stretch), but can easily be adapted to other Unix operating systems.
 * Using virtualenv to install NES is recommended. This is because when you use virtualenv, you create an isolated environment with its own installation directories.
 * Latest version of NES works only with Python 3.
 * For demonstration purposes, we will use the `/usr/local` directory to deploy NES. This directory seems to be the right place according to the `Linux Foundation <https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch04s09.html>`_. 
