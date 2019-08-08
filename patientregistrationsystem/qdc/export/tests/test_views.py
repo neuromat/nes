@@ -1625,6 +1625,23 @@ class ExportFrictionlessData(ExportTestCase):
 
         return dgp_file
 
+    def _create_questionnaire_export_data(self, mock_server):
+        # Create questionnaire data collection in NES
+        # TODO: use method already existent in patient.tests. See other places
+        self.survey = create_survey(LIMESURVEY_SURVEY_ID)
+        self.questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': self.survey})
+        # Include questionnaire in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, self.questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # Add response's participant to limesurvey survey and the references
+        # in our db
+        ObjectsFactory.create_questionnaire_response(
+            dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
+
+        set_mocks6(mock_server)
+
     def _assert_basic_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
             self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
@@ -2609,21 +2626,7 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_experiment_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
-        # Create questionnaire data collection in NES
-        # TODO: use method already existent in patient.tests. See other places
-        survey = create_survey(LIMESURVEY_SURVEY_ID)
-        questionnaire = ObjectsFactory.create_component(
-            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
-        # Include questionnaire in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(self.root_component, questionnaire)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
-
-        # Add response's participant to limesurvey survey and the references
-        # in our db
-        ObjectsFactory.create_questionnaire_response(
-            dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
-
-        set_mocks6(mockServer)
+        self._create_questionnaire_export_data(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2633,9 +2636,9 @@ class ExportFrictionlessData(ExportTestCase):
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
+                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + questionnaire.survey.en_title + '*Textfrage*Textfrage',
+                + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
         }
@@ -2644,7 +2647,7 @@ class ExportFrictionlessData(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
 
-        code = questionnaire.survey.code
+        code = self.questionnaire.survey.code
         filename = 'Fields_' + code + '_en.csv'
         unique_name = slugify('Fields_' + code)
         title = 'Fields_' + code
@@ -2655,7 +2658,7 @@ class ExportFrictionlessData(ExportTestCase):
             'name': unique_name, 'title': title,
             'path': os.path.join(
                 'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
-                'Questionnaire_metadata', code + '_' + slugify(questionnaire.survey.en_title), filename),
+                'Questionnaire_metadata', code + '_' + slugify(self.questionnaire.survey.en_title), filename),
             'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
         }
         
@@ -2666,21 +2669,7 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_experiment_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(self, mockServer):
-        # Create questionnaire data collection in NES
-        # TODO: use method already existent in patient.tests. See other places
-        survey = create_survey(LIMESURVEY_SURVEY_ID)
-        questionnaire = ObjectsFactory.create_component(
-            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
-        # Include questionnaire in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(self.root_component, questionnaire)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
-
-        # Add response's participant to limesurvey survey and the references
-        # in our db
-        ObjectsFactory.create_questionnaire_response(
-            dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
-
-        set_mocks6(mockServer)
+        self._create_questionnaire_export_data(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2690,9 +2679,9 @@ class ExportFrictionlessData(ExportTestCase):
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
+                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + questionnaire.survey.en_title + '*Textfrage*Textfrage',
+                + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
         }
@@ -2702,7 +2691,7 @@ class ExportFrictionlessData(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
 
-        code = questionnaire.survey.code
+        code = self.questionnaire.survey.code
         questionnaire_metadata_resource = next(
             item for item in json_data['resources'] if item['title'] == 'Fields_' + code)
 
@@ -2714,21 +2703,7 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_experiment_add_questionnaire_responses_file_to_datapackage_json_file(self, mockServer):
-        # Create questionnaire data collection in NES
-        # TODO: use method already existent in patient.tests. See other places
-        survey = create_survey(LIMESURVEY_SURVEY_ID)
-        questionnaire = ObjectsFactory.create_component(
-            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
-        # Include questionnaire in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(self.root_component, questionnaire)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
-
-        # Add response's participant to limesurvey survey and the references
-        # in our db
-        ObjectsFactory.create_questionnaire_response(
-            dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
-
-        set_mocks6(mockServer)
+        self._create_questionnaire_export_data(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2738,9 +2713,9 @@ class ExportFrictionlessData(ExportTestCase):
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
+                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + questionnaire.survey.en_title + '*Textfrage*Textfrage',
+                + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
         }
@@ -2750,18 +2725,16 @@ class ExportFrictionlessData(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         json_data = self._get_datapackage_json_data(temp_dir, response)
 
-        filename = survey.code + '_' + questionnaire.title + '_en'
+        filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
         extension = '.csv'
-        name = slugify(filename)
 
         questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['title'] == filename
-        )
+            item for item in json_data['resources'] if item['title'] == filename)
         # As this resource has 'schema' key, that is
         # itself a dict with other data, we test key/value pairs for all
         # keys except 'schema'.
         test_dict = {
-            'name': filename, 'title': slugify(filename),
+            'name': slugify(filename), 'title': filename,
             'path': os.path.join(
                 'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE', filename + extension),

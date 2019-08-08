@@ -1402,11 +1402,11 @@ class ExportExecution:
 
                         for language in language_list:
                             # Q123_<questionnaire_title>_<lang>.csv
-                            export_filename = '%s_%s_%s.%s' % (
-                                str(questionnaire_code), questionnaire_title, language, filesformat_type)
+                            export_filename = str(questionnaire_code) + '_' + questionnaire_title + '_' + language
                             # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/\
                             # Q123_<questionnaire_title>_<lang>.csv
-                            complete_filename = path.join(complete_export_path, export_filename)
+                            complete_filename = path.join(
+                                complete_export_path, export_filename + '.' + filesformat_type)
                             token_id = token['token_id']
                             answer_list = self.questionnaires_responses[str(questionnaire_id)][token_id][language]
                             rows_participant_data = self.get_participant_row_data(token['subject_code'])
@@ -1437,7 +1437,15 @@ class ExportExecution:
                             # Save array list into a file to export
                             if not file_exists:
                                 save_to_csv(complete_filename, fields_description, filesformat_type)
-                                self.files_to_zip_list.append([complete_filename, export_directory])
+                                self.files_to_zip_list.append([
+                                    complete_filename, export_directory,
+                                    {
+                                        'name': slugify(export_filename), 'title': export_filename,
+                                        'path': path.join(export_directory, export_filename + '.' + filesformat_type),
+                                        'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                                        'description': 'Questionnaire response'
+                                    }
+                                ])
 
                     # Questionnaire metadata directory
                     entrance_questionnaire = False
@@ -2992,7 +3000,7 @@ class ExportExecution:
                         # All the answer from the questionnaire_id in csv format
                         fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
-                        # Need multiple choice questions to make replacements just below
+                        # Multiple choice answers need replacement
                         error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                             questionnaire_lime_survey, questionnaire_id, language)
                         replace_multiple_choice_question_answers(fill_list1, multiple_choice_questions)
@@ -3002,7 +3010,7 @@ class ExportExecution:
                             responses_string2 = questionnaire_lime_survey.get_responses(
                                 questionnaire_id, language,response_type[1])
                             fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
-                            # Need multiple choice questions to make replacements just below
+                            # Multiple choice answers need replacement
                             error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                                 questionnaire_lime_survey, questionnaire_id, language)
                             replace_multiple_choice_question_answers(fill_list2, multiple_choice_questions)
