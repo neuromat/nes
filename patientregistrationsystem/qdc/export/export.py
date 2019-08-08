@@ -3229,7 +3229,7 @@ class ExportExecution:
             # Need types of questions to make replacement just below
             # TODO (NES-991): make a test for getting multiple choice questions
             error, multiple_choice_questions = QuestionnaireUtils.get_questions(
-                questionnaire_lime_survey, questionnaire_id, language)
+                questionnaire_lime_survey, questionnaire_id, language, ['M', 'P'])
             if error:
                 return error
 
