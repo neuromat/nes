@@ -1182,15 +1182,12 @@ def send_all_experiments_to_portal():
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
                     textual_description = get_description_from_experimental_protocol_tree(tree)
-                    image = get_experimental_protocol_image(
-                        group.experimental_protocol, tree, True
-                    )
+                    image = get_experimental_protocol_image(group.experimental_protocol, tree, True)
 
-                    # steps
-                    step_list = send_steps_to_portal(portal_group['id'], tree,
-                                                     list_of_eeg_setting, list_of_emg_setting,
-                                                     list_of_tms_setting, list_of_context_tree,
-                                                     language_code)
+                    # Steps
+                    step_list = send_steps_to_portal(
+                        portal_group['id'], tree, list_of_eeg_setting, list_of_emg_setting,
+                        list_of_tms_setting, list_of_context_tree, language_code)
                     root_step_id = step_list['0']['portal_step_id']
 
                     list_of_trees = create_list_of_trees(group.experimental_protocol, None)
@@ -1212,14 +1209,14 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(eeg_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_eeg_data_file = send_eeg_data_to_portal(
+                        send_eeg_data_to_portal(
                             portal_participant_list[eeg_data.subject_of_group.id],
                             portal_step_list[eeg_data.data_configuration_tree.id],
                             portal_file_id_list,
                             list_of_eeg_setting[eeg_data.eeg_setting.id],
                             eeg_data)
 
-                    # emg data
+                    # Emg data
                     emg_data_list = EMGData.objects.filter(subject_of_group__group=group)
 
                     for emg_data in emg_data_list:
@@ -1229,24 +1226,24 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(emg_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_emg_data_file = send_emg_data_to_portal(
+                        send_emg_data_to_portal(
                             portal_participant_list[emg_data.subject_of_group.id],
                             portal_step_list[emg_data.data_configuration_tree.id],
                             portal_file_id_list,
                             list_of_emg_setting[emg_data.emg_setting.id],
                             emg_data)
 
-                    # tms data
+                    # Tms data
                     tms_data_files = TMSData.objects.filter(subject_of_group__group=group)
 
                     for tms_data_file in tms_data_files:
-                        portal_tms_data_file = send_tms_data_to_portal(
+                        send_tms_data_to_portal(
                             portal_participant_list[tms_data_file.subject_of_group.id],
                             portal_step_list[tms_data_file.data_configuration_tree.id],
                             list_of_tms_setting[tms_data_file.tms_setting.id],
                             tms_data_file)
 
-                    # digital game phase data
+                    # Digital game phase data
                     digital_game_phase_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
 
                     for digital_game_phase_data in digital_game_phase_data_list:
@@ -1256,42 +1253,29 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(digital_game_phase_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_digital_game_phase_data_file = send_digital_game_phase_data_to_portal(
+                        send_digital_game_phase_data_to_portal(
                             portal_participant_list[digital_game_phase_data.subject_of_group.id],
                             portal_step_list[digital_game_phase_data.data_configuration_tree.id],
                             portal_file_id_list,
                             digital_game_phase_data)
 
-                    # questionnaire response
+                    # Questionnaire response
                     surveys = Questionnaires()
                     if surveys.session_key:
 
-                        # questionnaire response
-                        questionnaire_responses = \
-                            QuestionnaireResponse.objects.filter(
-                                subject_of_group__group=group
-                            )
+                        # Questionnaire response
+                        questionnaire_responses = QuestionnaireResponse.objects.filter(subject_of_group__group=group)
 
                         for questionnaire_response in questionnaire_responses:
-                            component_id = \
-                                questionnaire_response.data_configuration_tree.component_configuration.component_id
-                            questionnaire = \
-                                Questionnaire.objects.get(pk=component_id)
+                            component_id = questionnaire_response.data_configuration_tree.component_configuration.component_id
+                            questionnaire = Questionnaire.objects.get(pk=component_id)
                             limesurvey_id = questionnaire.survey.lime_survey_id
-                            token = \
-                                surveys.get_participant_properties(
-                                    limesurvey_id,
-                                    questionnaire_response.token_id,
-                                    "token"
-                                )
-                            questionnaire_language = \
-                                get_questionnaire_language(
-                                    surveys, limesurvey_id, language_code
-                                )
+                            token = surveys.get_participant_properties(
+                                    limesurvey_id, questionnaire_response.token_id, "token")
+                            questionnaire_language = get_questionnaire_language(surveys, limesurvey_id, language_code)
                             responses_string = surveys.get_responses_by_token(
                                 limesurvey_id, token, questionnaire_language)
-                            limesurvey_response = \
-                                {'questions': '', 'answers': ''}
+                            limesurvey_response = {'questions': '', 'answers': ''}
 
                             if isinstance(responses_string, bytes):
                                 reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
@@ -1299,9 +1283,9 @@ def send_all_experiments_to_portal():
                                 for row in reader:
                                     responses_list.append(row)
 
-                                # Need multiple choice questions types to
-                                # make replacement just below.
-                                error, question_list = QuestionnaireUtils.get_question_list(
+                                # Need multiple choice questions types to make replacement just below
+                                # TODO (NES-991): make a test for getting multiple choice questions
+                                error, question_list = QuestionnaireUtils.get_questions(
                                         surveys, limesurvey_id, questionnaire_language)
                                 if question_list:
                                     # Import here because of ImportError
@@ -1310,21 +1294,14 @@ def send_all_experiments_to_portal():
                                     # TODO: see answer in:
                                     # https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
                                     # TODO: for other solutions
-                                    from export.export import \
-                                        replace_multiple_question_answers
-                                    replace_multiple_question_answers(
-                                        responses_list, question_list
-                                    )
+                                    from export.export import replace_multiple_choice_question_answers
+                                    replace_multiple_choice_question_answers(responses_list, question_list)
 
                                 if len(responses_list) > 1:
-
-                                    # get fields to send
-                                    fields_to_send = \
-                                        [item.question_code
-                                         for item in
-                                         PortalSelectedQuestion.objects.filter(
-                                             experiment=group.experiment,
-                                             survey=questionnaire.survey)
+                                    # Get fields to send
+                                    fields_to_send = [
+                                        item.question_code for item in PortalSelectedQuestion.objects.filter(
+                                             experiment=group.experiment,survey=questionnaire.survey)
                                          ]
 
                                     limesurvey_response['questions'] = []
@@ -1335,7 +1312,7 @@ def send_all_experiments_to_portal():
                                             limesurvey_response['questions'].append(question_name)
                                             limesurvey_response['answers'].append(responses_list[1][question_index])
 
-                            portal_questionnaire_response = send_questionnaire_response_to_portal(
+                            send_questionnaire_response_to_portal(
                                 portal_participant_list[questionnaire_response.subject_of_group.id],
                                 portal_step_list[questionnaire_response.data_configuration_tree.id],
                                 json.dumps(limesurvey_response),
@@ -1365,9 +1342,9 @@ def send_all_experiments_to_portal():
                             additional_data
                         )
 
-                    # generic data collection data
-                    generic_data_collection_data_list = \
-                        GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+                    # Generic data collection data
+                    generic_data_collection_data_list = GenericDataCollectionData.objects.filter(
+                        subject_of_group__group=group)
 
                     for generic_data_collection_data in generic_data_collection_data_list:
 
@@ -1376,31 +1353,29 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(generic_data_collection_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_generic_data_collection_data_file = send_generic_data_collection_data_to_portal(
+                        send_generic_data_collection_data_to_portal(
                             portal_participant_list[generic_data_collection_data.subject_of_group.id],
                             portal_step_list[generic_data_collection_data.data_configuration_tree.id],
-                            portal_file_id_list,
-                            generic_data_collection_data)
+                            portal_file_id_list, generic_data_collection_data)
 
-                    send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
-                                                         textual_description=textual_description,
-                                                         image=image,
-                                                         root_step_id=root_step_id)
+                    send_experimental_protocol_to_portal(
+                        portal_group_id=portal_group['id'], textual_description=textual_description,
+                        image=image, root_step_id=root_step_id)
 
-            # end of sending
+            # End of sending
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
-            # update the schedule to 'sent'
+            # Update the schedule to 'sent'
             schedule_of_sending.status = 'sent'
             schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
             schedule_of_sending.save()
 
-            # update the last sending date
+            # Update the last sending date
             experiment = schedule_of_sending.experiment
             experiment.last_sending = schedule_of_sending.sending_datetime
             experiment.save()
 
-            print('experiment sent.\n')
+            print('Experiment sent\n')
 
 
 @login_required
@@ -5668,16 +5643,23 @@ def questionnaire_response_view(request, questionnaire_response_id,
     groups_of_questions_key = \
         request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id) + "_group_of_questions"
 
-    survey_title = cache.get(survey_title_key)
-    groups_of_questions = cache.get(groups_of_questions_key)
+    # TODO (NES-991): BROKEN! Made a test and fix this before close this issue.
+    #  Before that we are putting a generic exception
+    try:
+        survey_title = cache.get(survey_title_key)
+        groups_of_questions = cache.get(groups_of_questions_key)
+    except:
+        survey_title = None
+        groups_of_questions = None
 
     if not survey_title and not groups_of_questions:
         # Get the responses for each question of the questionnaire.
         survey_title, groups_of_questions = get_questionnaire_responses(
             language_code, limesurvey_id, token_id, request)
 
-        cache.set(survey_title_key, survey_title)
-        cache.set(groups_of_questions_key, groups_of_questions)
+        # TODO (NES-991): see BROKEN! above
+        # cache.set(survey_title_key, survey_title)
+        # cache.set(groups_of_questions_key, groups_of_questions)
 
     origin = get_origin(request)
 

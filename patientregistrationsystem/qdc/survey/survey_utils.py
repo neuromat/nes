@@ -111,10 +111,9 @@ class QuestionnaireUtils:
 
         return headers, fields
 
-    def append_questionnaire_header_and_field(self, questionnaire_id, header, fields,
-                                              considers_questionnaires,
-                                              considers_questionnaires_from_experiment):
-        # only one header, field instance
+    def append_questionnaire_header_and_field(
+            self, questionnaire_id, header, fields, considers_questionnaires, considers_questionnaires_from_experiment):
+        # Only one header, field instance
         for field in fields:
             if considers_questionnaires:
                 if field not in self.questionnaires_data[questionnaire_id]["fields"]:
@@ -284,7 +283,7 @@ class QuestionnaireUtils:
                 fields_from_questions.append(question_code)
                 # clean the question description that came from limesurvey
                 question_description = re.sub(
-                    '{.*?}', '',re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
+                    '{.*?}', '', re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
                 question_type = smart_str(properties['type'])
                 question_type_description = question_types[question_type] if question_type in question_types else ''
                 question_group = self.get_group_properties(
@@ -310,7 +309,7 @@ class QuestionnaireUtils:
                     else:
                         scales = ["", ""]
 
-                # answers
+                # Answers
                 options_list = []
 
                 if isinstance(properties['answeroptions'], dict):
@@ -323,21 +322,18 @@ class QuestionnaireUtils:
                              smart_str(option_values['answer'])]
                         )
                 else:
-                    # include blank line
+                    # Include blank line
                     options_list = [[""] * 2]
 
-                # sub-questions
+                # Sub-questions
                 if isinstance(properties['subquestions'], dict):
                     sub_questions_list = [
-                        [smart_str(value['title']),
-                         smart_str(value['question'])]
+                        [smart_str(value['title']), smart_str(value['question'])]
                         for value in properties['subquestions'].values()
                     ]
-                    sub_questions_list = sorted(
-                        sub_questions_list, key=itemgetter(0)
-                    )
+                    sub_questions_list = sorted(sub_questions_list, key=itemgetter(0))
                 else:
-                    # include blank line
+                    # Include blank line
                     sub_questions_list = [[""] * 2]
 
                 for scale_index, scale_label in enumerate(scales):
@@ -367,39 +363,29 @@ class QuestionnaireUtils:
         return 0, questionnaire_explanation_fields_list
 
     @staticmethod
-    def get_question_list(survey, survey_id, language):
-        """
-        Return limesurvey multiple question types list
-        TODO: make returns all question types
-        :param survey:
+    # TODO (NES-991): maybe get questions by group. Getting all questions
+    def get_questions(limesurvey_connection, survey_id, language, types=None):
+        """Return limesurvey multiple question types list
+        :param limesurvey_connection: survey.Questionnaires instance
         :param survey_id:
         :param language:
+        :param types: list of question types
         :return: tupple: (int, list) - (0, list) in case of success,
         else (Questionnaires.ERROR_code, empty list)
         """
-        result = survey.list_groups(survey_id)
+        result = limesurvey_connection.list_groups(survey_id)
         if result is None:
             return Questionnaires.ERROR_CODE, []
-        question_list = []
+        questions = []
         for group in result:
-            if 'id' in group and group['id']['language'] == language:
-                question_ids = survey.list_questions_ids(
-                    survey_id, group['id']['gid']
-                )
-                if not question_ids:
+            if group['id']['language'] == language:
+                questions = limesurvey_connection.list_questions(survey_id, group['id']['gid'])
+                if not questions:
                     return Questionnaires.ERROR_CODE, []
-                for id_ in question_ids:
-                    properties = survey.get_question_properties(id_, group['id']['language'])
-                    # Multiple question ('M' or 'P') will be question if
-                    # properties['subquestions'] is a dict, otherwise will
-                    # be subquestion. We only wish questions
-                    if properties is None:
-                        return Questionnaires.ERROR_CODE, []
-                    if isinstance(properties['subquestions'], dict) and \
-                            (properties['type'] == 'M' or properties['type'] == 'P'):
-                        question_list.append(properties['title'])
+                elif types is not None:
+                    questions = [item for item in questions if item['type'] in types]
 
-        return 0, question_list
+        return 0, questions
 
     @staticmethod
     def responses_to_csv(responses_string):
@@ -425,9 +411,7 @@ class QuestionnaireUtils:
         :return: group dict or None
         """
         groups = survey.list_groups(survey_id)
-        return next(
-            (item for item in groups if item['gid'] == gid and item['language'] == lang),
-            None)
+        return next((item for item in groups if item['gid'] == gid and item['language'] == lang), None)
 
     def get_response_column_name_for_Identification_group_questions(self, survey, limesurvey_id, question_title, lang):
         """
