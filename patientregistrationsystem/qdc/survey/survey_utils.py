@@ -309,7 +309,7 @@ class QuestionnaireUtils:
                     else:
                         scales = ["", ""]
 
-                # answers
+                # Answers
                 options_list = []
 
                 if isinstance(properties['answeroptions'], dict):
@@ -322,21 +322,18 @@ class QuestionnaireUtils:
                              smart_str(option_values['answer'])]
                         )
                 else:
-                    # include blank line
+                    # Include blank line
                     options_list = [[""] * 2]
 
-                # sub-questions
+                # Sub-questions
                 if isinstance(properties['subquestions'], dict):
                     sub_questions_list = [
-                        [smart_str(value['title']),
-                         smart_str(value['question'])]
+                        [smart_str(value['title']), smart_str(value['question'])]
                         for value in properties['subquestions'].values()
                     ]
-                    sub_questions_list = sorted(
-                        sub_questions_list, key=itemgetter(0)
-                    )
+                    sub_questions_list = sorted(sub_questions_list, key=itemgetter(0))
                 else:
-                    # include blank line
+                    # Include blank line
                     sub_questions_list = [[""] * 2]
 
                 for scale_index, scale_label in enumerate(scales):
@@ -386,7 +383,7 @@ class QuestionnaireUtils:
                 if not questions:
                     return Questionnaires.ERROR_CODE, []
                 elif types is not None:
-                    questions = [item for item in questions if item['type'] not in types]
+                    questions = [item for item in questions if item['type'] in types]
 
         return 0, questions
 

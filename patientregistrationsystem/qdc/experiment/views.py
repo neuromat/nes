@@ -1342,9 +1342,9 @@ def send_all_experiments_to_portal():
                             additional_data
                         )
 
-                    # generic data collection data
-                    generic_data_collection_data_list = \
-                        GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+                    # Generic data collection data
+                    generic_data_collection_data_list = GenericDataCollectionData.objects.filter(
+                        subject_of_group__group=group)
 
                     for generic_data_collection_data in generic_data_collection_data_list:
 
@@ -1353,31 +1353,29 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(generic_data_collection_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_generic_data_collection_data_file = send_generic_data_collection_data_to_portal(
+                        send_generic_data_collection_data_to_portal(
                             portal_participant_list[generic_data_collection_data.subject_of_group.id],
                             portal_step_list[generic_data_collection_data.data_configuration_tree.id],
-                            portal_file_id_list,
-                            generic_data_collection_data)
+                            portal_file_id_list, generic_data_collection_data)
 
-                    send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
-                                                         textual_description=textual_description,
-                                                         image=image,
-                                                         root_step_id=root_step_id)
+                    send_experimental_protocol_to_portal(
+                        portal_group_id=portal_group['id'], textual_description=textual_description,
+                        image=image, root_step_id=root_step_id)
 
-            # end of sending
+            # End of sending
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
-            # update the schedule to 'sent'
+            # Update the schedule to 'sent'
             schedule_of_sending.status = 'sent'
             schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
             schedule_of_sending.save()
 
-            # update the last sending date
+            # Update the last sending date
             experiment = schedule_of_sending.experiment
             experiment.last_sending = schedule_of_sending.sending_datetime
             experiment.save()
 
-            print('experiment sent.\n')
+            print('Experiment sent\n')
 
 
 @login_required
@@ -5645,16 +5643,23 @@ def questionnaire_response_view(request, questionnaire_response_id,
     groups_of_questions_key = \
         request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id) + "_group_of_questions"
 
-    survey_title = cache.get(survey_title_key)
-    groups_of_questions = cache.get(groups_of_questions_key)
+    # TODO (NES-991): BROKEN! Made a test and fix this before close this issue.
+    #  Before that we are putting a generic exception
+    try:
+        survey_title = cache.get(survey_title_key)
+        groups_of_questions = cache.get(groups_of_questions_key)
+    except:
+        survey_title = None
+        groups_of_questions = None
 
     if not survey_title and not groups_of_questions:
         # Get the responses for each question of the questionnaire.
         survey_title, groups_of_questions = get_questionnaire_responses(
             language_code, limesurvey_id, token_id, request)
 
-        cache.set(survey_title_key, survey_title)
-        cache.set(groups_of_questions_key, groups_of_questions)
+        # TODO (NES-991): see BROKEN! above
+        # cache.set(survey_title_key, survey_title)
+        # cache.set(groups_of_questions_key, groups_of_questions)
 
     origin = get_origin(request)
 
