@@ -109,21 +109,25 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     return 0, result
 
 
+def call_plugin(request):
+    return render(request, 'plugin/call_plugin.html')
+
+
 @login_required
-def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
+def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
     if request.method == 'POST':
         if not request.POST.getlist('patients_selected[]'):
             messages.warning(request, _('Please select at least one patient'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         # Export experiment (from export app) requires at least one patient
         # attribute selected (patient_selected is the list of attributes).
-        # This may be changed.
+        # This may be changed to a better key name
         if not request.POST.getlist('patient_selected'):
             messages.warning(request, _('Please select at least Gender participant attribute'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         if 'gender__name*gender' not in request.POST.getlist('patient_selected'):
             messages.warning(request, _('The Floresta Plugin needs to send at least Gender attribute'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         participants = request.POST.getlist('patients_selected[]')
         participants_headers = update_patient_attributes(request.POST.getlist('patient_selected'))
         limesurvey_error, questionnaires = build_questionnaires_list(request.LANGUAGE_CODE)
@@ -132,21 +136,17 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
                 request,
                 _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
                   'If problem persists please contact System Administrator.'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         limesurvey_error, zip_file = build_zip_file(request, participants, participants_headers, questionnaires)
         if limesurvey_error:
             messages.error(
                 request,
                 _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
                   'If problem persists please contact System Administrator.'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         if zip_file:
             messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
-            with open(zip_file, 'rb') as file:
-                response = HttpResponse(file, content_type='application/zip')
-                response['Content-Disposition'] = 'attachment; filename="export.zip"'
-                response['Content-Lenght'] = path.getsize(zip_file)
-                return response
+            return redirect('call-plugin')
         else:
             messages.error(request, _('Could not open zip file to send to Forest Plugin'))
 
