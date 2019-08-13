@@ -15,6 +15,7 @@ from django.test import override_settings
 from django.utils.encoding import smart_str
 
 from export import input_export
+from export.models import Export
 from export.tests.tests_helper import ExportTestCase
 from plugin.models import RandomForests
 from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks
@@ -140,7 +141,6 @@ class PluginTest(ExportTestCase):
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
-
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_redirect_to_call_plugin_view_with_correct_template(self, mockServer):
@@ -153,9 +153,26 @@ class PluginTest(ExportTestCase):
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             }, follow=True)
-        self.assertRedirects(response, reverse('call-plugin'))
+        export = Export.objects.last()
+        self.assertRedirects(response, reverse(
+            'call-plugin', kwargs={'user_id': self.user.id, 'export_id': export.id}))
         self.assertTemplateUsed(response, 'plugin/call_plugin.html')
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_redirect_to_call_plugin_view_with_right_context(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+        export = Export.objects.last()
+        self.assertEqual(response.context['user_id'], str(self.user.id))
+        self.assertEqual(response.context['export_id'], str(export.id))
 
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_attribute_display_warning_message(self, mockServer):
