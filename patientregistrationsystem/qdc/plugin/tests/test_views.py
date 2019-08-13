@@ -171,8 +171,8 @@ class PluginTest(ExportTestCase):
                 'patients_selected[]': [str(self.patient.id)]
             }, follow=True)
         export = Export.objects.last()
-        self.assertEqual(response.context['user_id'], str(self.user.id))
-        self.assertEqual(response.context['export_id'], str(export.id))
+        self.assertEqual(
+            response.context['plugin_url'], 'plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id))
 
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_attribute_display_warning_message(self, mockServer):

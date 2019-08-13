@@ -111,7 +111,7 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
 
 @login_required
 def call_plugin(request, user_id, export_id):
-    context = {'user_id': user_id, 'export_id': export_id}
+    context = {'plugin_url': 'plugin_url?user_id=' + str(user_id) + '&export_id=' + str(export_id)}
     return render(request, 'plugin/call_plugin.html', context)
 
 
