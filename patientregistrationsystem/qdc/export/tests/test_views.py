@@ -2748,6 +2748,7 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
+        # TODO (NES-991 - CONTINUE): fixes tests in ExportQuestionnaireTest
         self._create_questionnaire_export_data()
         set_mocks7(mockServer)
 
