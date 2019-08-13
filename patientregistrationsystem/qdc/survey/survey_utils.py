@@ -20,39 +20,39 @@ HEADER_EXPLANATION_FIELDS = [
     ('question_scale_label', 'string'), ('option_code', 'string'), ('option_description', 'string')
 ]
 
-question_types = {
-    '1': 'Array Dual Scale',
-    '5': '5 Point Choice',
-    'A': 'Array (5 Point Choice)',
-    'B': 'Array (10 Point Choice)',
-    'C': 'Array (Yes/No/Uncertain)',
-    'D': 'Date',
-    'E': 'Array (Increase, Same, Decrease)',
-    'F': 'Array (Flexible Labels)',
-    'G': 'Gender',
-    'H': 'Array (Flexible Labels) by Column',
-    'I': 'Language Switch',
-    'K': 'Multiple Numerical Input',
-    'L': 'List (Radio)',
-    'M': 'Multiple choice',
-    'N': 'Numerical Input',
-    'O': 'List With Comment',
-    'P': 'Multiple choice with comments',
-    'Q': 'Multiple Short Text',
-    'R': 'Ranking',
-    'S': 'Short Free Text',
-    'T': 'Long Free Text',
-    'U': 'Huge Free Text',
+QUESTION_TYPES = {
+    '1': ('Array Dual Scale', 'string'),
+    '5': ('5 Point Choice', 'string'),
+    'A': ('Array (5 Point Choice)', 'string'),
+    'B': ('Array (10 Point Choice)', 'string'),
+    'C': ('Array (Yes/No/Uncertain)', 'string'),
+    'D': ('Date', 'string'),
+    'E': ('Array (Increase, Same, Decrease)', 'string'),
+    'F': ('Array (Flexible Labels)', 'string'),
+    'G': ('Gender', 'string'),
+    'H': ('Array (Flexible Labels) by Column', 'string'),
+    'I': ('Language Switch', 'string'),
+    'K': ('Multiple Numerical Input', 'number'),
+    'L': ('List (Radio)', 'string'),
+    'M': ('Multiple choice', 'string'),
+    'N': ('Numerical Input', 'number'),
+    'O': ('List With Comment', 'string'),
+    'P': ('Multiple choice with comments', 'string'),
+    'Q': ('Multiple Short Text', 'string'),
+    'R': ('Ranking', 'string'),
+    'S': ('Short Free Text', 'string'),
+    'T': ('Long Free Text', 'string'),
+    'U': ('Huge Free Text', 'string'),
     # não encontrado na versão do Neuromat
-    'X': 'Boilerplate Question',
-    'Y': 'Yes/No',
-    '!': 'List (Dropdown)',
+    'X': ('Boilerplate Question', 'string'),
+    'Y': ('Yes/No', 'string'),
+    '!': ('List (Dropdown)', 'string'),
     # não encontrado na versão atual do Neuromat
-    ':': 'Array (Flexible Labels) multiple drop down',
-    # não encontrado na versão atual do Neuromat
-    ';': 'Array (Flexible Labels) multiple texts',
-    '|': 'File Upload',
-    '*': 'Equation'
+    ':': ('Array (Flexible Labels) multiple drop down', 'string'),
+    # não( encontrado na versão atual do Neuromat
+    ';': ('Array (Flexible Labels) multiple texts', 'string'),
+    '|': ('File Upload', 'string'),
+    '*': ('Equation', 'string')
 }
 
 
@@ -285,7 +285,7 @@ class QuestionnaireUtils:
                 question_description = re.sub(
                     '{.*?}', '', re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
                 question_type = smart_str(properties['type'])
-                question_type_description = question_types[question_type] if question_type in question_types else ''
+                question_type_description = QUESTION_TYPES[question_type] if question_type in QUESTION_TYPES else ''
                 question_group = self.get_group_properties(
                         questionnaire_lime_survey, questionnaire_id, properties['gid'], language)
                 if question_group is None:
@@ -379,7 +379,7 @@ class QuestionnaireUtils:
         questions = []
         for group in result:
             if group['id']['language'] == language:
-                questions = limesurvey_connection.list_questions(survey_id, group['id']['gid'])
+                questions.extend(limesurvey_connection.list_questions(survey_id, group['id']['gid']))
                 if not questions:
                     return Questionnaires.ERROR_CODE, []
                 elif types is not None:
@@ -413,7 +413,7 @@ class QuestionnaireUtils:
         groups = survey.list_groups(survey_id)
         return next((item for item in groups if item['gid'] == gid and item['language'] == lang), None)
 
-    def get_response_column_name_for_Identification_group_questions(self, survey, limesurvey_id, question_title, lang):
+    def get_response_column_name_for_identification_group_questions(self, survey, limesurvey_id, question_title, lang):
         """
         Return response table column name that is formed by <limesurvey_id>X<group_id>X<question_id>
         :param survey: Limesurvey ABC interface

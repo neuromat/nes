@@ -329,7 +329,7 @@ def export_create(request, export_id, input_filename, template_name='export/expo
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # Build datapackage.json file
+            # Build datapackage.json file (TODO (NES-991): error_msg stays?)
             error_msg = export.process_datapackage_json_file(request)
 
         else:

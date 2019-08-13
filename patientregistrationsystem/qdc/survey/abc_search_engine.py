@@ -132,7 +132,6 @@ class ABCSearchEngine(ABC):
         :param prop: the name of the propriety of the survey
         :return: value of the property
         """
-
         result = self.server.get_survey_properties(self.session_key, sid, {'method': prop})
 
         return result.get(prop)
