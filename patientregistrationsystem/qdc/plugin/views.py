@@ -109,8 +109,10 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     return 0, result
 
 
-def call_plugin(request):
-    return render(request, 'plugin/call_plugin.html')
+@login_required
+def call_plugin(request, user_id, export_id):
+    context = {'user_id': user_id, 'export_id': export_id}
+    return render(request, 'plugin/call_plugin.html', context)
 
 
 @login_required
@@ -146,7 +148,8 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
             return redirect(reverse('send-to-plugin'))
         if zip_file:
             messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
-            return redirect('call-plugin')
+            export = Export.objects.last()
+            return redirect('call-plugin', user_id=request.user.id, export_id=export.id)
         else:
             messages.error(request, _('Could not open zip file to send to Forest Plugin'))
 
