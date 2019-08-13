@@ -46,7 +46,7 @@ class PluginTest(ExportTestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'plugin/send_to_plugin.html')
 
-    def test_animal_new_url_resolves_animal_new_view(self):
+    def test_root_url_resolves_send_to_plugin_view(self):
         view = resolve('/plugin/')
         self.assertEquals(view.func, send_to_plugin)
 
@@ -143,7 +143,7 @@ class PluginTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_redirect_to_call_plugin_view_with_correct_template(self, mockServer):
+    def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_plugin_url_session_key(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
         self._create_basic_objects()
@@ -152,27 +152,17 @@ class PluginTest(ExportTestCase):
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
-            }, follow=True)
+            })
+
         export = Export.objects.last()
-        self.assertRedirects(response, reverse(
-            'call-plugin', kwargs={'user_id': self.user.id, 'export_id': export.id}))
-        self.assertTemplateUsed(response, 'plugin/call_plugin.html')
+        plugin_url = 'plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
+        self.assertRedirects(response, reverse('send-to-plugin'))
+        self.assertEqual(self.client.session.get('plugin_url'), plugin_url)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_redirect_to_call_plugin_view_with_right_context(self, mockServer):
-        set_limesurvey_api_mocks(mockServer)
-
-        self._create_basic_objects()
-        response = self.client.post(
-            reverse('send-to-plugin'),
-            data={
-                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
-                'patients_selected[]': [str(self.patient.id)]
-            }, follow=True)
-        export = Export.objects.last()
-        self.assertEqual(
-            response.context['plugin_url'], 'plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id))
+    def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_right_context(self, mockServer):
+        pass
 
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_attribute_display_warning_message(self, mockServer):

@@ -37,7 +37,7 @@ def participants_dict(survey):
 
 
 def update_patient_attributes(participants):
-    """add item to 'patient_selected POST list to suit to export method
+    """Add item to patient_selected POST list to suit to export method
     :param participants: list - participants
     :return: list - updated participants
     """
@@ -110,12 +110,6 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
 
 
 @login_required
-def call_plugin(request, user_id, export_id):
-    context = {'plugin_url': 'plugin_url?user_id=' + str(user_id) + '&export_id=' + str(export_id)}
-    return render(request, 'plugin/call_plugin.html', context)
-
-
-@login_required
 def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
     if request.method == 'POST':
         if not request.POST.getlist('patients_selected[]'):
@@ -149,7 +143,9 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
         if zip_file:
             messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
             export = Export.objects.last()
-            return redirect('call-plugin', user_id=request.user.id, export_id=export.id)
+            plugin_url = 'plugin_url?user_id=' + str(request.user.id) + '&export_id=' + str(export.id)
+            request.session['plugin_url'] = plugin_url
+            return redirect(reverse('send-to-plugin'))
         else:
             messages.error(request, _('Could not open zip file to send to Forest Plugin'))
 
