@@ -20,7 +20,7 @@ from django.template.defaultfilters import slugify
 
 from export.export_utils import create_list_of_trees, can_export_nwb
 
-from survey.survey_utils import QuestionnaireUtils, HEADER_EXPLANATION_FIELDS
+from survey.survey_utils import HEADER_EXPLANATION_FIELDS, QUESTION_TYPES
 
 from patient.models import Patient, QuestionnaireResponse, Gender, MaritalStatus, SocialDemographicData, Schooling, \
     Religion, FleshTone, Payment, SocialHistoryData, AmountCigarettes, AlcoholFrequency, AlcoholPeriod, Diagnosis, \
@@ -44,6 +44,7 @@ from experiment.views import get_block_tree, get_experimental_protocol_image, \
 
 from survey.abc_search_engine import Questionnaires
 from survey.views import limesurvey_available
+from survey.survey_utils import QuestionnaireUtils
 
 DEFAULT_LANGUAGE = 'pt-BR'
 
@@ -1434,22 +1435,29 @@ class ExportExecution:
                                     break
                             ###
 
-                            # Save array list into a file to export
+                            # Save array list into a file to expor
+                            questionnaire_lime_survey = Questionnaires()
                             if not file_exists:
                                 save_to_csv(complete_filename, fields_description, filesformat_type)
+                                # TODO (NES-991): treat possible error
+                                error, questions = QuestionnaireUtils.get_questions(
+                                    questionnaire_lime_survey, questionnaire_id, language)
                                 self.files_to_zip_list.append([
                                     complete_filename, export_directory,
                                     {
                                         'name': slugify(export_filename), 'title': export_filename,
                                         'path': path.join(export_directory, export_filename + '.' + filesformat_type),
                                         'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
-                                        'description': 'Questionnaire response'
+                                        'description': 'Questionnaire response',
+                                        'schema': {
+                                            'fields': self._set_questionnaire_response_fields(
+                                                rows_participant_data[0], answer_list[0], questions)
+                                        }
                                     }
                                 ])
 
                     # Questionnaire metadata directory
                     entrance_questionnaire = False
-                    questionnaire_lime_survey = Questionnaires()
                     # Create questionnaire fields file ('fields.csv') in
                     # Questionnaire_metadata directory
                     fields = self.questionnaire_utils.get_questionnaire_experiment_fields(questionnaire_id)
@@ -2567,6 +2575,29 @@ class ExportExecution:
             fields.append({'name': field[0], 'title': field[0], 'type': field[1], 'format': 'default'})
         return fields
 
+    @staticmethod
+    def _set_questionnaire_response_fields(participant_fields, question_fields, questions):
+        # TODO (NES-991): put here because of circular import with export.views.
+        #  See if it's a better way.
+        from export.views import PATIENT_FIELDS
+        fields = []
+        for participant_field in participant_fields:
+            field_info = next(item for item in PATIENT_FIELDS if item['header'] == participant_field)
+            fields.append({
+                'name': field_info['header'], 'title': field_info['header'], 'type': field_info['json_data_type'],
+                'format': 'default'
+            })
+        for question_field in question_fields:
+            # TODO (NES-991): improve regex
+            question_cleared = re.search('([a-zA-Z]+)(\[?)', question_field).group(1)
+            question = next(item for item in questions if item['title'] == question_cleared)
+            type = QUESTION_TYPES[question['type']][1]
+            fields.append({
+                'name': slugify(question_field), 'title': question_field, 'type': type, 'format': 'default'
+            })
+
+        return fields
+
     def process_experiment_data(self, language_code):
         error_msg = ''
 
@@ -3181,8 +3212,6 @@ class ExportExecution:
 
             header = self.questionnaire_utils.get_header_experiment_questionnaire(questionnaire_id)
 
-            # if header[len(header) - 1] == 'participant_code':
-            #     header = header[0:len(header) - 1]
             for element in step_header:
                 header.append(element)
 
