@@ -56,6 +56,12 @@ class PluginTest(ExportTestCase):
         for survey in Survey.objects.all():
             self.assertContains(response, survey.pt_title)
 
+    def test_does_not_define_plugin_url_attribute_does_not_display_plugin_entry_in_menu(self):
+        self._create_basic_objects()
+
+        response = self.client.get('home')
+        self.assertNotIn('Plugin', response.content.decode('utf-8'))
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_returns_zip_file(self, mockServer):
