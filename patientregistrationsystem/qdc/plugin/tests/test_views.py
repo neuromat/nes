@@ -41,7 +41,7 @@ class PluginTest(ExportTestCase):
         UtilTests.create_response_survey(self.user, self.patient, survey1, 21)
         UtilTests.create_response_survey(self.user, self.patient, survey2, 21)
 
-    def test_send_to_plugin_status_code(self):
+    def test_GET_send_to_plugin_returns_correct_status_code(self):
         response = self.client.get(reverse('send-to-plugin'), follow=True)
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'plugin/send_to_plugin.html')
@@ -155,14 +155,42 @@ class PluginTest(ExportTestCase):
             })
 
         export = Export.objects.last()
-        plugin_url = 'plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
+        plugin_url = 'http://plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
         self.assertRedirects(response, reverse('send-to-plugin'))
         self.assertEqual(self.client.session.get('plugin_url'), plugin_url)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_right_context(self, mockServer):
-        pass
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        export = Export.objects.last()
+        plugin_url = 'http://plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
+        self.assertEqual(response.context['plugin_url'], plugin_url)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_and_remove_plugin_url_key_from_session(
+            self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        self.assertIsNone(self.client.session.get('plugin_url'), None)
 
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_attribute_display_warning_message(self, mockServer):

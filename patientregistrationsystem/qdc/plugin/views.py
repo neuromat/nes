@@ -5,7 +5,6 @@ from os import path
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -141,9 +140,11 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
                   'If problem persists please contact System Administrator.'))
             return redirect(reverse('send-to-plugin'))
         if zip_file:
+            # TODO (NES-995): put this below
             messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
+
             export = Export.objects.last()
-            plugin_url = 'plugin_url?user_id=' + str(request.user.id) + '&export_id=' + str(export.id)
+            plugin_url = 'http://plugin_url?user_id=' + str(request.user.id) + '&export_id=' + str(export.id)
             request.session['plugin_url'] = plugin_url
             return redirect(reverse('send-to-plugin'))
         else:
@@ -197,5 +198,10 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
         'admission_title': admission_title,
         'surgical_title': surgical_title
     }
+
+    plugin_url = request.session.get('plugin_url', None)
+    if plugin_url is not None:
+        context['plugin_url'] = plugin_url
+        del request.session['plugin_url']
 
     return render(request, template_name, context)
