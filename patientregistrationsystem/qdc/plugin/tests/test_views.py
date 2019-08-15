@@ -57,12 +57,14 @@ class PluginTest(ExportTestCase):
         for survey in Survey.objects.all():
             self.assertContains(response, survey.pt_title)
 
+    @skip
     def test_does_not_define_plugin_url_attribute_does_not_display_plugin_entry_in_menu(self):
         self._create_basic_objects()
 
         response = self.client.get('home')
         self.assertNotIn('Plugin', response.content.decode('utf-8'))
 
+    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_returns_zip_file(self, mockServer):
@@ -87,6 +89,7 @@ class PluginTest(ExportTestCase):
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
+    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_returns_zip_file_with_only_data_from_participants_selected(self, mockServer):
@@ -148,6 +151,7 @@ class PluginTest(ExportTestCase):
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
+    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_plugin_url_session_key(self, mockServer):
