@@ -172,22 +172,6 @@ class PluginTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_display_success_message(self, mockServer):
-        set_limesurvey_api_mocks(mockServer)
-
-        self._create_basic_objects()
-        response = self.client.post(
-            reverse('send-to-plugin'),
-            data={
-                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
-                'patients_selected[]': [str(self.patient.id)]
-            }, follow=True)
-
-        message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Data from questionnaires was sent to Forest Plugin'))
-
-    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_right_context(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
@@ -219,6 +203,42 @@ class PluginTest(ExportTestCase):
             }, follow=True)
 
         self.assertIsNone(self.client.session.get('plugin_url'), None)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    @patch('plugin.views.build_zip_file')
+    def test_POST_send_to_plugin_does_not_build_zip_file_display_error_message(self, mock_build_zip_file, mockServer, ):
+        set_limesurvey_api_mocks(mockServer)
+        # Simulate an empty file path to represent that zip file was not created
+        mock_build_zip_file.return_value = 0, ''
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        self.assertRedirects(response, reverse('send-to-plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, _('Could not open zip file to send to Forest Plugin'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_display_success_message(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, _('Data from questionnaires was sent to Forest Plugin'))
 
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_attribute_display_warning_message(self, mockServer):
@@ -252,7 +272,7 @@ class PluginTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_does_not_patient_gender_display_warning_message(self, mockServer):
+    def test_POST_send_to_plugin_does_not_select_patient_gender_display_warning_message(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
         self._create_basic_objects()
