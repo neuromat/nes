@@ -286,8 +286,6 @@ class PluginTest(ExportTestCase):
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('The Floresta Plugin needs to send at least Gender attribute'))
 
-    # TODO (NES-995): create tests for messages when javascript is disabled
-
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message1(self, mockServer):
