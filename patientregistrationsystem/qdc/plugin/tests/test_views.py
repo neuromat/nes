@@ -15,6 +15,7 @@ from django.test import override_settings
 from django.utils.encoding import smart_str
 
 from export import input_export
+from export.models import Export
 from export.tests.tests_helper import ExportTestCase
 from plugin.models import RandomForests
 from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks
@@ -36,25 +37,34 @@ class PluginTest(ExportTestCase):
     def _create_basic_objects(self):
         survey1 = create_survey()
         survey2 = create_survey(505050)
-        RandomForests.objects.create(admission_assessment=survey1, surgical_evaluation=survey2)
+        RandomForests.objects.create(
+            admission_assessment=survey1, surgical_evaluation=survey2, plugin_url='http://plugin.numec.prp.usp.br')
         UtilTests.create_response_survey(self.user, self.patient, survey1, 21)
         UtilTests.create_response_survey(self.user, self.patient, survey2, 21)
 
-    def test_send_to_plugin_status_code(self):
-        response = self.client.get(reverse('send_to_plugin'), follow=True)
+    def test_GET_send_to_plugin_returns_correct_status_code(self):
+        response = self.client.get(reverse('send-to-plugin'), follow=True)
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'plugin/send_to_plugin.html')
 
-    def test_animal_new_url_resolves_animal_new_view(self):
+    def test_root_url_resolves_send_to_plugin_view(self):
         view = resolve('/plugin/')
         self.assertEquals(view.func, send_to_plugin)
 
     def test_GET_send_to_plugin_display_questionnaire_names_in_interface(self):
         self._create_basic_objects()
-        response = self.client.get(reverse('send_to_plugin'))
+        response = self.client.get(reverse('send-to-plugin'))
         for survey in Survey.objects.all():
             self.assertContains(response, survey.pt_title)
 
+    @skip
+    def test_does_not_define_plugin_url_attribute_does_not_display_plugin_entry_in_menu(self):
+        self._create_basic_objects()
+
+        response = self.client.get('home')
+        self.assertNotIn('Plugin', response.content.decode('utf-8'))
+
+    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_returns_zip_file(self, mockServer):
@@ -65,7 +75,7 @@ class PluginTest(ExportTestCase):
         for survey in Survey.objects.all():
             UtilTests.create_response_survey(self.user, patient2, survey, 50)
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id), str(patient2.id)]
@@ -79,6 +89,7 @@ class PluginTest(ExportTestCase):
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
+    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_returns_zip_file_with_only_data_from_participants_selected(self, mockServer):
@@ -96,7 +107,7 @@ class PluginTest(ExportTestCase):
         for survey in Survey.objects.all():
             UtilTests.create_response_survey(self.user, patient2, survey, 50)
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 # TODO (NES-963): about 'patient_selected see TODO (NES-963) in export.views
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
@@ -140,18 +151,76 @@ class PluginTest(ExportTestCase):
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
+    @skip
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_plugin_url_session_key(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+
+        export = Export.objects.last()
+        plugin_url = 'http://plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
+        self.assertRedirects(response, reverse('send-to-plugin'))
+        self.assertEqual(self.client.session.get('plugin_url'), plugin_url)
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_right_context(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        export = Export.objects.last()
+        plugin_url = 'http://plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
+        self.assertEqual(response.context['plugin_url'], plugin_url)
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_and_remove_plugin_url_key_from_session(
+            self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        self.assertIsNone(self.client.session.get('plugin_url'), None)
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_attribute_display_warning_message(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': [],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Please select at least Gender participant attribute'))
 
@@ -161,12 +230,12 @@ class PluginTest(ExportTestCase):
 
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age'],
                 'patients_selected[]': []
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Please select at least one patient'))
 
@@ -177,16 +246,18 @@ class PluginTest(ExportTestCase):
 
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('The Floresta Plugin needs to send at least Gender attribute'))
 
         shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+    # TODO (NES-995): create tests for messages when javascript is disabled
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -196,12 +267,12 @@ class PluginTest(ExportTestCase):
         mockServer.return_value.get_session_key.return_value = {'status': 'Invalid user name or password'}
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
@@ -219,12 +290,12 @@ class PluginTest(ExportTestCase):
         mockServer.return_value.get_survey_properties.return_value = {'status': 'Error: Invalid survey ID'}
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
@@ -240,12 +311,12 @@ class PluginTest(ExportTestCase):
         mockServer.return_value.export_responses.side_effect = 2*[{'status': 'No Data, survey table does not exist.'}]
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
@@ -261,12 +332,12 @@ class PluginTest(ExportTestCase):
             4 * [{'status': 'No Data, survey table does not exist.'}]
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
@@ -282,12 +353,12 @@ class PluginTest(ExportTestCase):
         mockServer.return_value.list_groups.side_effect = 8 * [{'status': 'No groups found'}]
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
@@ -302,12 +373,12 @@ class PluginTest(ExportTestCase):
         mockServer.return_value.list_questions.side_effect = 6 * [{'status': 'No questions found'}]
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
@@ -322,12 +393,12 @@ class PluginTest(ExportTestCase):
         mockServer.return_value.get_question_properties.side_effect = 4 * [{'status': 'Error: Invalid questionid'}]
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
@@ -338,16 +409,16 @@ class PluginTest(ExportTestCase):
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message8(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
-        # Could not get question properties
+        # Could not get participant properties
         mockServer.return_value.get_participant_properties.side_effect = 6 * [{'status': 'Error: No token table'}]
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
@@ -362,12 +433,12 @@ class PluginTest(ExportTestCase):
         mockServer.return_value.get_language_properties.side_effect = 4 * [{'status': 'No valid Data'}]
         self._create_basic_objects()
         response = self.client.post(
-            reverse('send_to_plugin'),
+            reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
-        self.assertRedirects(response, reverse('send_to_plugin'))
+        self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
                                     'problem persists please contact System Administrator.'))
