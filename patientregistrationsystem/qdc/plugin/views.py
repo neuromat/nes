@@ -149,6 +149,7 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
             return redirect(reverse('send-to-plugin'))
         else:
             messages.error(request, _('Could not open zip file to send to Forest Plugin'))
+            # TODO (NES-995): needs test here. Forgeting return statement
 
     try:
         random_forests = RandomForests.objects.get()

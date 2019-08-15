@@ -37,7 +37,8 @@ class PluginTest(ExportTestCase):
     def _create_basic_objects(self):
         survey1 = create_survey()
         survey2 = create_survey(505050)
-        RandomForests.objects.create(admission_assessment=survey1, surgical_evaluation=survey2)
+        RandomForests.objects.create(
+            admission_assessment=survey1, surgical_evaluation=survey2, plugin_url='http://plugin.numec.prp.usp.br')
         UtilTests.create_response_survey(self.user, self.patient, survey1, 21)
         UtilTests.create_response_survey(self.user, self.patient, survey2, 21)
 
@@ -165,6 +166,8 @@ class PluginTest(ExportTestCase):
         self.assertRedirects(response, reverse('send-to-plugin'))
         self.assertEqual(self.client.session.get('plugin_url'), plugin_url)
 
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_right_context(self, mockServer):
@@ -182,6 +185,8 @@ class PluginTest(ExportTestCase):
         plugin_url = 'http://plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
         self.assertEqual(response.context['plugin_url'], plugin_url)
 
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_and_remove_plugin_url_key_from_session(
@@ -197,6 +202,8 @@ class PluginTest(ExportTestCase):
             }, follow=True)
 
         self.assertIsNone(self.client.session.get('plugin_url'), None)
+
+        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_attribute_display_warning_message(self, mockServer):
