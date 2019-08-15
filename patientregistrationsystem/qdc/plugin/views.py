@@ -85,7 +85,7 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     :param participants_plugin: list - list of participants selected to send to Plugin
     :param participants_headers: list
     :param questionnaires: list
-    :return: str = zip file path
+    :return: str = zip file path if success, else Questoinaires.ERROR_CODE
     """
     components = {
         'per_additional_data': False, 'per_eeg_nwb_data': False, 'per_eeg_raw_data': False,
@@ -140,16 +140,13 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
                   'If problem persists please contact System Administrator.'))
             return redirect(reverse('send-to-plugin'))
         if zip_file:
-            # TODO (NES-995): put this below
-            messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
-
             export = Export.objects.last()
             plugin_url = 'http://plugin_url?user_id=' + str(request.user.id) + '&export_id=' + str(export.id)
             request.session['plugin_url'] = plugin_url
             return redirect(reverse('send-to-plugin'))
         else:
             messages.error(request, _('Could not open zip file to send to Forest Plugin'))
-            # TODO (NES-995): needs test here. Forgeting return statement
+            return redirect(reverse('send-to-plugin'))
 
     try:
         random_forests = RandomForests.objects.get()
@@ -203,6 +200,7 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
     plugin_url = request.session.get('plugin_url', None)
     if plugin_url is not None:
         context['plugin_url'] = plugin_url
+        messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
         del request.session['plugin_url']
 
     return render(request, template_name, context)

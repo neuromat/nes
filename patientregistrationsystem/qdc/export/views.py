@@ -220,8 +220,8 @@ def update_fields(list_, heading_type, fields):
     list_.insert(0, [participant_code['field'], abbreviated_data(participant_code['header'], heading_type)])
 
 
-def export_create(request, export_id, input_filename, template_name='export/export_data.html',
-                  participants_plugin=None):
+def export_create(
+        request, export_id, input_filename, template_name='export/export_data.html', participants_plugin=None):
     try:
         export_instance = Export.objects.get(user=request.user, id=export_id)
         export = ExportExecution(export_instance.user.id, export_instance.id)
@@ -330,7 +330,7 @@ def export_create(request, export_id, input_filename, template_name='export/expo
                 return render(request, template_name)
 
             # Build datapackage.json file
-            error_msg = export.process_datapackage_json_file(request)
+            export.process_datapackage_json_file(request)
 
         else:
             # Export method: filter by entrance questionnaire

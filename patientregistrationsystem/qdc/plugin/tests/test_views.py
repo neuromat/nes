@@ -8,11 +8,11 @@ import zipfile
 from unittest import skip
 from unittest.mock import patch
 
+from django.conf import settings
 from django.contrib.messages import get_messages
 from django.core.urlresolvers import reverse, resolve
 from django.utils.translation import ugettext_lazy as _
 from django.test import override_settings
-from django.utils.encoding import smart_str
 
 from export import input_export
 from export.models import Export
@@ -24,9 +24,10 @@ from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
 from survey.tests.tests_helper import create_survey
 
+TEMP_MEDIA_ROOT = tempfile.mkdtemp()
+
 
 class PluginTest(ExportTestCase):
-    TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
     def setUp(self):
         super(PluginTest, self).setUp()
@@ -38,7 +39,7 @@ class PluginTest(ExportTestCase):
         survey1 = create_survey()
         survey2 = create_survey(505050)
         RandomForests.objects.create(
-            admission_assessment=survey1, surgical_evaluation=survey2, plugin_url='http://plugin.numec.prp.usp.br')
+            admission_assessment=survey1, surgical_evaluation=survey2, plugin_url='http://plugin_url')
         UtilTests.create_response_survey(self.user, self.patient, survey1, 21)
         UtilTests.create_response_survey(self.user, self.patient, survey2, 21)
 
@@ -57,39 +58,40 @@ class PluginTest(ExportTestCase):
         for survey in Survey.objects.all():
             self.assertContains(response, survey.pt_title)
 
-    @skip
     def test_does_not_define_plugin_url_attribute_does_not_display_plugin_entry_in_menu(self):
         self._create_basic_objects()
+
+        # Unset plugin url to test bellow
+        plugin = RandomForests.objects.last()
+        plugin.plugin_url = ''
+        plugin.save()
 
         response = self.client.get('home')
         self.assertNotIn('Plugin', response.content.decode('utf-8'))
 
-    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_returns_zip_file(self, mockServer):
+    def test_POST_send_to_plugin_creates_zip_file(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
         self._create_basic_objects()
         patient2 = UtilTests.create_patient(self.user)
         for survey in Survey.objects.all():
             UtilTests.create_response_survey(self.user, patient2, survey, 50)
-        response = self.client.post(
+        self.client.post(
             reverse('send-to-plugin'),
             data={
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id), str(patient2.id)]
             })
-        self.assertEqual(response.status_code, 200)
-        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="%s"' % smart_str('export.zip'))
-        file = io.BytesIO(response.content)
-        zipped_file = zipfile.ZipFile(file, 'r')
-        self.assertIsNone(zipped_file.testzip())
-        zipped_file.close()
 
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        export = Export.objects.last()
+        with open(os.path.join(
+                settings.MEDIA_ROOT, 'export', str(self.user.id), str(export.id), 'export.zip'), 'rb') as file:
+            zipped_file = zipfile.ZipFile(file, 'r')
+            self.assertIsNone(zipped_file.testzip())
+            zipped_file.close()
 
-    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_returns_zip_file_with_only_data_from_participants_selected(self, mockServer):
@@ -106,52 +108,49 @@ class PluginTest(ExportTestCase):
         patient2 = UtilTests.create_patient(self.user)
         for survey in Survey.objects.all():
             UtilTests.create_response_survey(self.user, patient2, survey, 50)
-        response = self.client.post(
+        self.client.post(
             reverse('send-to-plugin'),
             data={
                 # TODO (NES-963): about 'patient_selected see TODO (NES-963) in export.views
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)],
             })
-        self.assertEqual(response.status_code, 200)
-        self.assertEquals(response.get('Content-Disposition'), 'attachment; filename="%s"' % smart_str('export.zip'))
-        file = io.BytesIO(response.content)
-        zipped_file = zipfile.ZipFile(file, 'r')
-        self.assertIsNone(zipped_file.testzip())
-        # Tests for Per_participant subdir
-        list_items = zipped_file.namelist()
-        in_items = re.compile(input_export.BASE_DIRECTORY + '/Per_participant/Participant_%s' % self.patient.code)
-        in_items = [in_items.match(item) for item in list_items]
-        in_items = [item for item in in_items if item is not None]
-        self.assertEqual(2, len(in_items))
-        out_items = re.compile('NES_EXPORT/Per_participant/Participant_%s' % patient2.code)
-        out_items = [out_items.match(item) for item in list_items]
-        out_items = [item for item in out_items if item is not None]
-        self.assertEqual(0, len(out_items))
 
-        # Tests for Per_questionnaire subdir
-        questionnaire1 = zipped_file.extract(
-            input_export.BASE_DIRECTORY +
-            '/Per_questionnaire/212121_admission-assessment-plugin/Responses_212121_en.csv',
-            self.TEMP_MEDIA_ROOT)
-        with open(questionnaire1) as file:
-            reader = list(csv.reader(file))
-            self.assertEqual(2, len(reader))
-            self.assertEqual(self.patient.code, reader[1][0])
-        questionnaire2 = zipped_file.extract(
-            input_export.BASE_DIRECTORY +
-            '/Per_questionnaire/505050_surgical-evaluation-plugin/Responses_505050_en.csv',
-            self.TEMP_MEDIA_ROOT)
-        with open(questionnaire2) as file:
-            reader = list(csv.reader(file))
-            self.assertEqual(2, len(reader))
-            self.assertEqual(self.patient.code, reader[1][0])
+        export = Export.objects.last()
+        with open(os.path.join(
+                settings.MEDIA_ROOT, 'export', str(self.user.id), str(export.id), 'export.zip'), 'rb') as file:
+            zipped_file = zipfile.ZipFile(file, 'r')
+            self.assertIsNone(zipped_file.testzip())
+            # Tests for Per_participant subdir
+            list_items = zipped_file.namelist()
+            in_items = re.compile(input_export.BASE_DIRECTORY + '/Per_participant/Participant_%s' % self.patient.code)
+            in_items = [in_items.match(item) for item in list_items]
+            in_items = [item for item in in_items if item is not None]
+            self.assertEqual(2, len(in_items))
+            out_items = re.compile('NES_EXPORT/Per_participant/Participant_%s' % patient2.code)
+            out_items = [out_items.match(item) for item in list_items]
+            out_items = [item for item in out_items if item is not None]
+            self.assertEqual(0, len(out_items))
 
-        zipped_file.close()
+            # Tests for Per_questionnaire subdir
+            questionnaire1 = zipped_file.extract(
+                input_export.BASE_DIRECTORY +
+                '/Per_questionnaire/212121_admission-assessment-plugin/Responses_212121_en.csv',
+                TEMP_MEDIA_ROOT)
+            with open(questionnaire1) as q1_file:
+                reader = list(csv.reader(q1_file))
+                self.assertEqual(2, len(reader))
+                self.assertEqual(self.patient.code, reader[1][0])
+            questionnaire2 = zipped_file.extract(
+                input_export.BASE_DIRECTORY +
+                '/Per_questionnaire/505050_surgical-evaluation-plugin/Responses_505050_en.csv',
+                TEMP_MEDIA_ROOT)
+            with open(questionnaire2) as q2_file:
+                reader = list(csv.reader(q2_file))
+                self.assertEqual(2, len(reader))
+                self.assertEqual(self.patient.code, reader[1][0])
 
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
-
-    @skip
+    @skip  # TODO (NES-995): solve this before final commit
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_plugin_url_session_key(self, mockServer):
@@ -166,11 +165,10 @@ class PluginTest(ExportTestCase):
             })
 
         export = Export.objects.last()
-        plugin_url = 'http://plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
+        plugin = RandomForests.objects.last()
+        plugin_url = plugin.plugin_url + '?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
         self.assertRedirects(response, reverse('send-to-plugin'))
         self.assertEqual(self.client.session.get('plugin_url'), plugin_url)
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -184,12 +182,11 @@ class PluginTest(ExportTestCase):
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             }, follow=True)
+        self.assertEqual(response.status_code, 200)
 
         export = Export.objects.last()
         plugin_url = 'http://plugin_url?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
         self.assertEqual(response.context['plugin_url'], plugin_url)
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -207,7 +204,41 @@ class PluginTest(ExportTestCase):
 
         self.assertIsNone(self.client.session.get('plugin_url'), None)
 
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    @patch('plugin.views.build_zip_file')
+    def test_POST_send_to_plugin_does_not_build_zip_file_display_error_message(self, mock_build_zip_file, mockServer, ):
+        set_limesurvey_api_mocks(mockServer)
+        # Simulate an empty file path to represent that zip file was not created
+        mock_build_zip_file.return_value = 0, ''
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        self.assertRedirects(response, reverse('send-to-plugin'))
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, _('Could not open zip file to send to Forest Plugin'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_display_success_message(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, _('Data from questionnaires was sent to Forest Plugin'))
 
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_does_not_select_any_attribute_display_warning_message(self, mockServer):
@@ -241,7 +272,7 @@ class PluginTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_does_not_patient_gender_display_warning_message(self, mockServer):
+    def test_POST_send_to_plugin_does_not_select_patient_gender_display_warning_message(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
         self._create_basic_objects()
@@ -254,10 +285,6 @@ class PluginTest(ExportTestCase):
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('The Floresta Plugin needs to send at least Gender attribute'))
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
-
-    # TODO (NES-995): create tests for messages when javascript is disabled
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -274,13 +301,9 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
-
-        # TODO (NES-971): put here and below because if clause does not work when running all class suit.
-        #  Verify why!
-        if os.path.exists(self.TEMP_MEDIA_ROOT):
-            shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -297,11 +320,9 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
-
-        if os.path.exists(self.TEMP_MEDIA_ROOT):
-            shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -318,10 +339,9 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -339,11 +359,9 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
-
-        if os.path.exists(self.TEMP_MEDIA_ROOT):
-            shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -360,10 +378,9 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -380,10 +397,9 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -400,10 +416,9 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
-
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -420,11 +435,9 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
-
-        if os.path.exists(self.TEMP_MEDIA_ROOT):
-            shutil.rmtree(self.TEMP_MEDIA_ROOT)
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
     @skip  # get_language_properties already deal with errors returned by LimeSurvey
     def test_POST_send_to_plugin_get_error_in_consuming_limesurvey_api_returns_error_message9(self, mockServer):
@@ -440,7 +453,10 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _('Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
-                                    'problem persists please contact System Administrator.'))
+        self.assertEqual(message, _(
+            'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+            'problem persists please contact System Administrator.'))
 
-        shutil.rmtree(self.TEMP_MEDIA_ROOT)
+
+def tearDownModule():
+    shutil.rmtree(TEMP_MEDIA_ROOT)
