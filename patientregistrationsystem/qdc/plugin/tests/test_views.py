@@ -172,6 +172,22 @@ class PluginTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_display_success_message(self, mockServer):
+        set_limesurvey_api_mocks(mockServer)
+
+        self._create_basic_objects()
+        response = self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            }, follow=True)
+
+        message = str(list(get_messages(response.wsgi_request))[0])
+        self.assertEqual(message, _('Data from questionnaires was sent to Forest Plugin'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_right_context(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
@@ -248,8 +264,7 @@ class PluginTest(ExportTestCase):
             })
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
-        self.assertEqual(message, _(
-            'The Floresta Plugin needs to send at least Gender attribute'))
+        self.assertEqual(message, _('The Floresta Plugin needs to send at least Gender attribute'))
 
     # TODO (NES-995): create tests for messages when javascript is disabled
 
