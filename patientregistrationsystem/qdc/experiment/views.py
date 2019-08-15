@@ -5276,8 +5276,8 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
     return render(request, template_name, context)
 
 
-def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, group_id, questionnaire_id,
-                                                            list_of_path):
+def subject_questionnaire_response_start_fill_questionnaire(
+        request, subject_id, group_id, questionnaire_id, list_of_path):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     data_configuration_tree_id = list_data_configuration_tree(questionnaire_id, list_of_path)

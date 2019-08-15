@@ -185,5 +185,10 @@
         $("#patient_selected").click(function () {
             $("#gender_field").prop('selected', true);
         });
+
+        {# Open url plugin in new tab #}
+        {% if plugin_url %}
+            window.open("{{ plugin_url }}", "_blank");
+        {% endif %}
     </script>
 {% endblock %}
