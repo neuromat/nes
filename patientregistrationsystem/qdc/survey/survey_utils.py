@@ -379,10 +379,12 @@ class QuestionnaireUtils:
         questions = []
         for group in result:
             if group['id']['language'] == language:
-                questions.extend(limesurvey_connection.list_questions(survey_id, group['id']['gid']))
-                if not questions:
+                group_questions = limesurvey_connection.list_questions(survey_id, group['id']['gid'])
+                if not group_questions:
                     return Questionnaires.ERROR_CODE, []
-                elif types is not None:
+                else:
+                    questions.extend(group_questions)
+                if types is not None:
                     questions = [item for item in questions if item['type'] in types]
 
         return 0, questions

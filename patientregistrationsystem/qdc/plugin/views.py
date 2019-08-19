@@ -5,7 +5,6 @@ from os import path
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -37,7 +36,7 @@ def participants_dict(survey):
 
 
 def update_patient_attributes(participants):
-    """add item to 'patient_selected POST list to suit to export method
+    """Add item to patient_selected POST list to suit to export method
     :param participants: list - participants
     :return: list - updated participants
     """
@@ -86,7 +85,7 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     :param participants_plugin: list - list of participants selected to send to Plugin
     :param participants_headers: list
     :param questionnaires: list
-    :return: str = zip file path
+    :return: str = zip file path if success, else Questoinaires.ERROR_CODE
     """
     components = {
         'per_additional_data': False, 'per_eeg_nwb_data': False, 'per_eeg_raw_data': False,
@@ -110,20 +109,20 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
 
 
 @login_required
-def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
+def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
     if request.method == 'POST':
         if not request.POST.getlist('patients_selected[]'):
             messages.warning(request, _('Please select at least one patient'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         # Export experiment (from export app) requires at least one patient
         # attribute selected (patient_selected is the list of attributes).
-        # This may be changed.
+        # This may be changed to a better key name
         if not request.POST.getlist('patient_selected'):
             messages.warning(request, _('Please select at least Gender participant attribute'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         if 'gender__name*gender' not in request.POST.getlist('patient_selected'):
             messages.warning(request, _('The Floresta Plugin needs to send at least Gender attribute'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         participants = request.POST.getlist('patients_selected[]')
         participants_headers = update_patient_attributes(request.POST.getlist('patient_selected'))
         limesurvey_error, questionnaires = build_questionnaires_list(request.LANGUAGE_CODE)
@@ -132,23 +131,23 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
                 request,
                 _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
                   'If problem persists please contact System Administrator.'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         limesurvey_error, zip_file = build_zip_file(request, participants, participants_headers, questionnaires)
         if limesurvey_error:
             messages.error(
                 request,
                 _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
                   'If problem persists please contact System Administrator.'))
-            return redirect(reverse('send_to_plugin'))
+            return redirect(reverse('send-to-plugin'))
         if zip_file:
-            messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
-            with open(zip_file, 'rb') as file:
-                response = HttpResponse(file, content_type='application/zip')
-                response['Content-Disposition'] = 'attachment; filename="export.zip"'
-                response['Content-Lenght'] = path.getsize(zip_file)
-                return response
+            export = Export.objects.last()
+            # TODO (NES-995): get plugin url from model
+            plugin_url = 'http://plugin_url?user_id=' + str(request.user.id) + '&export_id=' + str(export.id)
+            request.session['plugin_url'] = plugin_url
+            return redirect(reverse('send-to-plugin'))
         else:
             messages.error(request, _('Could not open zip file to send to Forest Plugin'))
+            return redirect(reverse('send-to-plugin'))
 
     try:
         random_forests = RandomForests.objects.get()
@@ -198,5 +197,11 @@ def send_to_plugin(request, template_name="plugin/send_to_plugin.html"):
         'admission_title': admission_title,
         'surgical_title': surgical_title
     }
+
+    plugin_url = request.session.get('plugin_url', None)
+    if plugin_url is not None:
+        context['plugin_url'] = plugin_url
+        messages.success(request, _('Data from questionnaires was sent to Forest Plugin'))
+        del request.session['plugin_url']
 
     return render(request, template_name, context)
