@@ -329,7 +329,7 @@ def export_create(
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # Build datapackage.json file
+            # Build datapackage.json file (TODO (NES-991): error_msg stays?)
             export.process_datapackage_json_file(request)
 
         else:

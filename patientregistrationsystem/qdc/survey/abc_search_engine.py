@@ -324,6 +324,8 @@ class ABCSearchEngine(ABC):
         ]:
             return None
 
+        # print(properties)  # DB
+
         return properties
 
     def set_question_properties(self, sid, data):
@@ -336,6 +338,8 @@ class ABCSearchEngine(ABC):
         :return: on success, list of ids and info of groups belonging to survey, else, None
         """
         groups = self.server.list_groups(self.session_key, sid)
+
+        # print(groups)  # DB
 
         return groups if isinstance(groups, list) else None
 
@@ -365,6 +369,8 @@ class ABCSearchEngine(ABC):
         :return: on success, list of question properties, else None
         """
         questions = self.server.list_questions(self.session_key, sid, gid)
+
+        # print(questions)  # DB
 
         return questions if isinstance(questions, list) else None
 
