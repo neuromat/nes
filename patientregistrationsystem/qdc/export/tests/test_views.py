@@ -27,7 +27,7 @@ from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
-    set_mocks5, set_mocks6
+    set_mocks5, set_mocks6, set_mocks7
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -516,22 +516,15 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(
-            os.path.join(
-                input_export.BASE_DIRECTORY,
-                'Experiment_data',
+        zipped_file.extract(os.path.join(
+                input_export.BASE_DIRECTORY, 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
-                self.survey.code + '_test-questionnaire_en.csv'
-            ), temp_dir
-        )
+                self.survey.code + '_test-questionnaire_en.csv'), temp_dir)
 
         with open(os.path.join(
-                temp_dir,
-                input_export.BASE_DIRECTORY,
-                'Experiment_data',
-                'Group_' + self.group.title.lower(),
-                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data',
+                'Group_' + self.group.title.lower(), 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
                 self.survey.code + '_test-questionnaire_en.csv'
         )) as file:
             csvreader = csv.reader(file)
@@ -539,10 +532,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             for row in csvreader:
                 rows.append(row)
             self.assertEqual(
-                rows[1][1],
-                ExportParticipants.subject_age(
-                    self.patient.date_birth, self.questionnaire_response)
-            )
+                rows[1][1], ExportParticipants.subject_age(self.patient.date_birth, self.questionnaire_response))
 
         shutil.rmtree(temp_dir)
 
@@ -1625,7 +1615,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         return dgp_file
 
-    def _create_questionnaire_export_data(self, mock_server):
+    def _create_questionnaire_export_data(self):
         # Create questionnaire data collection in NES
         # TODO: use method already existent in patient.tests. See other places
         self.survey = create_survey(LIMESURVEY_SURVEY_ID)
@@ -1639,8 +1629,6 @@ class ExportFrictionlessData(ExportTestCase):
         # in our db
         ObjectsFactory.create_questionnaire_response(
             dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
-
-        set_mocks6(mock_server)
 
     def _assert_basic_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
@@ -2626,7 +2614,8 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_experiment_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
-        self._create_questionnaire_export_data(mockServer)
+        self._create_questionnaire_export_data()
+        set_mocks6(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2669,7 +2658,8 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_experiment_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(self, mockServer):
-        self._create_questionnaire_export_data(mockServer)
+        self._create_questionnaire_export_data()
+        set_mocks6(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2703,7 +2693,8 @@ class ExportFrictionlessData(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_experiment_add_questionnaire_responses_file_to_datapackage_json_file(self, mockServer):
-        self._create_questionnaire_export_data(mockServer)
+        self._create_questionnaire_export_data()
+        set_mocks6(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2743,6 +2734,176 @@ class ExportFrictionlessData(ExportTestCase):
         self.assertTrue(all(
             item in questionnaire_response_resource.items() for item in test_dict.items()),
             str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
+        # TODO (NES-991 - CONTINUE): fixes tests in ExportQuestionnaireTest
+        self._create_questionnaire_export_data()
+        set_mocks7(mockServer)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = [
+                ('acquisitiondate', 'D', 'string'), ('funfpunktewahl', '5', 'string'),
+                ('dropdownliste', '!', 'string'), ('listeradio', 'L', 'string'),
+                ('listemitkommentar', 'O', 'string'), ('listemitkommentar[comment]','O', 'string'),
+                ('array[SQ001]', 'F', 'string'), ('array[SQ002]', 'F', 'string'),
+                ('arrayzehnpunktewahl[SQ001]', 'B', 'string'), ('arrayzehnpunktewahl[SQ002]', 'B', 'string'),
+                ('arrayfunfpunktewahl[SQ001]', 'A', 'string'), ('arrayfunfpunktewahl[SQ002]', 'A', 'string'),
+                ('arrayerhohengleichev[SQ001]', 'E', 'string'), ('arrayerhohengleichev[SQ002]', 'E', 'string'),
+                ('arrayzahlen[SQ001_SQ001]', ':', 'string'), ('arrayzahlen[SQ002_SQ001]', ':', 'string'),
+                ('arraytexte[SQ001_SQ001]', ';', 'string'), ('arraytexte[SQ001_SQ002]', ';', 'string'),
+                ('arrayjaneinunsicher[SQ001]', 'C', 'string'), ('arrayjaneinunsicher[SQ002]', 'C', 'string'),
+                ('arrayvonspalte[SQ001]', 'H', 'string'), ('arrayvonspalte[SQ002]', 'H', 'string'),
+                ('arraydualeskala[SQ001][1]', '1', 'string'), ('arraydualeskala[SQ001][2]', '1', 'string'),
+                ('arraydualeskala[SQ002][1]', '1', 'string'), ('arraydualeskala[SQ002][2]', '1', 'string'),
+                ('terminzeit', 'D', 'string'), ('gleichung', '*', 'string'),
+                ('dateiupload', '|', 'string'), ('dateiupload[filecount]', '|', 'string'),
+                ('geschlecht', 'G', 'string'), ('sprachumschaltung', 'I', 'string'),
+                ('mehrfachenumerischee[SQ001]', 'K', 'number'), ('mehrfachenumerischee[SQ002]', 'K', 'number'),
+                ('numerischeeingabe', 'N', 'number'),
+                ('rang[1]', 'R', 'string'),  ('rang[2]', 'R', 'string'),
+                ('textanzeige', 'X', 'string'), ('janein', 'Y', 'string'),
+                ('reisigerfreitext', 'U', 'string'), ('langerfreiertext', 'T', 'string'),
+                ('mehrfacherkurztext[SQ001]', 'Q', 'string'), ('mehrfacherkurztext[SQ002]', 'Q', 'string'),
+                ('kurzerfreitext', 'S', 'string'),
+                ('mehrfachauswahl[SQ001]', 'M', 'string'), ('mehrfachauswahl[SQ002]', 'M', 'string'),
+                ('mehrfachauswahlmitko[SQ001]', 'P', 'string'), ('mehrfachauswahlmitko[SQ001comment]', 'P', 'string'),
+                ('mehrfachauswahlmitko[SQ002]', 'P', 'string'), ('mehrfachauswahlmitko[SQ002comment]', 'P', 'string')
+        ]
+        # to_experiment = []
+        # for question in questions:
+        #     to_experiment.append(
+        #         '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+        #         + '*' + self.questionnaire.survey.en_title + '*' + question[0] + '*' + question[0])
+
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*funfpunktewahl*funfpunktewahl',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*dropdownliste*dropdownliste',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*listeradio*listeradio',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*listemitkommentar*listemitkommentar',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*listemitkommentar[comment]*listemitkommentar[comment]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*array[SQ001]*array[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*array[SQ002]*array[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayzehnpunktewahl[SQ001]*arrayzehnpunktewahl[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayzehnpunktewahl[SQ002]*arrayzehnpunktewahl[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayfunfpunktewahl[SQ001]*arrayfunfpunktewahl[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayfunfpunktewahl[SQ002]*arrayfunfpunktewahl[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayerhohengleichev[SQ001]*arrayerhohengleichev[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayerhohengleichev[SQ002]*arrayerhohengleichev[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayzahlen[SQ001_SQ001]*arrayzahlen[SQ001_SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayzahlen[SQ002_SQ001]*arrayzahlen[SQ002_SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arraytexte[SQ001_SQ001]*arraytexte[SQ001_SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arraytexte[SQ001_SQ002]*arraytexte[SQ001_SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayjaneinunsicher[SQ001]*arrayjaneinunsicher[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayjaneinunsicher[SQ002]*arrayjaneinunsicher[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayvonspalte[SQ001]*arrayvonspalte[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arrayvonspalte[SQ002]*arrayvonspalte[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ001][1]*arraydualeskala[SQ001][1]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ001][2]*arraydualeskala[SQ001][2]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ002][1]*arraydualeskala[SQ002][1]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ002][2]*arraydualeskala[SQ002][2]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*terminzeit*terminzeit',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*gleichung*gleichung',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*dateiupload*dateiupload',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*dateiupload[filecount]*dateiupload[filecount]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*geschlecht*geschlecht',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*sprachumschaltung*sprachumschaltung',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*mehrfachenumerischee[SQ001]*mehrfachenumerischee[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*mehrfachenumerischee[SQ002]*mehrfachenumerischee[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*numerischeeingabe*numerischeeingabe',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*rang[1]*rang[1]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*rang[2]*rang[2]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*textanzeige*textanzeige',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*janein*janein',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*reisigerfreitext*reisigerfreitext',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*langerfreiertext*langerfreiertext',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*mehrfacherkurztext[SQ001]*mehrfacherkurztext[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*mehrfacherkurztext[SQ002]*mehrfacherkurztext[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*kurzerfreitext*kurzerfreitext',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahl[SQ001]*mehrfachauswahl[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahl[SQ002]*mehrfachauswahl[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahlmitko[SQ001]*mehrfachauswahlmitko[SQ001]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title
+                + '*mehrfachauswahlmitko[SQ001comment]*mehrfachauswahlmitko[SQ001comment]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahlmitko[SQ002]*mehrfachauswahlmitko[SQ002]',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title
+                + '*mehrfachauswahlmitko[SQ002comment]*mehrfachauswahlmitko[SQ002comment]'
+            ],
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self._get_datapackage_json_data(temp_dir, response)
+
+        filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['title'] == filename)
+
+        for item in questions:
+            # TODO (CONTINUE): test for 'format': 'default' for patient fields
+            self.assertIn(
+                {'name': slugify(item[0]), 'title': item[0], 'type': item[2], 'format': 'default'},
+                questionnaire_response_resource['schema']['fields'])
 
 
 def tearDownModule():

@@ -334,6 +334,9 @@ def get_survey_header(surveys, survey, language, heading_type):
         survey.lime_survey_id, language, heading_type=heading_type
     )
     header_fields = next(
+        # TODO (dev (merging)): 500 error in NES-INDC (see Internal Server Error message
+        #  in email) is due to responses_text.decode(). We are fixing this here to match
+        #  the fix I did in NES-INDC production environment directly at tag TAG-159.1.
         reader(StringIO(responses_text.decode()), delimiter=',')
     )
     for field in header_fields:
