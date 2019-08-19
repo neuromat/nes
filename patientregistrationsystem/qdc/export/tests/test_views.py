@@ -2773,119 +2773,16 @@ class ExportFrictionlessData(ExportTestCase):
                 ('mehrfachauswahlmitko[SQ001]', 'P', 'string'), ('mehrfachauswahlmitko[SQ001comment]', 'P', 'string'),
                 ('mehrfachauswahlmitko[SQ002]', 'P', 'string'), ('mehrfachauswahlmitko[SQ002comment]', 'P', 'string')
         ]
-        # to_experiment = []
-        # for question in questions:
-        #     to_experiment.append(
-        #         '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-        #         + '*' + self.questionnaire.survey.en_title + '*' + question[0] + '*' + question[0])
+        to_experiment = []
+        for question in questions:
+            to_experiment.append(
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0] + '*' + question[0])
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
             'headings': ['code'],
-            'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*funfpunktewahl*funfpunktewahl',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*dropdownliste*dropdownliste',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*listeradio*listeradio',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*listemitkommentar*listemitkommentar',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*listemitkommentar[comment]*listemitkommentar[comment]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*array[SQ001]*array[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*array[SQ002]*array[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayzehnpunktewahl[SQ001]*arrayzehnpunktewahl[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayzehnpunktewahl[SQ002]*arrayzehnpunktewahl[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayfunfpunktewahl[SQ001]*arrayfunfpunktewahl[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayfunfpunktewahl[SQ002]*arrayfunfpunktewahl[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayerhohengleichev[SQ001]*arrayerhohengleichev[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayerhohengleichev[SQ002]*arrayerhohengleichev[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayzahlen[SQ001_SQ001]*arrayzahlen[SQ001_SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayzahlen[SQ002_SQ001]*arrayzahlen[SQ002_SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraytexte[SQ001_SQ001]*arraytexte[SQ001_SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraytexte[SQ001_SQ002]*arraytexte[SQ001_SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayjaneinunsicher[SQ001]*arrayjaneinunsicher[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayjaneinunsicher[SQ002]*arrayjaneinunsicher[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayvonspalte[SQ001]*arrayvonspalte[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayvonspalte[SQ002]*arrayvonspalte[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ001][1]*arraydualeskala[SQ001][1]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ001][2]*arraydualeskala[SQ001][2]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ002][1]*arraydualeskala[SQ002][1]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ002][2]*arraydualeskala[SQ002][2]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*terminzeit*terminzeit',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*gleichung*gleichung',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*dateiupload*dateiupload',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*dateiupload[filecount]*dateiupload[filecount]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*geschlecht*geschlecht',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*sprachumschaltung*sprachumschaltung',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachenumerischee[SQ001]*mehrfachenumerischee[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachenumerischee[SQ002]*mehrfachenumerischee[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*numerischeeingabe*numerischeeingabe',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*rang[1]*rang[1]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*rang[2]*rang[2]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*textanzeige*textanzeige',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*janein*janein',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*reisigerfreitext*reisigerfreitext',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*langerfreiertext*langerfreiertext',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfacherkurztext[SQ001]*mehrfacherkurztext[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfacherkurztext[SQ002]*mehrfacherkurztext[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*kurzerfreitext*kurzerfreitext',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahl[SQ001]*mehrfachauswahl[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahl[SQ002]*mehrfachauswahl[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahlmitko[SQ001]*mehrfachauswahlmitko[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title
-                + '*mehrfachauswahlmitko[SQ001comment]*mehrfachauswahlmitko[SQ001comment]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahlmitko[SQ002]*mehrfachauswahlmitko[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title
-                + '*mehrfachauswahlmitko[SQ002comment]*mehrfachauswahlmitko[SQ002comment]'
-            ],
+            'to_experiment[]': to_experiment,
             'patient_selected': ['age*age'], 'responses': ['short']
         }
 
