@@ -516,22 +516,15 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(
-            os.path.join(
-                input_export.BASE_DIRECTORY,
-                'Experiment_data',
+        zipped_file.extract(os.path.join(
+                input_export.BASE_DIRECTORY, 'Experiment_data',
                 'Group_' + self.group.title.lower(),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
-                self.survey.code + '_test-questionnaire_en.csv'
-            ), temp_dir
-        )
+                self.survey.code + '_test-questionnaire_en.csv'), temp_dir)
 
         with open(os.path.join(
-                temp_dir,
-                input_export.BASE_DIRECTORY,
-                'Experiment_data',
-                'Group_' + self.group.title.lower(),
-                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data',
+                'Group_' + self.group.title.lower(), 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
                 self.survey.code + '_test-questionnaire_en.csv'
         )) as file:
             csvreader = csv.reader(file)
@@ -539,10 +532,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             for row in csvreader:
                 rows.append(row)
             self.assertEqual(
-                rows[1][1],
-                ExportParticipants.subject_age(
-                    self.patient.date_birth, self.questionnaire_response)
-            )
+                rows[1][1], ExportParticipants.subject_age(self.patient.date_birth, self.questionnaire_response))
 
         shutil.rmtree(temp_dir)
 
