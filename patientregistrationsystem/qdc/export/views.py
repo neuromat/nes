@@ -319,7 +319,8 @@ def export_create(
             # data directory)
             if export.get_input_data('questionnaires_from_experiments'):
                 if export.get_input_data('export_per_questionnaire'):
-                    error_msg = export.process_per_experiment_questionnaire()
+                    # 'headings' == ['code'], ['full'] or ['abbreviated'], so request.POST.get('headings')[0]
+                    error_msg = export.process_per_experiment_questionnaire(request.POST.get('headings')[0])
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)

@@ -369,7 +369,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         # template
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            'headings': ['abbreviated'],
+            'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
@@ -498,7 +498,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_participant': ['on'],
             'per_questionnaire': ['on'],
             'action': ['run'],
-            'headings': ['abbreviated'],
+            'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
@@ -607,7 +607,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_participant': ['on'],
             'action': ['run'],
             'per_questionnaire': ['on'],
-            'headings': ['abbreviated'],
+            'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
@@ -668,7 +668,7 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_participant': ['on'],
             'action': ['run'],
             'per_questionnaire': ['on'],
-            'headings': ['abbreviated'],
+            'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
                 + '*Test questionnaire*acquisitiondate*acquisitiondate',
@@ -1693,10 +1693,10 @@ class ExportFrictionlessData(ExportTestCase):
     @staticmethod
     def _set_post_data(data_collection='per_eeg_raw_data'):
         # Data style that is posted to export_view in template
-        # TODO (NES-987): test for 'headings': ['short'] and 'headings': ['abbreviated']
         return {
             'per_questionnaire': ['on'], 'per_participant': ['on'],
             data_collection: ['on'], 'per_additional_data': ['on'],
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
@@ -2622,6 +2622,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
@@ -2666,6 +2667,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
@@ -2701,6 +2703,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
@@ -2737,8 +2740,7 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
-        # TODO (NES-991 - CONTINUE): fixes tests in ExportQuestionnaireTest
+    def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
         self._create_questionnaire_export_data()
         set_mocks7(mockServer)
 
@@ -2781,6 +2783,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            # TODO (NES-991): tests for 'abbreviated' and 'full'
             'headings': ['code'],
             'to_experiment[]': to_experiment,
             'patient_selected': ['age*age'], 'responses': ['short']
@@ -2797,7 +2800,7 @@ class ExportFrictionlessData(ExportTestCase):
             item for item in json_data['resources'] if item['title'] == filename)
 
         for item in questions:
-            # TODO (CONTINUE): test for 'format': 'default' for patient fields
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             self.assertIn(
                 {'name': slugify(item[0]), 'title': item[0], 'type': item[2], 'format': 'default'},
                 questionnaire_response_resource['schema']['fields'])
