@@ -485,7 +485,6 @@ def set_mocks3(mockServer):
 def set_mocks4(mockServer):
     mockServer.return_value.get_survey_properties.return_value = {'additional_languages': '', 'language': 'en'}
     mockServer.return_value.get_participant_properties.side_effect = [
-        {'token': 'obyBy4HizUhe3j0'},
         {'completed': '2019-06-26'},
         {'completed': '2019-06-26'},
         {'token': 'obyBy4HizUhe3j0'}
@@ -508,21 +507,21 @@ def set_mocks4(mockServer):
         'V2VsdCEiLCIiLCIiCgo='
     ]
     mockServer.return_value.list_groups.return_value = [
-            {
-                'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 2, 'gid': 1841,
-                'description': '', 'id': {'gid': 1841, 'language': 'en'}, 'group_name': 'First group', 'language': 'en'
-            },
-            {
-                'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 1, 'gid': 1840,
-                'description': '', 'id': {'gid': 1840, 'language': 'en'}, 'group_name': 'Identification',
-                'language': 'en'
-            },
-            {
-                'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 1, 'gid': 1840,
-                'description': '', 'id': {'gid': 1840, 'language': 'pt-BR'}, 'group_name': 'Identification',
-                'language': 'pt-BR'
-            },
-         ]
+        {
+            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 2, 'gid': 1841,
+            'description': '', 'id': {'gid': 1841, 'language': 'en'}, 'group_name': 'First group', 'language': 'en'
+        },
+        {
+            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 1, 'gid': 1840,
+            'description': '', 'id': {'gid': 1840, 'language': 'en'}, 'group_name': 'Identification',
+            'language': 'en'
+        },
+        {
+            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 1, 'gid': 1840,
+            'description': '', 'id': {'gid': 1840, 'language': 'pt-BR'}, 'group_name': 'Identification',
+            'language': 'pt-BR'
+        },
+    ]
     mockServer.return_value.list_questions.side_effect = [
         [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N', 'question_order': 3,
           'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5823, 'language': 'en', 'help': '', 'parent_qid': 0,

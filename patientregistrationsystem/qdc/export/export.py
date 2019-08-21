@@ -1333,7 +1333,11 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_experiment_questionnaire(self):
+    def process_per_experiment_questionnaire(self, heading_type):
+        """
+        :param heading_type: str, type of header csv columns
+        :return:
+        """
         error_msg = ''
 
         filesformat_type = self.get_input_data('filesformat_type')
