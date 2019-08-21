@@ -9344,12 +9344,21 @@ def component_create(request, experiment_id, component_type):
 
         if component_form.is_valid():
             if component_type == 'questionnaire':
+                surveys = Questionnaires()
+                limesurvey_available = check_limesurvey_access(request, surveys)
+
                 new_specific_component = Questionnaire()
                 survey, created = Survey.objects.get_or_create(
                     lime_survey_id=request.POST['questionnaire_selected'])
                 if created:
                     survey.is_initial_evaluation = False
-                    survey.save()
+
+                if surveys.get_survey_properties(survey.lime_survey_id, 'active') == 'Y':
+                    new_specific_component.survey = survey
+                else:
+                    survey.is_active = False
+
+                survey.save()
                 new_specific_component.survey = survey
             elif component_type == 'pause':
                 new_specific_component = Pause()
@@ -11172,8 +11181,15 @@ def component_add_new(request, path_of_the_components, component_type):
             else:
                 if number_of_uses_form.is_valid():
                     if component_type == 'questionnaire':
-                        survey.save()
-                        new_specific_component.survey = survey
+                        surveys = Questionnaires()
+                        limesurvey_available = check_limesurvey_access(request, surveys)
+
+                        if surveys.get_survey_properties(survey.lime_survey_id, 'active') == 'Y':
+                            survey.save()
+                            new_specific_component.survey = survey
+                        else:
+                            survey.is_active = False
+                            survey.save()
 
                     new_specific_component.save()
 
