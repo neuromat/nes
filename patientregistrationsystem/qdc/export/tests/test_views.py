@@ -27,7 +27,7 @@ from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
-    set_mocks5, set_mocks6, set_mocks7
+    set_mocks5, set_mocks6, set_mocks7, update_mocks
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -494,47 +494,50 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         # Post data to view: data style that is posted to export_view in
         # template
-        data = {
-            'per_participant': ['on'],
-            'per_questionnaire': ['on'],
-            'action': ['run'],
-            'headings': ['code'],
-            'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-                '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-                '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-                '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-                '*Test questionnaire*fileUpload*fileUpload'
-            ],
-            'patient_selected': ['age*age'],
-            'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
+        for heading_type in 'code', 'full', 'abbreviated':
+            if heading_type != 'code':
+                update_mocks(mockServer)
+            data = {
+                'per_participant': ['on'],
+                'per_questionnaire': ['on'],
+                'action': ['run'],
+                'headings': [heading_type],
+                'to_experiment[]': [
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*acquisitiondate*acquisitiondate',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*firstQuestion*firstQuestion',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*secondQuestion*secondQuestion',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*fileUpload*fileUpload'
+                ],
+                'patient_selected': ['age*age'],
+                'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
 
-        temp_dir = tempfile.mkdtemp()
-        zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(os.path.join(
-                input_export.BASE_DIRECTORY, 'Experiment_data',
-                'Group_' + self.group.title.lower(),
-                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
-                self.survey.code + '_test-questionnaire_en.csv'), temp_dir)
+            temp_dir = tempfile.mkdtemp()
+            zipped_file = self.get_zipped_file(response)
+            zipped_file.extract(os.path.join(
+                    input_export.BASE_DIRECTORY, 'Experiment_data',
+                    'Group_' + self.group.title.lower(),
+                    'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.csv'), temp_dir)
 
-        with open(os.path.join(
-                temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data',
-                'Group_' + self.group.title.lower(), 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
-                self.survey.code + '_test-questionnaire_en.csv'
-        )) as file:
-            csvreader = csv.reader(file)
-            rows = []
-            for row in csvreader:
-                rows.append(row)
-            self.assertEqual(
-                rows[1][1], ExportParticipants.subject_age(self.patient.date_birth, self.questionnaire_response))
+            with open(os.path.join(
+                    temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data',
+                    'Group_' + self.group.title.lower(), 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.csv'
+            )) as file:
+                csvreader = csv.reader(file)
+                rows = []
+                for row in csvreader:
+                    rows.append(row)
+                self.assertEqual(
+                    rows[1][1], ExportParticipants.subject_age(self.patient.date_birth, self.questionnaire_response))
 
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -1928,8 +1931,8 @@ class ExportFrictionlessData(ExportTestCase):
         for field in patient_fields:
             data['patient_selected'].append(field['field'] + '*' + field['header'])
 
-        # Test for Question code, Full question text and Abbreviated question text
-        # in Headings head, General informtion export tab
+        # Test for code, full, and abbreviated question texts
+        # in Headings head, General informtaion export tab
         for heading_type in ['code'], ['full'], ['abbreviated']:
             data['headings'] = heading_type
             response = self.client.post(reverse('export_view'), data)

@@ -320,7 +320,7 @@ def export_create(
             if export.get_input_data('questionnaires_from_experiments'):
                 if export.get_input_data('export_per_questionnaire'):
                     # 'headings' == ['code'], ['full'] or ['abbreviated'], so request.POST.get('headings')[0]
-                    error_msg = export.process_per_experiment_questionnaire(request.POST.get('headings')[0])
+                    error_msg = export.process_per_experiment_questionnaire(request.POST.get('headings'))
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)
@@ -779,7 +779,8 @@ def get_questionnaire_experiment_header(
     questionnaire_list = []
     language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
     token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, 'token')
-    responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
+    responses_string = questionnaire_lime_survey.get_header_response(
+        questionnaire_id, language_new, token, heading_type)
 
     if not isinstance(responses_string, dict):
         questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
