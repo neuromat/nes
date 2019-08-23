@@ -495,12 +495,19 @@ def set_mocks4(mockServer):
         'ZGF0ZSIsInN1YmplY3RpZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIsImZpbGVVcGxvYWQiLCJmaWxlVXBsb2FkW2ZpbGVj' \
         'b3VudF0iCiIxIiwiMjAxOS0wNi0yNiAxMzozNTo1NyIsIjIiLCJlbiIsIm9ieUJ5NEhpelVoZTNqMCIsIjUzOTc0IiwiMjAxOS0wNi0yNiAx' \
         'MzozNTo1Ny42MDU3MzMiLCIxNzc1MDUiLCJPbMOhIE11bmRvISIsIkhhbGxvIFdlbHQhIiwiIiwiIgoK'
-    mockServer.return_value.export_responses_by_token.return_value = \
-        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUg' \
-        'SWRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJGaXJzdCBxdWVzdGlvbiIsIlNlY29uZCBxdWVzdGlv' \
-        'biIsIkhhcyBmaWxldXBsb2FkPyIsImZpbGVjb3VudCAtIEhhcy4uICIKIjEiLCIyMDE5LTA2LTI2IDEzOjU0OjU3IiwiMiIsImVuIiwiaU9h' \
-        'UUtLZWxWZlNxSlE5IiwiNTM5NzkiLCIyMDE5LTA2LTI2IDEzOjU0OjU3Ljg3NzM5NCIsIjE3NzUxMCIsIk9sw6EgTXVuZG8hIiwiSGFsbG8g' \
-        'V2VsdCEiLCIiLCIiCgo='
+    # mockServer.return_value.export_responses_by_token.return_value = \
+    #     'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUg' \
+    #     'SWRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJGaXJzdCBxdWVzdGlvbiIsIlNlY29uZCBxdWVzdGlv' \
+    #     'biIsIkhhcyBmaWxldXBsb2FkPyIsImZpbGVjb3VudCAtIEhhcy4uICIKIjEiLCIyMDE5LTA2LTI2IDEzOjU0OjU3IiwiMiIsImVuIiwiaU9h' \
+    #     'UUtLZWxWZlNxSlE5IiwiNTM5NzkiLCIyMDE5LTA2LTI2IDEzOjU0OjU3Ljg3NzM5NCIsIjE3NzUxMCIsIk9sw6EgTXVuZG8hIiwiSGFsbG8g' \
+    #     'V2VsdCEiLCIiLCIiCgo=',
+    mockServer.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9u'
+        'ZGF0ZSIsInN1YmplY3RpZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIsImZpbGVVcGxvYWQiLCJmaWxlVXBsb2FkW2ZpbGVj'
+        'b3VudF0iCiIxIiwiMjAxOS0wNi0yNiAxMzozNTo1NyIsIjIiLCJlbiIsIm9ieUJ5NEhpelVoZTNqMCIsIjUzOTc0IiwiMjAxOS0wNi0yNiAx'
+        'MzozNTo1Ny42MDU3MzMiLCIxNzc1MDUiLCJPbMOhIE11bmRvISIsIkhhbGxvIFdlbHQhIiwiIiwiIgoK',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkZpcnN0IFF1ZXN0aW9uIiwiU2Vjb25kIFF1ZXN0aW9uIiwiRmlsZSBVcGxvYWQiLCJGaWxlIFVwbG9hZCBbZmlsZWNvdW50XSIsIjEiLCIyMDE5LTA2LTI2IDEzOjM1OjU3IiwiMiIsImVuIiwib2J5Qnk0SGl6VWhlM2owIiwiNTM5NzQiLCIyMDE5LTA2LTI2IDEzOjM1OjU3LjYwNTczMyIsIjE3NzUwNSIsIk9sw6EgTXVuZG8hIiwiSGFsbG8gV2VsdCEiLCIiLCIi'
+    ]
     mockServer.return_value.list_groups.return_value = [
         {
             'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 2, 'gid': 1841,

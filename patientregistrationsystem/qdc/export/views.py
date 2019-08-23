@@ -286,7 +286,7 @@ def export_create(
             export.include_group_data(request.session['group_selected_list'])
             # if fields from questionnaires were selected
             if export.get_input_data('questionnaire_list'):
-                export.get_questionnaires_responses()
+                export.get_questionnaires_responses(request.POST.get('headings'))
 
             error_msg = export.create_group_data_directory()
             if error_msg != '':
@@ -780,7 +780,7 @@ def get_questionnaire_experiment_header(
     language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
     token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, 'token')
     responses_string = questionnaire_lime_survey.get_header_response(
-        questionnaire_id, language_new, token, heading_type)
+        questionnaire_id, language_new, token)
 
     if not isinstance(responses_string, dict):
         questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)

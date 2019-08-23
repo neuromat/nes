@@ -116,6 +116,8 @@ class ABCSearchEngine(ABC):
             survey_title = self.server.get_language_properties(
                 self.session_key, sid, {'method': 'surveyls_title'}, language)
 
+            # print('get_language_properties', survey_title)  # DB
+
             if 'surveyls_title' in survey_title:
                 survey_title = survey_title.get('surveyls_title')
             else:
@@ -134,6 +136,8 @@ class ABCSearchEngine(ABC):
         """
         result = self.server.get_survey_properties(self.session_key, sid, {'method': prop})
 
+        # print('get_survey_properties', result)  # DB
+
         return result.get(prop)
 
     @abstractmethod
@@ -145,6 +149,8 @@ class ABCSearchEngine(ABC):
 
         result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
         # If failed to consume API, it return a dict with one element with 'status' as key
+
+        # print('get_survey_properties', result)  # DB
 
         return None if 'status' in result else result
 
@@ -232,9 +238,11 @@ class ABCSearchEngine(ABC):
         if fields:
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, doctype, token, language, 'complete', 'code', 'short', fields)
+            # print('export_responses_by_token', responses)  # DB
         else:
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, doctype, token, language, 'complete')
+            # print('export_responses_by_token', responses)  # DB
 
         if isinstance(responses, dict):
             return None
@@ -256,6 +264,8 @@ class ABCSearchEngine(ABC):
         """
         responses = self.server.export_responses(
             self.session_key, sid, 'csv', language, 'complete', heading_type, response_type)
+
+        # print('export_responses', responses)  # DB
 
         return None if isinstance(responses, dict) else b64decode(responses).decode()
 
@@ -317,6 +327,8 @@ class ABCSearchEngine(ABC):
         properties = self.server.get_question_properties(
             self.session_key, question_id, self.QUESTION_PROPERTIES, language)
 
+        # print('get_question_properties', properties)  # DB
+
         if 'status' in properties and properties['status'] in [
             'Error: Invalid questionid', 'Error: Invalid language', 'Error: Invalid questionid', 'No valid Data',
             'No permission', 'Invalid session key'
@@ -338,7 +350,7 @@ class ABCSearchEngine(ABC):
         """
         groups = self.server.list_groups(self.session_key, sid)
 
-        # print(groups)  # DB
+        # print('list_groups', groups)  # DB
 
         return groups if isinstance(groups, list) else None
 
@@ -369,7 +381,7 @@ class ABCSearchEngine(ABC):
         """
         questions = self.server.list_questions(self.session_key, sid, gid)
 
-        # print(questions)  # DB
+        # print('list_questions', questions)  # DB
 
         return questions if isinstance(questions, list) else None
 

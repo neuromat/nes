@@ -359,47 +359,62 @@ class ExportQuestionnaireTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_with_abbreviated_question_text(self, mockServer):
-        set_mocks4(mockServer)
-
+    def test_export_has_correct_header_fields_in_questionnaire_responses_file(self, mockServer):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
         # Post data to view: data style that is posted to export_view in
         # template
-        data = {
-            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            'headings': ['code'],
-            'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-                '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-                '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-                '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-                '*Test questionnaire*fileUpload*fileUpload'
-            ],
-            'patient_selected': ['age*age'], 'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks4(mockServer)
+            if heading_type != 'code':
+                update_mocks(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to_experiment[]': [
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*acquisitiondate*acquisitiondate',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*firstQuestion*firstQuestion',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*secondQuestion*secondQuestion',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*fileUpload*fileUpload'
+                ],
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
 
-        temp_dir = tempfile.mkdtemp()
-        zipped_file = self.get_zipped_file(response)
-        zipped_file.extract(os.path.join(
-                input_export.BASE_DIRECTORY, 'Experiment_data', 'Group_' + self.group.title.lower(),
-                'Per_questionnaire', 'Step_1_QUESTIONNAIRE', self.survey.code + '_test-questionnaire_en.csv'
-            ), temp_dir
-        )
-
-        with open(os.path.join(
-                    temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data', 'Group_' + self.group.title.lower(),
+            temp_dir = tempfile.mkdtemp()
+            zipped_file = self.get_zipped_file(response)
+            zipped_file.extract(os.path.join(
+                    input_export.BASE_DIRECTORY, 'Experiment_data', 'Group_' + self.group.title.lower(),
                     'Per_questionnaire', 'Step_1_QUESTIONNAIRE', self.survey.code + '_test-questionnaire_en.csv'
-                )) as file:
-            csv_line1 = next(csv.reader(file))
-            self.assertEqual(len(csv_line1), 6)
+                ), temp_dir
+            )
 
-        shutil.rmtree(temp_dir)
+            with open(os.path.join(
+                        temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data', 'Group_' + self.group.title.lower(),
+                        'Per_questionnaire', 'Step_1_QUESTIONNAIRE', self.survey.code + '_test-questionnaire_en.csv'
+                    )) as file:
+                csv_line1 = next(csv.reader(file))
+                self.assertEqual(len(csv_line1), 6)
+                if heading_type == 'code':
+                    self.assertEquals(
+                        csv_line1,
+                        ['participant_code', 'age', 'acquisitiondate', 'firstQuestion', 'secondQuestion', 'fileUpload'])
+                else:
+                    self.assertEquals(
+                        csv_line1,
+                        # TODO (NES-991): extends some string to test abbreviated
+                        [
+                            'participant_code', _('Age'), _('Acquisition date:'), _('First Question'),
+                            _('Second Question'), _('File Upload')
+                        ]
+                    )
+
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
