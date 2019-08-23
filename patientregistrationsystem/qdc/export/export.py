@@ -1425,7 +1425,7 @@ class ExportExecution:
                         if fields_description:
                             field_type = 'fields' if heading_type == 'code' else 'header_questionnaire'
                             header = self.build_header_questionnaire_per_participant(
-                                rows_participant_data[0], answer_list[0])
+                                rows_participant_data[0], answer_list[0][field_type])
                             fields_description.insert(0, header)
 
                             ###
@@ -1454,10 +1454,10 @@ class ExportExecution:
                                         'path': path.join(export_directory, export_filename + '.' + filesformat_type),
                                         'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                                         'description': 'Questionnaire response',
-                                        # 'schema': {
-                                        #     'fields': self._set_questionnaire_response_fields(
-                                        #         heading_type, rows_participant_data[0], answer_list[0], questions)
-                                        # }
+                                        'schema': {
+                                            'fields': self._set_questionnaire_response_fields(
+                                                heading_type, rows_participant_data[0], answer_list[0], questions)
+                                        }
                                     }
                                 ])
 
@@ -2607,9 +2607,11 @@ class ExportExecution:
                 'name': field_info['header'], 'title': field_info['header'], 'type': field_info['json_data_type'],
                 'format': 'default'
             })
-        for i in range (len(question_fields['fields'])):
+        for i in range(len(question_fields['fields'])):
             question_field, question_header, question_header_questionnaire = \
-            question_fields['fields'][i], question_fields['header'][i], question_fields['header_questionnaire'][i]
+            question_fields['fields'][i],\
+            question_fields['header'][i],\
+            question_fields['header_questionnaire'][i]
             # TODO (NES-991): improve regex
             question_cleared = re.search('([a-zA-Z]+)(\[?)', question_field).group(1)
             question = next(item for item in questions if item['title'] == question_cleared)
@@ -3116,7 +3118,7 @@ class ExportExecution:
                                     questionnaire_id, token_id, 'token')
                                 header = self.questionnaire_utils.questionnaires_experiment_data[
                                     questionnaire_id
-                                ]['header_questionnaire']
+                                ]
 
                                 if questionnaire_id not in self.questionnaires_responses:
                                     self.questionnaires_responses[questionnaire_id] = {}
