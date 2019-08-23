@@ -1423,6 +1423,7 @@ class ExportExecution:
 
                         # Header
                         if fields_description:
+                            field_type = 'fields' if heading_type == 'code' else 'header_questionnaire'
                             header = self.build_header_questionnaire_per_participant(
                                 rows_participant_data[0], answer_list[0])
                             fields_description.insert(0, header)
@@ -1453,10 +1454,10 @@ class ExportExecution:
                                         'path': path.join(export_directory, export_filename + '.' + filesformat_type),
                                         'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                                         'description': 'Questionnaire response',
-                                        'schema': {
-                                            'fields': self._set_questionnaire_response_fields(
-                                                heading_type, rows_participant_data[0], answer_list[0], questions)
-                                        }
+                                        # 'schema': {
+                                        #     'fields': self._set_questionnaire_response_fields(
+                                        #         heading_type, rows_participant_data[0], answer_list[0], questions)
+                                        # }
                                     }
                                 ])
 
@@ -1722,6 +1723,7 @@ class ExportExecution:
                             per_participant_rows = self.merge_questionnaire_answer_list_per_participant(
                                 export_rows_participants[1], answer_list[1: len(answer_list)])
 
+                            # TODO (NES-991): answer_list changes
                             header = self.build_header_questionnaire_per_participant(
                                 export_rows_participants[0], answer_list[0])
                             per_participant_rows.insert(0, header)
@@ -2592,10 +2594,14 @@ class ExportExecution:
             'name': field_info['header'], 'title': field_info['header'], 'type': field_info['json_data_type'],
             'format': 'default'
         })
-        participant_fields.remove('participant_code')
+
+        # Needs copy because of participant_fields is referred more the
+        # once if we have more than one group
+        participant_fields_copy = participant_fields.copy()
+        participant_fields_copy.remove('participant_code')
 
         key = 'header' if heading_type == 'code' else 'description'
-        for participant_field in participant_fields:
+        for participant_field in participant_fields_copy:
             field_info = next(item for item in PATIENT_FIELDS if item[key] == participant_field)
             fields.append({
                 'name': field_info['header'], 'title': field_info['header'], 'type': field_info['json_data_type'],
@@ -3026,7 +3032,7 @@ class ExportExecution:
 
         return filesformat_type
 
-    def get_questionnaires_responses(self):
+    def get_questionnaires_responses(self, heading_type):
         questionnaire_lime_survey = Questionnaires()
         response_type = self.get_response_type()
         self.questionnaires_responses = {}
@@ -3110,7 +3116,7 @@ class ExportExecution:
                                     questionnaire_id, token_id, 'token')
                                 header = self.questionnaire_utils.questionnaires_experiment_data[
                                     questionnaire_id
-                                ]
+                                ]['header_questionnaire']
 
                                 if questionnaire_id not in self.questionnaires_responses:
                                     self.questionnaires_responses[questionnaire_id] = {}
@@ -3118,7 +3124,8 @@ class ExportExecution:
                                     self.questionnaires_responses[questionnaire_id][token_id] = {}
 
                                 for language in data_from_lime_survey:
-                                    fields_filtered_list = [header, data_from_lime_survey[language][token]]
+                                    fields_filtered_list = [header, data_from_lime_survey[
+                                        language][token]]
                                     self.questionnaires_responses[questionnaire_id][token_id][language] = \
                                         fields_filtered_list
 
