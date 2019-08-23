@@ -1726,6 +1726,37 @@ class ExportFrictionlessData(ExportTestCase):
 
         return json_data
 
+    @staticmethod
+    def _set_all_questions():
+        return [
+            ('acquisitiondate', 'D', 'string'), ('funfpunktewahl', '5', 'string'),
+            ('dropdownliste', '!', 'string'), ('listeradio', 'L', 'string'),
+            ('listemitkommentar', 'O', 'string'), ('listemitkommentar[comment]', 'O', 'string'),
+            ('array[SQ001]', 'F', 'string'), ('array[SQ002]', 'F', 'string'),
+            ('arrayzehnpunktewahl[SQ001]', 'B', 'string'), ('arrayzehnpunktewahl[SQ002]', 'B', 'string'),
+            ('arrayfunfpunktewahl[SQ001]', 'A', 'string'), ('arrayfunfpunktewahl[SQ002]', 'A', 'string'),
+            ('arrayerhohengleichev[SQ001]', 'E', 'string'), ('arrayerhohengleichev[SQ002]', 'E', 'string'),
+            ('arrayzahlen[SQ001_SQ001]', ':', 'string'), ('arrayzahlen[SQ002_SQ001]', ':', 'string'),
+            ('arraytexte[SQ001_SQ001]', ';', 'string'), ('arraytexte[SQ001_SQ002]', ';', 'string'),
+            ('arrayjaneinunsicher[SQ001]', 'C', 'string'), ('arrayjaneinunsicher[SQ002]', 'C', 'string'),
+            ('arrayvonspalte[SQ001]', 'H', 'string'), ('arrayvonspalte[SQ002]', 'H', 'string'),
+            ('arraydualeskala[SQ001][1]', '1', 'string'), ('arraydualeskala[SQ001][2]', '1', 'string'),
+            ('arraydualeskala[SQ002][1]', '1', 'string'), ('arraydualeskala[SQ002][2]', '1', 'string'),
+            ('terminzeit', 'D', 'string'), ('gleichung', '*', 'string'),
+            ('dateiupload', '|', 'string'), ('dateiupload[filecount]', '|', 'string'),
+            ('geschlecht', 'G', 'string'), ('sprachumschaltung', 'I', 'string'),
+            ('mehrfachenumerischee[SQ001]', 'K', 'number'), ('mehrfachenumerischee[SQ002]', 'K', 'number'),
+            ('numerischeeingabe', 'N', 'number'),
+            ('rang[1]', 'R', 'string'), ('rang[2]', 'R', 'string'),
+            ('textanzeige', 'X', 'string'), ('janein', 'Y', 'string'),
+            ('reisigerfreitext', 'U', 'string'), ('langerfreiertext', 'T', 'string'),
+            ('mehrfacherkurztext[SQ001]', 'Q', 'string'), ('mehrfacherkurztext[SQ002]', 'Q', 'string'),
+            ('kurzerfreitext', 'S', 'string'),
+            ('mehrfachauswahl[SQ001]', 'M', 'string'), ('mehrfachauswahl[SQ002]', 'M', 'string'),
+            ('mehrfachauswahlmitko[SQ001]', 'P', 'string'), ('mehrfachauswahlmitko[SQ001comment]', 'P', 'string'),
+            ('mehrfachauswahlmitko[SQ002]', 'P', 'string'), ('mehrfachauswahlmitko[SQ002comment]', 'P', 'string')
+        ]
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_experiment_creates_content_dirs_in_data_directory(self):
         self._create_sample_export_data()
@@ -2757,41 +2788,15 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
+    def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
         self._create_questionnaire_export_data()
         set_mocks7(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        questions = [
-                ('acquisitiondate', 'D', 'string'), ('funfpunktewahl', '5', 'string'),
-                ('dropdownliste', '!', 'string'), ('listeradio', 'L', 'string'),
-                ('listemitkommentar', 'O', 'string'), ('listemitkommentar[comment]','O', 'string'),
-                ('array[SQ001]', 'F', 'string'), ('array[SQ002]', 'F', 'string'),
-                ('arrayzehnpunktewahl[SQ001]', 'B', 'string'), ('arrayzehnpunktewahl[SQ002]', 'B', 'string'),
-                ('arrayfunfpunktewahl[SQ001]', 'A', 'string'), ('arrayfunfpunktewahl[SQ002]', 'A', 'string'),
-                ('arrayerhohengleichev[SQ001]', 'E', 'string'), ('arrayerhohengleichev[SQ002]', 'E', 'string'),
-                ('arrayzahlen[SQ001_SQ001]', ':', 'string'), ('arrayzahlen[SQ002_SQ001]', ':', 'string'),
-                ('arraytexte[SQ001_SQ001]', ';', 'string'), ('arraytexte[SQ001_SQ002]', ';', 'string'),
-                ('arrayjaneinunsicher[SQ001]', 'C', 'string'), ('arrayjaneinunsicher[SQ002]', 'C', 'string'),
-                ('arrayvonspalte[SQ001]', 'H', 'string'), ('arrayvonspalte[SQ002]', 'H', 'string'),
-                ('arraydualeskala[SQ001][1]', '1', 'string'), ('arraydualeskala[SQ001][2]', '1', 'string'),
-                ('arraydualeskala[SQ002][1]', '1', 'string'), ('arraydualeskala[SQ002][2]', '1', 'string'),
-                ('terminzeit', 'D', 'string'), ('gleichung', '*', 'string'),
-                ('dateiupload', '|', 'string'), ('dateiupload[filecount]', '|', 'string'),
-                ('geschlecht', 'G', 'string'), ('sprachumschaltung', 'I', 'string'),
-                ('mehrfachenumerischee[SQ001]', 'K', 'number'), ('mehrfachenumerischee[SQ002]', 'K', 'number'),
-                ('numerischeeingabe', 'N', 'number'),
-                ('rang[1]', 'R', 'string'),  ('rang[2]', 'R', 'string'),
-                ('textanzeige', 'X', 'string'), ('janein', 'Y', 'string'),
-                ('reisigerfreitext', 'U', 'string'), ('langerfreiertext', 'T', 'string'),
-                ('mehrfacherkurztext[SQ001]', 'Q', 'string'), ('mehrfacherkurztext[SQ002]', 'Q', 'string'),
-                ('kurzerfreitext', 'S', 'string'),
-                ('mehrfachauswahl[SQ001]', 'M', 'string'), ('mehrfachauswahl[SQ002]', 'M', 'string'),
-                ('mehrfachauswahlmitko[SQ001]', 'P', 'string'), ('mehrfachauswahlmitko[SQ001comment]', 'P', 'string'),
-                ('mehrfachauswahlmitko[SQ002]', 'P', 'string'), ('mehrfachauswahlmitko[SQ002comment]', 'P', 'string')
-        ]
+        questions = self._set_all_questions()
+
         to_experiment = []
         for question in questions:
             to_experiment.append(
@@ -2812,10 +2817,8 @@ class ExportFrictionlessData(ExportTestCase):
         json_data = self._get_datapackage_json_data(temp_dir, response)
 
         filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
-
         questionnaire_response_resource = next(
             item for item in json_data['resources'] if item['title'] == filename)
-
         for item in questions:
             # TODO (NES-991): tests for 'full' and 'abbreviated'
             self.assertIn(
