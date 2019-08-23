@@ -498,8 +498,6 @@ class ExportQuestionnaireTest(ExportTestCase):
     def test_participant_age_in_responses_is_age_when_questionnaire_was_filled_1(self, mockServer):
         """Test over experiment questionnaire response"""
 
-        set_mocks4(mockServer)
-
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -510,6 +508,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         # Post data to view: data style that is posted to export_view in
         # template
         for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks4(mockServer)
             if heading_type != 'code':
                 update_mocks(mockServer)
             data = {
