@@ -27,7 +27,7 @@ from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
-    set_mocks5, set_mocks6, set_mocks7
+    set_mocks5, set_mocks6, set_mocks7, update_mocks
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -357,49 +357,64 @@ class ExportQuestionnaireTest(ExportTestCase):
             str(zipped_file.namelist())
         )
 
-    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # @patch('survey.abc_search_engine.Server')
-    # def test_export_with_abbreviated_question_text(self, mockServer):
-    #     set_mocks4(mockServer)
-    #
-    #     self.append_session_variable('group_selected_list', [str(self.group.id)])
-    #     self.append_session_variable('license', '0')
-    #
-    #     # Post data to view: data style that is posted to export_view in
-    #     # template
-    #     data = {
-    #         'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-    #         'headings': ['abbreviated'],
-    #         'to_experiment[]': [
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*acquisitiondate*acquisitiondate',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*firstQuestion*firstQuestion',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*secondQuestion*secondQuestion',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*fileUpload*fileUpload'
-    #         ],
-    #         'patient_selected': ['age*age'], 'responses': ['short']
-    #     }
-    #     response = self.client.post(reverse('export_view'), data)
-    #
-    #     temp_dir = tempfile.mkdtemp()
-    #     zipped_file = self.get_zipped_file(response)
-    #     zipped_file.extract(os.path.join(
-    #             input_export.BASE_DIRECTORY, 'Experiment_data', 'Group_' + self.group.title.lower(),
-    #             'Per_questionnaire', 'Step_1_QUESTIONNAIRE', self.survey.code + '_test-questionnaire_en.csv'
-    #         ), temp_dir
-    #     )
-    #
-    #     with open(os.path.join(
-    #                 temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data', 'Group_' + self.group.title.lower(),
-    #                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE', self.survey.code + '_test-questionnaire_en.csv'
-    #             )) as file:
-    #         csv_line1 = next(csv.reader(file))
-    #         self.assertEqual(len(csv_line1), 6)
-    #
-    #     shutil.rmtree(temp_dir)
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_has_correct_header_fields_in_questionnaire_responses_file(self, mockServer):
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks4(mockServer)
+            if heading_type != 'code':
+                update_mocks(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to_experiment[]': [
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*acquisitiondate*acquisitiondate',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*firstQuestion*firstQuestion',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*secondQuestion*secondQuestion',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*fileUpload*fileUpload'
+                ],
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            zipped_file = self.get_zipped_file(response)
+            zipped_file.extract(os.path.join(
+                    input_export.BASE_DIRECTORY, 'Experiment_data', 'Group_' + self.group.title.lower(),
+                    'Per_questionnaire', 'Step_1_QUESTIONNAIRE', self.survey.code + '_test-questionnaire_en.csv'
+                ), temp_dir
+            )
+
+            with open(os.path.join(
+                        temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data', 'Group_' + self.group.title.lower(),
+                        'Per_questionnaire', 'Step_1_QUESTIONNAIRE', self.survey.code + '_test-questionnaire_en.csv'
+                    )) as file:
+                csv_line1 = next(csv.reader(file))
+                self.assertEqual(len(csv_line1), 6)
+                if heading_type == 'code':
+                    self.assertEquals(
+                        csv_line1,
+                        ['participant_code', 'age', 'acquisitiondate', 'firstQuestion', 'secondQuestion', 'fileUpload'])
+                else:
+                    self.assertEquals(
+                        csv_line1,
+                        # TODO (NES-991): extends some string to test abbreviated
+                        [
+                            'participant_code', _('Age'), _('Acquisition date:'), _('First Question'),
+                            _('Second Question'), _('File Upload')
+                        ]
+                    )
+
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -478,63 +493,65 @@ class ExportQuestionnaireTest(ExportTestCase):
             ) + ' is in: ' + str(zipped_file.namelist())
         )
 
-    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # @patch('survey.abc_search_engine.Server')
-    # def test_participant_age_in_responses_is_age_when_questionnaire_was_filled_1(self, mockServer):
-    #     """Test over experiment questionnaire response"""
-    #
-    #     set_mocks4(mockServer)
-    #
-    #     self.append_session_variable('group_selected_list', [str(self.group.id)])
-    #     self.append_session_variable('license', '0')
-    #
-    #     # Change questionnaire respose date for testing
-    #     self.questionnaire_response.date = date(2016, 7, 7)
-    #     self.questionnaire_response.save()
-    #
-    #     # Post data to view: data style that is posted to export_view in
-    #     # template
-    #     data = {
-    #         'per_participant': ['on'],
-    #         'per_questionnaire': ['on'],
-    #         'action': ['run'],
-    #         'headings': ['abbreviated'],
-    #         'to_experiment[]': [
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*acquisitiondate*acquisitiondate',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*firstQuestion*firstQuestion',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*secondQuestion*secondQuestion',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*fileUpload*fileUpload'
-    #         ],
-    #         'patient_selected': ['age*age'],
-    #         'responses': ['short']
-    #     }
-    #     response = self.client.post(reverse('export_view'), data)
-    #
-    #     temp_dir = tempfile.mkdtemp()
-    #     zipped_file = self.get_zipped_file(response)
-    #     zipped_file.extract(os.path.join(
-    #             input_export.BASE_DIRECTORY, 'Experiment_data',
-    #             'Group_' + self.group.title.lower(),
-    #             'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
-    #             self.survey.code + '_test-questionnaire_en.csv'), temp_dir)
-    #
-    #     with open(os.path.join(
-    #             temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data',
-    #             'Group_' + self.group.title.lower(), 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
-    #             self.survey.code + '_test-questionnaire_en.csv'
-    #     )) as file:
-    #         csvreader = csv.reader(file)
-    #         rows = []
-    #         for row in csvreader:
-    #             rows.append(row)
-    #         self.assertEqual(
-    #             rows[1][1], ExportParticipants.subject_age(self.patient.date_birth, self.questionnaire_response))
-    #
-    #     shutil.rmtree(temp_dir)
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_participant_age_in_responses_is_age_when_questionnaire_was_filled_1(self, mockServer):
+        """Test over experiment questionnaire response"""
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        # Change questionnaire respose date for testing
+        self.questionnaire_response.date = date(2016, 7, 7)
+        self.questionnaire_response.save()
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks4(mockServer)
+            if heading_type != 'code':
+                update_mocks(mockServer)
+            data = {
+                'per_participant': ['on'],
+                'per_questionnaire': ['on'],
+                'action': ['run'],
+                'headings': [heading_type],
+                'to_experiment[]': [
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*acquisitiondate*acquisitiondate',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*firstQuestion*firstQuestion',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*secondQuestion*secondQuestion',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '*Test questionnaire*fileUpload*fileUpload'
+                ],
+                'patient_selected': ['age*age'],
+                'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            zipped_file = self.get_zipped_file(response)
+            zipped_file.extract(os.path.join(
+                    input_export.BASE_DIRECTORY, 'Experiment_data',
+                    'Group_' + self.group.title.lower(),
+                    'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.csv'), temp_dir)
+
+            with open(os.path.join(
+                    temp_dir, input_export.BASE_DIRECTORY, 'Experiment_data',
+                    'Group_' + self.group.title.lower(), 'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.csv'
+            )) as file:
+                csvreader = csv.reader(file)
+                rows = []
+                for row in csvreader:
+                    rows.append(row)
+                self.assertEqual(
+                    rows[1][1], ExportParticipants.subject_age(self.patient.date_birth, self.questionnaire_response))
+
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -593,128 +610,128 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         shutil.rmtree(temp_dir)
 
-    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # @patch('survey.abc_search_engine.Server')
-    # def test_export_create_csv_file(self, mockServer):
-    #     set_mocks4(mockServer)
-    #
-    #     self.append_session_variable('group_selected_list', [str(self.group.id)])
-    #     self.append_session_variable('license', '0')
-    #
-    #     # Post data to view: data style that is posted to export_view in
-    #     # template
-    #     data = {
-    #         'per_participant': ['on'],
-    #         'action': ['run'],
-    #         'per_questionnaire': ['on'],
-    #         'headings': ['abbreviated'],
-    #         'to_experiment[]': [
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*acquisitiondate*acquisitiondate',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*firstQuestion*firstQuestion',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*secondQuestion*secondQuestion',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
-    #             '*Test questionnaire*fileUpload*fileUpload'
-    #         ],
-    #         'patient_selected': ['age*age'],
-    #         'responses': ['short'],
-    #         'filesformat': ['csv']
-    #     }
-    #     response = self.client.post(reverse('export_view'), data)
-    #
-    #     temp_dir = tempfile.mkdtemp()
-    #     zipped_file = self.get_zipped_file(response)
-    #     zipped_file.extract(
-    #         os.path.join(
-    #             input_export.BASE_DIRECTORY,
-    #             'Experiment_data',
-    #             'Group_' + self.group.title.lower(),
-    #             'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
-    #             self.survey.code + '_test-questionnaire_en.csv'
-    #         ),
-    #         temp_dir
-    #     )
-    #
-    #     with open(
-    #             os.path.join(
-    #                 temp_dir,
-    #                 input_export.BASE_DIRECTORY,
-    #                 'Experiment_data',
-    #                 'Group_' + self.group.title.lower(),
-    #                 'Per_questionnaire',
-    #                 'Step_1_QUESTIONNAIRE',
-    #                 self.survey.code + '_test-questionnaire_en.csv'
-    #             )
-    #     ) as file:
-    #         dialect = csv.Sniffer().sniff(file.readline(), [',', '\t'])
-    #         file.seek(0)
-    #         self.assertEqual(dialect.delimiter, ",")
-    #
-    #     shutil.rmtree(temp_dir)
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_create_csv_file(self, mockServer):
+        set_mocks4(mockServer)
 
-    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # @patch('survey.abc_search_engine.Server')
-    # def test_export_create_tsv_file(self, mockServer):
-    #     set_mocks4(mockServer)
-    #
-    #     self.append_session_variable('group_selected_list', [str(self.group.id)])
-    #     self.append_session_variable('license', '0')
-    #
-    #     # Post data to view: data style that is posted to export_view in
-    #     # template
-    #     data = {
-    #         'per_participant': ['on'],
-    #         'action': ['run'],
-    #         'per_questionnaire': ['on'],
-    #         'headings': ['abbreviated'],
-    #         'to_experiment[]': [
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-    #             + '*Test questionnaire*acquisitiondate*acquisitiondate',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-    #             + '*Test questionnaire*firstQuestion*firstQuestion',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-    #             + '*Test questionnaire*secondQuestion*secondQuestion',
-    #             '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-    #             +
-    #             '*Test questionnaire*fileUpload*fileUpload'
-    #         ],
-    #         'patient_selected': ['age*age'],
-    #         'responses': ['short'],
-    #         'filesformat': ['tsv']
-    #     }
-    #     response = self.client.post(reverse('export_view'), data)
-    #
-    #     temp_dir = tempfile.mkdtemp()
-    #     zipped_file = self.get_zipped_file(response)
-    #     zipped_file.extract(
-    #         os.path.join(
-    #             input_export.BASE_DIRECTORY,
-    #             'Experiment_data',
-    #             'Group_' + self.group.title.lower(),
-    #             'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
-    #             self.survey.code + '_test-questionnaire_en.tsv'
-    #         ),
-    #         temp_dir
-    #     )
-    #
-    #     with open(
-    #             os.path.join(
-    #                 temp_dir,
-    #                 input_export.BASE_DIRECTORY,
-    #                 'Experiment_data',
-    #                 'Group_' + self.group.title.lower(),
-    #                 'Per_questionnaire',
-    #                 'Step_1_QUESTIONNAIRE',
-    #                 self.survey.code + '_test-questionnaire_en.tsv'
-    #             )
-    #     ) as file:
-    #         dialect = csv.Sniffer().sniff(file.readline(), [',', '\t'])
-    #         file.seek(0)
-    #         self.assertEqual(dialect.delimiter, "\t")
-    #
-    #     shutil.rmtree(temp_dir)
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_participant': ['on'],
+            'action': ['run'],
+            'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '*Test questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '*Test questionnaire*firstQuestion*firstQuestion',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '*Test questionnaire*fileUpload*fileUpload'
+            ],
+            'patient_selected': ['age*age'],
+            'responses': ['short'],
+            'filesformat': ['csv']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        zipped_file = self.get_zipped_file(response)
+        zipped_file.extract(
+            os.path.join(
+                input_export.BASE_DIRECTORY,
+                'Experiment_data',
+                'Group_' + self.group.title.lower(),
+                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.csv'
+            ),
+            temp_dir
+        )
+
+        with open(
+                os.path.join(
+                    temp_dir,
+                    input_export.BASE_DIRECTORY,
+                    'Experiment_data',
+                    'Group_' + self.group.title.lower(),
+                    'Per_questionnaire',
+                    'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.csv'
+                )
+        ) as file:
+            dialect = csv.Sniffer().sniff(file.readline(), [',', '\t'])
+            file.seek(0)
+            self.assertEqual(dialect.delimiter, ",")
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_create_tsv_file(self, mockServer):
+        set_mocks4(mockServer)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_participant': ['on'],
+            'action': ['run'],
+            'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*Test questionnaire*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*Test questionnaire*firstQuestion*firstQuestion',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*Test questionnaire*secondQuestion*secondQuestion',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                +
+                '*Test questionnaire*fileUpload*fileUpload'
+            ],
+            'patient_selected': ['age*age'],
+            'responses': ['short'],
+            'filesformat': ['tsv']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        zipped_file = self.get_zipped_file(response)
+        zipped_file.extract(
+            os.path.join(
+                input_export.BASE_DIRECTORY,
+                'Experiment_data',
+                'Group_' + self.group.title.lower(),
+                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                self.survey.code + '_test-questionnaire_en.tsv'
+            ),
+            temp_dir
+        )
+
+        with open(
+                os.path.join(
+                    temp_dir,
+                    input_export.BASE_DIRECTORY,
+                    'Experiment_data',
+                    'Group_' + self.group.title.lower(),
+                    'Per_questionnaire',
+                    'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_test-questionnaire_en.tsv'
+                )
+        ) as file:
+            dialect = csv.Sniffer().sniff(file.readline(), [',', '\t'])
+            file.seek(0)
+            self.assertEqual(dialect.delimiter, "\t")
+
+        shutil.rmtree(temp_dir)
 
 
 class ExportDataCollectionTest(ExportTestCase):
@@ -1693,10 +1710,10 @@ class ExportFrictionlessData(ExportTestCase):
     @staticmethod
     def _set_post_data(data_collection='per_eeg_raw_data'):
         # Data style that is posted to export_view in template
-        # TODO (NES-987): test for 'headings': ['short'] and 'headings': ['abbreviated']
         return {
             'per_questionnaire': ['on'], 'per_participant': ['on'],
             data_collection: ['on'], 'per_additional_data': ['on'],
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
@@ -1928,8 +1945,8 @@ class ExportFrictionlessData(ExportTestCase):
         for field in patient_fields:
             data['patient_selected'].append(field['field'] + '*' + field['header'])
 
-        # Test for Question code, Full question text and Abbreviated question text
-        # in Headings head, General informtion export tab
+        # Test for code, full, and abbreviated question texts
+        # in Headings head, General informtaion export tab
         for heading_type in ['code'], ['full'], ['abbreviated']:
             data['headings'] = heading_type
             response = self.client.post(reverse('export_view'), data)
@@ -2622,6 +2639,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
@@ -2666,6 +2684,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
@@ -2701,6 +2720,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
@@ -2737,8 +2757,7 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
-        # TODO (NES-991 - CONTINUE): fixes tests in ExportQuestionnaireTest
+    def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
         self._create_questionnaire_export_data()
         set_mocks7(mockServer)
 
@@ -2773,119 +2792,17 @@ class ExportFrictionlessData(ExportTestCase):
                 ('mehrfachauswahlmitko[SQ001]', 'P', 'string'), ('mehrfachauswahlmitko[SQ001comment]', 'P', 'string'),
                 ('mehrfachauswahlmitko[SQ002]', 'P', 'string'), ('mehrfachauswahlmitko[SQ002comment]', 'P', 'string')
         ]
-        # to_experiment = []
-        # for question in questions:
-        #     to_experiment.append(
-        #         '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-        #         + '*' + self.questionnaire.survey.en_title + '*' + question[0] + '*' + question[0])
+        to_experiment = []
+        for question in questions:
+            to_experiment.append(
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0] + '*' + question[0])
 
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            # TODO (NES-991): tests for 'abbreviated' and 'full'
             'headings': ['code'],
-            'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*funfpunktewahl*funfpunktewahl',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*dropdownliste*dropdownliste',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*listeradio*listeradio',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*listemitkommentar*listemitkommentar',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*listemitkommentar[comment]*listemitkommentar[comment]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*array[SQ001]*array[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*array[SQ002]*array[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayzehnpunktewahl[SQ001]*arrayzehnpunktewahl[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayzehnpunktewahl[SQ002]*arrayzehnpunktewahl[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayfunfpunktewahl[SQ001]*arrayfunfpunktewahl[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayfunfpunktewahl[SQ002]*arrayfunfpunktewahl[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayerhohengleichev[SQ001]*arrayerhohengleichev[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayerhohengleichev[SQ002]*arrayerhohengleichev[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayzahlen[SQ001_SQ001]*arrayzahlen[SQ001_SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayzahlen[SQ002_SQ001]*arrayzahlen[SQ002_SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraytexte[SQ001_SQ001]*arraytexte[SQ001_SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraytexte[SQ001_SQ002]*arraytexte[SQ001_SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayjaneinunsicher[SQ001]*arrayjaneinunsicher[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayjaneinunsicher[SQ002]*arrayjaneinunsicher[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayvonspalte[SQ001]*arrayvonspalte[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arrayvonspalte[SQ002]*arrayvonspalte[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ001][1]*arraydualeskala[SQ001][1]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ001][2]*arraydualeskala[SQ001][2]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ002][1]*arraydualeskala[SQ002][1]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*arraydualeskala[SQ002][2]*arraydualeskala[SQ002][2]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*terminzeit*terminzeit',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*gleichung*gleichung',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*dateiupload*dateiupload',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*dateiupload[filecount]*dateiupload[filecount]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*geschlecht*geschlecht',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*sprachumschaltung*sprachumschaltung',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachenumerischee[SQ001]*mehrfachenumerischee[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachenumerischee[SQ002]*mehrfachenumerischee[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*numerischeeingabe*numerischeeingabe',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*rang[1]*rang[1]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*rang[2]*rang[2]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*textanzeige*textanzeige',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*janein*janein',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*reisigerfreitext*reisigerfreitext',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*langerfreiertext*langerfreiertext',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfacherkurztext[SQ001]*mehrfacherkurztext[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfacherkurztext[SQ002]*mehrfacherkurztext[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*kurzerfreitext*kurzerfreitext',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahl[SQ001]*mehrfachauswahl[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahl[SQ002]*mehrfachauswahl[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahlmitko[SQ001]*mehrfachauswahlmitko[SQ001]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title
-                + '*mehrfachauswahlmitko[SQ001comment]*mehrfachauswahlmitko[SQ001comment]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*mehrfachauswahlmitko[SQ002]*mehrfachauswahlmitko[SQ002]',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title
-                + '*mehrfachauswahlmitko[SQ002comment]*mehrfachauswahlmitko[SQ002comment]'
-            ],
+            'to_experiment[]': to_experiment,
             'patient_selected': ['age*age'], 'responses': ['short']
         }
 
@@ -2900,7 +2817,7 @@ class ExportFrictionlessData(ExportTestCase):
             item for item in json_data['resources'] if item['title'] == filename)
 
         for item in questions:
-            # TODO (CONTINUE): test for 'format': 'default' for patient fields
+            # TODO (NES-991): tests for 'full' and 'abbreviated'
             self.assertIn(
                 {'name': slugify(item[0]), 'title': item[0], 'type': item[2], 'format': 'default'},
                 questionnaire_response_resource['schema']['fields'])

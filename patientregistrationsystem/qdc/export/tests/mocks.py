@@ -485,7 +485,6 @@ def set_mocks3(mockServer):
 def set_mocks4(mockServer):
     mockServer.return_value.get_survey_properties.return_value = {'additional_languages': '', 'language': 'en'}
     mockServer.return_value.get_participant_properties.side_effect = [
-        {'token': 'obyBy4HizUhe3j0'},
         {'completed': '2019-06-26'},
         {'completed': '2019-06-26'},
         {'token': 'obyBy4HizUhe3j0'}
@@ -496,33 +495,35 @@ def set_mocks4(mockServer):
         'ZGF0ZSIsInN1YmplY3RpZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIsImZpbGVVcGxvYWQiLCJmaWxlVXBsb2FkW2ZpbGVj' \
         'b3VudF0iCiIxIiwiMjAxOS0wNi0yNiAxMzozNTo1NyIsIjIiLCJlbiIsIm9ieUJ5NEhpelVoZTNqMCIsIjUzOTc0IiwiMjAxOS0wNi0yNiAx' \
         'MzozNTo1Ny42MDU3MzMiLCIxNzc1MDUiLCJPbMOhIE11bmRvISIsIkhhbGxvIFdlbHQhIiwiIiwiIgoK'
+    # mockServer.return_value.export_responses_by_token.return_value = \
+    #     'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUg' \
+    #     'SWRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJGaXJzdCBxdWVzdGlvbiIsIlNlY29uZCBxdWVzdGlv' \
+    #     'biIsIkhhcyBmaWxldXBsb2FkPyIsImZpbGVjb3VudCAtIEhhcy4uICIKIjEiLCIyMDE5LTA2LTI2IDEzOjU0OjU3IiwiMiIsImVuIiwiaU9h' \
+    #     'UUtLZWxWZlNxSlE5IiwiNTM5NzkiLCIyMDE5LTA2LTI2IDEzOjU0OjU3Ljg3NzM5NCIsIjE3NzUxMCIsIk9sw6EgTXVuZG8hIiwiSGFsbG8g' \
+    #     'V2VsdCEiLCIiLCIiCgo=',
     mockServer.return_value.export_responses_by_token.side_effect = [
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9u'
         'ZGF0ZSIsInN1YmplY3RpZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIsImZpbGVVcGxvYWQiLCJmaWxlVXBsb2FkW2ZpbGVj'
-        'b3VudF0iCiIxIiwiMjAxOS0wNi0yNiAxMzo1NDo1NyIsIjIiLCJlbiIsImlPYVFLS2VsVmZTcUpROSIsIjUzOTc5IiwiMjAxOS0wNi0yNiAxM'
-        'zo1NDo1Ny44NzczOTQiLCIxNzc1MTAiLCJPbMOhIE11bmRvISIsIkhhbGxvIFdlbHQhIiwiIiwiIgoK',
-        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUg'
-        'SWRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJGaXJzdCBxdWVzdGlvbiIsIlNlY29uZCBxdWVzdGlv'
-        'biIsIkhhcyBmaWxldXBsb2FkPyIsImZpbGVjb3VudCAtIEhhcy4uICIKIjEiLCIyMDE5LTA2LTI2IDEzOjU0OjU3IiwiMiIsImVuIiwiaU9h'
-        'UUtLZWxWZlNxSlE5IiwiNTM5NzkiLCIyMDE5LTA2LTI2IDEzOjU0OjU3Ljg3NzM5NCIsIjE3NzUxMCIsIk9sw6EgTXVuZG8hIiwiSGFsbG8g'
-        'V2VsdCEiLCIiLCIiCgo='
+        'b3VudF0iCiIxIiwiMjAxOS0wNi0yNiAxMzozNTo1NyIsIjIiLCJlbiIsIm9ieUJ5NEhpelVoZTNqMCIsIjUzOTc0IiwiMjAxOS0wNi0yNiAx'
+        'MzozNTo1Ny42MDU3MzMiLCIxNzc1MDUiLCJPbMOhIE11bmRvISIsIkhhbGxvIFdlbHQhIiwiIiwiIgoK',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkZpcnN0IFF1ZXN0aW9uIiwiU2Vjb25kIFF1ZXN0aW9uIiwiRmlsZSBVcGxvYWQiLCJGaWxlIFVwbG9hZCBbZmlsZWNvdW50XSIsIjEiLCIyMDE5LTA2LTI2IDEzOjM1OjU3IiwiMiIsImVuIiwib2J5Qnk0SGl6VWhlM2owIiwiNTM5NzQiLCIyMDE5LTA2LTI2IDEzOjM1OjU3LjYwNTczMyIsIjE3NzUwNSIsIk9sw6EgTXVuZG8hIiwiSGFsbG8gV2VsdCEiLCIiLCIi'
     ]
     mockServer.return_value.list_groups.return_value = [
-            {
-                'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 2, 'gid': 1841,
-                'description': '', 'id': {'gid': 1841, 'language': 'en'}, 'group_name': 'First group', 'language': 'en'
-            },
-            {
-                'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 1, 'gid': 1840,
-                'description': '', 'id': {'gid': 1840, 'language': 'en'}, 'group_name': 'Identification',
-                'language': 'en'
-            },
-            {
-                'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 1, 'gid': 1840,
-                'description': '', 'id': {'gid': 1840, 'language': 'pt-BR'}, 'group_name': 'Identification',
-                'language': 'pt-BR'
-            },
-         ]
+        {
+            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 2, 'gid': 1841,
+            'description': '', 'id': {'gid': 1841, 'language': 'en'}, 'group_name': 'First group', 'language': 'en'
+        },
+        {
+            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 1, 'gid': 1840,
+            'description': '', 'id': {'gid': 1840, 'language': 'en'}, 'group_name': 'Identification',
+            'language': 'en'
+        },
+        {
+            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID, 'group_order': 1, 'gid': 1840,
+            'description': '', 'id': {'gid': 1840, 'language': 'pt-BR'}, 'group_name': 'Identification',
+            'language': 'pt-BR'
+        },
+    ]
     mockServer.return_value.list_questions.side_effect = [
         [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N', 'question_order': 3,
           'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5823, 'language': 'en', 'help': '', 'parent_qid': 0,
@@ -3521,4 +3522,203 @@ def set_mocks7(mock_server):
         {'subquestions': 'No available answers', 'answeroptions': 'No available answer options',
          'attributes': 'No available attributes', 'attributes_lang': 'No available attributes', 'gid': 1952,
          'question_order': 2, 'title': 'SQ002', 'question': 'Unterfrage zwei', 'type': 'T', 'other': 'N'}
+    ]
+
+
+def update_mocks(mock_server):
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': 'obyBy4HizUhe3j0'},
+        {'completed': '2019-06-26'},
+        {'completed': '2019-06-26'},
+        {'token': 'obyBy4HizUhe3j0'}
+    ]
+    mock_server.return_value.list_questions.side_effect = [
+        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5823, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
+          'relevance': '1',
+          'title': 'fileUpload'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 2,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5822, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
+          'relevance': '1',
+          'title': 'secondQuestion'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5821, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
+          'relevance': '1',
+          'title': 'firstQuestion'}],
+        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5820, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
+          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
+         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5819, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
+          'title': 'acquisitiondate'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 0,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5818, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
+          'question': 'Responsible Identification number:',
+          'relevance': '1', 'title': 'responsibleid'}],
+        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5823, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
+          'relevance': '1',
+          'title': 'fileUpload'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 2,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5822, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
+          'relevance': '1',
+          'title': 'secondQuestion'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5821, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
+          'relevance': '1',
+          'title': 'firstQuestion'}],
+        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5820, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
+          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
+         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5819, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
+          'title': 'acquisitiondate'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 0,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5818, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
+          'question': 'Responsible Identification number:',
+          'relevance': '1', 'title': 'responsibleid'}],
+        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5823, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
+          'relevance': '1',
+          'title': 'fileUpload'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 2,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5822, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
+          'relevance': '1',
+          'title': 'secondQuestion'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5821, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
+          'relevance': '1',
+          'title': 'firstQuestion'}],
+        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5820, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
+          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
+         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5819, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
+          'title': 'acquisitiondate'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 0,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5818, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
+          'question': 'Responsible Identification number:',
+          'relevance': '1', 'title': 'responsibleid'}],
+        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5823, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
+          'relevance': '1',
+          'title': 'fileUpload'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 2,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5822, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
+          'relevance': '1',
+          'title': 'secondQuestion'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5821, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
+          'relevance': '1',
+          'title': 'firstQuestion'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5820, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
+          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
+         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5819, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
+          'title': 'acquisitiondate'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 0,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID, 'qid': 5818, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
+          'question': 'Responsible Identification number:',
+          'relevance': '1', 'title': 'responsibleid'}]
     ]
