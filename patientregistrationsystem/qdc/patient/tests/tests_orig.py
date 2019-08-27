@@ -1467,10 +1467,9 @@ class QuestionnaireFormValidation(TestCase):
         completed = entrance_evaluation['questionnaire_responses'][0]['completed']
         self.assertTrue(not completed)  # questionnaire is not completed
 
+    # TODO: this is an integration test
     def test_check_limesurvey_availability(self):
-        """
-        Test to see if LimeSurvey is available under circumstances
-        """
+        """Test to see if LimeSurvey is available under circumstances"""
         patient = self.util.create_patient(self.user)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")

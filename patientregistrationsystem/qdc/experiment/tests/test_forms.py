@@ -2027,10 +2027,12 @@ class SEP_Questionnaire_FormTest(TestCase):
                             'Failed to connect LimeSurvey')
 
         # Cria uma survey no Lime Survey
+        # TODO (NES-991): mock LimeSurvey
         cls.survey_id = cls.lime_survey.add_survey(9999,
                                                    'Questionario de teste - DjangoTests',
                                                    'en', 'G')
         # Deleta a survey gerada no Lime Survey
+        # TODO (NES-991): after mock above this is not necessary
         status = cls.lime_survey.delete_survey(cls.survey_id)
         # cls.assertEqual(status, 'OK', ['Erro na deleção'])
 
