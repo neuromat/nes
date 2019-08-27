@@ -780,7 +780,7 @@ def get_questionnaire_experiment_header(
     language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
     token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, 'token')
     responses_string = questionnaire_lime_survey.get_header_response(
-        questionnaire_id, language_new, token, heading_type)
+        questionnaire_id, language_new, token)
 
     if not isinstance(responses_string, dict):
         questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)

@@ -365,6 +365,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         # Post data to view: data style that is posted to export_view in
         # template
+        # TODO (NES-991): see false positive when take off headings in line 783 of views
         for heading_type in 'code', 'full', 'abbreviated':
             set_mocks4(mockServer)
             if heading_type != 'code':
@@ -2790,7 +2791,6 @@ class ExportFrictionlessData(ExportTestCase):
     @patch('survey.abc_search_engine.Server')
     def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
         self._create_questionnaire_export_data()
-        set_mocks7(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2803,27 +2803,32 @@ class ExportFrictionlessData(ExportTestCase):
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0] + '*' + question[0])
 
-        data = {
-            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            # TODO (NES-991): tests for 'abbreviated' and 'full'
-            'headings': ['code'],
-            'to_experiment[]': to_experiment,
-            'patient_selected': ['age*age'], 'responses': ['short']
-        }
+        for heading_type in ['code']:  # TODO (NES-991): complete with 'full', 'abbreviated':
+            set_mocks7(mockServer)
 
-        response = self.client.post(reverse('export_view'), data)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                # TODO (NES-991): test for 'abbreviated' and 'full'
+                'headings': [heading_type],
+                'to_experiment[]': to_experiment,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+            response = self.client.post(reverse('export_view'), data)
 
-        filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
-        questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['title'] == filename)
-        for item in questions:
-            # TODO (NES-991): tests for 'full' and 'abbreviated'
-            self.assertIn(
-                {'name': slugify(item[0]), 'title': item[0], 'type': item[2], 'format': 'default'},
-                questionnaire_response_resource['schema']['fields'])
+            temp_dir = tempfile.mkdtemp()
+            json_data = self._get_datapackage_json_data(temp_dir, response)
+
+            filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            for item in questions:
+                # TODO (NES-991): tests for 'full' and 'abbreviated'
+                self.assertIn(
+                    {'name': slugify(item[0]), 'title': item[0], 'type': item[2], 'format': 'default'},
+                    questionnaire_response_resource['schema']['fields'])
+
+            shutil.rmtree(temp_dir)
 
 
 def tearDownModule():

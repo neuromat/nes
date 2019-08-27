@@ -1100,7 +1100,7 @@ class ExportExecution:
                 if self.get_input_data('export_per_questionnaire') and (len(result) > 1):
                     export_filename = '%s_%s_%s.%s' % (
                         questionnaire['prefix_filename_responses'], str(questionnaire_code), language, filesformat_type)
-                    # path ex. NES_EXPORT/Per_questionnaire.Q123_aaa/Responses_Q123.csv
+                    # path ex. NES_EXPORT/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename)
 
                     save_to_csv(complete_filename, result, filesformat_type)
