@@ -2034,7 +2034,6 @@ class SEP_Questionnaire_FormTest(TestCase):
         # Deleta a survey gerada no Lime Survey
         # TODO (NES-991): after mock above this is not necessary
         status = cls.lime_survey.delete_survey(cls.survey_id)
-        # cls.assertEqual(status, 'OK', ['Erro na deleção'])
 
     def test_SEP_Questionnaire_is_valid(self):
         duration_value = "5"

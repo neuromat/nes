@@ -27,7 +27,7 @@ from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
-    set_mocks5, set_mocks6, set_mocks7, update_mocks
+    set_mocks5, set_mocks6, set_mocks7, update_mocks1, update_mocks2, update_mocks3
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -369,7 +369,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         for heading_type in 'code', 'full', 'abbreviated':
             set_mocks4(mockServer)
             if heading_type != 'code':
-                update_mocks(mockServer)
+                update_mocks1(mockServer)
             data = {
                 'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
                 'headings': [heading_type],
@@ -511,7 +511,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         for heading_type in 'code', 'full', 'abbreviated':
             set_mocks4(mockServer)
             if heading_type != 'code':
-                update_mocks(mockServer)
+                update_mocks1(mockServer)
             data = {
                 'per_participant': ['on'],
                 'per_questionnaire': ['on'],
@@ -1730,32 +1730,188 @@ class ExportFrictionlessData(ExportTestCase):
     @staticmethod
     def _set_all_questions():
         return [
-            ('acquisitiondate', 'D', 'string'), ('funfpunktewahl', '5', 'string'),
-            ('dropdownliste', '!', 'string'), ('listeradio', 'L', 'string'),
-            ('listemitkommentar', 'O', 'string'), ('listemitkommentar[comment]', 'O', 'string'),
-            ('array[SQ001]', 'F', 'string'), ('array[SQ002]', 'F', 'string'),
-            ('arrayzehnpunktewahl[SQ001]', 'B', 'string'), ('arrayzehnpunktewahl[SQ002]', 'B', 'string'),
-            ('arrayfunfpunktewahl[SQ001]', 'A', 'string'), ('arrayfunfpunktewahl[SQ002]', 'A', 'string'),
-            ('arrayerhohengleichev[SQ001]', 'E', 'string'), ('arrayerhohengleichev[SQ002]', 'E', 'string'),
-            ('arrayzahlen[SQ001_SQ001]', ':', 'string'), ('arrayzahlen[SQ002_SQ001]', ':', 'string'),
-            ('arraytexte[SQ001_SQ001]', ';', 'string'), ('arraytexte[SQ001_SQ002]', ';', 'string'),
-            ('arrayjaneinunsicher[SQ001]', 'C', 'string'), ('arrayjaneinunsicher[SQ002]', 'C', 'string'),
-            ('arrayvonspalte[SQ001]', 'H', 'string'), ('arrayvonspalte[SQ002]', 'H', 'string'),
-            ('arraydualeskala[SQ001][1]', '1', 'string'), ('arraydualeskala[SQ001][2]', '1', 'string'),
-            ('arraydualeskala[SQ002][1]', '1', 'string'), ('arraydualeskala[SQ002][2]', '1', 'string'),
-            ('terminzeit', 'D', 'string'), ('gleichung', '*', 'string'),
-            ('dateiupload', '|', 'string'), ('dateiupload[filecount]', '|', 'string'),
-            ('geschlecht', 'G', 'string'), ('sprachumschaltung', 'I', 'string'),
-            ('mehrfachenumerischee[SQ001]', 'K', 'number'), ('mehrfachenumerischee[SQ002]', 'K', 'number'),
-            ('numerischeeingabe', 'N', 'number'),
-            ('rang[1]', 'R', 'string'), ('rang[2]', 'R', 'string'),
-            ('textanzeige', 'X', 'string'), ('janein', 'Y', 'string'),
-            ('reisigerfreitext', 'U', 'string'), ('langerfreiertext', 'T', 'string'),
-            ('mehrfacherkurztext[SQ001]', 'Q', 'string'), ('mehrfacherkurztext[SQ002]', 'Q', 'string'),
-            ('kurzerfreitext', 'S', 'string'),
-            ('mehrfachauswahl[SQ001]', 'M', 'string'), ('mehrfachauswahl[SQ002]', 'M', 'string'),
-            ('mehrfachauswahlmitko[SQ001]', 'P', 'string'), ('mehrfachauswahlmitko[SQ001comment]', 'P', 'string'),
-            ('mehrfachauswahlmitko[SQ002]', 'P', 'string'), ('mehrfachauswahlmitko[SQ002comment]', 'P', 'string')
+            ({
+                 'code': 'acquisitiondate', 'full': _('Acquisition date:'), 'abbreviated': _('Acquisition date:')
+             }, 'D', 'string'),
+            ({
+                 'code': 'funfpunktewahl', 'full': _('Fünf Punkte Wahl'), 'abbreviated': _('Fünf Punkte Wahl')
+             }, '5', 'string'),
+            ({
+                 'code': 'dropdownliste', 'full': _('Dropdown Liste'), 'abbreviated': _('Dropdown Liste')
+             }, '!', 'string'),
+            ({
+                 'code': 'listeradio', 'full': _('Liste (radio)'), 'abbreviated': _('Liste (radio)')
+             }, 'L', 'string'),
+            ({
+                 'code': 'listemitkommentar', 'full': _('Liste mit Kommentar'), 'abbreviated': _('Liste mit Komme.. ')
+             }, 'O', 'string'),
+            ({
+                 'code': 'listemitkommentar[comment]', 'full': _('Liste mit Kommentar [Comment]'),
+                 'abbreviated': _('Liste mit Komme..  [Comment]')
+             }, 'O', 'string'),
+            ({
+                 'code': 'array[SQ001]', 'full': _('Array [Unterfrage eins]'),
+                 'abbreviated': _('Array [Unterfrage eins]')
+             }, 'F', 'string'),
+            ({
+                 'code': 'array[SQ002]', 'full': _('Array [Unterfrage zwei]'),
+                 'abbreviated': _('Array [Unterfrage zwei]')
+             }, 'F', 'string'),
+            ({
+                 'code': 'arrayzehnpunktewahl[SQ001]', 'full': _('Array (Zehn Punkte Wahl) [Unterfrage eins]'),
+                 'abbreviated': _('Array (Zehn Pun..  [Unterfrage eins]')
+             }, 'B', 'string'),
+            ({
+                 'code': 'arrayzehnpunktewahl[SQ002]', 'full': _('Array (Zehn Punkte Wahl) [Unterfrage zwei]'),
+                 'abbreviated': _('Array (Zehn Pun..  [Unterfrage zwei]')
+             }, 'B', 'string'),
+            ({
+                 'code': 'arrayfunfpunktewahl[SQ001]', 'full': _('Array (Fünf Punkte Wahl) [Unterfrage eins]'),
+                 'abbreviated': _('Array (Fünf Pun..  [Unterfrage eins]')
+             }, 'A', 'string'),
+            ({
+                 'code': 'arrayfunfpunktewahl[SQ002]', 'full': _('Array (Fünf Punkte Wahl) [Unterfrage zwei]'),
+                 'abbreviated': _('Array (Fünf Pun..  [Unterfrage zwei]')
+             }, 'A', 'string'),
+            ({
+                 'code': 'arrayerhohengleichev[SQ001]', 'full': _('Array (Erhöhen/Gleiche/Verringern) [Unterfrage eins]'),
+                 'abbreviated': _('Array (Erhöhen/..  [Unterfrage eins]')
+             }, 'E', 'string'),
+            ({
+                 'code': 'arrayerhohengleichev[SQ002]', 'full': _('Array (Erhöhen/Gleiche/Verringern) [Unterfrage zwei]'),
+                 'abbreviated': _('Array (Erhöhen/..  [Unterfrage zwei]')
+             }, 'E', 'string'),
+            ({
+                 'code': 'arrayzahlen[SQ001_SQ001]', 'full': _('Array (Zahlen) [Unterfrage eins][Unterfrage eins]'),
+                 'abbreviated': _('Array (Zahlen) [Unterfrage eins][Unterfrage eins]')
+             }, ':', 'string'),
+            ({
+                 'code': 'arrayzahlen[SQ002_SQ001]', 'full': _('Array (Zahlen) [Unterfrage zwei][Unterfrage eins]'),
+                 'abbreviated': _('Array (Zahlen) [Unterfrage zwei][Unterfrage eins]')
+             }, ':', 'string'),
+            ({
+                 'code': 'arraytexte[SQ001_SQ001]', 'full': _('Array (Texte) [Unterfrage eins][Unterfrage eins]'),
+                 'abbreviated': _('Array (Texte) [Unterfrage eins][Unterfrage eins]')
+             }, ';', 'string'),
+            ({
+                 'code': 'arraytexte[SQ001_SQ002]', 'full': _('Array (Texte) [Unterfrage eins][Unterfrage zwei]'),
+                 'abbreviated': _('Array (Texte) [Unterfrage eins][Unterfrage zwei]')
+             }, ';', 'string'),
+            ({
+                 'code': 'arrayjaneinunsicher[SQ001]', 'full': _('Array (Ja/Nein/Unsicher) [Unterfrage eins]'),
+                 'abbreviated': _('Array (Ja/Nein/..  [Unterfrage eins]')
+             }, 'C', 'string'),
+            ({
+                 'code': 'arrayjaneinunsicher[SQ002]', 'full': _('Array (Ja/Nein/Unsicher) [Unterfrage zwei]'),
+                 'abbreviated': _('Array (Ja/Nein/..  [Unterfrage zwei]')
+             }, 'C', 'string'),
+            ({
+                 'code': 'arrayvonspalte[SQ001]', 'full': _('Array von Spalte [Unterfrage eins]'),
+                 'abbreviated': _('Array von Spalte [Unterfrage eins]')
+             }, 'H', 'string'),
+            ({
+                 'code': 'arrayvonspalte[SQ002]', 'full': _('Array von Spalte [Unterfrage zwei]'),
+                 'abbreviated': _('Array von Spalte [Unterfrage zwei]')
+             }, 'H', 'string'),
+            ({
+                 'code': 'arraydualeskala[SQ001][1]', 'full': _('Array Duale Skala [Unterfrage eins][Scale 1]'),
+                 'abbreviated': _('Array Duale Skala [Unterfrage eins][Scale 1]')
+             }, '1', 'string'),
+            ({
+                 'code': 'arraydualeskala[SQ001][2]', 'full': _('Array Duale Skala [Unterfrage eins][Scale 2]'),
+                 'abbreviated': _('Array Duale Skala [Unterfrage eins][Scale 2]')
+             }, '1', 'string'),
+            ({
+                 'code': 'arraydualeskala[SQ002][1]', 'full': _('Array Duale Skala [Unterfrage zwei][Scale 1]'),
+                 'abbreviated': _('Array Duale Skala [Unterfrage zwei][Scale 1]')
+             }, '1', 'string'),
+            ({
+                 'code': 'arraydualeskala[SQ002][2]', 'full': _('Array Duale Skala [Unterfrage zwei][Scale 2]'),
+                 'abbreviated': _('Array Duale Skala [Unterfrage zwei][Scale 2]')
+             }, '1', 'string'),
+            ({
+                 'code': 'terminzeit', 'full': _('Terminzeit'), 'abbreviated': _('Terminzeit')
+             }, 'D', 'string'),
+            ({
+                 'code': 'gleichung', 'full': _('Gleichung'), 'abbreviated': _('Gleichung')
+             }, '*', 'string'),
+            ({
+                 'code': 'dateiupload', 'full': _('Datei-Upload'), 'abbreviated': _('Datei-Upload')
+             }, '|', 'string'),
+            ({
+                 'code': 'dateiupload[filecount]', 'full': _('filecount - Datei-Upload'),
+                 'abbreviated': _('filecount - Dat.. ')
+             }, '|', 'string'),
+            ({
+                 'code': 'geschlecht', 'full': _('Geschlecht'), 'abbreviated': _('Geschlecht')
+             }, 'G', 'string'),
+            ({
+                 'code': 'sprachumschaltung', 'full': _('Sprachumschaltung'), 'abbreviated': _('Sprachumschaltung')
+             }, 'I', 'string'),
+            ({
+                 'code': 'mehrfachenumerischee[SQ001]', 'full': _('Mehrfache numerische Eingabe [Unterfrage eins]'),
+                 'abbreviated': _('Mehrfache numer..  [Unterfrage eins]')
+             }, 'K', 'number'),
+            ({
+                 'code': 'mehrfachenumerischee[SQ002]', 'full': _('Mehrfache numerische Eingabe [Unterfrage zwei]'),
+                 'abbreviated': _('Mehrfache numer..  [Unterfrage zwei]')
+             }, 'K', 'number'),
+            ({
+                 'code': 'numerischeeingabe', 'full': _('Numerische Eingabe'), 'abbreviated': _('Numerische Eingabe')
+             }, 'N', 'number'),
+            ({
+                 'code': 'rang[1]', 'full': _('Rang [Rank 1]'), 'abbreviated': _('Rang [Rank 1]')
+             }, 'R', 'string'),
+            ({
+                 'code': 'rang[2]', 'full': _('Rang [Rank 2]'), 'abbreviated': _('Rang [Rank 2]')
+             }, 'R', 'string'),
+            ({
+                 'code': 'textanzeige', 'full': _('Textanzeige'), 'abbreviated': _('Textanzeige')
+             }, 'X', 'string'),
+            ({
+                 'code': 'janein', 'full': _('Ja/Nein'), 'abbreviated': _('Ja/Nein')
+             }, 'Y', 'string'),
+            ({
+                 'code': 'reisigerfreitext', 'full': _('Reisiger Freitext'), 'abbreviated': _('Reisiger Freitext')
+             }, 'U', 'string'),
+            ({
+                 'code': 'langerfreiertext', 'full': _('Langer freier Text'), 'abbreviated': _('Langer freier Text')
+             }, 'T', 'string'),
+            ({
+                'code': 'mehrfacherkurztext[SQ001]', 'full': _('Mehrfacher Kurztext [Unterfrage eins]'),
+                 'abbreviated': _('Mehrfacher Kurz..  [Unterfrage eins]')
+             }, 'Q', 'string'),
+            ({
+                'code': 'mehrfacherkurztext[SQ002]', 'full': _('Mehrfacher Kurztext [Unterfrage zwei]'),
+                 'abbreviated': _('Mehrfacher Kurz..  [Unterfrage zwei]')
+             }, 'Q', 'string'),
+            ({
+                'code': 'kurzerfreitext', 'full': _('Kurzer Freitext'), 'abbreviated': _('Kurzer Freitext')
+             }, 'S', 'string'),
+            ({
+                'code': 'mehrfachauswahl[SQ001]', 'full': _('Mehrfachauswahl [Unterfrage eins]'),
+                 'abbreviated': _('Mehrfachauswahl [Unterfrage eins]')
+             }, 'M', 'string'),
+            ({
+                'code': 'mehrfachauswahl[SQ002]', 'full': _('Mehrfachauswahl [Unterfrage zwei]'),
+                 'abbreviated': _('Mehrfachauswahl [Unterfrage zwei]')
+             }, 'M', 'string'),
+            ({
+                'code': 'mehrfachauswahlmitko[SQ001]', 'full': _('Mehrfachauswahl mit Kommentaren [Unterfrage eins]'),
+                 'abbreviated': _('Mehrfachauswahl..  [Unterfrage eins]')
+             }, 'P', 'string'),
+            ({
+                'code': 'mehrfachauswahlmitko[SQ001comment]', 'full': _('Mehrfachauswahl mit Kommentaren [Comment]'),
+                 'abbreviated': _('Mehrfachauswahl..  [Comment]')
+             }, 'P', 'string'),
+            ({
+                'code': 'mehrfachauswahlmitko[SQ002]', 'full': _('Mehrfachauswahl mit Kommentaren [Unterfrage zwei]'),
+                 'abbreviated': _('Mehrfachauswahl..  [Unterfrage zwei]')
+             }, 'P', 'string'),
+            ({
+                 'code': 'mehrfachauswahlmitko[SQ002comment]', 'full': _('Mehrfachauswahl mit Kommentaren [Comment]'),
+                 'abbreviated': _('Mehrfachauswahl..  [Comment]')
+             }, 'P', 'string')
         ]
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -2801,14 +2957,16 @@ class ExportFrictionlessData(ExportTestCase):
         for question in questions:
             to_experiment.append(
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
-                + '*' + self.questionnaire.survey.en_title + '*' + question[0] + '*' + question[0])
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        for heading_type in ['code']:  # TODO (NES-991): complete with 'full', 'abbreviated':
+        for heading_type in 'code', 'full', 'abbreviated':
             set_mocks7(mockServer)
-
+            if heading_type == 'full':
+                update_mocks2(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks3(mockServer)
             data = {
                 'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-                # TODO (NES-991): test for 'abbreviated' and 'full'
                 'headings': [heading_type],
                 'to_experiment[]': to_experiment,
                 'patient_selected': ['age*age'], 'responses': ['short']
@@ -2825,7 +2983,10 @@ class ExportFrictionlessData(ExportTestCase):
             for item in questions:
                 # TODO (NES-991): tests for 'full' and 'abbreviated'
                 self.assertIn(
-                    {'name': slugify(item[0]), 'title': item[0], 'type': item[2], 'format': 'default'},
+                        {
+                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    },
                     questionnaire_response_resource['schema']['fields'])
 
             shutil.rmtree(temp_dir)
