@@ -1648,7 +1648,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         ObjectsFactory.create_questionnaire_response(
             dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
 
-    def _assert_basic_experiment_data(self, json_data):
+    def _assert_basic_per_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
             self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
 
@@ -1661,6 +1661,21 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         # TODO (NES-987): see how to get testserver from TestCase class or other place,
         #  and https/http url part
         self.assertIn('testserver/experiments/' + name, json_data['homepage'])
+
+    def _assert_basic_per_participant_data(self, json_data):
+        for item in ['title', 'name', 'description', 'created']:
+            self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
+
+        title = 'Questionnaires Answered by Participants Outside Experiment Scope'
+        name = slugify(title)
+        description = 'Export made "Per Participant": the files contains metadata and responses of' \
+                      'questionnaires filled outside any experiment in the system. They can be entrance' \
+                      'questionnaires.'
+        day = json_data['created'].split(' ')[0]  # Get only the day to avoid test not passing
+        self.assertEqual(title, json_data['title'])
+        self.assertEqual(name, json_data['name'])
+        self.assertEqual(description, json_data['description'])
+        self.assertEqual(datetime.now().strftime('%Y-%m-%d'), day)
 
     def _assert_experiment_table_schema(self, resource_schema):
         self.assertIn(
@@ -1945,7 +1960,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self.get_datapackage_json_data(temp_dir, response)
-        self._assert_basic_experiment_data(json_data)
+        self._assert_basic_per_experiment_data(json_data)
 
         shutil.rmtree(temp_dir)
 
@@ -3012,34 +3027,38 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         self.assertTrue(any('datapackage.json' in element for element in zipped_file.namelist()),
                         'datapackage.json not found in: ' + str(zipped_file.namelist()))
 
-    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # @patch('survey.abc_search_engine.Server')
-    # def test_export_per_participant_add_basic_content_to_datapackage_json_file(self, mockServer):
-    #     survey = create_survey(LIMESURVEY_SURVEY_ID)
-    #     UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
-    #     set_mocks8(mockServer)
-    #
-    #     questions = self._set_all_questions()
-    #     to = []
-    #     for question in questions:
-    #         to.append(
-    #             '0*' + str(LIMESURVEY_SURVEY_ID) + '*' + survey.en_title + '*' + question[0]['code']
-    #             + '*' + question[0]['code'])
-    #
-    #     data = {
-    #         'headings': ['code'], 'per_articipant': ['on'], 'per_questionnaire': ['on'],
-    #         'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
-    #         'patient_selected': ['age*age'],
-    #         'to[]': to
-    #     }
-    #     response = self.client.post(reverse('export_view'), data)
-    #
-    #     temp_dir = tempfile.mkdtemp()
-    #     json_data = self.get_datapackage_json_data(temp_dir, response)
-    #     self._assert_basic_participant_data(json_data)
-    #
-    #     shutil.rmtree(temp_dir)
-    #
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_basic_content_to_datapackage_json_file(self, mockServer):
+        survey = create_survey(LIMESURVEY_SURVEY_ID)
+        UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
+        set_mocks8(mockServer)
+
+        questions = self._set_all_questions()
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID) + '*' + survey.en_title + '*' + question[0]['code']
+                + '*' + question[0]['code'])
+
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'],
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        self._assert_basic_per_participant_data(json_data)
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_per_participant_add_questionnaires_contributors_to_datapackage_json_file(self):
+        pass
+
     # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     # @patch('survey.abc_search_engine.Server')
     # def test_export_per_patient_add_questionnaire_response_file_to_datapackage_json_file(self, mockServer):
@@ -3055,7 +3074,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
     #             + '*' + question[0]['code'])
     #
     #     data = {
-    #         'headings': ['code'], 'per_articipant': ['on'], 'per_questionnaire': ['on'],
+    #         'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
     #         'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
     #         'patient_selected': ['age*age'],
     #         'to[]': to

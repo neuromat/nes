@@ -2960,7 +2960,13 @@ class ExportExecution:
                 datapackage['resources'].append(file[2])
 
     def _build_participant_datapackage_dict(self, request):
-        datapackage = {'name': 'Vladimir Ilyich Ulyanov'}
+        title = 'Questionnaires Answered by Participants Outside Experiment Scope'
+        name = slugify(title)
+        description = 'Export made "Per Participant": the files contains metadata and responses of' \
+                      'questionnaires filled outside any experiment in the system. They can be entrance' \
+                      'questionnaires.'
+        date_created = str(datetime.now().replace(microsecond=0))
+        datapackage = {'title': title, 'name': name, 'description': description, 'created': date_created}
 
         return datapackage
 
