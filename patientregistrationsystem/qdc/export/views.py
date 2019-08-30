@@ -349,6 +349,11 @@ def export_create(
                     messages.error(request, error_msg)
                     return render(request, template_name)
 
+                # TODO (NES-991): DRY: see the call when exporting experiment above
+                #  Call once!
+                # Build datapackage.json file (TODO (NES-991): error_msg stays?)
+                export.process_datapackage_json_file(request)
+
         # create zip file and include files
         export_complete_filename = ''
         if export.files_to_zip_list:

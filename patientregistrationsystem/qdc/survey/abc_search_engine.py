@@ -187,6 +187,8 @@ class ABCSearchEngine(ABC):
         """
         result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
 
+        # print('get_participant_properties', result)  # DB
+
         return result.get(prop) if 'status' not in result else None
 
     @abstractmethod
@@ -288,6 +290,8 @@ class ABCSearchEngine(ABC):
         if isinstance(responses, dict) and responses['status'] == 'No Response found for Token':
             responses = self.server.export_responses(
                 self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
+
+        # print(responses)  # DB
 
         return None if isinstance(responses, dict) else b64decode(responses).decode()
 

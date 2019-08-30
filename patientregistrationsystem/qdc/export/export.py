@@ -1104,7 +1104,15 @@ class ExportExecution:
                     complete_filename = path.join(export_path, export_filename)
 
                     save_to_csv(complete_filename, result, filesformat_type)
-                    self.files_to_zip_list.append([complete_filename, export_directory])
+                    self.files_to_zip_list.append([
+                        complete_filename, export_directory,
+                        # {
+                        #     'name': slugify(export_filename), 'title': export_filename,
+                        #     'path': path.join(export_directory, export_filename + '.' + filesformat_type),
+                        #     'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                        #     'description': 'Questionnaire response',
+                        # }
+                    ])
 
             # Questionnaire metadata
             entrance_questionnaire = True
@@ -2595,7 +2603,7 @@ class ExportExecution:
             'format': 'default'
         })
 
-        # Needs copy because of participant_fields is referred more the
+        # Needs copy because of participant_fields is referred more than
         # once if we have more than one group
         participant_fields_copy = participant_fields.copy()
         participant_fields_copy.remove('participant_code')
@@ -2948,10 +2956,15 @@ class ExportExecution:
 
     def _build_resources(self, datapackage):
         for file in self.files_to_zip_list:
-            if len(file) == 3:  # TODO (NES-987): just by now
+            if len(file) == 3:  # TODO (NES-987): just by now until having all files added
                 datapackage['resources'].append(file[2])
 
-    def _build_datapackage_dict(self, experiment, request):
+    def _build_participant_datapackage_dict(self, request):
+        datapackage = {'name': 'Vladimir Ilyich Ulyanov'}
+
+        return datapackage
+
+    def _build_experiment_datapackage_dict(self, experiment, request):
         name = slugify(experiment.title)
         researcher_owner = experiment.research_project.owner
 
@@ -2982,11 +2995,15 @@ class ExportExecution:
 
     def process_datapackage_json_file(self, request):
         """TODO (NES-987)
-        :param host:
+        :param request: request object
         """
-        # Get arbitrary key: all groups pertain to same experiment
-        group = Group.objects.get(id=int(list(self.per_group_data.keys())[0]))
-        datapackage_dict = self._build_datapackage_dict(group.experiment, request)
+        if request.POST.get('per_participant', None) == 'on':
+            datapackage_dict = self._build_participant_datapackage_dict(request)
+        else:
+            # Get arbitrary key: all groups pertain to same experiment
+            group = Group.objects.get(id=int(list(self.per_group_data.keys())[0]))
+            datapackage_dict = self._build_experiment_datapackage_dict(group.experiment, request)
+
         file_path = path.join(self.get_directory_base(), 'datapackage.json')
         with open(file_path, 'w') as file:
             json.dump(datapackage_dict, file)
