@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-05 14:17-0300\n"
+"POT-Creation-Date: 2019-09-02 16:08-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1127,12 +1127,12 @@ msgstr "Escolaridade do participante"
 msgid "Schooling of the householder"
 msgstr "Escolaridade do chefe de família"
 
-#: patient/models.py:557 patient/models.py:559 patient/models.py:561
+#: patient/models.py:556 patient/models.py:558 patient/models.py:560
 #: patient/views.py:281 patient/views.py:284
 msgid "The combination is not allowed."
 msgstr "Esta combinação é inválida."
 
-#: patient/models.py:658
+#: patient/models.py:657
 msgid "token id: "
 msgstr ""
 

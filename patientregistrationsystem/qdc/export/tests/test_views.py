@@ -7,7 +7,6 @@ import zipfile
 from datetime import date, datetime
 
 import shutil
-from json import load
 from unittest.mock import patch
 
 from django.core.files import File
@@ -26,8 +25,9 @@ from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME
     TMS_DEFAULT_SETTING_FILENAME, CONTEXT_TREE_DEFAULT
 from export.export_utils import create_list_of_trees
 from export.models import Export
-from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
-    set_mocks5, set_mocks6, set_mocks7, update_mocks1, update_mocks2, update_mocks3, set_mocks8
+from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID_1, set_mocks2, set_mocks3, set_mocks4, \
+    set_mocks5, set_mocks6, set_mocks7, update_mocks1, update_mocks2, update_mocks3, set_mocks8, set_mocks9, \
+    LIMESURVEY_SURVEY_ID_2, set_mocks10
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -46,7 +46,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         # Create questionnaire data collection in NES
         # TODO: use method already existent in patient.tests. See other places
-        self.survey = create_survey(LIMESURVEY_SURVEY_ID)
+        self.survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         self.data_configuration_tree = self._create_nes_questionnaire(self.root_component)
 
         # Add response's participant to limesurvey survey and the references
@@ -107,13 +107,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
             'headings': ['code'], 'patient_selected': ['age*age'], 'responses': ['short'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ]
         }
@@ -169,13 +169,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) + '*Test '
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) + '*Test '
                 'questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -247,22 +247,22 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) + '*Test '
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) + '*Test '
                 'questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload',
 
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) + '*Test '
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) + '*Test '
                 'questionnaire*acquisitiondate*acquisitiondate',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -374,13 +374,13 @@ class ExportQuestionnaireTest(ExportTestCase):
                 'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
                 'headings': [heading_type],
                 'to_experiment[]': [
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*acquisitiondate*acquisitiondate',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*firstQuestion*firstQuestion',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*secondQuestion*secondQuestion',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*fileUpload*fileUpload'
                 ],
                 'patient_selected': ['age*age'], 'responses': ['short']
@@ -447,22 +447,22 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload',
 
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -518,13 +518,13 @@ class ExportQuestionnaireTest(ExportTestCase):
                 'action': ['run'],
                 'headings': [heading_type],
                 'to_experiment[]': [
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*acquisitiondate*acquisitiondate',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*firstQuestion*firstQuestion',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*secondQuestion*secondQuestion',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*fileUpload*fileUpload'
                 ],
                 'patient_selected': ['age*age'],
@@ -550,7 +550,8 @@ class ExportQuestionnaireTest(ExportTestCase):
                 for row in csvreader:
                     rows.append(row)
                 self.assertEqual(
-                    rows[1][1], ExportParticipants.subject_age(self.patient.date_birth, self.questionnaire_response))
+                    rows[1][1], ExportParticipantsTest.subject_age(
+                        self.patient.date_birth, self.questionnaire_response))
 
             shutil.rmtree(temp_dir)
 
@@ -569,25 +570,25 @@ class ExportQuestionnaireTest(ExportTestCase):
         questionnaire_response.date = date(2016, 4, 17)
         questionnaire_response.save()
 
-        # Post data to view: data style that is posted to export_view in
-        # template
+        # Post data to view: data style that is posted to export_view in template
         data = {
             'per_participant': ['on'],
             'per_questionnaire': ['on'],
             'action': ['run'],
             'headings': ['code'],
             'to[]': [
-                '0*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short'],
+            'license': '0'
         }
         response = self.client.post(reverse('export_view'), data)
 
@@ -627,13 +628,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -688,13 +689,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
@@ -1636,7 +1637,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
     def _create_questionnaire_export_data(self):
         # Create questionnaire data collection in NES
         # TODO: use method already existent in patient.tests. See other places
-        self.survey = create_survey(LIMESURVEY_SURVEY_ID)
+        self.survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         self.questionnaire = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': self.survey})
         # Include questionnaire in experimental protocol
@@ -1668,8 +1669,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
         title = 'Questionnaires Answered by Participants Outside Experiment Scope'
         name = slugify(title)
-        description = 'Export made "Per Participant": the files contains metadata and responses of' \
-                      'questionnaires filled outside any experiment in the system. They can be entrance' \
+        description = 'Export made \"Per Participant\": the files contains metadata and responses of ' \
+                      'questionnaires filled outside any experiment in the system. They can be entrance ' \
                       'questionnaires.'
         day = json_data['created'].split(' ')[0]  # Get only the day to avoid test not passing
         self.assertEqual(title, json_data['title'])
@@ -2004,8 +2005,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
         self.assertIn('licenses', json_data)
         self.assertIn({
-            'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright',
-            'title': 'Copyright'
+            'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'
         }, json_data['licenses'])
 
         shutil.rmtree(temp_dir)
@@ -2024,7 +2024,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
         self.assertIn('licenses', json_data)
         self.assertIn({
-            'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'
+            'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'
         }, json_data['licenses'])
 
         shutil.rmtree(temp_dir)
@@ -2839,9 +2839,9 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
@@ -2885,9 +2885,9 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
@@ -2921,9 +2921,9 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
@@ -2967,7 +2967,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         to_experiment = []
         for question in questions:
             to_experiment.append(
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
         for heading_type in 'code', 'full', 'abbreviated':
@@ -3004,7 +3004,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_per_participant_creates_datapackage_json_file(self, mockServer):
-        survey = create_survey(LIMESURVEY_SURVEY_ID)
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
         set_mocks8(mockServer)
 
@@ -3012,13 +3012,13 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         to = []
         for question in questions:
             to.append(
-                '0*' + str(LIMESURVEY_SURVEY_ID) + '*' + survey.en_title + '*' + question[0]['code']
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' + question[0]['code']
                 + '*' + question[0]['code'])
 
         data = {
             'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
-            'patient_selected': ['age*age'],
+            'patient_selected': ['age*age'], 'license': '0',
             'to[]': to
         }
         response = self.client.post(reverse('export_view'), data)
@@ -3030,7 +3030,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_per_participant_add_basic_content_to_datapackage_json_file(self, mockServer):
-        survey = create_survey(LIMESURVEY_SURVEY_ID)
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
         set_mocks8(mockServer)
 
@@ -3038,13 +3038,13 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         to = []
         for question in questions:
             to.append(
-                '0*' + str(LIMESURVEY_SURVEY_ID) + '*' + survey.en_title + '*' + question[0]['code']
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' + question[0]['code']
                 + '*' + question[0]['code'])
 
         data = {
             'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
-            'patient_selected': ['age*age'],
+            'patient_selected': ['age*age'], 'license': '0',
             'to[]': to
         }
         response = self.client.post(reverse('export_view'), data)
@@ -3056,13 +3056,140 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_participant_add_questionnaires_contributors_to_datapackage_json_file(self):
-        pass
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaires_contributors_to_datapackage_json_file(self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        # Values from mocks
+        contributor1 = 'Jorge da Capadócia'
+        contributor1_email = 'jorge@example.com'
+        contributor2 = 'Leonardo dos Santos'
+        contributor2_email = 'leo@example.com'
+
+        self.assertIn('contributors', json_data)
+        self.assertIn(
+            {
+                'title': contributor1, 'email': contributor1_email,
+                'questionnaire': str(LIMESURVEY_SURVEY_ID_1) + ' - ' + survey1.en_title
+            },
+            json_data['contributors'])
+        self.assertIn(
+            {
+                'title': contributor2, 'email': contributor2_email,
+                'questionnaire': str(LIMESURVEY_SURVEY_ID_2) + ' - ' + survey2.en_title
+            },
+            json_data['contributors'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_display_license_options_in_form(self, mockServer):
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
+        set_mocks10(mockServer)
+
+        # Needed because if session expired this variable does not exist in request.session
+        # anymore. See the view.
+        self.append_session_variable('filtered_participant_data', [self.patient.id])
+        
+        response = self.client.get(reverse('export_view'))
+
+        self.assertIn(str(_('License')), response.content.decode('utf-8'))
+        self.assertIn('Creative Commons', response.content.decode('utf-8'))
+        self.assertIn('Copyright', response.content.decode('utf-8'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_default_license_to_datapackage_json_file(self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'
+        }, json_data['licenses'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_creative_commons_license_to_datapackage_json_file(self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '1',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'
+        }, json_data['licenses'])
+
+        shutil.rmtree(temp_dir)
 
     # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     # @patch('survey.abc_search_engine.Server')
     # def test_export_per_patient_add_questionnaire_response_file_to_datapackage_json_file(self, mockServer):
-    #     survey = create_survey(LIMESURVEY_SURVEY_ID)
+    #     survey = create_survey(LIMESURVEY_SURVEY_ID_1)
     #     UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
     #     set_mocks8(mockServer)
     #
@@ -3070,7 +3197,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
     #     to = []
     #     for question in questions:
     #         to.append(
-    #             '0*' + str(LIMESURVEY_SURVEY_ID) + '*' + survey.en_title + '*' +  question[0]['code']
+    #             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' +  question[0]['code']
     #             + '*' + question[0]['code'])
     #
     #     data = {

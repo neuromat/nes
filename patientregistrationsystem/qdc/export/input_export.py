@@ -90,7 +90,6 @@ class InputExport:
                         "output_language": output_language,
                     }
 
-                # if sid not in self.data['questionnaires']:
                 self.data["questionnaires"].append({"id": sid,
                                                     "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
                                                     "questionnaire_name": title,

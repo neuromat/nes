@@ -331,6 +331,7 @@ def export_create(
                 return render(request, template_name)
 
             # Build datapackage.json file (TODO (NES-991): error_msg stays?)
+            # TODO (NES-991): only process datapackage json file if not sending to Plugin
             export.process_datapackage_json_file(request)
 
         else:
@@ -352,7 +353,8 @@ def export_create(
                 # TODO (NES-991): DRY: see the call when exporting experiment above
                 #  Call once!
                 # Build datapackage.json file (TODO (NES-991): error_msg stays?)
-                export.process_datapackage_json_file(request)
+                if not participants_plugin:
+                    export.process_datapackage_json_file(request)
 
         # create zip file and include files
         export_complete_filename = ''
@@ -557,7 +559,7 @@ def export_view(request, template_name='export/export_data.html'):
 
     surveys = Questionnaires()
     questionnaires_experiment_list_final = []
-    # experiments export
+    # Experiments export
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
         component_list = []
@@ -610,8 +612,8 @@ def export_view(request, template_name='export/export_data.html'):
         for patient_questionnaire_response in patient_questionnaire_response_list:
             lime_survey_id = patient_questionnaire_response.survey.lime_survey_id
             if lime_survey_id not in surveys_id_list:
-                completed = surveys.get_participant_properties(lime_survey_id,
-                                                               patient_questionnaire_response.token_id, 'completed')
+                completed = surveys.get_participant_properties(
+                    lime_survey_id, patient_questionnaire_response.token_id, 'completed')
                 # if completed is a data
                 if completed is not None and completed != 'N' and completed != '':
                     surveys_id_list.append(lime_survey_id)
