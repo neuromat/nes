@@ -81,8 +81,8 @@ included_questionnaire_fields = [
 ]
 
 LICENSES = {
-    0: {'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'},
-    1: {'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'}
+    0: {'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'},
+    1: {'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'},
 }
 
 PROTOCOL_IMAGE_FILENAME = 'Protocol_image.png'
@@ -1104,7 +1104,15 @@ class ExportExecution:
                     complete_filename = path.join(export_path, export_filename)
 
                     save_to_csv(complete_filename, result, filesformat_type)
-                    self.files_to_zip_list.append([complete_filename, export_directory])
+                    self.files_to_zip_list.append([
+                        complete_filename, export_directory,
+                        # {
+                        #     'name': slugify(export_filename), 'title': export_filename,
+                        #     'path': path.join(export_directory, export_filename + '.' + filesformat_type),
+                        #     'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                        #     'description': 'Questionnaire response',
+                        # }
+                    ])
 
             # Questionnaire metadata
             entrance_questionnaire = True
@@ -2595,7 +2603,7 @@ class ExportExecution:
             'format': 'default'
         })
 
-        # Needs copy because of participant_fields is referred more the
+        # Needs copy because of participant_fields is referred more than
         # once if we have more than one group
         participant_fields_copy = participant_fields.copy()
         participant_fields_copy.remove('participant_code')
@@ -2948,16 +2956,45 @@ class ExportExecution:
 
     def _build_resources(self, datapackage):
         for file in self.files_to_zip_list:
-            if len(file) == 3:  # TODO (NES-987): just by now
+            if len(file) == 3:  # TODO (NES-987): just by now until having all files added
                 datapackage['resources'].append(file[2])
 
-    def _build_datapackage_dict(self, experiment, request):
+    def _get_questionnaire_owners(self):
+        limesurvey = Questionnaires()
+        contributors = []
+        for questionnaire in self.input_data['questionnaires']:
+            sid = questionnaire['id']
+            contributors.append({
+                'title': limesurvey.get_survey_properties(sid, 'admin'),
+                'email': limesurvey.get_survey_properties(sid, 'adminemail'),
+                'questionnaire': str(sid) + ' - ' + questionnaire['questionnaire_name']
+            })
+
+        return contributors
+
+    def _build_participant_datapackage_dict(self, request):
+        title = 'Questionnaires Answered by Participants Outside Experiment Scope'
+        name = slugify(title)
+        description = 'Export made \"Per Participant\": the files contains metadata and responses of ' \
+                      'questionnaires filled outside any experiment in the system. They can be entrance ' \
+                      'questionnaires.'
+        date_created = str(datetime.now().replace(microsecond=0))
+        datapackage = {
+            'title': title, 'name': name, 'description': description,
+            'created': date_created,
+            'contributors': self._get_questionnaire_owners(),
+            'licenses': [LICENSES[int(request.POST.get('license', None))]],
+            'resources': []  # Will be built below
+        }
+
+        return datapackage
+
+    def _build_experiment_datapackage_dict(self, experiment, request):
         name = slugify(experiment.title)
         researcher_owner = experiment.research_project.owner
 
         datapackage = {
-            'title': experiment.title, 'name': name,
-            'description': experiment.description,
+            'title': experiment.title, 'name': name, 'description': experiment.description,
             'created': str(datetime.now().replace(microsecond=0)),
             'homepage': request.get_host() + '/experiments/' + name,
             'contributors': [
@@ -2982,11 +3019,15 @@ class ExportExecution:
 
     def process_datapackage_json_file(self, request):
         """TODO (NES-987)
-        :param host:
+        :param request: request object
         """
-        # Get arbitrary key: all groups pertain to same experiment
-        group = Group.objects.get(id=int(list(self.per_group_data.keys())[0]))
-        datapackage_dict = self._build_datapackage_dict(group.experiment, request)
+        if 'group_selected_list' in request.session:
+            # Get arbitrary key: all groups pertain to same experiment
+            group = Group.objects.get(id=int(list(self.per_group_data.keys())[0]))
+            datapackage_dict = self._build_experiment_datapackage_dict(group.experiment, request)
+        else:
+            datapackage_dict = self._build_participant_datapackage_dict(request)
+
         file_path = path.join(self.get_directory_base(), 'datapackage.json')
         with open(file_path, 'w') as file:
             json.dump(datapackage_dict, file)

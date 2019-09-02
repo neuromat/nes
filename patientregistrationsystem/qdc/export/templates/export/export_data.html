@@ -132,9 +132,8 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-12 col-sm-12">
-                                <label for="filesformat"
-                                       class="control-label">{% trans "Files format: " %}
+                            <div class="col-xs-6 col-sm-6">
+                                <label for="filesformat" class="control-label">{% trans "File format " %}
                                 </label>
                                 <div class="form-group {% if export_form.errors.filesformat %}has-error{% endif %}">
                                     {% for check in export_form.filesformat %}
@@ -143,6 +142,13 @@
                                         </div>
                                     {% endfor %}
                                 </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6">
+                                <p><strong>{% trans "License" %}</strong></p>
+                                <input type="radio" name="license" id="license0" value="0" checked>
+                                <label for="license0">Creative Commons</label><br>
+                                <input type="radio" name="license" id="license1" value="1">
+                                <label for="license1">Copyright</label>
                             </div>
                         </div>
                     </div>

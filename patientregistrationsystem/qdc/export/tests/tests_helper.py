@@ -2,6 +2,7 @@ import io
 import os
 import zipfile
 from datetime import date, datetime, timedelta
+from json import load
 
 from django.contrib.auth.models import Group
 from django.test import TestCase
@@ -52,6 +53,14 @@ class ExportTestCase(TestCase):
         self.assertIsNone(zipped_file.testzip())
 
         return zipped_file
+
+    def get_datapackage_json_data(self, dir_, response):
+        zipped_file = self.get_zipped_file(response)
+        zipped_file.extractall(dir_)
+        with open(os.path.join(dir_, 'datapackage.json')) as file:
+            json_data = load(file)
+
+        return json_data
 
     def assert_per_participant_step_file_exists(
             self, step_number, component_step, data_collection_folder, filename, zipped_file):
