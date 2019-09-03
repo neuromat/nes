@@ -3365,7 +3365,6 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
             shutil.rmtree(temp_dir)
 
-    @skip
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_per_participant_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
@@ -3394,15 +3393,15 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
         for survey in [survey1, survey2]:
             filename = 'Fields_' + str(survey.lime_survey_id) + '_en.csv'
-            unique_name = slugify('Fields_' + str(survey.lime_survey_id))
-            title = 'Fields_' + str(survey.lime_survey_id)
+            unique_name = slugify('Fields_' + str(survey.lime_survey_id) + '_' + 'en')
+            title = 'Fields_' + str(survey.lime_survey_id) + '_' + 'en'
 
-            questionnaire_metadata_resource = next(
-                item for item in json_data['resources'] if item['title'] == 'Fields_' + str(survey.lime_survey_id))
+            questionnaire_metadata_resource = next(item for item in json_data['resources'] if item['title'] == title)
             test_dict = {
                 'name': unique_name, 'title': title,
                 'path': os.path.join(
-                    'data', 'Questionnaire_metadata', survey.lime_survey_id + '_' + slugify(survey.en_title), filename),
+                    'data', 'Questionnaire_metadata',
+                    str(survey.lime_survey_id) + '_' + slugify(survey.en_title), filename),
                 'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
             }
 
@@ -3410,6 +3409,42 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 item in questionnaire_metadata_resource.items() for item in test_dict.items()),
                 str(test_dict) + ' is not subdict of ' + str(questionnaire_metadata_resource))
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
+            self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        # TODO (NES-991): tests for 'full' and 'abbreviated'
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        for survey in [survey1, survey2]:
+            title = 'Fields_' + str(survey.lime_survey_id) + '_' + 'en'
+            questionnaire_metadata_resource = next(item for item in json_data['resources'] if item['title'] == title)
+
+            for item in HEADER_EXPLANATION_FIELDS:
+                self.assertIn(
+                    {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
+                    questionnaire_metadata_resource['schema']['fields'])
 
     # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     # @patch('survey.abc_search_engine.Server')
