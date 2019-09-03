@@ -1133,7 +1133,18 @@ class ExportExecution:
 
                 save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
-                self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
+                self.files_to_zip_list.append([
+                    complete_filename, export_questionnaire_metadata_directory,
+                    {
+                        'name': slugify(
+                            questionnaire['prefix_filename_fields'] + '_' + str(questionnaire_code) + '_' + language),
+                        'title':
+                            questionnaire['prefix_filename_fields'] + '_' + str(questionnaire_code) + '_' + language,
+                        'path': path.join(export_questionnaire_metadata_directory, export_filename),
+                        'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                        'description': 'Questionnaire metadata'
+                    }
+                ])
 
         questionnaire_lime_survey.release_session_key()
 
@@ -2456,7 +2467,7 @@ class ExportExecution:
             complete_filename, base_directory,
             {
                 # For datapackages.json resources
-                'name': 'Participants', 'title': 'Participants',
+                'name': 'participants', 'title': 'Participants',
                 'path': path.join(base_directory, export_filename),
                 'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
                 'schema': {
@@ -2487,7 +2498,7 @@ class ExportExecution:
             self.files_to_zip_list.append([
                 complete_filename, base_directory,
                 {
-                    'name': 'Diagnosis', 'title': 'Diagnosis',
+                    'name': 'diagnosis', 'title': 'Diagnosis',
                     'path': path.join(base_directory, export_filename),
                     'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
                     'schema': {
@@ -2986,6 +2997,8 @@ class ExportExecution:
             'licenses': [LICENSES[int(request.POST.get('license', None))]],
             'resources': []  # Will be built below
         }
+
+        self._build_resources(datapackage)
 
         return datapackage
 

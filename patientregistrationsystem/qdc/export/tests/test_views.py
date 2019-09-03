@@ -7,6 +7,7 @@ import zipfile
 from datetime import date, datetime
 
 import shutil
+from unittest import skip
 from unittest.mock import patch
 
 from django.core.files import File
@@ -2104,24 +2105,22 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self.get_datapackage_json_data(temp_dir, response)
-        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
-
-        # As Participants.csv/tsv resource has 'schema' key, that is
-        # itself a dict with other data, we test key/value pairs for all
-        # keys except 'schema'.
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'participants')
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in participants_resource:
+            participants_resource.pop('schema')
         # TODO (NES-987): will it have 'bytes' field?
         # TODO (NES-987): test for tsv format? It's implemented already
+        # TODO (NES-991): test for 'full' and 'abbreviated'
         test_dict = {
             # TODO (NES-987): Changes 'Participants.csv' to a constant in code
-            'name': 'Participants', 'title': 'Participants',
-            # TODO (NES-987): 'path' is wrong (test is wrong), fix this (required)!
-            #  Refactor to go similar the test for Diagnosis
-            'path': os.path.join('data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Participants.csv'),
+            'name': 'participants', 'title': 'Participants',
+            'path': os.path.join('data', 'Participant_data', 'Participants.csv'),
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
-        self.assertTrue(
-            all(item in participants_resource for item in test_dict),
-            str(test_dict) + ' is not subdict of ' + str(participants_resource))
+        self.assertEqual(
+            test_dict, participants_resource, str(test_dict) + ' not equal ' + str(participants_resource))
 
         shutil.rmtree(temp_dir)
 
@@ -2141,14 +2140,14 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             data['patient_selected'].append(field['field'] + '*' + field['header'])
 
         # Test for code, full, and abbreviated question texts
-        # in Headings head, General informtaion export tab
+        # in Headings head, General information export tab
         for heading_type in ['code'], ['full'], ['abbreviated']:
             data['headings'] = heading_type
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
             json_data = self.get_datapackage_json_data(temp_dir, response)
-            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'participants')
 
             self.assertIn('schema', participants_resource)
             self.assertIn('fields', participants_resource['schema'])
@@ -2178,18 +2177,17 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
         temp_dir = tempfile.mkdtemp()
         json_data = self.get_datapackage_json_data(temp_dir, response)
-        diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'Diagnosis')
-        # Remove schema field if it exists. The test was wrote before the
+        diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
+        # Remove schema field if it exists. The test was written before the
         # test that drives adding schema field to datapackage.json
         if 'schema' in diagnosis_resource:
             diagnosis_resource.pop('schema')
 
         test_dict = {
-            'name': 'Diagnosis', 'title': 'Diagnosis',
+            'name': 'diagnosis', 'title': 'Diagnosis',
             'path': os.path.join('data', 'Participant_data', 'Diagnosis.csv'),
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
-
         self.assertEqual(
             test_dict, diagnosis_resource, str(test_dict) + ' not equal ' + str(diagnosis_resource))
 
@@ -2215,7 +2213,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
             temp_dir = tempfile.mkdtemp()
             json_data = self.get_datapackage_json_data(temp_dir, response)
-            diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'Diagnosis')
+            diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
             self.assertIn('schema', diagnosis_resource)
             self.assertIn('fields', diagnosis_resource['schema'])
             self._assert_participants_table_schema(diagnosis_resource['schema'], heading_type[0], DIAGNOSIS_FIELDS)
@@ -3185,6 +3183,233 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         }, json_data['licenses'])
 
         shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_participant_data_file_info_to_datapackage_json_resources_field(
+            self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'participants')
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in participants_resource:
+            participants_resource.pop('schema')
+
+        test_dict = {
+            'name': 'participants', 'title': 'Participants',
+            'path': os.path.join('data', 'Participants.csv'),
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+        self.assertEqual(
+            test_dict, participants_resource, str(test_dict) + ' not equal ' + str(participants_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_participants_table_schema_info_to_datapackage_json_participants_resource(
+            self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        # age field is already included in POST data. Include only the others
+        patient_fields = PATIENT_FIELDS.copy()
+        age_field = next(item for item in patient_fields if item['field'] == 'age')
+        del (patient_fields[patient_fields.index(age_field)])
+        # Append all possible patient attributes in POST data
+        for field in patient_fields:
+            data['patient_selected'].append(field['field'] + '*' + field['header'])
+
+        # Test for code, full, and abbreviated question texts
+        # in Headings head, General information export tab
+        # TODO (NES-991): test for 'full' and 'abbreviated'. Manually passed with all patient attributes
+        #  Needed to change mock
+        for heading_type in ['code']:  # , ['full'], ['abbreviated']:
+            data['headings'] = [heading_type]
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'participants')
+
+            self.assertIn('schema', participants_resource)
+            self.assertIn('fields', participants_resource['schema'])
+            self._assert_participants_table_schema(participants_resource['schema'], heading_type)
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(
+            self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
+                'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
+                # Add selected diagnosis (all here)
+                'diagnosis_selected': [
+                    'medicalrecorddata__diagnosis__date*diagnosis_date',
+                    'medicalrecorddata__diagnosis__description*diagnosis_description',
+                    'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
+                    'medicalrecorddata__diagnosis__classification_of_diseases__description'
+                    '*classification_of_diseases_description',
+                    'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
+                    '*classification_of_diseases_description'
+                ]}
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in diagnosis_resource:
+            diagnosis_resource.pop('schema')
+
+        test_dict = {
+            'name': 'diagnosis', 'title': 'Diagnosis',
+            'path': os.path.join('data', 'Diagnosis.csv'),
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+        self.assertEqual(
+            test_dict, diagnosis_resource, str(test_dict) + ' not equal ' + str(diagnosis_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(
+            self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
+            'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
+            'diagnosis_selected': []
+        }
+        # Append al possible diagnosis attributes in POST data
+        for field in DIAGNOSIS_FIELDS:  # TODO (NES-991): do the same in the other diagnosis test
+            data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
+
+        # Test for Question code, Full question text and Abbreviated question text
+        # in Headings head, General informtion export tab
+        # TODO (NES-991): test for 'full' and 'abbreviated'. Needed to change mocks
+        #  Tested manually for all diagnosis fields for all types of Headings
+        for heading_type in ['code']:  # , 'full', 'abbreviated':
+            data['headings'] = [heading_type]
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+            diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
+            self.assertIn('schema', diagnosis_resource)
+            self.assertIn('fields', diagnosis_resource['schema'])
+            self._assert_participants_table_schema(diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
+
+            shutil.rmtree(temp_dir)
+
+    @skip
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        for survey in [survey1, survey2]:
+            filename = 'Fields_' + str(survey.lime_survey_id) + '_en.csv'
+            unique_name = slugify('Fields_' + str(survey.lime_survey_id))
+            title = 'Fields_' + str(survey.lime_survey_id)
+
+            questionnaire_metadata_resource = next(
+                item for item in json_data['resources'] if item['title'] == 'Fields_' + str(survey.lime_survey_id))
+            test_dict = {
+                'name': unique_name, 'title': title,
+                'path': os.path.join(
+                    'data', 'Questionnaire_metadata', survey.lime_survey_id + '_' + slugify(survey.en_title), filename),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
+            }
+
+            self.assertTrue(all(
+                item in questionnaire_metadata_resource.items() for item in test_dict.items()),
+                str(test_dict) + ' is not subdict of ' + str(questionnaire_metadata_resource))
+
 
     # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     # @patch('survey.abc_search_engine.Server')
