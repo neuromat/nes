@@ -1142,7 +1142,8 @@ class ExportExecution:
                             questionnaire['prefix_filename_fields'] + '_' + str(questionnaire_code) + '_' + language,
                         'path': path.join(export_questionnaire_metadata_directory, export_filename),
                         'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
-                        'description': 'Questionnaire metadata'
+                        'description': 'Questionnaire metadata',
+                        'schema': {'fields': self._set_questionnaire_metadata_fields()}
                     }
                 ])
 
