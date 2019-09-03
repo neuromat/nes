@@ -356,7 +356,7 @@ def export_create(
                 if not participants_plugin:
                     export.process_datapackage_json_file(request)
 
-        # create zip file and include files
+        # Create zip file and include files
         export_complete_filename = ''
         if export.files_to_zip_list:
             # export.zip file
