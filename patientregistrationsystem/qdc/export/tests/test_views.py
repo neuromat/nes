@@ -2990,7 +2990,6 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             questionnaire_response_resource = next(
                 item for item in json_data['resources'] if item['title'] == filename)
             for item in questions:
-                # TODO (NES-991): tests for 'full' and 'abbreviated'
                 self.assertIn(
                         {
                             'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
@@ -3425,7 +3424,10 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
-        # TODO (NES-991): tests for 'full' and 'abbreviated'
+        # TODO (NES-991): tests for 'full' and 'abbreviated'.
+        #  Obs.: By now NES exports by code only even if the user
+        #  selects 'full' or 'abbreviated' for headings. Besides that
+        #  the codes are in English too, even for questionnaires in pt-BR.
         data = {
             'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
@@ -3446,50 +3448,94 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                     {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
                     questionnaire_metadata_resource['schema']['fields'])
 
-    # @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    # @patch('survey.abc_search_engine.Server')
-    # def test_export_per_patient_add_questionnaire_response_file_to_datapackage_json_file(self, mockServer):
-    #     survey = create_survey(LIMESURVEY_SURVEY_ID_1)
-    #     UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
-    #     set_mocks8(mockServer)
-    #
-    #     questions = self._set_all_questions()
-    #     to = []
-    #     for question in questions:
-    #         to.append(
-    #             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' +  question[0]['code']
-    #             + '*' + question[0]['code'])
-    #
-    #     data = {
-    #         'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
-    #         'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
-    #         'patient_selected': ['age*age'],
-    #         'to[]': to
-    #     }
-    #     response = self.client.post(reverse('export_view'), data)
-    #
-    #     temp_dir = tempfile.mkdtemp()
-    #     json_data = self.get_datapackage_json_data(temp_dir, response)
-    #
-    #     filename = 'Responses_' + slugify(survey.lime_survey_id) + '_en'
-    #     extension = '.csv'
-    #
-    #     questionnaire_response_resource = next(
-    #         item for item in json_data['resources'] if item['title'] == filename)
-    #     # As this resource has 'schema' key, that is
-    #     # itself a dict with other data, we test key/value pairs for all
-    #     # keys except 'schema'.
-    #     test_dict = {
-    #         'name': slugify(filename), 'title': filename,
-    #         'path': os.path.join(
-    #             'data', 'Per_questionnaire',
-    #             survey.lime_survey_id + '_' + slugify(survey.title),
-    #             filename + extension),
-    #         'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
-    #     }
-    #     self.assertTrue(all(
-    #         item in questionnaire_response_resource.items() for item in test_dict.items()),
-    #         str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_response_file_to_datapackage_json_file(self, mockServer):
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks9(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        # TODO (NES-991): tests for 'full' and 'abbreviated'.
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        for survey in [survey1, survey2]:
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = 'Responses_' + slugify(survey.lime_survey_id) + '_en'
+            extension = '.csv'
+
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            # As this resource has 'schema' key, that is
+            # itself a dict with other data, we test key/value pairs for all
+            # keys except 'schema'.
+            test_dict = {
+                'name': slugify(filename), 'title': filename,
+                'path': os.path.join(
+                    'data', 'Per_questionnaire',
+                    str(survey.lime_survey_id) + '_' + slugify(survey.en_title),
+                    filename + extension),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+            }
+            self.assertTrue(all(
+                item in questionnaire_response_resource.items() for item in test_dict.items()),
+                str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
+        set_mocks8(mockServer)
+
+        questions = self._set_all_questions()
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' + question[0]['code']
+                + '*' + question[0]['code'])
+
+        data = {
+            # TODO (NES-991): test for 'full' and 'abbreviated'
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = 'Responses_' + slugify(survey.lime_survey_id) + '_en'
+
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['title'] == filename)
+
+        for item in questions:
+            self.assertIn(
+                {
+                    'name': slugify(item[0]['code']), 'title': item[0]['code'], 'type': item[2],
+                    'format': 'default'
+                }, questionnaire_response_resource['schema']['fields'])
+
+        shutil.rmtree(temp_dir)
+
 
 def tearDownModule():
     shutil.rmtree(TEMP_MEDIA_ROOT)

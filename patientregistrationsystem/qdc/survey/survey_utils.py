@@ -369,7 +369,7 @@ class QuestionnaireUtils:
         :param limesurvey_connection: survey.Questionnaires instance
         :param survey_id:
         :param language:
-        :param types: list of question types
+        :param types: list of question types. Defaults to return all questions
         :return: tupple: (int, list) - (0, list) in case of success,
         else (Questionnaires.ERROR_code, empty list)
         """

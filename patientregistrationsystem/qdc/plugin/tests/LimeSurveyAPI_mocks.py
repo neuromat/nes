@@ -29,20 +29,44 @@ def set_limesurvey_api_mocks(mockServer):
         'wIiwiMiIsImVuIiwiT1NTTWFGVmV3Vmw4RDBKIiwiMiIsIjIwMjAtMDktMDUgMDA6MDA6MDAiLCI5NTkxNiIsIkExIiwiQTIiLCI0IgoK'
     ]
     mockServer.return_value.list_groups.side_effect = \
-        4 * [[
+        5 * [[
             {'id': {'gid': 1576, 'language': 'en'}, 'group_order': 1, 'randomization_group': '',
              'description': '', 'sid': 225461, 'gid': 1576, 'language': 'en', 'group_name': 'Identification',
              'grelevance': ''},
             {'id': {'gid': 1577, 'language': 'en'}, 'group_order': 2, 'randomization_group': '',
              'description': '', 'sid': 225461, 'gid': 1577, 'language': 'en', 'group_name': 'Grupo 1',
              'grelevance': ''},
-        ]] + 4 * [[
+        ]] + 5 * [[
             {'id': {'gid': 1578, 'language': 'en'}, 'group_order': 1, 'randomization_group': '', 'description': '',
              'sid': 888656, 'gid': 1578, 'language': 'en', 'group_name': 'Identification', 'grelevance': ''},
             {'id': {'gid': 1579, 'language': 'en'}, 'group_order': 2, 'randomization_group': '', 'description': '',
              'sid': 888656, 'gid': 1579, 'language': 'en', 'group_name': 'Grupo 1', 'grelevance': ''}
         ]]
     mockServer.return_value.list_questions.side_effect = [
+        [
+            {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1576, 'preg': '', 'language': 'en',
+             'title': 'responsibleid', 'sid': 225461, 'modulename': None, 'parent_qid': 0, 'qid': 5006,
+             'mandatory': 'Y', 'other': 'N', 'question': 'Responsible Identification number:', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5006}, 'relevance': '1', 'question_order': 0},
+            {'type': 'D', 'same_default': 0, 'help': '', 'gid': 1576, 'preg': '', 'language': 'en',
+             'title': 'acquisitiondate', 'sid': 225461, 'modulename': None, 'parent_qid': 0, 'qid': 5007,
+             'mandatory': 'Y', 'other': 'N', 'question': 'Acquisition date<strong>:</strong><br />\n', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5007}, 'relevance': '1', 'question_order': 1},
+            {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1576, 'preg': '', 'language': 'en',
+             'title': 'subjectid', 'sid': 225461, 'modulename': None, 'parent_qid': 0, 'qid': 5008, 'mandatory': 'Y',
+             'other': 'N', 'question': 'Participant Identification number<b>:</b>', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5008}, 'relevance': '1', 'question_order': 3}
+        ],
+        [
+            {'type': 'T', 'same_default': 0, 'help': '', 'gid': 1577, 'preg': '', 'language': 'en', 'title': 'q1',
+             'sid': 225461, 'modulename': '', 'parent_qid': 0, 'qid': 5009, 'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 1', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5009}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'L', 'same_default': 0, 'help': '', 'gid': 1577, 'preg': '', 'language': 'en', 'title': 'q2',
+             'sid': 225461, 'modulename': None, 'parent_qid': 0, 'qid': 5010, 'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 2', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5010}, 'relevance': '1',
+             'question_order': 2}
+        ],
         [
             {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1576, 'preg': '', 'language': 'en',
              'title': 'responsibleid', 'sid': 225461, 'modulename': None, 'parent_qid': 0, 'qid': 5006,
@@ -133,6 +157,38 @@ def set_limesurvey_api_mocks(mockServer):
             {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1578, 'preg': '', 'language': 'en',
              'title': 'subjectid', 'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5013, 'mandatory': 'Y',
              'other': 'N', 'question': 'Participant Identification number<b>:</b>', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5013}, 'relevance': '1', 'question_order': 3}
+        ],
+        [
+            {'type': 'F', 'same_default': 0, 'help': '', 'gid': 1579, 'preg': '', 'language': 'en', 'title': 'q1',
+             'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5014, 'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 1', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5014}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579, 'preg': None, 'language': 'en',
+             'title': 'SQ001', 'sid': 888656, 'modulename': None, 'parent_qid': 5014, 'qid': 5015, 'mandatory': None,
+             'other': 'N', 'question': 'Ok', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5015}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579, 'preg': None, 'language': 'en',
+             'title': 'SQ002', 'sid': 888656, 'modulename': None, 'parent_qid': 5014, 'qid': 5016, 'mandatory': None,
+             'other': 'N', 'question': 'NoOk', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5016}, 'relevance': '',
+             'question_order': 2},
+            {'type': '5', 'same_default': 0, 'help': '', 'gid': 1579, 'preg': '', 'language': 'en', 'title': 'q2',
+             'sid': 888656, 'modulename': '', 'parent_qid': 0, 'qid': 5017, 'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 2', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5017}, 'relevance': '1',
+             'question_order': 3}
+        ],
+        [
+            {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1578, 'preg': '', 'language': 'en',
+             'title': 'responsibleid', 'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5011,
+             'mandatory': 'Y', 'other': 'N', 'question': 'Responsible Identification number:', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5011}, 'relevance': '1', 'question_order': 0},
+            {'type': 'D', 'same_default': 0, 'help': '', 'gid': 1578, 'preg': '', 'language': 'en',
+             'title': 'acquisitiondate', 'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5012,
+             'mandatory': 'Y', 'other': 'N', 'question': 'Acquisition date<strong>:</strong><br />\n', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5012}, 'relevance': '1', 'question_order': 1},
+            {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1578, 'preg': '', 'language': 'en',
+             'title': 'subjectid', 'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5013, 'mandatory': 'Y',
+             'other': 'N', 'question': 'Participant Identification number<b>:</b>', 'scale_id': 0,
              'id': {'language': 'en', 'qid': 5013}, 'relevance': '1', 'question_order': 3},
             {'type': 'F', 'same_default': 0, 'help': '', 'gid': 1579, 'preg': '', 'language': 'en', 'title': 'q1',
              'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5014, 'mandatory': 'N', 'other': 'N',
@@ -149,7 +205,8 @@ def set_limesurvey_api_mocks(mockServer):
             {'type': '5', 'same_default': 0, 'help': '', 'gid': 1579, 'preg': '', 'language': 'en', 'title': 'q2',
              'sid': 888656, 'modulename': '', 'parent_qid': 0, 'qid': 5017, 'mandatory': 'N', 'other': 'N',
              'question': 'Questão 2', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5017}, 'relevance': '1',
-             'question_order': 3}],
+             'question_order': 3}
+        ],
     ]
     mockServer.return_value.get_question_properties.side_effect = [
         {'other': 'N', 'attributes': {'hidn': '1'}, 'subquestions': 'No available answers', 'type': 'N',

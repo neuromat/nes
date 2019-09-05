@@ -1089,8 +1089,7 @@ class ExportExecution:
             export_questionnaire_metadata_directory = path.join(export_metadata_directory, path_questionnaire)
 
             for language in language_list:
-                # Per_participant_data is updated by define_questionnaire
-                # method
+                # Per_participant_data is updated by define_questionnaire method
                 result = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
                 if result == Questionnaires.ERROR_CODE:
                     return result
@@ -1098,20 +1097,34 @@ class ExportExecution:
                 # Create directory for questionnaire:
                 # <per_questionnaire>/<q_code_title>
                 if self.get_input_data('export_per_questionnaire') and (len(result) > 1):
-                    export_filename = '%s_%s_%s.%s' % (
-                        questionnaire['prefix_filename_responses'], str(questionnaire_code), language, filesformat_type)
+                    export_filename = '%s_%s_%s' % (
+                        questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
                     # path ex. NES_EXPORT/Per_questionnaire/Q123_aaa/Responses_Q123.csv
-                    complete_filename = path.join(export_path, export_filename)
-
+                    complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, result, filesformat_type)
+
+                    # Get data for datapackage resource questionnaire response table schema
+                    rows_participant_data = self.get_input_data('participants')['data_list']
+                    answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
+                    for question in questionnaire['output_list']:
+                        answer_list['fields'].append(question['field'])
+                        answer_list['header'].append(question['header'])
+                        answer_list['header_questionnaire'].append(question['header'])
+                    # TODO (NES-991): treat error!
+                    error, questions = QuestionnaireUtils.get_questions(
+                        questionnaire_lime_survey, questionnaire_id, language)
                     self.files_to_zip_list.append([
                         complete_filename, export_directory,
-                        # {
-                        #     'name': slugify(export_filename), 'title': export_filename,
-                        #     'path': path.join(export_directory, export_filename + '.' + filesformat_type),
-                        #     'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
-                        #     'description': 'Questionnaire response',
-                        # }
+                        {
+                            'name': slugify(export_filename), 'title': export_filename,
+                            'path': path.join(export_directory, export_filename + '.' + filesformat_type),
+                            'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                            'description': 'Questionnaire response',
+                            'schema': {
+                                'fields': self._set_questionnaire_response_fields(
+                                    'code', rows_participant_data[0], answer_list, questions)
+                            }
+                        }
                     ])
 
             # Questionnaire metadata
@@ -2607,7 +2620,7 @@ class ExportExecution:
         #  See if it's a better way.
         from export.views import PATIENT_FIELDS
         fields = []
-        # Field participant_code is different: by now it goes as 'participant_code'
+        # Field participant_code is different: by now NES write 'participant_code'
         # for all heading types
         field_info = next(item for item in PATIENT_FIELDS if item['header'] == 'participant_code')
         fields.append({
@@ -2629,11 +2642,9 @@ class ExportExecution:
             })
         for i in range(len(question_fields['fields'])):
             question_field, question_header, question_header_questionnaire = \
-            question_fields['fields'][i],\
-            question_fields['header'][i],\
-            question_fields['header_questionnaire'][i]
+            question_fields['fields'][i], question_fields['header'][i], question_fields['header_questionnaire'][i]
             # TODO (NES-991): improve regex
-            question_cleared = re.search('([a-zA-Z]+)(\[?)', question_field).group(1)
+            question_cleared = re.search('([a-zA-Z0-9]+)(\[?)', question_field).group(1)
             question = next(item for item in questions if item['title'] == question_cleared)
             type = QUESTION_TYPES[question['type']][1]
             title = question_header_questionnaire if heading_type != 'code' else question_field
@@ -3308,6 +3319,8 @@ class ExportExecution:
     def define_questionnaire(self, questionnaire, questionnaire_lime_survey, language):
         """
         :param questionnaire:
+        :param questionnaire_lime_survey:
+        :param language:
         :return: list - fields_description, in case of success, else error code
         """
         # questionnaire exportation - evaluation questionnaire
@@ -3392,11 +3405,11 @@ class ExportExecution:
 
                 self.update_questionnaire_rules(questionnaire_id)
 
-                # for each questionnaire_id from ResponseQuestionnaire from questionnaire_id
+                # For each questionnaire_id from ResponseQuestionnaire from questionnaire_id
                 for questionnaire_response in questionnaire_responses:
 
-                    # transform data fields
-                    # include new fieldsm
+                    # Transform data fields
+                    # Include new fields
 
                     survey_code = questionnaire_response.survey.code
                     lime_survey_id = questionnaire_response.survey.lime_survey_id
@@ -3422,18 +3435,14 @@ class ExportExecution:
                             self.questionnaire_utils.include_questionnaire_code_and_id(survey_code, lime_survey_id)
 
                             self.include_in_per_participant_data(
-                                transformed_fields,
-                                patient_code,
-                                survey_code,
-                                language
-                            )
+                                transformed_fields, patient_code, survey_code, language)
 
                             self.include_participant_per_questionnaire(token_id, survey_code)
 
                 headers, fields = self.questionnaire_utils.redefine_header_and_fields(
                     questionnaire_id, header_filtered, fields)
 
-            # build header
+            # Build header
             participant_data_header = self.get_input_data('participants')['data_list'][0]
 
             header = self.build_header_questionnaire_per_participant(
