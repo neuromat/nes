@@ -28,7 +28,7 @@ from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID_1, set_mocks2, set_mocks3, set_mocks4, \
     set_mocks5, set_mocks6, set_mocks7, update_mocks1, update_mocks2, update_mocks3, set_mocks8, set_mocks9, \
-    LIMESURVEY_SURVEY_ID_2, set_mocks10
+    LIMESURVEY_SURVEY_ID_2, set_mocks10, update_mocks4, update_mocks5
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -2980,7 +2980,6 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 'to_experiment[]': to_experiment,
                 'patient_selected': ['age*age'], 'responses': ['short']
             }
-
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
@@ -3501,7 +3500,6 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
     def test_export_per_participant_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
-        set_mocks8(mockServer)
 
         questions = self._set_all_questions()
         to = []
@@ -3511,30 +3509,34 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 + '*' + question[0]['code'])
 
         data = {
-            # TODO (NES-991): test for 'full' and 'abbreviated'
-            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
             'patient_selected': ['age*age'], 'license': '0',
             'to[]': to
         }
-        response = self.client.post(reverse('export_view'), data)
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks8(mockServer)
+            if heading_type == 'full':
+                update_mocks4(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks5(mockServer)
+            data['headings'] = [heading_type]
+            response = self.client.post(reverse('export_view'), data)
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self.get_datapackage_json_data(temp_dir, response)
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
 
-        filename = 'Responses_' + slugify(survey.lime_survey_id) + '_en'
+            filename = 'Responses_' + slugify(survey.lime_survey_id) + '_en'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            for item in questions:
+                self.assertIn(
+                    {
+                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'])
 
-        questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['title'] == filename)
-
-        for item in questions:
-            self.assertIn(
-                {
-                    'name': slugify(item[0]['code']), 'title': item[0]['code'], 'type': item[2],
-                    'format': 'default'
-                }, questionnaire_response_resource['schema']['fields'])
-
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
 
 def tearDownModule():

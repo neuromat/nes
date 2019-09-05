@@ -338,7 +338,7 @@ def export_create(
             # Export method: filter by entrance questionnaire
             if export.get_input_data('questionnaires'):
                 # Process per questionnaire data - entrance evaluation questionnaires
-                error_msg = export.process_per_questionnaire()
+                error_msg = export.process_per_questionnaire(request.POST.get('headings'))
                 if error_msg == Questionnaires.ERROR_CODE:  # TODO (NES-971): ??
                     return error_msg
                 if error_msg != '':

@@ -1027,7 +1027,7 @@ class ExportExecution:
 
         return export_fields_list
 
-    def process_per_questionnaire(self):
+    def process_per_questionnaire(self, heading_type):
         """
         :return: str - error message
         """
@@ -1122,7 +1122,7 @@ class ExportExecution:
                             'description': 'Questionnaire response',
                             'schema': {
                                 'fields': self._set_questionnaire_response_fields(
-                                    'code', rows_participant_data[0], answer_list, questions)
+                                    heading_type, rows_participant_data[0], answer_list, questions)
                             }
                         }
                     ])
@@ -2643,7 +2643,8 @@ class ExportExecution:
         for i in range(len(question_fields['fields'])):
             question_field, question_header, question_header_questionnaire = \
             question_fields['fields'][i], question_fields['header'][i], question_fields['header_questionnaire'][i]
-            # TODO (NES-991): improve regex
+            # TODO (NES-991): improve regex; see if numbers are allowed in LimeSurvey.
+            #  If they're not alowed fixes test. Questions 'q1', 'q2'
             question_cleared = re.search('([a-zA-Z0-9]+)(\[?)', question_field).group(1)
             question = next(item for item in questions if item['title'] == question_cleared)
             type = QUESTION_TYPES[question['type']][1]
