@@ -67,7 +67,7 @@ directory_structure = [
     }
 ]
 
-# valid for all questionnaires (no distinction amongst questionnaires)
+# Valid for all questionnaires (no distinction amongst questionnaires)
 included_questionnaire_fields = [
     {
         'field': 'participant_code',
@@ -1027,7 +1027,7 @@ class ExportExecution:
 
         return export_fields_list
 
-    def process_per_questionnaire(self, heading_type):
+    def process_per_questionnaire(self, heading_type, plugin):
         """
         :return: str - error message
         """
@@ -1113,19 +1113,21 @@ class ExportExecution:
                     # TODO (NES-991): treat error!
                     error, questions = QuestionnaireUtils.get_questions(
                         questionnaire_lime_survey, questionnaire_id, language)
-                    self.files_to_zip_list.append([
-                        complete_filename, export_directory,
-                        {
-                            'name': slugify(export_filename), 'title': export_filename,
-                            'path': path.join(export_directory, export_filename + '.' + filesformat_type),
-                            'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
-                            'description': 'Questionnaire response',
-                            'schema': {
-                                'fields': self._set_questionnaire_response_fields(
-                                    heading_type, rows_participant_data[0], answer_list, questions)
+                    # TODO (NES-911): extends conditional to the other parts
+                    if not plugin:
+                        datapackage_json = {
+                                'name': slugify(export_filename), 'title': export_filename,
+                                'path': path.join(export_directory, export_filename + '.' + filesformat_type),
+                                'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                                'description': 'Questionnaire response',
+                                'schema': {
+                                    'fields': self._set_questionnaire_response_fields(
+                                        heading_type, rows_participant_data[0], answer_list, questions)
+                                }
                             }
-                        }
-                    ])
+                    else:
+                        datapackage_json = ''
+                    self.files_to_zip_list.append([complete_filename, export_directory, datapackage_json])
 
             # Questionnaire metadata
             entrance_questionnaire = True
@@ -2618,9 +2620,9 @@ class ExportExecution:
     def _set_questionnaire_response_fields(heading_type, participant_fields, question_fields, questions):
         # TODO (NES-991): put here because of circular import with export.views.
         #  See if it's a better way.
-        from export.views import PATIENT_FIELDS
+        from export.views import PATIENT_FIELDS, abbreviated_data
         fields = []
-        # Field participant_code is different: by now NES write 'participant_code'
+        # Field participant_code is different: by now NES writes 'participant_code'
         # for all heading types
         field_info = next(item for item in PATIENT_FIELDS if item['header'] == 'participant_code')
         fields.append({
@@ -2635,9 +2637,13 @@ class ExportExecution:
 
         key = 'header' if heading_type == 'code' else 'description'
         for participant_field in participant_fields_copy:
-            field_info = next(item for item in PATIENT_FIELDS if item[key] == participant_field)
+            field_info = next(
+                item for item in PATIENT_FIELDS
+                if abbreviated_data(item[key], heading_type) == participant_field)
             fields.append({
-                'name': field_info['header'], 'title': field_info['header'], 'type': field_info['json_data_type'],
+                # str(field_info[key] needed because of PATIENT_FIELDS 'description' keys are localized
+                'name': field_info['header'],
+                'title': abbreviated_data(str(field_info[key]), heading_type), 'type': field_info['json_data_type'],
                 'format': 'default'
             })
         for i in range(len(question_fields['fields'])):

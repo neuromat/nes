@@ -7,7 +7,6 @@ import zipfile
 from datetime import date, datetime
 
 import shutil
-from unittest import skip
 from unittest.mock import patch
 
 from django.core.files import File
@@ -3508,11 +3507,14 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' + question[0]['code']
                 + '*' + question[0]['code'])
 
+        patient_selected = [
+            'age*age',
+            'socialdemographicdata__patient_schooling__name*patient_schooling'
+        ]
         data = {
             'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
-            'patient_selected': ['age*age'], 'license': '0',
-            'to[]': to
+            'patient_selected': patient_selected, 'license': '0', 'to[]': to
         }
         for heading_type in 'code', 'full', 'abbreviated':
             set_mocks8(mockServer)
@@ -3535,6 +3537,22 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                         'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields'])
+            for patient_field_selected in patient_selected:
+                patient_field_selected = patient_field_selected.split('*')[0]
+                patient_field = next(item for item in PATIENT_FIELDS if item['field'] == patient_field_selected)
+                title = ''
+                if heading_type == 'code':
+                    title = patient_field['header']
+                elif heading_type == 'full':
+                    title = patient_field['description']
+                elif heading_type == 'abbreviated':
+                    title = abbreviated_data(patient_field['description'])
+                self.assertIn(
+                    {
+                        'name': patient_field['header'], 'title': title, 'type': patient_field['json_data_type'],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields']
+                )
 
             shutil.rmtree(temp_dir)
 
