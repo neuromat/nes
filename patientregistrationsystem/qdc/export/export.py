@@ -3,6 +3,7 @@ import csv
 import json
 import random
 import re
+from collections import OrderedDict
 
 from csv import writer
 from datetime import date, datetime, timedelta
@@ -1099,7 +1100,7 @@ class ExportExecution:
                 if self.get_input_data('export_per_questionnaire') and (len(result) > 1):
                     export_filename = '%s_%s_%s' % (
                         questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
-                    # path ex. NES_EXPORT/Per_questionnaire/Q123_aaa/Responses_Q123.csv
+                    # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, result, filesformat_type)
 
@@ -1531,7 +1532,7 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_participant(self):
+    def process_per_participant(self, heading_type):
 
         error_msg = ''
 
@@ -1543,9 +1544,11 @@ class ExportExecution:
                 return error_msg
 
             prefix_filename_participant = 'Participant_'
-            # path ex. NES_EXPORT/Per_participant/
-            export_directory_base = path.join(self.get_input_data('base_directory'),
-                                              self.get_input_data('per_participant_directory'))
+            # Path ex. NES_EXPORT/Per_participant/
+            export_directory_base = path.join(
+                self.get_input_data('base_directory'), self.get_input_data('per_participant_directory'))
+
+            questionnaire_lime_survey = Questionnaires()
 
             for participant_code in self.get_per_participant_data():
                 # path ex. Participant_P123
@@ -1555,7 +1558,14 @@ class ExportExecution:
                 if error_msg != '':
                     return error_msg
 
-                for questionnaire_code in self.get_per_participant_data(participant_code):
+                # Make the list of questionnaires ordered: for unitary tests.
+                # Because the loop bellow can come in whatever order and so the mocks
+                # associated. See test_export_per_participant_add_questionnaire_response_file_to_datapackage_json_file2
+                # comments
+                questionnaires = self.get_per_participant_data(participant_code)
+                ordered_questionnaires = OrderedDict(sorted(questionnaires.items()))
+
+                for questionnaire_code in ordered_questionnaires:
                     questionnaire_id = int(self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code))
                     title = self.get_title_reduced(questionnaire_id=int(questionnaire_id))
                     questionnaire_directory_name = '%s_%s' % (str(questionnaire_code), title)
@@ -1582,19 +1592,42 @@ class ExportExecution:
                         language_list = [questionnaire_language['output_language']]
 
                     for language in language_list:
-                        export_filename = '%s_%s_%s.%s' \
-                                          % ('Responses', str(questionnaire_code), language, filesformat_type)
-                        participant_rows = \
-                            self.get_per_participant_data(participant_code, questionnaire_code)[language][0]
+                        export_filename = '%s_%s_%s' % ('Responses', str(questionnaire_code), language)
+                        # Path ex. NES_EXPORT/Per_participant/Participant_P123/QCode_Title/Responses_Q123_aaa.csv
+                        complete_filename = path.join(path_per_questionnaire, export_filename + '.' + filesformat_type)
+
+                        participant_rows = self.get_per_participant_data(
+                            participant_code, questionnaire_code)[language][0]
                         per_participant_rows = [header, participant_rows]
-
-                        # Path ex. NES_EXPORT/Per_participant/Participant_P123/QCode_Title
-                        # /Responses_Q123_aaa.csv
-                        complete_filename = path.join(path_per_questionnaire, export_filename)
-
                         save_to_csv(complete_filename, per_participant_rows, filesformat_type)
 
-                        self.files_to_zip_list.append([complete_filename, export_questionnaire_directory])
+                        answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
+                        questionnaire = next(
+                            item for item in self.get_input_data('questionnaires') if item['id'] == questionnaire_id)
+                        for question in questionnaire['output_list']:
+                            answer_list['fields'].append(question['field'])
+                            answer_list['header'].append(question['header'])
+                            answer_list['header_questionnaire'].append(question['header'])
+                        # TODO (NES-991): treat error!
+                        # TODO (NES-991): QuestionnaireUtils already in self.questionnaire_utils
+                        error, questions = QuestionnaireUtils.get_questions(
+                            questionnaire_lime_survey, questionnaire_id, language)
+                        datapackage_json = {
+                            'name': slugify(export_filename), 'title': export_filename,
+                            'path': path.join(export_questionnaire_directory, export_filename + '.' + filesformat_type),
+                            'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                            'description': 'Questionnaire response',
+                            'schema': {
+                                'fields': self._set_questionnaire_response_fields(
+                                    # CONTINUE: "participant_data_header" is ok; "questionnaire_header" is wrong.
+                                    #  See line 1125.
+                                    heading_type, participant_data_header, answer_list, questions)
+                            }
+                        }
+
+                        self.files_to_zip_list.append([
+                            complete_filename, export_questionnaire_directory, datapackage_json
+                        ])
 
         return error_msg
 
