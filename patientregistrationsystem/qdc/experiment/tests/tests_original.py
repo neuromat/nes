@@ -563,8 +563,8 @@ class ObjectsFactory(object):
         )
 
     @staticmethod
-    def create_questionnaire_response(dct, responsible, token_id,
-                                      subject_of_group):
+    def create_questionnaire_response(
+            dct, responsible, token_id, subject_of_group):
         return QuestionnaireResponse.objects.create(
             data_configuration_tree=dct,
             questionnaire_responsible=responsible, token_id=token_id,

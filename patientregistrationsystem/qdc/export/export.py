@@ -69,7 +69,7 @@ directory_structure = [
 ]
 
 # Valid for all questionnaires (no distinction amongst questionnaires)
-included_questionnaire_fields = [
+INCLUDED_QUESTIONNAIRE_FIELDS = [
     {
         'field': 'participant_code',
         'header': {
@@ -888,7 +888,7 @@ class ExportExecution:
 
         heading_type = self.get_heading_type()
 
-        for row in included_questionnaire_fields:
+        for row in INCLUDED_QUESTIONNAIRE_FIELDS:
             header_translated = _(row['header'][heading_type])
             header.append(smart_str(header_translated))
             fields.append(smart_str(row['field']))
@@ -905,7 +905,7 @@ class ExportExecution:
 
         heading_type = self.get_heading_type()
 
-        for row in included_questionnaire_fields:
+        for row in INCLUDED_QUESTIONNAIRE_FIELDS:
             header_translated = _(row['header'][heading_type])
             header.append(smart_str(header_translated))
             fields.append(smart_str(row['field']))
@@ -914,7 +914,7 @@ class ExportExecution:
 
     def transform_questionnaire_data(self, patient_id, fields):
 
-        for row in included_questionnaire_fields:
+        for row in INCLUDED_QUESTIONNAIRE_FIELDS:
 
             model_db = apps.get_model(row['model'])
 
@@ -1187,7 +1187,7 @@ class ExportExecution:
         if error_msg != '':
             return error_msg
 
-        # path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/
+        # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata
         error_msg, path_per_questionnaire_metadata = create_directory(
             path_participant_data, self.get_input_data('questionnaire_metadata_directory'))
         if error_msg != '':
@@ -1243,27 +1243,32 @@ class ExportExecution:
             else:
                 language_list = [questionnaire_language['output_language']]
             for language in language_list:
-                # per_participant_data is updated by define_questionnaire
-                # method
+                # per_participant_data is updated by define_questionnaire method
                 fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
                 if self.get_input_data('export_per_questionnaire') and (len(fields_description) > 1):
-                    export_filename = '%s_%s_%s.%s' % \
-                                      (questionnaire['prefix_filename_responses'],
-                                       str(questionnaire_code), language, filesformat_type)
+                    export_filename = '%s_%s_%s' % (
+                        questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
                     # /NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
-                    complete_filename = path.join(export_path, export_filename)
-
+                    complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, fields_description, filesformat_type)
-                    self.files_to_zip_list.append([complete_filename, export_directory])
+
+                    self.files_to_zip_list.append([
+                        complete_filename, export_directory,
+                        {
+                            'name': slugify(export_filename), 'title': export_filename,
+                            'path': path.join(export_directory, export_filename + '.' + filesformat_type),
+                            'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                            'description': 'Questionnaire response',
+                        }
+                    ])
 
             entrance_questionnaire = True
 
-            # create questionnaire fields file ('fields.csv') in
+            # Create questionnaire fields file ('fields.csv') in
             # Questionnaire_metadata directory
             fields = self.questionnaire_utils.get_questionnaire_fields(
                 questionnaire_id, entrance_questionnaire,
-                self.get_input_data('questionnaires_from_experiments')
-            )
+                self.get_input_data('questionnaires_from_experiments'))
 
             for language in questionnaire_language['language_list']:
                 error, questionnaire_fields = \
@@ -1272,7 +1277,7 @@ class ExportExecution:
                 export_filename = '%s_%s_%s.%s' % (
                     questionnaire['prefix_filename_fields'], str(questionnaire_code), language, filesformat_type)
 
-                # path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
+                # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
                 complete_filename = path.join(export_metadata_path, export_filename)
                 save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
                 self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
@@ -3363,12 +3368,12 @@ class ExportExecution:
         :param language:
         :return: list - fields_description, in case of success, else error code
         """
-        # questionnaire exportation - evaluation questionnaire
+        # Questionnaire exportation - evaluation questionnaire
         questionnaire_id = questionnaire['id']
         response_type = self.get_response_type()
         export_rows = []
 
-        # verify if LimeSurvey is running
+        # Verify if LimeSurvey is running
         available = limesurvey_available(questionnaire_lime_survey)
 
         headers, fields = self.questionnaire_utils.set_questionnaire_header_and_fields(questionnaire, True)
@@ -3377,7 +3382,7 @@ class ExportExecution:
         # Filter data (participants)
         questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
 
-        #  Include new filter that come from advanced search
+        # Include new filter that come from advanced search
         filtered_data = self.get_participants_filtered_data()
         questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
 
