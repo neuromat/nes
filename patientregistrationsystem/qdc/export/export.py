@@ -1648,26 +1648,23 @@ class ExportExecution:
         return error_msg
 
     def process_per_participant_per_entrance_questionnaire(self):
-        # path ex. NES_EXPORT/Participant_data/
+        # Path ex. NES_EXPORT/Participant_data/
         path_participant_data = path.join(
             self.get_export_directory(),
-            self.get_input_data('participant_data_directory')
-        )
-        # path ex. NES_EXPORT/Participant_data/Per_participant/
+            self.get_input_data('participant_data_directory'))
+        # Path ex. NES_EXPORT/Participant_data/Per_participant/
         error_msg, path_per_participant = create_directory(
             path_participant_data,
-            self.get_input_data('per_participant_directory')
-        )
+            self.get_input_data('per_participant_directory'))
         if error_msg != '':
             return error_msg
 
         prefix_filename_participant = 'Participant_'
-        # path ex. NES_EXPORT/Participant_data/Per_participant/
+        # Path ex. NES_EXPORT/Participant_data/Per_participant/
         export_participant_data = path.join(
             self.get_input_data('base_directory'),
-            self.get_input_data('participant_data_directory')
-        )
-        # path ex. NES_EXPORT/Participant_data/Per_participant/
+            self.get_input_data('participant_data_directory'))
+        # Path ex. NES_EXPORT/Participant_data/Per_participant/
         export_directory_base = path.join(export_participant_data, self.get_input_data('per_participant_directory'))
 
         filesformat_type = self.get_input_data('filesformat_type')
@@ -1676,38 +1673,30 @@ class ExportExecution:
             patient_id = Patient.objects.filter(code=participant_code).values('id')[0]['id']
             path_participant = prefix_filename_participant + str(participant_code)
             # /NES_EXPORT/Participant_data/Per_participant/Participant_P123/
-            error_msg, participant_path = create_directory(
-                path_per_participant, path_participant
-            )
+            error_msg, participant_path = create_directory(path_per_participant, path_participant)
             if error_msg != '':
                 return error_msg
 
-            for questionnaire_code in \
-                    self.get_per_participant_data(participant_code):
+            for questionnaire_code in self.get_per_participant_data(participant_code):
                 if self.participants_per_entrance_questionnaire[questionnaire_code]:
-                    if patient_id in \
-                            self.participants_per_entrance_questionnaire[questionnaire_code]:
-                        questionnaire_id = \
-                            int(self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code))
+                    if patient_id in self.participants_per_entrance_questionnaire[questionnaire_code]:
+                        questionnaire_id = int(
+                            self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code))
                         # select entry questionnaires' participants
-                        for questionnaire in \
-                                self.get_input_data('questionnaires'):
+                        for questionnaire in self.get_input_data('questionnaires'):
                             if questionnaire_id == questionnaire['id']:
-                                title = self.get_title_reduced(
-                                    questionnaire_id=questionnaire_id
-                                )
+                                title = self.get_title_reduced(questionnaire_id=questionnaire_id)
                                 questionnaire_language = \
                                     self.get_input_data('questionnaire_language')[str(questionnaire_id)]
-                                if 'long' in \
-                                        self.get_input_data('response_type'):
+                                if 'long' in self.get_input_data('response_type'):
                                     language_list = questionnaire_language['language_list']
                                 else:
                                     language_list = [questionnaire_language['output_language']]
                                 # Create questionnaire directory
                                 path_questionnaire = '%s_%s' % (str(questionnaire_code), title)
                                 # /NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
-                                error_msg, questionnaire_path_directory = create_directory(participant_path,
-                                                                                           path_questionnaire)
+                                error_msg, questionnaire_path_directory = create_directory(
+                                    participant_path, path_questionnaire)
                                 if error_msg != '':
                                     return error_msg
                                 export_participant_directory = path.join(export_directory_base, path_participant)
@@ -1715,13 +1704,15 @@ class ExportExecution:
                                 export_directory = path.join(export_participant_directory, path_questionnaire)
 
                                 for language in language_list:
-                                    export_filename = '%s_%s_%s.%s' % (
-                                        questionnaire['prefix_filename_responses'],
-                                        str(questionnaire_code), language, filesformat_type)
+                                    export_filename = '%s_%s_%s' % (
+                                        questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
+                                    # Path ex. NES_EXPORT/Participant_data/Per_participant/Q123_title
+                                    complete_filename = path.join(
+                                        questionnaire_path_directory, export_filename + '.' + filesformat_type)
 
                                     # Add participant personal data header
-                                    questionnaire_header = \
-                                        self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
+                                    questionnaire_header = self.questionnaire_utils.get_header_questionnaire(
+                                        questionnaire_id)
                                     participant_data_header = self.get_input_data('participants')['data_list'][0]
                                     header = self.build_header_questionnaire_per_participant(
                                             participant_data_header,
@@ -1730,12 +1721,18 @@ class ExportExecution:
                                     per_participant_rows = \
                                         self.per_participant_data[participant_code][questionnaire_code][language]
                                     per_participant_rows.insert(0, header)
-                                    # Path ex. NES_EXPORT/Participant_data/Per_participant/Q123_title
-                                    complete_filename = path.join(questionnaire_path_directory, export_filename)
-
                                     save_to_csv(complete_filename, per_participant_rows, filesformat_type)
 
-                                    self.files_to_zip_list.append([complete_filename, export_directory])
+                                    self.files_to_zip_list.append([
+                                        complete_filename, export_directory,
+                                        {
+                                            'name': slugify(export_filename), 'title': export_filename,
+                                            'path': path.join(
+                                                export_directory, export_filename + '.' + filesformat_type),
+                                            'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                                            'description': 'Questionnaire response'
+                                        }
+                                    ])
 
         return error_msg
 
