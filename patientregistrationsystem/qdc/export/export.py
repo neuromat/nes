@@ -1167,7 +1167,7 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_entrance_questionnaire(self):
+    def process_per_entrance_questionnaire(self, heading_type):
         filesformat_type = self.get_input_data('filesformat_type')
 
         path_participant_data = path.join(
@@ -1196,19 +1196,16 @@ class ExportExecution:
         # path ex. NES_EXPORT/Participant_data/
         export_per_entrance_questionnaire_directory = path.join(
             self.get_input_data('base_directory'),
-            self.get_input_data('participant_data_directory')
-        )
+            self.get_input_data('participant_data_directory'))
         # path ex. NES_EXPORT/Participant_data/Per_questionnaire/
         export_per_questionnaire_directory = path.join(
             export_per_entrance_questionnaire_directory,
-            self.get_input_data('per_questionnaire_directory')
-        )
+            self.get_input_data('per_questionnaire_directory'))
 
         # path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/
         export_metadata_directory = path.join(
             export_per_entrance_questionnaire_directory,
-            self.get_input_data('questionnaire_metadata_directory')
-        )
+            self.get_input_data('questionnaire_metadata_directory'))
 
         questionnaire_lime_survey = Questionnaires()
 
@@ -1271,7 +1268,7 @@ class ExportExecution:
                             'description': 'Questionnaire response',
                             'schema': {
                                 'fields': self._set_questionnaire_response_fields(
-                                    'code', rows_participant_data[0], answer_list, questions)
+                                    heading_type, rows_participant_data[0], answer_list, questions)
                             }
                         }
                     ])
@@ -2693,7 +2690,7 @@ class ExportExecution:
                 item for item in PATIENT_FIELDS
                 if abbreviated_data(item[key], heading_type) == participant_field)
             fields.append({
-                # str(field_info[key] needed because of PATIENT_FIELDS 'description' keys are localized
+                # str(field_info[key]) needed because of PATIENT_FIELDS 'description' keys are localized
                 'name': field_info['header'],
                 'title': abbreviated_data(str(field_info[key]), heading_type), 'type': field_info['json_data_type'],
                 'format': 'default'

@@ -27,7 +27,8 @@ from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID_1, set_mocks2, set_mocks3, set_mocks4, \
     set_mocks5, set_mocks6, set_mocks7, update_mocks1, update_mocks2, update_mocks3, \
-    LIMESURVEY_SURVEY_ID_2, set_mocks10, update_mocks4, update_mocks5, set_mocks11, set_mocks12, set_mocks13
+    LIMESURVEY_SURVEY_ID_2, set_mocks10, update_mocks4, update_mocks5, set_mocks11, set_mocks12, set_mocks13, \
+    update_mocks6, update_mocks7
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -3068,30 +3069,34 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 '0*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        set_mocks13(mockServer)
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks13(mockServer)
+            if heading_type == 'full':
+                update_mocks6(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks7(mockServer)
+            data = {
+                'per_participant': ['on'], 'per_questionnaire': ['on'], 'action': ['run'],
+                'headings': [heading_type],
+                'to[]': to,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
 
-        data = {
-            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            'headings': ['code'],
-            'to[]': to,
-            'patient_selected': ['age*age'], 'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self.get_datapackage_json_data(temp_dir, response)
+            filename = 'Responses_' + str(self.survey.lime_survey_id) + '_en'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            for item in questions:
+                self.assertIn(
+                    {
+                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'])
 
-        filename = 'Responses_' + str(self.survey.lime_survey_id) + '_en'
-        questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['title'] == filename)
-        for item in questions:
-            self.assertIn(
-                {
-                    'name': slugify(item[0]['code']), 'title': item[0]['code'], 'type': item[2],
-                    'format': 'default'
-                }, questionnaire_response_resource['schema']['fields'])
-
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')

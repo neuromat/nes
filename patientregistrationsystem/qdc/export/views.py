@@ -305,7 +305,7 @@ def export_create(
                 # Process per questionnaire data - entrance evaluation
                 # questionnaires (Particpant data directory)
                 if export.get_input_data('export_per_questionnaire'):
-                    error_msg = export.process_per_entrance_questionnaire()
+                    error_msg = export.process_per_entrance_questionnaire(request.POST.get('headings'))
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)
