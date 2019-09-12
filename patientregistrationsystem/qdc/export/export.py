@@ -1239,7 +1239,51 @@ class ExportExecution:
                 language_list = questionnaire_language['language_list']
             else:
                 language_list = [questionnaire_language['output_language']]
+
+            entrance_questionnaire = True
+
+            # Create questionnaire fields file ('fields.csv') in
+            # Questionnaire_metadata directory
+            fields = self.questionnaire_utils.get_questionnaire_fields(
+                questionnaire_id, entrance_questionnaire,
+                self.get_input_data('questionnaires_from_experiments'))
+
             for language in language_list:
+                error, questionnaire_fields = \
+                    self.questionnaire_utils.create_questionnaire_explanation_fields(
+                        questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
+                export_filename = '%s_%s_%s' % (
+                    questionnaire['prefix_filename_fields'], str(questionnaire_code), language)
+                # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
+                complete_filename = path.join(export_metadata_path, export_filename + '.' + filesformat_type)
+                save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
+
+                # Get data for datapackage resource questionnaire response table schema
+                rows_participant_data = self.get_input_data('participants')['data_list']
+                answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
+                for question in questionnaire['output_list']:
+                    answer_list['fields'].append(question['field'])
+                    answer_list['header'].append(question['header'])
+                    answer_list['header_questionnaire'].append(question['header'])
+                # TODO (NES-991): treat error!
+                error, questions = QuestionnaireUtils.get_questions(
+                    questionnaire_lime_survey, questionnaire_id, language)
+                self.files_to_zip_list.append([
+                    complete_filename, export_questionnaire_metadata_directory,
+                    {
+                        'name': slugify(export_filename), 'title': export_filename,
+                        'path': path.join(export_questionnaire_metadata_directory,
+                                          export_filename + '.' + filesformat_type),
+                        'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                        'description': 'Questionnaire metadata',
+                        'schema': {
+                            'fields': self._set_questionnaire_response_fields(
+                                heading_type, rows_participant_data[0], answer_list, questions
+                            )
+                        }
+                    }
+                ])
+
                 # per_participant_data is updated by define_questionnaire method
                 fields_description = self.define_questionnaire(questionnaire, questionnaire_lime_survey, language)
                 if self.get_input_data('export_per_questionnaire') and (len(fields_description) > 1):
@@ -1249,16 +1293,6 @@ class ExportExecution:
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, fields_description, filesformat_type)
 
-                    # Get data for datapackage resource questionnaire response table schema
-                    rows_participant_data = self.get_input_data('participants')['data_list']
-                    answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
-                    for question in questionnaire['output_list']:
-                        answer_list['fields'].append(question['field'])
-                        answer_list['header'].append(question['header'])
-                        answer_list['header_questionnaire'].append(question['header'])
-                    # TODO (NES-991): treat error!
-                    error, questions = QuestionnaireUtils.get_questions(
-                        questionnaire_lime_survey, questionnaire_id, language)
                     self.files_to_zip_list.append([
                         complete_filename, export_directory,
                         {
@@ -1272,26 +1306,6 @@ class ExportExecution:
                             }
                         }
                     ])
-
-            entrance_questionnaire = True
-
-            # Create questionnaire fields file ('fields.csv') in
-            # Questionnaire_metadata directory
-            fields = self.questionnaire_utils.get_questionnaire_fields(
-                questionnaire_id, entrance_questionnaire,
-                self.get_input_data('questionnaires_from_experiments'))
-
-            for language in questionnaire_language['language_list']:
-                error, questionnaire_fields = \
-                    self.questionnaire_utils.create_questionnaire_explanation_fields(
-                        questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
-                export_filename = '%s_%s_%s.%s' % (
-                    questionnaire['prefix_filename_fields'], str(questionnaire_code), language, filesformat_type)
-
-                # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
-                complete_filename = path.join(export_metadata_path, export_filename)
-                save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
-                self.files_to_zip_list.append([complete_filename, export_questionnaire_metadata_directory])
 
         questionnaire_lime_survey.release_session_key()
 
