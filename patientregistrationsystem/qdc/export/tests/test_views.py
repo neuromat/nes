@@ -2907,7 +2907,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_questionnaire_responses_file_to_datapackage_json_file(self, mockServer):
+    def test_export_per_experiment_add_questionnaire_responses_file_to_datapackage_json_file1(self, mockServer):
+        """In Per_questionnaire subdir"""
         self._create_questionnaire_export_data()
         set_mocks6(mockServer)
 
@@ -2954,7 +2955,64 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
+    def test_export_per_experiment_add_questionnaire_responses_file_to_datapackage_json_file2(self, mockServer):
+        """In Per_participant subdir"""
+
+        self._create_questionnaire_export_data()
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to_experiment = []
+        for question in questions:
+            to_experiment.append(
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        set_mocks7(mockServer)
+
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': to_experiment,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+        extension = '.csv'
+        unique_name = slugify(filename) + '_per-participant'
+
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['name'] == unique_name)
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        # TODO (NES-991): do this way for the other tests
+        if 'schema' in questionnaire_response_resource:
+            questionnaire_response_resource.pop('schema')
+        test_dict = {
+            'name': unique_name, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_QUESTIONNAIRE', filename + extension),
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+        }
+        self.assertEqual(
+            test_dict, questionnaire_response_resource,
+            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
+        """In Per_questionnaire subdir"""
+
         self._create_questionnaire_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2993,8 +3051,56 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                         {
                             'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
                             'format': 'default'
-                            # TODO (NES-991): put other fields
                         }, questionnaire_response_resource['schema']['fields'])
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_questionnaire_responses_table_schema_info_to_datapackage_json_file2(
+            self, mockServer):
+        """In Per_participant subdir"""
+
+        self._create_questionnaire_export_data()
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to_experiment = []
+        for question in questions:
+            to_experiment.append(
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks7(mockServer)
+            if heading_type == 'full':
+                update_mocks2(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks3(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to_experiment[]': to_experiment,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+            unique_name = slugify(filename) + '_per-participant'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['name'] == unique_name)
+            for item in questions:
+                self.assertIn(
+                    {
+                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'])
 
             shutil.rmtree(temp_dir)
 

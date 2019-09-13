@@ -1766,9 +1766,11 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_participant_per_experiment(self):
+    def process_per_participant_per_experiment(self, heading_type):
 
         error_msg = ''
+
+        questionnaire_lime_survey = Questionnaires()
 
         for group_id in self.per_group_data:
             header_saved = False
@@ -1818,12 +1820,13 @@ class ExportExecution:
                             language_list = [questionnaire_language['output_language']]
                         for language in language_list:
                             # Responses_Q123.csv
-                            export_filename = '%s_%s_%s.%s' % (str(questionnaire_code), slugify(questionnaire_title),
-                                                               language, filesformat_type)
+                            export_filename = '%s_%s_%s' % (str(
+                                questionnaire_code), slugify(questionnaire_title), language)
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Per_participant/\
+                            # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/
                             # Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
-                            complete_filename = path.join(directory_step_participant, export_filename)
+                            complete_filename = path.join(
+                                directory_step_participant, export_filename + '.' + filesformat_type)
 
                             export_rows_participants = self.get_participant_row_data(token_data['subject_code'])
 
@@ -1841,7 +1844,32 @@ class ExportExecution:
 
                             save_to_csv(complete_filename, per_participant_rows, filesformat_type)
 
-                            self.files_to_zip_list.append([complete_filename, step_participant_export_directory])
+                            # Get data for datapackage resource questionnaire response table schema
+                            # rows_participant_data = self.get_input_data('participants')['data_list']
+                            # answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
+                            # for question in questionnaire['output_list']:
+                            #     answer_list['fields'].append(question['field'])
+                            #     answer_list['header'].append(question['header'])
+                            #     answer_list['header_questionnaire'].append(question['header'])
+                            # TODO (NES-991): treat error!
+                            # TODO (NES-991): QuestionnaireUtils already in self.questionnaire_utils
+                            error, questions = QuestionnaireUtils.get_questions(
+                                questionnaire_lime_survey, questionnaire_id, language)
+
+                            self.files_to_zip_list.append([
+                                complete_filename, step_participant_export_directory,
+                                {
+                                    'name': slugify(export_filename) + '_per-participant', 'title': export_filename,
+                                    'path': path.join(
+                                        step_participant_export_directory, export_filename + '.' + filesformat_type),
+                                    'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                                    'schema': {
+                                        'fields': self._set_questionnaire_response_fields(
+                                            heading_type, export_rows_participants[0], answer_list[0], questions
+                                        )
+                                    }
+                                }
+                            ])
 
                 # For component_list
                 if 'eeg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
