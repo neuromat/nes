@@ -3089,11 +3089,10 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
             questionnaire_response_resource = next(
                 item for item in json_data['resources'] if item['title'] == filename)
-            for item in questions:
+            for item in HEADER_EXPLANATION_FIELDS:
                 self.assertIn(
                     {
-                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
-                        'format': 'default'
+                        'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'
                     }, questionnaire_response_resource['schema']['fields'])
 
             shutil.rmtree(temp_dir)

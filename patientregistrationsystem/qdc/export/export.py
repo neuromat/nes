@@ -1277,9 +1277,7 @@ class ExportExecution:
                         'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                         'description': 'Questionnaire metadata',
                         'schema': {
-                            'fields': self._set_questionnaire_response_fields(
-                                heading_type, rows_participant_data[0], answer_list, questions
-                            )
+                            'fields': self._set_questionnaire_metadata_fields()
                         }
                     }
                 ])
