@@ -1838,19 +1838,13 @@ class ExportExecution:
                                 export_rows_participants[1], answer_list[1: len(answer_list)])
 
                             # TODO (NES-991): answer_list changes
+                            field_type = 'fields' if heading_type == 'code' else 'header_questionnaire'
                             header = self.build_header_questionnaire_per_participant(
-                                export_rows_participants[0], answer_list[0])
+                                export_rows_participants[0], answer_list[0][field_type])
                             per_participant_rows.insert(0, header)
 
                             save_to_csv(complete_filename, per_participant_rows, filesformat_type)
 
-                            # Get data for datapackage resource questionnaire response table schema
-                            # rows_participant_data = self.get_input_data('participants')['data_list']
-                            # answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
-                            # for question in questionnaire['output_list']:
-                            #     answer_list['fields'].append(question['field'])
-                            #     answer_list['header'].append(question['header'])
-                            #     answer_list['header_questionnaire'].append(question['header'])
                             # TODO (NES-991): treat error!
                             # TODO (NES-991): QuestionnaireUtils already in self.questionnaire_utils
                             error, questions = QuestionnaireUtils.get_questions(
