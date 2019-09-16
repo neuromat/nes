@@ -141,9 +141,8 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_setting(experiment):
-        eeg_setting = EEGSetting.objects.create(experiment=experiment,
-                                                name='EEG-Setting name',
-                                                description='EEG-Setting description')
+        eeg_setting = EEGSetting.objects.create(
+            experiment=experiment, name='EEG-Setting name', description='EEG-Setting description')
         return eeg_setting
 
     @staticmethod
@@ -549,18 +548,12 @@ class ObjectsFactory(object):
         faker = Factory.create()
 
         return ComponentConfiguration.objects.create(
-            name=faker.word(),
-            parent=parent,
-            component=component
-        )
+            name=faker.word(), parent=parent, component=component)
 
     @staticmethod
     def create_data_configuration_tree(component_config, parent=None):
         return DataConfigurationTree.objects.create(
-            component_configuration=component_config,
-            code=random.randint(1, 999),
-            parent=parent
-        )
+            component_configuration=component_config, code=random.randint(1, 999), parent=parent)
 
     @staticmethod
     def create_questionnaire_response(
@@ -666,8 +659,7 @@ class ObjectsFactory(object):
         file_format = ObjectsFactory.create_file_format()
         return EMGData.objects.create(
             description=faker.text(), file_format=file_format, file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree, subject_of_group=subj_of_group, emg_setting=emg_set
-        )
+            data_configuration_tree=data_conf_tree, subject_of_group=subj_of_group, emg_setting=emg_set)
 
     @staticmethod
     def create_tms_data_collection_data(data_conf_tree,

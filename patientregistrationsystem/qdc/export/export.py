@@ -580,10 +580,7 @@ class ExportExecution:
 
                             for eeg_data in eeg_data_list:
                                 subject_code = eeg_data.subject_of_group.subject.patient.code
-                                sensors_positions_image = get_sensors_position(eeg_data)
-                                sensors_positions_filename = None
-                                if sensors_positions_image:
-                                    sensors_positions_filename = settings.BASE_DIR + str(sensors_positions_image)
+                                sensors_positions_filename = get_sensors_position(eeg_data)
 
                                 if subject_code not in self.per_group_data[group_id]['data_per_participant']:
                                     self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
@@ -1893,7 +1890,7 @@ class ExportExecution:
                             directory_data_name = eeg_data['eeg_data_directory_name']
                             path_per_eeg_data = path.join(path_per_eeg_participant, directory_data_name)
                             if not path.exists(path_per_eeg_data):
-                                # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/EEGDATA_#
                                 error_msg, path_per_eeg_data = create_directory(
                                     path_per_eeg_participant, directory_data_name)
@@ -1928,7 +1925,7 @@ class ExportExecution:
                             # If sensor position image exist
                             sensors_positions_image = eeg_data['sensor_filename']
                             if sensors_positions_image:
-                                sensor_position_filename = '%s.png' % 'sensor_position'
+                                sensor_position_filename = 'sensor_position.png'
                                 complete_sensor_position_filename = path.join(
                                     path_per_eeg_data, sensor_position_filename)
 
@@ -1937,8 +1934,14 @@ class ExportExecution:
                                 with open(complete_sensor_position_filename, 'wb') as f:
                                     f.write(data)
 
-                                self.files_to_zip_list.append(
-                                    [complete_sensor_position_filename, export_eeg_data_directory])
+                                self.files_to_zip_list.append([
+                                    complete_sensor_position_filename, export_eeg_data_directory,
+                                    {
+                                        'name': slugify(sensor_position_filename), 'title': 'sensor_position',
+                                        'path': path.join(export_eeg_data_directory, sensor_position_filename),
+                                        'description': 'Data Collection (format: png)'
+                                    }
+                                ])
 
                             for eeg_file in eeg_data['eeg_file_list']:
                                 path_eeg_data_file = str(eeg_file.file.file)

@@ -17,7 +17,7 @@ from django.test import override_settings
 
 from experiment.models import Component, ComponentConfiguration, \
     ComponentAdditionalFile, BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
-    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile, Stimulus, ContextTree
+    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile, Stimulus, ContextTree, EEGData
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
@@ -155,9 +155,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         subject_of_group = ObjectsFactory.create_subject_of_group(self.group, subject)
 
         ObjectsFactory.create_questionnaire_response(
-            dct=dct,
-            responsible=self.user, token_id=2,
-            subject_of_group=subject_of_group)
+            dct=dct, responsible=self.user, token_id=2, subject_of_group=subject_of_group)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -214,7 +212,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         """
         With reuse
         """
-        # by now: simple testing in browser is working (but, make this test ;)
+        # by now: simply testing in browser is working (but, make this test ;)
         pass
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -432,10 +430,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         subject_of_group2 = ObjectsFactory.create_subject_of_group(group2, subject2)
 
         ObjectsFactory.create_questionnaire_response(
-            dct=self.data_configuration_tree,
-            responsible=self.user, token_id=2,
-            subject_of_group=subject_of_group2
-        )
+            dct=self.data_configuration_tree, responsible=self.user, token_id=2, subject_of_group=subject_of_group2)
 
         self.append_session_variable('group_selected_list', [str(self.group.id), str(group2.id)])
         self.append_session_variable('license', '0')
@@ -2347,6 +2342,44 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             i += 1
 
             self.assertIn(eeg_file_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_per_experiment_add_eeg_data_collection_sensor_position_file(self):
+        self._create_sample_export_data()
+
+        # The file saved below is associated with a file format that is considered
+        # to generate sensor_postion.png file
+        eegdata = EEGData.objects.first()
+        eegdata.file_format.nes_code = 'MNE-RawFromEGI'
+        eegdata.file_format.save()
+        # Get the file uploaded and substitute it by a real EEG raw file
+        eegfile = EEGFile.objects.first()
+        with File(open('export/tests/example.raw', 'rb')) as f:
+            eegfile.file.save('example.raw', f)
+        eegfile.save()
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = 'sensor_position.png'
+        unique_name = slugify(filename)  # TODO (NES-987): make unique
+        eeg_sensor_position_resource = {
+            'name': unique_name, 'title': 'sensor_position',
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_1', filename),
+            'description': 'Data Collection (format: png)'
+        }
+
+        self.assertIn(eeg_sensor_position_resource, json_data['resources'])
 
         shutil.rmtree(temp_dir)
 
