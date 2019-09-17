@@ -6285,11 +6285,8 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False):
 @login_required
 @permission_required('experiment.change_experiment')
 def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_eeg_data_form.html"):
-
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
-
     eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
-
     eeg_step = get_object_or_404(EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id)
 
     for field in eeg_data_form.fields:
@@ -6570,10 +6567,7 @@ def clean(input_string):
 @login_required
 @permission_required('experiment.change_experiment')
 def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
-
     update_process_requisition(request, process_requisition, 'reading_source_file', _('Reading source file'))
-
-    # eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
     eeg_file = get_object_or_404(EEGFile, pk=eeg_file_id)
 
     # Open and read signal
@@ -6594,9 +6588,9 @@ def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
             request,
             _("It was not possible to open the data file. Check if the number of channels configured is correct."))
 
-        return redirect('subject_eeg_view',
-                        group_id=eeg_file.eeg_data.subject_of_group.group_id,
-                        subject_id=eeg_file.eeg_data.subject_of_group.subject_id)
+        return redirect(
+            'subject_eeg_view', group_id=eeg_file.eeg_data.subject_of_group.group_id,
+            subject_id=eeg_file.eeg_data.subject_of_group.subject_id)
 
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "export_nwb")
     errors, path_complete = create_directory(path_complete, str(request.user.id))

@@ -2384,7 +2384,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_eeg_data_collection_nwb_file(self):
+    def test_export_per_experiment_add_eeg_data_collection_nwb_file_resource(self):
         self._create_sample_export_data()
 
         # The file saved below is associated with a file format that is considered
