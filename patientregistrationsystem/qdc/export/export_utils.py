@@ -43,7 +43,6 @@ def create_list_of_trees(block_id, component_type, numeration=''):
 
 
 def can_export_nwb(eeg_data_list):
-
     for eeg_data in eeg_data_list:
         eeg_data.eeg_file_list = []
         for eeg_file in eeg_data.eeg_files.all():
