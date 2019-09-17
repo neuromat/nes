@@ -39,7 +39,7 @@ from experiment.models import Experiment, Group, Subject, \
     AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, \
     TMSData, DirectionOfTheInducedCurrent, CoilOrientation, \
     EEGElectrodePositionCollectionStatus, EEGElectrodePositionSetting, EEGElectrodeLayoutSetting, \
-    TMSLocalizationSystem, BrainAreaSystem, BrainArea
+    TMSLocalizationSystem, BrainAreaSystem, BrainArea, EEGAmplifierSetting
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -144,6 +144,12 @@ class ObjectsFactory(object):
         eeg_setting = EEGSetting.objects.create(
             experiment=experiment, name='EEG-Setting name', description='EEG-Setting description')
         return eeg_setting
+
+    @staticmethod
+    def create_eeg_amplifier_setting(eeg_setting, amplifier):
+        # First implementation needed number_of_channels_used=129 for test
+        return EEGAmplifierSetting.objects.create(
+            eeg_setting=eeg_setting, eeg_amplifier=amplifier, number_of_channels_used=129)
 
     @staticmethod
     def create_emg_setting(experiment, acquisition_software_version):

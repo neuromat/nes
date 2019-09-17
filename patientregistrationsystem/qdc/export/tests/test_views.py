@@ -80,7 +80,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks1(mockServer)
 
         # Create questionnaire in NES
-        # TODO (attached to NES-991): já criado no setUP
+        # TODO (attached to NES-991): já criado no setUp
         dct = self._create_nes_questionnaire(self.root_component)
 
         # Create first patient/subject/subject_of_group besides those of setUp
@@ -2380,6 +2380,53 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         }
 
         self.assertIn(eeg_sensor_position_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_per_experiment_add_eeg_data_collection_nwb_file(self):
+        self._create_sample_export_data()
+
+        # The file saved below is associated with a file format that is considered
+        # to generate sensor_postion.png file
+        eegdata = EEGData.objects.first()
+        eegdata.file_format.nes_code = 'MNE-RawFromEGI'
+        eegdata.file_format.save()
+        # Create history user for eegdata as nwb creation needs that
+        history = eegdata.history.last()
+        history.history_user = self.user
+        history.save()
+        # Get the file uploaded and substitute it by a real EEG raw file
+        eegfile = EEGFile.objects.first()
+        with File(open('export/tests/example.raw', 'rb')) as f:
+            eegfile.file.save('example.raw', f)
+        eegfile.save()
+
+        # Create components needed to be able to export raw file to nwb format
+        manufacturer = ObjectsFactory.create_manufacturer()
+        amplifier = ObjectsFactory.create_amplifier(manufacturer)
+        ObjectsFactory.create_eeg_amplifier_setting(self.eeg_set, amplifier)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = 'example.nwb'
+        unique_name = slugify(filename)  # TODO (NES-987): make unique
+        nwb_file_resource = {
+            'name': unique_name, 'title': 'example',
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_1', filename),
+            'description': 'Data Collection (format: nwb)'
+        }
+
+        self.assertIn(nwb_file_resource, json_data['resources'])
 
         shutil.rmtree(temp_dir)
 

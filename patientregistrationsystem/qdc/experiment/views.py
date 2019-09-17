@@ -6657,7 +6657,6 @@ def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filenam
     history_data = eeg_data.history.all().order_by('history_date')
     if history_data:
         experimenter = history_data.last().history_user
-        experimenter_description = ""
         if experimenter.last_name or experimenter.first_name:
             experimenter_description = experimenter.last_name + ', ' + experimenter.first_name
         else:

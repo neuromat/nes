@@ -1971,7 +1971,7 @@ class ExportExecution:
                                 if eeg_file.can_export_to_nwb:
                                     process_requisition = int(random.random() * 10000)
                                     eeg_file_name = eeg_data_filename.split('.')[0]
-                                    nwb_file_name = '%s.nwb' % eeg_file_name
+                                    nwb_file_name = eeg_file_name + '.nwb'
                                     complete_nwb_file_name = path.join(path_per_eeg_data, nwb_file_name)
                                     req = None
 
@@ -1983,13 +1983,18 @@ class ExportExecution:
                                             ok_opening = True
 
                                     if ok_opening:
-                                        complete_nwb_file_name = create_nwb_file(eeg_file.eeg_data,
-                                                                                 eeg_file.eeg_reading,
-                                                                                 process_requisition, req,
-                                                                                 complete_nwb_file_name)
+                                        complete_nwb_file_name = create_nwb_file(
+                                            eeg_file.eeg_data, eeg_file.eeg_reading, process_requisition,
+                                            req, complete_nwb_file_name)
                                         if complete_nwb_file_name:
-                                            self.files_to_zip_list.append(
-                                                [complete_nwb_file_name, export_eeg_data_directory])
+                                            self.files_to_zip_list.append([
+                                                complete_nwb_file_name, export_eeg_data_directory,
+                                                {
+                                                    'name': slugify(nwb_file_name), 'title': eeg_file_name,
+                                                    'path': path.join(export_eeg_data_directory, nwb_file_name),
+                                                    'description': 'Data Collection (format: nwb)'
+                                                }
+                                            ])
                                         else:
                                             return error_msg
 
