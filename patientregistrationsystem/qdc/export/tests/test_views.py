@@ -2,6 +2,7 @@ import csv
 import os
 import io
 import re
+import sys
 import tempfile
 import zipfile
 from datetime import date, datetime
@@ -1555,7 +1556,19 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
     def setUp(self):
         super(ExportFrictionlessDataPerExperimentTest, self).setUp()
 
+        # Redirect sys.stdout to avoid messages during test.
+        self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
+        # Redirect sys.stderr to avoid a RuntimeWarning when calling
+        # read_raw_egi method experiment view
+        self.stderr_bk, sys.stderr = sys.stderr, open('/dev/null', 'w+')
+
     def tearDown(self):
+        # Restore sys.stdout, sys.stderr
+        sys.stdout.close()
+        sys.stderr.close()
+        sys.stdout = self.stdout_bk
+        sys.stderr = self.stderr_bk
+
         self.client.logout()
 
     def _create_sample_export_data(self):

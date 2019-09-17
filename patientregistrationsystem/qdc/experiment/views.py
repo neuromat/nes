@@ -6273,7 +6273,7 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False):
 
         try:
             # Trying to read the segments
-            reading = mne.io.read_raw_brainvision(eeg_file.file.path, preload=preload)
+            reading = mne.io.read_raw_brainvision(eeg_file.file.path, preload=preload, stim_channel=False)
         except:
             reading = None
 
