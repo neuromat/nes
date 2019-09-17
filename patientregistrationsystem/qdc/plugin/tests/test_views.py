@@ -18,7 +18,7 @@ from export import input_export
 from export.models import Export
 from export.tests.tests_helper import ExportTestCase
 from plugin.models import RandomForests
-from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks
+from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks, update_limesurvey_api_mocks
 from plugin.views import send_to_plugin
 from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
@@ -69,6 +69,11 @@ class PluginTest(ExportTestCase):
         response = self.client.get('home')
         self.assertNotIn('Plugin', response.content.decode('utf-8'))
 
+    def test_group_selected_list_in_request_session_removes_this_session_key(self):
+        # TODO (NES-995): simulate 'group_selected_list' in request session when sending
+        #  to Plugin
+        pass
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_creates_zip_file(self, mockServer):
@@ -78,9 +83,13 @@ class PluginTest(ExportTestCase):
         patient2 = UtilTests.create_patient(self.user)
         for survey in Survey.objects.all():
             UtilTests.create_response_survey(self.user, patient2, survey, 50)
+        # Update mocks for calling the two patients
+        update_limesurvey_api_mocks(mockServer)
+
         self.client.post(
             reverse('send-to-plugin'),
             data={
+                'headings': ['code'],
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id), str(patient2.id)]
             })
@@ -111,6 +120,7 @@ class PluginTest(ExportTestCase):
         self.client.post(
             reverse('send-to-plugin'),
             data={
+                'headings': ['code'],
                 # TODO (NES-963): about 'patient_selected see TODO (NES-963) in export.views
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)],
@@ -179,6 +189,7 @@ class PluginTest(ExportTestCase):
         response = self.client.post(
             reverse('send-to-plugin'),
             data={
+                'headings': ['code'],
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             }, follow=True)
@@ -198,6 +209,7 @@ class PluginTest(ExportTestCase):
         self.client.post(
             reverse('send-to-plugin'),
             data={
+                'headings': ['code'],
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             }, follow=True)
@@ -233,6 +245,7 @@ class PluginTest(ExportTestCase):
         response = self.client.post(
             reverse('send-to-plugin'),
             data={
+                'headings': ['code'],
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             }, follow=True)

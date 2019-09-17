@@ -240,11 +240,11 @@ class ABCSearchEngine(ABC):
         if fields:
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, doctype, token, language, 'complete', 'code', 'short', fields)
-            # print('export_responses_by_token', responses)  # DB
+            # print(responses)  # DB
         else:
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, doctype, token, language, 'complete')
-            # print('export_responses_by_token', responses)  # DB
+            # print(responses)  # DB
 
         if isinstance(responses, dict):
             return None

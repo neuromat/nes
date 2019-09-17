@@ -305,12 +305,12 @@ def export_create(
                 # Process per questionnaire data - entrance evaluation
                 # questionnaires (Particpant data directory)
                 if export.get_input_data('export_per_questionnaire'):
-                    error_msg = export.process_per_entrance_questionnaire()
+                    error_msg = export.process_per_entrance_questionnaire(request.POST.get('headings'))
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)
                 if export.get_input_data('export_per_participant'):
-                    error_msg = export.process_per_participant_per_entrance_questionnaire()
+                    error_msg = export.process_per_participant_per_entrance_questionnaire(request.POST.get('headings'))
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)
@@ -325,7 +325,7 @@ def export_create(
                         messages.error(request, error_msg)
                         return render(request, template_name)
             # Build export data for each component
-            error_msg = export.process_per_participant_per_experiment()
+            error_msg = export.process_per_participant_per_experiment(request.POST.get('headings'))
             if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)
@@ -338,14 +338,14 @@ def export_create(
             # Export method: filter by entrance questionnaire
             if export.get_input_data('questionnaires'):
                 # Process per questionnaire data - entrance evaluation questionnaires
-                error_msg = export.process_per_questionnaire()
+                error_msg = export.process_per_questionnaire(request.POST.get('headings'), participants_plugin)
                 if error_msg == Questionnaires.ERROR_CODE:  # TODO (NES-971): ??
                     return error_msg
                 if error_msg != '':
                     messages.error(request, error_msg)
                     return render(request, template_name)
 
-                error_msg = export.process_per_participant()
+                error_msg = export.process_per_participant(request.POST.get('headings'))
                 if error_msg != '':
                     messages.error(request, error_msg)
                     return render(request, template_name)
