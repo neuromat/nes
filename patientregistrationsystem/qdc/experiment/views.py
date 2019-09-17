@@ -6317,7 +6317,10 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
 
     # Geração da imagem de localização dos electrodos (NES v1.5)
     sensors_positions_filepath = get_sensors_position(eeg_data)
-    sensors_positions_relativepath = path.join(settings.MEDIA_URL, 'temp', path.basename(sensors_positions_filepath))
+    if sensors_positions_filepath:
+        sensors_positions_relativepath = path.join(settings.MEDIA_URL, 'temp', path.basename(sensors_positions_filepath))
+    else:
+        sensors_positions_relativepath = None
 
     if request.method == "POST":
 

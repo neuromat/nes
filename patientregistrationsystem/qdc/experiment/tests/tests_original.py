@@ -1,6 +1,7 @@
 # coding=utf-8
 import datetime
 import random
+import shutil
 import tempfile
 
 import os
@@ -10,7 +11,7 @@ from unittest.mock import patch
 from django.core.files import File
 from django.db import IntegrityError
 from django.apps import apps
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -54,6 +55,7 @@ from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 from survey.tests.tests_helper import create_survey
 
+TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
 LIME_SURVEY_ID_INACTIVE = 846317
@@ -2436,6 +2438,7 @@ class SubjectTest(TestCase):
         count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_eeg_data_file(self):
         """Test of an EEG data file upload"""
 
@@ -5193,3 +5196,7 @@ class ContextTreeTest(TestCase):
 
         # Check if number of context trees decreased by 1
         self.assertEqual(ContextTree.objects.all().count(), count - 1)
+
+
+def tearDownModule():
+    shutil.rmtree(TEMP_MEDIA_ROOT)

@@ -1101,18 +1101,18 @@ class ExportExecution:
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, result, filesformat_type)
 
-                    # Get data for datapackage resource questionnaire response table schema
-                    rows_participant_data = self.get_input_data('participants')['data_list']
-                    answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
-                    for question in questionnaire['output_list']:
-                        answer_list['fields'].append(question['field'])
-                        answer_list['header'].append(question['header'])
-                        answer_list['header_questionnaire'].append(question['header'])
-                    # TODO (NES-991): treat error!
-                    error, questions = QuestionnaireUtils.get_questions(
-                        questionnaire_lime_survey, questionnaire_id, language)
                     # TODO (NES-911): extends conditional to the other parts
                     if not plugin:
+                        # Get data for datapackage resource questionnaire response table schema
+                        rows_participant_data = self.get_input_data('participants')['data_list']
+                        answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
+                        for question in questionnaire['output_list']:
+                            answer_list['fields'].append(question['field'])
+                            answer_list['header'].append(question['header'])
+                            answer_list['header_questionnaire'].append(question['header'])
+                        # TODO (NES-991): treat error!
+                        error, questions = QuestionnaireUtils.get_questions(
+                            questionnaire_lime_survey, questionnaire_id, language)
                         datapackage_json = {
                                 'name': slugify(export_filename), 'title': export_filename,
                                 'path': path.join(export_directory, export_filename + '.' + filesformat_type),
