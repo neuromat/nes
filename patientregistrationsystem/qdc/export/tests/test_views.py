@@ -2,12 +2,12 @@ import csv
 import os
 import io
 import re
+import sys
 import tempfile
 import zipfile
 from datetime import date, datetime
 
 import shutil
-from json import load
 from unittest.mock import patch
 
 from django.core.files import File
@@ -18,7 +18,7 @@ from django.test import override_settings
 
 from experiment.models import Component, ComponentConfiguration, \
     ComponentAdditionalFile, BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
-    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile, Stimulus, ContextTree
+    CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile, Stimulus, ContextTree, EEGData
 from experiment.tests.tests_original import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
@@ -26,8 +26,10 @@ from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME
     TMS_DEFAULT_SETTING_FILENAME, CONTEXT_TREE_DEFAULT
 from export.export_utils import create_list_of_trees
 from export.models import Export
-from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID, set_mocks2, set_mocks3, set_mocks4, \
-    set_mocks5, set_mocks6, set_mocks7, update_mocks1, update_mocks2, update_mocks3
+from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID_1, set_mocks2, set_mocks3, set_mocks4, \
+    set_mocks5, set_mocks6, set_mocks7, update_mocks1, update_mocks2, update_mocks3, \
+    LIMESURVEY_SURVEY_ID_2, set_mocks10, update_mocks4, update_mocks5, set_mocks11, set_mocks12, set_mocks13, \
+    update_mocks6, update_mocks7
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -46,7 +48,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         # Create questionnaire data collection in NES
         # TODO: use method already existent in patient.tests. See other places
-        self.survey = create_survey(LIMESURVEY_SURVEY_ID)
+        self.survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         self.data_configuration_tree = self._create_nes_questionnaire(self.root_component)
 
         # Add response's participant to limesurvey survey and the references
@@ -79,7 +81,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks1(mockServer)
 
         # Create questionnaire in NES
-        # TODO (attached to NES-991): já criado no setUP
+        # TODO (attached to NES-991): já criado no setUp
         dct = self._create_nes_questionnaire(self.root_component)
 
         # Create first patient/subject/subject_of_group besides those of setUp
@@ -107,13 +109,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
             'headings': ['code'], 'patient_selected': ['age*age'], 'responses': ['short'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ]
         }
@@ -154,9 +156,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         subject_of_group = ObjectsFactory.create_subject_of_group(self.group, subject)
 
         ObjectsFactory.create_questionnaire_response(
-            dct=dct,
-            responsible=self.user, token_id=2,
-            subject_of_group=subject_of_group)
+            dct=dct, responsible=self.user, token_id=2, subject_of_group=subject_of_group)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -169,13 +169,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) + '*Test '
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) + '*Test '
                 'questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -213,7 +213,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         """
         With reuse
         """
-        # by now: simple testing in browser is working (but, make this test ;)
+        # by now: simply testing in browser is working (but, make this test ;)
         pass
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -247,22 +247,22 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) + '*Test '
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) + '*Test '
                 'questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload',
 
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) + '*Test '
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) + '*Test '
                 'questionnaire*acquisitiondate*acquisitiondate',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -374,13 +374,13 @@ class ExportQuestionnaireTest(ExportTestCase):
                 'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
                 'headings': [heading_type],
                 'to_experiment[]': [
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*acquisitiondate*acquisitiondate',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*firstQuestion*firstQuestion',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*secondQuestion*secondQuestion',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*fileUpload*fileUpload'
                 ],
                 'patient_selected': ['age*age'], 'responses': ['short']
@@ -431,10 +431,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         subject_of_group2 = ObjectsFactory.create_subject_of_group(group2, subject2)
 
         ObjectsFactory.create_questionnaire_response(
-            dct=self.data_configuration_tree,
-            responsible=self.user, token_id=2,
-            subject_of_group=subject_of_group2
-        )
+            dct=self.data_configuration_tree, responsible=self.user, token_id=2, subject_of_group=subject_of_group2)
 
         self.append_session_variable('group_selected_list', [str(self.group.id), str(group2.id)])
         self.append_session_variable('license', '0')
@@ -447,22 +444,22 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload',
 
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '1*' + str(group2.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -518,13 +515,13 @@ class ExportQuestionnaireTest(ExportTestCase):
                 'action': ['run'],
                 'headings': [heading_type],
                 'to_experiment[]': [
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*acquisitiondate*acquisitiondate',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*firstQuestion*firstQuestion',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*secondQuestion*secondQuestion',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                     '*Test questionnaire*fileUpload*fileUpload'
                 ],
                 'patient_selected': ['age*age'],
@@ -550,7 +547,8 @@ class ExportQuestionnaireTest(ExportTestCase):
                 for row in csvreader:
                     rows.append(row)
                 self.assertEqual(
-                    rows[1][1], ExportParticipants.subject_age(self.patient.date_birth, self.questionnaire_response))
+                    rows[1][1], ExportParticipantsTest.subject_age(
+                        self.patient.date_birth, self.questionnaire_response))
 
             shutil.rmtree(temp_dir)
 
@@ -569,25 +567,25 @@ class ExportQuestionnaireTest(ExportTestCase):
         questionnaire_response.date = date(2016, 4, 17)
         questionnaire_response.save()
 
-        # Post data to view: data style that is posted to export_view in
-        # template
+        # Post data to view: data style that is posted to export_view in template
         data = {
             'per_participant': ['on'],
             'per_questionnaire': ['on'],
             'action': ['run'],
             'headings': ['code'],
             'to[]': [
-                '0*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
             'responses': ['short'],
+            'license': '0'
         }
         response = self.client.post(reverse('export_view'), data)
 
@@ -627,13 +625,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID) +
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1) +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
             'patient_selected': ['age*age'],
@@ -688,13 +686,13 @@ class ExportQuestionnaireTest(ExportTestCase):
             'per_questionnaire': ['on'],
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*Test questionnaire*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*Test questionnaire*firstQuestion*firstQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*Test questionnaire*secondQuestion*secondQuestion',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 +
                 '*Test questionnaire*fileUpload*fileUpload'
             ],
@@ -1372,10 +1370,10 @@ class ExportDataCollectionTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
 
-class ExportParticipants(ExportTestCase):
+class ExportParticipantsTest(ExportTestCase):
 
     def setUp(self):
-        super(ExportParticipants, self).setUp()
+        super(ExportParticipantsTest, self).setUp()
 
     def tearDown(self):
         self.client.logout()
@@ -1468,10 +1466,10 @@ class ExportParticipants(ExportTestCase):
         self.assertEqual(message, _('Please select at least one patient attribute'))
 
 
-class ExportSelection(ExportTestCase):
+class ExportSelectionTest(ExportTestCase):
 
     def setUp(self):
-        super(ExportSelection, self).setUp()
+        super(ExportSelectionTest, self).setUp()
 
     def tearDown(self):
         self.client.logout()
@@ -1553,12 +1551,24 @@ class ExportSelection(ExportTestCase):
         self.assertEqual(self.client.session['license'], '0')
 
 
-class ExportFrictionlessData(ExportTestCase):
+class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     def setUp(self):
-        super(ExportFrictionlessData, self).setUp()
+        super(ExportFrictionlessDataPerExperimentTest, self).setUp()
+
+        # Redirect sys.stdout to avoid messages during test.
+        self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
+        # Redirect sys.stderr to avoid a RuntimeWarning when calling
+        # read_raw_egi method experiment view
+        self.stderr_bk, sys.stderr = sys.stderr, open('/dev/null', 'w+')
 
     def tearDown(self):
+        # Restore sys.stdout, sys.stderr
+        sys.stdout.close()
+        sys.stderr.close()
+        sys.stdout = self.stdout_bk
+        sys.stderr = self.stderr_bk
+
         self.client.logout()
 
     def _create_sample_export_data(self):
@@ -1636,7 +1646,7 @@ class ExportFrictionlessData(ExportTestCase):
     def _create_questionnaire_export_data(self):
         # Create questionnaire data collection in NES
         # TODO: use method already existent in patient.tests. See other places
-        self.survey = create_survey(LIMESURVEY_SURVEY_ID)
+        self.survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         self.questionnaire = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': self.survey})
         # Include questionnaire in experimental protocol
@@ -1648,7 +1658,7 @@ class ExportFrictionlessData(ExportTestCase):
         ObjectsFactory.create_questionnaire_response(
             dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
 
-    def _assert_basic_experiment_data(self, json_data):
+    def _assert_basic_per_experiment_data(self, json_data):
         for item in ['title', 'name', 'description', 'created', 'homepage']:
             self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
 
@@ -1661,6 +1671,21 @@ class ExportFrictionlessData(ExportTestCase):
         # TODO (NES-987): see how to get testserver from TestCase class or other place,
         #  and https/http url part
         self.assertIn('testserver/experiments/' + name, json_data['homepage'])
+
+    def _assert_basic_per_participant_data(self, json_data):
+        for item in ['title', 'name', 'description', 'created']:
+            self.assertIn(item, json_data, '\'' + item + '\'' + ' not in ' + str(json_data))
+
+        title = 'Questionnaires Answered by Participants Outside Experiment Scope'
+        name = slugify(title)
+        description = 'Export made \"Per Participant\": the files contains metadata and responses of ' \
+                      'questionnaires filled outside any experiment in the system. They can be entrance ' \
+                      'questionnaires.'
+        day = json_data['created'].split(' ')[0]  # Get only the day to avoid test not passing
+        self.assertEqual(title, json_data['title'])
+        self.assertEqual(name, json_data['name'])
+        self.assertEqual(description, json_data['description'])
+        self.assertEqual(datetime.now().strftime('%Y-%m-%d'), day)
 
     def _assert_experiment_table_schema(self, resource_schema):
         self.assertIn(
@@ -1718,14 +1743,6 @@ class ExportFrictionlessData(ExportTestCase):
             'headings': ['code'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
-
-    def _get_datapackage_json_data(self, dir_, response):
-        zipped_file = self.get_zipped_file(response)
-        zipped_file.extractall(dir_)
-        with open(os.path.join(dir_, 'datapackage.json')) as file:
-            json_data = load(file)
-
-        return json_data
 
     @staticmethod
     def _set_all_questions():
@@ -1915,7 +1932,7 @@ class ExportFrictionlessData(ExportTestCase):
         ]
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_creates_content_dirs_in_data_directory(self):
+    def test_export_per_experiment_creates_content_dirs_inside_data_directory(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -1930,7 +1947,7 @@ class ExportFrictionlessData(ExportTestCase):
             'data dir not found in: ' + str(zipped_file.namelist()))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_creates_datapackage_json_file(self):
+    def test_export_per_experiment_creates_datapackage_json_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -1943,7 +1960,7 @@ class ExportFrictionlessData(ExportTestCase):
                         'datapackage.json not found in: ' + str(zipped_file.namelist()))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_basic_content_to_datapackage_json_file(self):
+    def test_export_per_experiment_add_basic_content_to_datapackage_json_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -1952,13 +1969,13 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
-        self._assert_basic_experiment_data(json_data)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        self._assert_basic_per_experiment_data(json_data)
 
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_experiment_contributors_to_datapackage_json_file(self):
+    def test_export_per_experiment_add_experiment_contributors_to_datapackage_json_file(self):
         self._create_sample_export_data()
         contributor1 = self.research_project.owner
         contributor2 = ObjectsFactory.create_experiment_researcher(self.experiment).researcher
@@ -1969,7 +1986,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         self.assertIn('contributors', json_data)
         self.assertIn({
@@ -1984,7 +2001,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_default_license_to_datapackage_json_file(self):
+    def test_export_per_experiment_add_default_license_to_datapackage_json_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -1993,27 +2010,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
-
-        self.assertIn('licenses', json_data)
-        self.assertIn({
-            'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright',
-            'title': 'Copyright'
-        }, json_data['licenses'])
-
-        shutil.rmtree(temp_dir)
-
-    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_creative_commons_license_to_datapackage_json_file(self):
-        self._create_sample_export_data()
-        self.append_session_variable('group_selected_list', [str(self.group.id)])
-        self.append_session_variable('license', '1')
-
-        data = self._set_post_data()
-        response = self.client.post(reverse('export_view'), data)
-
-        temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         self.assertIn('licenses', json_data)
         self.assertIn({
@@ -2023,7 +2020,26 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_resources_field_to_datapackage_json_file(self):
+    def test_export_per_experiment_add_creative_commons_license_to_datapackage_json_file(self):
+        self._create_sample_export_data()
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '1')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'
+        }, json_data['licenses'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_per_experiment_add_resources_field_to_datapackage_json_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2032,14 +2048,14 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         self.assertIn('resources', json_data)
 
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_basic_experiment_data_file_info_to_datapackage_json_resources_field(self):
+    def test_export_per_experiment_add_basic_experiment_data_file_info_to_datapackage_json_resources_field(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2048,7 +2064,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         experiment_resource = next(item for item in json_data['resources'] if item['name'] == 'Experiment')
 
         # As Experiment.csv/tsv resource has 'schema' key, that is
@@ -2067,7 +2083,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_experiment_table_schema_info_to_datapackage_json_experiment_resource(self):
+    def test_export_per_experiment_add_experiment_table_schema_info_to_datapackage_json_experiment_resource(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2076,7 +2092,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         experiment_resource = next(item for item in json_data['resources'] if item['name'] == 'Experiment')
 
         self.assertIn('schema', experiment_resource)
@@ -2086,7 +2102,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_participant_data_file_info_to_datapackage_json_resources_field(self):
+    def test_export_per_experiment_add_participant_data_file_info_to_datapackage_json_resources_field(self):
         # TODO (NES-987): change method name to _create_eeg_export_data
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2096,30 +2112,28 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
-        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
-
-        # As Participants.csv/tsv resource has 'schema' key, that is
-        # itself a dict with other data, we test key/value pairs for all
-        # keys except 'schema'.
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'participants')
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in participants_resource:
+            participants_resource.pop('schema')
         # TODO (NES-987): will it have 'bytes' field?
         # TODO (NES-987): test for tsv format? It's implemented already
+        # TODO (NES-991): test for 'full' and 'abbreviated'
         test_dict = {
             # TODO (NES-987): Changes 'Participants.csv' to a constant in code
-            'name': 'Participants', 'title': 'Participants',
-            # TODO (NES-987): 'path' is wrong (test is wrong), fix this (required)!
-            #  Refactor to go similar the test for Diagnosis
-            'path': os.path.join('data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Participants.csv'),
+            'name': 'participants', 'title': 'Participants',
+            'path': os.path.join('data', 'Participant_data', 'Participants.csv'),
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
-        self.assertTrue(
-            all(item in participants_resource for item in test_dict),
-            str(test_dict) + ' is not subdict of ' + str(participants_resource))
+        self.assertEqual(
+            test_dict, participants_resource, str(test_dict) + ' not equal ' + str(participants_resource))
 
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_participants_table_schema_info_to_datapackage_json_participants_resource(self):
+    def test_export_per_experiment_add_participants_table_schema_info_to_datapackage_json_participants_resource(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2134,14 +2148,14 @@ class ExportFrictionlessData(ExportTestCase):
             data['patient_selected'].append(field['field'] + '*' + field['header'])
 
         # Test for code, full, and abbreviated question texts
-        # in Headings head, General informtaion export tab
+        # in Headings head, General information export tab
         for heading_type in ['code'], ['full'], ['abbreviated']:
             data['headings'] = heading_type
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
-            json_data = self._get_datapackage_json_data(temp_dir, response)
-            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'Participants')
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'participants')
 
             self.assertIn('schema', participants_resource)
             self.assertIn('fields', participants_resource['schema'])
@@ -2150,7 +2164,7 @@ class ExportFrictionlessData(ExportTestCase):
             shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(self):
+    def test_export_per_experiment_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2170,26 +2184,25 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
-        diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'Diagnosis')
-        # Remove schema field if it exists. The test was wrote before the
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
+        # Remove schema field if it exists. The test was written before the
         # test that drives adding schema field to datapackage.json
         if 'schema' in diagnosis_resource:
             diagnosis_resource.pop('schema')
 
         test_dict = {
-            'name': 'Diagnosis', 'title': 'Diagnosis',
+            'name': 'diagnosis', 'title': 'Diagnosis',
             'path': os.path.join('data', 'Participant_data', 'Diagnosis.csv'),
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
         }
-
         self.assertEqual(
             test_dict, diagnosis_resource, str(test_dict) + ' not equal ' + str(diagnosis_resource))
 
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(self):
+    def test_export_per_experiment_add_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2207,8 +2220,8 @@ class ExportFrictionlessData(ExportTestCase):
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
-            json_data = self._get_datapackage_json_data(temp_dir, response)
-            diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'Diagnosis')
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+            diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
             self.assertIn('schema', diagnosis_resource)
             self.assertIn('fields', diagnosis_resource['schema'])
             self._assert_participants_table_schema(diagnosis_resource['schema'], heading_type[0], DIAGNOSIS_FIELDS)
@@ -2216,7 +2229,7 @@ class ExportFrictionlessData(ExportTestCase):
             shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_experimental_protocol_image_file(self):
+    def test_export_per_experiment_add_experimental_protocol_image_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2225,7 +2238,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = PROTOCOL_IMAGE_FILENAME.split('.')
 
         protocol_image_resource = {
@@ -2240,7 +2253,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_experimental_protocol_description_file(self):
+    def test_export_per_experiment_add_experimental_protocol_description_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2249,7 +2262,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = PROTOCOL_DESCRIPTION_FILENAME.split('.')
 
         protocol_description_resource = {
@@ -2264,7 +2277,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_eeg_default_setting_file(self):
+    def test_export_per_experiment_add_eeg_default_setting_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2273,7 +2286,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = EEG_DEFAULT_SETTING_FILENAME.split('.')
 
         eeg_default_setting_resource = {
@@ -2288,7 +2301,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_eeg_setting_description_file(self):
+    def test_export_per_experiment_add_eeg_setting_description_file(self):
         self._create_sample_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2297,7 +2310,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = EEG_SETTING_FILENAME.split('.')
 
         eeg_setting_resource = {
@@ -2312,7 +2325,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_eeg_data_collection_files(self):
+    def test_export_per_experiment_add_eeg_data_collection_files(self):
         self._create_sample_export_data()
         # Adds one more eeg data collection
         eegdata = ObjectsFactory.create_eeg_data(self.dct_eeg, self.subject_of_group, self.eeg_set)
@@ -2325,7 +2338,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         i = 1  # For EEGData_<str(i)> subdirs
         for eeg_file in EEGFile.objects.order_by('id'):
@@ -2346,13 +2359,98 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_sensor_position_image(self):
+    def test_export_per_experiment_add_eeg_data_collection_sensor_position_file(self):
+        self._create_sample_export_data()
+
+        # The file saved below is associated with a file format that is considered
+        # to generate sensor_postion.png file
+        eegdata = EEGData.objects.first()
+        eegdata.file_format.nes_code = 'MNE-RawFromEGI'
+        eegdata.file_format.save()
+        # Get the file uploaded and substitute it by a real EEG raw file
+        eegfile = EEGFile.objects.first()
+        with File(open('export/tests/example.raw', 'rb')) as f:
+            eegfile.file.save('example.raw', f)
+        eegfile.save()
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = 'sensor_position.png'
+        unique_name = slugify(filename)  # TODO (NES-987): make unique
+        eeg_sensor_position_resource = {
+            'name': unique_name, 'title': 'sensor_position',
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_1', filename),
+            'description': 'Data Collection (format: png)'
+        }
+
+        self.assertIn(eeg_sensor_position_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_per_experiment_add_eeg_data_collection_nwb_file_resource(self):
+        self._create_sample_export_data()
+
+        # The file saved below is associated with a file format that is considered
+        # to generate sensor_postion.png file
+        eegdata = EEGData.objects.first()
+        eegdata.file_format.nes_code = 'MNE-RawFromEGI'
+        eegdata.file_format.save()
+        # Create history user for eegdata as nwb creation needs that
+        history = eegdata.history.last()
+        history.history_user = self.user
+        history.save()
+        # Get the file uploaded and substitute it by a real EEG raw file
+        eegfile = EEGFile.objects.first()
+        with File(open('export/tests/example.raw', 'rb')) as f:
+            eegfile.file.save('example.raw', f)
+        eegfile.save()
+
+        # Create components needed to be able to export raw file to nwb format
+        manufacturer = ObjectsFactory.create_manufacturer()
+        amplifier = ObjectsFactory.create_amplifier(manufacturer)
+        ObjectsFactory.create_eeg_amplifier_setting(self.eeg_set, amplifier)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data()
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = 'example.nwb'
+        unique_name = slugify(filename)  # TODO (NES-987): make unique
+        nwb_file_resource = {
+            'name': unique_name, 'title': 'example',
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_EEG', 'EEGData_1', filename),
+            'description': 'Data Collection (format: nwb)'
+        }
+
+        self.assertIn(nwb_file_resource, json_data['resources'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    def test_export_per_experiment_add_sensor_position_image(self):
         pass
         # self._create_sample_export_data()
         # TODO (NES-987): leave to the last
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_tms_default_setting_file(self):
+    def test_export_per_experiment_add_tms_default_setting_file(self):
         temp_dir = tempfile.mkdtemp()
         self._create_tms_export_data(temp_dir)  # pass temp_dir for hotspot file creation
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2362,7 +2460,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         response = self.client.post(reverse('export_view'), data)
 
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = TMS_DEFAULT_SETTING_FILENAME.split('.')
         tms_default_setting_resource = {
             'name': filename, 'title': filename,
@@ -2376,7 +2474,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_tms_data_description_and_hotspot_map_files(self):
+    def test_export_per_experiment_add_tms_data_description_and_hotspot_map_files(self):
         temp_dir = tempfile.mkdtemp()
         self._create_tms_export_data(temp_dir)  # pass temp_dir for hotspot file creation
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2386,7 +2484,7 @@ class ExportFrictionlessData(ExportTestCase):
 
         response = self.client.post(reverse('export_view'), data)
 
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = TMS_DATA_FILENAME.split('.')
         tms_data_resource = {
             'name': filename, 'title': filename,
@@ -2410,7 +2508,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_emg_default_setting_file(self):
+    def test_export_per_experiment_add_emg_default_setting_file(self):
         self._create_emg_export_data()
         self._create_emg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2421,7 +2519,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = EMG_DEFAULT_SETTING.split('.')
 
         emg_default_setting_resource = {
@@ -2436,7 +2534,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_emg_setting_description_file(self):
+    def test_export_per_experiment_add_emg_setting_description_file(self):
         self._create_emg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2446,7 +2544,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = EMG_SETTING_FILENAME.split('.')
 
         emg_setting_resource = {
@@ -2461,7 +2559,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_emg_data_collection_files(self):
+    def test_export_per_experiment_add_emg_data_collection_files(self):
         self._create_emg_export_data()
         # Adds one more emg data collection
         emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct_emg, self.subject_of_group, self.emg_set)
@@ -2475,7 +2573,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         i = 1  # For EMGData_<str(i)> subdirs
         for emg_file in EMGFile.objects.order_by('id'):
@@ -2496,7 +2594,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_goalkeeper_context_tree_default_file(self):
+    def test_export_per_experiment_add_goalkeeper_context_tree_default_file(self):
         self._create_goalkeeper_game_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2507,7 +2605,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
         filename, extension = CONTEXT_TREE_DEFAULT.split('.')
 
         context_tree_resource = {
@@ -2522,7 +2620,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_stimulus_file(self):
+    def test_export_per_experiment_add_stimulus_file(self):
         # Create a stimulus component
         stimulus_type = ObjectsFactory.create_stimulus_type()
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -2544,7 +2642,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         stimulus = Stimulus.objects.first()
         filename = os.path.basename(stimulus.media_file.file.name)
@@ -2562,7 +2660,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_generic_data_collection_file(self):
+    def test_export_per_experiment_add_generic_data_collection_file(self):
         # Create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(
@@ -2585,7 +2683,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = os.path.basename(gdcf.file.name)
         unique_name = slugify(filename)
@@ -2605,7 +2703,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_generic_data_collection_file(self):
+    def test_export_per_experiment_add_generic_data_collection_file(self):
         # Create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(
@@ -2628,7 +2726,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = os.path.basename(gdcf.file.name)
         unique_name = slugify(filename)
@@ -2648,7 +2746,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_goalkeeper_game_files(self):
+    def test_export_per_experiment_add_goalkeeper_game_files(self):
         dgp_file = self._create_goalkeeper_game_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2659,7 +2757,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = os.path.basename(dgp_file.file.name)
         filename_goalkeeper_game_data_dir = filename.split('_')[0]
@@ -2689,7 +2787,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_goalkeeper_game_context_tree_file(self):
+    def test_export_per_experiment_add_goalkeeper_game_context_tree_file(self):
         self._create_goalkeeper_game_export_data()
 
         # Add file to context tree setting file
@@ -2707,7 +2805,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = os.path.basename(context_tree.setting_file.name)
         unique_name = slugify(filename)
@@ -2724,8 +2822,10 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_experimental_protocol_additional_file(self):
-        pass  # by now, additional data from Experimental Protocol (set of steps) appear to have not being exported
+    def test_export_per_experiment_add_experimental_protocol_additional_file(self):
+        # TODO (NES-991): by now, additional data from Experimental Protocol (set of steps) appear to have not being
+        #  exported
+        pass
         # Create a file and add it as an additional file of the root component
         # with tempfile.TemporaryDirectory() as tmpdirname:
         #     with open(os.path.join(tmpdirname, 'stepadditionaldata.bin'), 'wb') as f:
@@ -2741,10 +2841,10 @@ class ExportFrictionlessData(ExportTestCase):
         # response = self.client.post(reverse('export_view'), data)
         #
         # temp_dir = tempfile.mkdtemp()
-        # json_data = self._get_datapackage_json_data(temp_dir, response)
+        # json_data = self.get_datapackage_json_data(temp_dir, response)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_step_additional_file(self):
+    def test_export_per_experiment_add_step_additional_file(self):
         # Create generic data collection (gdc) component, it could been any data collection
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(self.experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': it})
@@ -2768,7 +2868,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = os.path.basename(additional_file.file.name)
         unique_name = slugify(filename)
@@ -2786,7 +2886,7 @@ class ExportFrictionlessData(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_experiment_add_participant_data_collection_additional_file(self):
+    def test_export_per_experiment_add_participant_data_collection_additional_file(self):
         self._create_sample_export_data()
         additional_data = ObjectsFactory.create_additional_data_data(self.dct_eeg, self.subject_of_group)
         additional_file = ObjectsFactory.create_additional_data_file(additional_data)
@@ -2798,7 +2898,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = os.path.basename(additional_file.file.name)
         unique_name = slugify(filename)
@@ -2818,7 +2918,7 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_experiment_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
+    def test_export_per_experiment_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
         self._create_questionnaire_export_data()
         set_mocks6(mockServer)
 
@@ -2830,9 +2930,9 @@ class ExportFrictionlessData(ExportTestCase):
             # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
@@ -2840,7 +2940,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         code = self.questionnaire.survey.code
         filename = 'Fields_' + code + '_en.csv'
@@ -2863,7 +2963,8 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_experiment_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(self, mockServer):
+    def test_export_per_experiment_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
+            self, mockServer):
         self._create_questionnaire_export_data()
         set_mocks6(mockServer)
 
@@ -2875,9 +2976,9 @@ class ExportFrictionlessData(ExportTestCase):
             # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
@@ -2886,7 +2987,7 @@ class ExportFrictionlessData(ExportTestCase):
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         code = self.questionnaire.survey.code
         questionnaire_metadata_resource = next(
@@ -2899,7 +3000,8 @@ class ExportFrictionlessData(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_experiment_add_questionnaire_responses_file_to_datapackage_json_file(self, mockServer):
+    def test_export_per_experiment_add_questionnaire_responses_file_to_datapackage_json_file1(self, mockServer):
+        """In Per_questionnaire subdir"""
         self._create_questionnaire_export_data()
         set_mocks6(mockServer)
 
@@ -2911,18 +3013,17 @@ class ExportFrictionlessData(ExportTestCase):
             # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
             ],
             'patient_selected': ['age*age'], 'responses': ['short']
         }
-
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
-        json_data = self._get_datapackage_json_data(temp_dir, response)
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
         extension = '.csv'
@@ -2943,9 +3044,13 @@ class ExportFrictionlessData(ExportTestCase):
             item in questionnaire_response_resource.items() for item in test_dict.items()),
             str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
 
+        shutil.rmtree(temp_dir)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_experiment_add_questionnaire_responses_table_schema_info_to_datapackage(self, mockServer):
+    def test_export_per_experiment_add_questionnaire_responses_file_to_datapackage_json_file2(self, mockServer):
+        """In Per_participant subdir"""
+
         self._create_questionnaire_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2956,7 +3061,62 @@ class ExportFrictionlessData(ExportTestCase):
         to_experiment = []
         for question in questions:
             to_experiment.append(
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID)
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        set_mocks7(mockServer)
+
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': to_experiment,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+        extension = '.csv'
+        unique_name = slugify(filename) + '_per-participant'
+
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['name'] == unique_name)
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        # TODO (NES-991): do this way for the other tests
+        if 'schema' in questionnaire_response_resource:
+            questionnaire_response_resource.pop('schema')
+        test_dict = {
+            'name': unique_name, 'title': filename,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_QUESTIONNAIRE', filename + extension),
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+        }
+        self.assertEqual(
+            test_dict, questionnaire_response_resource,
+            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
+        """In Per_questionnaire subdir"""
+
+        self._create_questionnaire_export_data()
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to_experiment = []
+        for question in questions:
+            to_experiment.append(
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
         for heading_type in 'code', 'full', 'abbreviated':
@@ -2971,23 +3131,1130 @@ class ExportFrictionlessData(ExportTestCase):
                 'to_experiment[]': to_experiment,
                 'patient_selected': ['age*age'], 'responses': ['short']
             }
-
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
-            json_data = self._get_datapackage_json_data(temp_dir, response)
+            json_data = self.get_datapackage_json_data(temp_dir, response)
 
             filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
             questionnaire_response_resource = next(
                 item for item in json_data['resources'] if item['title'] == filename)
             for item in questions:
-                # TODO (NES-991): tests for 'full' and 'abbreviated'
                 self.assertIn(
                         {
+                            'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                            'format': 'default'
+                        }, questionnaire_response_resource['schema']['fields'])
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_questionnaire_responses_table_schema_info_to_datapackage_json_file2(
+            self, mockServer):
+        """In Per_participant subdir"""
+
+        self._create_questionnaire_export_data()
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to_experiment = []
+        for question in questions:
+            to_experiment.append(
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks7(mockServer)
+            if heading_type == 'full':
+                update_mocks2(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks3(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to_experiment[]': to_experiment,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+            unique_name = slugify(filename) + '_per-participant'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['name'] == unique_name)
+            for item in questions:
+                self.assertIn(
+                    {
                         'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
                         'format': 'default'
-                    },
-                    questionnaire_response_resource['schema']['fields'])
+                    }, questionnaire_response_resource['schema']['fields'])
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_entrance_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
+        self._create_questionnaire_export_data()
+        UtilTests.create_response_survey(self.user, self.patient, self.survey, token_id=1)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        set_mocks13(mockServer)
+
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to[]': to,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
+        extension = '.csv'
+
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['title'] == filename)
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        # TODO (NES-991): do this way for the other tests
+        if 'schema' in questionnaire_response_resource:
+            questionnaire_response_resource.pop('schema')
+        test_dict = {
+            'name': slugify(filename), 'title': filename,
+            'path': os.path.join(
+                'data', 'Participant_data', 'Questionnaire_metadata',
+                str(self.survey.lime_survey_id) + '_' + slugify(self.survey.en_title), filename + extension),
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
+        }
+        self.assertEqual(
+            test_dict, questionnaire_response_resource,
+            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_entrance_questionnaire_metadata_table_schema_info_to_datapackage(
+            self, mockServer):
+        self._create_questionnaire_export_data()
+        UtilTests.create_response_survey(self.user, self.patient, self.survey, token_id=1)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks13(mockServer)
+            if heading_type == 'full':
+                update_mocks6(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks7(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to[]': to,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            for item in HEADER_EXPLANATION_FIELDS:
+                self.assertIn(
+                    {
+                        'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'])
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_entrance_questionnaire_responses_file_to_datapackage_json_file1(
+            self, mockServer):
+        """In Per_questionnaire subdir"""
+        self._create_questionnaire_export_data()
+        UtilTests.create_response_survey(self.user, self.patient, self.survey, token_id=1)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        set_mocks13(mockServer)
+
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to[]': to,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = 'Responses_' + str(self.survey.lime_survey_id) + '_en'
+        extension = '.csv'
+
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['title'] == filename)
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        # TODO (NES-991): do this way for the other tests
+        if 'schema' in questionnaire_response_resource:
+            questionnaire_response_resource.pop('schema')
+        test_dict = {
+            'name': slugify(filename), 'title': filename,
+            'path': os.path.join(
+                'data', 'Participant_data', 'Per_questionnaire',
+                str(self.survey.lime_survey_id) + '_' + slugify(self.survey.en_title),
+                filename + extension),
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+        }
+        self.assertEqual(
+            test_dict, questionnaire_response_resource,
+            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_entrance_questionnaire_responses_file_to_datapackage_json_file2(
+            self, mockServer):
+        """In Per_participant subdir"""
+
+        self._create_questionnaire_export_data()
+        UtilTests.create_response_survey(self.user, self.patient, self.survey, token_id=1)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        set_mocks13(mockServer)
+
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to[]': to,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        filename = 'Responses_' + str(self.survey.code) + '_en'
+        extension = '.csv'
+
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['title'] == filename)
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        # TODO (NES-991): do this way for the other tests
+        if 'schema' in questionnaire_response_resource:
+            questionnaire_response_resource.pop('schema')
+        test_dict = {
+            'name': slugify(filename), 'title': filename,
+            'path': os.path.join(
+                'data', 'Participant_data', 'Per_participant', 'Participant_' + self.patient.code,
+                self.survey.code + '_' + slugify(self.survey.en_title), filename + extension),
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+        }
+        self.assertEqual(
+            test_dict, questionnaire_response_resource,
+            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_entrance_questionnaire_responses_table_schema_info_to_datapackage1(
+            self, mockServer):
+        """In Per_questionnaire subdir"""
+        self._create_questionnaire_export_data()
+        UtilTests.create_response_survey(self.user, self.patient, self.survey, token_id=1)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks13(mockServer)
+            if heading_type == 'full':
+                update_mocks6(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks7(mockServer)
+            data = {
+                'per_participant': ['on'], 'per_questionnaire': ['on'], 'action': ['run'],
+                'headings': [heading_type],
+                'to[]': to,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = 'Responses_' + str(self.survey.lime_survey_id) + '_en'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            for item in questions:
+                self.assertIn(
+                    {
+                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'])
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_experiment_add_entrance_questionnaire_responses_table_schema_info_to_datapackage2(
+            self, mockServer):
+        """In Per_participant subdir"""
+
+        self._create_questionnaire_export_data()
+        UtilTests.create_response_survey(self.user, self.patient, self.survey, token_id=1)
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
+
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks13(mockServer)
+            if heading_type == 'full':
+                update_mocks6(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks7(mockServer)
+            data = {
+                'per_participant': ['on'], 'per_questionnaire': ['on'], 'action': ['run'],
+                'headings': [heading_type],
+                'to[]': to,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = 'Responses_' + str(self.survey.code) + '_en'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            for item in questions:
+                self.assertIn(
+                    {
+                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'])
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_creates_datapackage_json_file(self, mockServer):
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
+        set_mocks12(mockServer)
+
+        questions = self._set_all_questions()
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' + question[0]['code']
+                + '*' + question[0]['code'])
+
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        zipped_file = self.get_zipped_file(response)
+        self.assertTrue(any('datapackage.json' in element for element in zipped_file.namelist()),
+                        'datapackage.json not found in: ' + str(zipped_file.namelist()))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_basic_content_to_datapackage_json_file(self, mockServer):
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
+        set_mocks12(mockServer)
+
+        questions = self._set_all_questions()
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' + question[0]['code']
+                + '*' + question[0]['code'])
+
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        self._assert_basic_per_participant_data(json_data)
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaires_contributors_to_datapackage_json_file(self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        # Values from mocks
+        contributor1 = 'Jorge da Capadócia'
+        contributor1_email = 'jorge@example.com'
+        contributor2 = 'Leonardo dos Santos'
+        contributor2_email = 'leo@example.com'
+
+        self.assertIn('contributors', json_data)
+        self.assertIn(
+            {
+                'title': contributor1, 'email': contributor1_email,
+                'questionnaire': str(LIMESURVEY_SURVEY_ID_1) + ' - ' + survey1.en_title
+            },
+            json_data['contributors'])
+        self.assertIn(
+            {
+                'title': contributor2, 'email': contributor2_email,
+                'questionnaire': str(LIMESURVEY_SURVEY_ID_2) + ' - ' + survey2.en_title
+            },
+            json_data['contributors'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_display_license_options_in_form(self, mockServer):
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
+        set_mocks10(mockServer)
+
+        # Needed because if session expired this variable does not exist in request.session
+        # anymore. See the view.
+        self.append_session_variable('filtered_participant_data', [self.patient.id])
+        
+        response = self.client.get(reverse('export_view'))
+
+        self.assertIn(str(_('License')), response.content.decode('utf-8'))
+        self.assertIn('Creative Commons', response.content.decode('utf-8'))
+        self.assertIn('Copyright', response.content.decode('utf-8'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_default_license_to_datapackage_json_file(self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': 'CC', 'path': 'https://creativecommons.org', 'title': 'Creative Commons'
+        }, json_data['licenses'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_creative_commons_license_to_datapackage_json_file(self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '1',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        self.assertIn('licenses', json_data)
+        self.assertIn({
+            'name': '©', 'path': 'https://simple.wikipedia.org/wiki/Copyright', 'title': 'Copyright'
+        }, json_data['licenses'])
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_participant_data_file_info_to_datapackage_json_resources_field(
+            self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        participants_resource = next(item for item in json_data['resources'] if item['name'] == 'participants')
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in participants_resource:
+            participants_resource.pop('schema')
+
+        test_dict = {
+            'name': 'participants', 'title': 'Participants',
+            'path': os.path.join('data', 'Participants.csv'),
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+        self.assertEqual(
+            test_dict, participants_resource, str(test_dict) + ' not equal ' + str(participants_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_participants_table_schema_info_to_datapackage_json_participants_resource(
+            self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        # age field is already included in POST data. Include only the others
+        patient_fields = PATIENT_FIELDS.copy()
+        age_field = next(item for item in patient_fields if item['field'] == 'age')
+        del (patient_fields[patient_fields.index(age_field)])
+        # Append all possible patient attributes in POST data
+        for field in patient_fields:
+            data['patient_selected'].append(field['field'] + '*' + field['header'])
+
+        # Test for code, full, and abbreviated question texts
+        # in Headings head, General information export tab
+        # TODO (NES-991): test for 'full' and 'abbreviated'. Manually passed with all patient attributes
+        #  Needed to change mock
+        for heading_type in ['code']:  # , ['full'], ['abbreviated']:
+            data['headings'] = [heading_type]
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+            participants_resource = next(item for item in json_data['resources'] if item['name'] == 'participants')
+
+            self.assertIn('schema', participants_resource)
+            self.assertIn('fields', participants_resource['schema'])
+            self._assert_participants_table_schema(participants_resource['schema'], heading_type)
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(
+            self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
+                'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
+                # Add selected diagnosis (all here)
+                'diagnosis_selected': [
+                    'medicalrecorddata__diagnosis__date*diagnosis_date',
+                    'medicalrecorddata__diagnosis__description*diagnosis_description',
+                    'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
+                    'medicalrecorddata__diagnosis__classification_of_diseases__description'
+                    '*classification_of_diseases_description',
+                    'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
+                    '*classification_of_diseases_description'
+                ]}
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+        diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in diagnosis_resource:
+            diagnosis_resource.pop('schema')
+
+        test_dict = {
+            'name': 'diagnosis', 'title': 'Diagnosis',
+            'path': os.path.join('data', 'Diagnosis.csv'),
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+        }
+        self.assertEqual(
+            test_dict, diagnosis_resource, str(test_dict) + ' not equal ' + str(diagnosis_resource))
+
+        shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(
+            self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
+            'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
+            'diagnosis_selected': []
+        }
+        # Append al possible diagnosis attributes in POST data
+        for field in DIAGNOSIS_FIELDS:  # TODO (NES-991): do the same in the other diagnosis test
+            data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
+
+        # Test for Question code, Full question text and Abbreviated question text
+        # in Headings head, General informtion export tab
+        # TODO (NES-991): test for 'full' and 'abbreviated'. Needed to change mocks
+        #  Tested manually for all diagnosis fields for all types of Headings
+        for heading_type in ['code']:  # , 'full', 'abbreviated':
+            data['headings'] = [heading_type]
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+            diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
+            self.assertIn('schema', diagnosis_resource)
+            self.assertIn('fields', diagnosis_resource['schema'])
+            self._assert_participants_table_schema(diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        for survey in [survey1, survey2]:
+            filename = 'Fields_' + str(survey.lime_survey_id) + '_en.csv'
+            unique_name = slugify('Fields_' + str(survey.lime_survey_id) + '_' + 'en')
+            title = 'Fields_' + str(survey.lime_survey_id) + '_' + 'en'
+
+            questionnaire_metadata_resource = next(item for item in json_data['resources'] if item['title'] == title)
+            test_dict = {
+                'name': unique_name, 'title': title,
+                'path': os.path.join(
+                    'data', 'Questionnaire_metadata',
+                    str(survey.lime_survey_id) + '_' + slugify(survey.en_title), filename),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
+            }
+
+            self.assertTrue(all(
+                item in questionnaire_metadata_resource.items() for item in test_dict.items()),
+                str(test_dict) + ' is not subdict of ' + str(questionnaire_metadata_resource))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
+            self, mockServer):
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        # TODO (NES-991): tests for 'full' and 'abbreviated'.
+        #  Obs.: By now NES exports by code only even if the user
+        #  selects 'full' or 'abbreviated' for headings. Besides that
+        #  the codes are in English too, even for questionnaires in pt-BR.
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        for survey in [survey1, survey2]:
+            title = 'Fields_' + str(survey.lime_survey_id) + '_' + 'en'
+            questionnaire_metadata_resource = next(item for item in json_data['resources'] if item['title'] == title)
+
+            for item in HEADER_EXPLANATION_FIELDS:
+                self.assertIn(
+                    {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
+                    questionnaire_metadata_resource['schema']['fields'])
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_response_file_to_datapackage_json_file1(self, mockServer):
+        """In Per_questionnaire subdir"""
+
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        for survey in [survey1, survey2]:
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = 'Responses_' + slugify(survey.lime_survey_id) + '_en'
+            extension = '.csv'
+
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            # As this resource has 'schema' key, that is
+            # itself a dict with other data, we test key/value pairs for all
+            # keys except 'schema'.
+            test_dict = {
+                'name': slugify(filename), 'title': filename,
+                'path': os.path.join(
+                    'data', 'Per_questionnaire',
+                    str(survey.lime_survey_id) + '_' + slugify(survey.en_title),
+                    filename + extension),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+            }
+            self.assertTrue(all(
+                item in questionnaire_response_resource.items() for item in test_dict.items()),
+                str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
+        """In Per_questionnaire subdir"""
+
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
+
+        questions = self._set_all_questions()
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' + question[0]['code']
+                + '*' + question[0]['code'])
+
+        patient_selected = [
+            'age*age',
+            'socialdemographicdata__patient_schooling__name*patient_schooling'
+        ]
+        data = {
+            'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': patient_selected, 'license': '0', 'to[]': to
+        }
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks12(mockServer)
+            if heading_type == 'full':
+                update_mocks4(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks5(mockServer)
+            data['headings'] = [heading_type]
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = 'Responses_' + slugify(survey.lime_survey_id) + '_en'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            for item in questions:
+                self.assertIn(
+                    {
+                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'])
+            for patient_field_selected in patient_selected:
+                patient_field_selected = patient_field_selected.split('*')[0]
+                patient_field = next(item for item in PATIENT_FIELDS if item['field'] == patient_field_selected)
+                title = ''
+                if heading_type == 'code':
+                    title = patient_field['header']
+                elif heading_type == 'full':
+                    title = patient_field['description']
+                elif heading_type == 'abbreviated':
+                    title = abbreviated_data(patient_field['description'])
+                self.assertIn(
+                    {
+                        'name': patient_field['header'], 'title': title, 'type': patient_field['json_data_type'],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields']
+                )
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_response_file_to_datapackage_json_file2(self, mockServer):
+        """In Per_participant subdir"""
+
+        # It's important to keep the order: first 'Q5050' then 'Q2121'.
+        # See comment in export.process_per_participant method
+        survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
+        survey1.code = 'Q5050'
+        survey1.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey1, token_id=1)
+        survey2 = create_survey(LIMESURVEY_SURVEY_ID_2)
+        survey2.code = 'Q2121'
+        survey2.save()
+        UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
+        set_mocks11(mockServer)
+
+        to = [
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
+            '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*textfrageeins*textfrageeins',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
+            '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
+        ]
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': ['age*age'], 'license': '0',
+            'to[]': to
+        }
+        response = self.client.post(reverse('export_view'), data)
+
+        for survey in [survey1, survey2]:
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = 'Responses_' + survey.code + '_en'
+            extension = '.csv'
+
+            path_resource = os.path.join(
+                'data', 'Per_participant', 'Participant_' + self.patient.code,
+                survey.code + '_' + slugify(survey.en_title), filename + extension)
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['path'] == path_resource)
+            # As this resource has 'schema' key, that is
+            # itself a dict with other data, we test key/value pairs for all
+            # keys except 'schema'.
+            test_dict = {
+                'name': slugify(filename), 'title': filename,
+                'path': os.path.join(
+                    'data', 'Per_participant', 'Participant_' + self.patient.code,
+                    str(survey.code) + '_' + slugify(survey.en_title), filename + extension),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+            }
+            self.assertTrue(all(
+                item in questionnaire_response_resource.items() for item in test_dict.items()),
+                str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+
+            shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_export_per_participant_add_questionnaire_responses_table_schema_info_to_datapackage2(self, mockServer):
+        """In Per_participant subdir"""
+
+        survey = create_survey(LIMESURVEY_SURVEY_ID_1)
+        UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
+
+        questions = self._set_all_questions()
+        to = []
+        for question in questions:
+            to.append(
+                '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey.en_title + '*' + question[0]['code']
+                + '*' + question[0]['code'])
+
+        patient_selected = [
+            'age*age',
+            'socialdemographicdata__patient_schooling__name*patient_schooling'
+        ]
+        data = {
+            'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
+            'patient_selected': patient_selected, 'license': '0', 'to[]': to
+        }
+
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks12(mockServer)
+            if heading_type == 'full':
+                update_mocks4(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks5(mockServer)
+            data['headings'] = [heading_type]
+            response = self.client.post(reverse('export_view'), data)
+
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
+
+            filename = 'Responses_' + survey.code + '_en'
+            extension = '.csv'
+            path_resource = os.path.join(
+                'data', 'Per_participant', 'Participant_' + self.patient.code,
+                survey.code + '_' + slugify(survey.en_title), filename + extension)
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['path'] == path_resource)
+            for item in questions:
+                self.assertIn(
+                    {
+                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'])
+            for patient_field_selected in patient_selected:
+                patient_field_selected = patient_field_selected.split('*')[0]
+                patient_field = next(item for item in PATIENT_FIELDS if item['field'] == patient_field_selected)
+                title = ''
+                if heading_type == 'code':
+                    title = patient_field['header']
+                elif heading_type == 'full':
+                    title = patient_field['description']
+                elif heading_type == 'abbreviated':
+                    title = abbreviated_data(patient_field['description'])
+                self.assertIn(
+                    {
+                        'name': patient_field['header'], 'title': title, 'type': patient_field['json_data_type'],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields']
+                )
 
             shutil.rmtree(temp_dir)
 

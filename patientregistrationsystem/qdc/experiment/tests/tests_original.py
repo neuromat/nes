@@ -1,6 +1,7 @@
 # coding=utf-8
 import datetime
 import random
+import shutil
 import tempfile
 
 import os
@@ -10,7 +11,7 @@ from unittest.mock import patch
 from django.core.files import File
 from django.db import IntegrityError
 from django.apps import apps
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -39,7 +40,7 @@ from experiment.models import Experiment, Group, Subject, \
     AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, \
     TMSData, DirectionOfTheInducedCurrent, CoilOrientation, \
     EEGElectrodePositionCollectionStatus, EEGElectrodePositionSetting, EEGElectrodeLayoutSetting, \
-    TMSLocalizationSystem, BrainAreaSystem, BrainArea
+    TMSLocalizationSystem, BrainAreaSystem, BrainArea, EEGAmplifierSetting
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
@@ -54,6 +55,7 @@ from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 from survey.tests.tests_helper import create_survey
 
+TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
 LIME_SURVEY_ID_INACTIVE = 846317
@@ -141,10 +143,15 @@ class ObjectsFactory(object):
 
     @staticmethod
     def create_eeg_setting(experiment):
-        eeg_setting = EEGSetting.objects.create(experiment=experiment,
-                                                name='EEG-Setting name',
-                                                description='EEG-Setting description')
+        eeg_setting = EEGSetting.objects.create(
+            experiment=experiment, name='EEG-Setting name', description='EEG-Setting description')
         return eeg_setting
+
+    @staticmethod
+    def create_eeg_amplifier_setting(eeg_setting, amplifier):
+        # First implementation needed number_of_channels_used=129 for test
+        return EEGAmplifierSetting.objects.create(
+            eeg_setting=eeg_setting, eeg_amplifier=amplifier, number_of_channels_used=129)
 
     @staticmethod
     def create_emg_setting(experiment, acquisition_software_version):
@@ -549,22 +556,16 @@ class ObjectsFactory(object):
         faker = Factory.create()
 
         return ComponentConfiguration.objects.create(
-            name=faker.word(),
-            parent=parent,
-            component=component
-        )
+            name=faker.word(), parent=parent, component=component)
 
     @staticmethod
     def create_data_configuration_tree(component_config, parent=None):
         return DataConfigurationTree.objects.create(
-            component_configuration=component_config,
-            code=random.randint(1, 999),
-            parent=parent
-        )
+            component_configuration=component_config, code=random.randint(1, 999), parent=parent)
 
     @staticmethod
-    def create_questionnaire_response(dct, responsible, token_id,
-                                      subject_of_group):
+    def create_questionnaire_response(
+            dct, responsible, token_id, subject_of_group):
         return QuestionnaireResponse.objects.create(
             data_configuration_tree=dct,
             questionnaire_responsible=responsible, token_id=token_id,
@@ -666,8 +667,7 @@ class ObjectsFactory(object):
         file_format = ObjectsFactory.create_file_format()
         return EMGData.objects.create(
             description=faker.text(), file_format=file_format, file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree, subject_of_group=subj_of_group, emg_setting=emg_set
-        )
+            data_configuration_tree=data_conf_tree, subject_of_group=subj_of_group, emg_setting=emg_set)
 
     @staticmethod
     def create_tms_data_collection_data(data_conf_tree,
@@ -2438,6 +2438,7 @@ class SubjectTest(TestCase):
         count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_eeg_data_file(self):
         """Test of an EEG data file upload"""
 
@@ -5195,3 +5196,7 @@ class ContextTreeTest(TestCase):
 
         # Check if number of context trees decreased by 1
         self.assertEqual(ContextTree.objects.all().count(), count - 1)
+
+
+def tearDownModule():
+    shutil.rmtree(TEMP_MEDIA_ROOT)

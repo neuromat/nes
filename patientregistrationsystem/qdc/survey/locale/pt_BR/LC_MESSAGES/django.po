@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-05 14:17-0300\n"
+"POT-Creation-Date: 2019-09-02 16:08-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: survey/survey_utils.py:446 survey/survey_utils.py:452
+#: survey/survey_utils.py:429 survey/survey_utils.py:435
 msgid "Could not get list of groups from LimeSurvey"
 msgstr "Não foi possível obter a lista dos grupos no LimeSurvey"
 
-#: survey/survey_utils.py:449
+#: survey/survey_utils.py:432
 msgid "There's no group with name Identification."
 msgstr "Não há um grupo com o nome Identificação."
 
-#: survey/survey_utils.py:455
+#: survey/survey_utils.py:438
 #, python-format
 msgid "There's no question with name %s"
 msgstr "Não há um questionráio com o nome %s"
@@ -241,11 +241,11 @@ msgstr "Não há alterações para salvar."
 msgid "Questionnaire was updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:602
+#: survey/views.py:605
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:605
+#: survey/views.py:608
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
@@ -253,23 +253,23 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:719
+#: survey/views.py:722
 msgid "Other"
 msgstr "Outros"
 
-#: survey/views.py:754
+#: survey/views.py:757
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:819 survey/views.py:833 survey/views.py:861
+#: survey/views.py:822 survey/views.py:836 survey/views.py:864
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:896
+#: survey/views.py:899
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "O LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:939
+#: survey/views.py:942
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."

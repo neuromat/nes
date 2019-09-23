@@ -85,17 +85,11 @@ class Experiment(models.Model):
     data_acquisition_is_concluded = models.BooleanField(default=False)
 
     source_code_url = models.URLField(null=True, blank=True)
-    ethics_committee_project_url = \
-        models.URLField(
-            _('URL of the project approved by the ethics committee'),
-            null=True, blank=True
-        )
+    ethics_committee_project_url = models.URLField(
+            _('URL of the project approved by the ethics committee'), null=True, blank=True)
     ethics_committee_project_file = models.FileField(
         _('Project file approved by the ethics committee'),
-        upload_to=get_experiment_dir,
-        null=True, blank=True
-    )
-
+        upload_to=get_experiment_dir, null=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
     last_sending = models.DateTimeField(null=True)
 
@@ -386,8 +380,8 @@ class EEGElectrodeLocalizationSystem(models.Model):
 
 
 class EEGElectrodePosition(models.Model):
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
-                                                          related_name="electrode_positions")
+    eeg_electrode_localization_system = models.ForeignKey(
+        EEGElectrodeLocalizationSystem, related_name="electrode_positions")
     name = models.CharField(max_length=150)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])

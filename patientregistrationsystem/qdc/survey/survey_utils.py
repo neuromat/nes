@@ -148,13 +148,10 @@ class QuestionnaireUtils:
 
     def get_questionnaire_fields(self, questionnaire_id, entrance_questionnaire,
                                  considers_questionnaires_from_experiments):
-        # headers_questionnaire format: dict {questionnaire_id: {fields:[fields]}}
-
         fields = []
         if entrance_questionnaire:
             if questionnaire_id in self.questionnaires_data:
                 fields = self.questionnaires_data[questionnaire_id]["fields"]
-        # if self.get_input_data('questionnaires_from_experiments'):
         if considers_questionnaires_from_experiments:
             if questionnaire_id in self.questionnaires_experiment_data:
                 fields = self.questionnaires_experiment_data[questionnaire_id]["fields"]
@@ -369,7 +366,7 @@ class QuestionnaireUtils:
         :param limesurvey_connection: survey.Questionnaires instance
         :param survey_id:
         :param language:
-        :param types: list of question types
+        :param types: list of question types. Defaults to return all questions
         :return: tupple: (int, list) - (0, list) in case of success,
         else (Questionnaires.ERROR_code, empty list)
         """

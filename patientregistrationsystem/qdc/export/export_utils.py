@@ -43,7 +43,6 @@ def create_list_of_trees(block_id, component_type, numeration=''):
 
 
 def can_export_nwb(eeg_data_list):
-
     for eeg_data in eeg_data_list:
         eeg_data.eeg_file_list = []
         for eeg_file in eeg_data.eeg_files.all():
@@ -53,12 +52,11 @@ def can_export_nwb(eeg_data_list):
             # v1.5
             # can export to nwb?
             if eeg_file.eeg_reading.file_format and eeg_file.eeg_reading.reading:
-                if eeg_file.eeg_reading.file_format.nes_code == "MNE-RawFromEGI" \
+                if eeg_file.eeg_reading.file_format.nes_code == 'MNE-RawFromEGI' \
                         and hasattr(eeg_data.eeg_setting, 'eeg_amplifier_setting') \
                         and eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used \
                         and eeg_data.eeg_setting.eeg_amplifier_setting.number_of_channels_used == len(
-                            mne.pick_types(eeg_file.eeg_reading.reading.info, eeg=True)
-                ):
+                            mne.pick_types(eeg_file.eeg_reading.reading.info, eeg=True)):
                     eeg_file.can_export_to_nwb = True
             eeg_data.eeg_file_list.append(eeg_file)
 

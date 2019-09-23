@@ -305,12 +305,12 @@ def export_create(
                 # Process per questionnaire data - entrance evaluation
                 # questionnaires (Particpant data directory)
                 if export.get_input_data('export_per_questionnaire'):
-                    error_msg = export.process_per_entrance_questionnaire()
+                    error_msg = export.process_per_entrance_questionnaire(request.POST.get('headings'))
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)
                 if export.get_input_data('export_per_participant'):
-                    error_msg = export.process_per_participant_per_entrance_questionnaire()
+                    error_msg = export.process_per_participant_per_entrance_questionnaire(request.POST.get('headings'))
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)
@@ -325,31 +325,38 @@ def export_create(
                         messages.error(request, error_msg)
                         return render(request, template_name)
             # Build export data for each component
-            error_msg = export.process_per_participant_per_experiment()
+            error_msg = export.process_per_participant_per_experiment(request.POST.get('headings'))
             if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
             # Build datapackage.json file (TODO (NES-991): error_msg stays?)
+            # TODO (NES-991): only process datapackage json file if not sending to Plugin
             export.process_datapackage_json_file(request)
 
         else:
             # Export method: filter by entrance questionnaire
             if export.get_input_data('questionnaires'):
                 # Process per questionnaire data - entrance evaluation questionnaires
-                error_msg = export.process_per_questionnaire()
+                error_msg = export.process_per_questionnaire(request.POST.get('headings'), participants_plugin)
                 if error_msg == Questionnaires.ERROR_CODE:  # TODO (NES-971): ??
                     return error_msg
                 if error_msg != '':
                     messages.error(request, error_msg)
                     return render(request, template_name)
 
-                error_msg = export.process_per_participant()
+                error_msg = export.process_per_participant(request.POST.get('headings'))
                 if error_msg != '':
                     messages.error(request, error_msg)
                     return render(request, template_name)
 
-        # create zip file and include files
+                # TODO (NES-991): DRY: see the call when exporting experiment above
+                #  Call once!
+                # Build datapackage.json file (TODO (NES-991): error_msg stays?)
+                if not participants_plugin:
+                    export.process_datapackage_json_file(request)
+
+        # Create zip file and include files
         export_complete_filename = ''
         if export.files_to_zip_list:
             # export.zip file
@@ -552,7 +559,7 @@ def export_view(request, template_name='export/export_data.html'):
 
     surveys = Questionnaires()
     questionnaires_experiment_list_final = []
-    # experiments export
+    # Experiments export
     if 'group_selected_list' in request.session:
         group_list = request.session['group_selected_list']
         component_list = []
@@ -605,8 +612,8 @@ def export_view(request, template_name='export/export_data.html'):
         for patient_questionnaire_response in patient_questionnaire_response_list:
             lime_survey_id = patient_questionnaire_response.survey.lime_survey_id
             if lime_survey_id not in surveys_id_list:
-                completed = surveys.get_participant_properties(lime_survey_id,
-                                                               patient_questionnaire_response.token_id, 'completed')
+                completed = surveys.get_participant_properties(
+                    lime_survey_id, patient_questionnaire_response.token_id, 'completed')
                 # if completed is a data
                 if completed is not None and completed != 'N' and completed != '':
                     surveys_id_list.append(lime_survey_id)
@@ -695,35 +702,27 @@ def get_component_with_data_and_metadata(group, component_list):
 
     # data collection
     if 'eeg' not in component_list:
-        # eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
         if eeg_data_list:
             component_list.append('eeg')
     if 'eeg_nwb' not in component_list:
-        # eeg_data_list = EEGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         eeg_data_list = EEGData.objects.filter(subject_of_group__group=group)
         export_nwb = can_export_nwb(eeg_data_list)
         if export_nwb:
             component_list.append('eeg_nwb')
     if 'emg' not in component_list:
-        # emg_data_list = EMGData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         emg_data_list = EMGData.objects.filter(subject_of_group__group=group)
         if emg_data_list:
             component_list.append('emg')
     if 'tms' not in component_list:
-        # tms_data_list = TMSData.objects.filter(subject_of_group__group=group).distinct('data_configuration_tree')
         tms_data_list = TMSData.objects.filter(subject_of_group__group=group)
         if tms_data_list:
             component_list.append('tms')
     if 'additional_data' not in component_list:
-        # additional_data_list = AdditionalData.objects.filter(subject_of_group__group=group).distinct(
-            # 'data_configuration_tree')
         additional_data_list = AdditionalData.objects.filter(subject_of_group__group=group)
         if additional_data_list:
             component_list.append('additional_data')
     if 'goalkeeper_game_data' not in component_list:
-        # goalkeeper_game_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group).distinct(
-            # 'data_configuration_tree')
         goalkeeper_game_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
         if goalkeeper_game_data_list:
             component_list.append('goalkeeper_game_data')
