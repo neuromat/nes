@@ -442,26 +442,20 @@ def export_view(request, template_name='export/export_data.html'):
                     previous_questionnaire_id = index
                 output_list.append((field, header))
 
-        # TODO (NES-963): participant_selected_list in fact is the attributes list not
-        #  participants per se. Give a better name?
-        participant_selected_list = request.POST.getlist('patient_selected')
-
-        participants_list = []
-
-        for participant in participant_selected_list:
-            participants_list.append(participant.split('*'))
+        participant_fields_selected = request.POST.getlist('patient_selected')
+        participants = []
+        for participant in participant_fields_selected:
+            participants.append(participant.split('*'))
 
         diagnosis_selected_list = request.POST.getlist('diagnosis_selected')
-
         diagnosis_list = []
-
         for diagnosis in diagnosis_selected_list:
             diagnosis_list.append(diagnosis.split('*'))
 
         selected_data_available = (
                 len(questionnaires_selected_list) or
                 len(experiment_questionnaires_selected_list) or
-                len(participant_selected_list) or
+                len(participant_fields_selected) or
                 len(diagnosis_selected_list))
 
         if selected_data_available:
@@ -481,8 +475,8 @@ def export_view(request, template_name='export/export_data.html'):
                 filesformat_type = export_form.cleaned_data['filesformat'] or 'csv'
                 heading_type = export_form.cleaned_data['headings'] or 'code'
 
-                if participants_list:
-                    update_fields(participants_list, heading_type, PATIENT_FIELDS)
+                if participants:
+                    update_fields(participants, heading_type, PATIENT_FIELDS)
                 if diagnosis_list:
                     update_fields(diagnosis_list, heading_type, DIAGNOSIS_FIELDS)
 
@@ -520,7 +514,7 @@ def export_view(request, template_name='export/export_data.html'):
                 create_directory(settings.MEDIA_ROOT, path.split(input_export_file)[0])
 
                 build_complete_export_structure(
-                    per_participant, per_questionnaire, per_experiment, participants_list,
+                    per_participant, per_questionnaire, per_experiment, participants,
                     diagnosis_list, questionnaires_list, experiment_questionnaires_list, responses_type,
                     heading_type, input_filename, component_list, language_code, filesformat_type)
 
@@ -549,7 +543,7 @@ def export_view(request, template_name='export/export_data.html'):
                     for field in questionnaire[2]:
                         selected_ev_quest_experiments.append(questionnaire[0], field[0])
 
-                for participant in participants_list:
+                for participant in participants:
                     selected_participant.append(participant[0])
 
                 for diagnosis in diagnosis_list:
@@ -1363,9 +1357,7 @@ def select_experiments_by_study(request, study_id):
 
 def select_groups_by_experiment(request, experiment_id):
     experiment = Experiment.objects.filter(pk=experiment_id)
-
     group_list = Group.objects.filter(experiment=experiment)
-
     json_group_list = serializers.serialize('json', group_list)
 
     return HttpResponse(json_group_list, content_type='application/json')

@@ -1,5 +1,4 @@
 import csv
-import io
 import os
 import re
 import shutil
@@ -11,6 +10,7 @@ from unittest.mock import patch
 from django.conf import settings
 from django.contrib.messages import get_messages
 from django.core.urlresolvers import reverse, resolve
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.test import override_settings
 
@@ -18,7 +18,8 @@ from export import input_export
 from export.models import Export
 from export.tests.tests_helper import ExportTestCase
 from plugin.models import RandomForests
-from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks, update_limesurvey_api_mocks
+from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks, update_limesurvey_api_mocks, \
+    set_limesurvey_api_mocks2
 from plugin.views import send_to_plugin
 from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
@@ -36,12 +37,19 @@ class PluginTest(ExportTestCase):
         self.client.logout()
 
     def _create_basic_objects(self):
-        survey1 = create_survey()
-        survey2 = create_survey(505050)
+        self.survey1 = create_survey()
+        # Specify the survey code for matching with mocks.
+        # In code, export.process_per_participant sorts surveys by survey code, already.
+        # for matching the mocks. See comment in export.process_per_participant method.
+        self.survey1.code = 'Q212121'
+        self.survey1.save()
+        self.survey2 = create_survey(505050)
+        self.survey2.code = 'Q505050'
+        self.survey2.save()
         RandomForests.objects.create(
-            admission_assessment=survey1, surgical_evaluation=survey2, plugin_url='http://plugin_url')
-        UtilTests.create_response_survey(self.user, self.patient, survey1, 21)
-        UtilTests.create_response_survey(self.user, self.patient, survey2, 21)
+            admission_assessment=self.survey1, surgical_evaluation=self.survey2, plugin_url='http://plugin_url')
+        UtilTests.create_response_survey(self.user, self.patient, self.survey1, 21)
+        UtilTests.create_response_survey(self.user, self.patient, self.survey2, 21)
 
     def test_GET_send_to_plugin_returns_correct_status_code(self):
         response = self.client.get(reverse('send-to-plugin'), follow=True)
@@ -52,7 +60,9 @@ class PluginTest(ExportTestCase):
         view = resolve('/plugin/')
         self.assertEquals(view.func, send_to_plugin)
 
-    def test_GET_send_to_plugin_display_questionnaire_names_in_interface(self):
+    def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_in_default_language(
+            self):
+        # TODO (NES-995): refactors to test properly
         self._create_basic_objects()
         response = self.client.get(reverse('send-to-plugin'))
         for survey in Survey.objects.all():
@@ -137,7 +147,7 @@ class PluginTest(ExportTestCase):
             in_items = [in_items.match(item) for item in list_items]
             in_items = [item for item in in_items if item is not None]
             self.assertEqual(2, len(in_items))
-            out_items = re.compile('NES_EXPORT/Per_participant/Participant_%s' % patient2.code)
+            out_items = re.compile('data/Per_participant/Participant_%s' % patient2.code)
             out_items = [out_items.match(item) for item in list_items]
             out_items = [item for item in out_items if item is not None]
             self.assertEqual(0, len(out_items))
@@ -145,7 +155,7 @@ class PluginTest(ExportTestCase):
             # Tests for Per_questionnaire subdir
             questionnaire1 = zipped_file.extract(
                 input_export.BASE_DIRECTORY +
-                '/Per_questionnaire/212121_admission-assessment-plugin/Responses_212121_en.csv',
+                '/Per_questionnaire/QA_admission-assessment-plugin/Responses_QA_en.csv',
                 TEMP_MEDIA_ROOT)
             with open(questionnaire1) as q1_file:
                 reader = list(csv.reader(q1_file))
@@ -153,7 +163,7 @@ class PluginTest(ExportTestCase):
                 self.assertEqual(self.patient.code, reader[1][0])
             questionnaire2 = zipped_file.extract(
                 input_export.BASE_DIRECTORY +
-                '/Per_questionnaire/505050_surgical-evaluation-plugin/Responses_505050_en.csv',
+                '/Per_questionnaire/QS_surgical-evaluation-plugin/Responses_QS_en.csv',
                 TEMP_MEDIA_ROOT)
             with open(questionnaire2) as q2_file:
                 reader = list(csv.reader(q2_file))
@@ -298,6 +308,65 @@ class PluginTest(ExportTestCase):
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('The Floresta Plugin needs to send at least Gender attribute'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_write_files_and_dirs_the_right_way_and_always_in_english(self, mockServer):
+        set_limesurvey_api_mocks2(mockServer)
+
+        self._create_basic_objects()
+        self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'headings': ['code'],
+                'opt_floresta': ['on'], 'patient_selected': ['gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        export = Export.objects.last()
+        with open(os.path.join(
+                settings.MEDIA_ROOT, 'export', str(self.user.id), str(export.id), 'export.zip'), 'rb') as file:
+            zip_file = zipfile.ZipFile(file, 'r')
+            self.assertIsNone(zip_file.testzip())
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_questionnaire', 'QA_' + slugify(self.survey1.en_title), 'Responses_QA_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join('data/Per_questionnaire', 'QA_' + slugify(self.survey1.en_title), 'Responses_QA_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_questionnaire', 'QS_' + slugify(self.survey2.en_title), 'Responses_QS_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join('data/Per_questionnaire', 'QS_' + slugify(self.survey2.en_title), 'Responses_QS_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_' + slugify(self.survey1.en_title),
+                    'Responses_QA_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join(
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_' + slugify(self.survey1.en_title),
+                    'Responses_QA_en.csv')
+                + ' not in: ' + str (zip_file.namelist()))
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_' + slugify(self.survey2.en_title),
+                    'Responses_QS_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join(
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_' + slugify(self.survey2.en_title),
+                    'Responses_QS_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_make_subdirs_questionnaire_titles_in_english(self, mockServer):
+        pass
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_write_csv_participant_data_in_english(self, mockServer):
+        pass
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')

@@ -20,6 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 
 from export.export_utils import create_list_of_trees, can_export_nwb
+from plugin.models import RandomForests
 
 from survey.survey_utils import HEADER_EXPLANATION_FIELDS, QUESTION_TYPES
 
@@ -116,6 +117,7 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
     going to be saved
     :param rows_to_be_saved: list of rows that are going to be written on the
     file
+    :param filesformat_type: file extension
     :param mode: mode for openning file
     :return:
     """
@@ -927,7 +929,6 @@ class ExportExecution:
         return fields
 
     def get_title(self, questionnaire_id):
-
         title = ''
         questionnaires = self.get_input_data('questionnaires')
         for questionnaire in questionnaires:
@@ -947,16 +948,12 @@ class ExportExecution:
         return title
 
     def get_title_reduced(self, questionnaire_id=None, questionnaire_code=None):
-
         reduced_title = ''
         title = ''
-
         if questionnaire_code:
             questionnaire_id = self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code)
-
         if questionnaire_id:
             title = self.get_title(questionnaire_id)
-
         if title:
             reduced_title = slugify(title)
 
@@ -971,9 +968,7 @@ class ExportExecution:
         return reduced_title
 
     @staticmethod
-    def build_header_questionnaire_per_participant(
-            header_participant_data, header_answer_list
-    ):
+    def build_header_questionnaire_per_participant(header_participant_data, header_answer_list):
         header = []
         for field in header_participant_data[0:2]:
             header.append(field)
@@ -1066,9 +1061,16 @@ class ExportExecution:
                 language_list = [questionnaire_language['output_language']]
 
             questionnaire_code = self.questionnaire_utils.get_questionnaire_code_from_id(questionnaire_id)
-            questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
-            # Ex. Per_questionnaire.Q123_aaa
-            path_questionnaire = '%s_%s' % (str(questionnaire_code), questionnaire_title)
+            if not plugin:
+                # Ex. Per_questionnaire.Q123_aaa
+                questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
+                path_questionnaire = '%s_%s' % (str(questionnaire_code), questionnaire_title)
+            else:
+                random_forest = RandomForests.objects.first()
+                if questionnaire_id == random_forest.admission_assessment.lime_survey_id:
+                    path_questionnaire = '%s_%s' % ('QA', slugify(random_forest.admission_assessment.en_title))
+                else:
+                    path_questionnaire = '%s_%s' % ('QS', slugify(random_forest.surgical_evaluation.en_title))
 
             # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
@@ -1095,8 +1097,15 @@ class ExportExecution:
                 # Create directory for questionnaire:
                 # <per_questionnaire>/<q_code_title>
                 if self.get_input_data('export_per_questionnaire') and (len(result) > 1):
-                    export_filename = '%s_%s_%s' % (
-                        questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
+                    if not plugin:
+                        export_filename = '%s_%s_%s' % (
+                            questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
+                    else:
+                        if questionnaire_id == RandomForests.objects.first().admission_assessment.lime_survey_id:
+                            export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QA_en')
+                        else:
+                            export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QS_en')
+
                     # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, result, filesformat_type)

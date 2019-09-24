@@ -4606,15 +4606,17 @@ def search_cid10_ajax(request):
         group_id = request.POST['group_id']
 
         if search_text:
-            cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text) |
-                                                                  Q(code__icontains=search_text))
+            cid_10_list = ClassificationOfDiseases.objects.filter(
+                Q(abbreviated_description__icontains=search_text)
+                | Q(description__icontains=search_text)
+                | Q(code__icontains=search_text))
 
         if group_id:
-            return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
+            return render_to_response(
+                'experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
         else:
-            return render_to_response('export/diagnoses.html',
-                                      {'classification_of_diseases_list': cid_10_list})
+            return render_to_response(
+                'export/diagnoses.html', {'classification_of_diseases_list': cid_10_list})
 
 
 @login_required
