@@ -145,7 +145,7 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
         ['short'], 'code',
         input_filename, components, request.LANGUAGE_CODE, 'csv')
     result = export_create(
-        request, export.id, input_filename, participants_plugin=participants_plugin)
+        request, export.id, input_filename, participants_plugin=participants_plugin, per_experiment=per_experiment)
     if result == Questionnaires.ERROR_CODE:
         return result, None
 
@@ -202,7 +202,8 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
                     _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
                       'If problem persists please contact System Administrator.'))
                 return redirect(reverse('send-to-plugin'))
-            limesurvey_error, zip_file = build_zip_file(request, None, participants_headers, questionnaires, True)
+            limesurvey_error, zip_file = build_zip_file(
+                request, subjects_of_groups, participants_headers, questionnaires)
             if limesurvey_error:
                 messages.error(
                     request,
@@ -240,7 +241,8 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
                     _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
                       'If problem persists please contact System Administrator.'))
                 return redirect(reverse('send-to-plugin'))
-            limesurvey_error, zip_file = build_zip_file(request, participants, participants_headers, questionnaires)
+            limesurvey_error, zip_file = build_zip_file(
+                request, participants, participants_headers, questionnaires, False)
             if limesurvey_error:
                 messages.error(
                     request,

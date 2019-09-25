@@ -221,13 +221,14 @@ def update_fields(list_, heading_type, fields):
 
 
 def export_create(
-        request, export_id, input_filename, template_name='export/export_data.html', participants_plugin=None):
+        request, export_id, input_filename, template_name='export/export_data.html', participants_plugin=None,
+        per_experiment=False):
     try:
         export_instance = Export.objects.get(user=request.user, id=export_id)
         export = ExportExecution(export_instance.user.id, export_instance.id)
         language_code = request.LANGUAGE_CODE
 
-        if participants_plugin:
+        if participants_plugin and not per_experiment:
             participants_filtered_list = participants_plugin
         elif 'filtered_participant_data' in request.session:
             participants_filtered_list = request.session['filtered_participant_data']
@@ -282,8 +283,8 @@ def export_create(
                 return render(request, template_name)
 
         if 'group_selected_list' in request.session:
-            # export method: filter by experiments
-            export.include_group_data(request.session['group_selected_list'])
+            # Export method: filter by experiments
+            export.include_group_data(request.session['group_selected_list'], participants_plugin)
             # if fields from questionnaires were selected
             if export.get_input_data('questionnaire_list'):
                 export.get_questionnaires_responses(request.POST.get('headings'))
@@ -300,7 +301,7 @@ def export_create(
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # if questionnaire from entrance evaluation was selected
+            # If questionnaire from entrance evaluation was selected
             if export.get_input_data('questionnaires'):
                 # Process per questionnaire data - entrance evaluation
                 # questionnaires (Particpant data directory)
