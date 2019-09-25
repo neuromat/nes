@@ -740,8 +740,8 @@ def get_experiment_questionnaire_response_list(group_id):
     if group.experimental_protocol:
         for path_experiment in create_list_of_trees(group.experimental_protocol, 'questionnaire'):
 
-            questionnaire_configuration = get_object_or_404(ComponentConfiguration,
-                                                            pk=path_experiment[-1][0])
+            questionnaire_configuration = get_object_or_404(
+                ComponentConfiguration, pk=path_experiment[-1][0])
             questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
             lime_survey_id = questionnaire.survey.lime_survey_id
             if lime_survey_id not in experiment_questionnaire_response_dict:
@@ -1105,9 +1105,9 @@ def experiment_selection(request, template_name='export/experiment_selection.htm
             if groups_selected:
                 for group_selected_id in groups_selected:
                     group_selected = Group.objects.filter(pk=group_selected_id)
-                    subject_of_group = SubjectOfGroup.objects.filter(group=group_selected)
-                    for subject in subject_of_group:
-                        patient = subject.subject.patient
+                    subject_of_groups = SubjectOfGroup.objects.filter(group=group_selected)
+                    for subject_of_group in subject_of_groups:
+                        patient = subject_of_group.subject.patient
                         if patient.id not in subject_list:
                             subject_list.append(patient.id)
 
@@ -1133,9 +1133,7 @@ def experiment_selection(request, template_name='export/experiment_selection.htm
 
 
 def get_block_tree(component_id, language_code=None):
-
     component = get_object_or_404(Component, id=component_id)
-
     attributes = get_component_attributes(component, language_code)
 
     list_of_component_configuration = []
@@ -1148,10 +1146,12 @@ def get_block_tree(component_id, language_code=None):
                 {'component_configuration_attributes': component_configuration_attributes,
                  'component': component_info})
 
-    return {'identification': component.identification,
-            'component_type': component.component_type,
-            'attributes': attributes,
-            'list_of_component_configuration': list_of_component_configuration}
+    return {
+        'identification': component.identification,
+        'component_type': component.component_type,
+        'attributes': attributes,
+        'list_of_component_configuration': list_of_component_configuration
+    }
 
 
 def get_component_configuration_attributes(configuration):

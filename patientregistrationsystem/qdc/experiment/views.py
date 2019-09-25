@@ -8618,9 +8618,9 @@ def get_block_tree(component, language_code=None, numeration=''):
         counter = 1
         for configuration in configurations:
             component_configuration_attributes = get_component_configuration_attributes(configuration)
-            component_info = get_block_tree(configuration.component,
-                                            language_code,
-                                            (numeration + '.' if numeration else '') + str(counter))
+            component_info = get_block_tree(
+                configuration.component, language_code,
+                (numeration + '.' if numeration else '') + str(counter))
             list_of_component_configuration.append(
                 {'component_configuration_attributes': component_configuration_attributes,
                  'component': component_info,

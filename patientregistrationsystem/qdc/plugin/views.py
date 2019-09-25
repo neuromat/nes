@@ -11,7 +11,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from experiment.models import Experiment, QuestionnaireResponse as ExperimentResponse, Questionnaire, Component
+from experiment.models import Experiment, QuestionnaireResponse as ExperimentResponse, Questionnaire, Component, Group
+from experiment.views import get_block_tree
 from export.forms import ExportForm
 from export.input_export import build_complete_export_structure
 from export.models import Export
@@ -52,7 +53,18 @@ def update_patient_attributes(participants):
     return participants
 
 
-def build_questionnaires_list(language_code):
+def has_questionnaire(experimental_protocol, survey):
+    components = get_block_tree(experimental_protocol, language_code='en')
+    for component in components['list_of_component_configuration']:
+        if component['component']['component_type'] == Component.QUESTIONNAIRE:
+            questionnaire = Questionnaire.objects.get(id=component['component']['component'].id)
+            if questionnaire.survey == survey:
+                return True
+
+    return False
+
+
+def build_questionnaires_list(language_code, groups=None):
     """Build questionnaires list that will be used in export method to build
     export structure
     :param language_code: str - questionnaire language code
@@ -79,16 +91,41 @@ def build_questionnaires_list(language_code):
         for index, dict0 in enumerate(questionnaires)
     ]
 
-    return 0, questionnaires
+    # TODO (NES-995): break at least this part in another method.
+    #  Keep attentiont to the principle of (sic) one method -> do one thing.
+    # If questionnaires list is for experiment questionnaires, update questionnaires list
+    for questionnaire in questionnaires:
+        del questionnaire[0]
+
+    new_questionnaires = []
+    admission_survey = questionnaires[0]
+    surgical_survey = questionnaires[1]
+    for group_id in groups:
+        group_id = str(group_id)
+        copy_admission = admission_survey.copy()
+        copy_admission.insert(0, group_id)
+        new_questionnaires.append(copy_admission)
+        group = Group.objects.get(id=group_id)
+        if has_questionnaire(group.experimental_protocol, random_forests.surgical_evaluation):
+            copy_surgical = surgical_survey.copy()
+            copy_surgical.insert(0, group_id)
+            new_questionnaires.append(copy_surgical)
+
+    for i, questionnaire in enumerate(new_questionnaires):
+        questionnaire.insert(0, str(i))
+
+    return 0, new_questionnaires
 
 
-def build_zip_file(request, participants_plugin, participants_headers, questionnaires):
+def build_zip_file(request, participants_plugin, participants_headers, questionnaires,
+                   per_experiment=True):
     """Define components to use as the component list argument of
     build_complete_export_structure export method
     :param request: Request object
     :param participants_plugin: list - list of participants selected to send to Plugin
     :param participants_headers: list
     :param questionnaires: list
+    :param per_experiment: boolean - True if per_experiment, else False (per_participant)
     :return: str = zip file path if success, else Questoinaires.ERROR_CODE
     """
     components = {
@@ -102,7 +139,10 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     os.makedirs(export_dir)
     input_filename = path.join(export_dir, 'json_export.json')
     build_complete_export_structure(
-        True, True, False, participants_headers, [], questionnaires, [], ['short'], 'code',
+        True, True, per_experiment, participants_headers, [],
+        [] if per_experiment else questionnaires,
+        questionnaires if per_experiment else [],
+        ['short'], 'code',
         input_filename, components, request.LANGUAGE_CODE, 'csv')
     result = export_create(
         request, export.id, input_filename, participants_plugin=participants_plugin)
@@ -112,12 +152,72 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
     return 0, result
 
 
+def select_participants(request, experiment_id):
+    participants = []
+    random_forests = RandomForests.objects.get()
+    admission = Survey.objects.get(pk=random_forests.admission_assessment.pk)
+    experiment = Experiment.objects.get(pk=experiment_id)
+    for component in experiment.components.all():
+        if component.component_type == Component.QUESTIONNAIRE:
+            questionnaire = Questionnaire.objects.get(pk=component.id)
+            if questionnaire.survey == admission:
+                questionnaire_responses = ExperimentResponse.objects.filter(
+                    data_configuration_tree__component_configuration__component=questionnaire)
+                for questionnaire_response in questionnaire_responses:
+                    subject_of_group = questionnaire_response.subject_of_group
+                    if subject_of_group:
+                        participants.append({
+                            'subject_of_group_id': subject_of_group.id,
+                            'participant_id': subject_of_group.subject.patient.id,
+                            'participant_name': subject_of_group.subject.patient.name,
+                            'group_id': subject_of_group.group.id,
+                            'group_name': subject_of_group.group.title
+                        })
+    if participants:
+        json_participants = json.dumps(participants)
+    else:
+        json_participants = []
+
+    return HttpResponse(json_participants, content_type='application/json')
+
+
 @login_required
 def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
     if request.method == 'POST':
         if request.POST.get('per_experiment'):
+            # TODO (NES-995): change name for subjects_of_groups_selected
+            subjects_of_groups = request.POST.getlist('patients_selected[]')
+            group_ids = Group.objects.filter(subjectofgroup__in=subjects_of_groups).distinct().values_list('id', flat=True)
+            request.session['group_selected_list'] = [str(group_id) for group_id in list(group_ids)]
+            request.session['license'] = 0
+            # Need to delete before call export_create method
+            if 'filtered_participant_data' in request.session:
+                del request.session['filtered_participant_data']
             participants_headers = update_patient_attributes(request.POST.getlist('patient_selected'))
-            
+            # TODO (NES-995): build always in English, but possibly not hard coded
+            limesurvey_error, questionnaires = build_questionnaires_list('en', group_ids)
+            if limesurvey_error:
+                messages.error(
+                    request,
+                    _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
+                      'If problem persists please contact System Administrator.'))
+                return redirect(reverse('send-to-plugin'))
+            limesurvey_error, zip_file = build_zip_file(request, None, participants_headers, questionnaires, True)
+            if limesurvey_error:
+                messages.error(
+                    request,
+                    _('Error: some thing went wrong consuming LimeSurvey API. Please try again. '
+                      'If problem persists please contact System Administrator.'))
+                return redirect(reverse('send-to-plugin'))
+            if zip_file:
+                export = Export.objects.last()
+                plugin_url = RandomForests.objects.first().plugin_url
+                plugin_url += '?user_id=' + str(request.user.id) + '&export_id=' + str(export.id)
+                request.session['plugin_url'] = plugin_url
+                return redirect(reverse('send-to-plugin'))
+            else:
+                messages.error(request, _('Could not open zip file to send to Forest Plugin'))
+                return redirect(reverse('send-to-plugin'))
         else:
             if not request.POST.getlist('patients_selected[]'):
                 messages.warning(request, _('Please select at least one patient'))
@@ -232,32 +332,3 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
         del request.session['plugin_url']
 
     return render(request, template_name, context)
-
-
-def select_participants(request, experiment_id):
-    participants = []
-    random_forests = RandomForests.objects.get()
-    admission = Survey.objects.get(pk=random_forests.admission_assessment.pk)
-    experiment = Experiment.objects.get(pk=experiment_id)
-    for component in experiment.components.all():
-        if component.component_type == Component.QUESTIONNAIRE:
-            questionnaire = Questionnaire.objects.get(pk=component.id)
-            if questionnaire.survey == admission:
-                questionnaire_responses = ExperimentResponse.objects.filter(
-                    data_configuration_tree__component_configuration__component=questionnaire)
-                for questionnaire_response in questionnaire_responses:
-                    subject_of_group = questionnaire_response.subject_of_group
-                    if subject_of_group:
-                        participants.append({
-                            'subject_of_group_id': subject_of_group.id,
-                            'participant_id': subject_of_group.subject.patient.id,
-                            'participant_name': subject_of_group.subject.patient.name,
-                            'group_id': subject_of_group.group.id,
-                            'group_name': subject_of_group.group.title
-                        })
-    if participants:
-        json_participants = json.dumps(participants)
-    else:
-        json_participants = []
-
-    return HttpResponse(json_participants, content_type='application/json')

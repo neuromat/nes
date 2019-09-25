@@ -852,20 +852,16 @@ class ExportExecution:
         return participant_rows
 
     def get_per_participant_data(self, participant=None, questionnaire=None):
-
         if questionnaire:
             return self.per_participant_data[participant][questionnaire]
-
         if participant:
             return self.per_participant_data[participant]
 
         return self.per_participant_data
 
     def get_per_participant_data_from_experiment(self, participant=None, questionnaire=None):
-
         if questionnaire:
             return self.per_participant_data_from_experiment[participant][questionnaire]
-
         if participant:
             return self.per_participant_data_from_experiment[participant]
 
