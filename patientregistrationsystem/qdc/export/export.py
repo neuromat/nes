@@ -1409,9 +1409,12 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_experiment_questionnaire(self, heading_type):
+    # TODO (NES-995): change per_experiment to per_experiment_plugin or something like this.
+    #  Change this and in other places
+    def process_per_experiment_questionnaire(self, heading_type, per_experiment=False):
         """
         :param heading_type: str, type of header csv columns
+        :param per_experiment: bool - if sending to plugin by experiment
         :return:
         """
         error_msg = ''
@@ -1433,10 +1436,16 @@ class ExportExecution:
                     questionnaire_code = questionnaires['questionnaire_code']
                     questionnaire_title = self.redefine_questionnaire_title(questionnaire_data['questionnaire_name'])
 
-                    questionnaire_prefix_filename = questionnaire_data['prefix_filename_responses']
                     prefix_filename_fields = questionnaire_data['prefix_filename_fields']
                     # Ex. Q123_aaa
-                    directory_questionnaire_name = '%s_%s' % (str(questionnaire_code), questionnaire_title)
+                    if per_experiment:
+                        randomforests = RandomForests.objects.first()
+                        if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                            directory_questionnaire_name = 'QA_unified_admission_assessment'
+                        elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                            directory_questionnaire_name = 'QS_surgical_evaluation'
+                        else:
+                            directory_questionnaire_name = '%s_%s' % (str(questionnaire_code), questionnaire_title)
 
                     # Metadata directory for export
                     # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/
@@ -1446,8 +1455,8 @@ class ExportExecution:
                         self.per_group_data[group_id]['group']['questionnaire_metadata_export_directory'],
                         directory_questionnaire_name)
                     # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
-                    error_msg, complete_export_metadata_path = create_directory(metadata_directory,
-                        directory_questionnaire_name)
+                    error_msg, complete_export_metadata_path = create_directory(
+                        metadata_directory, directory_questionnaire_name)
                     if error_msg != '':
                         return error_msg
 
@@ -1482,8 +1491,15 @@ class ExportExecution:
 
                         for language in language_list:
                             # Q123_<questionnaire_title>_<lang>.csv
-                            export_filename = str(questionnaire_code) + '_' + questionnaire_title + '_' + language
-                            # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/\
+                            if per_experiment:
+                                randomforests = RandomForests.objects.first()
+                                if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                                    export_filename = 'QA_unified_admission_assessment_' + language
+                                elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                                    export_filename = 'QS_surgical_evaluation_' + language
+                                else:
+                                    export_filename = str(questionnaire_code) + '_' + questionnaire_title + '_' + language
+                            # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/
                             # Q123_<questionnaire_title>_<lang>.csv
                             complete_filename = path.join(
                                 complete_export_path, export_filename + '.' + filesformat_type)
@@ -1546,8 +1562,17 @@ class ExportExecution:
                             str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
                         # Build metadata export - Fields_Q123.csv
-                        export_filename = '%s_%s_%s.%s' % \
-                                          (prefix_filename_fields, str(questionnaire_code), language, filesformat_type)
+                        if per_experiment:
+                            randomforests = RandomForests.objects.first()
+                            if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                                export_filename = '%s_%s_%s.%s' % (
+                                    prefix_filename_fields, 'QA', language, filesformat_type)
+                            elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                                export_filename = '%s_%s_%s.%s' % (
+                                    prefix_filename_fields, 'QS', language, filesformat_type)
+                            else:
+                                export_filename = '%s_%s_%s.%s' % (
+                                    prefix_filename_fields, str(questionnaire_code), language, filesformat_type)
 
                         complete_filename = path.join(complete_export_metadata_path, export_filename)
 
@@ -1609,11 +1634,11 @@ class ExportExecution:
                     title = self.get_title_reduced(questionnaire_id=int(questionnaire_id))
                     questionnaire_directory_name = '%s_%s' % (str(questionnaire_code), title)
                     # create questionnaire directory
-                    # path ex. NES_EXPORT/Per_participant/Participant_PCode/QCode_Title/
+                    # path ex. NES_EXPORT/Per_participant/Participant_<participant_code>/questionnaire_code_Title/
                     error_msg, path_per_questionnaire = create_directory(participant_path, questionnaire_directory_name)
                     # path ex. NES_EXPORT/Per_participant/QCode_Title/
-                    export_questionnaire_directory = path.join(path.join(export_directory_base, path_participant),
-                                                               questionnaire_directory_name)
+                    export_questionnaire_directory = path.join(
+                        path.join(export_directory_base, path_participant), questionnaire_directory_name)
 
                     # add participant personal data header
                     questionnaire_header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
@@ -1776,10 +1801,8 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_participant_per_experiment(self, heading_type):
-
+    def process_per_participant_per_experiment(self, heading_type, per_experiment=False):
         error_msg = ''
-
         questionnaire_lime_survey = Questionnaires()
 
         for group_id in self.per_group_data:
@@ -1829,9 +1852,15 @@ class ExportExecution:
                         else:
                             language_list = [questionnaire_language['output_language']]
                         for language in language_list:
-                            # Responses_Q123.csv
-                            export_filename = '%s_%s_%s' % (str(
-                                questionnaire_code), slugify(questionnaire_title), language)
+                            if per_experiment:
+                                randomforests = RandomForests.objects.first()
+                                if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                                    export_filename = 'QA_unified_admission_assessment_' + language
+                                elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                                    export_filename = 'QS_surgical_evaluation_' + language
+                                else:
+                                    export_filename = '%s_%s_%s' % (str(
+                                        questionnaire_code), slugify(questionnaire_title), language)
 
                             # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/
                             # Participant_P123/Step_X_aaa/P123_Q123_aaa.csv

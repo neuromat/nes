@@ -321,12 +321,13 @@ def export_create(
             if export.get_input_data('questionnaires_from_experiments'):
                 if export.get_input_data('export_per_questionnaire'):
                     # 'headings' == ['code'], ['full'] or ['abbreviated'], so request.POST.get('headings')[0]
-                    error_msg = export.process_per_experiment_questionnaire(request.POST.get('headings'))
+                    error_msg = export.process_per_experiment_questionnaire(
+                        request.POST.get('headings'), per_experiment)
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)
             # Build export data for each component
-            error_msg = export.process_per_participant_per_experiment(request.POST.get('headings'))
+            error_msg = export.process_per_participant_per_experiment(request.POST.get('headings'), per_experiment=True)
             if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)
