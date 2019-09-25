@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-25 10:58-0300\n"
+"POT-Creation-Date: 2019-09-25 11:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,9 +70,8 @@ msgid "Send"
 msgstr "Enviar"
 
 #: plugin/templates/plugin/send_to_plugin.html:187
-#| msgid "Participant fields"
 msgid "Per Participant"
-msgstr "Por Participant"
+msgstr "Por Participante"
 
 #: plugin/templates/plugin/send_to_plugin.html:257
 msgid "Cancel"
