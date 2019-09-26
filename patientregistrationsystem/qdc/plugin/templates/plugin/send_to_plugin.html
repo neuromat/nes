@@ -283,7 +283,7 @@
 
         {# If redirected, open url plugin #}
         {% if plugin_url %}
-            window.open("{{ plugin_url }}", "_blank");
+            window.open("{{ plugin_url | escapejs }}", "_blank");
         {% endif %}
     </script>
 {% endblock %}

@@ -51,7 +51,7 @@ class PluginTest(ExportTestCase):
         UtilTests.create_response_survey(self.user, self.patient, self.survey1, 21)
         UtilTests.create_response_survey(self.user, self.patient, self.survey2, 21)
 
-    def test_GET_send_to_plugin_returns_correct_status_code(self):
+    def test_GET_send_to_plugin_returns_right_status_code(self):
         response = self.client.get(reverse('send-to-plugin'), follow=True)
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'plugin/send_to_plugin.html')
