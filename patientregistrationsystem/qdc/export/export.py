@@ -1438,14 +1438,13 @@ class ExportExecution:
 
                     prefix_filename_fields = questionnaire_data['prefix_filename_fields']
                     # Ex. Q123_aaa
+                    directory_questionnaire_name = '%s_%s' % (str(questionnaire_code), questionnaire_title)
                     if per_experiment_plugin:
                         randomforests = RandomForests.objects.first()
                         if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
                             directory_questionnaire_name = 'QA_unified_admission_assessment'
                         elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                             directory_questionnaire_name = 'QS_surgical_evaluation'
-                        else:
-                            directory_questionnaire_name = '%s_%s' % (str(questionnaire_code), questionnaire_title)
 
                     # Metadata directory for export
                     # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/
@@ -1491,14 +1490,13 @@ class ExportExecution:
 
                         for language in language_list:
                             # Q123_<questionnaire_title>_<lang>.csv
+                            export_filename = str(questionnaire_code) + '_' + questionnaire_title + '_' + language
                             if per_experiment_plugin:
                                 randomforests = RandomForests.objects.first()
                                 if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
-                                    export_filename = 'QA_unified_admission_assessment_' + language
+                                    export_filename = 'QA_unified_admission_assessment_en'
                                 elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
-                                    export_filename = 'QS_surgical_evaluation_' + language
-                                else:
-                                    export_filename = str(questionnaire_code) + '_' + questionnaire_title + '_' + language
+                                    export_filename = 'QS_surgical_evaluation_en'
                             # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/
                             # Q123_<questionnaire_title>_<lang>.csv
                             complete_filename = path.join(
@@ -1562,6 +1560,8 @@ class ExportExecution:
                             str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
                         # Build metadata export - Fields_Q123.csv
+                        export_filename = '%s_%s_%s.%s' % (
+                            prefix_filename_fields, str(questionnaire_code), language, filesformat_type)
                         if per_experiment_plugin:
                             randomforests = RandomForests.objects.first()
                             if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
@@ -1570,9 +1570,6 @@ class ExportExecution:
                             elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                 export_filename = '%s_%s_%s.%s' % (
                                     prefix_filename_fields, 'QS', language, filesformat_type)
-                            else:
-                                export_filename = '%s_%s_%s.%s' % (
-                                    prefix_filename_fields, str(questionnaire_code), language, filesformat_type)
 
                         complete_filename = path.join(complete_export_metadata_path, export_filename)
 
@@ -1801,7 +1798,7 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_participant_per_experiment(self, heading_type, per_experiment=False):
+    def process_per_participant_per_experiment(self, heading_type, per_experiment_plugin=False):
         error_msg = ''
         questionnaire_lime_survey = Questionnaires()
 
@@ -1851,19 +1848,21 @@ class ExportExecution:
                             language_list = questionnaire_language['language_list']
                         else:
                             language_list = [questionnaire_language['output_language']]
+                        response_english_plugin_done = False
                         for language in language_list:
-                            if per_experiment:
+                            if response_english_plugin_done:
+                                break
+                            export_filename = '%s_%s_%s' % (str(
+                                questionnaire_code), slugify(questionnaire_title), language)
+                            if per_experiment_plugin:
                                 randomforests = RandomForests.objects.first()
                                 if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
-                                    export_filename = 'QA_unified_admission_assessment_' + language
+                                    export_filename = 'QA_unified_admission_assessment_en'
                                 elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
-                                    export_filename = 'QS_surgical_evaluation_' + language
-                                else:
-                                    export_filename = '%s_%s_%s' % (str(
-                                        questionnaire_code), slugify(questionnaire_title), language)
+                                    export_filename = 'QS_surgical_evaluation_en'
+                                response_english_plugin_done = True
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/
-                            # Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
+                            # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Participant_P123/Step_X_aaa
                             complete_filename = path.join(
                                 directory_step_participant, export_filename + '.' + filesformat_type)
 
