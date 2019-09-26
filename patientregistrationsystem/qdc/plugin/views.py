@@ -145,7 +145,8 @@ def build_zip_file(request, participants_plugin, participants_headers, questionn
         ['short'], 'code',
         input_filename, components, request.LANGUAGE_CODE, 'csv')
     result = export_create(
-        request, export.id, input_filename, participants_plugin=participants_plugin, per_experiment=per_experiment)
+        request, export.id, input_filename, participants_plugin=participants_plugin,
+        per_experiment_plugin=per_experiment)
     if result == Questionnaires.ERROR_CODE:
         return result, None
 

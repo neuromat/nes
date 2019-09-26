@@ -222,13 +222,13 @@ def update_fields(list_, heading_type, fields):
 
 def export_create(
         request, export_id, input_filename, template_name='export/export_data.html', participants_plugin=None,
-        per_experiment=False):
+        per_experiment_plugin=False):
     try:
         export_instance = Export.objects.get(user=request.user, id=export_id)
         export = ExportExecution(export_instance.user.id, export_instance.id)
         language_code = request.LANGUAGE_CODE
 
-        if participants_plugin and not per_experiment:
+        if participants_plugin and not per_experiment_plugin:
             participants_filtered_list = participants_plugin
         elif 'filtered_participant_data' in request.session:
             participants_filtered_list = request.session['filtered_participant_data']
@@ -274,7 +274,7 @@ def export_create(
                     list(participants_list),
                     request.session['group_selected_list'])
             export_rows_participants = export.process_participant_data(
-                participants_input_data, participants_list, language_code)
+                participants_input_data, participants_list, language_code, participants_plugin)
             export.get_input_data('participants')['data_list'] = export_rows_participants
             # Create file participants.csv and diagnosis.csv
             error_msg = export.build_participant_export_data('group_selected_list' in request.session)
@@ -294,7 +294,7 @@ def export_create(
                 messages.error(request, error_msg)
                 return render(request, template_name)
 
-            # create files of experimental protocol description file
+            # Create files of experimental protocol description file
             error_msg = export.process_experiment_data(language_code)
 
             if error_msg != '':
@@ -322,7 +322,7 @@ def export_create(
                 if export.get_input_data('export_per_questionnaire'):
                     # 'headings' == ['code'], ['full'] or ['abbreviated'], so request.POST.get('headings')[0]
                     error_msg = export.process_per_experiment_questionnaire(
-                        request.POST.get('headings'), per_experiment)
+                        request.POST.get('headings'), per_experiment_plugin)
                     if error_msg != '':
                         messages.error(request, error_msg)
                         return render(request, template_name)

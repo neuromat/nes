@@ -1411,10 +1411,10 @@ class ExportExecution:
 
     # TODO (NES-995): change per_experiment to per_experiment_plugin or something like this.
     #  Change this and in other places
-    def process_per_experiment_questionnaire(self, heading_type, per_experiment=False):
+    def process_per_experiment_questionnaire(self, heading_type, per_experiment_plugin=False):
         """
         :param heading_type: str, type of header csv columns
-        :param per_experiment: bool - if sending to plugin by experiment
+        :param per_experiment_plugin: bool - if sending to plugin by experiment
         :return:
         """
         error_msg = ''
@@ -1438,7 +1438,7 @@ class ExportExecution:
 
                     prefix_filename_fields = questionnaire_data['prefix_filename_fields']
                     # Ex. Q123_aaa
-                    if per_experiment:
+                    if per_experiment_plugin:
                         randomforests = RandomForests.objects.first()
                         if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
                             directory_questionnaire_name = 'QA_unified_admission_assessment'
@@ -1491,7 +1491,7 @@ class ExportExecution:
 
                         for language in language_list:
                             # Q123_<questionnaire_title>_<lang>.csv
-                            if per_experiment:
+                            if per_experiment_plugin:
                                 randomforests = RandomForests.objects.first()
                                 if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
                                     export_filename = 'QA_unified_admission_assessment_' + language
@@ -1562,7 +1562,7 @@ class ExportExecution:
                             str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
                         # Build metadata export - Fields_Q123.csv
-                        if per_experiment:
+                        if per_experiment_plugin:
                             randomforests = RandomForests.objects.first()
                             if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
                                 export_filename = '%s_%s_%s.%s' % (
@@ -2534,7 +2534,7 @@ class ExportExecution:
 
         return participants
 
-    def process_participant_data(self, participants_output_fields, participants, language):
+    def process_participant_data(self, participants_output_fields, participants, language, participants_plugin=False):
         # TODO: fix translation model functionality
         age_value_dict = {}
         headers, fields = self.get_headers_and_fields(participants_output_fields)
@@ -2543,7 +2543,7 @@ class ExportExecution:
             age_value_dict = self.calculate_age_by_participant(participants)
             fields.remove('age')
 
-        if language != 'pt-br':  # read english fields
+        if language != 'pt-br' or participants_plugin:  # Read english fields
             fields = self.get_field_en(fields)
 
         # Pick up the first terms of participants: required because
