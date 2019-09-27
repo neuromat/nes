@@ -91,30 +91,33 @@ def build_questionnaires_list(language_code, groups=None):
         for index, dict0 in enumerate(questionnaires)
     ]
 
-    # TODO (NES-995): break at least this part in another method.
-    #  Keep attentiont to the principle of (sic) one method -> do one thing.
-    # If questionnaires list is for experiment questionnaires, update questionnaires list
-    for questionnaire in questionnaires:
-        del questionnaire[0]
+    if groups is not None:
+        # TODO (NES-995): break at least this part in another method.
+        #  Keep attentiont to the principle of (sic) one method -> do one thing.
+        # If questionnaires list is for experiment questionnaires, update questionnaires list
+        for questionnaire in questionnaires:
+            del questionnaire[0]
 
-    new_questionnaires = []
-    admission_survey = questionnaires[0]
-    surgical_survey = questionnaires[1]
-    for group_id in groups:
-        group_id = str(group_id)
-        copy_admission = admission_survey.copy()
-        copy_admission.insert(0, group_id)
-        new_questionnaires.append(copy_admission)
-        group = Group.objects.get(id=group_id)
-        if has_questionnaire(group.experimental_protocol, random_forests.surgical_evaluation):
-            copy_surgical = surgical_survey.copy()
-            copy_surgical.insert(0, group_id)
-            new_questionnaires.append(copy_surgical)
+        new_questionnaires = []
+        admission_survey = questionnaires[0]
+        surgical_survey = questionnaires[1]
+        for group_id in groups:
+            group_id = str(group_id)
+            copy_admission = admission_survey.copy()
+            copy_admission.insert(0, group_id)
+            new_questionnaires.append(copy_admission)
+            group = Group.objects.get(id=group_id)
+            if has_questionnaire(group.experimental_protocol, random_forests.surgical_evaluation):
+                copy_surgical = surgical_survey.copy()
+                copy_surgical.insert(0, group_id)
+                new_questionnaires.append(copy_surgical)
 
-    for i, questionnaire in enumerate(new_questionnaires):
-        questionnaire.insert(0, str(i))
+        for i, questionnaire in enumerate(new_questionnaires):
+            questionnaire.insert(0, str(i))
 
-    return 0, new_questionnaires
+        return 0, new_questionnaires
+
+    return 0, questionnaires
 
 
 def build_zip_file(request, participants_plugin, participants_headers, questionnaires,
