@@ -327,7 +327,8 @@ def export_create(
                         messages.error(request, error_msg)
                         return render(request, template_name)
             # Build export data for each component
-            error_msg = export.process_per_participant_per_experiment(request.POST.get('headings'), per_experiment_plugin=True)
+            error_msg = export.process_per_participant_per_experiment(
+                request.POST.get('headings'), per_experiment_plugin=per_experiment_plugin)
             if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)

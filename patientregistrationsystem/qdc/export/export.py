@@ -371,11 +371,10 @@ class ExportExecution:
         header_step_list = ['Step', 'Step identification', 'Path questionnaire', 'Data completed']
         for group_id in groups:
             group = get_object_or_404(Group, pk=group_id)
-            # TODO (NES-995): see if it's best to make this conditional here or below
-            # if subjects_of_groups is not None:
-            #     subjects_of_group = SubjectOfGroup.objects.filter(group=group, pk__in=subjects_of_groups)
-            # else:
-            subjects_of_group = SubjectOfGroup.objects.filter(group=group)
+            if subjects_of_groups is not None:
+                subjects_of_group = SubjectOfGroup.objects.filter(group=group, pk__in=subjects_of_groups)
+            else:
+                subjects_of_group = SubjectOfGroup.objects.filter(group=group)
             title = slugify(group.title).replace('-', '_')
 
             description = group.description  # TODO: code bloat
@@ -431,65 +430,64 @@ class ExportExecution:
 
                             for data_configuration_tree in configuration_tree_list:
                                 for subject_of_group in subjects_of_group:
-                                    if str(subject_of_group.id) in subjects_of_groups:
-                                        experiment_questionnaire_response_list = \
-                                            ExperimentQuestionnaireResponse.objects.filter(
-                                                data_configuration_tree_id=data_configuration_tree.id,
-                                                subject_of_group=subject_of_group)
-                                        for questionnaire_response in experiment_questionnaire_response_list:
-                                            token_id = questionnaire_response.token_id
-                                            completed = surveys.get_participant_properties(
-                                                questionnaire_id, token_id, 'completed')
-                                            # load complete questionnaires data
-                                            if completed is not None and completed != 'N' and completed != '':
-                                                subject_code = questionnaire_response.subject_of_group.subject.patient.code
-                                                step_number = path_experiment[0][4]
-                                                step_identification = questionnaire_configuration.component.identification
-                                                protocol_step_list = [
-                                                    header_step_list,
-                                                    [step_number, step_identification, path_questionnaire, completed]
-                                                ]
-                                                questionnaire_response_dic = {
-                                                    'token_id': token_id,
-                                                    'questionnaire_id': questionnaire_id,
-                                                    'questionnaire_code': questionnaire_code,
-                                                    'data_configuration_tree_id': data_configuration_tree.id,
-                                                    'subject_id':
-                                                        questionnaire_response.subject_of_group.subject.patient.id,
-                                                    'subject_code': subject_code,
-                                                    'directory_step_name': 'Step_' + str(step_number) + '_' +
-                                                                           component_type.upper(),
-                                                    'protocol_step_list': protocol_step_list,
-                                                }
+                                    experiment_questionnaire_response_list = \
+                                        ExperimentQuestionnaireResponse.objects.filter(
+                                            data_configuration_tree_id=data_configuration_tree.id,
+                                            subject_of_group=subject_of_group)
+                                    for questionnaire_response in experiment_questionnaire_response_list:
+                                        token_id = questionnaire_response.token_id
+                                        completed = surveys.get_participant_properties(
+                                            questionnaire_id, token_id, 'completed')
+                                        # load complete questionnaires data
+                                        if completed is not None and completed != 'N' and completed != '':
+                                            subject_code = questionnaire_response.subject_of_group.subject.patient.code
+                                            step_number = path_experiment[0][4]
+                                            step_identification = questionnaire_configuration.component.identification
+                                            protocol_step_list = [
+                                                header_step_list,
+                                                [step_number, step_identification, path_questionnaire, completed]
+                                            ]
+                                            questionnaire_response_dic = {
+                                                'token_id': token_id,
+                                                'questionnaire_id': questionnaire_id,
+                                                'questionnaire_code': questionnaire_code,
+                                                'data_configuration_tree_id': data_configuration_tree.id,
+                                                'subject_id':
+                                                    questionnaire_response.subject_of_group.subject.patient.id,
+                                                'subject_code': subject_code,
+                                                'directory_step_name': 'Step_' + str(step_number) + '_' +
+                                                                       component_type.upper(),
+                                                'protocol_step_list': protocol_step_list,
+                                            }
 
-                                                if subject_code not in \
-                                                        self.per_group_data[group_id]['data_per_participant']:
-                                                    self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
-                                                    self.per_group_data[group_id]['data_per_participant'][subject_code][
-                                                        'token_list'
-                                                    ] = []
-
+                                            if subject_code not in \
+                                                    self.per_group_data[group_id]['data_per_participant']:
+                                                self.per_group_data[group_id]['data_per_participant'][subject_code] = {}
                                                 self.per_group_data[group_id]['data_per_participant'][subject_code][
                                                     'token_list'
-                                                ].append(questionnaire_response_dic)
+                                                ] = []
 
-                                                if questionnaire_id not in self.per_group_data[
+                                            self.per_group_data[group_id]['data_per_participant'][subject_code][
+                                                'token_list'
+                                            ].append(questionnaire_response_dic)
+
+                                            if questionnaire_id not in self.per_group_data[
+                                                group_id
+                                            ]['questionnaires_per_group']:
+                                                self.per_group_data[
                                                     group_id
-                                                ]['questionnaires_per_group']:
-                                                    self.per_group_data[
-                                                        group_id
-                                                    ]['questionnaires_per_group'][questionnaire_id] = {
-                                                        'questionnaire_code': questionnaire_code,
-                                                        'header_filtered_list': [],
-                                                        'token_list': []
-                                                    }
+                                                ]['questionnaires_per_group'][questionnaire_id] = {
+                                                    'questionnaire_code': questionnaire_code,
+                                                    'header_filtered_list': [],
+                                                    'token_list': []
+                                                }
 
-                                                if token_id not in self.per_group_data[group_id][
-                                                    'questionnaires_per_group'
-                                                ][questionnaire_id]['token_list']:
-                                                    self.per_group_data[group_id]['questionnaires_per_group'][
-                                                        questionnaire_id
-                                                    ]['token_list'].append(questionnaire_response_dic)
+                                            if token_id not in self.per_group_data[group_id][
+                                                'questionnaires_per_group'
+                                            ][questionnaire_id]['token_list']:
+                                                self.per_group_data[group_id]['questionnaires_per_group'][
+                                                    questionnaire_id
+                                                ]['token_list'].append(questionnaire_response_dic)
 
             if group.experimental_protocol is not None:
                 if self.get_input_data('component_list')['per_additional_data']:
@@ -3326,7 +3324,11 @@ class ExportExecution:
                     self.questionnaire_utils.redefine_header_and_fields_experiment(
                         questionnaire_id, header_filtered, fields, headers)
 
-                    if self.per_group_data[group_id]['questionnaires_per_group']:
+                    # "And" part is inserted because when exporting from plugin, all groups
+                    # are being processed independently of participant has reponses in the
+                    # too questionnaires or not.
+                    if self.per_group_data[group_id]['questionnaires_per_group'] \
+                            and int(questionnaire_id) in self.per_group_data[group_id]['questionnaires_per_group']:
                         questionnaire_list = self.per_group_data[
                             group_id
                         ]['questionnaires_per_group'][int(questionnaire_id)]['token_list']

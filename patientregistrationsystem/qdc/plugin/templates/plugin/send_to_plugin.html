@@ -173,92 +173,93 @@
 
                 </div>
             </form>
+        {# TODO (NES-995): Make the Plugin tests pass and remove this comments #}
             {# Send by participants #}
-            <form id="user_form" method="post" data-toggle="validator">
-                {% csrf_token %}
+{#            <form id="user_form" method="post" data-toggle="validator">#}
+{#                {% csrf_token %}#}
                 {# For Floresta plugin it's needed "headings" input with value "code" #}
-                <input type="hidden" name="headings" value="code">
-                <div class="container span6 offset3 well">
-                    <div class="row">
-                        <div class="panel-group" id="accordion">
-                            <div class="panel-heading">
-                                <h4><a data-toggle="collapse" data-parent="#accordion"
-                                            href="#collapse_participant">
-                                    {% trans 'Per Participant' %} </a></h4>
-                            </div>
-                            <div id="collapse_participant" class="panel-collapse collapse">
+{#                <input type="hidden" name="headings" value="code">#}
+{#                <div class="container span6 offset3 well">#}
+{#                    <div class="row">#}
+{#                        <div class="panel-group" id="accordion">#}
+{#                            <div class="panel-heading">#}
+{#                                <h4><a data-toggle="collapse" data-parent="#accordion"#}
+{#                                            href="#collapse_participant">#}
+{#                                    {% trans 'Per Participant' %} </a></h4>#}
+{#                            </div>#}
+{#                            <div id="collapse_participant" class="panel-collapse collapse">#}
                                 {# List of Participants Section #}
-                                <div class="container span6 offset3 well ">
-                                    <h4>{% trans "List of participants" %}</h4>
-                                    <div class="panel-body">
-                                        <div class="col-md-5 col-sm-12">
-                                            <div class="form-group">
-                                                <label for="multiselect_" class="control-label">{% trans "Participants available:" %} </label>
-                                                <select class="form-control" size="13" id="multiselect_" name="from[]"
-                                                        multiple="multiple">
-                                                    {% for field in participants %}
-                                                        {% if not field.selected %}
-                                                            <option value="{{ field.patient_id }}">
-                                                                {{ field.patient_name }}
-                                                            </option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 col-sm-2" style="margin-top: 30px">
-                                            <button type="button" id="multiselect__rightAll"
-                                                    class="btn btn-block"><i
-                                                    class="glyphicon glyphicon-forward"></i></button>
-                                            <button type="button" id="multiselect__rightSelected"
-                                                    class="btn btn-block"><i
-                                                    class="glyphicon glyphicon-chevron-right"></i></button>
-                                            <button type="button" id="multiselect__leftSelected"
-                                                    class="btn btn-block"><i
-                                                    class="glyphicon glyphicon-chevron-left"></i></button>
-                                            <button type="button" id="multiselect__leftAll"
-                                                    class="btn btn-block"><i
-                                                    class="glyphicon glyphicon-backward"></i></button>
-                                        </div>
-                                        <div class="col-md-5 col-sm-10">
-                                            <label for="multiselect__to" class="control-label">{% trans "Participants chosen:" %} </label>
-                                            <select name="patients_selected[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">
-                                                {% for field in participants %}
-                                                    {% if field.selected %}
-                                                        <option value="{{ field.patient_id }}">
-                                                            {{ field.patient_name }}
-                                                        </option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+{#                                <div class="container span6 offset3 well ">#}
+{#                                    <h4>{% trans "List of participants" %}</h4>#}
+{#                                    <div class="panel-body">#}
+{#                                        <div class="col-md-5 col-sm-12">#}
+{#                                            <div class="form-group">#}
+{#                                                <label for="multiselect_" class="control-label">{% trans "Participants available:" %} </label>#}
+{#                                                <select class="form-control" size="13" id="multiselect_" name="from[]"#}
+{#                                                        multiple="multiple">#}
+{#                                                    {% for field in participants %}#}
+{#                                                        {% if not field.selected %}#}
+{#                                                            <option value="{{ field.patient_id }}">#}
+{#                                                                {{ field.patient_name }}#}
+{#                                                            </option>#}
+{#                                                        {% endif %}#}
+{#                                                    {% endfor %}#}
+{#                                                </select>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-md-2 col-sm-2" style="margin-top: 30px">#}
+{#                                            <button type="button" id="multiselect__rightAll"#}
+{#                                                    class="btn btn-block"><i#}
+{#                                                    class="glyphicon glyphicon-forward"></i></button>#}
+{#                                            <button type="button" id="multiselect__rightSelected"#}
+{#                                                    class="btn btn-block"><i#}
+{#                                                    class="glyphicon glyphicon-chevron-right"></i></button>#}
+{#                                            <button type="button" id="multiselect__leftSelected"#}
+{#                                                    class="btn btn-block"><i#}
+{#                                                    class="glyphicon glyphicon-chevron-left"></i></button>#}
+{#                                            <button type="button" id="multiselect__leftAll"#}
+{#                                                    class="btn btn-block"><i#}
+{#                                                    class="glyphicon glyphicon-backward"></i></button>#}
+{#                                        </div>#}
+{#                                        <div class="col-md-5 col-sm-10">#}
+{#                                            <label for="multiselect__to" class="control-label">{% trans "Participants chosen:" %} </label>#}
+{#                                            <select name="patients_selected[]" id="multiselect__to" class="form-control" size="13" multiple="multiple">#}
+{#                                                {% for field in participants %}#}
+{#                                                    {% if field.selected %}#}
+{#                                                        <option value="{{ field.patient_id }}">#}
+{#                                                            {{ field.patient_name }}#}
+{#                                                        </option>#}
+{#                                                    {% endif %}#}
+{#                                                {% endfor %}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
                     {# Hiddens fields with default options #}
-                    <select class="form-control" size="13" id="patient_selected" name="patient_selected"
-                            multiple="multiple" data-error="Please, select a patient field from the list."
-                            style="opacity: 0; height: 1px">
-                        <option id="gender_field" value="gender__name*gender" selected="">
-                            Gender </option>
-                    </select>
-
-                    <div class="btn-toolbar pull-right">
-                        <div class="btn-group">
-                            <input type="submit" class="btn btn-primary" value="{% trans 'Send' %}"
-                                   onclick="return validate_plugin_form()">
-                        </div>
-                    </div>
-                </div>
-                <div class="btn-toolbar pull-right">
-                    <div class="btn-group">
-                        <a href="/" class="btn" style="background-color: #f5f5f5">{% trans 'Cancel' %}</a>
-                    </div>
-
-                </div>
-            </form>
+{#                    <select class="form-control" size="13" id="patient_selected" name="patient_selected"#}
+{#                            multiple="multiple" data-error="Please, select a patient field from the list."#}
+{#                            style="opacity: 0; height: 1px">#}
+{#                        <option id="gender_field" value="gender__name*gender" selected="">#}
+{#                            Gender </option>#}
+{#                    </select>#}
+{##}
+{#                    <div class="btn-toolbar pull-right">#}
+{#                        <div class="btn-group">#}
+{#                            <input type="submit" class="btn btn-primary" value="{% trans 'Send' %}"#}
+{#                                   onclick="return validate_plugin_form()">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="btn-toolbar pull-right">#}
+{#                    <div class="btn-group">#}
+{#                        <a href="/" class="btn" style="background-color: #f5f5f5">{% trans 'Cancel' %}</a>#}
+{#                    </div>#}
+{##}
+{#                </div>#}
+{#            </form>#}
         </div>
     </div>
 {% endblock %}
