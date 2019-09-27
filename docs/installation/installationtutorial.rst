@@ -51,18 +51,6 @@ Initial setup
 
     pip install -r requirements.txt
 
-    pip install -U mne
-
-8. Now you need to install the NWB package, that is installed from the source-code::
-
-    cd ../../..
-
-    git clone https://github.com/AllenInstitute/nwb-api.git
-
-    cd nwb-api/ainwb
-
-    python setup.py install
-
 .. _deploying-nes-with-apache-postgresql-and-mod-wsgi:
 
 Deploying NES with Apache, PostgreSQL and mod_wsgi
