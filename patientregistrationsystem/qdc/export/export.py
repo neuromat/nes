@@ -20,6 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 
 from export.export_utils import create_list_of_trees, can_export_nwb
+from plugin.models import RandomForests
 
 from survey.survey_utils import HEADER_EXPLANATION_FIELDS, QUESTION_TYPES
 
@@ -116,6 +117,7 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
     going to be saved
     :param rows_to_be_saved: list of rows that are going to be written on the
     file
+    :param filesformat_type: file extension
     :param mode: mode for openning file
     :return:
     """
@@ -360,12 +362,19 @@ class ExportExecution:
                             and patient_id not in self.participants_per_experiment_questionnaire[code]:
                         self.participants_per_experiment_questionnaire[code].append(patient_id)
 
-    def include_group_data(self, group_list):
+    def include_group_data(self, groups, subjects_of_groups=None):
+        """
+        :param groups: list of groups
+        :param subjects_of_groups: participants
+        """
         surveys = Questionnaires()
         header_step_list = ['Step', 'Step identification', 'Path questionnaire', 'Data completed']
-        for group_id in group_list:
+        for group_id in groups:
             group = get_object_or_404(Group, pk=group_id)
-            subjects_of_group = SubjectOfGroup.objects.filter(group=group)
+            if subjects_of_groups is not None:
+                subjects_of_group = SubjectOfGroup.objects.filter(group=group, pk__in=subjects_of_groups)
+            else:
+                subjects_of_group = SubjectOfGroup.objects.filter(group=group)
             title = slugify(group.title).replace('-', '_')
 
             description = group.description  # TODO: code bloat
@@ -850,20 +859,16 @@ class ExportExecution:
         return participant_rows
 
     def get_per_participant_data(self, participant=None, questionnaire=None):
-
         if questionnaire:
             return self.per_participant_data[participant][questionnaire]
-
         if participant:
             return self.per_participant_data[participant]
 
         return self.per_participant_data
 
     def get_per_participant_data_from_experiment(self, participant=None, questionnaire=None):
-
         if questionnaire:
             return self.per_participant_data_from_experiment[participant][questionnaire]
-
         if participant:
             return self.per_participant_data_from_experiment[participant]
 
@@ -927,7 +932,6 @@ class ExportExecution:
         return fields
 
     def get_title(self, questionnaire_id):
-
         title = ''
         questionnaires = self.get_input_data('questionnaires')
         for questionnaire in questionnaires:
@@ -947,16 +951,12 @@ class ExportExecution:
         return title
 
     def get_title_reduced(self, questionnaire_id=None, questionnaire_code=None):
-
         reduced_title = ''
         title = ''
-
         if questionnaire_code:
             questionnaire_id = self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code)
-
         if questionnaire_id:
             title = self.get_title(questionnaire_id)
-
         if title:
             reduced_title = slugify(title)
 
@@ -971,9 +971,7 @@ class ExportExecution:
         return reduced_title
 
     @staticmethod
-    def build_header_questionnaire_per_participant(
-            header_participant_data, header_answer_list
-    ):
+    def build_header_questionnaire_per_participant(header_participant_data, header_answer_list):
         header = []
         for field in header_participant_data[0:2]:
             header.append(field)
@@ -1066,9 +1064,16 @@ class ExportExecution:
                 language_list = [questionnaire_language['output_language']]
 
             questionnaire_code = self.questionnaire_utils.get_questionnaire_code_from_id(questionnaire_id)
-            questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
-            # Ex. Per_questionnaire.Q123_aaa
-            path_questionnaire = '%s_%s' % (str(questionnaire_code), questionnaire_title)
+            if not plugin:
+                # Ex. Per_questionnaire.Q123_aaa
+                questionnaire_title = self.get_title_reduced(questionnaire_id=questionnaire_id)
+                path_questionnaire = '%s_%s' % (str(questionnaire_code), questionnaire_title)
+            else:
+                random_forest = RandomForests.objects.first()
+                if questionnaire_id == random_forest.admission_assessment.lime_survey_id:
+                    path_questionnaire = '%s_%s' % ('QA', slugify(random_forest.admission_assessment.en_title))
+                else:
+                    path_questionnaire = '%s_%s' % ('QS', slugify(random_forest.surgical_evaluation.en_title))
 
             # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
@@ -1095,8 +1100,15 @@ class ExportExecution:
                 # Create directory for questionnaire:
                 # <per_questionnaire>/<q_code_title>
                 if self.get_input_data('export_per_questionnaire') and (len(result) > 1):
-                    export_filename = '%s_%s_%s' % (
-                        questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
+                    if not plugin:
+                        export_filename = '%s_%s_%s' % (
+                            questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
+                    else:
+                        if questionnaire_id == RandomForests.objects.first().admission_assessment.lime_survey_id:
+                            export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QA_en')
+                        else:
+                            export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QS_en')
+
                     # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, result, filesformat_type)
@@ -1395,9 +1407,12 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_experiment_questionnaire(self, heading_type):
+    # TODO (NES-995): change per_experiment to per_experiment_plugin or something like this.
+    #  Change this and in other places
+    def process_per_experiment_questionnaire(self, heading_type, per_experiment_plugin=False):
         """
         :param heading_type: str, type of header csv columns
+        :param per_experiment_plugin: bool - if sending to plugin by experiment
         :return:
         """
         error_msg = ''
@@ -1408,7 +1423,6 @@ class ExportExecution:
             if 'questionnaires_per_group' in self.per_group_data[group_id]:
                 questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group']
                 for questionnaire_id in questionnaire_list:
-
                     # Create questionnaire_name_directory
                     questionnaires = questionnaire_list[questionnaire_id]
                     dir_questionnaire_step = dict()
@@ -1420,10 +1434,15 @@ class ExportExecution:
                     questionnaire_code = questionnaires['questionnaire_code']
                     questionnaire_title = self.redefine_questionnaire_title(questionnaire_data['questionnaire_name'])
 
-                    questionnaire_prefix_filename = questionnaire_data['prefix_filename_responses']
                     prefix_filename_fields = questionnaire_data['prefix_filename_fields']
                     # Ex. Q123_aaa
                     directory_questionnaire_name = '%s_%s' % (str(questionnaire_code), questionnaire_title)
+                    if per_experiment_plugin:
+                        randomforests = RandomForests.objects.first()
+                        if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                            directory_questionnaire_name = 'QA_unified_admission_assessment'
+                        elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                            directory_questionnaire_name = 'QS_surgical_evaluation'
 
                     # Metadata directory for export
                     # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/
@@ -1433,8 +1452,8 @@ class ExportExecution:
                         self.per_group_data[group_id]['group']['questionnaire_metadata_export_directory'],
                         directory_questionnaire_name)
                     # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
-                    error_msg, complete_export_metadata_path = create_directory(metadata_directory,
-                        directory_questionnaire_name)
+                    error_msg, complete_export_metadata_path = create_directory(
+                        metadata_directory, directory_questionnaire_name)
                     if error_msg != '':
                         return error_msg
 
@@ -1444,7 +1463,7 @@ class ExportExecution:
                     else:
                         language_list = [questionnaire_language['output_language']]
 
-                    # Getting unique steps for each questionnaire so we can
+                    # Get unique steps for each questionnaire so we can
                     # aggregate directories by steps if there are same
                     # questionnaire in more than one step
                     for token in questionnaires['token_list']:
@@ -1470,7 +1489,13 @@ class ExportExecution:
                         for language in language_list:
                             # Q123_<questionnaire_title>_<lang>.csv
                             export_filename = str(questionnaire_code) + '_' + questionnaire_title + '_' + language
-                            # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/\
+                            if per_experiment_plugin:
+                                randomforests = RandomForests.objects.first()
+                                if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                                    export_filename = 'QA_unified_admission_assessment_en'
+                                elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                                    export_filename = 'QS_surgical_evaluation_en'
+                            # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/
                             # Q123_<questionnaire_title>_<lang>.csv
                             complete_filename = path.join(
                                 complete_export_path, export_filename + '.' + filesformat_type)
@@ -1533,8 +1558,16 @@ class ExportExecution:
                             str(questionnaire_id), language, questionnaire_lime_survey, fields, entrance_questionnaire)
 
                         # Build metadata export - Fields_Q123.csv
-                        export_filename = '%s_%s_%s.%s' % \
-                                          (prefix_filename_fields, str(questionnaire_code), language, filesformat_type)
+                        export_filename = '%s_%s_%s.%s' % (
+                            prefix_filename_fields, str(questionnaire_code), language, filesformat_type)
+                        if per_experiment_plugin:
+                            randomforests = RandomForests.objects.first()
+                            if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                                export_filename = '%s_%s_%s.%s' % (
+                                    prefix_filename_fields, 'QA', language, filesformat_type)
+                            elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                                export_filename = '%s_%s_%s.%s' % (
+                                    prefix_filename_fields, 'QS', language, filesformat_type)
 
                         complete_filename = path.join(complete_export_metadata_path, export_filename)
 
@@ -1596,11 +1629,11 @@ class ExportExecution:
                     title = self.get_title_reduced(questionnaire_id=int(questionnaire_id))
                     questionnaire_directory_name = '%s_%s' % (str(questionnaire_code), title)
                     # create questionnaire directory
-                    # path ex. NES_EXPORT/Per_participant/Participant_PCode/QCode_Title/
+                    # path ex. NES_EXPORT/Per_participant/Participant_<participant_code>/questionnaire_code_Title/
                     error_msg, path_per_questionnaire = create_directory(participant_path, questionnaire_directory_name)
                     # path ex. NES_EXPORT/Per_participant/QCode_Title/
-                    export_questionnaire_directory = path.join(path.join(export_directory_base, path_participant),
-                                                               questionnaire_directory_name)
+                    export_questionnaire_directory = path.join(
+                        path.join(export_directory_base, path_participant), questionnaire_directory_name)
 
                     # add participant personal data header
                     questionnaire_header = self.questionnaire_utils.get_header_questionnaire(questionnaire_id)
@@ -1764,10 +1797,8 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_participant_per_experiment(self, heading_type):
-
+    def process_per_participant_per_experiment(self, heading_type, per_experiment_plugin=False):
         error_msg = ''
-
         questionnaire_lime_survey = Questionnaires()
 
         for group_id in self.per_group_data:
@@ -1816,13 +1847,21 @@ class ExportExecution:
                             language_list = questionnaire_language['language_list']
                         else:
                             language_list = [questionnaire_language['output_language']]
+                        response_english_plugin_done = False
                         for language in language_list:
-                            # Responses_Q123.csv
+                            if response_english_plugin_done:
+                                break
                             export_filename = '%s_%s_%s' % (str(
                                 questionnaire_code), slugify(questionnaire_title), language)
+                            if per_experiment_plugin:
+                                randomforests = RandomForests.objects.first()
+                                if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                                    export_filename = 'QA_unified_admission_assessment_en'
+                                elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                                    export_filename = 'QS_surgical_evaluation_en'
+                                response_english_plugin_done = True
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/
-                            # Participant_P123/Step_X_aaa/P123_Q123_aaa.csv
+                            # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Participant_P123/Step_X_aaa
                             complete_filename = path.join(
                                 directory_step_participant, export_filename + '.' + filesformat_type)
 
@@ -2493,7 +2532,7 @@ class ExportExecution:
 
         return participants
 
-    def process_participant_data(self, participants_output_fields, participants, language):
+    def process_participant_data(self, participants_output_fields, participants, language, participants_plugin=False):
         # TODO: fix translation model functionality
         age_value_dict = {}
         headers, fields = self.get_headers_and_fields(participants_output_fields)
@@ -2502,7 +2541,7 @@ class ExportExecution:
             age_value_dict = self.calculate_age_by_participant(participants)
             fields.remove('age')
 
-        if language != 'pt-br':  # read english fields
+        if language != 'pt-br' or participants_plugin:  # Read english fields
             fields = self.get_field_en(fields)
 
         # Pick up the first terms of participants: required because
@@ -2875,7 +2914,7 @@ class ExportExecution:
                         txt_file.writelines(group_resume)
                         txt_file.writelines(experimental_protocol_description)
 
-                # save protocol image
+                # Save protocol image
                 experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
                 if experimental_protocol_image:
                     complete_protocol_image_filename = path.join(
@@ -3286,9 +3325,14 @@ class ExportExecution:
                     self.questionnaire_utils.redefine_header_and_fields_experiment(
                         questionnaire_id, header_filtered, fields, headers)
 
-                    if self.per_group_data[group_id]['questionnaires_per_group']:
-                        questionnaire_list = self.per_group_data[group_id]['questionnaires_per_group'][int(
-                            questionnaire_id)]['token_list']
+                    # "And" part is inserted because when exporting from plugin, all groups
+                    # are being processed independently of participant has reponses in the
+                    # too questionnaires or not.
+                    if self.per_group_data[group_id]['questionnaires_per_group'] \
+                            and int(questionnaire_id) in self.per_group_data[group_id]['questionnaires_per_group']:
+                        questionnaire_list = self.per_group_data[
+                            group_id
+                        ]['questionnaires_per_group'][int(questionnaire_id)]['token_list']
                         for questionnaire_data in questionnaire_list:
                             token_id = questionnaire_data['token_id']
                             completed = questionnaire_lime_survey.get_participant_properties(
@@ -3306,8 +3350,7 @@ class ExportExecution:
                                     self.questionnaires_responses[questionnaire_id][token_id] = {}
 
                                 for language in data_from_lime_survey:
-                                    fields_filtered_list = [header, data_from_lime_survey[
-                                        language][token]]
+                                    fields_filtered_list = [header, data_from_lime_survey[language][token]]
                                     self.questionnaires_responses[questionnaire_id][token_id][language] = \
                                         fields_filtered_list
 

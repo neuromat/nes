@@ -55,6 +55,7 @@ from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
 from survey.tests.tests_helper import create_survey
 
+# TODO (NES-995): it is creating one more here TEMP_MEDIA_ROOT
 TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235

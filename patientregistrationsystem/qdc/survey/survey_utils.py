@@ -225,7 +225,6 @@ class QuestionnaireUtils:
             self.questionnaire_code_and_id[code] = str(questionnaire_id)
 
     def get_questionnaire_id_from_code(self, code):
-
         questionnaire_id = 0
         if code in self.questionnaire_code_and_id:
             questionnaire_id = self.questionnaire_code_and_id[code]

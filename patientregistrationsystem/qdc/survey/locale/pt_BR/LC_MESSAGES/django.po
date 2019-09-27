@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-02 16:08-0300\n"
+"POT-Creation-Date: 2019-09-25 11:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: survey/survey_utils.py:429 survey/survey_utils.py:435
+#: survey/survey_utils.py:425 survey/survey_utils.py:431
 msgid "Could not get list of groups from LimeSurvey"
 msgstr "Não foi possível obter a lista dos grupos no LimeSurvey"
 
-#: survey/survey_utils.py:432
+#: survey/survey_utils.py:428
 msgid "There's no group with name Identification."
 msgstr "Não há um grupo com o nome Identificação."
 
-#: survey/survey_utils.py:438
+#: survey/survey_utils.py:434
 #, python-format
 msgid "There's no question with name %s"
 msgstr "Não há um questionráio com o nome %s"

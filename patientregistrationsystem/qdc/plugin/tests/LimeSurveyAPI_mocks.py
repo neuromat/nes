@@ -1,7 +1,7 @@
-def set_limesurvey_api_mocks(mockServer):
-    mockServer.return_value.get_session_key.return_value = 'idk208ghdkdg8bu'  # whatever string
-    mockServer.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
-    mockServer.return_value.export_responses.side_effect = [
+def set_limesurvey_api_mocks(mock_server):
+    mock_server.return_value.get_session_key.return_value = 'idk208ghdkdg8bu'  # whatever string
+    mock_server.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
+    mock_server.return_value.export_responses.side_effect = [
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0'
         'aW9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndw'
         'YTJRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwi'
@@ -12,7 +12,7 @@ def set_limesurvey_api_mocks(mockServer):
         'k4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsImZGUG5Uc05VSndSeWUzZyIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTc'
         'iLCJBMiIsIkExIiwiMSIKCg=='
     ]
-    mockServer.return_value.export_responses_by_token.side_effect = [
+    mock_server.return_value.export_responses_by_token.side_effect = [
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0a'
         'W9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndwYT'
         'JRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKCg==',
@@ -28,7 +28,7 @@ def set_limesurvey_api_mocks(mockServer):
         'VyOiIsIlF1ZXN0w6NvIDEgW09rXSIsIlF1ZXN0w6NvIDEgW05vT2tdIiwiUXVlc3TDo28gMiIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjA'
         'wIiwiMiIsImVuIiwiT1NTTWFGVmV3Vmw4RDBKIiwiMiIsIjIwMjAtMDktMDUgMDA6MDA6MDAiLCI5NTkxNiIsIkExIiwiQTIiLCI0IgoK'
     ]
-    mockServer.return_value.list_groups.side_effect = \
+    mock_server.return_value.list_groups.side_effect = \
         5 * [[
             {'id': {'gid': 1576, 'language': 'en'}, 'group_order': 1, 'randomization_group': '',
              'description': '', 'sid': 225461, 'gid': 1576, 'language': 'en', 'group_name': 'Identification',
@@ -42,7 +42,7 @@ def set_limesurvey_api_mocks(mockServer):
             {'id': {'gid': 1579, 'language': 'en'}, 'group_order': 2, 'randomization_group': '', 'description': '',
              'sid': 888656, 'gid': 1579, 'language': 'en', 'group_name': 'Grupo 1', 'grelevance': ''}
         ]]
-    mockServer.return_value.list_questions.side_effect = [
+    mock_server.return_value.list_questions.side_effect = [
         [
             {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1576, 'preg': '', 'language': 'en',
              'title': 'responsibleid', 'sid': 225461, 'modulename': None, 'parent_qid': 0, 'qid': 5006,
@@ -208,7 +208,7 @@ def set_limesurvey_api_mocks(mockServer):
              'question_order': 3}
         ]
     ]
-    mockServer.return_value.get_question_properties.side_effect = [
+    mock_server.return_value.get_question_properties.side_effect = [
         {'other': 'N', 'attributes': {'hidn': '1'}, 'subquestions': 'No available answers', 'type': 'N',
          'question_order': 0, 'answeroptions': 'No available answer options', 'gid': 1576,
          'attributes_lang': 'No available attributes', 'title': 'responsibleid',
@@ -258,13 +258,12 @@ def set_limesurvey_api_mocks(mockServer):
          'question_order': 3, 'answeroptions': 'No available answer options', 'gid': 1579,
          'attributes_lang': 'No available attributes', 'title': 'q2', 'question': 'Questão 2'}
     ]
-
-    mockServer.return_value.get_participant_properties.side_effect = [
+    mock_server.return_value.get_participant_properties.side_effect = [
         {'token': 'sIbj3gwjvwpa2QY'}, {'token': 'OSSMaFVewVl8D0J'},
         {'token': 'sIbj3gwjvwpa2QY'}, {'token': 'WRFUAgTemzuu8nD'},
         {'token': 'OSSMaFVewVl8D0J'}, {'token': 'fFPnTsNUJwRye3g'}
     ]
-    mockServer.return_value.get_language_properties.side_effect = [
+    mock_server.return_value.get_language_properties.side_effect = [
         {'surveyls_title': 'Admission Assessment Plugin'},
         {'surveyls_title': 'Surgical Evaluation Plugin'},
         {'surveyls_title': 'Admission Assessment Plugin'},
@@ -502,4 +501,295 @@ def update_limesurvey_api_mocks(mock_server):
              'question': 'Questão 2', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5017}, 'relevance': '1',
              'question_order': 3}
         ]
+    ]
+
+
+def set_limesurvey_api_mocks2(mock_server):
+    mock_server.return_value.get_survey_properties.side_effect = [
+        {'additional_languages': 'pt-BR', 'language': 'en'},
+        {'additional_languages': '', 'language': 'en'},
+        {'additional_languages': 'pt-BR', 'language': 'en'},
+        {'additional_languages': 'pt-BR', 'language': 'en'},
+        {'additional_languages': '', 'language': 'en'},
+        {'additional_languages': '', 'language': 'en'}
+    ]
+    mock_server.return_value.export_responses.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZWVpbnMiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhiVW'
+        'h0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyIKCg==',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZXp3ZWkiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMm'
+        'N6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSIKCg=='
+    ]
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZWVpbnMiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhiVW'
+        'h0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyIKCg ==',
+        'IklEIGRhIHJlc3Bvc3RhIiwiRGF0YSBkZSBlbnZpbyIsIsOabHRpbWEgcMOhZ2luYSIsIklkaW9tYSBpbmljaWFsIiwiQ8OzZGlnbyBkZSBhY'
+        '2Vzc28iLCJSZXNwb25zaWJsZSBJZGVudGlmaWNhdGlvbiBudW1iZXI6IiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGVudG'
+        'lmaWNhdGlvbiBudW1iZXI6IiwiVGV4dCBGcmFnZSBFaW5zIgoiMSIsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyIiwiZW4iLCIxNk5oRml6QzY'
+        '4YlVodFQiLCIyIiwiMjAyMS0wNi0wOCAwMDowMDowMCIsIjYiLCJBbnR3b3J0IEVpbnMiCgo =',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZXp3ZWkiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMm'
+        'N6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSIKCg ==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIl'
+        'RleHQgRnJhZ2UgWndlaSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiWXlVekN1TlRzblUyY3plIiwiMiIsIjIwMjEtMDY'
+        'tMDggMDA6MDA6MDAiLCI2IiwiQW50d29ydCBad2VpIgoK'
+    ]
+    mock_server.return_value.list_groups.side_effect = [
+        [{'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2},
+         {'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '', 'language': 'pt-BR',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '',
+                              'language': 'pt-BR', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2},
+         {'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '', 'language': 'pt-BR',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '',
+                              'language': 'pt-BR', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2},
+         {'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '', 'language': 'pt-BR',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '',
+                              'language': 'pt-BR', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2},
+         {'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '', 'language': 'pt-BR',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '',
+                              'language': 'pt-BR', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2},
+         {'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '', 'language': 'pt-BR',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '',
+                              'language': 'pt-BR', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1961, 'sid': 689143, 'group_name': 'Identification',
+          'id': {'gid': 1961, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1962, 'sid': 689143, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1962, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1961, 'sid': 689143, 'group_name': 'Identification',
+          'id': {'gid': 1961, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1962, 'sid': 689143, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1962, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1961, 'sid': 689143, 'group_name': 'Identification',
+          'id': {'gid': 1961, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1962, 'sid': 689143, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1962, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2},
+         {'grelevance': '', 'gid': 1959, 'sid': 798261, 'group_name': 'Identification',
+          'id': {'gid': 1959, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '', 'language': 'pt-BR',
+          'group_order': 1}, {'grelevance': '', 'gid': 1960, 'sid': 798261, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1960, 'language': 'pt-BR'}, 'description': '', 'randomization_group': '',
+                              'language': 'pt-BR', 'group_order': 2}],
+        [{'grelevance': '', 'gid': 1961, 'sid': 689143, 'group_name': 'Identification',
+          'id': {'gid': 1961, 'language': 'en'}, 'description': '', 'randomization_group': '', 'language': 'en',
+          'group_order': 1}, {'grelevance': '', 'gid': 1962, 'sid': 689143, 'group_name': 'Gruppe Eins',
+                              'id': {'gid': 1962, 'language': 'en'}, 'description': '', 'randomization_group': '',
+                              'language': 'en', 'group_order': 2}]
+    ]
+    mock_server.return_value.list_questions.side_effect = [
+        [{'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'language': 'en', 'gid': 1959,
+          'qid': 7938, 'sid': 798261, 'title': 'subjectid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7938}, 'preg': '', 'question_order': 3},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D', 'language': 'en', 'gid': 1959,
+          'qid': 7937, 'sid': 798261, 'title': 'acquisitiondate', 'modulename': None, 'relevance': '1',
+          'same_default': 0, 'id': {'language': 'en', 'qid': 7937}, 'preg': '', 'question_order': 1},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Responsible Identification number:', 'type': 'N', 'language': 'en', 'gid': 1959, 'qid': 7936,
+          'sid': 798261, 'title': 'responsibleid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7936}, 'preg': '', 'question_order': 0}],
+        [{'other': 'N', 'help': '', 'mandatory': 'N', 'scale_id': 0, 'parent_qid': 0, 'question': 'Text Frage Eins',
+          'type': 'S', 'language': 'en', 'gid': 1960, 'qid': 7939, 'sid': 798261, 'title': 'textfrageeins',
+          'modulename': None, 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7939}, 'preg': '',
+          'question_order': 1}],
+        [{'other': 'N', 'help': '', 'mandatory': 'N', 'scale_id': 0, 'parent_qid': 0, 'question': 'Text Frage Eins',
+          'type': 'S', 'language': 'en', 'gid': 1960, 'qid': 7939, 'sid': 798261, 'title': 'textfrageeins',
+          'modulename': None, 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7939}, 'preg': '',
+          'question_order': 1}, {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+                                 'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'language': 'en',
+                                 'gid': 1959, 'qid': 7938, 'sid': 798261, 'title': 'subjectid', 'modulename': None,
+                                 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7938}, 'preg': '',
+                                 'question_order': 3},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D', 'language': 'en', 'gid': 1959,
+          'qid': 7937, 'sid': 798261, 'title': 'acquisitiondate', 'modulename': None, 'relevance': '1',
+          'same_default': 0, 'id': {'language': 'en', 'qid': 7937}, 'preg': '', 'question_order': 1},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Responsible Identification number:', 'type': 'N', 'language': 'en', 'gid': 1959, 'qid': 7936,
+          'sid': 798261, 'title': 'responsibleid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7936}, 'preg': '', 'question_order': 0}],
+        [{'other': 'N', 'help': '', 'mandatory': 'N', 'scale_id': 0, 'parent_qid': 0, 'question': 'Text Frage Eins',
+          'type': 'S', 'language': 'en', 'gid': 1960, 'qid': 7939, 'sid': 798261, 'title': 'textfrageeins',
+          'modulename': None, 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7939}, 'preg': '',
+          'question_order': 1}, {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+                                 'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'language': 'en',
+                                 'gid': 1959, 'qid': 7938, 'sid': 798261, 'title': 'subjectid', 'modulename': None,
+                                 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7938}, 'preg': '',
+                                 'question_order': 3},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D', 'language': 'en', 'gid': 1959,
+          'qid': 7937, 'sid': 798261, 'title': 'acquisitiondate', 'modulename': None, 'relevance': '1',
+          'same_default': 0, 'id': {'language': 'en', 'qid': 7937}, 'preg': '', 'question_order': 1},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Responsible Identification number:', 'type': 'N', 'language': 'en', 'gid': 1959, 'qid': 7936,
+          'sid': 798261, 'title': 'responsibleid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7936}, 'preg': '', 'question_order': 0}],
+        [{'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'language': 'en', 'gid': 1961,
+          'qid': 7942, 'sid': 689143, 'title': 'subjectid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7942}, 'preg': '', 'question_order': 3},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D', 'language': 'en', 'gid': 1961,
+          'qid': 7941, 'sid': 689143, 'title': 'acquisitiondate', 'modulename': None, 'relevance': '1',
+          'same_default': 0, 'id': {'language': 'en', 'qid': 7941}, 'preg': '', 'question_order': 1},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Responsible Identification number:', 'type': 'N', 'language': 'en', 'gid': 1961, 'qid': 7940,
+          'sid': 689143, 'title': 'responsibleid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7940}, 'preg': '', 'question_order': 0}],
+        [{'other': 'N', 'help': '', 'mandatory': 'N', 'scale_id': 0, 'parent_qid': 0, 'question': 'Text Frage Zwei',
+          'type': 'S', 'language': 'en', 'gid': 1962, 'qid': 7943, 'sid': 689143, 'title': 'textfragezwei',
+          'modulename': None, 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7943}, 'preg': '',
+          'question_order': 1}],
+        [{'other': 'N', 'help': '', 'mandatory': 'N', 'scale_id': 0, 'parent_qid': 0, 'question': 'Text Frage Zwei',
+          'type': 'S', 'language': 'en', 'gid': 1962, 'qid': 7943, 'sid': 689143, 'title': 'textfragezwei',
+          'modulename': None, 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7943}, 'preg': '',
+          'question_order': 1}, {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+                                 'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'language': 'en',
+                                 'gid': 1961, 'qid': 7942, 'sid': 689143, 'title': 'subjectid', 'modulename': None,
+                                 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7942}, 'preg': '',
+                                 'question_order': 3},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D', 'language': 'en', 'gid': 1961,
+          'qid': 7941, 'sid': 689143, 'title': 'acquisitiondate', 'modulename': None, 'relevance': '1',
+          'same_default': 0, 'id': {'language': 'en', 'qid': 7941}, 'preg': '', 'question_order': 1},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Responsible Identification number:', 'type': 'N', 'language': 'en', 'gid': 1961, 'qid': 7940,
+          'sid': 689143, 'title': 'responsibleid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7940}, 'preg': '', 'question_order': 0}],
+        [{'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'language': 'en', 'gid': 1959,
+          'qid': 7938, 'sid': 798261, 'title': 'subjectid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7938}, 'preg': '', 'question_order': 3},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D', 'language': 'en', 'gid': 1959,
+          'qid': 7937, 'sid': 798261, 'title': 'acquisitiondate', 'modulename': None, 'relevance': '1',
+          'same_default': 0, 'id': {'language': 'en', 'qid': 7937}, 'preg': '', 'question_order': 1},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Responsible Identification number:', 'type': 'N', 'language': 'en', 'gid': 1959, 'qid': 7936,
+          'sid': 798261, 'title': 'responsibleid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7936}, 'preg': '', 'question_order': 0}],
+        [{'other': 'N', 'help': '', 'mandatory': 'N', 'scale_id': 0, 'parent_qid': 0, 'question': 'Text Frage Eins',
+          'type': 'S', 'language': 'en', 'gid': 1960, 'qid': 7939, 'sid': 798261, 'title': 'textfrageeins',
+          'modulename': None, 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7939}, 'preg': '',
+          'question_order': 1}],
+        [{'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'language': 'en', 'gid': 1961,
+          'qid': 7942, 'sid': 689143, 'title': 'subjectid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7942}, 'preg': '', 'question_order': 3},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'type': 'D', 'language': 'en', 'gid': 1961,
+          'qid': 7941, 'sid': 689143, 'title': 'acquisitiondate', 'modulename': None, 'relevance': '1',
+          'same_default': 0, 'id': {'language': 'en', 'qid': 7941}, 'preg': '', 'question_order': 1},
+         {'other': 'N', 'help': '', 'mandatory': 'Y', 'scale_id': 0, 'parent_qid': 0,
+          'question': 'Responsible Identification number:', 'type': 'N', 'language': 'en', 'gid': 1961, 'qid': 7940,
+          'sid': 689143, 'title': 'responsibleid', 'modulename': None, 'relevance': '1', 'same_default': 0,
+          'id': {'language': 'en', 'qid': 7940}, 'preg': '', 'question_order': 0}],
+        [{'other': 'N', 'help': '', 'mandatory': 'N', 'scale_id': 0, 'parent_qid': 0, 'question': 'Text Frage Zwei',
+          'type': 'S', 'language': 'en', 'gid': 1962, 'qid': 7943, 'sid': 689143, 'title': 'textfragezwei',
+          'modulename': None, 'relevance': '1', 'same_default': 0, 'id': {'language': 'en', 'qid': 7943}, 'preg': '',
+          'question_order': 1}]
+    ]
+    mock_server.return_value.get_question_properties.side_effect = [
+        {'question': 'Text Frage Eins', 'title': 'textfrageeins', 'answeroptions': 'No available answer options',
+         'subquestions': 'No available answers', 'question_order': 1, 'attributes': 'No available attributes',
+         'gid': 1960, 'attributes_lang': 'No available attributes', 'other': 'N', 'type': 'S'},
+        {'question': 'Participant Identification number<b>:</b>', 'title': 'subjectid',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 3,
+         'attributes': {'hidden': '1'}, 'gid': 1959, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'N'},
+        {'question': 'Acquisition date<strong>:</strong><br />\n', 'title': 'acquisitiondate',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 1,
+         'attributes': {'hidden': '1'}, 'gid': 1959, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'D'},
+        {'question': 'Responsible Identification number:', 'title': 'responsibleid',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 0,
+         'attributes': {'hidden': '1'}, 'gid': 1959, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'N'},
+        {'question': 'Text Frage Eins', 'title': 'textfrageeins', 'answeroptions': 'No available answer options',
+         'subquestions': 'No available answers', 'question_order': 1, 'attributes': 'No available attributes',
+         'gid': 1960, 'attributes_lang': 'No available attributes', 'other': 'N', 'type': 'S'},
+        {'question': 'Participant Identification number<b>:</b>', 'title': 'subjectid',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 3,
+         'attributes': {'hidden': '1'}, 'gid': 1959, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'N'},
+        {'question': 'Acquisition date<strong>:</strong><br />\n', 'title': 'acquisitiondate',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 1,
+         'attributes': {'hidden': '1'}, 'gid': 1959, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'D'},
+        {'question': 'Responsible Identification number:', 'title': 'responsibleid',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 0,
+         'attributes': {'hidden': '1'}, 'gid': 1959, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'N'},
+        {'question': 'Text Frage Zwei', 'title': 'textfragezwei', 'answeroptions': 'No available answer options',
+         'subquestions': 'No available answers', 'question_order': 1, 'attributes': 'No available attributes',
+         'gid': 1962, 'attributes_lang': 'No available attributes', 'other': 'N', 'type': 'S'},
+        {'question': 'Participant Identification number<b>:</b>', 'title': 'subjectid',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 3,
+         'attributes': {'hidden': '1'}, 'gid': 1961, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'N'},
+        {'question': 'Acquisition date<strong>:</strong><br />\n', 'title': 'acquisitiondate',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 1,
+         'attributes': {'hidden': '1'}, 'gid': 1961, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'D'},
+        {'question': 'Responsible Identification number:', 'title': 'responsibleid',
+         'answeroptions': 'No available answer options', 'subquestions': 'No available answers', 'question_order': 0,
+         'attributes': {'hidden': '1'}, 'gid': 1961, 'attributes_lang': 'No available attributes', 'other': 'N',
+         'type': 'N'},
+    ]
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'}
+    ]
+    mock_server.return_value.get_language_properties.side_effect = [
+        {'surveyls_title': 'Questionário simples um'},
+        {'surveyls_title': 'Einfacher Fragebogen Zwei'},
+        {'surveyls_title': 'Einfacher Fragebogen Eins'},
+        {'surveyls_title': 'Questionário simples um'},
+        {'surveyls_title': 'Einfacher Fragebogen Zwei'}
     ]

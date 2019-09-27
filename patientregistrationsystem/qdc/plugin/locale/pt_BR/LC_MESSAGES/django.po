@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-02 16:08-0300\n"
+"POT-Creation-Date: 2019-09-25 11:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,88 +18,95 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: plugin/templates/plugin/send_to_plugin.html:23
+#: plugin/templates/plugin/send_to_plugin.html:18
 msgid "Home"
-msgstr ""
+msgstr "Início"
 
-#: plugin/templates/plugin/send_to_plugin.html:24
-#: plugin/templates/plugin/send_to_plugin.html:54
+#: plugin/templates/plugin/send_to_plugin.html:19
+#: plugin/templates/plugin/send_to_plugin.html:46
 msgid "Plugin"
 msgstr ""
 
-#: plugin/templates/plugin/send_to_plugin.html:25
+#: plugin/templates/plugin/send_to_plugin.html:20
 msgid "Participants selection"
 msgstr "Seleção de participantes"
 
-#: plugin/templates/plugin/send_to_plugin.html:68
+#: plugin/templates/plugin/send_to_plugin.html:62
 msgid "Questionnaires data to be sent"
 msgstr "Dados de questionários a serem enviados"
 
-#: plugin/templates/plugin/send_to_plugin.html:80
+#: plugin/templates/plugin/send_to_plugin.html:82
+msgid "Per Experiment"
+msgstr "Por Experimento"
+
+#: plugin/templates/plugin/send_to_plugin.html:86
+#, fuzzy
+#| msgid "Participants selection"
+msgid "Filters selection"
+msgstr "Seleção de participantes"
+
+#: plugin/templates/plugin/send_to_plugin.html:90
+msgid "Experiments"
+msgstr "Experimentos"
+
+#: plugin/templates/plugin/send_to_plugin.html:104
+#: plugin/templates/plugin/send_to_plugin.html:192
 msgid "List of participants"
 msgstr "Lista de participantes"
 
-#: plugin/templates/plugin/send_to_plugin.html:84
+#: plugin/templates/plugin/send_to_plugin.html:109
+#: plugin/templates/plugin/send_to_plugin.html:196
 msgid "Participants available:"
 msgstr "Participantes disponíveis:"
 
-#: plugin/templates/plugin/send_to_plugin.html:112
+#: plugin/templates/plugin/send_to_plugin.html:138
+#: plugin/templates/plugin/send_to_plugin.html:224
 msgid "Participants chosen:"
 msgstr "Participantes escolhidos:"
 
-#: plugin/templates/plugin/send_to_plugin.html:128
-msgid "Additional info"
-msgstr "Informação adicional"
-
-#: plugin/templates/plugin/send_to_plugin.html:132
-msgid "Participant fields"
-msgstr "Opções disponíveis"
-
-#: plugin/templates/plugin/send_to_plugin.html:135
-msgid "Please, select a patient field from the list."
-msgstr "Por favor, selecione uma opção da lista."
-
-#: plugin/templates/plugin/send_to_plugin.html:146
-msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
-msgstr "* use o botão Ctrl para selecionar mais de um campo. (command no Mac)"
-
-#: plugin/templates/plugin/send_to_plugin.html:154
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: plugin/templates/plugin/send_to_plugin.html:157
+#: plugin/templates/plugin/send_to_plugin.html:169
+#: plugin/templates/plugin/send_to_plugin.html:250
 msgid "Send"
 msgstr "Enviar"
 
-#: plugin/tests/test_views.py:225 plugin/views.py:149
+#: plugin/templates/plugin/send_to_plugin.html:187
+msgid "Per Participant"
+msgstr "Por Participante"
+
+#: plugin/templates/plugin/send_to_plugin.html:257
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: plugin/tests/test_views.py:247 plugin/views.py:220 plugin/views.py:259
 msgid "Could not open zip file to send to Forest Plugin"
 msgstr ""
 "Não foi possível abrir o arquivo zip para enviar para o plugin Floresta"
 
-#: plugin/tests/test_views.py:241 plugin/views.py:204
+#: plugin/tests/test_views.py:264 plugin/views.py:333
 msgid "Data from questionnaires was sent to Forest Plugin"
 msgstr "Os dados dos questionários foram enviados para o plugin Floresta"
 
-#: plugin/tests/test_views.py:256 plugin/views.py:121
+#: plugin/tests/test_views.py:279 plugin/views.py:230
 msgid "Please select at least Gender participant attribute"
 msgstr "Selecione ao menos o atributo Gênero do participante"
 
-#: plugin/tests/test_views.py:271 plugin/views.py:115
+#: plugin/tests/test_views.py:294 plugin/views.py:224
 #, fuzzy
 #| msgid "Please, select a patient field from the list."
 msgid "Please select at least one patient"
 msgstr "Por favor, selecione uma opção da lista."
 
-#: plugin/tests/test_views.py:287 plugin/views.py:124
+#: plugin/tests/test_views.py:310 plugin/views.py:233
 msgid "The Floresta Plugin needs to send at least Gender attribute"
 msgstr ""
 "O plugin floresta precisa enviar ao menos o atributo gênero do participante"
 
-#: plugin/tests/test_views.py:305 plugin/tests/test_views.py:324
-#: plugin/tests/test_views.py:343 plugin/tests/test_views.py:363
-#: plugin/tests/test_views.py:382 plugin/tests/test_views.py:401
-#: plugin/tests/test_views.py:420 plugin/tests/test_views.py:439
-#: plugin/tests/test_views.py:457 plugin/views.py:132 plugin/views.py:139
+#: plugin/tests/test_views.py:387 plugin/tests/test_views.py:406
+#: plugin/tests/test_views.py:425 plugin/tests/test_views.py:445
+#: plugin/tests/test_views.py:464 plugin/tests/test_views.py:483
+#: plugin/tests/test_views.py:502 plugin/tests/test_views.py:521
+#: plugin/tests/test_views.py:539 plugin/views.py:202 plugin/views.py:210
+#: plugin/views.py:241 plugin/views.py:249
 msgid ""
 "Error: some thing went wrong consuming LimeSurvey API. Please try again. If "
 "problem persists please contact System Administrator."
@@ -107,3 +114,14 @@ msgstr ""
 "Erro: alguma coisa errada aconteceu ao consumir a API do LimeSurvey. Por "
 "favor tente novamente. Se o problema persistir por favor entre em contato "
 "com o administrador do sistema."
+
+#~ msgid "Additional info"
+#~ msgstr "Informação adicional"
+
+#~ msgid "Please, select a patient field from the list."
+#~ msgstr "Por favor, selecione uma opção da lista."
+
+#~ msgid ""
+#~ "* use ctrl-click to select more than one field. (command-click on Mac)"
+#~ msgstr ""
+#~ "* use o botão Ctrl para selecionar mais de um campo. (command no Mac)"

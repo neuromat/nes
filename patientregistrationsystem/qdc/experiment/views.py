@@ -4606,15 +4606,17 @@ def search_cid10_ajax(request):
         group_id = request.POST['group_id']
 
         if search_text:
-            cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text) |
-                                                                  Q(code__icontains=search_text))
+            cid_10_list = ClassificationOfDiseases.objects.filter(
+                Q(abbreviated_description__icontains=search_text)
+                | Q(description__icontains=search_text)
+                | Q(code__icontains=search_text))
 
         if group_id:
-            return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
+            return render_to_response(
+                'experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
         else:
-            return render_to_response('export/diagnoses.html',
-                                      {'classification_of_diseases_list': cid_10_list})
+            return render_to_response(
+                'export/diagnoses.html', {'classification_of_diseases_list': cid_10_list})
 
 
 @login_required
@@ -8616,9 +8618,9 @@ def get_block_tree(component, language_code=None, numeration=''):
         counter = 1
         for configuration in configurations:
             component_configuration_attributes = get_component_configuration_attributes(configuration)
-            component_info = get_block_tree(configuration.component,
-                                            language_code,
-                                            (numeration + '.' if numeration else '') + str(counter))
+            component_info = get_block_tree(
+                configuration.component, language_code,
+                (numeration + '.' if numeration else '') + str(counter))
             list_of_component_configuration.append(
                 {'component_configuration_attributes': component_configuration_attributes,
                  'component': component_info,

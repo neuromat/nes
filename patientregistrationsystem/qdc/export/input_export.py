@@ -90,11 +90,13 @@ class InputExport:
                         "output_language": output_language,
                     }
 
-                self.data["questionnaires"].append({"id": sid,
-                                                    "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
-                                                    "questionnaire_name": title,
-                                                    "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
-                                                    "output_list": [], "responses_list": []})
+                self.data["questionnaires"].append({
+                    "id": sid,
+                    "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
+                    "questionnaire_name": title,
+                    "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
+                    "output_list": [], "responses_list": []
+                })
                 for header, field in field_header_list:
                     output_data = {"header": header, "field": field}
                     self.data["questionnaires"][-1]["output_list"].append(output_data)
@@ -141,8 +143,7 @@ class InputExport:
         questionnaire_lime_survey.release_session_key()
 
 
-def build_partial_export_structure(
-        export_per_participant, participant_field_header_list, output_filename, language=DEFAULT_LANGUAGE):
+def build_partial_export_structure(export_per_participant, participant_field_header_list, output_filename):
 
     json_data = InputExport()
 
