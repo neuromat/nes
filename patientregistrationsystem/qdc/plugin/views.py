@@ -191,7 +191,8 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
         if request.POST.get('per_experiment'):
             # TODO (NES-995): change name for subjects_of_groups_selected
             subjects_of_groups = request.POST.getlist('patients_selected[]')
-            group_ids = Group.objects.filter(subjectofgroup__in=subjects_of_groups).distinct().values_list('id', flat=True)
+            group_ids = Group.objects.filter(
+                subjectofgroup__in=subjects_of_groups).distinct().values_list('id', flat=True)
             request.session['group_selected_list'] = [str(group_id) for group_id in list(group_ids)]
             request.session['license'] = 0
             # Need to delete before call export_create method
@@ -224,6 +225,8 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
                 messages.error(request, _('Could not open zip file to send to Forest Plugin'))
                 return redirect(reverse('send-to-plugin'))
         else:
+            if 'group_selected_list' in request.session:
+                del request.session['group_selected_list']
             if not request.POST.getlist('patients_selected[]'):
                 messages.warning(request, _('Please select at least one patient'))
                 return redirect(reverse('send-to-plugin'))

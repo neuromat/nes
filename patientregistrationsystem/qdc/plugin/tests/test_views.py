@@ -74,11 +74,10 @@ class PluginTest(ExportTestCase):
         self.assertContains(response, 'Título do Questionário Avaliação de Entrada não disponível em pt-BR')
         self.assertContains(response, 'Título do Questionário Avaliação Cirúrgica não disponível em pt-BR')
 
+    @override_settings(LANGUAGE_CODE='en')
     def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_display_message2(
             self):
         """Current language is en"""
-
-        settings.LANGUAGE_CODE = 'en'
 
         self._create_basic_objects()
         random_forest = RandomForests.objects.get()
@@ -102,10 +101,25 @@ class PluginTest(ExportTestCase):
         response = self.client.get('home')
         self.assertNotIn('Plugin', response.content.decode('utf-8'))
 
-    def test_group_selected_list_in_request_session_removes_this_session_key(self):
-        # TODO (NES-995): simulate 'group_selected_list' in request session when sending
-        #  to Plugin
-        pass
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_group_selected_list_in_request_session_removes_session_key(self, mockServer):
+        # Simulate 'group_selected_list' already in request session when sending
+        # to Plugin in Per Participant way
+        self.append_session_variable('group_selected_list', 21)
+
+        set_limesurvey_api_mocks(mockServer)
+        self._create_basic_objects()
+
+        self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'headings': ['code'],
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+
+        self.assertIsNone(self.client.session.get('group_selected_list', None))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
