@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 15:11-0300\n"
+"POT-Creation-Date: 2019-09-30 15:35-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,13 +38,11 @@ msgstr "Dados de questionários a serem enviados"
 #: plugin/templates/plugin/send_to_plugin.html:67
 msgid ""
 "Questionnaire title for Unified Admission Assessment not available in en"
-msgstr ""
-"Título do Questionário Avaliação de Entrada não disponível em pt-BR"
+msgstr "Título do Questionário Avaliação de Entrada não disponível em pt-BR"
 
 #: plugin/templates/plugin/send_to_plugin.html:72
 msgid "Questionnaire title for Surgical Assessment not available in en"
-msgstr ""
-"Título do Questionário Avaliação Cirúrgica não disponível em pt-BR"
+msgstr "Título do Questionário Avaliação Cirúrgica não disponível em pt-BR"
 
 #: plugin/templates/plugin/send_to_plugin.html:90
 msgid "Per Experiment"
@@ -88,26 +86,26 @@ msgstr "Por Participante"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: plugin/tests/test_views.py:270 plugin/views.py:224 plugin/views.py:263
+#: plugin/tests/test_views.py:270 plugin/views.py:225 plugin/views.py:264
 msgid "Could not open zip file to send to Forest Plugin"
 msgstr ""
 "Não foi possível abrir o arquivo zip para enviar para o plugin Floresta"
 
-#: plugin/tests/test_views.py:287 plugin/views.py:337
+#: plugin/tests/test_views.py:287 plugin/views.py:338
 msgid "Data from questionnaires was sent to Forest Plugin"
 msgstr "Os dados dos questionários foram enviados para o plugin Floresta"
 
-#: plugin/tests/test_views.py:302 plugin/views.py:234
+#: plugin/tests/test_views.py:302 plugin/views.py:235
 msgid "Please select at least Gender participant attribute"
 msgstr "Selecione ao menos o atributo Gênero do participante"
 
-#: plugin/tests/test_views.py:317 plugin/views.py:228
+#: plugin/tests/test_views.py:317 plugin/views.py:229
 #, fuzzy
 #| msgid "Please, select a patient field from the list."
 msgid "Please select at least one patient"
 msgstr "Por favor, selecione uma opção da lista."
 
-#: plugin/tests/test_views.py:333 plugin/views.py:237
+#: plugin/tests/test_views.py:333 plugin/views.py:238
 msgid "The Floresta Plugin needs to send at least Gender attribute"
 msgstr ""
 "O plugin floresta precisa enviar ao menos o atributo gênero do participante"
@@ -116,8 +114,8 @@ msgstr ""
 #: plugin/tests/test_views.py:448 plugin/tests/test_views.py:468
 #: plugin/tests/test_views.py:487 plugin/tests/test_views.py:506
 #: plugin/tests/test_views.py:525 plugin/tests/test_views.py:544
-#: plugin/tests/test_views.py:562 plugin/views.py:206 plugin/views.py:214
-#: plugin/views.py:245 plugin/views.py:253
+#: plugin/tests/test_views.py:562 plugin/views.py:207 plugin/views.py:215
+#: plugin/views.py:246 plugin/views.py:254
 msgid ""
 "Error: some thing went wrong consuming LimeSurvey API. Please try again. If "
 "problem persists please contact System Administrator."
