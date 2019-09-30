@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-25 11:02-0300\n"
+"POT-Creation-Date: 2019-09-30 15:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,11 +118,11 @@ msgstr "Árvore de contexto deve ser preenchida"
 msgid "Information type must be filled."
 msgstr "Tipo de informação deve ser preenchido."
 
-#: experiment/forms.py:265 experiment/models.py:932
+#: experiment/forms.py:265 experiment/models.py:934
 msgid "Sequence"
 msgstr "Em uma sequência"
 
-#: experiment/forms.py:266 experiment/models.py:932
+#: experiment/forms.py:266 experiment/models.py:934
 msgid "Parallel"
 msgstr "De forma paralela"
 
@@ -353,24 +353,24 @@ msgstr ""
 msgid "Date cannot be greater than today's date."
 msgstr "Data de preenchimento não pode ser maior que a data de hoje."
 
-#: experiment/models.py:87
+#: experiment/models.py:89
 #: experiment/templates/experiment/experiment_info_pdf.html:41
 #: experiment/templates/experiment/experiment_register.html:116
 msgid "URL of the project approved by the ethics committee"
 msgstr "URL do projeto aprovado pelo comitê de ética"
 
-#: experiment/models.py:89
+#: experiment/models.py:91
 #: experiment/templates/experiment/experiment_info_pdf.html:44
 #: experiment/templates/experiment/experiment_register.html:127
 msgid "Project file approved by the ethics committee"
 msgstr "Arquivo do projeto aprovado pelo comitê de ética"
 
-#: experiment/models.py:146
+#: experiment/models.py:148
 #: experiment/templates/experiment/eegmachine_list.html:44
 msgid "EEG Machine"
 msgstr "Máquina EEG"
 
-#: experiment/models.py:147
+#: experiment/models.py:149
 #: experiment/templates/experiment/amplifier_list.html:44
 #: experiment/templates/experiment/amplifier_register.html:53
 #: experiment/templates/experiment/amplifier_register.html:72
@@ -380,26 +380,26 @@ msgstr "Máquina EEG"
 msgid "Amplifier"
 msgstr "Amplificador"
 
-#: experiment/models.py:148
+#: experiment/models.py:150
 #: experiment/templates/experiment/eegsolution_list.html:44
 msgid "EEG Solution"
 msgstr "Solução de EEG"
 
-#: experiment/models.py:149
+#: experiment/models.py:151
 #: experiment/templates/experiment/eeg_setting_register.html:166
 msgid "Filter"
 msgstr "Filtro"
 
-#: experiment/models.py:150
+#: experiment/models.py:152
 msgid "EEG Electrode Net"
 msgstr "Rede de eletrodos de EEG"
 
-#: experiment/models.py:151
+#: experiment/models.py:153
 #: experiment/templates/experiment/emg_setting_register.html:234
 msgid "A/D Converter"
 msgstr "Conversor A/D"
 
-#: experiment/models.py:152
+#: experiment/models.py:154
 #: experiment/templates/experiment/tms_setting_register.html:115
 #: experiment/templates/experiment/tms_setting_register.html:125
 #: experiment/templates/experiment/tms_setting_tms_device.html:98
@@ -411,181 +411,181 @@ msgstr "Conversor A/D"
 msgid "TMS device"
 msgstr "Dispositivo TMS"
 
-#: experiment/models.py:165 experiment/models.py:166
+#: experiment/models.py:167 experiment/models.py:168
 msgid "Equipment"
 msgstr "Equipamento"
 
-#: experiment/models.py:229
+#: experiment/models.py:231
 msgid "Disposable"
 msgstr "Descartável"
 
-#: experiment/models.py:230
+#: experiment/models.py:232
 msgid "Reusable"
 msgstr "Reutilizável"
 
-#: experiment/models.py:233 experiment/models.py:584
+#: experiment/models.py:235 experiment/models.py:586
 msgid "Surface"
 msgstr "Superfície"
 
-#: experiment/models.py:234 experiment/models.py:585
+#: experiment/models.py:236 experiment/models.py:587
 msgid "Intramuscular"
 msgstr ""
 
-#: experiment/models.py:235 experiment/models.py:586
+#: experiment/models.py:237 experiment/models.py:588
 msgid "Needle"
 msgstr "Agulha"
 
-#: experiment/models.py:238 experiment/models.py:319
+#: experiment/models.py:240 experiment/models.py:321
 msgid "millimeter(s)"
 msgstr "milímetro(s)"
 
-#: experiment/models.py:239 experiment/models.py:320
+#: experiment/models.py:241 experiment/models.py:322
 msgid "centimeter(s)"
 msgstr "centíetro(s)"
 
-#: experiment/models.py:283
+#: experiment/models.py:285
 msgid "Gelled"
 msgstr "Gelificado"
 
-#: experiment/models.py:284
+#: experiment/models.py:286
 msgid "Dry"
 msgstr "Seco"
 
-#: experiment/models.py:287
+#: experiment/models.py:289
 msgid "Active"
 msgstr "Ativo"
 
-#: experiment/models.py:288
+#: experiment/models.py:290
 msgid "Passive"
 msgstr "Passivo"
 
-#: experiment/models.py:306
+#: experiment/models.py:308
 msgid "Single"
 msgstr "Simples"
 
-#: experiment/models.py:307
+#: experiment/models.py:309
 msgid "Multi"
 msgstr ""
 
-#: experiment/models.py:420
+#: experiment/models.py:422
 msgid "Air core coil"
 msgstr "Bobina de núcleo de ar"
 
-#: experiment/models.py:421
+#: experiment/models.py:423
 msgid "Solid core coil"
 msgstr "Bobina de núcleo sólido"
 
-#: experiment/models.py:435
+#: experiment/models.py:437
 msgid "Monophase"
 msgstr "Monofásico"
 
-#: experiment/models.py:436
+#: experiment/models.py:438
 msgid "Biphase"
 msgstr "Bifásico"
 
-#: experiment/models.py:755
+#: experiment/models.py:757
 msgid "Single pulse"
 msgstr "Simple pulso"
 
-#: experiment/models.py:756
+#: experiment/models.py:758
 msgid "Paired pulse"
 msgstr "Pulso pareado"
 
-#: experiment/models.py:757
+#: experiment/models.py:759
 msgid "Repetitive pulse"
 msgstr "Pulso repetitivo"
 
-#: experiment/models.py:852
+#: experiment/models.py:854
 msgid "Set of steps"
 msgstr "Conjunto de passos"
 
-#: experiment/models.py:853
+#: experiment/models.py:855
 msgid "Instruction"
 msgstr "Instrução"
 
-#: experiment/models.py:854
+#: experiment/models.py:856
 msgid "Pause"
 msgstr "Pausa"
 
-#: experiment/models.py:855
+#: experiment/models.py:857
 #: experiment/templates/experiment/subject_questionnaire_response_form.html:154
 #: experiment/templates/experiment/subject_questionnaire_response_list.html:67
 msgid "Questionnaire"
 msgstr "Questionário"
 
-#: experiment/models.py:856
+#: experiment/models.py:858
 msgid "Stimulus"
 msgstr "Estímulo"
 
-#: experiment/models.py:857
+#: experiment/models.py:859
 msgid "Task for participant"
 msgstr "Tarefa para o participante"
 
-#: experiment/models.py:858
+#: experiment/models.py:860
 msgid "Task for experimenter"
 msgstr "Tarefa para o experimentador"
 
-#: experiment/models.py:859 experiment/templates/experiment/subjects.html:205
+#: experiment/models.py:861 experiment/templates/experiment/subjects.html:205
 #: experiment/views.py:5078
 msgid "EEG"
 msgstr "EEG"
 
-#: experiment/models.py:860 experiment/templates/experiment/subjects.html:223
+#: experiment/models.py:862 experiment/templates/experiment/subjects.html:223
 #: experiment/views.py:5088
 msgid "EMG"
 msgstr "EMG"
 
-#: experiment/models.py:861 experiment/templates/experiment/subjects.html:241
+#: experiment/models.py:863 experiment/templates/experiment/subjects.html:241
 #: experiment/views.py:5098
 msgid "TMS"
 msgstr "TMS"
 
-#: experiment/models.py:862
+#: experiment/models.py:864
 msgid "Goalkeeper game phase"
 msgstr "Fase de jogo do goleiro"
 
-#: experiment/models.py:863
+#: experiment/models.py:865
 #: experiment/templates/experiment/subject_generic_data_collection_data_form.html:229
 msgid "Generic data collection"
 msgstr "Coleta genérica de dados"
 
-#: experiment/models.py:1054 experiment/models.py:1424
+#: experiment/models.py:1056 experiment/models.py:1426
 #: experiment/templates/experiment/show_selected_participants.html:51
 msgid "Code"
 msgstr "Código"
 
-#: experiment/models.py:1059
+#: experiment/models.py:1061
 #: experiment/templates/experiment/experiment_info_pdf.html:76
 #: experiment/templates/experiment/group_goalkeeper_game_data.html:81
 msgid "Group"
 msgstr "Grupos"
 
-#: experiment/models.py:1440
+#: experiment/models.py:1442
 msgid "Phase already registered"
 msgstr "Fase já cadastrada"
 
-#: experiment/models.py:1444
+#: experiment/models.py:1446
 #, python-brace-format
 msgid "{game} - phase {phase}"
 msgstr "{game} - fase {phase}"
 
-#: experiment/models.py:1512
+#: experiment/models.py:1514
 msgid "scheduled"
 msgstr "agendado"
 
-#: experiment/models.py:1513
+#: experiment/models.py:1515
 msgid "canceled"
 msgstr "Cancelado"
 
-#: experiment/models.py:1514
+#: experiment/models.py:1516
 msgid "sending"
 msgstr "enviando"
 
-#: experiment/models.py:1515
+#: experiment/models.py:1517
 msgid "sent"
 msgstr "enviado"
 
-#: experiment/models.py:1516
+#: experiment/models.py:1518
 msgid "error sending"
 msgstr "erro ao enviar"
 

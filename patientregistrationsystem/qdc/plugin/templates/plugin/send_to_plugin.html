@@ -5,7 +5,7 @@
 {% block header %}
     <script src="{% static 'quiz/js/experiment_selection.js' %}"></script>
     <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
-    <script src="{% static 'quiz/js/participant_import.js' %}"></script>  {# TODO (NES-970: apparently not necessary #}
+    <script src="{% static 'quiz/js/participant_import.js' %}"></script>
 {% endblock %}
 
 {% block activePlugin %}class="active"{% endblock %}
@@ -63,8 +63,16 @@
                 <div class="panel-body">
                     <div class="col-md-5 col-sm-12">
                         <ul>
-                            <li><strong>{{ admission_title }}</strong></li>
-                            <li><strong>{{ surgical_title }}</strong></li>
+                            {% if not admission_title %}
+                                <li><em>{% trans 'Questionnaire title for Unified Admission Assessment not available in en' %}</em></li>
+                            {% else %}
+                                <li><strong>{{ admission_title }}</strong></li>
+                            {% endif %}
+                            {% if not surgical_title %}
+                                <li><em>{% trans 'Questionnaire title for Surgical Assessment not available in en' %}</em></li>
+                            {% else %}
+                                <li><strong>{{ surgical_title }}</strong></li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
@@ -174,7 +182,6 @@
 
                 </div>
             </form>
-            {# TODO (NES-995): Make the Plugin tests pass and remove this comments #}
             {# Send by participants #}
             <form id="user_form" method="post" data-toggle="validator">
                 {% csrf_token %}
