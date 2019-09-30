@@ -111,7 +111,6 @@ class PluginTest(ExportTestCase):
             self.assertIsNone(zipped_file.testzip())
             zipped_file.close()
 
-    @skip  # TODO (NES-995): remove skip and fix the test/code
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_returns_zip_file_with_only_data_from_participants_selected(self, mockServer):
@@ -156,7 +155,7 @@ class PluginTest(ExportTestCase):
             # Tests for Per_questionnaire subdir
             questionnaire1 = zipped_file.extract(
                 input_export.BASE_DIRECTORY +
-                '/Per_questionnaire/QA_admission-assessment-plugin/Responses_QA_en.csv',
+                '/Per_questionnaire/QA_unified_admission_assessment/Responses_QA_en.csv',
                 TEMP_MEDIA_ROOT)
             with open(questionnaire1) as q1_file:
                 reader = list(csv.reader(q1_file))
@@ -164,7 +163,7 @@ class PluginTest(ExportTestCase):
                 self.assertEqual(self.patient.code, reader[1][0])
             questionnaire2 = zipped_file.extract(
                 input_export.BASE_DIRECTORY +
-                '/Per_questionnaire/QS_surgical-evaluation-plugin/Responses_QS_en.csv',
+                '/Per_questionnaire/QS_surgical_evaluation/Responses_QS_en.csv',
                 TEMP_MEDIA_ROOT)
             with open(questionnaire2) as q2_file:
                 reader = list(csv.reader(q2_file))
@@ -310,7 +309,6 @@ class PluginTest(ExportTestCase):
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('The Floresta Plugin needs to send at least Gender attribute'))
 
-    @skip  # TODO (NES-995): remove skip and fix the test/code
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_POST_send_to_plugin_write_files_and_dirs_the_right_way_and_always_in_english(self, mockServer):
@@ -331,32 +329,32 @@ class PluginTest(ExportTestCase):
             self.assertIsNone(zip_file.testzip())
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_questionnaire', 'QA_' + slugify(self.survey1.en_title), 'Responses_QA_en.csv')
+                    'data/Per_questionnaire', 'QA_unified_admission_assessment', 'Responses_QA_en.csv')
                     in element for element in zip_file.namelist()),
-                os.path.join('data/Per_questionnaire', 'QA_' + slugify(self.survey1.en_title), 'Responses_QA_en.csv')
+                os.path.join('data/Per_questionnaire', 'QA_unified_admission_assessment', 'Responses_QA_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_questionnaire', 'QS_' + slugify(self.survey2.en_title), 'Responses_QS_en.csv')
+                    'data/Per_questionnaire', 'QS_surgical_evaluation', 'Responses_QS_en.csv')
                     in element for element in zip_file.namelist()),
-                os.path.join('data/Per_questionnaire', 'QS_' + slugify(self.survey2.en_title), 'Responses_QS_en.csv')
+                os.path.join('data/Per_questionnaire', 'QS_surgical_evaluation', 'Responses_QS_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_' + slugify(self.survey1.en_title),
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_unified_admission_assessment',
                     'Responses_QA_en.csv')
                     in element for element in zip_file.namelist()),
                 os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_' + slugify(self.survey1.en_title),
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_unified_admission_assessment',
                     'Responses_QA_en.csv')
-                + ' not in: ' + str (zip_file.namelist()))
+                + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_' + slugify(self.survey2.en_title),
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_surgical_evaluation',
                     'Responses_QS_en.csv')
                     in element for element in zip_file.namelist()),
                 os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_' + slugify(self.survey2.en_title),
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_surgical_evaluation',
                     'Responses_QS_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
 
