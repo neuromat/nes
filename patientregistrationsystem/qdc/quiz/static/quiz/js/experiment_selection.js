@@ -7,8 +7,9 @@ $(document).ready(function () {
     var select_research_project = $("#id_research_projects");
     var select_experiments = $("#id_experiments");
     var select_groups = $("#group_selected");
-    var select_experiment_participants = $("#multiselect_2");
-    // var values = $('#id_research_projects').val();
+    var select_experiment_participants_from = $("#multiselect_2");
+    var select_experiment_participants_to = $("#multiselect_2_to");
+
     select_groups.prop('disabled', true);
 
     select_research_project.change(function () {
@@ -51,7 +52,7 @@ $(document).ready(function () {
 
         // Get participants for RandomForests Plugin
         if (experiment_id == 0) {
-            select_experiment_participants.html('<option></option>');
+            select_experiment_participants_from.html('<option></option>');
         }
         var url = "/plugin/get_participants_by_experiment/" + experiment_id;
         $.getJSON(url, function (participants) {
@@ -60,8 +61,12 @@ $(document).ready(function () {
                 options += '<option value="' + participants[i].subject_of_group_id + '">' + participants[i].participant_name + ' - ' + participants[i].group_name + '</option>';
             }
 
-            select_experiment_participants.html(options);
-            select_experiment_participants.prop('disabled', false);
+            select_experiment_participants_from.html(options);
+            select_experiment_participants_from.prop('disabled', false);
+
+            // Clean up the "to" multiselect when loading, to avoid mixing participants
+            // when sending
+            select_experiment_participants_to.empty()
         });
     });
 

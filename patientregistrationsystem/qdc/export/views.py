@@ -348,7 +348,8 @@ def export_create(
                     messages.error(request, error_msg)
                     return render(request, template_name)
 
-                error_msg = export.process_per_participant(request.POST.get('headings'))
+                error_msg = export.process_per_participant(
+                    request.POST.get('headings'), participants_plugin if participants_plugin else None)
                 if error_msg != '':
                     messages.error(request, error_msg)
                     return render(request, template_name)

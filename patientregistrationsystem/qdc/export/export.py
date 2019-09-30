@@ -1035,9 +1035,9 @@ class ExportExecution:
 
         filesformat_type = self.get_input_data('filesformat_type')
 
-        # and save per_participant data
+        # Save per_participant data
         if self.get_input_data('export_per_questionnaire'):
-            # check if exist fields selected from questionnaires
+            # Check if exist fields selected from questionnaires
             error_msg, path_per_questionnaire = create_directory(
                 self.get_export_directory(), self.get_input_data('per_questionnaire_directory'))
             if error_msg != '':
@@ -1071,9 +1071,9 @@ class ExportExecution:
             else:
                 random_forest = RandomForests.objects.first()
                 if questionnaire_id == random_forest.admission_assessment.lime_survey_id:
-                    path_questionnaire = '%s_%s' % ('QA', slugify(random_forest.admission_assessment.en_title))
+                    path_questionnaire = 'QA_unified_admission_assessment'
                 else:
-                    path_questionnaire = '%s_%s' % ('QS', slugify(random_forest.surgical_evaluation.en_title))
+                    path_questionnaire = 'QS_surgical_evaluation'
 
             # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
@@ -1591,7 +1591,7 @@ class ExportExecution:
 
         return error_msg
 
-    def process_per_participant(self, heading_type):
+    def process_per_participant(self, heading_type, participants_plugin):
 
         error_msg = ''
 
@@ -1628,7 +1628,13 @@ class ExportExecution:
                     questionnaire_id = int(self.questionnaire_utils.get_questionnaire_id_from_code(questionnaire_code))
                     title = self.get_title_reduced(questionnaire_id=int(questionnaire_id))
                     questionnaire_directory_name = '%s_%s' % (str(questionnaire_code), title)
-                    # create questionnaire directory
+                    if participants_plugin:
+                        randomforests = RandomForests.objects.first()
+                        if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                            questionnaire_directory_name = 'QA_unified_admission_assessment'
+                        elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                            questionnaire_directory_name = 'QS_surgical_evaluation'
+                    # Create questionnaire directory
                     # path ex. NES_EXPORT/Per_participant/Participant_<participant_code>/questionnaire_code_Title/
                     error_msg, path_per_questionnaire = create_directory(participant_path, questionnaire_directory_name)
                     # path ex. NES_EXPORT/Per_participant/QCode_Title/
@@ -1652,6 +1658,12 @@ class ExportExecution:
 
                     for language in language_list:
                         export_filename = '%s_%s_%s' % ('Responses', str(questionnaire_code), language)
+                        if participants_plugin:
+                            randomforests = RandomForests.objects.first()
+                            if questionnaire_id == randomforests.admission_assessment.lime_survey_id:
+                                export_filename = 'Responses_QA_en'
+                            elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
+                                export_filename = 'Responses_QS_en'
                         # Path ex. NES_EXPORT/Per_participant/Participant_P123/QCode_Title/Responses_Q123_aaa.csv
                         complete_filename = path.join(path_per_questionnaire, export_filename + '.' + filesformat_type)
 
@@ -1720,8 +1732,7 @@ class ExportExecution:
             if error_msg != '':
                 return error_msg
 
-            for questionnaire_code in \
-                    self.get_per_participant_data(participant_code):
+            for questionnaire_code in self.get_per_participant_data(participant_code):
                 if self.participants_per_entrance_questionnaire[questionnaire_code]:
                     if patient_id in self.participants_per_entrance_questionnaire[questionnaire_code]:
                         questionnaire_id = int(
