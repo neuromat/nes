@@ -11,7 +11,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from experiment.models import Experiment, QuestionnaireResponse as ExperimentResponse, Questionnaire, Component, Group
+from experiment.models import Experiment, QuestionnaireResponse as ExperimentResponse, Questionnaire, Component, Group, \
+    SubjectOfGroup
 from experiment.views import get_block_tree
 from export.forms import ExportForm
 from export.input_export import build_complete_export_structure
@@ -219,7 +220,11 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
                 export = Export.objects.last()
                 plugin_url = RandomForests.objects.first().plugin_url
                 plugin_url += '?user_id=' + str(request.user.id) + '&export_id=' + str(export.id)
+                # Puts in session to open plugin and load posted values
                 request.session['plugin_url'] = plugin_url
+                request.session['experiment_selected_id'] = int(request.POST.get('experiment_selected', None))
+                request.session['participants_from'] = list(map(int, request.POST.getlist('from[]', None)))
+                request.session['participants_to'] = list(map(int, request.POST.getlist('patients_selected[]')))
                 return redirect(reverse('send-to-plugin'))
             else:
                 messages.error(request, _('Could not open zip file to send to Forest Plugin'))
@@ -305,8 +310,8 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
     # Exclude PATIENT_FIELDS item correspondent to patient code
     # Did that as of NES-987 issue refactorings (this was a major refactoring)
     patient_fields = PATIENT_FIELDS.copy()
-    item = next(item for item in PATIENT_FIELDS if item['field'] == 'code')
-    del patient_fields[patient_fields.index(item)]
+    key = next(item for item in PATIENT_FIELDS if item['field'] == 'code')
+    del patient_fields[patient_fields.index(key)]
 
     context = {
         'participants': participants_headers,
@@ -325,13 +330,31 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
             groups__subjectofgroup__questionnaireresponse__in=questionnaire_responses).distinct()
 
         context['experiments'] = experiments
+        context['experiment_selected_id'] = request.session.get('experiment_selected_id', None)
+        if 'experiment_selected_id' in request.session:
+            del request.session['experiment_selected_id']
+
+        context['participants_from'] = dict((el, '') for el in request.session.get('participants_from', []))
+        for key in context['participants_from']:
+            subject_of_group = SubjectOfGroup.objects.get(pk=key)
+            patient = subject_of_group.subject.patient
+            context['participants_from'][key] = patient.name + ' - ' + subject_of_group.group.title
+        if 'participants_from' in request.session:
+            del request.session['participants_from']
+
+        context['participants_to'] = dict((el, '') for el in request.session.get('participants_to', []))
+        for key in context['participants_to']:
+            subject_of_group = SubjectOfGroup.objects.get(pk=key)
+            patient = subject_of_group.subject.patient
+            context['participants_to'][key] = patient.name + ' - ' + subject_of_group.group.title
+        if 'participants_to' in request.session:
+            del request.session['participants_to']
 
         export_form = ExportForm(
             request.POST or None,
             initial={'title': 'title', 'responses': ['short'], 'headings': 'code', 'filesformat': 'csv'})
 
         context['export_form'] = export_form
-
     # END - Here goes the selections for Sending by Experiment
 
     plugin_url = request.session.get('plugin_url', None)
