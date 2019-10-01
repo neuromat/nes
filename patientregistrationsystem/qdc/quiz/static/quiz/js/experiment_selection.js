@@ -34,6 +34,10 @@ $(document).ready(function () {
     select_experiments.change(function () {
         var experiment_id = $(this).val();
 
+        // Clean up the "to" multiselect when loading, to avoid mixing participants
+        // from different experiments when sending
+        select_experiment_participants_to.empty();
+
         if (experiment_id == "") {
             experiment_id = "0";
         }
@@ -70,9 +74,6 @@ $(document).ready(function () {
             select_experiment_participants_from.html(options);
             select_experiment_participants_from.prop('disabled', false);
 
-            // Clean up the "to" multiselect when loading, to avoid mixing participants
-            // from different experiments when sending
-            select_experiment_participants_to.empty()
         });
     });
 
