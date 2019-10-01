@@ -10,7 +10,6 @@ from unittest.mock import patch
 from django.conf import settings
 from django.contrib.messages import get_messages
 from django.core.urlresolvers import reverse, resolve
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.test import override_settings
 
@@ -60,13 +59,36 @@ class PluginTest(ExportTestCase):
         view = resolve('/plugin/')
         self.assertEquals(view.func, send_to_plugin)
 
-    def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_in_default_language(
+    def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_display_message1(
             self):
-        # TODO (NES-995): refactors to test properly
+        """Current language is pt-BR"""
+
         self._create_basic_objects()
+        random_forest = RandomForests.objects.get()
+        random_forest.admission_assessment.pt_title = None
+        random_forest.admission_assessment.save()
+        random_forest.surgical_evaluation.pt_title = None
+        random_forest.surgical_evaluation.save()
+
         response = self.client.get(reverse('send-to-plugin'))
-        for survey in Survey.objects.all():
-            self.assertContains(response, survey.pt_title)
+        self.assertContains(response, 'Título do Questionário Avaliação de Entrada não disponível em pt-BR')
+        self.assertContains(response, 'Título do Questionário Avaliação Cirúrgica não disponível em pt-BR')
+
+    @override_settings(LANGUAGE_CODE='en')
+    def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_display_message2(
+            self):
+        """Current language is en"""
+
+        self._create_basic_objects()
+        random_forest = RandomForests.objects.get()
+        random_forest.admission_assessment.en_title = None
+        random_forest.admission_assessment.save()
+        random_forest.surgical_evaluation.en_title = None
+        random_forest.surgical_evaluation.save()
+
+        response = self.client.get(reverse('send-to-plugin'))
+        self.assertContains(response, 'Questionnaire title for Unified Admission Assessment not available in en')
+        self.assertContains(response, 'Questionnaire title for Surgical Assessment not available in en')
 
     def test_does_not_define_plugin_url_attribute_does_not_display_plugin_entry_in_menu(self):
         self._create_basic_objects()
@@ -79,10 +101,25 @@ class PluginTest(ExportTestCase):
         response = self.client.get('home')
         self.assertNotIn('Plugin', response.content.decode('utf-8'))
 
-    def test_group_selected_list_in_request_session_removes_this_session_key(self):
-        # TODO (NES-995): simulate 'group_selected_list' in request session when sending
-        #  to Plugin
-        pass
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_group_selected_list_in_request_session_removes_session_key(self, mockServer):
+        # Simulate 'group_selected_list' already in request session when sending
+        # to Plugin in Per Participant way
+        self.append_session_variable('group_selected_list', 21)
+
+        set_limesurvey_api_mocks(mockServer)
+        self._create_basic_objects()
+
+        self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'headings': ['code'],
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+
+        self.assertIsNone(self.client.session.get('group_selected_list', None))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -170,16 +207,16 @@ class PluginTest(ExportTestCase):
                 self.assertEqual(2, len(reader))
                 self.assertEqual(self.patient.code, reader[1][0])
 
-    @skip  # TODO (NES-995): solve this before final commit
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_plugin_url_session_key(self, mockServer):
+    def test_POST_send_to_plugin_adds_plugin_url_session_key_and_redirect_to_send_to_plugin_view(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
         self._create_basic_objects()
         response = self.client.post(
             reverse('send-to-plugin'),
             data={
+                'headings': ['code'],
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
@@ -187,8 +224,8 @@ class PluginTest(ExportTestCase):
         export = Export.objects.last()
         plugin = RandomForests.objects.last()
         plugin_url = plugin.plugin_url + '?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
-        self.assertRedirects(response, reverse('send-to-plugin'))
         self.assertEqual(self.client.session.get('plugin_url'), plugin_url)
+        self.assertRedirects(response, reverse('send-to-plugin'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')

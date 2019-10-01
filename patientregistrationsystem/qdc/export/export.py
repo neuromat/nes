@@ -1407,8 +1407,6 @@ class ExportExecution:
 
         return error_msg
 
-    # TODO (NES-995): change per_experiment to per_experiment_plugin or something like this.
-    #  Change this and in other places
     def process_per_experiment_questionnaire(self, heading_type, per_experiment_plugin=False):
         """
         :param heading_type: str, type of header csv columns
@@ -2605,14 +2603,14 @@ class ExportExecution:
         error_msg = ''
         participants_filtered_list = self.get_participants_filtered_data()
         # Process participants/diagnosis (Per_participant directory)
-        # path ex. Users/.../NES_EXPORT/
+        # Path ex. Users/.../NES_EXPORT/
         base_export_directory = self.get_export_directory()
         # /NES_EXPORT/
         base_directory = self.get_input_data('base_directory')
         # Participant_data directory
         participant_data_directory = self.get_input_data('participant_data_directory')
         if per_experiment:
-            # path ex. Users/.../NES_EXPORT/Participant_data/
+            # Path ex. Users/.../NES_EXPORT/Participant_data/
             participant_base_export_directory = path.join(base_export_directory, participant_data_directory)
             # /NES_EXPORT/Participant_data
             base_directory = path.join(base_directory, participant_data_directory)
