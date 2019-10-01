@@ -51,11 +51,17 @@ $(document).ready(function () {
         });
 
         // Get participants for RandomForests Plugin
-        if (experiment_id == 0) {
+        select_experiment_participants_from.html('<option></option>');
+        if (experiment_id != 0) {
+            // Fill multiselect "from" with a suit ajax loading gif
             select_experiment_participants_from.html('<option></option>');
+            $('#loading_box').css('display', 'flex');
+            select_experiment_participants_from.prop('disabled', true);
         }
+
         var url = "/plugin/get_participants_by_experiment/" + experiment_id;
         $.getJSON(url, function (participants) {
+            $('#loading_box').css('display', 'none');
             var options = "";
             for (var i = 0; i < participants.length; i++) {
                 options += '<option value="' + participants[i].subject_of_group_id + '">' + participants[i].participant_name + ' - ' + participants[i].group_name + '</option>';
@@ -65,7 +71,7 @@ $(document).ready(function () {
             select_experiment_participants_from.prop('disabled', false);
 
             // Clean up the "to" multiselect when loading, to avoid mixing participants
-            // when sending
+            // from different experiments when sending
             select_experiment_participants_to.empty()
         });
     });
