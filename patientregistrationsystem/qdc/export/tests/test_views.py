@@ -19,7 +19,7 @@ from django.test import override_settings
 from experiment.models import Component, ComponentConfiguration, \
     ComponentAdditionalFile, BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
     CoilOrientation, DirectionOfTheInducedCurrent, EEGFile, EMGFile, Stimulus, ContextTree, EEGData
-from experiment.tests.tests_original import ObjectsFactory
+from experiment.tests.tests_helper import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
     EEG_SETTING_FILENAME, TMS_DATA_FILENAME, HOTSPOT_MAP, EMG_SETTING_FILENAME, EMG_DEFAULT_SETTING, \

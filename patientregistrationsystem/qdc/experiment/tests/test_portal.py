@@ -10,7 +10,7 @@ from experiment.models import ScheduleOfSending, Component
 from experiment.portal import send_experiment_to_portal, \
     send_experiment_researcher_to_portal, \
     send_researcher_to_portal, send_steps_to_portal
-from experiment.tests.tests_original import ObjectsFactory
+from experiment.tests.tests_helper import ObjectsFactory
 from experiment.views import get_block_tree
 from survey.abc_search_engine import ABCSearchEngine
 from survey.survey_utils import HEADER_EXPLANATION_FIELDS

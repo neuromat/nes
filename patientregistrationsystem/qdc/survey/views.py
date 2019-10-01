@@ -939,8 +939,7 @@ def check_limesurvey_access(request, surveys):
     available = limesurvey_available(surveys)
     if not available:
         messages.warning(
-            request, _("LimeSurvey unavailable. System running partially.")
-        )
+            request, _("LimeSurvey unavailable. System running partially."))
 
     return available
 
