@@ -99,10 +99,11 @@
                     <div class="row">
                         <div class="panel-group" id="accordion">
                             <div class="panel-heading">
-                                <h4><a data-toggle="collapse" data-parent="#accordion" href="#collapse_experiment">
+                                <h4><a data-toggle="collapse" data-parent="#accordion" href="#collapse_experiment"
+                                       aria-expanded="true">
                                     {% trans 'Per Experiment' %} </a></h4>
                             </div>
-                            <div id="collapse_experiment" class="panel-collapse collapse">
+                            <div id="collapse_experiment" class="panel-collapse collapse in">
                                 <div id="studies_container" class="container span6 offset3 well">
                                     <h4>{% trans "Filters selection" %}</h4>
                                     <div class="form-group">
@@ -173,7 +174,7 @@
                             </div>
                         </div>
                     </div>
-                    {# Hiddens fields with default options #}
+                    {# Hidden fields with default options #}
                     <select class="form-control" size="13" id="patient_selected" name="patient_selected"
                             multiple="multiple" data-error="Please, select a patient field from the list."
                             style="opacity: 0; height: 1px">
