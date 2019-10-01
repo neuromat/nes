@@ -114,7 +114,9 @@
                                                     <option value>-------</option>
                                                     {% for experiment in experiments %}
                                                         <option
-                                                                {% if not creating and experiment.id == experiment_selected.id %}selected="selected"{% endif %} value="{{ experiment.id }}">{{ experiment.title }} - ({{ experiment.research_project }})</option>
+                                                                {% if not creating and experiment.id == experiment_selected_id %}
+                                                                    selected="selected"{% endif %} value="{{ experiment.id }}">
+                                                            {{ experiment.title }} - ({{ experiment.research_project }})</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -134,12 +136,8 @@
                                                 <select class="form-control" size="13" id="multiselect_2"
                                                         name="from[]"
                                                         multiple="multiple">
-                                                    {% for field in experiment_participants %}
-                                                        {% if not field.selected %}
-                                                            <option value="{{ field.subject_of_group }}">
-                                                                {{ field.participant }}
-                                                            </option>
-                                                        {% endif %}
+                                                    {% for key, value in participants_from.items %}
+                                                        <option value="{{ key }}">{{ value }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -163,12 +161,8 @@
                                             >{% trans "Participants chosen:" %} </label>
                                             <select name="patients_selected[]" id="multiselect_2_to"
                                                     class="form-control" size="13" multiple="multiple">
-                                                {% for field in participants %}
-                                                    {% if field.selected %}
-                                                        <option value="{{ field.patient_id }}">
-                                                            {{ field.patient_name }}
-                                                        </option>
-                                                    {% endif %}
+                                                {% for key, value in participants_to.items %}
+                                                    <option value="{{ key }}">{{ value }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
