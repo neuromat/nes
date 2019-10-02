@@ -1571,7 +1571,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
         self.client.logout()
 
-    def _create_sample_export_data(self):
+    def _create_eeg_export_data(self):
         # Create eeg component (could be other component type or more than one component)
         self.eeg_set = ObjectsFactory.create_eeg_setting(self.experiment)
         eeg_comp = ObjectsFactory.create_component(self.experiment, Component.EEG, kwargs={'eeg_set': self.eeg_set})
@@ -1734,15 +1734,19 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             )
 
     @staticmethod
-    def _set_post_data(data_collection='per_eeg_raw_data'):
+    def _set_post_data(*data_collections):
         # Data style that is posted to export_view in template
-        return {
+        post_data = {
             'per_questionnaire': ['on'], 'per_participant': ['on'],
-            data_collection: ['on'], 'per_additional_data': ['on'],
+            'per_additional_data': ['on'],
             # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
+        for data_collection in data_collections:
+            post_data[data_collection] = ['on']
+
+        return post_data
 
     @staticmethod
     def _set_all_questions():
@@ -1933,7 +1937,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_per_experiment_creates_content_dirs_inside_data_directory(self):
-        self._create_sample_export_data()
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -1948,7 +1952,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_per_experiment_creates_datapackage_json_file(self):
-        self._create_sample_export_data()
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -1960,8 +1964,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                         'datapackage.json not found in: ' + str(zipped_file.namelist()))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_basic_content_to_datapackage_json_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_basic_content_to_datapackage_json_file(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -1975,8 +1979,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_experiment_contributors_to_datapackage_json_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_experiment_contributors_to_datapackage_json_file(self):
+        self._create_eeg_export_data()
         contributor1 = self.research_project.owner
         contributor2 = ObjectsFactory.create_experiment_researcher(self.experiment).researcher
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2001,8 +2005,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_default_license_to_datapackage_json_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_default_license_to_datapackage_json_file(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2020,8 +2024,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_creative_commons_license_to_datapackage_json_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_creative_commons_license_to_datapackage_json_file(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '1')
 
@@ -2039,8 +2043,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_resources_field_to_datapackage_json_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_resources_field_to_datapackage_json_file(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2055,8 +2059,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_basic_experiment_data_file_info_to_datapackage_json_resources_field(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_basic_experiment_data_file_info_to_datapackage_json_resources_field(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2083,8 +2087,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_experiment_table_schema_info_to_datapackage_json_experiment_resource(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_experiment_table_schema_info_to_datapackage_json_experiment_resource(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2102,9 +2106,9 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_participant_data_file_info_to_datapackage_json_resources_field(self):
+    def test_export_per_experiment_adds_participant_data_file_info_to_datapackage_json_resources_field(self):
         # TODO (NES-987): change method name to _create_eeg_export_data
-        self._create_sample_export_data()
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2133,8 +2137,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_participants_table_schema_info_to_datapackage_json_participants_resource(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_participants_table_schema_info_to_datapackage_json_participants_resource(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2164,8 +2168,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_participants_diagnosis_file_info_to_datapackage_json_resources_field(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2202,8 +2206,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2229,8 +2233,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_experimental_protocol_image_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_experimental_protocol_image_file(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2253,8 +2257,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_experimental_protocol_description_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_experimental_protocol_description_file(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
@@ -2277,12 +2281,12 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_eeg_default_setting_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_eeg_default_setting_file(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
+        data = self._set_post_data('per_eeg_raw_data')
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
@@ -2301,12 +2305,12 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_eeg_setting_description_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_eeg_setting_description_file(self):
+        self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
+        data = self._set_post_data('per_eeg_raw_data')
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
@@ -2325,8 +2329,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_eeg_data_collection_files(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_eeg_data_collection_files(self):
+        self._create_eeg_export_data()
         # Adds one more eeg data collection
         eegdata = ObjectsFactory.create_eeg_data(self.dct_eeg, self.subject_of_group, self.eeg_set)
         ObjectsFactory.create_eeg_file(eegdata)
@@ -2334,7 +2338,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
+        data = self._set_post_data('per_eeg_raw_data')
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
@@ -2359,8 +2363,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_eeg_data_collection_sensor_position_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_eeg_data_collection_sensor_position_file(self):
+        self._create_eeg_export_data()
 
         # The file saved below is associated with a file format that is considered
         # to generate sensor_postion.png file
@@ -2376,7 +2380,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
+        data = self._set_post_data('per_eeg_raw_data')
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
@@ -2397,8 +2401,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_eeg_data_collection_nwb_file_resource(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_eeg_data_collection_nwb_file_resource(self):
+        self._create_eeg_export_data()
 
         # The file saved below is associated with a file format that is considered
         # to generate sensor_postion.png file
@@ -2423,7 +2427,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
+        data = self._set_post_data('per_eeg_raw_data')
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
@@ -2444,13 +2448,13 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_sensor_position_image(self):
+    def test_export_per_experiment_adds_sensor_position_image(self):
         pass
-        # self._create_sample_export_data()
+        # self._create_eeg_export_data()
         # TODO (NES-987): leave to the last
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_tms_default_setting_file(self):
+    def test_export_per_experiment_adds_tms_default_setting_file(self):
         temp_dir = tempfile.mkdtemp()
         self._create_tms_export_data(temp_dir)  # pass temp_dir for hotspot file creation
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2474,7 +2478,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_tms_data_description_and_hotspot_map_files(self):
+    def test_export_per_experiment_adds_tms_data_description_and_hotspot_map_files(self):
         temp_dir = tempfile.mkdtemp()
         self._create_tms_export_data(temp_dir)  # pass temp_dir for hotspot file creation
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2508,7 +2512,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_emg_default_setting_file(self):
+    def test_export_per_experiment_adds_emg_default_setting_file(self):
         self._create_emg_export_data()
         self._create_emg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2534,7 +2538,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_emg_setting_description_file(self):
+    def test_export_per_experiment_adds_emg_setting_description_file(self):
         self._create_emg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2559,7 +2563,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_emg_data_collection_files(self):
+    def test_export_per_experiment_adds_emg_data_collection_files(self):
         self._create_emg_export_data()
         # Adds one more emg data collection
         emgdata = ObjectsFactory.create_emg_data_collection_data(self.dct_emg, self.subject_of_group, self.emg_set)
@@ -2594,7 +2598,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_goalkeeper_context_tree_default_file(self):
+    def test_export_per_experiment_adds_goalkeeper_context_tree_default_file(self):
         self._create_goalkeeper_game_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2620,7 +2624,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_stimulus_file(self):
+    def test_export_per_experiment_adds_stimulus_file(self):
         # Create a stimulus component
         stimulus_type = ObjectsFactory.create_stimulus_type()
         with tempfile.TemporaryDirectory() as tmpdirname:
@@ -2660,7 +2664,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_generic_data_collection_file(self):
+    def test_export_per_experiment_adds_generic_data_collection_file(self):
         # Create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(
@@ -2703,7 +2707,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_generic_data_collection_file(self):
+    def test_export_per_experiment_adds_generic_data_collection_file(self):
         # Create generic data collection (gdc) component
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(
@@ -2746,7 +2750,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_goalkeeper_game_files(self):
+    def test_export_per_experiment_adds_goalkeeper_game_files(self):
         dgp_file = self._create_goalkeeper_game_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
@@ -2787,7 +2791,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_goalkeeper_game_context_tree_file(self):
+    def test_export_per_experiment_adds_goalkeeper_game_context_tree_file(self):
         self._create_goalkeeper_game_export_data()
 
         # Add file to context tree setting file
@@ -2822,7 +2826,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_experimental_protocol_additional_file(self):
+    def test_export_per_experiment_adds_experimental_protocol_additional_file(self):
         # TODO (NES-991): by now, additional data from Experimental Protocol (set of steps) appear to have not being
         #  exported
         pass
@@ -2844,7 +2848,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         # json_data = self.get_datapackage_json_data(temp_dir, response)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_step_additional_file(self):
+    def test_export_per_experiment_adds_step_additional_file(self):
         # Create generic data collection (gdc) component, it could been any data collection
         it = ObjectsFactory.create_information_type()
         gdc = ObjectsFactory.create_component(self.experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': it})
@@ -2886,15 +2890,15 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_add_participant_data_collection_additional_file(self):
-        self._create_sample_export_data()
+    def test_export_per_experiment_adds_participant_data_collection_additional_file(self):
+        self._create_eeg_export_data()
         additional_data = ObjectsFactory.create_additional_data_data(self.dct_eeg, self.subject_of_group)
         additional_file = ObjectsFactory.create_additional_data_file(additional_data)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = self._set_post_data()
+        data = self._set_post_data('per_eeg_raw_data')
         response = self.client.post(reverse('export_view'), data)
 
         temp_dir = tempfile.mkdtemp()
@@ -2918,7 +2922,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
+    def test_export_per_experiment_adds_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
         self._create_questionnaire_export_data()
         set_mocks6(mockServer)
 
@@ -2963,7 +2967,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
+    def test_export_per_experiment_adds_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
             self, mockServer):
         self._create_questionnaire_export_data()
         set_mocks6(mockServer)
@@ -3000,7 +3004,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_questionnaire_responses_file_to_datapackage_json_file1(self, mockServer):
+    def test_export_per_experiment_adds_questionnaire_responses_file_to_datapackage_json_file1(self, mockServer):
         """In Per_questionnaire subdir"""
         self._create_questionnaire_export_data()
         set_mocks6(mockServer)
@@ -3048,7 +3052,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_questionnaire_responses_file_to_datapackage_json_file2(self, mockServer):
+    def test_export_per_experiment_adds_questionnaire_responses_file_to_datapackage_json_file2(self, mockServer):
         """In Per_participant subdir"""
 
         self._create_questionnaire_export_data()
@@ -3103,7 +3107,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
+    def test_export_per_experiment_adds_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
         """In Per_questionnaire subdir"""
 
         self._create_questionnaire_export_data()
@@ -3150,7 +3154,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_questionnaire_responses_table_schema_info_to_datapackage_json_file2(
+    def test_export_per_experiment_adds_questionnaire_responses_table_schema_info_to_datapackage_json_file2(
             self, mockServer):
         """In Per_participant subdir"""
 
@@ -3199,7 +3203,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_entrance_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
+    def test_export_per_experiment_adds_entrance_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
         self._create_questionnaire_export_data()
         UtilTests.create_response_survey(self.user, self.patient, self.survey, token_id=1)
 
@@ -3252,7 +3256,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_entrance_questionnaire_metadata_table_schema_info_to_datapackage(
+    def test_export_per_experiment_adds_entrance_questionnaire_metadata_table_schema_info_to_datapackage(
             self, mockServer):
         self._create_questionnaire_export_data()
         UtilTests.create_response_survey(self.user, self.patient, self.survey, token_id=1)
@@ -3298,7 +3302,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_entrance_questionnaire_responses_file_to_datapackage_json_file1(
+    def test_export_per_experiment_adds_entrance_questionnaire_responses_file_to_datapackage_json_file1(
             self, mockServer):
         """In Per_questionnaire subdir"""
         self._create_questionnaire_export_data()
@@ -3354,7 +3358,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_entrance_questionnaire_responses_file_to_datapackage_json_file2(
+    def test_export_per_experiment_adds_entrance_questionnaire_responses_file_to_datapackage_json_file2(
             self, mockServer):
         """In Per_participant subdir"""
 
@@ -3410,7 +3414,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_entrance_questionnaire_responses_table_schema_info_to_datapackage1(
+    def test_export_per_experiment_adds_entrance_questionnaire_responses_table_schema_info_to_datapackage1(
             self, mockServer):
         """In Per_questionnaire subdir"""
         self._create_questionnaire_export_data()
@@ -3458,7 +3462,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_add_entrance_questionnaire_responses_table_schema_info_to_datapackage2(
+    def test_export_per_experiment_adds_entrance_questionnaire_responses_table_schema_info_to_datapackage2(
             self, mockServer):
         """In Per_participant subdir"""
 
@@ -3533,7 +3537,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_basic_content_to_datapackage_json_file(self, mockServer):
+    def test_export_per_participant_adds_basic_content_to_datapackage_json_file(self, mockServer):
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
         set_mocks12(mockServer)
@@ -3561,7 +3565,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_questionnaires_contributors_to_datapackage_json_file(self, mockServer):
+    def test_export_per_participant_adds_questionnaires_contributors_to_datapackage_json_file(self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
         survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
@@ -3632,7 +3636,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_default_license_to_datapackage_json_file(self, mockServer):
+    def test_export_per_participant_adds_default_license_to_datapackage_json_file(self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
         survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
@@ -3671,7 +3675,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_creative_commons_license_to_datapackage_json_file(self, mockServer):
+    def test_export_per_participant_adds_creative_commons_license_to_datapackage_json_file(self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
         survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
@@ -3710,7 +3714,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_participant_data_file_info_to_datapackage_json_resources_field(
+    def test_export_per_participant_adds_participant_data_file_info_to_datapackage_json_resources_field(
             self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
@@ -3758,7 +3762,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_participants_table_schema_info_to_datapackage_json_participants_resource(
+    def test_export_per_participant_adds_participants_table_schema_info_to_datapackage_json_participants_resource(
             self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
@@ -3812,7 +3816,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_participants_diagnosis_file_info_to_datapackage_json_resources_field(
+    def test_export_per_participant_adds_participants_diagnosis_file_info_to_datapackage_json_resources_field(
             self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
@@ -3867,7 +3871,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(
+    def test_export_per_participant_adds_participants_diagnosis_table_schema_info_to_datapackage_json_participants_resource(
             self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
@@ -3915,7 +3919,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
+    def test_export_per_participant_adds_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
         survey1 = create_survey(LIMESURVEY_SURVEY_ID_1)
@@ -3965,7 +3969,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
+    def test_export_per_participant_adds_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
             self, mockServer):
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
         # See comment in export.process_per_participant method
@@ -4011,7 +4015,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_questionnaire_response_file_to_datapackage_json_file1(self, mockServer):
+    def test_export_per_participant_adds_questionnaire_response_file_to_datapackage_json_file1(self, mockServer):
         """In Per_questionnaire subdir"""
 
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
@@ -4068,7 +4072,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
+    def test_export_per_participant_adds_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
         """In Per_questionnaire subdir"""
 
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
@@ -4132,7 +4136,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_questionnaire_response_file_to_datapackage_json_file2(self, mockServer):
+    def test_export_per_participant_adds_questionnaire_response_file_to_datapackage_json_file2(self, mockServer):
         """In Per_participant subdir"""
 
         # It's important to keep the order: first 'Q5050' then 'Q2121'.
@@ -4191,7 +4195,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_add_questionnaire_responses_table_schema_info_to_datapackage2(self, mockServer):
+    def test_export_per_participant_adds_questionnaire_responses_table_schema_info_to_datapackage2(self, mockServer):
         """In Per_participant subdir"""
 
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
@@ -4257,6 +4261,29 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 )
 
             shutil.rmtree(temp_dir)
+
+    def test_export_adds_resource_has_already_resource_with_same_name_adds_hash(self):
+        # eeg file and emg file are going to have the same name: file.bin
+        self._create_eeg_export_data()
+        self._create_emg_export_data()
+
+        self.append_session_variable('group_selected_list', [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        data = self._set_post_data('per_eeg_raw_data', 'per_emg_data')
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
+
+        eeg_emg_resources = [
+            resource for resource in json_data['resources']
+            if os.path.basename(resource['path']) == 'file.bin'
+        ]
+
+        self.assertNotEqual(eeg_emg_resources[0]['name'], eeg_emg_resources[1]['name'])
+
+        shutil.rmtree(temp_dir)
 
 
 def tearDownModule():

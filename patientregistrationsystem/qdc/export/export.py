@@ -3,6 +3,7 @@ import csv
 import json
 import random
 import re
+import string
 from collections import OrderedDict
 
 from csv import writer
@@ -3215,6 +3216,8 @@ class ExportExecution:
         else:
             datapackage_dict = self._build_participant_datapackage_dict(request)
 
+        self._set_unique_resources_names(datapackage_dict)
+
         file_path = path.join(self.get_directory_base(), 'datapackage.json')
         with open(file_path, 'w') as file:
             json.dump(datapackage_dict, file)
@@ -3616,6 +3619,20 @@ class ExportExecution:
 
             export_rows.insert(0, header)
         return export_rows
+
+    @staticmethod
+    def _randomword(length):
+        letters = string.ascii_lowercase
+        return ''.join(random.choice(letters) for i in range(length))
+
+    def _set_unique_resources_names(self, datapackage):
+        for index, resource in enumerate(datapackage['resources']):
+            resources_same_name = [
+                resource['name'] for resource in datapackage['resources']
+                if resource['name'] == datapackage['resources'][index]['name']
+            ]
+            if len(resources_same_name) > 1:  # There's a duplicate
+                datapackage['resources'][index]['name'] = resource['name'] + self._randomword(3)
 
 
 def handling_values(dictionary_object):
