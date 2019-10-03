@@ -1127,15 +1127,16 @@ class ExportExecution:
                         error, questions = QuestionnaireUtils.get_questions(
                             questionnaire_lime_survey, questionnaire_id, language)
                         datapackage_json = {
-                                'name': slugify(export_filename), 'title': export_filename,
-                                'path': path.join(export_directory, export_filename + '.' + filesformat_type),
-                                'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
-                                'description': 'Questionnaire response',
-                                'schema': {
-                                    'fields': self._set_questionnaire_response_fields(
-                                        heading_type, rows_participant_data[0], answer_list, questions)
-                                }
+                            'name': slugify(export_filename), 'title': export_filename,
+                            'path': path.join(export_directory, export_filename + '.' + filesformat_type),
+                            'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                            'description': 'Questionnaire response',
+                            'profile': 'tabular-data-resource',
+                            'schema': {
+                                'fields': self._set_questionnaire_response_fields(
+                                    heading_type, rows_participant_data[0], answer_list, questions)
                             }
+                        }
                     else:
                         datapackage_json = ''
                     self.files_to_zip_list.append([complete_filename, export_directory, datapackage_json])
@@ -1169,6 +1170,7 @@ class ExportExecution:
                         'path': path.join(export_questionnaire_metadata_directory, export_filename),
                         'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                         'description': 'Questionnaire metadata',
+                        'profile': 'tabular-data-resource',
                         'schema': {'fields': self._set_questionnaire_metadata_fields()}
                     }
                 ])
@@ -1212,7 +1214,7 @@ class ExportExecution:
             export_per_entrance_questionnaire_directory,
             self.get_input_data('per_questionnaire_directory'))
 
-        # path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/
+        # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/
         export_metadata_directory = path.join(
             export_per_entrance_questionnaire_directory,
             self.get_input_data('questionnaire_metadata_directory'))
@@ -1228,22 +1230,22 @@ class ExportExecution:
             path_questionnaire = \
                 '%s_%s' % (str(questionnaire_code), questionnaire_title)
 
-            # path ex. NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/
+            # Path ex. NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
             if error_msg != '':
                 return error_msg
-            # path ex. NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/
+            # Path ex. NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/
             export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
 
-            # path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa
+            # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa
             error_msg, export_metadata_path = create_directory(path_per_questionnaire_metadata, path_questionnaire)
             if error_msg != '':
                 return error_msg
 
-            # path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/
+            # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/
             export_questionnaire_metadata_directory = path.join(export_metadata_directory, path_questionnaire)
 
-            # defining language to be displayed
+            # Defining language to be displayed
             questionnaire_language = self.get_input_data('questionnaire_language')[str(questionnaire_id)]
             if 'long' in self.get_input_data('response_type'):
                 language_list = questionnaire_language['language_list']
@@ -1280,6 +1282,7 @@ class ExportExecution:
                             'path': path.join(export_directory, export_filename + '.' + filesformat_type),
                             'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                             'description': 'Questionnaire response',
+                            'profile': 'tabular-data-resource',
                             'schema': {
                                 'fields': self._set_questionnaire_response_fields(
                                     heading_type, rows_participant_data[0], answer_list, questions)
@@ -1310,6 +1313,7 @@ class ExportExecution:
                                           export_filename + '.' + filesformat_type),
                         'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                         'description': 'Questionnaire metadata',
+                        'profile': 'tabular-data-resource',
                         'schema': {
                             'fields': self._set_questionnaire_metadata_fields()
                         }
@@ -1540,6 +1544,7 @@ class ExportExecution:
                                         'path': path.join(export_directory, export_filename + '.' + filesformat_type),
                                         'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                                         'description': 'Questionnaire response',
+                                        'profile': 'tabular-data-resource',
                                         'schema': {
                                             'fields': self._set_questionnaire_response_fields(
                                                 heading_type, rows_participant_data[0], answer_list[0], questions)
@@ -1580,6 +1585,7 @@ class ExportExecution:
                                 'path': path.join(export_metadata_directory, export_filename),
                                 'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                                 'description': 'Questionnaire metadata',
+                                'profile': 'tabular-data-resource',
                                 'schema': {
                                     'fields': self._set_questionnaire_metadata_fields()
                                 }
@@ -1687,6 +1693,7 @@ class ExportExecution:
                             'path': path.join(export_questionnaire_directory, export_filename + '.' + filesformat_type),
                             'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                             'description': 'Questionnaire response',
+                            'profile': 'tabular-data-resource',
                             'schema': {
                                 'fields': self._set_questionnaire_response_fields(
                                     heading_type, participant_data_header, answer_list, questions)
@@ -1797,6 +1804,7 @@ class ExportExecution:
                                                 export_directory, export_filename + '.' + filesformat_type),
                                             'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
                                             'description': 'Questionnaire response',
+                                            'profile': 'tabular-data-resource',
                                             'schema': {
                                                 'fields': self._set_questionnaire_response_fields(
                                                     heading_type, rows_participant_data[0], answer_list, questions
@@ -1904,6 +1912,7 @@ class ExportExecution:
                                     'path': path.join(
                                         step_participant_export_directory, export_filename + '.' + filesformat_type),
                                     'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                                    'profile': 'tabular-data-resource',
                                     'schema': {
                                         'fields': self._set_questionnaire_response_fields(
                                             heading_type, export_rows_participants[0], answer_list[0], questions
@@ -2316,7 +2325,7 @@ class ExportExecution:
                             'name': unique_name2, 'title': unique_name2,
                             'path': path.join(
                                 goalkeeper_game_data_export_directory, export_filename),
-                            'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
+                            'encoding': 'UTF-8',
                         }
                     ])
 
@@ -2642,6 +2651,7 @@ class ExportExecution:
                 'name': 'participants', 'title': 'Participants',
                 'path': path.join(base_directory, export_filename),
                 'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
+                'profile': 'tabular-data-resource',
                 'schema': {
                     'fields': self._set_datapackage_table_schema(participants_headers, participants_field_types)
                 }
@@ -2673,6 +2683,7 @@ class ExportExecution:
                     'name': 'diagnosis', 'title': 'Diagnosis',
                     'path': path.join(base_directory, export_filename),
                     'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
+                    'profile': 'tabular-data-resource',
                     'schema': {
                         'fields': self._set_datapackage_table_schema(diagnosis_headers, diagnosis_field_types)
                     }
@@ -2817,6 +2828,85 @@ class ExportExecution:
 
         return fields
 
+    @staticmethod
+    def _randomword(length):
+        letters = string.ascii_lowercase
+        return ''.join(random.choice(letters) for i in range(length))
+
+    def _set_unique_resources_names(self, datapackage):
+        for index, resource in enumerate(datapackage['resources']):
+            resources_same_name = [
+                resource['name'] for resource in datapackage['resources']
+                if resource['name'] == datapackage['resources'][index]['name']
+            ]
+            if len(resources_same_name) > 1:  # There's a duplicate
+                datapackage['resources'][index]['name'] = resource['name'] + self._randomword(3)
+
+    def _build_resources(self, datapackage):
+        for file in self.files_to_zip_list:
+            if len(file) == 3:  # TODO (NES-987): just by now until having all files added
+                datapackage['resources'].append(file[2])
+
+    def _get_questionnaire_owners(self):
+        limesurvey = Questionnaires()
+        contributors = []
+        for questionnaire in self.input_data['questionnaires']:
+            sid = questionnaire['id']
+            contributors.append({
+                'title': limesurvey.get_survey_properties(sid, 'admin'),
+                'email': limesurvey.get_survey_properties(sid, 'adminemail'),
+                'questionnaire': str(sid) + ' - ' + questionnaire['questionnaire_name']
+            })
+
+        return contributors
+
+    def _build_participant_datapackage_dict(self, request):
+        title = 'Questionnaires Answered by Participants Outside Experiment Scope'
+        name = slugify(title)
+        description = 'Export made \"Per Participant\": the files contains metadata and responses of ' \
+                      'questionnaires filled outside any experiment in the system. They can be entrance ' \
+                      'questionnaires.'
+        date_created = str(datetime.now().replace(microsecond=0))
+        datapackage = {
+            'title': title, 'name': name, 'description': description,
+            'created': date_created,
+            'contributors': self._get_questionnaire_owners(),
+            'licenses': [LICENSES[int(request.POST.get('license', None))]],
+            'resources': []  # Will be built below
+        }
+
+        self._build_resources(datapackage)
+
+        return datapackage
+
+    def _build_experiment_datapackage_dict(self, experiment, request):
+        name = slugify(experiment.title)
+        researcher_owner = experiment.research_project.owner
+
+        datapackage = {
+            'title': experiment.title, 'name': name, 'description': experiment.description,
+            'created': str(datetime.now().replace(microsecond=0)),
+            'homepage': request.get_host() + '/experiments/' + name,
+            'contributors': [
+                {
+                    'title': researcher_owner.first_name + ' ' + researcher_owner.last_name,
+                    'email': researcher_owner.email
+                }
+            ],
+            'licenses': [LICENSES[int(request.session['license'])]],
+            'resources': []  # Will be built below
+        }
+        # Add the other contributors (besides research project owner)
+        for contributor in experiment.researchers.all():
+            datapackage['contributors'].append({
+                'title': contributor.researcher.first_name + ' ' + contributor.researcher.last_name,
+                'email': contributor.researcher.email
+            })
+        # Add to datapackage resources
+        self._build_resources(datapackage)
+
+        return datapackage
+
     def process_experiment_data(self, language_code):
         error_msg = ''
 
@@ -2873,6 +2963,7 @@ class ExportExecution:
                 'path': path.join(export_experiment_data, filename_experiment_resume),
                 'format': file_extension, 'mediatype': 'text/%s' % file_extension,
                 'encoding': 'UTF-8',
+                'profile': 'tabular-data-resource',
                 'schema': {
                     'fields': self._set_datapackage_table_schema(
                         experiment_summary_header, experiment_summary_field_types)
@@ -3139,71 +3230,6 @@ class ExportExecution:
                             ])
 
         return error_msg
-
-    def _build_resources(self, datapackage):
-        for file in self.files_to_zip_list:
-            if len(file) == 3:  # TODO (NES-987): just by now until having all files added
-                datapackage['resources'].append(file[2])
-
-    def _get_questionnaire_owners(self):
-        limesurvey = Questionnaires()
-        contributors = []
-        for questionnaire in self.input_data['questionnaires']:
-            sid = questionnaire['id']
-            contributors.append({
-                'title': limesurvey.get_survey_properties(sid, 'admin'),
-                'email': limesurvey.get_survey_properties(sid, 'adminemail'),
-                'questionnaire': str(sid) + ' - ' + questionnaire['questionnaire_name']
-            })
-
-        return contributors
-
-    def _build_participant_datapackage_dict(self, request):
-        title = 'Questionnaires Answered by Participants Outside Experiment Scope'
-        name = slugify(title)
-        description = 'Export made \"Per Participant\": the files contains metadata and responses of ' \
-                      'questionnaires filled outside any experiment in the system. They can be entrance ' \
-                      'questionnaires.'
-        date_created = str(datetime.now().replace(microsecond=0))
-        datapackage = {
-            'title': title, 'name': name, 'description': description,
-            'created': date_created,
-            'contributors': self._get_questionnaire_owners(),
-            'licenses': [LICENSES[int(request.POST.get('license', None))]],
-            'resources': []  # Will be built below
-        }
-
-        self._build_resources(datapackage)
-
-        return datapackage
-
-    def _build_experiment_datapackage_dict(self, experiment, request):
-        name = slugify(experiment.title)
-        researcher_owner = experiment.research_project.owner
-
-        datapackage = {
-            'title': experiment.title, 'name': name, 'description': experiment.description,
-            'created': str(datetime.now().replace(microsecond=0)),
-            'homepage': request.get_host() + '/experiments/' + name,
-            'contributors': [
-                {
-                    'title': researcher_owner.first_name + ' ' + researcher_owner.last_name,
-                    'email': researcher_owner.email
-                }
-            ],
-            'licenses': [LICENSES[int(request.session['license'])]],
-            'resources': []  # Will be built below
-        }
-        # Add the other contributors (besides research project owner)
-        for contributor in experiment.researchers.all():
-            datapackage['contributors'].append({
-                'title': contributor.researcher.first_name + ' ' + contributor.researcher.last_name,
-                'email': contributor.researcher.email
-            })
-        # Add to datapackage resources
-        self._build_resources(datapackage)
-
-        return datapackage
 
     def process_datapackage_json_file(self, request):
         """TODO (NES-987)
@@ -3619,20 +3645,6 @@ class ExportExecution:
 
             export_rows.insert(0, header)
         return export_rows
-
-    @staticmethod
-    def _randomword(length):
-        letters = string.ascii_lowercase
-        return ''.join(random.choice(letters) for i in range(length))
-
-    def _set_unique_resources_names(self, datapackage):
-        for index, resource in enumerate(datapackage['resources']):
-            resources_same_name = [
-                resource['name'] for resource in datapackage['resources']
-                if resource['name'] == datapackage['resources'][index]['name']
-            ]
-            if len(resources_same_name) > 1:  # There's a duplicate
-                datapackage['resources'][index]['name'] = resource['name'] + self._randomword(3)
 
 
 def handling_values(dictionary_object):

@@ -1551,10 +1551,10 @@ class ExportSelectionTest(ExportTestCase):
         self.assertEqual(self.client.session['license'], '0')
 
 
-class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
+class ExportFrictionlessDataTest(ExportTestCase):
 
     def setUp(self):
-        super(ExportFrictionlessDataPerExperimentTest, self).setUp()
+        super(ExportFrictionlessDataTest, self).setUp()
 
         # Redirect sys.stdout to avoid messages during test.
         self.stdout_bk, sys.stdout = sys.stdout, open('/dev/null', 'w+')
@@ -2078,7 +2078,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         # TODO (NES-987): test for tsv format
         test_dict = {
             'name': 'Experiment', 'title': 'Experiment', 'path': 'data/Experiment_data/Experiment.csv',
-            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8',
+            'profile': 'tabular-data-resource'
         }
         self.assertTrue(all(
             item in experiment_resource.items() for item in test_dict.items()),
@@ -2129,7 +2130,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             # TODO (NES-987): Changes 'Participants.csv' to a constant in code
             'name': 'participants', 'title': 'Participants',
             'path': os.path.join('data', 'Participant_data', 'Participants.csv'),
-            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8',
+            'profile': 'tabular-data-resource'
         }
         self.assertEqual(
             test_dict, participants_resource, str(test_dict) + ' not equal ' + str(participants_resource))
@@ -2198,7 +2200,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         test_dict = {
             'name': 'diagnosis', 'title': 'Diagnosis',
             'path': os.path.join('data', 'Participant_data', 'Diagnosis.csv'),
-            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8',
+            'profile': 'tabular-data-resource'
         }
         self.assertEqual(
             test_dict, diagnosis_resource, str(test_dict) + ' not equal ' + str(diagnosis_resource))
@@ -2446,12 +2449,6 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         self.assertIn(nwb_file_resource, json_data['resources'])
 
         shutil.rmtree(temp_dir)
-
-    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_adds_sensor_position_image(self):
-        pass
-        # self._create_eeg_export_data()
-        # TODO (NES-987): leave to the last
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_per_experiment_adds_tms_default_setting_file(self):
@@ -2751,7 +2748,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_per_experiment_adds_goalkeeper_game_files(self):
-        dgp_file = self._create_goalkeeper_game_export_data()
+        digital_game_phase_file = self._create_goalkeeper_game_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2763,21 +2760,22 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         temp_dir = tempfile.mkdtemp()
         json_data = self.get_datapackage_json_data(temp_dir, response)
 
-        filename = os.path.basename(dgp_file.file.name)
+        filename = os.path.basename(digital_game_phase_file.file.name)
         filename_goalkeeper_game_data_dir = filename.split('_')[0]
         unique_name_filename_goalkeeper_game_data_dir = slugify(filename_goalkeeper_game_data_dir)
-        unique_name = slugify(filename)
 
-        file_format_nes_code = dgp_file.digital_game_phase_data.file_format.nes_code
-        dgp_resource1 = {
+        digital_game_phase_resource1 = {
             'name': unique_name_filename_goalkeeper_game_data_dir,
             'title': unique_name_filename_goalkeeper_game_data_dir,
             'path': os.path.join(
                 'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
                 'Goalkeeper_game_data', filename_goalkeeper_game_data_dir + '.csv'),
-            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+            'encoding': 'UTF-8'
         }
-        dgp_resource2 = {
+
+        file_format_nes_code = digital_game_phase_file.digital_game_phase_data.file_format.nes_code
+        unique_name = slugify(filename)
+        digital_game_phase_resource2 = {
             'name': unique_name, 'title': unique_name,
             'path': os.path.join(
                 'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'), 'Per_participant',
@@ -2785,8 +2783,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             'description': 'Data Collection (format: %s)' % file_format_nes_code
         }
 
-        self.assertIn(dgp_resource1, json_data['resources'])
-        self.assertIn(dgp_resource2, json_data['resources'])
+        self.assertIn(digital_game_phase_resource1, json_data['resources'])
+        self.assertIn(digital_game_phase_resource2, json_data['resources'])
 
         shutil.rmtree(temp_dir)
 
@@ -2958,7 +2956,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             'path': os.path.join(
                 'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
                 'Questionnaire_metadata', code + '_' + slugify(self.questionnaire.survey.en_title), filename),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
+            'profile': 'tabular-data-resource',
         }
         
         self.assertTrue(all(
@@ -3042,7 +3041,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             'path': os.path.join(
                 'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
                 'Per_questionnaire', 'Step_1_QUESTIONNAIRE', filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+            'profile': 'tabular-data-resource',
         }
         self.assertTrue(all(
             item in questionnaire_response_resource.items() for item in test_dict.items()),
@@ -3097,7 +3097,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             'path': os.path.join(
                 'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
                 'Per_participant', 'Participant_' + self.patient.code, 'Step_1_QUESTIONNAIRE', filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+            'profile': 'tabular-data-resource',
         }
         self.assertEqual(
             test_dict, questionnaire_response_resource,
@@ -3246,7 +3247,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             'path': os.path.join(
                 'data', 'Participant_data', 'Questionnaire_metadata',
                 str(self.survey.lime_survey_id) + '_' + slugify(self.survey.en_title), filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
+            'profile': 'tabular-data-resource'
         }
         self.assertEqual(
             test_dict, questionnaire_response_resource,
@@ -3348,7 +3350,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 'data', 'Participant_data', 'Per_questionnaire',
                 str(self.survey.lime_survey_id) + '_' + slugify(self.survey.en_title),
                 filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+            'profile': 'tabular-data-resource',
         }
         self.assertEqual(
             test_dict, questionnaire_response_resource,
@@ -3404,7 +3407,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
             'path': os.path.join(
                 'data', 'Participant_data', 'Per_participant', 'Participant_' + self.patient.code,
                 self.survey.code + '_' + slugify(self.survey.en_title), filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+            'profile': 'tabular-data-resource',
         }
         self.assertEqual(
             test_dict, questionnaire_response_resource,
@@ -3619,7 +3623,7 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_display_license_options_in_form(self, mockServer):
+    def test_export_per_participant_displays_license_options_in_form(self, mockServer):
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
         set_mocks10(mockServer)
@@ -3753,7 +3757,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         test_dict = {
             'name': 'participants', 'title': 'Participants',
             'path': os.path.join('data', 'Participants.csv'),
-            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8',
+            'profile': 'tabular-data-resource',
         }
         self.assertEqual(
             test_dict, participants_resource, str(test_dict) + ' not equal ' + str(participants_resource))
@@ -3862,7 +3867,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
         test_dict = {
             'name': 'diagnosis', 'title': 'Diagnosis',
             'path': os.path.join('data', 'Diagnosis.csv'),
-            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8'
+            'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8',
+            'profile': 'tabular-data-resource',
         }
         self.assertEqual(
             test_dict, diagnosis_resource, str(test_dict) + ' not equal ' + str(diagnosis_resource))
@@ -3960,7 +3966,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 'path': os.path.join(
                     'data', 'Questionnaire_metadata',
                     str(survey.lime_survey_id) + '_' + slugify(survey.en_title), filename),
-                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata'
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
+                'profile': 'tabular-data-resource',
             }
 
             self.assertTrue(all(
@@ -4062,7 +4069,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                     'data', 'Per_questionnaire',
                     str(survey.lime_survey_id) + '_' + slugify(survey.en_title),
                     filename + extension),
-                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                'profile': 'tabular-data-resource',
             }
             self.assertTrue(all(
                 item in questionnaire_response_resource.items() for item in test_dict.items()),
@@ -4185,7 +4193,8 @@ class ExportFrictionlessDataPerExperimentTest(ExportTestCase):
                 'path': os.path.join(
                     'data', 'Per_participant', 'Participant_' + self.patient.code,
                     str(survey.code) + '_' + slugify(survey.en_title), filename + extension),
-                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response'
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                'profile': 'tabular-data-resource',
             }
             self.assertTrue(all(
                 item in questionnaire_response_resource.items() for item in test_dict.items()),
