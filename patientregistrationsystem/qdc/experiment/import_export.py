@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 from base64 import b64encode, b64decode
 
 from experiment.models import Group, ResearchProject, Experiment, \
-    Keyword, Component, Questionnaire, QuestionnaireResponse, EEGElectrodeLocalizationSystem, FileFormat
+    Keyword, Component, Questionnaire, QuestionnaireResponse, EEGElectrodeLocalizationSystem, FileFormat, Subject
 from experiment.import_export_model_relations import ONE_TO_ONE_RELATION, FOREIGN_RELATIONS, MODEL_ROOT_NODES, \
     EXPERIMENT_JSON_FILES, PATIENT_JSON_FILES, JSON_FILES_DETACHED_MODELS, PRE_LOADED_MODELS_FOREIGN_KEYS, \
     PRE_LOADED_MODELS_INHERITANCE, PRE_LOADED_MODELS_NOT_EDITABLE, PRE_LOADED_PATIENT_MODEL, \
@@ -506,7 +506,7 @@ class ImportExperiment:
 
     def _deal_with_models_with_unique_fields(self):
         """Some models that have unique fields need to be treated separately
-        because the updating concept diverges from others (TODO (NES-965): explain better)
+        because the updating concept diverges from others. TODO (NES-965): explain better
         """
         self._deal_with_eegelectrodelocalizationsystem()
         self._deal_with_fileformat()
@@ -561,6 +561,19 @@ class ImportExperiment:
                         for dependent_index in dependent_indexes:
                             self.data[dependent_index]['fields'][dependent_model[1]] = self.data[i]['pk']
 
+    def _update_subject(self, index, patient):
+        # Though in experiment.models patient attribute is ForeignKey for Subject model,
+        # in the system, Subject have a OneToOne relation with Patient so
+        # prevent of creating new Subject object if not creating new Patient's objects
+        # TODO: if this is the case for the future, Subject model could be
+        #  changed to have OneToOne relation with Patient.
+        subject = Subject.objects.get(patient=patient)
+        self.data[index]['pk'], updated_id = subject.id, self.data[index]['pk']
+        dependent_indexes = self._get_indexes('experiment', 'subjectofgroup')
+        for dependent_index in dependent_indexes:
+            if self.data[dependent_index]['fields']['subject'] == updated_id:
+                self.data[dependent_index]['fields']['subject'] = subject.id
+
     def _keep_patients_pre_loaded(self, patients_to_update):
         for model, dependent_models in PRE_LOADED_PATIENT_MODEL.items():
             indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == model[0]]
@@ -571,17 +584,19 @@ class ImportExperiment:
                 list_of_filters.append(Q(**{'name': self.data[i]['fields']['name']}))
 
                 instances = Patient.objects.filter(reduce(or_, list_of_filters))
-
                 for instance in instances:
-                    if instance and str(instance.id) in patients_to_update:
+                    if str(instance.id) in patients_to_update:
                         self.data[i]['pk'], old_id = instance.id, self.data[i]['pk']
                         for dependent_model in dependent_models:
                             dependent_indexes = [
                                 index for (index, dict_) in enumerate(self.data)
-                                if dict_['model'] == dependent_model[0] and dict_['fields'][dependent_model[1]] == old_id
+                                if dict_['model'] == dependent_model[0]
+                                and dict_['fields'][dependent_model[1]] == old_id
                             ]
                             for dependent_index in dependent_indexes:
                                 self.data[dependent_index]['fields'][dependent_model[1]] = self.data[i]['pk']
+                                if dependent_model[0] == 'experiment.subject':
+                                    self._update_subject(dependent_index, instance)
 
     def check_for_duplicates_of_participants(self):
         try:
@@ -594,30 +609,29 @@ class ImportExperiment:
 
         indexes = [index for (index, dict_) in enumerate(data) if dict_['model'] == 'patient.patient']
 
-        # For each participant in the json file, check if there are any participant with the same CPF
-        # or same name already in the database and return the list of the ones in conflict
-        list_of_participants_with_conflict = []
+        participants_with_conflict = []
         for i in indexes:
-            list_of_filters = []
+            # Check if the patient is already there
             if data[i]['fields']['cpf']:
-                list_of_filters.append(Q(**{'cpf': data[i]['fields']['cpf']}))
-            list_of_filters.append(Q(**{'name': data[i]['fields']['name']}))
-
-            patient_already_in_database = Patient.objects.filter(reduce(or_, list_of_filters)).first()
+                patient_already_in_database = Patient.objects.get(
+                    name=data[i]['fields']['name'], cpf=data[i]['fields']['cpf'])
+            else:
+                patient_already_in_database = Patient.objects.get(code=data[i]['fields']['code'])
 
             if patient_already_in_database:
-                list_of_participants_with_conflict.append(
-                    {'id_db': patient_already_in_database.pk,
-                     'name_db': patient_already_in_database.name,
-                     'code_db': patient_already_in_database.code,
-                     'cpf_db': patient_already_in_database.cpf,
-                     'id_new': data[i]['pk'],
-                     'name_new': data[i]['fields']['name'],
-                     'code_new': data[i]['fields']['code'],
-                     'cpf_new': data[i]['fields']['cpf'],
-                     'selected': None})
+                participants_with_conflict.append({
+                    'id_db': patient_already_in_database.pk,
+                    'name_db': patient_already_in_database.name,
+                    'code_db': patient_already_in_database.code,
+                    'cpf_db': patient_already_in_database.cpf,
+                    'id_new': data[i]['pk'],
+                    'name_new': data[i]['fields']['name'],
+                    'code_new': data[i]['fields']['code'],
+                    'cpf_new': data[i]['fields']['cpf'],
+                    'selected': None
+                })
 
-        return 0, '', list_of_participants_with_conflict
+        return 0, '', participants_with_conflict
 
     def _verify_classification_of_diseases(self):
         indexes = [index for (index, dict_) in enumerate(self.data) if dict_['model'] == 'patient.diagnosis']
@@ -830,14 +844,14 @@ class ImportExperiment:
                     continue
                 # TODO (NES-956): get the language. By now put 'en' to test
                 ls_subject_id_column_name = \
-                    questionnaire_utils.get_response_column_name_for_Identification_group_questions(
+                    questionnaire_utils.get_response_column_name_for_identification_group_questions(
                         ls_interface, limesurvey_id, 'subjectid', 'en')
                 if isinstance(ls_subject_id_column_name, tuple):  # Returned error
                     result = ls_subject_id_column_name[0], _('Could not update identification questions for all '
                                                              'responses.')
                     continue
                 ls_responsible_id_column_name = \
-                    questionnaire_utils.get_response_column_name_for_Identification_group_questions(
+                    questionnaire_utils.get_response_column_name_for_identification_group_questions(
                         ls_interface, limesurvey_id, 'responsibleid', 'en')
                 if isinstance(ls_responsible_id_column_name, tuple):  # Returned error
                     result = ls_responsible_id_column_name[0], _('Could not update identification questions for all '

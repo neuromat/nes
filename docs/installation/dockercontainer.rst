@@ -52,7 +52,7 @@ First NES Docker container loading
 
 After Docker (or Docker Toolbox) installation, open the terminal (or ``Docker Quickstart Terminal`` if you are using Docker Toolbox) and run the command below to download and run the NES container::
 
-    docker run -dit --name nes -p 8080:8080 -p 8000:8000 neuromat/nes
+    docker run -it --name nes -p 8080:8080 -p 8000:8000 neuromat/nes
 
 .. note:: For data persistence it its advisable the use of `Volumes`_ which are already created on NES container execution, but won't have mnemonic references compared to manually created named volumes.
 

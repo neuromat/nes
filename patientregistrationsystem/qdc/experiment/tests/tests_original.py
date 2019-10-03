@@ -1,21 +1,15 @@
 # coding=utf-8
 import datetime
-import random
+import shutil
 import tempfile
 
-import os
-import zipfile
+from unittest.mock import patch
 
-from django.core.files import File
-from django.db import IntegrityError
-from django.apps import apps
-from django.test import TestCase
-from django.test.client import RequestFactory
+from django.test import TestCase, override_settings
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-from faker import Factory
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, \
@@ -25,33 +19,26 @@ from experiment.models import Experiment, Group, Subject, \
     EEG, FileFormat, EEGData, EEGSetting, DataConfigurationTree, EMG, \
     Manufacturer, Tag, Amplifier, \
     EEGSolution, FilterType, ElectrodeModel, EEGElectrodeNet, \
-    EEGElectrodeNetSystem, EEGElectrodeLocalizationSystem, \
+    EEGElectrodeLocalizationSystem, \
     EEGElectrodePosition, Material, EMGSetting, Software, SoftwareVersion, \
     ADConverter, EMGElectrodeSetting, \
     StandardizationSystem, MuscleSubdivision, Muscle, MuscleSide, \
-    EMGElectrodePlacement, EMGElectrodePlacementSetting, \
-    EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, CoilShape, Publication, \
-    ContextTree, ExperimentResearcher, InformationType, \
-    GenericDataCollectionData, GenericDataCollectionFile, DigitalGamePhase, \
-    GenericDataCollection, DigitalGamePhaseData, DigitalGamePhaseFile, \
-    AdditionalData, AdditionalDataFile, EEGFile, EMGData, EMGFile, TMSSetting, TMS, \
-    TMSData, DirectionOfTheInducedCurrent, CoilOrientation, \
-    EEGElectrodePositionCollectionStatus, EEGElectrodePositionSetting, EEGElectrodeLayoutSetting, \
-    TMSLocalizationSystem, BrainAreaSystem, BrainArea
+    EMGElectrodePlacement, EEGElectrodeCap, EEGCapSize, TMSDevice, CoilModel, Publication, \
+    ContextTree
+from experiment.tests.tests_helper import ObjectsFactory
 
 from experiment.views import experiment_update, upload_file, research_project_update, \
     publication_update, context_tree_update, \
     publication_add_experiment
 
-from custom_user.views import User
-
-from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile
+from patient.models import ClassificationOfDiseases
 from patient.tests.tests_orig import UtilTests
 
 from survey.models import Survey
 from survey.abc_search_engine import Questionnaires
-from survey.tests.tests_helper import create_survey
 
+# TODO (NES-995): it is creating one more here TEMP_MEDIA_ROOT
+TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 LIME_SURVEY_ID = 828636
 LIME_SURVEY_ID_WITHOUT_ACCESS_CODE_TABLE = 563235
 LIME_SURVEY_ID_INACTIVE = 846317
@@ -67,801 +54,6 @@ USER_PWD = 'mypassword'
 
 SEARCH_TEXT = 'search_text'
 SUBJECT_SEARCH = 'subject_search'
-
-
-class ObjectsFactory(object):
-
-    @staticmethod
-    def create_research_project(owner=None):
-        """
-        Create a research project to be used in the test
-        :return: research project
-        """
-        research_project = ResearchProject.objects.create(
-            title="Research project title",
-            description="Research project description",
-            start_date=datetime.date.today(),
-            owner=owner
-        )
-        research_project.save()
-        return research_project
-
-    @staticmethod
-    def create_experiment(research_project):
-        """
-        Create an experiment to be used in the test
-        :param research_project: research project
-        :return: experiment
-        """
-        experiment = Experiment.objects.create(
-            research_project_id=research_project.id,
-            title="Experimento-Update",
-            description="Descricao do Experimento-Update"
-        )
-        experiment.changed_by = None
-        experiment.save()
-        return experiment
-
-    @staticmethod
-    def create_experiment_researcher(experiment):
-        """
-        Create an experiment researcher to be used in tests
-        :param experiment: researcher's experiment
-        :return: ExperimentResearcher model instance
-        """
-        user = User.objects.create_user(
-            username='toninho', email='toninho@example.com', password='toninho',
-        )
-        user.user_profile.citation_name = "VESPOLI, Toninho"
-
-        return ExperimentResearcher.objects.create(
-            experiment=experiment, researcher=user
-        )
-
-    @staticmethod
-    def create_publication(list_of_experiments):
-        """
-        Create a publication to be used in the test
-        :param list_of_experiments: list of experiments
-        :return: publication
-        """
-
-        publication = Publication.objects.create(title="Publication-Update",
-                                                 citation="Citation-Update")
-        publication.save()
-        for experiment in list_of_experiments:
-            publication.experiments.add(experiment)
-        return publication
-
-    @staticmethod
-    def create_context_tree(experiment):
-        """
-        Create a context tree for an experiment
-        :param experiment: experiment
-        :return: new context tree
-        """
-
-        context_tree = ContextTree.objects.create(
-            experiment=experiment, name="Context tree name", description="Context tree description")
-        context_tree.save()
-        return context_tree
-
-    @staticmethod
-    def create_eeg_setting(experiment):
-        eeg_setting = EEGSetting.objects.create(experiment=experiment,
-                                                name='EEG-Setting name',
-                                                description='EEG-Setting description')
-        return eeg_setting
-
-    @staticmethod
-    def create_emg_setting(experiment, acquisition_software_version):
-        emg_setting = EMGSetting.objects.create(experiment=experiment,
-                                                name='EMG-Setting name',
-                                                description='EMG-Setting description',
-                                                acquisition_software_version=acquisition_software_version,)
-        return emg_setting
-
-    @staticmethod
-    def create_tms_setting(experiment):
-        return TMSSetting.objects.create(experiment=experiment,
-                                         name='TMS-Setting name',
-                                         description='TMS-Setting description')
-
-    @staticmethod
-    def create_tms_device(manufacturer):
-        faker = Factory.create()
-        TMSDevice.objects.create(
-            manufacturer=manufacturer, equipment_type=TMSDevice.EQUIPMENT_TYPES[0][0], identification=faker.word(),
-            description=faker.text(), serial_number=faker.ssn())
-
-    @staticmethod
-    def create_emg_electrode_setting(emg_setting, electrode_model):
-        return EMGElectrodeSetting.objects.create(emg_setting=emg_setting, electrode=electrode_model)
-
-    @staticmethod
-    def create_emg_electrode_placement_setting(emg_electrode_setting, electrode_placement, muscle_side=None):
-        return EMGElectrodePlacementSetting.objects.create(
-            emg_electrode_setting=emg_electrode_setting,
-            emg_electrode_placement=electrode_placement,
-            muscle_side=muscle_side,
-            remarks="Remarks electrode placement setting")
-
-    @staticmethod
-    def create_standardization_system():
-        return StandardizationSystem.objects.create(
-            name='Standardization System identification',
-            description='Standardization System description')
-
-    @staticmethod
-    def create_muscle():
-        return Muscle.objects.create(name='Muscle identification')
-
-    @staticmethod
-    def create_muscle_subdivision(muscle):
-        return MuscleSubdivision.objects.create(
-            name='Muscle subdivision identification',
-            anatomy_origin='Anatomy origin description',
-            anatomy_insertion='Anatomy insertion description',
-            anatomy_function='Anatomy function description',
-            muscle=muscle
-        )
-
-    @staticmethod
-    def create_muscle_side(muscle):
-        muscle_side = MuscleSide.objects.create(
-            name='Muscle side identification',
-            muscle=muscle
-        )
-        muscle_side.save()
-        return muscle_side
-
-    @staticmethod
-    def create_emg_electrode_placement(standardization_system, muscle_subdivision):
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-            emg_ep = EMGElectrodePlacement.objects.create(
-                standardization_system=standardization_system,
-                muscle_subdivision=muscle_subdivision,
-                placement_type=random.choice(EMGElectrodePlacement.PLACEMENT_TYPES)[0]
-            )
-            with File(open(bin_file.name, 'rb')) as f:
-                emg_ep.photo.save('file.bin', f)
-            emg_ep.save()
-        return emg_ep
-
-    @staticmethod
-    def create_component(experiment, component_type, identification=None, kwargs=None):
-        faker = Factory.create()
-
-        if component_type == Component.TASK_EXPERIMENT:
-            model = TaskForTheExperimenter.__name__
-        elif component_type == Component.DIGITAL_GAME_PHASE:
-            model = DigitalGamePhase.__name__
-        elif component_type == Component.GENERIC_DATA_COLLECTION:
-            model = GenericDataCollection.__name__
-        elif component_type == Component.EEG:
-            model = EEG.__name__
-        elif component_type == Component.EMG:
-            model = EMG.__name__
-        elif component_type == Component.TMS:
-            model = TMS.__name__
-        else:
-            model = component_type
-
-        component = apps.get_model('experiment', model)(
-            experiment=experiment,
-            identification=identification or faker.ssn(),
-            component_type=component_type,
-            description=faker.text(max_nb_chars=15),
-        )
-
-        if component_type == Component.QUESTIONNAIRE:
-            try:
-                component.survey = kwargs['survey']
-            except KeyError:
-                print('You must specify \'sid\' key in kwargs dict')
-        elif component_type == Component.GENERIC_DATA_COLLECTION:
-            try:
-                component.information_type = kwargs['it']
-            except KeyError:
-                print('You must specify \'it\' key in kwargs dict')
-        elif component_type == Component.DIGITAL_GAME_PHASE:
-            try:
-                component.software_version = kwargs['software_version']
-                component.context_tree = kwargs['context_tree']
-            except KeyError:
-                print('You must specify \'software_version\' and \'context_tree\' key in kwargs dict')
-        elif component_type == Component.EEG:
-            try:
-                component.eeg_setting = kwargs['eeg_set']
-            except KeyError:
-                print('You must specify \'eeg_setting\' key in kwargs dict')
-        elif component_type == Component.EMG:
-            try:
-                component.emg_setting = kwargs['emg_set']
-            except KeyError:
-                print('You must specify \'emg_setting\' key in kwargs dict')
-        elif component_type == Component.STIMULUS:
-            try:
-                component.stimulus_type = kwargs['stimulus_type']
-                component.media_file = kwargs.get('media_file', None)
-            except KeyError:
-                print('You must specify \'stimulus_type\' and \'media_file\' key in kwargs dict')
-        elif component_type == Component.TMS:
-            try:
-                component.tms_setting = kwargs['tms_set']
-            except KeyError:
-                print('You must specify \'tms_setting\' key in kwargs dict')
-        try:
-            component.save()
-        except IntegrityError:
-            print('Have you remembered to give specific attribute for '
-                  'the specific component?')
-
-        return component
-
-    @staticmethod
-    def create_group(experiment, experimental_protocol=None):
-        """
-        :param experiment: experiment
-        :param experimental_protocol: experimental protocol
-        :return: group
-        """
-        faker = Factory.create()
-
-        group = Group.objects.create(
-            experiment=experiment,
-            title=faker.word(),
-            description=faker.text(max_nb_chars=15),
-            experimental_protocol=experimental_protocol
-        )
-        return group
-
-    @staticmethod
-    def create_subject(patient):
-        """
-        :param patient: Patient model instance
-        :return: Subject model instance
-        """
-        return Subject.objects.create(patient=patient)
-
-    @staticmethod
-    def create_subject_of_group(group, subject):
-        """
-        :param group: Group model instance
-        :param subject: Subject model instance
-        :return: SubjectOfGroup model instance
-        """
-        subject_of_group = SubjectOfGroup.objects.create(
-            subject=subject, group=group
-        )
-        group.subjectofgroup_set.add(subject_of_group)
-
-        return subject_of_group
-
-    @staticmethod
-    def create_block(experiment):
-        block = Block.objects.create(
-            identification='Block identification',
-            description='Block description',
-            experiment=experiment,
-            component_type=Component.BLOCK,
-            type="sequence"
-        )
-        block.save()
-        return block
-
-    @staticmethod
-    def create_manufacturer():
-        manufacturer = Manufacturer.objects.create(
-            name='Manufacturer name'
-        )
-        return manufacturer
-
-    @staticmethod
-    def create_amplifier(manufacturer):
-        amplifier = Amplifier.objects.create(
-            manufacturer=manufacturer,
-            equipment_type="amplifier",
-            identification="Amplifier identification"
-        )
-        amplifier.save()
-        return amplifier
-
-    @staticmethod
-    def create_eeg_solution(manufacturer):
-        eeg_solution = EEGSolution.objects.create(
-            manufacturer=manufacturer,
-            name="Solution name"
-        )
-        eeg_solution.save()
-        return eeg_solution
-
-    @staticmethod
-    def create_filter_type():
-        filter_type = FilterType.objects.create(
-            name="Filter type name"
-        )
-        filter_type.save()
-        return filter_type
-
-    @staticmethod
-    def create_tag(name='TAG name'):
-        tag = Tag.objects.create(
-            name=name
-        )
-        tag.save()
-        return tag
-
-    @staticmethod
-    def create_electrode_model():
-        electrode_model = ElectrodeModel.objects.create(
-            name="Electrode Model name"
-        )
-        tagaux = ObjectsFactory.create_tag('EEG')
-        electrode_model.tags.add(tagaux)
-        electrode_model.save()
-        return electrode_model
-
-    @staticmethod
-    def create_eeg_electrode_net(manufacturer, electrode_model_default):
-        eeg_electrode_net = EEGElectrodeNet.objects.create(
-            manufacturer=manufacturer,
-            equipment_type="eeg_electrode_net",
-            electrode_model_default=electrode_model_default,
-            identification="Electrode Net identification"
-        )
-        eeg_electrode_net.save()
-        return eeg_electrode_net
-
-    @staticmethod
-    def create_eeg_electrode_net_system(eeg_electrode_net, eeg_electrode_localization_system):
-        eeg_electrode_net_system = EEGElectrodeNetSystem.objects.create(
-            eeg_electrode_net=eeg_electrode_net,
-            eeg_electrode_localization_system=eeg_electrode_localization_system
-        )
-        eeg_electrode_net_system.save()
-        return eeg_electrode_net_system
-
-    @staticmethod
-    def create_eeg_electrode_localization_system():
-        faker = Factory.create()
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-            eeg_els = EEGElectrodeLocalizationSystem.objects.create(name=faker.word(), description=faker.text())
-            with File(open(bin_file.name, 'rb')) as f:
-                eeg_els.map_image_file.save('file.bin', f)
-            eeg_els.save()
-        return eeg_els
-
-    @staticmethod
-    def create_eeg_electrode_position(eeg_electrode_localization_system):
-        return EEGElectrodePosition.objects.create(
-            eeg_electrode_localization_system=eeg_electrode_localization_system,
-            name="Position name"
-        )
-
-    @staticmethod
-    def create_eeg_electrode_layout_setting(eeg_setting, eeg_electrode_net_system):
-        return EEGElectrodeLayoutSetting.objects.create(
-            eeg_setting=eeg_setting, eeg_electrode_net_system=eeg_electrode_net_system
-        )
-
-    @staticmethod
-    def create_eeg_electrode_position_setting(eeg_electrode_layout_setting, eeg_electrode_position, electrode_model):
-        faker = Factory.create()
-        return EEGElectrodePositionSetting.objects.create(
-            eeg_electrode_layout_setting=eeg_electrode_layout_setting,
-            eeg_electrode_position=eeg_electrode_position,
-            electrode_model=electrode_model,
-            used=random.choice([True, False]),
-            channel_index=faker.pyint()
-        )
-
-    @staticmethod
-    def create_eeg_electrode_position_collection_status(eeg_data, eeg_electrode_position_setting):
-        faker = Factory.create()
-        return EEGElectrodePositionCollectionStatus.objects.create(
-            eeg_data=eeg_data, eeg_electrode_position_setting=eeg_electrode_position_setting,
-            worked=random.choice([True, False]), channel_index=faker.pyint()
-        )
-
-    @staticmethod
-    def create_software(manufacturer):
-        software = Software.objects.create(
-            manufacturer=manufacturer,
-            name="Software name"
-        )
-        software.save()
-        return software
-
-    @staticmethod
-    def create_software_version(software):
-        software_version = SoftwareVersion.objects.create(
-            software=software,
-            name="Software Version name"
-        )
-        software_version.save()
-        return software_version
-
-    @staticmethod
-    def create_ad_converter(manufacturer):
-        ad_converter = ADConverter.objects.create(
-            manufacturer=manufacturer,
-            equipment_type="ad_converter",
-            identification="AD Converter identification",
-            signal_to_noise_rate=20,
-            sampling_rate=10,
-            resolution=7
-        )
-        ad_converter.save()
-        return ad_converter
-
-    @staticmethod
-    def system_authentication(instance):
-        user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
-        factory = RequestFactory()
-        logged = instance.client.login(username=USER_USERNAME, password=USER_PWD)
-        return logged, user, factory
-
-    @staticmethod
-    def create_material():
-        material = Material.objects.create(
-            name="Material name"
-        )
-        material.save()
-        return material
-
-    @staticmethod
-    def create_eeg_electrode_cap(manufacturer, electrode_model, material=None):
-        return EEGElectrodeCap.objects.create(
-            manufacturer=manufacturer,
-            identification="EEG electrode cap identification",
-            electrode_model_default=electrode_model,
-            material=material,
-            equipment_type='eeg_electrode_net'
-        )
-
-    @staticmethod
-    def create_eeg_electrode_capsize(eeg_electrode_cap):
-        faker = Factory.create()
-        return EEGCapSize.objects.create(
-            eeg_electrode_cap=eeg_electrode_cap, size=faker.word(),
-            electrode_adjacent_distance=faker.pyfloat())
-
-    @staticmethod
-    def create_coil_model(coil_shape):
-        coil_model = CoilModel.objects.create(
-            name="Electrode Model name",
-            coil_shape=coil_shape
-        )
-        coil_model.save()
-        return coil_model
-
-    @staticmethod
-    def create_coil_shape():
-        coil_shape = CoilShape.objects.create(
-            name="Electrode Shape name"
-        )
-        coil_shape.save()
-        return coil_shape
-
-    @staticmethod
-    def create_component_configuration(parent, component):
-        faker = Factory.create()
-
-        return ComponentConfiguration.objects.create(
-            name=faker.word(),
-            parent=parent,
-            component=component
-        )
-
-    @staticmethod
-    def create_data_configuration_tree(component_config, parent=None):
-        return DataConfigurationTree.objects.create(
-            component_configuration=component_config,
-            code=random.randint(1, 999),
-            parent=parent
-        )
-
-    @staticmethod
-    def create_questionnaire_response(dct, responsible, token_id,
-                                      subject_of_group):
-        return QuestionnaireResponse.objects.create(
-            data_configuration_tree=dct,
-            questionnaire_responsible=responsible, token_id=token_id,
-            subject_of_group=subject_of_group
-        )
-
-    @staticmethod
-    def create_information_type():
-        faker = Factory.create()
-
-        return InformationType.objects.create(
-            name=faker.word(), description=faker.text()
-        )
-
-    @staticmethod
-    def create_file_format():
-        faker = Factory.create()
-        while True:  # nes_code is unique
-            nes_code = str(faker.unix_time())
-            if not FileFormat.objects.filter(nes_code=nes_code).first():
-                break
-
-        return FileFormat.objects.create(
-            nes_code=nes_code, name=faker.file_extension(), description=faker.text())
-
-    @staticmethod
-    def create_generic_data_collection_data(data_conf_tree, subj_of_group):
-        faker = Factory.create()
-
-        file_format = ObjectsFactory.create_file_format()
-        return GenericDataCollectionData.objects.create(
-            description=faker.text(), file_format=file_format, file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree, subject_of_group=subj_of_group
-        )
-
-    @staticmethod
-    def create_binary_file(path, name='file.bin'):
-        with open(os.path.join(path, name), 'wb') as f:
-            f.write(b'carambola')
-            return f
-
-    @staticmethod
-    def create_csv_file(dir_, name='file.csv'):
-        with open(os.path.join(dir_, name), 'w') as f:
-            f.write('h1,h2\n')
-            f.write('v1,v2\n')
-            return f
-
-    @staticmethod
-    def create_zipfile(zip_dir, file_list):
-        zip_file = zipfile.ZipFile(os.path.join(zip_dir, 'dummy_file.zip'), 'w')
-        for file in file_list:
-            zip_file.write(file.name, os.path.basename(file.name))
-        zip_file.close()
-        return zip_file
-
-    @staticmethod
-    def create_generic_data_collection_file(gdc_data):
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-
-            gdcf = GenericDataCollectionFile.objects.create(
-                generic_data_collection_data=gdc_data
-            )
-            with File(open(bin_file.name, 'rb')) as f:
-                gdcf.file.save('file.bin', f)
-            gdcf.save()
-
-        return gdcf
-
-    @staticmethod
-    def create_eeg_data(data_conf_tree, subj_of_group, eeg_set, eeg_cap_size=None):
-
-        faker = Factory.create()
-
-        file_format = ObjectsFactory.create_file_format()
-        return EEGData.objects.create(
-            description=faker.text(), file_format=file_format,
-            file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group, eeg_setting=eeg_set,
-            eeg_cap_size=eeg_cap_size
-        )
-
-    @staticmethod
-    def create_eeg_file(eeg_data):
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-            eegf = EEGFile.objects.create(eeg_data=eeg_data)
-            with File(open(bin_file.name, 'rb')) as f:
-                eegf.file.save('file.bin', f)
-            eegf.save()
-
-        return eegf
-
-    @staticmethod
-    def create_emg_data_collection_data(data_conf_tree, subj_of_group, emg_set):
-        faker = Factory.create()
-
-        file_format = ObjectsFactory.create_file_format()
-        return EMGData.objects.create(
-            description=faker.text(), file_format=file_format, file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree, subject_of_group=subj_of_group, emg_setting=emg_set
-        )
-
-    @staticmethod
-    def create_tms_data_collection_data(data_conf_tree,
-                                        subj_of_group, tms_set):
-
-        faker = Factory.create()
-        doic = DirectionOfTheInducedCurrent.objects.create(name="Direction of Induced Current")
-        coilor = CoilOrientation.objects.create(name="Coil Orientation")
-
-        return TMSData.objects.create(
-            tms_setting=tms_set,
-            data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group,
-            coil_orientation=coilor,
-            description=faker.text(),
-            direction_of_induced_current=doic,)
-
-    @staticmethod
-    def create_tms_localization_system_file():
-        brainareasystem = BrainAreaSystem.objects.create(name='Lobo frontal')
-        brainarea = BrainArea.objects.create(name='Lobo frontal', brain_area_system=brainareasystem)
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-
-            tmslsf = TMSLocalizationSystem.objects.create(
-                name="TMS name", brain_area=brainarea)
-            with File(open(bin_file.name, 'rb')) as f:
-                tmslsf.tms_localization_system_image.save('file.bin', f)
-            tmslsf.save()
-
-        return tmslsf
-
-    @staticmethod
-    def create_emg_data_collection_file(emg_data):
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-            emgf = EMGFile.objects.create(emg_data=emg_data)
-            with File(open(bin_file.name, 'rb')) as f:
-                emgf.file.save('file.bin', f)
-            emgf.save()
-
-        return emgf
-
-    @staticmethod
-    def create_digital_game_phase_data(data_conf_tree, subj_of_group):
-
-        faker = Factory.create()
-
-        file_format = ObjectsFactory.create_file_format()
-        return DigitalGamePhaseData.objects.create(
-            description=faker.text(), file_format=file_format,
-            file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group
-        )
-
-    @staticmethod
-    def create_digital_game_phase_file(dgp_data):
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-
-            dgpf = DigitalGamePhaseFile.objects.create(
-                digital_game_phase_data=dgp_data
-            )
-            with File(open(bin_file.name, 'rb')) as f:
-                dgpf.file.save('file.bin', f)
-            dgpf.save()
-
-        return dgpf
-
-    @staticmethod
-    def create_additional_data_data(data_conf_tree, subj_of_group):
-
-        faker = Factory.create()
-
-        file_format = ObjectsFactory.create_file_format()
-        return AdditionalData.objects.create(
-            description=faker.text(), file_format=file_format,
-            file_format_description=faker.text(),
-            data_configuration_tree=data_conf_tree,
-            subject_of_group=subj_of_group
-        )
-
-    @staticmethod
-    def create_additional_data_file(ad_data):
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-            adf = AdditionalDataFile.objects.create(additional_data=ad_data)
-            with File(open(bin_file.name, 'rb')) as f:
-                adf.file.save('file.bin', f)
-            adf.save()
-
-        return adf
-
-    @staticmethod
-    def create_stimulus_type():
-        faker = Factory.create()
-        return StimulusType.objects.create(name=faker.word())
-
-    @staticmethod
-    def create_stimulus_step(stimulus_type, mediafile):
-        return Stimulus.objects.create(
-            stimulus_type=stimulus_type,
-            media_file=mediafile
-        )
-
-    @staticmethod
-    def create_hotspot_data_collection_file(hotspot):
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, 'file.bin'), 'wb') as bin_file:
-                bin_file.write(b'carambola')
-
-            with File(open(bin_file.name, 'rb')) as f:
-                hotspot.hot_spot_map.save('file.bin', f)
-            hotspot.save()
-
-        return hotspot
-
-    @staticmethod
-    def create_complete_set_of_components(experiment, rootcomponent):
-        component1 = ObjectsFactory.create_component(experiment, Component.INSTRUCTION)
-        ObjectsFactory.create_component_configuration(rootcomponent, component1)
-        component2 = ObjectsFactory.create_component(experiment, Component.PAUSE)
-        ObjectsFactory.create_component_configuration(rootcomponent, component2)
-        survey = create_survey(123458)
-        component3 = ObjectsFactory.create_component(experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
-        ObjectsFactory.create_component_configuration(rootcomponent, component3)
-        stimulus_type = ObjectsFactory.create_stimulus_type()
-        component4 = ObjectsFactory.create_component(
-            experiment, Component.STIMULUS, kwargs={'stimulus_type': stimulus_type}
-        )
-        ObjectsFactory.create_component_configuration(rootcomponent, component4)
-        component5 = ObjectsFactory.create_component(experiment, Component.TASK)
-        ObjectsFactory.create_component_configuration(rootcomponent, component5)
-        component6 = ObjectsFactory.create_component(experiment, Component.TASK_EXPERIMENT)
-        ObjectsFactory.create_component_configuration(rootcomponent, component6)
-        eeg_setting = ObjectsFactory.create_eeg_setting(experiment)
-        component9 = ObjectsFactory.create_component(experiment, Component.EEG, kwargs={'eeg_set': eeg_setting})
-        ObjectsFactory.create_component_configuration(rootcomponent, component9)
-        manufacturer = ObjectsFactory.create_manufacturer()
-        software = ObjectsFactory.create_software(manufacturer)
-        acquisition_software = ObjectsFactory.create_software_version(software)
-        emg_setting = ObjectsFactory.create_emg_setting(experiment, acquisition_software)
-        component10 = ObjectsFactory.create_component(experiment, Component.EMG, kwargs={'emg_set': emg_setting})
-        ObjectsFactory.create_component_configuration(rootcomponent, component10)
-        tms_setting = ObjectsFactory.create_tms_setting(experiment)
-        component11 = ObjectsFactory.create_component(experiment, Component.TMS, kwargs={'tms_set': tms_setting})
-        ObjectsFactory.create_component_configuration(rootcomponent, component11)
-        context_tree = ObjectsFactory.create_context_tree(experiment)
-        component12 = ObjectsFactory.create_component(
-            experiment, Component.DIGITAL_GAME_PHASE,
-            kwargs={'software_version': acquisition_software, 'context_tree': context_tree}
-        )
-        ObjectsFactory.create_component_configuration(rootcomponent, component12)
-        information_type = ObjectsFactory.create_information_type()
-        component13 = ObjectsFactory.create_component(
-            experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': information_type}
-        )
-        ObjectsFactory.create_component_configuration(rootcomponent, component13)
-
-    @staticmethod
-    def create_exam_file(patient, user):
-        faker = Factory.create()
-
-        cid10 = ClassificationOfDiseases.objects.create(
-            code=faker.word(),
-            description=faker.text(),
-            abbreviated_description=faker.word())
-        medical_record = MedicalRecordData.objects.create(patient=patient, record_responsible=user)
-        diagnosis = Diagnosis.objects.create(medical_record_data=medical_record, classification_of_diseases=cid10)
-        complementary_exam = ComplementaryExam.objects.create(diagnosis=diagnosis,
-                                                              date=datetime.date.today(),
-                                                              description=faker.text())
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            bin_file = ObjectsFactory.create_binary_file(tmpdirname)
-
-            exam_file = ExamFile.objects.create(exam=complementary_exam)
-            with File(open(bin_file.name, 'rb')) as f:
-                exam_file.content.save('file.bin', f)
-            exam_file.save()
-        return exam_file
 
 
 class ExperimentalProtocolTest(TestCase):
@@ -1677,7 +869,6 @@ class SubjectTest(TestCase):
         self.assertIsNotNone(self.lime_survey.session_key, 'Failed to connect LimeSurvey')
 
         self.tag_eeg = ObjectsFactory.create_tag('EEG')
-        # self.tag_eeg.name =
 
     def test_subject_view_and_search(self):
         """Teste de visualizacao de participante após cadastro na base de dados"""
@@ -1833,10 +1024,450 @@ class SubjectTest(TestCase):
         count_after_insert_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         self.assertEqual(count_after_insert_subject, count_before_insert_subject)
 
-    def test_questionnaire_fill(self):
-        """
-        Test of a questionnaire fill
-        """
+    @patch('survey.abc_search_engine.Server')
+    def test_questionnaire_fill(self, mockServer):
+        """Test of a questionnaire fill"""
+
+        mockServer.return_value.get_session_key.return_value = 'fmhcr2qv7tz37b3zpkhfz3t6rjj26eri'
+        mockServer.return_value.get_language_properties.side_effect = [
+            {'surveyls_title': 'NES-TestCase (used by automated tests)'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests) - Survey without access code table'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests) - Survey inactive'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests) - Survey without identification group'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests)'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests)'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests)'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests)'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests) - Survey without access code table'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests) - Survey inactive'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests) - Survey without identification group'},
+            {'surveyls_title': 'NES-TestCase (used by automated tests)'}
+        ]
+        mockServer.return_value.get_summary.side_effect = [1, {'status': 'No available data'}, 0, 0]
+        mockServer.return_value.get_survey_properties.side_effect = [{'active': 'Y'}, {'active': 'N'}, {'active': 'Y'}]
+        mockServer.return_value.list_groups.side_effect = [
+            [{'group_order': 1, 'language': 'pt-BR', 'sid': 828636, 'description': 'Teste de dominância manual '
+                                                                                   'baseado em Oldfield (1971)', 'id': {'language': 'pt-BR', 'gid': 1118}, 'randomization_group': '', 'grelevance': '', 'group_name': 'Teste de Lateralidade (Oldfield)', 'gid': 1118}, {'group_order': 0, 'language': 'pt-BR', 'sid': 828636, 'description': '', 'id': {'language': 'pt-BR', 'gid': 1119}, 'randomization_group': '', 'grelevance': '', 'group_name': 'Identification', 'gid': 1119}],
+            [{'group_order': 0, 'language': 'pt-BR', 'sid': 913841,
+              'description': 'Teste de dominância manual baseado em Oldfield (1971)',
+              'id': {'language': 'pt-BR', 'gid': 1140}, 'randomization_group': '', 'grelevance': '',
+              'group_name': 'Teste de Lateralidade (Oldfield)', 'gid': 1140}]
+        ]
+        mockServer.return_value.list_questions.side_effect = [
+            [{'help': '', 'relevance': '1', 'title': 'tendenciacanhoto', 'question_order': 3, 'qid': 7622, 'preg': '',
+             'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7622}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 828636, 'question': 'Você já teve alguma tendência de ser canhoto?', 'other': 'N', 'type': 'Y', 'parent_qid': 0}, {'help': '', 'relevance': '1', 'title': 'canhotofamilia', 'question_order': 4, 'qid': 7623, 'preg': '', 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7623}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 828636, 'question': 'Existe alguém canhoto na família?', 'other': 'N', 'type': 'Y', 'parent_qid': 0}, {'help': '', 'relevance': '1', 'title': 'idteste', 'question_order': 7, 'qid': 7625, 'preg': '', 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7625}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 828636, 'question': 'Indicar a preferência manual nas seguintes atividades assinalando + na coluna apropriada. Quando a preferência for tão forte de modo a não ser capaz de usar a outra mão assinale + +. Se não existir preferência, assinale + nas duas colunas.', 'other': 'N', 'type': '1', 'parent_qid': 0}, {'help': '', 'relevance': '1', 'title': 'formulaoldfield0', 'question_order': 20, 'qid': 7629, 'preg': '', 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7629}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': '{if(is_empty(idteste_1_0.value),0,intval(idteste_1_0.value)) + if(is_empty(idteste_2_0.value),0,intval(idteste_2_0.value)) + if(is_empty(idteste_3_0.value),0,intval(idteste_3_0.value)) + if(is_empty(idteste_4_0.value),0,intval(idteste_4_0.value)) + if(is_empty(idteste_5_0.value),0,intval(idteste_5_0.value)) + if(is_empty(idteste_6_0.value),0,intval(idteste_6_0.value)) + if(is_empty(idteste_7_0.value),0,intval(idteste_7_0.value)) + if(is_empty(idteste_8_0.value),0,intval(idteste_8_0.value)) + if(is_empty(idteste_9_0.value),0,intval(idteste_9_0.value)) + if(is_empty(idteste_10_0.value),0,intval(idteste_10_0.value)) + if(is_empty(idteste_11_0.value),0,intval(idteste_11_0.value)) + if(is_empty(idteste_12_0.value),0,intval(idteste_12_0.value)) + if(is_empty(idteste_13_0.value),0,intval(idteste_13_0.value)) + if(is_empty(idteste_14_0.value),0,intval(idteste_14_0.value)) + if(is_empty(idteste_15_0.value),0,intval(idteste_15_0.value)) + if(is_empty(idteste_16_0.value),0,intval(idteste_16_0.value)) + if(is_empty(idteste_17_0.value),0,intval(idteste_17_0.value)) + if(is_empty(idteste_18_0.value),0,intval(idteste_18_0.value)) + if(is_empty(idteste_19_0.value),0,intval(idteste_19_0.value))}', 'other': 'N', 'type': '*', 'parent_qid': 0}, {'help': '', 'relevance': '1', 'title': 'formulaoldfield', 'question_order': 22, 'qid': 7630, 'preg': '', 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7630}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': '{if(is_empty(idteste_1_1.value),0,intval(idteste_1_1.value)) + if(is_empty(idteste_2_1.value),0,intval(idteste_2_1.value)) + if(is_empty(idteste_3_1.value),0,intval(idteste_3_1.value)) + if(is_empty(idteste_4_1.value),0,intval(idteste_4_1.value)) + if(is_empty(idteste_5_1.value),0,intval(idteste_5_1.value)) + if(is_empty(idteste_6_1.value),0,intval(idteste_6_1.value)) + if(is_empty(idteste_7_1.value),0,intval(idteste_7_1.value)) + if(is_empty(idteste_8_1.value),0,intval(idteste_8_1.value)) + if(is_empty(idteste_9_1.value),0,intval(idteste_9_1.value)) + if(is_empty(idteste_10_1.value),0,intval(idteste_10_1.value)) + if(is_empty(idteste_11_1.value),0,intval(idteste_11_1.value)) + if(is_empty(idteste_12_1.value),0,intval(idteste_12_1.value)) + if(is_empty(idteste_13_1.value),0,intval(idteste_13_1.value)) + if(is_empty(idteste_14_1.value),0,intval(idteste_14_1.value)) + if(is_empty(idteste_15_1.value),0,intval(idteste_15_1.value)) + if(is_empty(idteste_16_1.value),0,intval(idteste_16_1.value)) + if(is_empty(idteste_17_1.value),0,intval(idteste_17_1.value)) + if(is_empty(idteste_18_1.value),0,intval(idteste_18_1.value)) + if(is_empty(idteste_19_1.value),0,intval(idteste_19_1.value))}', 'other': 'N', 'type': '*', 'parent_qid': 0}, {'help': '', 'relevance': '', 'title': 'pontuacaoold', 'question_order': 24, 'qid': 7631, 'preg': '', 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7631}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': '<p>\n\t{if(((formulaoldfield0+formulaoldfield)==0),"",round(((formulaoldfield0-formulaoldfield)/(formulaoldfield0+formulaoldfield)*100),2))}</p>\n', 'other': 'N', 'type': '*', 'parent_qid': 0}, {'help': '', 'relevance': '', 'title': 'MsgPontuacaoold', 'question_order': 26, 'qid': 7632, 'preg': '', 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7632}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': '<div>\n\t<span style="color:#ff0000;"><strong>Pontuação:</strong></span><strong> </strong>{pontuacaoold}</div>\n', 'other': 'N', 'type': 'X', 'parent_qid': 0}, {'help': '', 'relevance': None, 'title': '1', 'question_order': 1, 'qid': 7633, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7633}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Escrever', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '2', 'question_order': 2, 'qid': 7634, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7634}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Desenhar', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '3', 'question_order': 3, 'qid': 7635, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7635}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Jogar uma pedra', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '4', 'question_order': 4, 'qid': 7636, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7636}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar uma tesoura', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '5', 'question_order': 5, 'qid': 7637, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7637}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar um pente', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '6', 'question_order': 6, 'qid': 7638, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7638}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar uma escova de dentes', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '7', 'question_order': 7, 'qid': 7639, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7639}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar uma faca (sem uso do garfo)', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '8', 'question_order': 8, 'qid': 7640, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7640}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar uma colher', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '9', 'question_order': 9, 'qid': 7641, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7641}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar um martelo', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '10', 'question_order': 10, 'qid': 7642, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7642}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar uma chave de fenda', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '11', 'question_order': 11, 'qid': 7643, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7643}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar uma raquete de tênis', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '12', 'question_order': 12, 'qid': 7644, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7644}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar uma faca (com garfo)', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '13', 'question_order': 13, 'qid': 7645, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7645}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar uma vassoura (ver mão superior)', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '14', 'question_order': 14, 'qid': 7646, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7646}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Usar um ancinho (ver mão superior)', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '15', 'question_order': 15, 'qid': 7647, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7647}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Acender um fósforo', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '16', 'question_order': 16, 'qid': 7648, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7648}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Abrir um vidro com tampa (mão da tampa)', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '17', 'question_order': 17, 'qid': 7649, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7649}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Dar cartas', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '18', 'question_order': 18, 'qid': 7650, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7650}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Enfiar a linha na agulha (mão que segura ou que move)', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': None, 'title': '19', 'question_order': 19, 'qid': 7651, 'preg': None, 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7651}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Com que pé você prefere chutar?', 'other': 'N', 'type': '1', 'parent_qid': 7625}, {'help': '', 'relevance': '((828636X1118X7623.NAOK == "Y"))', 'title': 'famliacanhoto2', 'question_order': 5, 'qid': 7624, 'preg': '', 'gid': 1118, 'id': {'language': 'pt-BR', 'qid': 7624}, 'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636, 'question': 'Quem?', 'other': 'N', 'type': 'S', 'parent_qid': 0}],
+            [{'help': '', 'relevance': '1', 'title': 'fileUpload', 'question_order': 4, 'qid': 91282, 'preg': '',
+              'gid': 1119, 'id': {'language': 'pt-BR', 'qid': 91282}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 828636,
+              'question': 'Has fileupload question?', 'other': 'N', 'type': '|', 'parent_qid': 0},
+             {'help': '', 'relevance': '1', 'title': 'responsibleid', 'question_order': 0, 'qid': 7626, 'preg': '',
+              'gid': 1119, 'id': {'language': 'pt-BR', 'qid': 7626}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 828636,
+              'question': '<b>Número do avaliador</b>', 'other': 'N', 'type': 'N', 'parent_qid': 0},
+             {'help': '', 'relevance': '1', 'title': 'acquisitiondate', 'question_order': 1, 'qid': 7627, 'preg': '',
+              'gid': 1119, 'id': {'language': 'pt-BR', 'qid': 7627}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 828636,
+              'question': '<strong>Data:</strong><br />\n', 'other': 'N', 'type': 'D', 'parent_qid': 0},
+             {'help': '', 'relevance': '1', 'title': 'subjectid', 'question_order': 3, 'qid': 7628, 'preg': '',
+              'gid': 1119, 'id': {'language': 'pt-BR', 'qid': 7628}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 828636,
+              'question': '<b>Número do participante:</b>', 'other': 'N', 'type': 'N', 'parent_qid': 0}],
+            [{'help': '', 'relevance': '1', 'title': 'tendenciacanhoto', 'question_order': 3, 'qid': 7768, 'preg': '',
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7768}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 913841,
+              'question': 'Você já teve alguma tendência de ser canhoto?', 'other': 'N', 'type': 'Y', 'parent_qid': 0},
+             {'help': '', 'relevance': '1', 'title': 'canhotofamilia', 'question_order': 4, 'qid': 7769, 'preg': '',
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7769}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 913841,
+              'question': 'Existe alguém canhoto na família?', 'other': 'N', 'type': 'Y', 'parent_qid': 0},
+             {'help': '', 'relevance': '1', 'title': 'idteste', 'question_order': 7, 'qid': 7771, 'preg': '',
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7771}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'Y', 'sid': 913841,
+              'question': 'Indicar a preferência manual nas seguintes atividades assinalando + na coluna apropriada. Quando a preferência for tão forte de modo a não ser capaz de usar a outra mão assinale + +. Se não existir preferência, assinale + nas duas colunas.',
+              'other': 'N', 'type': '1', 'parent_qid': 0},
+             {'help': '', 'relevance': '1', 'title': 'formulaoldfield0', 'question_order': 20, 'qid': 7775, 'preg': '',
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7775}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': '{if(is_empty(idteste_1_0.value),0,intval(idteste_1_0.value)) + if(is_empty(idteste_2_0.value),0,intval(idteste_2_0.value)) + if(is_empty(idteste_3_0.value),0,intval(idteste_3_0.value)) + if(is_empty(idteste_4_0.value),0,intval(idteste_4_0.value)) + if(is_empty(idteste_5_0.value),0,intval(idteste_5_0.value)) + if(is_empty(idteste_6_0.value),0,intval(idteste_6_0.value)) + if(is_empty(idteste_7_0.value),0,intval(idteste_7_0.value)) + if(is_empty(idteste_8_0.value),0,intval(idteste_8_0.value)) + if(is_empty(idteste_9_0.value),0,intval(idteste_9_0.value)) + if(is_empty(idteste_10_0.value),0,intval(idteste_10_0.value)) + if(is_empty(idteste_11_0.value),0,intval(idteste_11_0.value)) + if(is_empty(idteste_12_0.value),0,intval(idteste_12_0.value)) + if(is_empty(idteste_13_0.value),0,intval(idteste_13_0.value)) + if(is_empty(idteste_14_0.value),0,intval(idteste_14_0.value)) + if(is_empty(idteste_15_0.value),0,intval(idteste_15_0.value)) + if(is_empty(idteste_16_0.value),0,intval(idteste_16_0.value)) + if(is_empty(idteste_17_0.value),0,intval(idteste_17_0.value)) + if(is_empty(idteste_18_0.value),0,intval(idteste_18_0.value)) + if(is_empty(idteste_19_0.value),0,intval(idteste_19_0.value))}',
+              'other': 'N', 'type': '*', 'parent_qid': 0},
+             {'help': '', 'relevance': '1', 'title': 'formulaoldfield', 'question_order': 22, 'qid': 7776, 'preg': '',
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7776}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': '{if(is_empty(idteste_1_1.value),0,intval(idteste_1_1.value)) + if(is_empty(idteste_2_1.value),0,intval(idteste_2_1.value)) + if(is_empty(idteste_3_1.value),0,intval(idteste_3_1.value)) + if(is_empty(idteste_4_1.value),0,intval(idteste_4_1.value)) + if(is_empty(idteste_5_1.value),0,intval(idteste_5_1.value)) + if(is_empty(idteste_6_1.value),0,intval(idteste_6_1.value)) + if(is_empty(idteste_7_1.value),0,intval(idteste_7_1.value)) + if(is_empty(idteste_8_1.value),0,intval(idteste_8_1.value)) + if(is_empty(idteste_9_1.value),0,intval(idteste_9_1.value)) + if(is_empty(idteste_10_1.value),0,intval(idteste_10_1.value)) + if(is_empty(idteste_11_1.value),0,intval(idteste_11_1.value)) + if(is_empty(idteste_12_1.value),0,intval(idteste_12_1.value)) + if(is_empty(idteste_13_1.value),0,intval(idteste_13_1.value)) + if(is_empty(idteste_14_1.value),0,intval(idteste_14_1.value)) + if(is_empty(idteste_15_1.value),0,intval(idteste_15_1.value)) + if(is_empty(idteste_16_1.value),0,intval(idteste_16_1.value)) + if(is_empty(idteste_17_1.value),0,intval(idteste_17_1.value)) + if(is_empty(idteste_18_1.value),0,intval(idteste_18_1.value)) + if(is_empty(idteste_19_1.value),0,intval(idteste_19_1.value))}',
+              'other': 'N', 'type': '*', 'parent_qid': 0},
+             {'help': '', 'relevance': '', 'title': 'pontuacaoold', 'question_order': 24, 'qid': 7777, 'preg': '',
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7777}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': '<p>\n\t{if(((formulaoldfield0+formulaoldfield)==0),"",round(((formulaoldfield0-formulaoldfield)/(formulaoldfield0+formulaoldfield)*100),2))}</p>\n',
+              'other': 'N', 'type': '*', 'parent_qid': 0},
+             {'help': '', 'relevance': '', 'title': 'MsgPontuacaoold', 'question_order': 26, 'qid': 7778, 'preg': '',
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7778}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': '<div>\n\t<span style="color:#ff0000;"><strong>Pontuação:</strong></span><strong> </strong>{pontuacaoold}</div>\n',
+              'other': 'N', 'type': 'X', 'parent_qid': 0},
+             {'help': '', 'relevance': None, 'title': '1', 'question_order': 1, 'qid': 7779, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7779}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Escrever', 'other': 'N', 'type': '1',
+              'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '2', 'question_order': 2, 'qid': 7780, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7780}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Desenhar', 'other': 'N', 'type': '1',
+              'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '3', 'question_order': 3, 'qid': 7781, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7781}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Jogar uma pedra', 'other': 'N',
+              'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '4', 'question_order': 4, 'qid': 7782, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7782}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Usar uma tesoura', 'other': 'N',
+              'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '5', 'question_order': 5, 'qid': 7783, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7783}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Usar um pente', 'other': 'N',
+              'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '6', 'question_order': 6, 'qid': 7784, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7784}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Usar uma escova de dentes',
+              'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '7', 'question_order': 7, 'qid': 7785, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7785}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Usar uma faca (sem uso do garfo)',
+              'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '8', 'question_order': 8, 'qid': 7786, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7786}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Usar uma colher', 'other': 'N',
+              'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '9', 'question_order': 9, 'qid': 7787, 'preg': None, 'gid': 1140,
+              'id': {'language': 'pt-BR', 'qid': 7787}, 'scale_id': 0, 'modulename': None, 'same_default': 0,
+              'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Usar um martelo', 'other': 'N',
+              'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '10', 'question_order': 10, 'qid': 7788, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7788}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': 'Usar uma chave de fenda', 'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '11', 'question_order': 11, 'qid': 7789, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7789}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': 'Usar uma raquete de tênis', 'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '12', 'question_order': 12, 'qid': 7790, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7790}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': 'Usar uma faca (com garfo)', 'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '13', 'question_order': 13, 'qid': 7791, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7791}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': 'Usar uma vassoura (ver mão superior)', 'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '14', 'question_order': 14, 'qid': 7792, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7792}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': 'Usar um ancinho (ver mão superior)', 'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '15', 'question_order': 15, 'qid': 7793, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7793}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Acender um fósforo',
+              'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '16', 'question_order': 16, 'qid': 7794, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7794}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': 'Abrir um vidro com tampa (mão da tampa)', 'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '17', 'question_order': 17, 'qid': 7795, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7795}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841, 'question': 'Dar cartas',
+              'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '18', 'question_order': 18, 'qid': 7796, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7796}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': 'Enfiar a linha na agulha (mão que segura ou que move)', 'other': 'N', 'type': '1',
+              'parent_qid': 7771},
+             {'help': '', 'relevance': None, 'title': '19', 'question_order': 19, 'qid': 7797, 'preg': None,
+              'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7797}, 'scale_id': 0, 'modulename': None,
+              'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N', 'sid': 913841,
+              'question': 'Com que pé você prefere chutar?', 'other': 'N', 'type': '1', 'parent_qid': 7771},
+             {'help': '', 'relevance': '((913841X1140X7769.NAOK == "Y"))', 'title': 'famliacanhoto2',
+              'question_order': 5, 'qid': 7770, 'preg': '', 'gid': 1140, 'id': {'language': 'pt-BR', 'qid': 7770},
+              'scale_id': 0, 'modulename': None, 'same_default': 0, 'language': 'pt-BR', 'mandatory': 'N',
+              'sid': 913841, 'question': 'Quem?', 'other': 'N', 'type': 'S', 'parent_qid': 0}]
+        ]
+        mockServer.return_value.get_question_properties.side_effect = [
+            {
+                'other': 'N', 'title': 'tendenciacanhoto', 'attributes_lang': 'No available attributes', 'question_order': 3, 'question': 'Você já teve alguma tendência de ser canhoto?', 'type': 'Y', 'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': 'No available attributes', 'subquestions': 'No available answers'
+            },
+            {
+                'other': 'N', 'title': 'canhotofamilia', 'attributes_lang': 'No available attributes', 'question_order': 4,
+                'question': 'Existe alguém canhoto na família?', 'type': 'Y',
+                'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': 'No available attributes',
+                'subquestions': 'No available answers'
+            },
+            {
+                'other': 'N', 'title': 'idteste',
+                'attributes_lang': {'dualscale_headerB': 'Membro esquerdo', 'dualscale_headerA': 'Membro direito'},
+                'question_order': 7,
+                'question': 'Indicar a preferência manual nas seguintes atividades assinalando + na coluna apropriada. Quando a preferência for tão forte de modo a não ser capaz de usar a outra mão assinale + +. Se não existir preferência, assinale + nas duas colunas.',
+                'type': '1', 'answeroptions': {'ESQ0': {'assessment_value': 0, 'scale_id': 1, 'answer': '0', 'order': 1},
+                                               'DIR2': {'assessment_value': 2, 'scale_id': 0, 'answer': '++', 'order': 3},
+                                               'ESQ1': {'assessment_value': 1, 'scale_id': 1, 'answer': '+', 'order': 2},
+                                               'DIR1': {'assessment_value': 1, 'scale_id': 0, 'answer': '+', 'order': 2},
+                                               'DIR0': {'assessment_value': 0, 'scale_id': 0, 'answer': '0', 'order': 1},
+                                               'ESQ2': {'assessment_value': 2, 'scale_id': 1, 'answer': '++', 'order': 3}},
+                'gid': 1118, 'attributes': 'No available attributes',
+                'subquestions': {'7646': {'question': 'Usar um ancinho (ver mão superior)', 'scale_id': 0, 'title': '14'},
+                                 '7650': {'question': 'Enfiar a linha na agulha (mão que segura ou que move)',
+                                          'scale_id': 0, 'title': '18'},
+                                 '7639': {'question': 'Usar uma faca (sem uso do garfo)', 'scale_id': 0, 'title': '7'},
+                                 '7641': {'question': 'Usar um martelo', 'scale_id': 0, 'title': '9'},
+                                 '7651': {'question': 'Com que pé você prefere chutar?', 'scale_id': 0, 'title': '19'},
+                                 '7634': {'question': 'Desenhar', 'scale_id': 0, 'title': '2'},
+                                 '7633': {'question': 'Escrever', 'scale_id': 0, 'title': '1'},
+                                 '7644': {'question': 'Usar uma faca (com garfo)', 'scale_id': 0, 'title': '12'},
+                                 '7642': {'question': 'Usar uma chave de fenda', 'scale_id': 0, 'title': '10'},
+                                 '7637': {'question': 'Usar um pente', 'scale_id': 0, 'title': '5'},
+                                 '7635': {'question': 'Jogar uma pedra', 'scale_id': 0, 'title': '3'},
+                                 '7647': {'question': 'Acender um fósforo', 'scale_id': 0, 'title': '15'},
+                                 '7649': {'question': 'Dar cartas', 'scale_id': 0, 'title': '17'},
+                                 '7636': {'question': 'Usar uma tesoura', 'scale_id': 0, 'title': '4'},
+                                 '7645': {'question': 'Usar uma vassoura (ver mão superior)', 'scale_id': 0,
+                                          'title': '13'},
+                                 '7643': {'question': 'Usar uma raquete de tênis', 'scale_id': 0, 'title': '11'},
+                                 '7648': {'question': 'Abrir um vidro com tampa (mão da tampa)', 'scale_id': 0,
+                                          'title': '16'},
+                                 '7640': {'question': 'Usar uma colher', 'scale_id': 0, 'title': '8'},
+                                 '7638': {'question': 'Usar uma escova de dentes', 'scale_id': 0, 'title': '6'}}
+            },
+            {'other': 'N', 'title': 'formulaoldfield0', 'attributes_lang': 'No available attributes',
+             'question_order': 20,
+             'question': '{if(is_empty(idteste_1_0.value),0,intval(idteste_1_0.value)) + if(is_empty(idteste_2_0.value),0,intval(idteste_2_0.value)) + if(is_empty(idteste_3_0.value),0,intval(idteste_3_0.value)) + if(is_empty(idteste_4_0.value),0,intval(idteste_4_0.value)) + if(is_empty(idteste_5_0.value),0,intval(idteste_5_0.value)) + if(is_empty(idteste_6_0.value),0,intval(idteste_6_0.value)) + if(is_empty(idteste_7_0.value),0,intval(idteste_7_0.value)) + if(is_empty(idteste_8_0.value),0,intval(idteste_8_0.value)) + if(is_empty(idteste_9_0.value),0,intval(idteste_9_0.value)) + if(is_empty(idteste_10_0.value),0,intval(idteste_10_0.value)) + if(is_empty(idteste_11_0.value),0,intval(idteste_11_0.value)) + if(is_empty(idteste_12_0.value),0,intval(idteste_12_0.value)) + if(is_empty(idteste_13_0.value),0,intval(idteste_13_0.value)) + if(is_empty(idteste_14_0.value),0,intval(idteste_14_0.value)) + if(is_empty(idteste_15_0.value),0,intval(idteste_15_0.value)) + if(is_empty(idteste_16_0.value),0,intval(idteste_16_0.value)) + if(is_empty(idteste_17_0.value),0,intval(idteste_17_0.value)) + if(is_empty(idteste_18_0.value),0,intval(idteste_18_0.value)) + if(is_empty(idteste_19_0.value),0,intval(idteste_19_0.value))}',
+             'type': '*', 'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': {'hidden': '1'},
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'formulaoldfield', 'attributes_lang': 'No available attributes',
+             'question_order': 22,
+             'question': '{if(is_empty(idteste_1_1.value),0,intval(idteste_1_1.value)) + if(is_empty(idteste_2_1.value),0,intval(idteste_2_1.value)) + if(is_empty(idteste_3_1.value),0,intval(idteste_3_1.value)) + if(is_empty(idteste_4_1.value),0,intval(idteste_4_1.value)) + if(is_empty(idteste_5_1.value),0,intval(idteste_5_1.value)) + if(is_empty(idteste_6_1.value),0,intval(idteste_6_1.value)) + if(is_empty(idteste_7_1.value),0,intval(idteste_7_1.value)) + if(is_empty(idteste_8_1.value),0,intval(idteste_8_1.value)) + if(is_empty(idteste_9_1.value),0,intval(idteste_9_1.value)) + if(is_empty(idteste_10_1.value),0,intval(idteste_10_1.value)) + if(is_empty(idteste_11_1.value),0,intval(idteste_11_1.value)) + if(is_empty(idteste_12_1.value),0,intval(idteste_12_1.value)) + if(is_empty(idteste_13_1.value),0,intval(idteste_13_1.value)) + if(is_empty(idteste_14_1.value),0,intval(idteste_14_1.value)) + if(is_empty(idteste_15_1.value),0,intval(idteste_15_1.value)) + if(is_empty(idteste_16_1.value),0,intval(idteste_16_1.value)) + if(is_empty(idteste_17_1.value),0,intval(idteste_17_1.value)) + if(is_empty(idteste_18_1.value),0,intval(idteste_18_1.value)) + if(is_empty(idteste_19_1.value),0,intval(idteste_19_1.value))}',
+             'type': '*', 'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': {'hidden': '1'},
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'pontuacaoold', 'attributes_lang': 'No available attributes', 'question_order': 24,
+             'question': '<p>\n\t{if(((formulaoldfield0+formulaoldfield)==0),"",round(((formulaoldfield0-formulaoldfield)/(formulaoldfield0+formulaoldfield)*100),2))}</p>\n',
+             'type': '*', 'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': {'hidden': '1'},
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'MsgPontuacaoold', 'attributes_lang': 'No available attributes',
+             'question_order': 26,
+             'question': '<div>\n\t<span style="color:#ff0000;"><strong>Pontuação:</strong></span><strong> </strong>{pontuacaoold}</div>\n',
+             'type': 'X', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '1', 'attributes_lang': 'No available attributes', 'question_order': 1,
+             'question': 'Escrever', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '2', 'attributes_lang': 'No available attributes', 'question_order': 2,
+             'question': 'Desenhar', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '3', 'attributes_lang': 'No available attributes', 'question_order': 3,
+             'question': 'Jogar uma pedra', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '4', 'attributes_lang': 'No available attributes', 'question_order': 4,
+             'question': 'Usar uma tesoura', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '5', 'attributes_lang': 'No available attributes', 'question_order': 5,
+             'question': 'Usar um pente', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '6', 'attributes_lang': 'No available attributes', 'question_order': 6,
+             'question': 'Usar uma escova de dentes', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1118, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '7', 'attributes_lang': 'No available attributes', 'question_order': 7,
+             'question': 'Usar uma faca (sem uso do garfo)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '8', 'attributes_lang': 'No available attributes', 'question_order': 8,
+             'question': 'Usar uma colher', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '9', 'attributes_lang': 'No available attributes', 'question_order': 9,
+             'question': 'Usar um martelo', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '10', 'attributes_lang': 'No available attributes', 'question_order': 10,
+             'question': 'Usar uma chave de fenda', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1118, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '11', 'attributes_lang': 'No available attributes', 'question_order': 11,
+             'question': 'Usar uma raquete de tênis', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1118, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '12', 'attributes_lang': 'No available attributes', 'question_order': 12,
+             'question': 'Usar uma faca (com garfo)', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1118, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '12', 'attributes_lang': 'No available attributes', 'question_order': 12,
+             'question': 'Usar uma faca (com garfo)', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1118, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '14', 'attributes_lang': 'No available attributes', 'question_order': 14,
+             'question': 'Usar um ancinho (ver mão superior)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '15', 'attributes_lang': 'No available attributes', 'question_order': 15,
+             'question': 'Acender um fósforo', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '16', 'attributes_lang': 'No available attributes', 'question_order': 16,
+             'question': 'Abrir um vidro com tampa (mão da tampa)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '17', 'attributes_lang': 'No available attributes', 'question_order': 17,
+             'question': 'Dar cartas', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '18', 'attributes_lang': 'No available attributes', 'question_order': 18,
+             'question': 'Enfiar a linha na agulha (mão que segura ou que move)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1118, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '19', 'attributes_lang': 'No available attributes', 'question_order': 19,
+             'question': 'Com que pé você prefere chutar?', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1118, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'famliacanhoto2', 'attributes_lang': 'No available attributes', 'question_order': 5,
+             'question': 'Quem?', 'type': 'S', 'answeroptions': 'No available answer options', 'gid': 1118,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'fileUpload', 'attributes_lang': 'No available attributes', 'question_order': 4,
+             'question': 'Has fileupload question?', 'type': '|', 'answeroptions': 'No available answer options',
+             'gid': 1119, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'responsibleid', 'attributes_lang': 'No available attributes', 'question_order': 0,
+             'question': '<b>Número do avaliador</b>', 'type': 'N', 'answeroptions': 'No available answer options',
+             'gid': 1119, 'attributes': {'hidden': '1'}, 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'acquisitiondate', 'attributes_lang': 'No available attributes',
+             'question_order': 1, 'question': '<strong>Data:</strong><br />\n', 'type': 'D',
+             'answeroptions': 'No available answer options', 'gid': 1119, 'attributes': {'hidden': '1'},
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'subjectid', 'attributes_lang': 'No available attributes', 'question_order': 3,
+             'question': '<b>Número do participante:</b>', 'type': 'N', 'answeroptions': 'No available answer options',
+             'gid': 1119, 'attributes': {'hidden': '1'}, 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'tendenciacanhoto', 'attributes_lang': 'No available attributes',
+             'question_order': 3, 'question': 'Você já teve alguma tendência de ser canhoto?', 'type': 'Y',
+             'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'canhotofamilia', 'attributes_lang': 'No available attributes', 'question_order': 4,
+             'question': 'Existe alguém canhoto na família?', 'type': 'Y',
+             'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'idteste',
+             'attributes_lang': {'dualscale_headerB': 'Membro esquerdo', 'dualscale_headerA': 'Membro direito'},
+             'question_order': 7,
+             'question': 'Indicar a preferência manual nas seguintes atividades assinalando + na coluna apropriada. Quando a preferência for tão forte de modo a não ser capaz de usar a outra mão assinale + +. Se não existir preferência, assinale + nas duas colunas.',
+             'type': '1', 'answeroptions': {'ESQ0': {'assessment_value': 0, 'scale_id': 1, 'answer': '0', 'order': 1},
+                                            'DIR2': {'assessment_value': 2, 'scale_id': 0, 'answer': '++', 'order': 3},
+                                            'ESQ1': {'assessment_value': 1, 'scale_id': 1, 'answer': '+', 'order': 2},
+                                            'DIR1': {'assessment_value': 1, 'scale_id': 0, 'answer': '+', 'order': 2},
+                                            'DIR0': {'assessment_value': 0, 'scale_id': 0, 'answer': '0', 'order': 1},
+                                            'ESQ2': {'assessment_value': 2, 'scale_id': 1, 'answer': '++', 'order': 3}},
+             'gid': 1140, 'attributes': 'No available attributes',
+             'subquestions': {'7780': {'question': 'Desenhar', 'scale_id': 0, 'title': '2'},
+                              '7785': {'question': 'Usar uma faca (sem uso do garfo)', 'scale_id': 0, 'title': '7'},
+                              '7796': {'question': 'Enfiar a linha na agulha (mão que segura ou que move)',
+                                       'scale_id': 0, 'title': '18'},
+                              '7789': {'question': 'Usar uma raquete de tênis', 'scale_id': 0, 'title': '11'},
+                              '7784': {'question': 'Usar uma escova de dentes', 'scale_id': 0, 'title': '6'},
+                              '7790': {'question': 'Usar uma faca (com garfo)', 'scale_id': 0, 'title': '12'},
+                              '7797': {'question': 'Com que pé você prefere chutar?', 'scale_id': 0, 'title': '19'},
+                              '7791': {'question': 'Usar uma vassoura (ver mão superior)', 'scale_id': 0,
+                                       'title': '13'},
+                              '7781': {'question': 'Jogar uma pedra', 'scale_id': 0, 'title': '3'},
+                              '7792': {'question': 'Usar um ancinho (ver mão superior)', 'scale_id': 0, 'title': '14'},
+                              '7788': {'question': 'Usar uma chave de fenda', 'scale_id': 0, 'title': '10'},
+                              '7794': {'question': 'Abrir um vidro com tampa (mão da tampa)', 'scale_id': 0,
+                                       'title': '16'},
+                              '7782': {'question': 'Usar uma tesoura', 'scale_id': 0, 'title': '4'},
+                              '7793': {'question': 'Acender um fósforo', 'scale_id': 0, 'title': '15'},
+                              '7795': {'question': 'Dar cartas', 'scale_id': 0, 'title': '17'},
+                              '7783': {'question': 'Usar um pente', 'scale_id': 0, 'title': '5'},
+                              '7786': {'question': 'Usar uma colher', 'scale_id': 0, 'title': '8'},
+                              '7779': {'question': 'Escrever', 'scale_id': 0, 'title': '1'},
+                              '7787': {'question': 'Usar um martelo', 'scale_id': 0, 'title': '9'}}},
+            {'other': 'N', 'title': 'formulaoldfield0', 'attributes_lang': 'No available attributes',
+             'question_order': 20,
+             'question': '{if(is_empty(idteste_1_0.value),0,intval(idteste_1_0.value)) + if(is_empty(idteste_2_0.value),0,intval(idteste_2_0.value)) + if(is_empty(idteste_3_0.value),0,intval(idteste_3_0.value)) + if(is_empty(idteste_4_0.value),0,intval(idteste_4_0.value)) + if(is_empty(idteste_5_0.value),0,intval(idteste_5_0.value)) + if(is_empty(idteste_6_0.value),0,intval(idteste_6_0.value)) + if(is_empty(idteste_7_0.value),0,intval(idteste_7_0.value)) + if(is_empty(idteste_8_0.value),0,intval(idteste_8_0.value)) + if(is_empty(idteste_9_0.value),0,intval(idteste_9_0.value)) + if(is_empty(idteste_10_0.value),0,intval(idteste_10_0.value)) + if(is_empty(idteste_11_0.value),0,intval(idteste_11_0.value)) + if(is_empty(idteste_12_0.value),0,intval(idteste_12_0.value)) + if(is_empty(idteste_13_0.value),0,intval(idteste_13_0.value)) + if(is_empty(idteste_14_0.value),0,intval(idteste_14_0.value)) + if(is_empty(idteste_15_0.value),0,intval(idteste_15_0.value)) + if(is_empty(idteste_16_0.value),0,intval(idteste_16_0.value)) + if(is_empty(idteste_17_0.value),0,intval(idteste_17_0.value)) + if(is_empty(idteste_18_0.value),0,intval(idteste_18_0.value)) + if(is_empty(idteste_19_0.value),0,intval(idteste_19_0.value))}',
+             'type': '*', 'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': {'hidden': '1'},
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'formulaoldfield', 'attributes_lang': 'No available attributes',
+             'question_order': 22,
+             'question': '{if(is_empty(idteste_1_1.value),0,intval(idteste_1_1.value)) + if(is_empty(idteste_2_1.value),0,intval(idteste_2_1.value)) + if(is_empty(idteste_3_1.value),0,intval(idteste_3_1.value)) + if(is_empty(idteste_4_1.value),0,intval(idteste_4_1.value)) + if(is_empty(idteste_5_1.value),0,intval(idteste_5_1.value)) + if(is_empty(idteste_6_1.value),0,intval(idteste_6_1.value)) + if(is_empty(idteste_7_1.value),0,intval(idteste_7_1.value)) + if(is_empty(idteste_8_1.value),0,intval(idteste_8_1.value)) + if(is_empty(idteste_9_1.value),0,intval(idteste_9_1.value)) + if(is_empty(idteste_10_1.value),0,intval(idteste_10_1.value)) + if(is_empty(idteste_11_1.value),0,intval(idteste_11_1.value)) + if(is_empty(idteste_12_1.value),0,intval(idteste_12_1.value)) + if(is_empty(idteste_13_1.value),0,intval(idteste_13_1.value)) + if(is_empty(idteste_14_1.value),0,intval(idteste_14_1.value)) + if(is_empty(idteste_15_1.value),0,intval(idteste_15_1.value)) + if(is_empty(idteste_16_1.value),0,intval(idteste_16_1.value)) + if(is_empty(idteste_17_1.value),0,intval(idteste_17_1.value)) + if(is_empty(idteste_18_1.value),0,intval(idteste_18_1.value)) + if(is_empty(idteste_19_1.value),0,intval(idteste_19_1.value))}',
+             'type': '*', 'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': {'hidden': '1'},
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'pontuacaoold', 'attributes_lang': 'No available attributes', 'question_order': 24,
+             'question': '<p>\n\t{if(((formulaoldfield0+formulaoldfield)==0),"",round(((formulaoldfield0-formulaoldfield)/(formulaoldfield0+formulaoldfield)*100),2))}</p>\n',
+             'type': '*', 'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': {'hidden': '1'},
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'MsgPontuacaoold', 'attributes_lang': 'No available attributes',
+             'question_order': 26,
+             'question': '<div>\n\t<span style="color:#ff0000;"><strong>Pontuação:</strong></span><strong> </strong>{pontuacaoold}</div>\n',
+             'type': 'X', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '1', 'attributes_lang': 'No available attributes', 'question_order': 1,
+             'question': 'Escrever', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '2', 'attributes_lang': 'No available attributes', 'question_order': 2,
+             'question': 'Desenhar', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '3', 'attributes_lang': 'No available attributes', 'question_order': 3,
+             'question': 'Jogar uma pedra', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '4', 'attributes_lang': 'No available attributes', 'question_order': 4,
+             'question': 'Usar uma tesoura', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '5', 'attributes_lang': 'No available attributes', 'question_order': 5,
+             'question': 'Usar um pente', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '6', 'attributes_lang': 'No available attributes', 'question_order': 6,
+             'question': 'Usar uma escova de dentes', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1140, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '7', 'attributes_lang': 'No available attributes', 'question_order': 7,
+             'question': 'Usar uma faca (sem uso do garfo)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '8', 'attributes_lang': 'No available attributes', 'question_order': 8,
+             'question': 'Usar uma colher', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '9', 'attributes_lang': 'No available attributes', 'question_order': 9,
+             'question': 'Usar um martelo', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '10', 'attributes_lang': 'No available attributes', 'question_order': 10,
+             'question': 'Usar uma chave de fenda', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1140, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '11', 'attributes_lang': 'No available attributes', 'question_order': 11,
+             'question': 'Usar uma raquete de tênis', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1140, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '12', 'attributes_lang': 'No available attributes', 'question_order': 12,
+             'question': 'Usar uma faca (com garfo)', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1140, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '13', 'attributes_lang': 'No available attributes', 'question_order': 13,
+             'question': 'Usar uma vassoura (ver mão superior)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '14', 'attributes_lang': 'No available attributes', 'question_order': 14,
+             'question': 'Usar um ancinho (ver mão superior)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '15', 'attributes_lang': 'No available attributes', 'question_order': 15,
+             'question': 'Acender um fósforo', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '16', 'attributes_lang': 'No available attributes', 'question_order': 16,
+             'question': 'Abrir um vidro com tampa (mão da tampa)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '17', 'attributes_lang': 'No available attributes', 'question_order': 17,
+             'question': 'Dar cartas', 'type': '1', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '18', 'attributes_lang': 'No available attributes', 'question_order': 18,
+             'question': 'Enfiar a linha na agulha (mão que segura ou que move)', 'type': '1',
+             'answeroptions': 'No available answer options', 'gid': 1140, 'attributes': 'No available attributes',
+             'subquestions': 'No available answers'},
+            {'other': 'N', 'title': '19', 'attributes_lang': 'No available attributes', 'question_order': 19,
+             'question': 'Com que pé você prefere chutar?', 'type': '1', 'answeroptions': 'No available answer options',
+             'gid': 1140, 'attributes': 'No available attributes', 'subquestions': 'No available answers'},
+            {'other': 'N', 'title': 'famliacanhoto2', 'attributes_lang': 'No available attributes', 'question_order': 5,
+             'question': 'Quem?', 'type': 'S', 'answeroptions': 'No available answer options', 'gid': 1140,
+             'attributes': 'No available attributes', 'subquestions': 'No available answers'}
+        ]
+        mockServer.return_value.add_participants.return_value = [
+            {'remindersent': 'N', 'completed': 'N', 'blacklisted': None, 'participant_id': None, 'remindercount': 0, 'lastname': '', 'sent': 'N', 'usesleft': 1, 'validuntil': None, 'language': None, 'emailstatus': 'OK', 'validfrom': None, 'token': 'kMR34vg97KnCOOK', 'tid': '867', 'mpid': None, 'email': '', 'firstname': ''}
+        ]
+        mockServer.return_value.get_participant_properties.side_effect = [
+            {'token': 'kMR34vg97KnCOOK'},
+            {'completed': 'N'},
+            {'completed': 'N'},
+            {'token': 'kMR34vg97KnCOOK'},
+            {'completed': 'N'},
+            {'completed': 'N'},
+            {'completed': 'N'}
+        ]
+        mockServer.return_value.delete_participants.return_value = {'867': 'Deleted'}
 
         # Create a research project
         research_project = ObjectsFactory.create_research_project()
@@ -1847,7 +1478,7 @@ class SubjectTest(TestCase):
         # Create the root of the experimental protocol
         block = ObjectsFactory.create_block(Experiment.objects.first())
 
-        # Using a known questionnaires at LiveSurvey to use in this test.
+        # Using a known questionnaires at LimeSurvey to use in this test.
         new_survey, created = \
             Survey.objects.get_or_create(lime_survey_id=LIME_SURVEY_ID)
         new_survey_without_access_table, created = \
@@ -2012,10 +1643,9 @@ class SubjectTest(TestCase):
         count_after_delete_subject = SubjectOfGroup.objects.all().filter(group=group).count()
         self.assertEqual(count_before_delete_subject - 1, count_after_delete_subject)
 
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_eeg_data_file(self):
-        """
-        Test of a EEG data file upload
-        """
+        """Test of an EEG data file upload"""
 
         research_project = ObjectsFactory.create_research_project()
 
@@ -4771,3 +4401,7 @@ class ContextTreeTest(TestCase):
 
         # Check if number of context trees decreased by 1
         self.assertEqual(ContextTree.objects.all().count(), count - 1)
+
+
+def tearDownModule():
+    shutil.rmtree(TEMP_MEDIA_ROOT)

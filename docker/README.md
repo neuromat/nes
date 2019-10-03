@@ -114,11 +114,11 @@ _these are the same variables set for LimeSurvey_
 
 # References
 
--   <https://github.com/LimeSurvey/LimeSurvey/>
--   <https://github.com/martialblog/docker-limesurvey>
--   <https://github.com/gliderlabs/docker-alpine>
--   <https://github.com/docker-library/httpd>
--   <https://github.com/docker-library/postgres>
+-   https://github.com/LimeSurvey/LimeSurvey/
+-   https://github.com/martialblog/docker-limesurvey
+-   https://github.com/gliderlabs/docker-alpine
+-   https://github.com/docker-library/httpd
+-   https://github.com/docker-library/postgres
 
 # TO-DO
 

@@ -91,7 +91,7 @@ def get_survey_title_based_on_the_user_language(survey, language_code, update=Fa
 @permission_required('survey.view_survey')
 def survey_list(request, template_name='survey/survey_list.html'):
     surveys = Questionnaires()
-    limesurvey_available = check_limesurvey_access(request, surveys)
+    limesurvey_available_ = check_limesurvey_access(request, surveys)
 
     questionnaires_list = []
 
@@ -135,7 +135,7 @@ def survey_list(request, template_name='survey/survey_list.html'):
 
     context = {
         'questionnaires_list': questionnaires_list,
-        'limesurvey_available': limesurvey_available,
+        'limesurvey_available': limesurvey_available_,
     }
 
     return render(request, template_name, context)
@@ -334,6 +334,9 @@ def get_survey_header(surveys, survey, language, heading_type):
         survey.lime_survey_id, language, heading_type=heading_type
     )
     header_fields = next(
+        # TODO (dev (merging)): 500 error in NES-INDC (see Internal Server Error message
+        #  in email) is due to responses_text.decode(). We are fixing this here to match
+        #  the fix I did in NES-INDC production environment directly at tag TAG-159.1.
         reader(StringIO(responses_text.decode()), delimiter=',')
     )
     for field in header_fields:
@@ -936,8 +939,7 @@ def check_limesurvey_access(request, surveys):
     available = limesurvey_available(surveys)
     if not available:
         messages.warning(
-            request, _("LimeSurvey unavailable. System running partially.")
-        )
+            request, _("LimeSurvey unavailable. System running partially."))
 
     return available
 
@@ -953,19 +955,21 @@ def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, lang
     if questionnaire_lime_survey.session_key:
 
         # defining language to be showed
-        languages = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+        result = questionnaire_lime_survey.get_survey_languages(questionnaire_id)
+        if result is None:
+            return Questionnaires.ERROR_CODE
 
         # language to be showed can be the base language, or...
-        if "language" in languages:
+        if "language" in result:
 
-            language = languages['language']
+            language = result['language']
 
             # ...can be one of the additional languages
-            if language.lower() != language_code.lower() and languages['additional_languages']:
+            if language.lower() != language_code.lower() and result['additional_languages']:
 
                 # search for the right language in addional languages,
                 # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
-                additional_languages_list = languages['additional_languages'].split(' ')
+                additional_languages_list = result['additional_languages'].split(' ')
                 additional_languages_list_lower = [item.lower() for item in additional_languages_list]
                 if language_code.lower() in additional_languages_list_lower:
                     index = additional_languages_list_lower.index(language_code.lower())

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-21 07:31-0300\n"
+"POT-Creation-Date: 2019-09-30 15:35-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,18 +16,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: survey/survey_utils.py:471 survey/survey_utils.py:477
+#: survey/survey_utils.py:425 survey/survey_utils.py:431
 msgid "Could not get list of groups from LimeSurvey"
-msgstr ""
+msgstr "Não foi possível obter a lista dos grupos no LimeSurvey"
 
-#: survey/survey_utils.py:474
+#: survey/survey_utils.py:428
 msgid "There's no group with name Identification."
-msgstr ""
+msgstr "Não há um grupo com o nome Identificação."
 
-#: survey/survey_utils.py:480
+#: survey/survey_utils.py:434
 #, python-format
 msgid "There's no question with name %s"
-msgstr ""
+msgstr "Não há um questionráio com o nome %s"
 
 #: survey/templates/survey/survey_list.html:43
 msgid "List of questionnaires"
@@ -69,12 +69,20 @@ msgid "Insert new questionnaire"
 msgstr "Inserir novo questionário"
 
 #: survey/templates/survey/survey_list.html:77
-msgid "Update informations about the questionnaires"
+msgid ""
+"Click to update questionnaire title if not displaying the title in selected "
+"NES language"
 msgstr ""
+"Clique para atualizar o título do questionário se o título não aparece no "
+"idioma selecionado no NES"
 
-#: survey/templates/survey/survey_list.html:77
+#: survey/templates/survey/survey_list.html:82
+msgid "Update informations about the questionnaires"
+msgstr "Atualizar informações sobre os questionários"
+
+#: survey/templates/survey/survey_list.html:82
 msgid "Update"
-msgstr ""
+msgstr "Atualizar"
 
 #: survey/templates/survey/survey_register.html:53
 #: survey/templates/survey/survey_sensitive_fields.html:46
@@ -233,11 +241,11 @@ msgstr "Não há alterações para salvar."
 msgid "Questionnaire was updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:602
+#: survey/views.py:605
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:605
+#: survey/views.py:608
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
@@ -245,42 +253,23 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:719
+#: survey/views.py:722
 msgid "Other"
 msgstr "Outros"
 
-#: survey/views.py:754
+#: survey/views.py:757
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:819 survey/views.py:833 survey/views.py:861
+#: survey/views.py:822 survey/views.py:836 survey/views.py:864
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:896
+#: survey/views.py:899
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
-"LimeSurvey não encontrou dados de preenchimento para este questionário."
+"O LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:939
+#: survey/views.py:942
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."
-
-#~ msgid ""
-#~ "NES can't retrieve files from \"file upload\" questions from LimeSurvey."
-#~ msgstr ""
-#~ "O NES não importa arquivos carregados pelo Limesurvey através de questões "
-#~ "do tipo 'Envio de arquivo'."
-
-#~ msgid ""
-#~ "See \"Best Pratices and Recommendations\" at https://nes.rtfd.io for more "
-#~ "details."
-#~ msgstr ""
-#~ "Veja \"Best Pratices and Recommendations\" em https://nes.rtfd.io para "
-#~ "mais detalhes."
-
-#~ msgid "Entrance evaluation"
-#~ msgstr "Avaliação de Entrada"
-
-#~ msgid "Answered as entrance evaluation"
-#~ msgstr "Respondido como avaliação de entrada"

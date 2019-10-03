@@ -549,8 +549,7 @@ class SocialHistoryData(models.Model):
         self.changed_by = value
 
     def __str__(self):
-        return \
-            str(self.patient)
+        return str(self.patient)
 
     def clean(self):
         if self.smoker and self.ex_smoker:
@@ -639,17 +638,12 @@ class ExamFile(models.Model):
 
 class QuestionnaireResponse(models.Model):
     patient = models.ForeignKey(Patient, null=False)
-
     survey = models.ForeignKey(Survey, null=False, on_delete=models.PROTECT)
-
     token_id = models.IntegerField(null=False)
     date = models.DateField(
         default=datetime.date.today, null=False,
-        validators=[validate_date_questionnaire_response]
-    )
-    questionnaire_responsible = models.ForeignKey(
-        User, null=False, related_name="+"
-    )
+        validators=[validate_date_questionnaire_response])
+    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
     is_completed = models.CharField(null=False, max_length=50, default="")
 
     class Meta:

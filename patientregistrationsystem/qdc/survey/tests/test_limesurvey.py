@@ -9,7 +9,7 @@ from survey.survey_utils import QuestionnaireUtils
 class LimeSurveyAPITest(TestCase):
 
     @patch('survey.abc_search_engine.Server')
-    def test_get_question_properties(self, mockServerClass):
+    def test_get_question_properties(self, mockServer):
         lime_survey = Questionnaires()
         lime_survey.get_question_properties(1, 'en')
 
@@ -19,7 +19,7 @@ class LimeSurveyAPITest(TestCase):
             'attributes', 'other'
         }
         (session_key, question_id, properties, language), kwargs = \
-            mockServerClass.return_value.get_question_properties.call_args
+            mockServer.return_value.get_question_properties.call_args
         self.assertTrue(
             set(question_properties).issubset(properties),
             str(set(question_properties)) + ' is not a subset of ' +
@@ -70,15 +70,13 @@ class SurveyUtilsTest(TestCase):
               'language': language, 'grelevance': ''}]
 
         lime_survey = Questionnaires()
-        questionnaire_fields = survey_utils.create_questionnaire_explanation_fields(
+        error, questionnaire_fields = survey_utils.create_questionnaire_explanation_fields(
                 questionnaire_id, language, lime_survey, fields, entrance_survey)
 
         # First line contains metadata column headers, subsequent lines
         # contains the metadata column values.
         # Assert for correct length for metadata headers and values
-        self.assertTrue(
-            len(questionnaire_fields[0]), len(questionnaire_fields[1])
-        )
+        self.assertTrue(len(questionnaire_fields[0]), len(questionnaire_fields[1]))
 
         # asserts for question_order field
         self.assertTrue('question_order' in questionnaire_fields[0])

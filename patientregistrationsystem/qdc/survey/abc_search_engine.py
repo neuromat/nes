@@ -21,7 +21,6 @@ class ABCSearchEngine(ABC):
 
     def get_session_key(self):
         self.server = Server(self.limesurvey_rpc)
-
         try:
             self.session_key = self.server.get_session_key(
                 settings.LIMESURVEY['USER'], settings.LIMESURVEY['PASSWORD'])
@@ -86,17 +85,10 @@ class ABCSearchEngine(ABC):
 
         participant_data = {'email': '', 'firstname': '', 'lastname': ''}
 
-        result = self.server.add_participants(
-            self.session_key, sid, [participant_data], True
-        )
+        result = self.server.add_participants(self.session_key, sid, [participant_data], True)
 
-        if result \
-                and isinstance(result, list) \
-                and isinstance(result[0], dict) \
-                and 'error' not in result[0]:
-
-            return {'token': result[0]['token'],
-                    'tid': result[0]['tid']}
+        if result and isinstance(result, list) and isinstance(result[0], dict) and 'error' not in result[0]:
+            return {'token': result[0]['token'], 'tid': result[0]['tid']}
         else:
             return None
 
@@ -108,6 +100,7 @@ class ABCSearchEngine(ABC):
         :return: on success, a dict of deletion status for each participant; on failure, status dict.
         """
         result = self.server.delete_participants(self.session_key, survey_id, tokens_ids)
+
         # In case of success RPC returs a list, otherwise a dict with error status
         return result if 'status' not in result else None
 
@@ -120,8 +113,10 @@ class ABCSearchEngine(ABC):
         """
 
         if self.session_key:
-            survey_title = self.server.get_language_properties(self.session_key, sid, {'method': 'surveyls_title'},
-                                                               language)
+            survey_title = self.server.get_language_properties(
+                self.session_key, sid, {'method': 'surveyls_title'}, language)
+
+            # print(survey_title)  # DB
 
             if 'surveyls_title' in survey_title:
                 survey_title = survey_title.get('surveyls_title')
@@ -139,8 +134,9 @@ class ABCSearchEngine(ABC):
         :param prop: the name of the propriety of the survey
         :return: value of the property
         """
-
         result = self.server.get_survey_properties(self.session_key, sid, {'method': prop})
+
+        # print(result)  # DB
 
         return result.get(prop)
 
@@ -152,8 +148,11 @@ class ABCSearchEngine(ABC):
         """
 
         result = self.server.get_survey_properties(self.session_key, sid, ['additional_languages', 'language'])
+        # If failed to consume API, it return a dict with one element with 'status' as key
 
-        return result
+        # print(result)  # DB
+
+        return None if 'status' in result else result
 
     @abstractmethod
     def activate_survey(self, sid):
@@ -188,6 +187,8 @@ class ABCSearchEngine(ABC):
         """
         result = self.server.get_participant_properties(self.session_key, survey_id, token_id, {'method': prop})
 
+        # print(result)  # DB
+
         return result.get(prop) if 'status' not in result else None
 
     @abstractmethod
@@ -210,9 +211,8 @@ class ABCSearchEngine(ABC):
         :return: survey ID generated
         """
 
-        survey_id_generated = self.server.add_survey(
-            self.session_key, sid, title, language, survey_format
-        )
+        survey_id_generated = self.server.add_survey(self.session_key, sid, title, language, survey_format)
+
         return survey_id_generated
 
     @abstractmethod
@@ -221,8 +221,8 @@ class ABCSearchEngine(ABC):
         :param sid: survey ID
         :return: status of the operation
         """
-
         status = self.server.delete_survey(self.session_key, sid)
+
         return status['status']
 
     @abstractmethod
@@ -240,9 +240,11 @@ class ABCSearchEngine(ABC):
         if fields:
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, doctype, token, language, 'complete', 'code', 'short', fields)
+            # print(responses)  # DB
         else:
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, doctype, token, language, 'complete')
+            # print(responses)  # DB
 
         if isinstance(responses, dict):
             return None
@@ -265,25 +267,35 @@ class ABCSearchEngine(ABC):
         responses = self.server.export_responses(
             self.session_key, sid, 'csv', language, 'complete', heading_type, response_type)
 
-        return b64decode(responses).decode()
+        # print(responses)  # DB
+
+        return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     def get_header_response(self, sid, language, token, heading_type):
-        """ Obtain header responses
+        """Obtain header responses
         :param sid: survey ID
         :param language: language
         :param token: token
         :param heading_type: heading type (can be 'code' or 'full')
-        :return: responses in the txt format
+        :return: str - responses in the txt format in case of success, else None
         """
 
         responses = self.server.export_responses_by_token(
             self.session_key, sid, 'csv', token, language, 'complete', heading_type, 'short')
 
-        if not isinstance(responses, str):
+        # print(responses)  # DB
+
+        # For compatibility with export view call: when export_responses returns
+        # {'status': 'No Response found by Token'} export view call export_responses,
+        # that returns a string to responses variable and can mount the screen with the
+        # possible data to export
+        if isinstance(responses, dict) and responses['status'] == 'No Response found for Token':
             responses = self.server.export_responses(
                 self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
 
-        return b64decode(responses).decode()
+            # print(responses)  # DB
+
+        return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     @abstractmethod
     def get_summary(self, sid, stat_name):
@@ -307,15 +319,9 @@ class ABCSearchEngine(ABC):
         """
         questions_data_b64 = b64encode(questions_data.encode('utf-8'))
         result = self.server.import_group(
-            self.session_key, sid, questions_data_b64.decode('utf-8'),
-            format_import_file
-        )
+            self.session_key, sid, questions_data_b64.decode('utf-8'), format_import_file)
 
-        if isinstance(result, dict):
-            if 'status' in result:
-                return None
-        else:
-            return result
+        return None if isinstance(result, dict) else result
 
     @abstractmethod
     def get_question_properties(self, question_id, language):
@@ -324,10 +330,16 @@ class ABCSearchEngine(ABC):
         :param language: language of the answer
         :return: properties of a question of a survey
         """
-
         properties = self.server.get_question_properties(
-            self.session_key, question_id, self.QUESTION_PROPERTIES, language
-        )
+            self.session_key, question_id, self.QUESTION_PROPERTIES, language)
+
+        # print(properties)  # DB
+
+        if 'status' in properties and properties['status'] in [
+            'Error: Invalid questionid', 'Error: Invalid language', 'Error: Invalid questionid', 'No valid Data',
+            'No permission', 'Invalid session key'
+        ]:
+            return None
 
         return properties
 
@@ -342,6 +354,8 @@ class ABCSearchEngine(ABC):
         """
         groups = self.server.list_groups(self.session_key, sid)
 
+        # print(groups)  # DB
+
         return groups if isinstance(groups, list) else None
 
     @abstractmethod
@@ -352,10 +366,16 @@ class ABCSearchEngine(ABC):
         Control API does not do that (TODO (NES-956): see why lang is gone
         :return: list of group properties
         """
-        return self.server.get_group_properties(self.session_key, gid)
+        result = self.server.get_group_properties(self.session_key, gid)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def set_group_properties(self, sid, data):
-        return self.server.set_group_properties(self.session_key, sid, data)
+        result = self.server.set_group_properties(self.session_key, sid, data)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def list_questions(self, sid, gid):
         """List questions with their properties
@@ -364,6 +384,8 @@ class ABCSearchEngine(ABC):
         :return: on success, list of question properties, else None
         """
         questions = self.server.list_questions(self.session_key, sid, gid)
+
+        # print(questions)  # DB
 
         return questions if isinstance(questions, list) else None
 
@@ -375,12 +397,13 @@ class ABCSearchEngine(ABC):
         :return: ids and info of (sub-)questions of a survey/group
         """
 
-        question_list = []
+        question_ids = []
         questions = self.list_questions(sid, gid)
-        for question in questions:
-            question_list.append(question['id']['qid'])
+        if questions is not None:
+            for question in questions:
+                question_ids.append(question['id']['qid'])
 
-        return question_list
+        return question_ids
 
     @abstractmethod
     def find_tokens_by_questionnaire(self, sid):
@@ -390,19 +413,26 @@ class ABCSearchEngine(ABC):
         """
         tokens = self.server.list_participants(self.session_key, sid, 0, 99999999)
 
-        # if some error occurs RPC returns a dict, so return None
+        # If some error occurs RPC returns a dict, so return None
         return tokens if isinstance(tokens, list) else None
 
     def add_group(self, sid, title, description):
-        return self.server.add_group(self.session_key, sid, title)
+        result = self.server.add_group(self.session_key, sid, title)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def add_response(self, sid, response_data):
-        return self.server.add_response(self.session_key, sid, response_data)
+        result = self.server.add_response(self.session_key, sid, response_data)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def set_participant_properties(self, sid, tid, properties_dict):
-        return self.server.set_participant_properties(
-            self.session_key, sid, tid, properties_dict
-        )
+        result = self.server.set_participant_properties(self.session_key, sid, tid, properties_dict)
+
+        # TODO (NES-963): treat errors
+        return result
 
     def import_survey(self, base64_encoded_lsa):
         """
@@ -441,6 +471,10 @@ class ABCSearchEngine(ABC):
 
 class Questionnaires(ABCSearchEngine):
     """ Wrapper class for LimeSurvey API"""
+
+    ERROR_CODE = 1
+    ERROR_MESSAGE = 'Error: some thing went wrong consuming LimeSurvey API. Please try again. If '
+    'problem persists please contact System Administrator.'
 
     def find_all_questionnaires(self):
         return super(Questionnaires, self).find_all_questionnaires()

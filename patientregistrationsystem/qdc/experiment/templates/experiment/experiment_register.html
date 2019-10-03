@@ -493,14 +493,14 @@
                            class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
-                    <div class="btn-group pull-right">
-                        <a href="/experiment/research_project/{{ research_project.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
-                    </div>
                     {% if not editing and can_change %}
                         <div class="btn-group pull-right">
                             <a href="/experiment/{{ experiment.id }}/export" class="btn btn-primary">{% trans "Export" %}</a>
                         </div>
                     {% endif %}
+                    <div class="btn-group pull-right">
+                        <a href="/experiment/research_project/{{ research_project.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                    </div>
                 {% endif %}
             </div>
         </div>

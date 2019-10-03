@@ -1,10 +1,13 @@
 # -*- coding: UTF-8 -*-
 
 import os
+import shutil
 import sys
 import tempfile
 
 from datetime import date, datetime
+from unittest import skip
+from unittest.mock import patch
 
 from xml.etree.ElementTree import XML
 from xml.etree import ElementTree
@@ -153,8 +156,7 @@ class UtilTests:
 
     @staticmethod
     def create_limesurvey_participant(survey, lime_survey):
-        result = \
-            lime_survey.add_participant(survey.lime_survey_id)
+        result = lime_survey.add_participant(survey.lime_survey_id)
 
         return result
 
@@ -165,8 +167,7 @@ class UtilTests:
 
         return QuestionnaireResponse.objects.create(
             patient=patient, survey=survey, token_id=token_id,
-            questionnaire_responsible=responsible
-        )
+            questionnaire_responsible=responsible)
 
 
 class CpfValidationTest(TestCase):
@@ -274,12 +275,8 @@ class PatientFormValidation(TestCase):
     util = UtilTests()
 
     def setUp(self):
+        """Set up authentication and variables to start each test
         """
-        Configura autenticacao e variaveis para iniciar cada teste
-
-        """
-        # print 'Set up for', self._testMethodName
-
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
@@ -300,10 +297,8 @@ class PatientFormValidation(TestCase):
                      'email': 'email@email.com'}
 
     def test_patient_invalid_cpf(self):
+        """Test inclusion of participant with invalid cpf
         """
-        Testa inclusao de participante com cpf invalido
-        """
-
         # CPF invalido
         cpf = '100.913.651-81'
         self.data['cpf'] = cpf
@@ -507,7 +502,7 @@ class PatientFormValidation(TestCase):
 
         self.fill_management_form()
 
-        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
         # Prepare to test social history data tab
@@ -526,7 +521,7 @@ class PatientFormValidation(TestCase):
 
         self.fill_management_form()
 
-        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
         # Prepare to test social history data tab
@@ -549,7 +544,7 @@ class PatientFormValidation(TestCase):
 
         self.fill_management_form()
 
-        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
         # Prepare to test social history data tab
@@ -572,7 +567,7 @@ class PatientFormValidation(TestCase):
 
         self.fill_management_form()
 
-        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
         # Prepare to test social history data tab
@@ -600,7 +595,7 @@ class PatientFormValidation(TestCase):
         # forms contained in the formset."
         self.fill_management_form()
 
-        response = self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
+        self.client.post(reverse(PATIENT_NEW), self.data, follow=True)
         self.assertEqual(Patient.objects.filter(name=name).count(), 1)
 
         # Prepare to test social history data tab
@@ -792,7 +787,7 @@ class PatientFormValidation(TestCase):
         patient.removed = True
         patient.save()
 
-        # Create an instance of a GET request.
+        # Create an instance of a GET request
         request = self.factory.get(
             reverse(PATIENT_VIEW, args=[patient.pk, ])
         )
@@ -891,13 +886,6 @@ class MedicalRecordFormValidation(TestCase):
     util = UtilTests()
 
     def setUp(self):
-        """
-        Configura autenticacao e variaveis para iniciar cada teste
-
-        """
-
-        # print('Set up for', self._testMethodName)
-
         self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
@@ -1018,12 +1006,8 @@ class MedicalRecordFormValidation(TestCase):
         response = self.client.post(url + "?currentTab=3", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-        # self.assertEqual(medical_record.pk, response.context['medical_record'])
-
     def test_medical_record_edit(self):
-        """
-        Testar a edição de avaliação medica
-        """
+        """Test medical evaluation edition"""
 
         patient = self.util.create_patient(changed_by=self.user)
         medical_record = self.util.create_medical_record(self.user, patient)
@@ -1285,11 +1269,156 @@ class QuestionnaireFormValidation(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def test_entrance_evaluation_response_view(self):
+    @staticmethod
+    def _set_mocks(mockServer):
+        mockServer.return_value.get_session_key.return_value = 'gvq89d8y3nn8m9um5makg6qiixkqwai9'
+        mockServer.return_value.add_participants.return_value = [
+            {
+                'completed': 'N', 'email': '', 'mpid': None, 'lastname': '', 'participant_id': None,
+                'token': 'xryiz4rvoh78z9v', 'usesleft': 1, 'remindercount': 0, 'remindersent': 'N', 'sent': 'N',
+                'language': None, 'emailstatus': 'OK', 'validfrom': None, 'tid': '4221', 'blacklisted': None,
+                'firstname': '', 'validuntil': None
+            }
+        ]
+        mockServer.return_value.get_participant_properties.side_effect = [
+            {'completed': '2018-05-15 15:51'},
+            {'token': 'y32dlEFm9J1MTH4'}
+        ]
+        mockServer.return_value.get_survey_properties.return_value = {'language': 'pt-BR', 'additional_languages': ''}
+        mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Rapid Turn Test'}
+        mockServer.return_value.list_groups.return_value = [
+            {'description': '<p>O Rapid Turn Test é uma medida de equilíbrio dinâmico em que a pessoa deve '
+                            'completar três voltas completas no mesmo lugar enquanto o tempo é registrado. Giros '
+                            'para os dois lados são registrados, e também verifica-se a presença de '
+                            '<em>Freezing</em>.</p>\n',
+             'gid': 2617, 'grelevance': '1', 'sid': 247189, 'language': 'pt-BR',
+             'id': {'language': 'pt-BR', 'gid': 2617}, 'randomization_group': '', 'group_order': 0, 'group_name':
+                 'RT-Test'},
+            {'description': '', 'gid': 2618, 'grelevance': '', 'sid': 247189, 'language': 'pt-BR',
+             'id': {'language': 'pt-BR', 'gid': 2618}, 'randomization_group': '', 'group_order': 1,
+             'group_name': 'Identification'}
+        ]
+        mockServer.return_value.list_questions.side_effect = [
+            [
+                {'question': 'Presença de freezing?', 'parent_qid': 0, 'qid': 59414, 'modulename': '', 'mandatory': 'Y',
+                 'id': {'language': 'pt-BR', 'qid': 59414}, 'title': 'ynFreezingLeft', 'gid': 2617, 'scale_id': 0,
+                 'same_default': 0, 'type': 'Y', 'sid': 247189, 'preg': '',
+                 'help': 'O freezing pode ocorrer enquanto o indivíduo muda de direção, tendo a sensação de que o pé fica preso ao chão.',
+                 'other': 'N', 'question_order': 3, 'language': 'pt-BR', 'relevance': '1'},
+                {'question': 'Presença de freezing?', 'parent_qid': 0, 'qid': 59413, 'modulename': '', 'mandatory': 'Y',
+                 'id': {'language': 'pt-BR', 'qid': 59413}, 'title': 'ynFreezingRight', 'gid': 2617, 'scale_id': 0,
+                 'same_default': 0, 'type': 'Y', 'sid': 247189, 'preg': '',
+                 'help': 'O freezing pode ocorrer enquanto o indivíduo muda de direção, tendo a sensação de que o pé fica preso ao chão.',
+                 'other': 'N', 'question_order': 1, 'language': 'pt-BR', 'relevance': '1'}, {
+                'question': 'Em pé, no mesmo lugar, o(a) senhor(a) poderia dar 3 voltas completas, pela esquerda, o mais rápido possível?',
+                'parent_qid': 0, 'qid': 59412, 'modulename': '', 'mandatory': 'Y',
+                'id': {'language': 'pt-BR', 'qid': 59412}, 'title': 'decRTLeft', 'gid': 2617, 'scale_id': 0,
+                'same_default': 0, 'type': 'N', 'sid': 247189, 'preg': '',
+                'help': 'Instrução: Agora em\xa0 pé, parado, vire no lugar para o lado esquerdo\xa0 o mais rápido possível completando 3\xa0 voltas (Registre o tempo, em segundos, decorrido para que o indivíduo realize as três voltas completas).',
+                'other': 'N', 'question_order': 2, 'language': 'pt-BR', 'relevance': '1'}, {
+                'question': '<p style="text-align:justify;">Em pé, no mesmo lugar, o(a) senhor(a) poderia dar 3 voltas completas, pela direita, o mais rápido possível?</p>\n',
+                'parent_qid': 0, 'qid': 59411, 'modulename': '', 'mandatory': 'Y',
+                'id': {'language': 'pt-BR', 'qid': 59411}, 'title': 'decRTRight', 'gid': 2617, 'scale_id': 0,
+                'same_default': 0, 'type': 'N', 'sid': 247189, 'preg': '',
+                'help': '<p style="text-align:justify;">Instrução: Em pé, parado, vire no lugar para o lado direito o mais rápido possível completando 3\xa0 voltas (Registre o tempo, em segundos, decorrido para que o indivíduo realize as três voltas completas).</p>\n',
+                'other': 'N', 'question_order': 0, 'language': 'pt-BR', 'relevance': '1'}
+            ],
+            [
+                {'question': 'Participant Identification number<b>:</b>', 'parent_qid': 0, 'qid': 59417,
+                 'modulename': None,
+                 'mandatory': 'Y', 'id': {'language': 'pt-BR', 'qid': 59417}, 'title': 'subjectid', 'gid': 2618,
+                 'scale_id': 0, 'same_default': 0, 'type': 'N', 'sid': 247189, 'preg': '', 'help': '', 'other': 'N',
+                 'question_order': 3, 'language': 'pt-BR', 'relevance': '1'},
+                {'question': 'Acquisition date<strong>:</strong><br />', 'parent_qid': 0, 'qid': 59416,
+                 'modulename': None,
+                 'mandatory': 'Y', 'id': {'language': 'pt-BR', 'qid': 59416}, 'title': 'acquisitiondate', 'gid': 2618,
+                 'scale_id': 0, 'same_default': 0, 'type': 'D', 'sid': 247189, 'preg': '', 'help': '', 'other': 'N',
+                 'question_order': 1, 'language': 'pt-BR', 'relevance': '1'},
+                {'question': 'Responsible Identification number:', 'parent_qid': 0, 'qid': 59415, 'modulename': None,
+                 'mandatory': 'Y', 'id': {'language': 'pt-BR', 'qid': 59415}, 'title': 'responsibleid', 'gid': 2618,
+                 'scale_id': 0, 'same_default': 0, 'type': 'N', 'sid': 247189, 'preg': '', 'help': '', 'other': 'N',
+                 'question_order': 0, 'language': 'pt-BR', 'relevance': '1'}
+            ],
+            [
+                {'id': {'language': 'pt-BR', 'qid': 59417}, 'help': '', 'qid': 59417, 'sid': 247189, 'same_default': 0,
+                 'mandatory': 'Y', 'question_order': 3, 'gid': 2618, 'relevance': '1', 'scale_id': 0, 'preg': '',
+                 'parent_qid': 0, 'modulename': None, 'title': 'subjectid', 'language': 'pt-BR',
+                 'question': 'Participant Identification number<b>:</b>', 'type': 'N', 'other': 'N'},
+                {'id': {'language': 'pt-BR', 'qid': 59416}, 'help': '', 'qid': 59416, 'sid': 247189, 'same_default': 0,
+                 'mandatory': 'Y', 'question_order': 1, 'gid': 2618, 'relevance': '1', 'scale_id': 0, 'preg': '',
+                 'parent_qid': 0, 'modulename': None, 'title': 'acquisitiondate', 'language': 'pt-BR',
+                 'question': 'Acquisition date<strong>:</strong><br />', 'type': 'D', 'other': 'N'},
+                {'id': {'language': 'pt-BR', 'qid': 59415}, 'help': '', 'qid': 59415, 'sid': 247189, 'same_default': 0,
+                 'mandatory': 'Y', 'question_order': 0, 'gid': 2618, 'relevance': '1', 'scale_id': 0, 'preg': '',
+                 'parent_qid': 0, 'modulename': None, 'title': 'responsibleid', 'language': 'pt-BR',
+                 'question': 'Responsible Identification number:', 'type': 'N', 'other': 'N'}]
+        ]
+        mockServer.return_value.get_question_properties.side_effect = [
+            {
+                'question_order': 0, 'type': 'N',
+                'question': '<p style="text-align:justify;">Em pé, no mesmo lugar, o(a) senhor(a) poderia dar 3 voltas '
+                            'completas, pela direita, o mais rápido possível?</p>\n',
+                'title': 'decRTRight', 'attributes': 'No available attributes', 'other': 'N', 'gid': 2617,
+                'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+                'attributes_lang': 'No available attributes'
+            },
+            {
+                'question_order': 2, 'type': 'N',
+                'question': 'Em pé, no mesmo lugar, o(a) senhor(a) poderia dar 3 voltas completas, pela esquerda, o mais rápido possível?',
+                'title': 'decRTLeft', 'attributes': 'No available attributes', 'other': 'N', 'gid': 2617,
+                'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+                'attributes_lang': 'No available attributes'
+            },
+            {
+                'question_order': 1, 'type': 'Y', 'question': 'Presença de freezing?', 'title': 'ynFreezingRight',
+                'attributes': 'No available attributes', 'other': 'N', 'gid': 2617,
+                'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+                'attributes_lang': 'No available attributes'
+            },
+            {
+                'question_order': 3, 'type': 'Y', 'question': 'Presença de freezing?', 'title': 'ynFreezingLeft',
+                'attributes': 'No available attributes', 'other': 'N', 'gid': 2617,
+                'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+                'attributes_lang': 'No available attributes'
+            },
+            {
+                'question_order': 0, 'type': 'N', 'question': 'Responsible Identification number:',
+                'title': 'responsibleid', 'attributes': {'hidden': '1'}, 'other': 'N', 'gid': 2618,
+                'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+                'attributes_lang': 'No available attributes'},
+            {
+                'question_order': 1, 'type': 'D', 'question': 'Acquisition date<strong>:</strong><br />',
+                'title': 'acquisitiondate', 'attributes': {'hidden': '1'}, 'other': 'N', 'gid': 2618,
+                'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+                'attributes_lang': 'No available attributes'
+            },
+            {
+                'question_order': 3, 'type': 'N', 'question': 'Participant Identification number<b>:</b>',
+                'title': 'subjectid', 'attributes': {'hidden': '1'}, 'other': 'N', 'gid': 2618,
+                'answeroptions': 'No available answer options', 'subquestions': 'No available answers',
+                'attributes_lang': 'No available attributes'
+            }
+        ]
+        mockServer.return_value.export_responses_by_token.return_value = \
+            'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwiZGVjUlRSaWdodCIsInluRnJlZXppbmdSaWdodCIsImRlY1JUTGVmdCIsInluRnJlZXppbmdMZWZ0IiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZGF0ZSIsInN1YmplY3RpZCIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMSIsInB0LUJSIiwieTMyZGxFRm05SjFNVEg0IiwiNCIsIk4iLCIxMCIsIk4iLCI1NSIsIiIsIjYiCgo='
+
+    @patch('survey.abc_search_engine.Server')
+    def test_entrance_evaluation_response_view(self, mockServer):
+        """Test list of entrance evaluation of the entrance
+        evaluation questionnaire type
         """
-        Test list of entrance evaluation
-        of the entrance evaluation questionnaire type
-        """
+        mockServer.return_value.get_session_key.return_value = 'gvq89d8y3nn8m9um5makg6qiixkqwai9'
+        mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Rapid Turn Test'}
+        mockServer.return_value.add_participants.return_value = [
+            {
+                'completed': 'N', 'email': '', 'mpid': None, 'lastname': '', 'participant_id': None,
+                'token': 'xryiz4rvoh78z9v', 'usesleft': 1, 'remindercount': 0, 'remindersent': 'N', 'sent': 'N',
+                'language': None, 'emailstatus': 'OK', 'validfrom': None, 'tid': '4221', 'blacklisted': None,
+                'firstname': '', 'validuntil': None
+            }
+        ]
+        mockServer.return_value.get_participant_properties.return_value = {'completed': 'N'}
+
         patient = self.util.create_patient(self.user)
 
         response = self.client.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
@@ -1339,10 +1468,10 @@ class QuestionnaireFormValidation(TestCase):
         completed = entrance_evaluation['questionnaire_responses'][0]['completed']
         self.assertTrue(not completed)  # questionnaire is not completed
 
+    # TODO: this is an integration test. TODO (NES-995): take it to its place
+    @skip
     def test_check_limesurvey_availability(self):
-        """
-        Test to see if LimeSurvey is available under circumstances
-        """
+        """Test if LimeSurvey is available under circumstances"""
         patient = self.util.create_patient(self.user)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
@@ -1355,7 +1484,7 @@ class QuestionnaireFormValidation(TestCase):
 
         surveys.release_session_key()
 
-        # test limesurvey not available
+        # Test limesurvey not available
         settings.LIMESURVEY['URL_API'] = 'https://surveys.numec.prp.usp.br/'  # with error
 
         surveys = Questionnaires()
@@ -1367,10 +1496,16 @@ class QuestionnaireFormValidation(TestCase):
 
         settings.LIMESURVEY['URL_API'] = 'https://survey.numec.prp.usp.br/'  # without error
 
-    def test_entrance_evaluation_response_create(self):
+    @patch('survey.abc_search_engine.Server')
+    # def test_entrance_evaluation_response_create(self):
+    def test_entrance_evaluation_response_create(self, mockServer):
         """Test inclusion of questionnaire response to a clear survey
         of the type: entrance evaluation questionnaire
         """
+
+        # NES-981 Setting default mocks just passed the test. Not sure if mocks
+        # are overloaded
+        self._set_mocks(mockServer)
 
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
@@ -1383,19 +1518,27 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.post(url + "?origin=subject", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-    def test_entrance_evaluation_response_update(self):
+    @patch('survey.abc_search_engine.Server')
+    # def test_entrance_evaluation_response_update(self):
+    def test_entrance_evaluation_response_update(self, mockServer):
         """Test update of questionnaire response to a clear survey
         of the type: entrance evaluation questionnaire
         """
+        self._set_mocks(mockServer)
+        # Extend get_participant_properties to calls for self.client.post
+        mockServer.return_value.get_participant_properties.side_effect = [
+            {'completed': '2018-05-15 15:51'},
+            {'token': 'y32dlEFm9J1MTH4'},
+            {'completed': 'N'},
+            {'token': 'OFapcaLkOd9QlN1'}
+        ]
+
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
-        response_survey = self.util.create_response_survey(
-            self.user, patient, survey, 12
-        )
+        response_survey = self.util.create_response_survey(self.user, patient, survey, 21)
 
         url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')
         url2 = url1.replace('experiment', 'patient')
-
         response = self.client.get(url2 + "?origin=subject&status=edit")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_survey.token_id, response.context["questionnaire_response"].token_id)
@@ -1404,11 +1547,28 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
-    def test_entrance_evaluation_response_delete(self):
-        """
-        Test delete from 2 views: update and view
+    @patch('survey.abc_search_engine.Server')
+    def test_entrance_evaluation_response_delete(self, mockServer):
+        """Test delete from 2 views: update and view
         of the type: entrance evaluation questionnaire
         """
+        mockServer.return_value.get_session_key.return_value = 'smq6aggip5w97mccxhxete7fwfwfs6pr'
+        mockServer.return_value.add_participants.side_effect = [
+            [{'token': 'HjZIlSstGrKqzmV', 'blacklisted': None,
+              'remindersent': 'N', 'email': '', 'mpid': None, 'remindercount': 0, 'lastname': '', 'language': None,
+              'firstname': '', 'validuntil': None, 'validfrom': None, 'completed': 'N', 'tid': '4228', 'sent': 'N',
+              'usesleft': 1, 'emailstatus': 'OK', 'participant_id': None}],
+            [{'token': '81Um8LUYGob4f2p', 'blacklisted': None, 'remindersent': 'N', 'email': '', 'mpid': None,
+              'remindercount': 0, 'lastname': '', 'language': None, 'firstname': '', 'validuntil': None,
+              'validfrom': None, 'completed': 'N', 'tid': '4229', 'sent': 'N', 'usesleft': 1, 'emailstatus': 'OK',
+              'participant_id': None}]
+        ]
+
+        mockServer.return_value.get_participant_properties.return_value = {'completed': 'N'}
+        mockServer.return_value.delete_participants.side_effect = [{'4228': 'Deleted'}, {'4229': 'Deleted'}]
+        mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Rapid Turn Test'}
+        mockServer.return_value.get_survey_properties.return_value = {'language': 'pt-BR', 'additional_languages': ''}
+
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
         response_survey = self.util.create_response_survey(self.user, patient, survey)
@@ -1438,11 +1598,13 @@ class QuestionnaireFormValidation(TestCase):
         response = self.client.post(url2 + "?origin=subject&status=edit", self.data, follow=True)
         self.assertEqual(response.status_code, 200)  # Now it is deleted
 
-    def test_entrance_ev_response_complete(self):
-        """
-        Test view of questionnaire response when questionnaire is complete
+    @patch('survey.abc_search_engine.Server')
+    def test_entrance_ev_response_complete(self, mockServer):
+        """Test view of questionnaire response when questionnaire is complete
         of the type: entrance evaluation questionnaire
         """
+        self._set_mocks(mockServer)
+
         patient = self.util.create_patient(self.user)
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
         response_survey = self.util.create_response_survey(self.user, patient, survey, 2)
@@ -1453,15 +1615,17 @@ class QuestionnaireFormValidation(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_survey.token_id, response.context["questionnaire_response"].token_id)
 
+    @patch('survey.abc_search_engine.Server')
     @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
                                            'LOCATION': 'limesurveycache',
                                            'TIMEOUT': 0}})
-    def test_entrance_ev_response_complete_without_cache(self):
-        """
-        Test view of questionnaire response when questionnaire is complete
+    def test_entrance_ev_response_complete_without_cache(self, mockServer):
+        """Test view of questionnaire response when questionnaire is complete
         of the type: entrance evaluation questionnaire and no information
         is saved in the cache
         """
+        self._set_mocks(mockServer)
+
         usermethod = self.user
         patient_mock = self.util.create_patient(usermethod)
         survey_mock = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
@@ -1481,15 +1645,17 @@ class QuestionnaireFormValidation(TestCase):
         )
         self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
 
+    @patch('survey.abc_search_engine.Server')
     @override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
                                            'LOCATION': 'limesurveycache',
                                            'TIMEOUT': 60}})
-    def test_entrance_ev_response_complete_with_cache(self):
-        """
-        Test view of questionnaire response when questionnaire is complete
+    def test_entrance_ev_response_complete_with_cache(self, mockServer):
+        """Test view of questionnaire response when questionnaire is complete
         of the type: entrance evaluation questionnaire getting information
         from a cache
         """
+        self._set_mocks(mockServer)
+
         usermethod = self.user
         patient_mock = self.util.create_patient(usermethod)
         survey_mock = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
@@ -1509,10 +1675,16 @@ class QuestionnaireFormValidation(TestCase):
         )
         self.assertEqual(response_survey_mock.token_id, response.context["questionnaire_response"].token_id)
 
-    def test_experiment_response_view(self):
-        """
-        Testa a visualizacao completa do questionario respondido no Lime Survey
-        """
+    @patch('survey.abc_search_engine.Server')
+    def test_experiment_response_view(self, mockServer):
+        """Test complete visualization of answered questionnaire in LimeSurvey"""
+        
+        mockServer.return_value.get_session_key.return_value = 'smq6aggip5w97mccxhxete7fwfwfs6pr'
+        mockServer.return_value.add_survey.return_value = 99999
+        mockServer.return_value.delete_survey.return_value = {'status': 'OK'}
+        mockServer.return_value.get_language_properties.return_value = {
+            'surveyls_title': 'Questionario de teste - DjangoTests'
+        }
 
         # Create a research project
         research_project = ResearchProject.objects.create(
@@ -1734,10 +1906,7 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
             f.write(self.csv_data)
 
     def test_classification_of_diseases_translate_into_english(self):
-        # """
-        # Test to initialize icd with English translation
-        #
-        # """
+        """Test to initialize icd with English translation"""
 
         classification_of_disease = self.util.create_cid10()
         classification_of_disease.description_en = None
@@ -1761,9 +1930,7 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         self.assertEqual(num_records_updated, classification_of_disease.count())
 
     def test_check_filename(self):
-        # """
-        # Test to see if file is open correctly
-        # """
+        """Test to see if file is open correctly"""
 
         self.assertRaises(FileNotFoundError, import_classification_of_diseases, "incorrect_file_name")
         self.assertRaises(IOError, import_classification_of_diseases, "incorrect_file_name")
@@ -1805,10 +1972,9 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         self.assertIsNotNone(AlcoholFrequency.objects.first().name_en)
 
     def test_translate_icd_into_english_with_command(self):
-        # """
-        # Test to initialize icd with English translation using command (similar to python manage.py import_icd)
-        #
-        # """
+        """Test to initialize icd with English translation using command
+        (similar to python manage.py import_icd)
+        """
 
         classification_of_disease = self.util.create_cid10()
         classification_of_disease.description_en = None
@@ -1843,6 +2009,6 @@ A000,Cholera due to Vibrio cholerae 01 biovar cholerae,Cólera devida a Vibrio c
         classification_of_disease = ClassificationOfDiseases.objects.all()
         self.assertIsNotNone(classification_of_disease.first().description_en)
 
-        os.remove(file_path)
-
         self.assertEqual(2, ClassificationOfDiseases.objects.count())
+
+        shutil.rmtree(temp_dir)

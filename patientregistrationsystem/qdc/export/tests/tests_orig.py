@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from unittest.mock import patch
+
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -86,6 +88,8 @@ class UtilTests:
 
     def create_response_survey_mock(self, user, patient, survey, token_id=None):
         if not token_id:
+            # TODO (NES-981): maybe this is not necessary. We want just the token id.
+            #  It's not necessary to really create participant in LimeSurvey
             token_id = self.create_token_id_mock(patient, survey)
 
         questionnaire_response = QuestionnaireResponse(patient=patient, survey=survey, token_id=token_id,
@@ -175,8 +179,18 @@ class PatientActiveTest(TestCase):
 
         self.client.login(username=USER_USERNAME, password=USER_PWD)
 
-    def test_active_patient(self):
-        """ Test correct path - everything is ok """
+    @patch('survey.abc_search_engine.Server')
+    def test_active_patient(self, mockServer):
+        """Test correct path - everything is ok"""
+
+        mockServer.return_value.add_participants.return_value = [
+            {
+                'emailstatus': 'OK', 'sent': 'N', 'usesleft': 1, 'lastname': '', 'blacklisted': None,
+                'token': 'hXDBhg9JWC1TlTV', 'email': '', 'language': None, 'remindercount': 0, 'validuntil': None,
+                'firstname': '', 'validfrom': None, 'completed': 'N', 'remindersent': 'N', 'tid': '4501',
+                'participant_id': None, 'mpid': None
+            }
+        ]
 
         patient_mock = self.util.create_patient_mock(user=self.user)
         survey_mock = self.util.create_survey_mock(QUESTIONNAIRE_ID, True)
@@ -212,14 +226,14 @@ class PatientActiveTest(TestCase):
         self.assertTrue(not response)
 
     def test_patient_removed_from_database(self):
-        """ Test when patient is removed """
+        """Test when patient is removed"""
 
         patient_mock = self.util.create_patient_mock(user=self.user)
         patient_mock.removed = True
         patient_mock.save()
 
         survey_mock = self.util.create_survey_mock(QUESTIONNAIRE_ID, True)
-        self.util.create_response_survey_mock(self.user, patient_mock, survey_mock)
+        self.util.create_response_survey_mock(self.user, patient_mock, survey_mock, token_id=1)
 
         subject_id = str(float(patient_mock.pk))
         response = is_patient_active(subject_id)
@@ -269,7 +283,9 @@ class InputExportTest(TestCase):
         logged = self.client.login(username=USER_USERNAME, password=USER_PWD)
         self.assertEqual(logged, True)
 
-    def test_write_dynamic_json(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_write_dynamic_json(self, mockServer):
+        mockServer.return_value.get_survey_properties.return_value = {'language': 'pt-BR', 'additional_languages': 'en'}
         input_data = InputExport()
 
         self.assertEqual(len(input_data.data), 0)
@@ -296,13 +312,13 @@ class InputExportTest(TestCase):
 
         self.assertNotIn("questionnaires", input_data.data)
 
-        input_data.build_questionnaire(
-            questionnaire_list, "pt-BR", entrance_questionnaire=True
-        )
+        input_data.build_questionnaire(questionnaire_list, "pt-BR", entrance_questionnaire=True)
 
         self.assertIn("questionnaires", input_data.data)
 
-    def test_create_dynamic_json(self):
+    @patch('survey.abc_search_engine.Server')
+    def test_create_dynamic_json(self, mockServer):
+        mockServer.return_value.get_survey_properties.return_value = {'language': 'pt-BR', 'additional_languages': 'en'}
 
         participant_field_header_list = [("id", "id"), ("name", "name")]
 

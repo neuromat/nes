@@ -10,7 +10,7 @@ from experiment.models import ScheduleOfSending, Component
 from experiment.portal import send_experiment_to_portal, \
     send_experiment_researcher_to_portal, \
     send_researcher_to_portal, send_steps_to_portal
-from experiment.tests.tests_original import ObjectsFactory
+from experiment.tests.tests_helper import ObjectsFactory
 from experiment.views import get_block_tree
 from survey.abc_search_engine import ABCSearchEngine
 from survey.survey_utils import HEADER_EXPLANATION_FIELDS
@@ -153,10 +153,8 @@ class PortalAPITest(TestCase):
         # use mockRestApiClientClass to get metadata value that will be sent
         (api_schema, action_keys), kwargs = \
             mockRestApiClientClass.return_value.client.action.call_args
-        for field in HEADER_EXPLANATION_FIELDS:
+        for field in [item[0] for item in HEADER_EXPLANATION_FIELDS]:
             self.assertIn(field, kwargs['params']['survey_metadata'])
-        survey_metadata = csv.reader(
-            StringIO(kwargs['params']['survey_metadata'])
-        )
+        survey_metadata = csv.reader(StringIO(kwargs['params']['survey_metadata']))
         for row in survey_metadata:
             self.assertEqual(len(row), len(HEADER_EXPLANATION_FIELDS))

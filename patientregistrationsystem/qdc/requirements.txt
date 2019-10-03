@@ -26,5 +26,5 @@ networkx==2.2
 
 -e "git+https://github.com/davedash/django-fixture-magic.git#egg=django-fixture-magic"
 
-mne>=0.17.0
+mne==0.17.2
 -e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"

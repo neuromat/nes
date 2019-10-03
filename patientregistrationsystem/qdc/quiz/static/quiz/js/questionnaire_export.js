@@ -47,9 +47,9 @@ function updateFieldsSelectionCounter_Experiment() {
 }
 
 function validateFormExport() {
-
     var checkbox_per_participant = $("#id_per_participant").prop("checked");
     var checkbox_per_questionnaire = $("#id_per_questionnaire").prop("checked");
+    var select_participants_attributes = $("select[name='patient_selected'] option:selected").length
     var fields_selected = 0;
     var fields_counter = $("span[id ^='badge']");
 
@@ -75,6 +75,10 @@ function validateFormExport() {
 
     }
 
+    if (!select_participants_attributes) {
+        return 3;
+    }
+
     return 0;
 
 }
@@ -83,17 +87,20 @@ function onClickRun() {
     var field_counter = $("span[id ^='badge']:first");
     var check_validation = validateFormExport();
 
-    if (check_validation == 0){
+    if (check_validation == 0) {
         return true;
     }
-    else{
+    else {
         if (check_validation == 1){
             showErrorMessage(gettext("Either one or both Per participant/Per questionnaire must be set."));
             $("#id_per_participant").focus();
         }
-        else{
-            showWarningMessage(gettext("At least one questionnaire field have to be set."));
+        else if (check_validation == 2) {
+            showWarningMessage(gettext("At least one questionnaire field have to be set"));
             $(field_counter).focus();
+        }
+        else if (check_validation == 3) {
+            showWarningMessage(gettext("At least one field from participant have to be set"));
         }
         return false;
     }

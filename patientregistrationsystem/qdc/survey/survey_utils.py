@@ -9,52 +9,50 @@ from io import StringIO
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
 
+from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
 
 HEADER_EXPLANATION_FIELDS = [
-    'questionnaire_code', 'questionnaire_title',
-    'question_group', 'question_order',
-    'question_type', 'question_type_description',
-    'question_index',
-    'question_code', 'question_description',
-    'subquestion_code', 'subquestion_description',
-    'question_scale', 'question_scale_label',
-    'option_code', 'option_description'
-    ]
+    ('questionnaire_code', 'string'), ('questionnaire_title', 'string'), ('question_group', 'string'),
+    ('question_order', 'integer'), ('question_type', 'string'), ('question_type_description', 'string'),
+    ('question_index', 'string'), ('question_code', 'string'), ('question_description', 'string'),
+    ('subquestion_code', 'string'), ('subquestion_description', 'string'), ('question_scale', 'string'),
+    ('question_scale_label', 'string'), ('option_code', 'string'), ('option_description', 'string')
+]
 
-question_types = {
-    '1': 'Array Dual Scale',
-    '5': '5 Point Choice',
-    'A': 'Array (5 Point Choice)',
-    'B': 'Array (10 Point Choice)',
-    'C': 'Array (Yes/No/Uncertain)',
-    'D': 'Date',
-    'E': 'Array (Increase, Same, Decrease)',
-    'F': 'Array (Flexible Labels)',
-    'G': 'Gender',
-    'H': 'Array (Flexible Labels) by Column',
-    'I': 'Language Switch',
-    'K': 'Multiple Numerical Input',
-    'L': 'List (Radio)',
-    'M': 'Multiple choice',
-    'N': 'Numerical Input',
-    'O': 'List With Comment',
-    'P': 'Multiple choice with comments',
-    'Q': 'Multiple Short Text',
-    'R': 'Ranking',
-    'S': 'Short Free Text',
-    'T': 'Long Free Text',
-    'U': 'Huge Free Text',
+QUESTION_TYPES = {
+    '1': ('Array Dual Scale', 'string'),
+    '5': ('5 Point Choice', 'string'),
+    'A': ('Array (5 Point Choice)', 'string'),
+    'B': ('Array (10 Point Choice)', 'string'),
+    'C': ('Array (Yes/No/Uncertain)', 'string'),
+    'D': ('Date', 'string'),
+    'E': ('Array (Increase, Same, Decrease)', 'string'),
+    'F': ('Array (Flexible Labels)', 'string'),
+    'G': ('Gender', 'string'),
+    'H': ('Array (Flexible Labels) by Column', 'string'),
+    'I': ('Language Switch', 'string'),
+    'K': ('Multiple Numerical Input', 'number'),
+    'L': ('List (Radio)', 'string'),
+    'M': ('Multiple choice', 'string'),
+    'N': ('Numerical Input', 'number'),
+    'O': ('List With Comment', 'string'),
+    'P': ('Multiple choice with comments', 'string'),
+    'Q': ('Multiple Short Text', 'string'),
+    'R': ('Ranking', 'string'),
+    'S': ('Short Free Text', 'string'),
+    'T': ('Long Free Text', 'string'),
+    'U': ('Huge Free Text', 'string'),
     # não encontrado na versão do Neuromat
-    'X': 'Boilerplate Question',
-    'Y': 'Yes/No',
-    '!': 'List (Dropdown)',
+    'X': ('Boilerplate Question', 'string'),
+    'Y': ('Yes/No', 'string'),
+    '!': ('List (Dropdown)', 'string'),
     # não encontrado na versão atual do Neuromat
-    ':': 'Array (Flexible Labels) multiple drop down',
-    # não encontrado na versão atual do Neuromat
-    ';': 'Array (Flexible Labels) multiple texts',
-    '|': 'File Upload',
-    '*': 'Equation'
+    ':': ('Array (Flexible Labels) multiple drop down', 'string'),
+    # não( encontrado na versão atual do Neuromat
+    ';': ('Array (Flexible Labels) multiple texts', 'string'),
+    '|': ('File Upload', 'string'),
+    '*': ('Equation', 'string')
 }
 
 
@@ -113,10 +111,9 @@ class QuestionnaireUtils:
 
         return headers, fields
 
-    def append_questionnaire_header_and_field(self, questionnaire_id, header, fields,
-                                              considers_questionnaires,
-                                              considers_questionnaires_from_experiment):
-        # only one header, field instance
+    def append_questionnaire_header_and_field(
+            self, questionnaire_id, header, fields, considers_questionnaires, considers_questionnaires_from_experiment):
+        # Only one header, field instance
         for field in fields:
             if considers_questionnaires:
                 if field not in self.questionnaires_data[questionnaire_id]["fields"]:
@@ -151,13 +148,10 @@ class QuestionnaireUtils:
 
     def get_questionnaire_fields(self, questionnaire_id, entrance_questionnaire,
                                  considers_questionnaires_from_experiments):
-        # headers_questionnaire format: dict {questionnaire_id: {fields:[fields]}}
-
         fields = []
         if entrance_questionnaire:
             if questionnaire_id in self.questionnaires_data:
                 fields = self.questionnaires_data[questionnaire_id]["fields"]
-        # if self.get_input_data('questionnaires_from_experiments'):
         if considers_questionnaires_from_experiments:
             if questionnaire_id in self.questionnaires_experiment_data:
                 fields = self.questionnaires_experiment_data[questionnaire_id]["fields"]
@@ -231,7 +225,6 @@ class QuestionnaireUtils:
             self.questionnaire_code_and_id[code] = str(questionnaire_id)
 
     def get_questionnaire_id_from_code(self, code):
-
         questionnaire_id = 0
         if code in self.questionnaire_code_and_id:
             questionnaire_id = self.questionnaire_code_and_id[code]
@@ -253,75 +246,51 @@ class QuestionnaireUtils:
 
         return questionnaire_code
 
-    def create_questionnaire_explanation_fields(self, questionnaire_id,
-                                                language,
-                                                questionnaire_lime_survey,
-                                                fields,
-                                                entrance_questionnaire):
+    def create_questionnaire_explanation_fields(
+            self, questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire):
         """
         :param questionnaire_id:
         :param language:
         :param questionnaire_lime_survey:
         :param fields: fields from questionnaire that are to be exported
         :param entrance_questionnaire: boolean
-        :return: header, formatted according to fields
-                 data_rows, formatted according to fields
-                 if error, both data are []
+        :return: tupple: (int, list) - list: header, formatted according to fields
+                 data_rows, formatted according to fields, in case of success, else empty []
+
         """
-        # clear fields
+        # Clear fields
         fields_cleared = [field.split("[")[0] for field in fields]
-
-        questionnaire_explanation_fields_list = [HEADER_EXPLANATION_FIELDS]
-
+        questionnaire_explanation_fields_list = [[item[0] for item in HEADER_EXPLANATION_FIELDS]]
         fields_from_questions = []
-
-        # for each field, verify the question description
-        questionnaire_title = questionnaire_lime_survey.get_survey_title(
-            questionnaire_id, language
-        )
-        questionnaire_code = \
-            self.get_questionnaire_code_from_id(questionnaire_id)
-
-        # get fields description
-        questionnaire_questions = questionnaire_lime_survey.list_questions_ids(
-            questionnaire_id, 0
-        )
+        # For each field, verify the question description
+        questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, language)
+        questionnaire_code = self.get_questionnaire_code_from_id(questionnaire_id)
+        # Get fields description
+        questionnaire_questions = questionnaire_lime_survey.list_questions_ids(questionnaire_id, 0)
+        if not questionnaire_questions:
+            return Questionnaires.ERROR_CODE, []
 
         for question in questionnaire_questions:
-            properties = questionnaire_lime_survey.get_question_properties(
-                    question, language
-                )
-            question_code = \
-                properties['title'] if 'title' in properties else None
+            properties = questionnaire_lime_survey.get_question_properties(question, language)
+            if properties is None:
+                return Questionnaires.ERROR_CODE, []
+            question_code = properties['title'] if 'title' in properties else None
             if question_code and question_code in fields_cleared:
                 fields_from_questions.append(question_code)
                 # clean the question description that came from limesurvey
-                question_description = \
-                    re.sub(
-                        '{.*?}', '',
-                        re.sub('<.*?>', '', properties['question'])
-                    ).replace('&nbsp;', '').strip()
+                question_description = re.sub(
+                    '{.*?}', '', re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
                 question_type = smart_str(properties['type'])
-                question_type_description = question_types[question_type] \
-                    if question_type in question_types else ''
-                question_group = \
-                    self.get_group_properties(
-                        questionnaire_lime_survey,
-                        questionnaire_id,
-                        properties['gid'],
-                        language
-                    )
+                question_type_description = QUESTION_TYPES[question_type] if question_type in QUESTION_TYPES else ''
+                question_group = self.get_group_properties(
+                        questionnaire_lime_survey, questionnaire_id, properties['gid'], language)
+                if question_group is None:
+                    return Questionnaires.ERROR_CODE, []
                 question_order = properties['question_order']
 
-                questionnaire_list = \
-                    [smart_str(questionnaire_code),
-                     smart_str(questionnaire_title)]
-                question_type_list = \
-                    [smart_str(question_order), question_type,
-                     question_type_description]
-                question_list = \
-                    [smart_str(question_code),
-                     smart_str(question_description)]
+                questionnaire_list = [smart_str(questionnaire_code), smart_str(questionnaire_title)]
+                question_type_list = [smart_str(question_order), question_type, question_type_description]
+                question_list = [smart_str(question_code), smart_str(question_description)]
 
                 scales = [""]
                 # "1": "Array Dual Scale"
@@ -329,16 +298,14 @@ class QuestionnaireUtils:
                     if isinstance(properties['attributes_lang'], dict):
                         scales = [
                             properties['attributes_lang']['dualscale_headerA']
-                            if 'dualscale_headerA' in properties[
-                                'attributes_lang'] else "",
+                            if 'dualscale_headerA' in properties['attributes_lang'] else "",
                             properties['attributes_lang']['dualscale_headerB']
-                            if 'dualscale_headerB' in properties[
-                                'attributes_lang'] else ""
+                            if 'dualscale_headerB' in properties['attributes_lang'] else ""
                         ]
                     else:
                         scales = ["", ""]
 
-                # answers
+                # Answers
                 options_list = []
 
                 if isinstance(properties['answeroptions'], dict):
@@ -351,43 +318,33 @@ class QuestionnaireUtils:
                              smart_str(option_values['answer'])]
                         )
                 else:
-                    # include blank line
+                    # Include blank line
                     options_list = [[""] * 2]
 
-                # sub-questions
+                # Sub-questions
                 if isinstance(properties['subquestions'], dict):
                     sub_questions_list = [
-                        [smart_str(value['title']),
-                         smart_str(value['question'])]
+                        [smart_str(value['title']), smart_str(value['question'])]
                         for value in properties['subquestions'].values()
                     ]
-                    sub_questions_list = sorted(
-                        sub_questions_list, key=itemgetter(0)
-                    )
+                    sub_questions_list = sorted(sub_questions_list, key=itemgetter(0))
                 else:
-                    # include blank line
+                    # Include blank line
                     sub_questions_list = [[""] * 2]
 
                 for scale_index, scale_label in enumerate(scales):
-                    scale = [scale_index + 1, scale_label] \
-                        if scale_label else [""] * 2
+                    scale = [scale_index + 1, scale_label] if scale_label else [""] * 2
                     for sub_question in sub_questions_list:
                         for option in options_list:
-
                             question_index = question_code
                             if sub_question[0]:
                                 question_index += '[' + sub_question[0] + ']'
                             if scale_label:
-                                question_index += \
-                                    '[' + str(scale_index + 1) + ']'
-
+                                question_index += '[' + str(scale_index + 1) + ']'
                             questionnaire_explanation_fields_list.append(
-                                questionnaire_list +
-                                [question_group['group_name']] +
-                                question_type_list +
-                                [question_index] + question_list +
-                                sub_question + scale + option
-                            )
+                                questionnaire_list + [question_group['group_name']]
+                                + question_type_list + [question_index] + question_list
+                                + sub_question + scale + option)
 
         if len(fields_cleared) != len(fields_from_questions):
             for field in fields_cleared:
@@ -399,35 +356,34 @@ class QuestionnaireUtils:
                     ]
                     questionnaire_explanation_fields_list.append(question_list)
 
-        return questionnaire_explanation_fields_list
+        return 0, questionnaire_explanation_fields_list
 
     @staticmethod
-    def get_question_list(survey, survey_id, language):
-        """
-        Return limesurvey multiple question types list
-        TODO: make returns all question types
-        :param survey:
+    # TODO (NES-991): maybe get questions by group. Getting all questions
+    def get_questions(limesurvey_connection, survey_id, language, types=None):
+        """Return limesurvey multiple question types list
+        :param limesurvey_connection: survey.Questionnaires instance
         :param survey_id:
         :param language:
-        :return: list
+        :param types: list of question types. Defaults to return all questions
+        :return: tupple: (int, list) - (0, list) in case of success,
+        else (Questionnaires.ERROR_code, empty list)
         """
-        groups = survey.list_groups(survey_id)
-        question_list = []
-        for group in groups:
-            if 'id' in group and group['id']['language'] == language:
-                question_ids = survey.list_questions_ids(
-                    survey_id, group['id']['gid']
-                )
-                for id_ in question_ids:
-                    properties = survey.get_question_properties(id_, group['id']['language'])
-                    # Multiple question ('M' or 'P') will be question if
-                    # properties['subquestions'] is a dict, otherwise will
-                    # be subquestion. We only wish questions
-                    if isinstance(properties['subquestions'], dict) and \
-                            (properties['type'] == 'M' or properties['type'] == 'P'):
-                        question_list.append(properties['title'])
+        result = limesurvey_connection.list_groups(survey_id)
+        if result is None:
+            return Questionnaires.ERROR_CODE, []
+        questions = []
+        for group in result:
+            if group['id']['language'] == language:
+                group_questions = limesurvey_connection.list_questions(survey_id, group['id']['gid'])
+                if not group_questions:
+                    return Questionnaires.ERROR_CODE, []
+                else:
+                    questions.extend(group_questions)
+                if types is not None:
+                    questions = [item for item in questions if item['type'] in types]
 
-        return question_list
+        return 0, questions
 
     @staticmethod
     def responses_to_csv(responses_string):
@@ -453,11 +409,9 @@ class QuestionnaireUtils:
         :return: group dict or None
         """
         groups = survey.list_groups(survey_id)
-        return next(
-            (item for item in groups if item['gid'] == gid and item['language'] == lang),
-            None)
+        return next((item for item in groups if item['gid'] == gid and item['language'] == lang), None)
 
-    def get_response_column_name_for_Identification_group_questions(self, survey, limesurvey_id, question_title, lang):
+    def get_response_column_name_for_identification_group_questions(self, survey, limesurvey_id, question_title, lang):
         """
         Return response table column name that is formed by <limesurvey_id>X<group_id>X<question_id>
         :param survey: Limesurvey ABC interface

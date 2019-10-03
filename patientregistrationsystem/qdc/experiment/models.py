@@ -85,17 +85,11 @@ class Experiment(models.Model):
     data_acquisition_is_concluded = models.BooleanField(default=False)
 
     source_code_url = models.URLField(null=True, blank=True)
-    ethics_committee_project_url = \
-        models.URLField(
-            _('URL of the project approved by the ethics committee'),
-            null=True, blank=True
-        )
+    ethics_committee_project_url = models.URLField(
+            _('URL of the project approved by the ethics committee'), null=True, blank=True)
     ethics_committee_project_file = models.FileField(
         _('Project file approved by the ethics committee'),
-        upload_to=get_experiment_dir,
-        null=True, blank=True
-    )
-
+        upload_to=get_experiment_dir, null=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
     last_sending = models.DateTimeField(null=True)
 
@@ -123,9 +117,7 @@ class ExperimentResearcher(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.pk and not self.channel_index:
-            top = ExperimentResearcher.objects.filter(
-                experiment=self.experiment
-            ).order_by('-channel_index').first()
+            top = ExperimentResearcher.objects.filter(experiment=self.experiment).order_by('-channel_index').first()
             self.channel_index = top.channel_index + 1 if top else 1
         super(ExperimentResearcher, self).save()
 
@@ -388,8 +380,8 @@ class EEGElectrodeLocalizationSystem(models.Model):
 
 
 class EEGElectrodePosition(models.Model):
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
-                                                          related_name="electrode_positions")
+    eeg_electrode_localization_system = models.ForeignKey(
+        EEGElectrodeLocalizationSystem, related_name="electrode_positions")
     name = models.CharField(max_length=150)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -930,9 +922,7 @@ class Stimulus(Component):
 
 
 class Questionnaire(Component):
-    survey = models.ForeignKey(
-        Survey, null=False, blank=False, on_delete=models.PROTECT
-    )
+    survey = models.ForeignKey(Survey, null=False, blank=False, on_delete=models.PROTECT)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -942,9 +932,7 @@ class Block(Component):
     SEQUENCE = 'sequence'
     PARALLEL_BLOCK = 'parallel_block'
     BLOCK_TYPES = ((SEQUENCE, _("Sequence")), (PARALLEL_BLOCK, _("Parallel")))
-    number_of_mandatory_components = models.IntegerField(
-        null=True, blank=True, validators=[MinValueValidator(0)]
-    )
+    number_of_mandatory_components = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     type = models.CharField(null=False, max_length=20,
                             choices=BLOCK_TYPES)
 
@@ -1140,6 +1128,17 @@ def get_data_file_dir(instance, filename):
                 if instance.digital_game_phase_data.data_configuration_tree else 0),
             'digital_game_phase')
 
+    # TODO (NES-987): see backlog
+    # elif isinstance(instance, HotSpot):
+    #     directory = path.join(
+    #         'data_collection_files',
+    #         str(instance.tms_data.subject_of_group.group.experiment.id),
+    #         str(instance.tms_data.subject_of_group.group.id),
+    #         str(instance.tms_data.subject_of_group.subject.id),
+    #         str(instance.tms_data.data_configuration_tree.id if instance.tms_data.data_configuration_tree else 0),
+    #         'hot_spot_map'
+    #     )
+
     return path.join(directory, filename)
 
 
@@ -1162,8 +1161,7 @@ class SubjectOfGroup(models.Model):
 
 class DataConfigurationTree(models.Model):
     component_configuration = models.ForeignKey(
-        ComponentConfiguration, on_delete=models.PROTECT
-    )
+        ComponentConfiguration, on_delete=models.PROTECT)
     parent = models.ForeignKey('self', null=True, related_name='children')
     code = models.IntegerField(null=True, blank=True)
 
@@ -1406,8 +1404,8 @@ class DigitalGamePhaseFile(models.Model):
 
 
 class GenericDataCollectionFile(models.Model):
-    generic_data_collection_data = models.ForeignKey(GenericDataCollectionData,
-                                                     related_name='generic_data_collection_files')
+    generic_data_collection_data = models.ForeignKey(
+        GenericDataCollectionData, related_name='generic_data_collection_files')
     file = models.FileField(upload_to=get_data_file_dir)
 
 
