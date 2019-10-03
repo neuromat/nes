@@ -1892,7 +1892,6 @@ class ExportExecution:
                             per_participant_rows = self.merge_questionnaire_answer_list_per_participant(
                                 export_rows_participants[1], answer_list[1: len(answer_list)])
 
-                            # TODO (NES-991): answer_list changes
                             field_type = 'fields' if heading_type == 'code' else 'header_questionnaire'
                             header = self.build_header_questionnaire_per_participant(
                                 export_rows_participants[0], answer_list[0][field_type])

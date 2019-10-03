@@ -3917,7 +3917,6 @@ def set_mocks9(mock_server):
         [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
-
          {'id': {'language': 'pt-BR', 'gid': 1959}, 'language': 'pt-BR', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
@@ -3927,7 +3926,6 @@ def set_mocks9(mock_server):
         [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
-
          {'id': {'language': 'pt-BR', 'gid': 1959}, 'language': 'pt-BR', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
@@ -3937,7 +3935,6 @@ def set_mocks9(mock_server):
         [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
-
          {'id': {'language': 'pt-BR', 'gid': 1959}, 'language': 'pt-BR', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
@@ -3947,7 +3944,6 @@ def set_mocks9(mock_server):
         [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
-
          {'id': {'language': 'pt-BR', 'gid': 1959}, 'language': 'pt-BR', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
@@ -4127,7 +4123,6 @@ def set_mocks10(mock_server):
 
 
 def set_mocks11(mock_server):
-    # TODO (NES-991): see if it's possible to reuse set_mocks9
     mock_server.return_value.get_survey_properties.side_effect = [
         {'language': 'en', 'additional_languages': ''},
         {'language': 'en', 'additional_languages': ''},
