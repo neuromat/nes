@@ -23,10 +23,12 @@ SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+DEBUG404 = True
 
-TEMPLATE_DEBUG = DEBUG
+# SECURITY WARNING: don't run with "is testing" in production
+IS_TESTING = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -43,10 +45,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_jenkins',
-
     'simple_history',
     'jsonrpc_requests',
-    'solo'
+    'solo',
+    'fixture_magic'
 )
 
 PROJECT_APPS = (
@@ -55,19 +57,12 @@ PROJECT_APPS = (
     'custom_user',
     'experiment',
     'survey',
-    'cep',
     'export',
-    'configuration'
-)
-
-PROJECT_TAGS_APPS = (
-    'quiz.templatetags.qdc_tags',
-    'experiment.templatetags.subjects_tags',
-    'survey.templatetags.subjects_tags_survey',
+    'configuration',
+    'plugin'
 )
 
 INSTALLED_APPS += PROJECT_APPS
-INSTALLED_APPS += PROJECT_TAGS_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -81,18 +76,35 @@ MIDDLEWARE_CLASSES = (
     'simple_history.middleware.HistoryRequestMiddleware',
 )
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.i18n',
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+            ],
+            'debug': DEBUG,
+        },
+    },
+]
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.template.context_processors.debug",
-    "django.template.context_processors.i18n",
-    "django.template.context_processors.media",
-    "django.template.context_processors.static",
-    "django.template.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
-    "django.template.context_processors.request",
-)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'limesurveycache',
+        'TIMEOUT': 24*60*60,
 
+    }
+}
 
 ROOT_URLCONF = 'qdc.urls'
 
@@ -120,22 +132,16 @@ SHOW_SEND_TO_PORTAL_BUTTON = False
 # AUTH_USER_MODEL = 'quiz.UserProfile'
 # AUTH_PROFILE_MODULE = 'quiz.UserProfile'
 
-TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'pt-br'
-# LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('pt-br', 'Português'),
     ('en', 'English'),
 )
 
-# os.path.join(BASE_DIR, 'locale'),
-# LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale'),]
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
     os.path.join(BASE_DIR, 'patient/locale'),
@@ -171,11 +177,13 @@ MODELTRANSLATION_AUTO_POPULATE = 'all'
 
 MODELTRANSLATION_PREPOPULATE_LANGUAGE = 'en'
 
-
 FIXTURE_DIRS = (
     'patient.fixtures',
     'experiment.fixtures',
 )
+
+# The maximum number of parameters that may be received via GET or POST
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -193,4 +201,4 @@ try:
 except ImportError:
     pass
 
-VERSION = '1.39.1'
+VERSION = '1.59.1'

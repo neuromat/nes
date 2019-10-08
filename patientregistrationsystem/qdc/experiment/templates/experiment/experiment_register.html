@@ -5,6 +5,7 @@
 
 {% block header %}
     <script src="{% static 'quiz/js/collaborators.js' %}"></script>
+    <script src="{% static 'quiz/js/block_component.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -137,24 +138,26 @@
                     </div>
                 {% endif %}
 
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            {{ experiment_form.is_public }}
-                            <span class="fa fa-share-alt"></span> <label class="control-label">{% trans "Is public" %}</label>
-                            <div class="help-block with-errors"></div>
+                {% if portal != '' %}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                {{ experiment_form.is_public }}
+                                <span class="fa fa-share-alt"></span> <label class="control-label">{% trans "Is public" %}</label>
+                                <div class="help-block with-errors"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                        <div class="form-group">
-                            {{ experiment_form.data_acquisition_is_concluded }}
-                            <span class="fa fa-upload"></span> <label class="control-label">{% trans "Data acquisition is concluded" %}</label>
-                            <div class="help-block with-errors"></div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+                            <div class="form-group">
+                                {{ experiment_form.data_acquisition_is_concluded }}
+                                <span class="fa fa-upload"></span> <label class="control-label">{% trans "Data acquisition is concluded" %}</label>
+                                <div class="help-block with-errors"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
 
                 {% if not editing and can_change %}
                     <div class="btn-group pull-left">
@@ -165,7 +168,7 @@
 
             {% if not editing %}
 
-                {% if experiment.is_public or experiment.last_sending %}
+                {% if experiment.is_public and portal != '' or experiment.last_sending and portal != '' %}
 
                     <div class="container span6 offset3 well ">
 
@@ -243,12 +246,13 @@
                                 <tr>
                                     <th style="text-align: left">{% trans "Person" %}</th>
                                     <th style="text-align: left">{% trans "Institution" %}</th>
-                                    <th style="text-align: center">{% trans "Remove" %}</th>
+                                    <th style="text-align: right">{% trans "Order" %}</th>
+                                    <th></th>
+                                    <th style="text-align: right">{% trans "Remove" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
-
-                            {% for collaborator in collaborators %}
+                            {% for collaborator in collaborators.all|dictsort:"channel_index" %}
                                 <tr>
                                     <td style="text-align: left">
                                         {{ collaborator.researcher.first_name }} {{ collaborator.researcher.last_name }}
@@ -260,14 +264,25 @@
                                             <em>{% trans "Not registered" %}</em>
                                         {% endif %}
                                     </td>
-                                    <td style="text-align: center">
+                                    <td class="text-right col-md-1">
+                                        {% if not forloop.last %}
+                                            <a class="btn glyphicon glyphicon-arrow-down"
+                                               href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/down/"></a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="col-md-1">
+                                        {% if not forloop.first %}
+                                            <a class="btn glyphicon glyphicon-arrow-up"
+                                               href="/experiment/experiment_research/change_the_order/{{ collaborator.id }}/up/"></a>
+                                        {% endif %}
+                                    </td>
+                                    <td style="text-align: right">
                                         {% if can_change %}
                                             <a class="btn glyphicon glyphicon-remove" style="color: indianred;" data-toggle="tooltip" data-placement="right" onclick="show_modal_remove_collaborator({{ collaborator.id }});" title="{% trans "Remove researcher" %}"></a>
                                         {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
-
                             </tbody>
                         </table>
                     </div>
@@ -478,6 +493,11 @@
                            class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
                     </div>
                 {% else %}
+                    {% if not editing and can_change %}
+                        <div class="btn-group pull-right">
+                            <a href="/experiment/{{ experiment.id }}/export" class="btn btn-primary">{% trans "Export" %}</a>
+                        </div>
+                    {% endif %}
                     <div class="btn-group pull-right">
                         <a href="/experiment/research_project/{{ research_project.id }}" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                     </div>

@@ -6,6 +6,7 @@
     {% load i18n %}
     {% load l10n %}
     {% load qdc_tags %}
+    {% load solo_tags %}
     <meta charset="utf-8">
 
     <title>{% trans "Neuroscience Experiments System - NES" %}</title>
@@ -21,30 +22,30 @@
     <script>
         $(document).ready(function() {
             $('.datepicker').datepicker({
-                        dateFormat: gettext('mm/dd/yy'),
-                        dayNames: [gettext('Sunday'),gettext('Monday'),gettext('Tuesday'),
-                            gettext('Wednesday'),gettext('Thursday'),gettext('Friday'),gettext('Saturday')],
-                        dayNamesMin: [gettext('Su'),gettext('Mo'),gettext('Tu'),gettext('We'),gettext('Th'),
-                                gettext('Fr'),gettext('Sa'),gettext('Su')],
-                        dayNamesShort: [gettext('Sun'),gettext('Mon'),gettext('Tue'),gettext('Wed'),
-                                gettext('Thu'),gettext('Fri'),gettext('Sat'),gettext('Sun')],
-                        monthNames: [gettext('January'),gettext('February'),gettext('March'),
-                                gettext('April'),gettext('May'),gettext('June'),
-                                gettext('July'),gettext('August'),gettext('September'),
-                                gettext('October'),gettext('November'),gettext('December')],
-                        monthNamesShort: [gettext('Jan'),gettext('Feb'),gettext('Mar'),gettext('Apr'),
-                                gettext('May'),gettext('Jun'),gettext('Jul'),gettext('Aug'),
-                                gettext('Sep'),gettext('Oct'),gettext('Nov'),gettext('Dec')],
-                        nextText: gettext('Next'),
-                        prevText: gettext('Previous')
+                dateFormat: gettext('mm/dd/yy'),
+                dayNames: [gettext('Sunday'),gettext('Monday'),gettext('Tuesday'),
+                    gettext('Wednesday'),gettext('Thursday'),gettext('Friday'),gettext('Saturday')],
+                dayNamesMin: [gettext('Su'),gettext('Mo'),gettext('Tu'),gettext('We'),gettext('Th'),
+                    gettext('Fr'),gettext('Sa'),gettext('Su')],
+                dayNamesShort: [gettext('Sun'),gettext('Mon'),gettext('Tue'),gettext('Wed'),
+                    gettext('Thu'),gettext('Fri'),gettext('Sat'),gettext('Sun')],
+                monthNames: [gettext('January'),gettext('February'),gettext('March'),
+                    gettext('April'),gettext('May'),gettext('June'),
+                    gettext('July'),gettext('August'),gettext('September'),
+                    gettext('October'),gettext('November'),gettext('December')],
+                monthNamesShort: [gettext('Jan'),gettext('Feb'),gettext('Mar'),gettext('Apr'),
+                    gettext('May'),gettext('Jun'),gettext('Jul'),gettext('Aug'),
+                    gettext('Sep'),gettext('Oct'),gettext('Nov'),gettext('Dec')],
+                nextText: gettext('Next'),
+                prevText: gettext('Previous')
             }).
-                    mask("99/99/9999");
+            mask("99/99/9999");
         });
+
     </script>
 
     <link href="{% static 'quiz/bootstrap-3.0.0-dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}"
-          rel="stylesheet">
+    <link href="{% static 'quiz/BootstrapFormHelpers-master/dist/css/bootstrap-formhelpers.min.css' %}" rel="stylesheet">
 
     <script src="{% static 'quiz/bootstrap-3.0.0-dist/js/bootstrap.min.js' %}"></script>
 
@@ -60,7 +61,7 @@
 
     <link rel="stylesheet" href="{% static 'quiz/font-awesome-4.6.3/css/font-awesome.min.css' %}">
 
-    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    <script type="text/javascript" src="{% url 'javascript_catalog' %}"></script>
 
     <style type="text/css">
 
@@ -79,24 +80,20 @@
             height: 30px;
             width: 100%;
         }
-
         .version_number {
             float:right;
             margin-right: 10px;
         }
-
         /* Theme */
         .footer {
             font-size: 8pt;
             font-family: Verdana;
             font-weight: bold;
         }
-
         .thumbnail {
             border: 0 none;
             box-shadow: none;
         }
-
         .unbuttonmize:hover, .unbuttonmize:focus {
             background-color: white;
             border-color: #ccc;
@@ -105,9 +102,11 @@
         .unbuttonmize:focus {
             outline-style: none;
         }
-
         .unbuttonmize:active {
             box-shadow: none;
+        }
+        .import-results {
+            background-color: #dff0d8;
         }
     </style>
 
@@ -131,10 +130,6 @@
 
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ol class="nav navbar-nav navbar-right">
-{#                <li>#}
-{#                    <a href="/home/check_upgrade/"><span class="glyphicon#}
-{#                    glyphicon-check"></span>Check_upgrade</a>#}
-{#                </li>#}
                 {% if perms.configuration.upgrade_rights and if_upgrade %}
                     <li>
                         <a href="/home/upgrade_nes/"><span class="glyphicon
@@ -149,7 +144,7 @@
 
                     <a class="btn-default dropdown-toggle navbar-inverse" data-toggle="dropdown" href="#">
                         <span style="font-size: 0.85em;" class="glyphicon glyphicon-globe"></span>
-                            {{ LANGUAGE_CODE|language_name_local }}
+                        {{ LANGUAGE_CODE|language_name_local }}
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown dropdown-user dropdown-menu" role="menu">
@@ -257,6 +252,16 @@
                         <a href="/experiment/setup/">
                             <span class="glyphicon glyphicon-cog"></span>
                             {% trans "Set up" %}
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% get_solo 'plugin.RandomForests' as random_forests %}
+                {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.plugin_url %}
+                    <li {% block activePlugin %}{% endblock %}>
+                        <a href="/plugin/">
+                            <span class="glyphicon glyphicon-cloud-upload"></span>
+                            {% trans "Plugin" %}
                         </a>
                     </li>
                 {% endif %}

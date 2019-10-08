@@ -9,6 +9,7 @@ from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from simple_history.models import HistoricalRecords
+from django.conf import settings
 
 from patient.models import Patient, ClassificationOfDiseases
 from survey.models import Survey
@@ -35,10 +36,6 @@ IMPEDANCE_UNIT = (
 def validate_date_questionnaire_response(value):
     if value > datetime.date.today():
         raise ValidationError(_("Date cannot be greater than today's date."))
-
-
-class Subject(models.Model):
-    patient = models.ForeignKey(Patient)
 
 
 class StimulusType(models.Model):
@@ -81,17 +78,18 @@ def get_experiment_dir(instance, filename):
 class Experiment(models.Model):
     title = models.CharField(null=False, max_length=255, blank=False)
     description = models.TextField(null=False, blank=False)
-    research_project = models.ForeignKey(ResearchProject, null=False, blank=False)
+    research_project = models.ForeignKey(
+        ResearchProject, null=False, blank=False
+    )
     is_public = models.BooleanField(default=False)
     data_acquisition_is_concluded = models.BooleanField(default=False)
 
     source_code_url = models.URLField(null=True, blank=True)
-    ethics_committee_project_url = models.URLField(_('URL of the project approved by the ethics committee'),
-                                                   null=True, blank=True)
-    ethics_committee_project_file = models.FileField(_('Project file approved by the ethics committee'),
-                                                     upload_to=get_experiment_dir,
-                                                     null=True, blank=True)
-
+    ethics_committee_project_url = models.URLField(
+            _('URL of the project approved by the ethics committee'), null=True, blank=True)
+    ethics_committee_project_file = models.FileField(
+        _('Project file approved by the ethics committee'),
+        upload_to=get_experiment_dir, null=True, blank=True)
     last_update = models.DateTimeField(auto_now=True)
     last_sending = models.DateTimeField(null=True)
 
@@ -113,8 +111,15 @@ class Experiment(models.Model):
 
 
 class ExperimentResearcher(models.Model):
-    experiment = models.ForeignKey(Experiment)
+    experiment = models.ForeignKey(Experiment, related_name='researchers')
     researcher = models.ForeignKey(User)
+    channel_index = models.IntegerField(null=True)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.pk and not self.channel_index:
+            top = ExperimentResearcher.objects.filter(experiment=self.experiment).order_by('-channel_index').first()
+            self.channel_index = top.channel_index + 1 if top else 1
+        super(ExperimentResearcher, self).save()
 
 
 class Publication(models.Model):
@@ -125,7 +130,7 @@ class Publication(models.Model):
 
 
 class Manufacturer(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)  # TODO: possibly make unique
 
     def __str__(self):
         return self.name
@@ -148,7 +153,7 @@ class Equipment(models.Model):
         ("ad_converter", _("A/D Converter")),
         ("tms_device", _("TMS device"))
     )
-    manufacturer = models.ForeignKey(Manufacturer, null=False, related_name="set_of_equipment")
+    manufacturer = models.ForeignKey(Manufacturer, related_name="set_of_equipment")
     equipment_type = models.CharField(null=True, blank=True, max_length=50, choices=EQUIPMENT_TYPES)
     identification = models.CharField(max_length=150)
     description = models.TextField(null=True, blank=True)
@@ -375,8 +380,8 @@ class EEGElectrodeLocalizationSystem(models.Model):
 
 
 class EEGElectrodePosition(models.Model):
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
-                                                          related_name="electrode_positions")
+    eeg_electrode_localization_system = models.ForeignKey(
+        EEGElectrodeLocalizationSystem, related_name="electrode_positions")
     name = models.CharField(max_length=150)
     coordinate_x = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     coordinate_y = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
@@ -401,8 +406,8 @@ class EEGElectrodePosition(models.Model):
 
 class EEGElectrodeNetSystem(models.Model):
     eeg_electrode_net = models.ForeignKey(EEGElectrodeNet, related_name="set_of_electrode_net_system")
-    eeg_electrode_localization_system = models.ForeignKey(EEGElectrodeLocalizationSystem,
-                                                          related_name='set_of_electrode_net_system')
+    eeg_electrode_localization_system = models.ForeignKey(
+        EEGElectrodeLocalizationSystem, related_name='set_of_electrode_net_system')
 
 
 class CoilShape(models.Model):
@@ -444,8 +449,6 @@ class EEGSetting(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField()
     copied_from = models.ForeignKey('self', null=True, related_name='children')
-
-    # set_of_equipment = models.ManyToManyField(Equipment)
 
     def __str__(self):
         return self.name
@@ -555,8 +558,8 @@ class Muscle(models.Model):
 
 
 class MuscleSubdivision(models.Model):
-    muscle = models.ForeignKey(Muscle)
     name = models.CharField(max_length=150)
+    muscle = models.ForeignKey(Muscle)
     anatomy_origin = models.TextField(null=True, blank=True)
     anatomy_insertion = models.TextField(null=True, blank=True)
     anatomy_function = models.TextField(null=True, blank=True)
@@ -566,8 +569,8 @@ class MuscleSubdivision(models.Model):
 
 
 class MuscleSide(models.Model):
-    muscle = models.ForeignKey(Muscle)
     name = models.CharField(max_length=150)
+    muscle = models.ForeignKey(Muscle)
 
     def __str__(self):
         return self.name
@@ -723,8 +726,9 @@ class EMGAnalogFilterSetting(models.Model):
 
 
 class EMGElectrodePlacementSetting(models.Model):
-    emg_electrode_setting = models.OneToOneField(EMGElectrodeSetting,
-                                                 primary_key=True, related_name='emg_electrode_placement_setting')
+    emg_electrode_setting = models.OneToOneField(
+        EMGElectrodeSetting, primary_key=True, related_name='emg_electrode_placement_setting'
+    )
     emg_electrode_placement = models.ForeignKey(EMGElectrodePlacement)
     remarks = models.TextField(null=True, blank=True)
     muscle_side = models.ForeignKey(MuscleSide, null=True, blank=True)
@@ -815,8 +819,8 @@ class TMSLocalizationSystem(models.Model):
             self.tms_localization_system_image = None
             super(TMSLocalizationSystem, self).save(*args, **kwargs)
             self.tms_localization_system_image = saved_file
-
-        super(TMSLocalizationSystem, self).save(*args, **kwargs)
+        else:
+            super(TMSLocalizationSystem, self).save(*args, **kwargs)
 
 
 class CoilOrientation(models.Model):
@@ -834,27 +838,39 @@ class DirectionOfTheInducedCurrent(models.Model):
 
 
 class Component(models.Model):
+    BLOCK = 'block'
+    INSTRUCTION = 'instruction'
+    PAUSE = 'pause'
+    QUESTIONNAIRE = 'questionnaire'
+    STIMULUS = 'stimulus'
+    TASK = 'task'
+    TASK_EXPERIMENT = 'task_experiment'
+    EEG = 'eeg'
+    EMG = 'emg'
+    TMS = 'tms'
+    DIGITAL_GAME_PHASE = 'digital_game_phase'
+    GENERIC_DATA_COLLECTION = 'generic_data_collection'
     COMPONENT_TYPES = (
-        ("block", _("Set of steps")),
-        ("instruction", _("Instruction")),
-        ("pause", _("Pause")),
-        ("questionnaire", _("Questionnaire")),
-        ("stimulus", _("Stimulus")),
-        ("task", _("Task for participant")),
-        ("task_experiment", _("Task for experimenter")),
-        ("eeg", _("EEG")),
-        ("emg", _("EMG")),
-        ("tms", _("TMS")),
-        ("digital_game_phase", _("Goalkeeper game phase")),
-        ("generic_data_collection", _("Generic data collection")),
+        (BLOCK, _('Set of steps')),
+        (INSTRUCTION, _('Instruction')),
+        (PAUSE, _('Pause')),
+        (QUESTIONNAIRE, _('Questionnaire')),
+        (STIMULUS, _('Stimulus')),
+        (TASK, _('Task for participant')),
+        (TASK_EXPERIMENT, _('Task for experimenter')),
+        (EEG, _('EEG')),
+        (EMG, _('EMG')),
+        (TMS, _('TMS')),
+        (DIGITAL_GAME_PHASE, _('Goalkeeper game phase')),
+        (GENERIC_DATA_COLLECTION, _('Generic data collection')),
     )
 
-    identification = models.CharField(null=False, max_length=50, blank=False)
+    identification = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
     duration_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     duration_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
-    experiment = models.ForeignKey(Experiment, null=False)
-    component_type = models.CharField(null=False, max_length=30, choices=COMPONENT_TYPES)
+    experiment = models.ForeignKey(Experiment, related_name='components')
+    component_type = models.CharField(max_length=30, choices=COMPONENT_TYPES)
 
     def save(self, *args, **kwargs):
         super(Component, self).save(*args, **kwargs)
@@ -1002,7 +1018,8 @@ class ComponentConfiguration(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     number_of_repetitions = models.IntegerField(null=True, blank=True, default=1, validators=[MinValueValidator(1)])
 
-    # These 2 interval fields are useful only when number_of_repetition is different from 1.
+    # These 2 interval fields are useful only when number_of_repetition is
+    # different from 1.
     interval_between_repetitions_value = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(1)])
     interval_between_repetitions_unit = models.CharField(null=True, blank=True, max_length=15, choices=TIME_UNITS)
 
@@ -1010,8 +1027,10 @@ class ComponentConfiguration(models.Model):
     # TODO Change to not null.
     parent = models.ForeignKey(Block, null=True, related_name='children')
 
-    # This field is only useful for component configurations marked as fixed and inside a sequence. However, we leave it
-    # as not null because we want the unique restriction of the pair (parent, order) to be applied in a database level.
+    # This field is only useful for component configurations marked as fixed
+    # and inside a sequence. However, we leave it as not null because we
+    # want the unique restriction of the pair (parent, order) to be applied
+    # in a database level.
     order = models.IntegerField(null=False, blank=False, validators=[MinValueValidator(1)])
 
     # This is null when the parent is a parallel block.
@@ -1031,7 +1050,7 @@ class ComponentConfiguration(models.Model):
 
 
 class Group(models.Model):
-    experiment = models.ForeignKey(Experiment, null=False, blank=False)
+    experiment = models.ForeignKey(Experiment, null=False, blank=False, related_name='groups')
     title = models.CharField(null=False, max_length=50, blank=False)
     description = models.TextField(null=False, blank=False)
     code = models.CharField(_('Code'), null=True, blank=True, max_length=150, unique=True)
@@ -1060,7 +1079,6 @@ def get_data_file_dir(instance, filename):
     directory = 'data_files'
 
     if isinstance(instance, EEGFile):
-
         directory = path.join(
             'data_collection_files',
             str(instance.eeg_data.subject_of_group.group.experiment.id),
@@ -1110,16 +1128,22 @@ def get_data_file_dir(instance, filename):
                 if instance.digital_game_phase_data.data_configuration_tree else 0),
             'digital_game_phase')
 
-    elif isinstance(instance, HotSpot):
-        directory = path.join('data_collection_files',
-                              str(instance.tms_data.subject_of_group.group.experiment.id),
-                              str(instance.tms_data.subject_of_group.group.id),
-                              str(instance.tms_data.subject_of_group.subject.id),
-                              str(instance.tms_data.data_configuration_tree.id if
-                                  instance.tms_data.data_configuration_tree else 0))
-        directory = path.join(directory, 'tms_hot_spot')
+    # TODO (NES-987): see backlog
+    # elif isinstance(instance, HotSpot):
+    #     directory = path.join(
+    #         'data_collection_files',
+    #         str(instance.tms_data.subject_of_group.group.experiment.id),
+    #         str(instance.tms_data.subject_of_group.group.id),
+    #         str(instance.tms_data.subject_of_group.subject.id),
+    #         str(instance.tms_data.data_configuration_tree.id if instance.tms_data.data_configuration_tree else 0),
+    #         'hot_spot_map'
+    #     )
 
     return path.join(directory, filename)
+
+
+class Subject(models.Model):
+    patient = models.ForeignKey(Patient)
 
 
 class SubjectOfGroup(models.Model):
@@ -1136,7 +1160,8 @@ class SubjectOfGroup(models.Model):
 
 
 class DataConfigurationTree(models.Model):
-    component_configuration = models.ForeignKey(ComponentConfiguration, on_delete=models.PROTECT)
+    component_configuration = models.ForeignKey(
+        ComponentConfiguration, on_delete=models.PROTECT)
     parent = models.ForeignKey('self', null=True, related_name='children')
     code = models.IntegerField(null=True, blank=True)
 
@@ -1146,7 +1171,8 @@ class DataConfigurationTree(models.Model):
 
 
 class SubjectStepData(models.Model):
-    # data_configuration_tree null means that the DataCollection is associated to the whole experimental protocol
+    # data_configuration_tree null means that the DataCollection is
+    # associated to the whole experimental protocol
     data_configuration_tree = models.ForeignKey(DataConfigurationTree, null=True, blank=True)
 
     subject_of_group = models.ForeignKey(SubjectOfGroup)
@@ -1184,9 +1210,9 @@ class DataCollection(models.Model):
 
 class QuestionnaireResponse(DataCollection):
     token_id = models.IntegerField(null=False)
-    questionnaire_responsible = \
-        models.ForeignKey(User, null=False, related_name="+")
+    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
     history = HistoricalRecords()
+    is_completed = models.CharField(max_length=50, default="")
 
     class Meta:
         permissions = (
@@ -1233,10 +1259,7 @@ class EEGData(DataFile, DataCollection):
     eeg_setting_reason_for_change = models.TextField(null=True, blank=True, default='')
     eeg_cap_size = models.ForeignKey(EEGCapSize, null=True, blank=True)
 
-    # Audit trail - Simple History
     history = HistoricalRecords()
-
-    # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
         return self.description
@@ -1268,8 +1291,6 @@ class TMSData(DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
     def __str__(self):
         return self.description
 
@@ -1298,8 +1319,6 @@ class AdditionalData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
     def __str__(self):
         return self.description
 
@@ -1319,8 +1338,6 @@ class EMGData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
     def __str__(self):
         return self.description
 
@@ -1339,8 +1356,6 @@ class DigitalGamePhaseData(DataFile, DataCollection):
     # Audit trail - Simple History
     history = HistoricalRecords()
 
-    # changed_by = models.ForeignKey('auth.User')
-
     def __str__(self):
         return self.description
 
@@ -1354,10 +1369,7 @@ class DigitalGamePhaseData(DataFile, DataCollection):
 
 
 class GenericDataCollectionData(DataFile, DataCollection):
-    # Audit trail - Simple History
     history = HistoricalRecords()
-
-    # changed_by = models.ForeignKey('auth.User')
 
     def __str__(self):
         return self.description
@@ -1392,8 +1404,8 @@ class DigitalGamePhaseFile(models.Model):
 
 
 class GenericDataCollectionFile(models.Model):
-    generic_data_collection_data = models.ForeignKey(GenericDataCollectionData,
-                                                     related_name='generic_data_collection_files')
+    generic_data_collection_data = models.ForeignKey(
+        GenericDataCollectionData, related_name='generic_data_collection_files')
     file = models.FileField(upload_to=get_data_file_dir)
 
 
@@ -1459,19 +1471,42 @@ class GoalkeeperGameConfig(models.Model):
     date = models.CharField(name="gamedata", max_length=6)
     time = models.CharField(name="gametime", max_length=6)
     result_id = models.IntegerField(name="idresult")
+    playid = models.TextField(name="playid", default="")
+    sessiontime = models.FloatField(name="sessiontime", default="")
+    relaxtime = models.FloatField(name="relaxtime", default="")
+    playermachine = models.TextField(name="playermachine", default="")
+    gamerandom = models.TextField(name="gamerandom", default="")
+    limitplays = models.SmallIntegerField(name="limitplays", default="")
+    totalcorrect = models.SmallIntegerField(name="totalcorrect", default="")
+    successrate = models.FloatField(name="successrate", default="")
+    gamemode = models.TextField(name="gamemode", default="")
+    status = models.SmallIntegerField(name="status", default="")
+    playstorelax = models.SmallIntegerField(name="playstorelax", default="")
+    scoreboard = models.BooleanField(name="scoreboard", default="")
+    finalscoreboard = models.SmallIntegerField(name="finalscoreboard", default="")
+    animationtype = models.SmallIntegerField(name="animationtype", default="")
+    minhits = models.SmallIntegerField(name="minhits", default="")
 
     class Meta:
-        managed = False
+        managed = settings.IS_TESTING
         db_table = '"public"."gameconfig"'
 
 
 class GoalkeeperGameResults(models.Model):
-    id = models.IntegerField(name="id", primary_key=True)
-    file_content = models.TextField(name='filecontent')
+    id = models.IntegerField(name="idgameresult", primary_key=True, default="")
+    id_config = models.IntegerField(name="idconfig", default="")
+    move = models.SmallIntegerField(name='move', default="")
+    timeuntilanykey = models.FloatField(name='timeuntilanykey', default="")
+    timeuntilshowagain = models.FloatField(name='timeuntilshowagain', default="")
+    waitedresult = models.SmallIntegerField(name='waitedresult', default="")
+    ehrandom = models.CharField(name='ehrandom', max_length=3, default="")
+    optionchoosen = models.SmallIntegerField(name='optionchoosen', default="")
+    movementtime = models.FloatField(name='movementtime', default="")
+    decisiontime = models.FloatField(name='decisiontime', default="")
 
     class Meta:
-        managed = False
-        db_table = '"public"."results"'
+        managed = settings.IS_TESTING
+        db_table = '"public"."gameresults"'
 
 
 class ScheduleOfSending(models.Model):

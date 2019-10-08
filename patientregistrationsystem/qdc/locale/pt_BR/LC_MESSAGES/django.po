@@ -2,13 +2,11 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-28 13:36-0300\n"
+"POT-Creation-Date: 2019-09-30 15:35-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -650,9 +648,9 @@ msgstr "Pode registrar experimento"
 msgid "Can view sensitive patient data"
 msgstr "Pode ver dados sensíveis de participante"
 
-#: add_initial_data.py:181
-msgid "Administrator"
-msgstr "Administrador"
+#: add_initial_data.py:178
+msgid "Can send data to plugin"
+msgstr ""
 
 #: add_initial_data.py:182
 msgid "Attendant"
@@ -673,6 +671,27 @@ msgstr "Pesquisador júnior"
 #: add_initial_data.py:186
 msgid "Senior researcher"
 msgstr "Pesquisador sênior"
+
+#: add_initial_data.py:187
+msgid "Administrator"
+msgstr "Administrador"
+
+#: templates/404.html:14 templates/registration/change_password_custom.html:142
+#: templates/registration/logged_out.html:4
+msgid "Home"
+msgstr "Home"
+
+#: templates/404.html:20
+msgid "404 Page Not Found"
+msgstr "404 Página Não Encontrada"
+
+#: templates/404.html:21
+msgid "This page does not exist yet!"
+msgstr "Esta página ainda não existe!"
+
+#: templates/404.html:28
+msgid "Back"
+msgstr "Voltar"
 
 #: templates/admin/base_site.html:4
 msgid "QDC site admin test"
@@ -709,12 +728,7 @@ msgstr ""
 msgid "Save"
 msgstr "Salvar"
 
-#: templates/registration/change_password_custom.html:143
-#: templates/registration/logged_out.html:4
-msgid "Home"
-msgstr "Home"
-
-#: templates/registration/change_password_custom.html:145
+#: templates/registration/change_password_custom.html:144
 msgid "Logout"
 msgstr ""
 
@@ -742,7 +756,7 @@ msgstr "Fazer login"
 msgid "I forgot my password"
 msgstr "Esqueci minha senha"
 
-#: templates/registration/password_define_email.html:6
+#: templates/registration/password_define_email.html:5
 msgid ""
 "Hi, is everything ok?\n"
 "\n"
@@ -760,7 +774,7 @@ msgstr ""
 "    Por favor, vá para a seguinte página e entre com uma senha:\n"
 "    "
 
-#: templates/registration/password_define_email.html:17
+#: templates/registration/password_define_email.html:16
 #, python-format
 msgid ""
 "Your username: %(user.username)s\n"
@@ -818,7 +832,7 @@ msgstr ""
 "foi usado anteriormente. <br/>\n"
 "                Por favor, faça uma nova requisição de redefinição de senha."
 
-#: templates/registration/password_reset_done.html:18
+#: templates/registration/password_reset_done.html:16
 msgid ""
 "We sent you a message with instructions to set up your password\n"
 "            for the e-mail provided. "
@@ -827,11 +841,11 @@ msgstr ""
 "endereço de\n"
 "            e-mail informado. "
 
-#: templates/registration/password_reset_done.html:20
+#: templates/registration/password_reset_done.html:18
 msgid "You should receive it soon."
 msgstr "Você deve recebê-lo em breve."
 
-#: templates/registration/password_reset_email.html:5
+#: templates/registration/password_reset_email.html:4
 msgid ""
 "Hi, is everything ok?\n"
 "\n"
@@ -849,7 +863,7 @@ msgstr ""
 "        Por favor, vá para a seguinte página e entre com uma nova senha:\n"
 "    "
 
-#: templates/registration/password_reset_email.html:15
+#: templates/registration/password_reset_email.html:14
 msgid ""
 "\n"
 "    Thank you for using our site!\n"
@@ -917,9 +931,6 @@ msgstr "Alterar senha em %(site_name)s"
 
 #~ msgid "Insert new"
 #~ msgstr "Inserir novo"
-
-#~ msgid "Back"
-#~ msgstr "Voltar"
 
 #~ msgid "New"
 #~ msgstr "Novo"

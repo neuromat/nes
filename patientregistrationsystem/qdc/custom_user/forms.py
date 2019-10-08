@@ -7,30 +7,28 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.forms import PasswordResetForm
 from custom_user.models import Institution, UserProfile
-from patient.quiz_widget import SelectBoxCountries
 
 
 class UserForm(ModelForm):
+    first_name = CharField(required=True, widget=TextInput(attrs={'class': 'form-control', 'autofocus': "true",
+                                                                  'placeholder': _('Type first name')}))
+    last_name = CharField(required=True, widget=TextInput(attrs={'class': 'form-control', 'autofocus': "true",
+                                                                 'placeholder': _('Type last name')}))
+    email = CharField(required=True, widget=TextInput(
+        attrs={'class': 'form-control', 'placeholder': _('Type e-mail'), 'id': "email", 'type': 'email',
+               'data-error': "E-mail inválido", 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
+                                                           '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}))
 
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'password', 'email', 'groups']
 
         widgets = {
-            'first_name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
-                                           'placeholder': _('Type first name')}),
-            'last_name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
-                                          'placeholder': _('Type last name')}),
             'username': TextInput(attrs={'class': 'form-control', 'required': "",
                                          'placeholder': _('Type user name')}),
             'password': PasswordInput(attrs={'id': 'id_new_password1', 'required': "",
                                              'class': 'form-control', 'placeholder': _('Type password'),
                                              'onkeyup': "passwordForce(); if(beginCheckPassword1)checkPassExt();"}),
-            'email': TextInput(attrs={'class': 'form-control', 'required': "",
-                                      'placeholder': _('Type e-mail'), 'id': "email",
-                                      'type': 'email', 'data-error': "E-mail inválido",
-                                      'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
-                                                 '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
             'groups': CheckboxSelectMultiple(),
         }
 
@@ -82,19 +80,24 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['institution', 'login_enabled']
+        fields = ['institution', 'login_enabled', 'citation_name']
 
         widgets = {
             'institution': Select(attrs={'class': 'form-control'}),
-            'login_enabled': RadioSelect(attrs={'id': 'optradio'}),
+            'login_enabled': RadioSelect(),
+            'citation_name': TextInput(attrs={'class': 'form-control', 'placeholder': _('Type citation name')}),
         }
 
 
 class ResearcherForm(ModelForm):
+    first_name = CharField(required=True)
+    last_name = CharField(required=True)
+    email = CharField(required=True)
+    citation_name = CharField(required=False)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'citation_name']
 
         widgets = {
             'first_name': TextInput(attrs={'class': 'form-control', 'autofocus': "true", 'required': "",
@@ -106,6 +109,8 @@ class ResearcherForm(ModelForm):
                                       'type': 'email', 'data-error': "E-mail inválido",
                                       'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]' +
                                                  '+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
+            'citation_name': TextInput(attrs={'class': 'form-control',
+                                              'placeholder': _('Type citation name')}),
         }
 
 
@@ -117,14 +122,14 @@ class InstitutionForm(ModelForm):
         widgets = {
             'name': TextInput(attrs={'class': 'form-control', 'required': "", 'autofocus': ''}),
             'acronym': TextInput(attrs={'class': 'form-control'}),
-            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'country': Select(attrs={'class': 'form-control'}),
             'parent': Select(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super(InstitutionForm, self).__init__(*args, **kwargs)
         self.fields['country'].initial = 'BR'
-        instance = kwargs.get('instance')
+        instance = kwargs.get('instance') or self.instance
 
         if instance:
             parent_list = Institution.objects.all()
@@ -136,9 +141,8 @@ class InstitutionForm(ModelForm):
 
 def get_institutions_recursively(institution):
     institution_list = [institution]
-    output_list = set(institution_list)
     children = Institution.objects.filter(parent=institution)
     for child in children:
-        if child not in output_list:
-            output_list |= get_institutions_recursively(child)
-    return output_list
+        if child not in institution_list:
+            institution_list = get_institutions_recursively(child)
+    return institution_list

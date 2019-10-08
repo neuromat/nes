@@ -9,7 +9,6 @@ from django.utils.translation import ugettext as _
 
 from custom_user.forms import InstitutionForm, UserForm, UserFormUpdate, UserProfileForm, ResearcherForm
 from custom_user.models import Institution, UserProfile
-from patient.quiz_widget import SelectBoxCountriesDisabled
 
 
 def get_group_permissions(user):
@@ -212,7 +211,6 @@ def user_update(request, user_id, template_name="custom_user/register_users.html
 
 
 @login_required
-# @permission_required('team.change_team')
 def institution_create(request, template_name="custom_user/institution_register.html"):
     institution_form = InstitutionForm(request.POST or None)
 
@@ -236,7 +234,6 @@ def institution_create(request, template_name="custom_user/institution_register.
 
 
 @login_required
-# @permission_required('team.change_team')
 def institution_view(request, institution_id, template_name="custom_user/institution_register.html"):
     institution = get_object_or_404(Institution, pk=institution_id)
 
@@ -245,21 +242,13 @@ def institution_view(request, institution_id, template_name="custom_user/institu
     for field in institution_form.fields:
         institution_form.fields[field].widget.attrs['disabled'] = True
 
-    institution_form.fields['country'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_country', 'data-flags': 'true', 'disabled': 'true'})
-
     if request.method == "POST":
         if request.POST['action'] == "remove":
             institution_used = UserProfile.objects.filter(institution=institution)
             if institution_used.exists():
-                if institution_used.count() > 1:
-                    messages.warning(
-                        request,
-                        _('This institution cannot be removed because there are people associated with it.'))
-                else:
-                    messages.warning(
-                        request,
-                        _('This institution cannot be removed because there is a person associated with it.'))
+                messages.warning(
+                    request, _('This institution cannot be removed because there are researchers associated with it.')
+                )
 
                 redirect_url = reverse("institution_view", args=(institution_id,))
                 return HttpResponseRedirect(redirect_url)
@@ -285,7 +274,6 @@ def institution_view(request, institution_id, template_name="custom_user/institu
 
 
 @login_required
-# @permission_required('team.change_team')
 def institution_update(request, institution_id, template_name="custom_user/institution_register.html"):
     institution = get_object_or_404(Institution, pk=institution_id)
 

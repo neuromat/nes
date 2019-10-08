@@ -26,7 +26,7 @@ from .models import Experiment, Group, Subject, User, EEGSetting, \
     EMGPreamplifierSetting, EMGAmplifierSetting, EMGPreamplifierFilterSetting, \
     EMGAnalogFilterSetting, \
     EMGSurfacePlacement, EMGIntramuscularPlacement, EMGNeedlePlacement, \
-    EMGElectrodePlacementSetting
+    EMGElectrodePlacementSetting, ExperimentResearcher
 
 from survey.abc_search_engine import Questionnaires
 from survey.survey_utils import QuestionnaireUtils
@@ -39,8 +39,10 @@ class RestApiClient(object):
     active = False
 
     def __init__(self):
-        auth = coreapi.auth.BasicAuthentication(username=settings.PORTAL_API['USER'],
-                                                password=settings.PORTAL_API['PASSWORD'])
+        auth = coreapi.auth.BasicAuthentication(
+            username=settings.PORTAL_API['USER'],
+            password=settings.PORTAL_API['PASSWORD']
+        )
         self.client = coreapi.Client(auth=auth)
 
         try:
@@ -62,33 +64,52 @@ def get_portal_status():
 
 
 def send_experiment_to_portal(experiment: Experiment):
-
+    """
+    :param experiment: Experiment model instance
+    :return: coreapi.Client().action returning entity
+    """
     rest = RestApiClient()
 
     if not rest.active:
         return None
 
     # general params
-    params = {"nes_id": str(experiment.id),
-              "title": experiment.title,
-              "description": experiment.description,
-              "data_acquisition_done": str(experiment.data_acquisition_is_concluded),
-              "project_url": experiment.source_code_url,
-              "ethics_committee_url": experiment.ethics_committee_project_url
+    params = {'nes_id': str(experiment.id),
+              'title': experiment.title,
+              'description': experiment.description,
+              'data_acquisition_done':
+                  str(experiment.data_acquisition_is_concluded),
+              'project_url': experiment.source_code_url,
+              'ethics_committee_url': experiment.ethics_committee_project_url,
+              'release_notes':
+                  experiment.schedule_of_sending.get(
+                      status='scheduled').reason_for_resending
               }
 
     action_keys = ['experiments', 'create']
 
     if experiment.ethics_committee_project_file:
-        with open(path.join(settings.MEDIA_ROOT, experiment.ethics_committee_project_file.name), 'rb') as f:
+        with open(path.join(
+                settings.MEDIA_ROOT,
+                experiment.ethics_committee_project_file.name
+        ), 'rb') as f:
             params["ethics_committee_file"] = \
-                coreapi.utils.File(os.path.basename(experiment.ethics_committee_project_file.name), f)
+                coreapi.utils.File(
+                    os.path.basename(
+                        experiment.ethics_committee_project_file.name
+                    ), f
+                )
 
-            portal_experiment = rest.client.action(rest.schema, action_keys,
-                                                   params=params, encoding="multipart/form-data")
+            portal_experiment = \
+                rest.client.action(
+                    rest.schema, action_keys,
+                    params=params, encoding="multipart/form-data"
+                )
     else:
-        portal_experiment = rest.client.action(rest.schema, action_keys,
-                                               params=params, encoding="multipart/form-data")
+        portal_experiment = rest.client.action(
+            rest.schema, action_keys, params=params,
+            encoding="multipart/form-data"
+        )
 
     return portal_experiment
 
@@ -258,7 +279,7 @@ def send_eeg_setting_to_portal(eeg_setting: EEGSetting):
 
                 # electrode position
                 electrode_position_portal = send_eeg_electrode_position_to_portal(
-                    portal_eeg_setting['id'], electrode_model_portal['id'] , position)
+                    portal_eeg_setting['id'], electrode_model_portal['id'], position)
 
     return portal_eeg_setting
 
@@ -395,7 +416,8 @@ def send_eeg_electrode_localization_system_to_portal(
               'description': eeg_electrode_localization_system.description}
 
     if eeg_electrode_localization_system.map_image_file:
-        map_image_file = open(path.join(settings.MEDIA_ROOT, eeg_electrode_localization_system.map_image_file.name), 'rb')
+        map_image_file = open(path.join(settings.MEDIA_ROOT, eeg_electrode_localization_system.map_image_file.name),
+                              'rb')
         params["map_image_file"] = \
             coreapi.utils.File(
                 os.path.basename(eeg_electrode_localization_system.map_image_file.name),
@@ -735,7 +757,7 @@ def send_emg_intramuscular_placement_to_portal(experiment_nes_id,
     action_keys = ['experiments', 'emg_intramuscular_placement', 'create']
 
     portal_intramuscular_placement = rest.client.action(rest.schema, action_keys,
-                                                  params=params, encoding="multipart/form-data")
+                                                        params=params, encoding="multipart/form-data")
 
     return portal_intramuscular_placement
 
@@ -770,7 +792,7 @@ def send_emg_needle_placement_to_portal(experiment_nes_id,
     action_keys = ['experiments', 'emg_needle_placement', 'create']
 
     portal_needle_placement = rest.client.action(rest.schema, action_keys,
-                                                  params=params, encoding="multipart/form-data")
+                                                 params=params, encoding="multipart/form-data")
 
     return portal_needle_placement
 
@@ -1121,7 +1143,7 @@ def send_research_project_to_portal(experiment: Experiment):
 
     action_keys = ['experiments', 'studies', 'create']
 
-    portal_research_project = rest.client.action(rest.schema, action_keys , params=params)
+    portal_research_project = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_research_project
 
@@ -1134,14 +1156,59 @@ def send_researcher_to_portal(research_project_id, researcher: User):
         return None
 
     params = {"id": research_project_id,
-              "name": researcher.first_name + ' ' + researcher.last_name,
-              "email": researcher.email}
+              "first_name": researcher.first_name,
+              "last_name": researcher.last_name,
+              "email": researcher.email,
+              "citation_name": researcher.user_profile.citation_name}
 
     action_keys = ['studies', 'researcher', 'create']
 
     portal_participant = rest.client.action(rest.schema, action_keys, params=params)
 
     return portal_participant
+
+
+def send_experiment_researcher_to_portal(researcher: ExperimentResearcher):
+
+    first_name = ""
+    last_name = ""
+    citation_name = ""
+    citation_order = ""
+
+    if researcher.researcher.first_name:
+        first_name = researcher.researcher.first_name
+
+    if researcher.researcher.last_name:
+        last_name = researcher.researcher.last_name
+
+    if researcher.researcher.user_profile.citation_name:
+        citation_name = researcher.researcher.user_profile.citation_name
+
+    if citation_name == "" and first_name == "" and last_name == "":
+        return None
+
+    if researcher.channel_index:
+        citation_order = researcher.channel_index
+
+    rest = RestApiClient()
+
+    if not rest.active:
+        return None
+
+    params = {'experiment_nes_id': str(researcher.experiment.id),
+              'first_name': researcher.researcher.first_name,
+              'last_name': researcher.researcher.last_name,
+              'email': researcher.researcher.email,
+              'institution':
+                  researcher.researcher.user_profile.institution.name
+                  if researcher.researcher.user_profile.institution else '',
+              'citation_name': researcher.researcher.user_profile.citation_name,
+              'citation_order': citation_order
+              }
+
+    action_keys = ['experiments', 'researchers', 'create']
+
+    return rest.client.action(rest.schema, action_keys, params=params)
 
 
 def get_experiment_status_portal(experiment_id):
@@ -1166,8 +1233,7 @@ def get_experiment_status_portal(experiment_id):
 
 def send_steps_to_portal(portal_group_id, component_tree,
                          list_of_eeg_setting, list_of_emg_setting, list_of_tms_setting, list_of_context_tree,
-                         language_code,
-                         component_configuration_id=None, parent=None,):
+                         language_code, component_configuration_id=None, parent=None):
 
     component = component_tree['component']
     component_configuration = None
@@ -1293,9 +1359,7 @@ def send_steps_to_portal(portal_group_id, component_tree,
 
         language = survey_languages['language']
 
-        survey_metadata, survey_name = get_survey_information(
-            language, survey, surveys
-        )
+        survey_metadata, survey_name = get_survey_information(language, survey, surveys)
 
         params = {"id": portal_step['id'],
                   "survey_name": survey_name,
@@ -1314,9 +1378,7 @@ def send_steps_to_portal(portal_group_id, component_tree,
                     survey_languages['additional_languages'].split(' '):
                 if additional_language != '':
                     survey_metadata, survey_name = \
-                        get_survey_information(
-                            additional_language, survey, surveys
-                        )
+                        get_survey_information(additional_language, survey, surveys)
                     params['survey_name'] = survey_name
                     params['survey_metadata'] = survey_metadata
                     params['language_code'] = additional_language
@@ -1336,15 +1398,11 @@ def send_steps_to_portal(portal_group_id, component_tree,
     # sending sub-steps
     if component_tree['list_of_component_configuration']:
         for component_configuration in component_tree['list_of_component_configuration']:
-            sub_step_list = send_steps_to_portal(portal_group_id,
-                                                 component_configuration['component'],
-                                                 list_of_eeg_setting,
-                                                 list_of_emg_setting,
-                                                 list_of_tms_setting,
-                                                 list_of_context_tree,
-                                                 language_code,
-                                                 component_configuration['id'],
-                                                 portal_step['id'])
+            sub_step_list = send_steps_to_portal(
+                portal_group_id, component_configuration['component'],
+                list_of_eeg_setting, list_of_emg_setting, list_of_tms_setting,
+                list_of_context_tree, language_code, component_configuration['id'],
+                portal_step['id'])
             return_dict.update(sub_step_list)
 
     return return_dict
@@ -1353,19 +1411,14 @@ def send_steps_to_portal(portal_group_id, component_tree,
 def get_survey_information(language, survey, surveys):
     survey_name = surveys.get_survey_title(survey.lime_survey_id, language)
     questionnaire_utils = QuestionnaireUtils()
-    fields = get_questionnaire_fields_for_portal(
-        surveys, survey.lime_survey_id, language
-    )
-    questionnaire_fields = \
-        questionnaire_utils.create_questionnaire_explanation_fields(
-            survey.lime_survey_id, language, surveys, fields, False
-        )
+    fields = get_questionnaire_fields_for_portal(surveys, survey.lime_survey_id, language)
+    error, questionnaire_fields = questionnaire_utils.create_questionnaire_explanation_fields(
+            survey.lime_survey_id, language, surveys, fields, False)
     survey_metadata = ''
     for row in questionnaire_fields:
         first = True
         for column in row:
-            survey_metadata += \
-                (',' if not first else '') + '"' + str(column) + '"'
+            survey_metadata += (',' if not first else '') + '"' + str(column) + '"'
             if first:
                 first = False
 
@@ -1382,13 +1435,10 @@ def get_questionnaire_fields_for_portal(questionnaire_lime_survey, lime_survey_i
     """
 
     fields = []
-    responses_text = \
-        questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
+    responses_text = questionnaire_lime_survey.get_responses(lime_survey_id, language_code)
     if responses_text:
         # header
-        header_fields = next(
-            reader(StringIO(responses_text.decode()), delimiter=',')
-        )
+        header_fields = next(reader(StringIO(responses_text), delimiter=','))
         for field in header_fields:
             if field not in questionnaire_evaluation_fields_excluded:
                 fields.append(field)

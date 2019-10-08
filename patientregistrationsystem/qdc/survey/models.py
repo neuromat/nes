@@ -7,11 +7,20 @@ class Survey(models.Model):
 
     lime_survey_id = models.IntegerField(unique=True)
     is_initial_evaluation = models.BooleanField(default=True)
+    pt_title = models.CharField(null=True, max_length=255, default=None)
+    en_title = models.CharField(null=True, max_length=255, default=None)
+    is_active = models.NullBooleanField(default=None)
+
+    def __str__(self):
+        if self.en_title:
+            return self.en_title
+        elif self.pt_title:
+            return self.pt_title
+        else:
+            return self.code
 
     class Meta:
-        permissions = (
-            ("view_survey", "Can view survey"),
-        )
+        permissions = (("view_survey", "Can view survey"),)
 
     def save(self, *args, **kwargs):
         if not self.pk:

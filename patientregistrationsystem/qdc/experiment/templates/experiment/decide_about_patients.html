@@ -1,0 +1,125 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% block header %}
+    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
+    <script src="{% static 'quiz/js/participant_import.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="tab-content">
+        {% if messages %}
+            {% for message in messages %}
+
+                {% if message.tags == "success" %}
+                    <script>showSuccessMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "warning" %}
+                    <script>showWarningMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "error" %}
+                    <script>showErrorMessage('{{ message }}')</script>
+                {% endif %}
+
+                {% if message.tags == "info" %}
+                    <script>showInfoMessage('{{ message }}')</script>
+                {% endif %}
+
+            {% endfor %}
+        {% endif %}
+
+        <div class="tab-pane fade in active" id="selectedParticipantBreadCrumb">
+            <div class="col-md-10">
+                <ol class="breadcrumb">
+                    <li><a href="/home">{% trans "Home" %}</a></li>
+                    <li class="active">{% trans "Studies" %}</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="col-md-10">
+            {% if perms.patient.export_patient %}
+                {% if patients %}
+                    <form role="form" action="" method="POST">
+                    {% csrf_token %}
+                        <div class="container span6 offset3 well ">
+                            <h4>{% trans "Conflict" %}</h4>
+                            <div class="container span6 offset3 well ">
+                                {% trans "There is a conflict with one or more participants to be imported with the participants already in the database." %}<br>
+                                {% trans "You can decide whether you want to update the patient in the database or create a new patient them." %}<br><br>
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="col-md-5 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="control-label">{% trans "Participants to update/overwrite database" %}: </label>
+                                                <select class="form-control" size="13"
+                                                        id="multiselect_"
+                                                        name="from[]" multiple="multiple">
+                                                    {% for patient in patients %}
+                                                        {% if not patient.selected %}
+                                                            <option title="{% trans "Conflict with"%} {% if patient.name_db %}{{ patient.name_db }}{% else %}{{ patient.code_db }}{% endif %} {% if patient.cpf_db %}({{ patient.cpf_db }}){% endif %}"
+                                                                    value="{{ patient.id_db }}">
+                                                                {% if patient.name_new %}{{ patient.name_new }}{% else %}{{ patient.code_new }}{% endif %} {% if patient.cpf_new %}({{ patient.cpf_new }}){% endif %}
+                                                            </option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2">
+                                            <button type="button" id="multiselect__rightAll"
+                                                    class="btn btn-block"><i
+                                                    class="glyphicon glyphicon-forward"></i></button>
+                                            <button type="button" id="multiselect__rightSelected"
+                                                    class="btn btn-block"><i
+                                                    class="glyphicon glyphicon-chevron-right"></i></button>
+                                            <button type="button" id="multiselect__leftSelected"
+                                                    class="btn btn-block"><i
+                                                    class="glyphicon glyphicon-chevron-left"></i></button>
+                                            <button type="button" id="multiselect__leftAll"
+                                                    class="btn btn-block"><i
+                                                    class="glyphicon glyphicon-backward"></i></button>
+                                        </div>
+                                        <div class="col-md-5 col-sm-10">
+                                            <label class="control-label">{% trans "New participants" %}: </label>
+                                            <select name="to[]" id="multiselect__to"
+                                                    class="form-control" size="13"
+                                                    multiple="multiple">
+                                                {% for patient in patients %}
+                                                    {% if patient.selected %}
+                                                        <option title="{{ patient.name_new }}"
+                                                                value="{{ patient.id_new }}">
+                                                            {% if patient.name_new %}{{ patient.name_new }}{% else %}{{ patient.code_new }}{% endif %} {% if patient.cpf_new %}({{ patient.cpf_new }}){% endif %}
+                                                        </option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group pull-right">
+                            <button type="submit" class="btn btn-primary" style="margin-left: 5px;" name="action" value="run">{% trans "Run" %}</button>
+                        </div>
+                    </form>
+                {% endif %}
+            {% endif %}
+
+            <div class="btn-group pull-right">
+                <a href="/home/" class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

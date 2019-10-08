@@ -4,12 +4,13 @@ from survey.abc_search_engine import Questionnaires
 from survey.views import get_questionnaire_language
 
 
-BASE_DIRECTORY = "NES_EXPORT"
+BASE_DIRECTORY = "data"
 PER_PARTICIPANT_DIRECTORY = "Per_participant"
 PER_QUESTIONNAIRE_DIRECTORY = "Per_questionnaire"
 QUESTIONNAIRE_METADATA_DIRECTORY = "Questionnaire_metadata"
 PARTICIPANT_DATA_DIRECTORY = "Participant_data"
 EXPERIMENT_DATA_DIRECTORY = "Experiment_data"
+GOALKEEPER_GAME_DATA_DIRECTORY = "Goalkeeper_game_data"
 EXPORT_FILENAME = "export.zip"
 EXPORT_EXPERIMENT_FILENAME = "export_experiment.zip"
 
@@ -29,8 +30,6 @@ class InputExport:
         self.data = {}
 
     def read(self, input_filename, update_input_data=True):
-        # print("read")
-
         with open(input_filename.encode('utf-8'), 'r') as input_file:
             input_data_temp = load(self.data, input_file)
 
@@ -40,12 +39,10 @@ class InputExport:
         return self.data
 
     def write(self, output_filename):
-        # print("write")
         with open(output_filename.encode('utf-8'), 'w', encoding='UTF-8') as outfile:
             dump(self.data, outfile)
 
     def build_header(self, export_per_experiment):
-        # print("header")
         # /NES_EXPORT
         self.data["base_directory"] = BASE_DIRECTORY
         self.data["per_participant_directory"] = PER_PARTICIPANT_DIRECTORY
@@ -55,29 +52,18 @@ class InputExport:
         if export_per_experiment:
             self.data["experiment_data_directory"] = EXPERIMENT_DATA_DIRECTORY
             self.data["participant_data_directory"] = PARTICIPANT_DATA_DIRECTORY
+            self.data["goalkeeper_game_data_directory"] = GOALKEEPER_GAME_DATA_DIRECTORY
 
     def build_dynamic_header(self, variable_name, variable_data):
         self.data[variable_name] = variable_data
 
     def build_diagnosis_participant(self, strut_name, output_filename, field_header_list):
-        # print("participant or diagnosis")
-        self.data[strut_name] = {
-            "output_filename": output_filename,
-            "output_list": [],
-            "data_list": []
-        }
-        # self.data[strut_name].append({"output_filename": output_filename, "output_list": [], "data_list": []})
-
-        # field_header_list[0] -> field
-        # field_header_list[1] -> header
+        self.data[strut_name] = {"output_filename": output_filename, "output_list": [], "data_list": []}
         for field, header in field_header_list:
             output_data = {"header": header, "field": field}
             self.data[strut_name]["output_list"].append(output_data)
-            # self.data[strut_name][0]["output_list"]
 
     def build_questionnaire(self, questionnaire_list, language, entrance_questionnaire):
-
-        # print("questionnaire")
         questionnaire_lime_survey = Questionnaires()
         if "questionnaire_language" not in self.data:
             self.data["questionnaire_language"] = {}
@@ -90,7 +76,10 @@ class InputExport:
 
                 languages = questionnaire_lime_survey.get_survey_languages(sid)
                 language_list = [languages['language']]
-                additional_language = languages['additional_languages'].split(' ')
+                if languages['additional_languages']:
+                    additional_language = languages['additional_languages'].split(' ')
+                else:
+                    additional_language = ['']
                 for item in additional_language:
                     if item != '':
                         language_list.append(item)
@@ -101,12 +90,13 @@ class InputExport:
                         "output_language": output_language,
                     }
 
-                # if sid not in self.data['questionnaires']:
-                self.data["questionnaires"].append({"id": sid,
-                                                    "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
-                                                    "questionnaire_name": title,
-                                                    "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
-                                                    "output_list": [], "responses_list": []})
+                self.data["questionnaires"].append({
+                    "id": sid,
+                    "prefix_filename_fields": PREFIX_FILENAME_FIELDS,
+                    "questionnaire_name": title,
+                    "prefix_filename_responses": PREFIX_FILENAME_RESPONSES,
+                    "output_list": [], "responses_list": []
+                })
                 for header, field in field_header_list:
                     output_data = {"header": header, "field": field}
                     self.data["questionnaires"][-1]["output_list"].append(output_data)
@@ -118,7 +108,10 @@ class InputExport:
                 output_language = get_questionnaire_language(questionnaire_lime_survey, sid, language)
                 languages = questionnaire_lime_survey.get_survey_languages(sid)
                 language_list = [languages['language']]
-                additional_language = languages['additional_languages'].split(' ')
+                if languages['additional_languages']:
+                    additional_language = languages['additional_languages'].split(' ')
+                else:
+                    additional_language = ['']
                 for item in additional_language:
                     if item != '':
                         language_list.append(item)
@@ -150,23 +143,21 @@ class InputExport:
         questionnaire_lime_survey.release_session_key()
 
 
-def build_partial_export_structure(export_per_participant, participant_field_header_list, output_filename,
-                                   language=DEFAULT_LANGUAGE):
+def build_partial_export_structure(export_per_participant, participant_field_header_list, output_filename):
 
     json_data = InputExport()
 
     json_data.build_header()
     json_data.build_dynamic_header("export_per_participant", export_per_participant)
     json_data.build_diagnosis_participant("participants", OUTPUT_FILENAME_PARTICIPANTS, participant_field_header_list)
-    # json_data.build_diagnosis_participant("diagnosis", OUTPUT_FILENAME_DIAGNOSIS, diagnosis_field_header_list)
-    # json_data.build_questionnaire(questionnaires_list, language)
     json_data.write(output_filename)
 
 
-def build_complete_export_structure(export_per_participant, export_per_questionnaire, export_per_experiment,
-                                    participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
-                                    experiment_questionnaires_list, response_type, heading_type, output_filename,
-                                    component_list, language):
+def build_complete_export_structure(
+        export_per_participant, export_per_questionnaire, export_per_experiment,
+        participant_field_header_list, diagnosis_field_header_list, questionnaires_list,
+        experiment_questionnaires_list, response_type, heading_type,
+        output_filename, component_list, language, filesformat_type):
 
     json_data = InputExport()
 
@@ -179,6 +170,8 @@ def build_complete_export_structure(export_per_participant, export_per_questionn
     json_data.build_dynamic_header("response_type", response_type)
 
     json_data.build_dynamic_header("heading_type", heading_type)
+
+    json_data.build_dynamic_header("filesformat_type", filesformat_type)
 
     json_data.build_dynamic_header("output_language", language)
 

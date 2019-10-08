@@ -35,7 +35,7 @@ def icd_english_translation(tree):
 
         long_description = category.find("Rubric[@kind='preferredLong']")
 
-        if long_description:
+        if long_description is not None:
             description = format_text_element(long_description.find("Label"))
         else:
             description = abbreviated_description
@@ -70,28 +70,25 @@ class Command(BaseCommand):
     help = 'Import ICD for translation'
 
     def add_arguments(self, parser):
-        parser.add_argument('--en', nargs='?', type=str, help='english filename')
-        # parser.add_argument('--pt_br', nargs='?', type=str, help='portuguese filename')
+        parser.add_argument(
+            '--en', nargs='?', type=str, help='english filename'
+        )
 
     def handle(self, *args, **options):
 
         if options['en']:
             filename_english = options['en']
             try:
-                records = import_classification_of_diseases(filename_english)
-                self.stdout.write('Successfully imported %d record(s) English translation from file "%s".'
-                                  % (records, filename_english))
-
+                import_classification_of_diseases(filename_english)
             except IOError:
-                raise CommandError('Filename "%s" does not exist.' % filename_english)
-
+                raise CommandError(
+                    'Filename "%s" does not exist.' % filename_english
+                )
             except UnicodeDecodeError:
-                raise CommandError('Filename "%s" has incorrect format.' % filename_english)
-
+                raise CommandError(
+                    'Filename "%s" has incorrect format.' % filename_english
+                )
             except ElementTree.ParseError:
-                raise CommandError('Filename "%s" has incorrect format.' % filename_english)
-
-        # if options['pt_br']:
-        #     filename_portuguese = options['pt_br']
-        #
-        # self.stdout.write('Successfully import translation.' )
+                raise CommandError(
+                    'Filename "%s" has incorrect format.' % filename_english
+                )

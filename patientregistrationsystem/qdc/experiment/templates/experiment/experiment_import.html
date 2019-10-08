@@ -1,0 +1,97 @@
+{% extends "quiz/template.html" %}
+
+{% load i18n admin_static %}
+{% load i18n %}
+
+{% block header %}
+    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
+    <script src="{% static 'quiz/js/participant_import.js' %}"></script>
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+{% endblock %}
+
+{% block form %}
+
+{% endblock %}
+
+{% block activeAdvancedResearchProject %}class="active"{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="tab-pane fade in active" id="researchProjectBreadCrumb">
+        <div class="col-md-10">
+            <ol class="breadcrumb">
+                <li><a href="/home">{% trans "Home" %}</a></li>
+                <li><a href="{% url 'research_project_list' %}">{% trans "Studies" %}</a></li>
+                <li class="active">
+                    {% if research_project_id %}
+                        {% trans "Import Experiment" %}
+                    {% else %}
+                        {% trans "Import Study/Experiment" %}
+                    {% endif %}
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="tab-pane fade in active" id="mainMenuUserTab">
+        <div class="col-md-10">
+
+            <div class="container span6 offset3 well ">
+            {% if research_project_id %}
+                <h3>{% trans "Import Experiment" %}</h3>
+            {% else %}
+                <h3>{% trans "Import Study/Experiment" %}</h3>
+            {% endif %}
+            <h4><em>{% trans "Choose a .zip file previously exported by NES" %}</em></h4>
+            <p>
+                {% if research_project_id %}
+                    {% trans "This will create a whole new Experiment. The extension of objects that will be imported depends upon the stuff inside json file." %}
+                {% else %}
+                    {% trans "This will create a whole new Study/Experiment. The extension of objects that will be imported depends upon the stuff inside zip file." %}
+                {% endif %}
+            </p>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="file" name="file">
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+
+            <div class="btn-group pull-right">
+                <a href="/experiment/research_project/{% if research_project_id %}{{ research_project_id }}{% else %}list{% endif %}"
+                   class="btn" style="background-color: #f5f5f5">{% trans "Cancel" %}</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

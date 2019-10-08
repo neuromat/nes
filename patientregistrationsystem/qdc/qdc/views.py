@@ -35,8 +35,12 @@ def contact(request):
     if check_upgrade(request):
         if_upgrade = True
         if request.user.has_perm('configuration.upgrade_rights'):
-            messages.info(request, mark_safe('<a href="/home/upgrade_nes/">There is a new version of NES. Click '
-                                             'for upgrade</a>'))
+            messages.info(
+                request, mark_safe(
+                    '<a href="/home/upgrade_nes/">There is a new version of NES. Click '
+                    'for upgrade</a>'
+                )
+            )
 
         else:
             messages.success(request, _("There is a new version, please contact your NES administrator to update !"))
@@ -136,7 +140,6 @@ def upgrade_nes(request):
 
         new_version_tag = \
             sorted(git.tag().split('\n'), key=lambda s: list(map(int, s.replace('-', '.').split('.')[1:])))[-1]
-
 
         repo.remotes.origin.fetch()
 

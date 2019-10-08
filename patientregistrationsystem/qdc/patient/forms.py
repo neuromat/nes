@@ -4,17 +4,20 @@ from django.core.validators import EMPTY_VALUES
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm, TextInput, DateInput, Select, RadioSelect, TypedChoiceField
 from django.forms.widgets import Textarea
-from cep.widgets import CEPInput
 
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, ComplementaryExam, ExamFile, \
     QuestionnaireResponse
-from patient.quiz_widget import SelectBoxCountries, SelectBoxState
 
 # pylint: disable=E1101
 # pylint: disable=E1103
 
 
 class PatientForm(ModelForm):
+    def __init__(self, data=None, *args, **kwargs):
+        super(PatientForm, self).__init__(data, *args, **kwargs)
+        self.fields['zipcode'].widget.attrs['onBlur'] = 'pesquisacep(this.value);'
+        self.fields['country'].initial = 'BR'
+
     anonymous = forms.BooleanField(required=False,
                                    initial=False,
                                    label=_('Anonymous participant?'))
@@ -42,16 +45,14 @@ class PatientForm(ModelForm):
             'rg': TextInput(attrs={'class': 'form-control'}),
             'marital_status': Select(attrs={'class': 'form-control'}),
 
-            'country': SelectBoxCountries(attrs={'data-flags': 'true'}),
-            'zipcode': CEPInput(address={'street': 'id_street', 'district': 'id_district', 'city': 'id_city',
-                                         'state': 'id_state'},
-                                attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
+            'country': Select(attrs={'class': 'form-control'}),
+            'zipcode': TextInput(attrs={'class': 'form-control', 'pattern': '\d{5}-?\d{3}'}),
             'street': TextInput(attrs={'class': 'form-control'}),
             'address_number': TextInput(attrs={'class': 'form-control'}),
             'address_complement': TextInput(attrs={'class': 'form-control'}),
             'district': TextInput(attrs={'class': 'form-control'}),
             'city': TextInput(attrs={'class': 'form-control'}),
-            'state': SelectBoxState(attrs={'data-country': 'id_country'}),
+            'state': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={
                 'class': 'form-control', 'type': 'email', 'data-error': _('Incorrect e-mail'),
                 'pattern': '^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$'}),
@@ -95,7 +96,7 @@ class SocialDemographicDataForm(ModelForm):
                   'social_class']
         widgets = {
             'natural_of': TextInput(attrs={'class': 'form-control'}),
-            'citizenship': SelectBoxCountries(attrs={'data-flags': 'true'}),
+            'citizenship': Select(attrs={'class': 'form-control'}),
             'patient_schooling': Select(attrs={'class': 'form-control'}),
             'schooling': Select(attrs={'class': 'form-control'}),
             'flesh_tone': Select(attrs={'class': 'form-control'}),
@@ -173,8 +174,10 @@ class QuestionnaireResponseForm(ModelForm):
         ]
 
         widgets = {
-            'date': DateInput(format=_("%d/%m/%Y"),
-                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy')},)
-                                     # 'required': "",
-                                     # 'data-error': _("Fill date must be filled")}, )
+            'date': DateInput(
+                format=_("%d/%m/%Y"),
+                attrs={'class': 'form-control datepicker',
+                       'placeholder': _('mm/dd/yyyy'), 'required': "",
+                       'data-error': _("Fill date must be filled.")},
+            )
         }

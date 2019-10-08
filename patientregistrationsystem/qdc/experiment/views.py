@@ -3,6 +3,7 @@ import csv
 import re
 import json
 import random
+import tempfile
 
 import numpy as np
 
@@ -33,13 +34,15 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Min
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.db.models.deletion import ProtectedError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext as _
+from django.core.cache import cache
 
+from experiment.import_export import ExportExperiment, ImportExperiment
 from qdc.settings import MEDIA_ROOT
 from survey.survey_utils import QuestionnaireUtils
 from .models import Experiment, ExperimentResearcher, Subject, QuestionnaireResponse, SubjectOfGroup, Group, \
@@ -83,15 +86,22 @@ from .forms import ExperimentForm, QuestionnaireResponseForm, FileForm, GroupFor
 
 from .portal import get_experiment_status_portal, \
     send_experiment_to_portal, get_portal_status, \
-    send_group_to_portal, send_research_project_to_portal, send_experiment_end_message_to_portal, \
+    send_group_to_portal, send_research_project_to_portal, \
+    send_experiment_end_message_to_portal, \
     send_experimental_protocol_to_portal, send_participant_to_portal, \
-    send_researcher_to_portal, send_eeg_setting_to_portal, send_emg_setting_to_portal, \
-    send_tms_setting_to_portal, send_context_tree_to_portal, send_steps_to_portal, \
+    send_researcher_to_portal, send_eeg_setting_to_portal, \
+    send_emg_setting_to_portal, \
+    send_tms_setting_to_portal, send_context_tree_to_portal, \
+    send_steps_to_portal, \
     send_file_to_portal, send_eeg_data_to_portal, \
     send_digital_game_phase_data_to_portal, \
-    send_questionnaire_response_to_portal, send_emg_data_to_portal, send_tms_data_to_portal, \
+    send_questionnaire_response_to_portal, send_emg_data_to_portal, \
+    send_tms_data_to_portal, \
     send_generic_data_collection_data_to_portal, \
-    send_additional_data_to_portal, send_publication_to_portal
+    send_additional_data_to_portal, send_publication_to_portal, \
+    send_experiment_researcher_to_portal
+
+from .pdf import render as render_to_pdf
 
 from configuration.models import LocalInstitution
 
@@ -269,6 +279,33 @@ def research_project_view(request, research_project_id, template_name="experimen
             redirect_url = reverse("experiment_view", args=(experiment.id,))
             return HttpResponseRedirect(redirect_url)
 
+        if request.POST['action'][:10] == "create_pdf":
+            experiment_id = request.POST['action'][11:]
+            experiment = get_object_or_404(Experiment, pk=experiment_id)
+            researchers = ExperimentResearcher.objects.filter(experiment=experiment)
+            groups = Group.objects.filter(experiment=experiment)
+            experimental_protocol_image = []
+            language_code = request.LANGUAGE_CODE
+            for group in groups:
+                if group.experimental_protocol:
+                    tree = get_block_tree(group.experimental_protocol, language_code)
+                    image = get_experimental_protocol_image(
+                        group.experimental_protocol, tree, True
+                    )
+                    group_and_image = [group.title, image]
+                    experimental_protocol_image.append(group_and_image)
+
+            return render_to_pdf(
+                'experiment/experiment_info_pdf.html',
+                {
+                    'pagesize': 'A4',
+                    'experiment': experiment,
+                    'researchers': researchers,
+                    'groups': groups,
+                    'experimental_protocol_image': experimental_protocol_image
+                }
+            )
+
     context = {"can_change": get_can_change(request.user, research_project),
                "experiments": research_project.experiment_set.order_by('title'),
                "keywords": research_project.keywords.order_by('name'),
@@ -291,7 +328,10 @@ def get_owner_full_name(research_project):
 def research_project_update(request, research_project_id, template_name="experiment/research_project_register.html"):
     research_project = get_object_or_404(ResearchProject, pk=research_project_id)
 
-    check_can_change(request.user, research_project)
+    #  com o decorator @permission_required('experiment.change_researchproject'),
+    #  a função abaixo é desnecessaria:
+    #
+    #  check_can_change(request.user, research_project)
 
     research_project_form = ResearchProjectForm(request.POST or None, instance=research_project)
     research_project_owner_form = ResearchProjectOwnerForm(request.POST or None, instance=research_project)
@@ -606,7 +646,8 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
     tms_setting_list = TMSSetting.objects.filter(experiment=experiment).order_by('name')
     context_tree_list = ContextTree.objects.filter(experiment=experiment).order_by('name')
     experiment_form = ExperimentForm(request.POST or None, instance=experiment)
-    collaborators = ExperimentResearcher.objects.filter(experiment=experiment).order_by('researcher__first_name')
+    collaborators = ExperimentResearcher.objects.filter(experiment=experiment).order_by('channel_index')
+    portal = settings.PORTAL_API.get("URL")
 
     for field in experiment_form.fields:
         experiment_form.fields[field].widget.attrs['disabled'] = True
@@ -663,20 +704,22 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
                 redirect_url = reverse("experiment_view", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
 
-    context = {"can_change": get_can_change(request.user, experiment.research_project),
-               "experiment": experiment,
-               "last_schedule_of_sending":
-                   ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last(),
-               "experiment_form": experiment_form,
-               "group_list": group_list,
-               "eeg_setting_list": eeg_setting_list,
-               "emg_setting_list": emg_setting_list,
-               "tms_setting_list": tms_setting_list,
-               "context_tree_list": context_tree_list,
-               "research_project": experiment.research_project,
-               "experiment_status_portal": experiment_status_portal,
-               "collaborators": collaborators,
-               }
+    context = {
+        "can_change": get_can_change(request.user, experiment.research_project),
+        "experiment": experiment,
+        "last_schedule_of_sending":
+            ScheduleOfSending.objects.filter(experiment=experiment).order_by('schedule_datetime').last(),
+        "experiment_form": experiment_form,
+        "group_list": group_list,
+        "eeg_setting_list": eeg_setting_list,
+        "emg_setting_list": emg_setting_list,
+        "tms_setting_list": tms_setting_list,
+        "context_tree_list": context_tree_list,
+        "research_project": experiment.research_project,
+        "experiment_status_portal": experiment_status_portal,
+        "collaborators": collaborators,
+        "portal": portal
+    }
 
     return render(request, template_name, context)
 
@@ -685,10 +728,9 @@ def experiment_view(request, experiment_id, template_name="experiment/experiment
 @permission_required('experiment.change_experiment')
 def experiment_update(request, experiment_id, template_name="experiment/experiment_register.html"):
     experiment = get_object_or_404(Experiment, pk=experiment_id)
-
     check_can_change(request.user, experiment.research_project)
-
     group_list = Group.objects.filter(experiment=experiment)
+    portal = settings.PORTAL_API.get("URL")
 
     if request.method == "POST":
         experiment_form = ExperimentForm(request.POST or None, request.FILES, instance=experiment)
@@ -705,11 +747,14 @@ def experiment_update(request, experiment_id, template_name="experiment/experime
     else:
         experiment_form = ExperimentForm(request.POST or None, instance=experiment)
 
-    context = {"research_project": experiment.research_project,
-               "experiment_form": experiment_form,
-               "editing": True,
-               "group_list": group_list,
-               "experiment": experiment}
+    context = {
+        "research_project": experiment.research_project,
+        "experiment_form": experiment_form,
+        "editing": True,
+        "group_list": group_list,
+        "experiment": experiment,
+        "portal": portal
+    }
 
     return render(request, template_name, context)
 
@@ -722,7 +767,8 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
     collaborators_added = ExperimentResearcher.objects.filter(experiment_id=experiment_id)
     collaborators_added_ids = collaborators_added.values_list('researcher_id', flat=True)
 
-    collaborators = User.objects.filter(is_active=True).exclude(pk__in=collaborators_added_ids).order_by('first_name', 'last_name')
+    collaborators = User.objects.filter(is_active=True).exclude(pk__in=collaborators_added_ids).order_by('first_name',
+                                                                                                         'last_name')
 
     if request.method == "POST":
         if request.POST['action'] == "save":
@@ -757,6 +803,102 @@ def collaborator_create(request, experiment_id, template_name="experiment/collab
 
 
 @login_required
+# @permission_required('experiment.export_experiment')  # TODO: add permisson
+def experiment_export(request, experiment_id):
+    experiment = get_object_or_404(Experiment, pk=experiment_id)
+
+    export = ExportExperiment(experiment)
+    err_code_experiment, err_message_experiment = export.export_all()
+
+    if err_code_experiment:
+        messages.warning(request, err_message_experiment)
+
+    file = open(path.join(export.temp_dir, export.FILE_NAME_ZIP), 'rb')
+    response = HttpResponse(file, content_type='application/zip')
+    response['Content-Length'] = path.getsize(file.name)
+    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str('experiment.zip')
+
+    return response
+
+
+def handle_uploaded_file(file):
+    with tempfile.NamedTemporaryFile('wb+', delete=False) as f:
+        for chunk in file.chunks():
+            f.write(chunk)
+        return f.name
+
+
+@login_required
+# @permission_required('experiment.import_experiment')  # TODO: add permissons
+def experiment_import(request, template_name='experiment/experiment_import.html', research_project_id=None):
+    if request.method == 'GET':
+        return render(request, template_name, context={'research_project_id': research_project_id})
+
+    if request.method == 'POST':
+        if not request.POST.get('action'):
+            file = request.FILES.get('file')
+            if not file:
+                messages.warning(request, _('Please select a zip file'))
+                return HttpResponseRedirect(reverse('experiment_import'))
+
+            file_name = handle_uploaded_file(file)
+            import_experiment = ImportExperiment(file_name)
+
+            # Deal with patients before trying to import the experiment
+            err_code_patients, err_message_patients, patients_with_conflict = \
+                import_experiment.check_for_duplicates_of_participants()
+
+            if err_code_patients:
+                messages.error(request, _(err_message_patients))
+                if research_project_id:
+                    return HttpResponseRedirect(reverse('experiment_import',
+                                                        kwargs={'research_project_id': research_project_id}))
+                else:
+                    return HttpResponseRedirect(reverse('experiment_import'))
+
+            request.session['patients'] = patients_with_conflict
+            request.session['file_name'] = file_name
+
+            if patients_with_conflict and not request.session.get('patients_conflicts_resolved', None):
+                return render(
+                    request, 'experiment/decide_about_patients.html', context={'patients': patients_with_conflict})
+
+    patients_to_update = request.POST.getlist('from[]')
+
+    file_name = request.session.get('file_name')
+    import_experiment = ImportExperiment(file_name)
+    result_code, result_message = \
+        import_experiment.import_all(request, research_project_id, patients_to_update)
+    os.remove(file_name)
+
+    if result_code:
+        if result_code == import_experiment.BAD_JSON_FILE_ERROR_CODE:
+            messages.error(request, _(result_message))
+            if research_project_id:
+                return HttpResponseRedirect(
+                    reverse('experiment_import', kwargs={'research_project_id': research_project_id}))
+            else:
+                return HttpResponseRedirect(reverse('experiment_import'))
+        if result_code == import_experiment.LIMESURVEY_ERROR:
+            messages.error(request, result_message)
+    if research_project_id:
+        messages.success(request, _('Experiment successfully imported.'))
+    else:
+        messages.success(request, _('Experiment successfully imported. New study was created.'))
+
+    # Push new object to session to display log to users
+    request.session['objects_imported'] = import_experiment.get_new_objects()
+    return HttpResponseRedirect(reverse('import_log'))
+
+
+@login_required
+# @permission_required('experiment.import_experiment')  # TODO: add permissons
+def import_log(request):
+    context = request.session.get('objects_imported')
+    return render(request, 'experiment/import_log.html', context)
+
+
+@login_required
 @permission_required('experiment.change_experiment')
 def experiment_schedule_of_sending(request, experiment_id,
                                    template_name="experiment/experiment_schedule_of_sending.html"):
@@ -773,7 +915,7 @@ def experiment_schedule_of_sending(request, experiment_id,
     limesurvey_available = check_limesurvey_access(request, surveys)
 
     experiment_questionnaires = {}
-    for group in experiment.group_set.all():
+    for group in experiment.groups.all():
 
         list_of_eeg_configuration = create_list_of_trees(group.experimental_protocol, "questionnaire")
         for path_tree in list_of_eeg_configuration:
@@ -783,7 +925,7 @@ def experiment_schedule_of_sending(request, experiment_id,
 
                 language = get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id,
                                                       request.LANGUAGE_CODE)
-                questionnaire_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id, language)
+                questionnaire_title = find_questionnaire_name(questionnaire.survey, language)["name"]
 
                 current_sensitive_questions = SensitiveQuestion.objects.filter(survey=questionnaire.survey)
                 current_portal_selected_questions = PortalSelectedQuestion.objects.filter(experiment=experiment,
@@ -928,7 +1070,9 @@ def date_of_first_data_collection(subject_of_group):
 
 def send_all_experiments_to_portal():
     language_code = 'en'
-    for schedule_of_sending in ScheduleOfSending.objects.filter(status="scheduled").order_by("schedule_datetime"):
+    for schedule_of_sending in ScheduleOfSending.objects.filter(
+            status="scheduled"
+            ).order_by("schedule_datetime"):
 
         print("\nExperiment %s - %s\n" % (schedule_of_sending.experiment.id,
                                           schedule_of_sending.experiment.title))
@@ -946,6 +1090,20 @@ def send_all_experiments_to_portal():
             list_of_emg_setting = {}
             list_of_tms_setting = {}
             list_of_context_tree = {}
+
+            # sending experiment researchers
+            for experiment_researcher in \
+                    schedule_of_sending.experiment.researchers.all():
+                # only send experiment researcher with first_name and
+                # last_name
+                if not experiment_researcher.researcher.first_name and \
+                        not \
+                        experiment_researcher.researcher.last_name:
+                    continue
+                else:
+                    send_experiment_researcher_to_portal(
+                        experiment_researcher
+                    )
 
             # sending publications
             for publication in \
@@ -1024,13 +1182,12 @@ def send_all_experiments_to_portal():
                 if group.experimental_protocol:
                     tree = get_block_tree(group.experimental_protocol, language_code)
                     textual_description = get_description_from_experimental_protocol_tree(tree)
-                    image = get_experimental_protocol_image(group.experimental_protocol, tree)
+                    image = get_experimental_protocol_image(group.experimental_protocol, tree, True)
 
-                    # steps
-                    step_list = send_steps_to_portal(portal_group['id'], tree,
-                                                     list_of_eeg_setting, list_of_emg_setting,
-                                                     list_of_tms_setting, list_of_context_tree,
-                                                     language_code)
+                    # Steps
+                    step_list = send_steps_to_portal(
+                        portal_group['id'], tree, list_of_eeg_setting, list_of_emg_setting,
+                        list_of_tms_setting, list_of_context_tree, language_code)
                     root_step_id = step_list['0']['portal_step_id']
 
                     list_of_trees = create_list_of_trees(group.experimental_protocol, None)
@@ -1052,14 +1209,14 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(eeg_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_eeg_data_file = send_eeg_data_to_portal(
+                        send_eeg_data_to_portal(
                             portal_participant_list[eeg_data.subject_of_group.id],
                             portal_step_list[eeg_data.data_configuration_tree.id],
                             portal_file_id_list,
                             list_of_eeg_setting[eeg_data.eeg_setting.id],
                             eeg_data)
 
-                    # emg data
+                    # Emg data
                     emg_data_list = EMGData.objects.filter(subject_of_group__group=group)
 
                     for emg_data in emg_data_list:
@@ -1069,24 +1226,24 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(emg_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_emg_data_file = send_emg_data_to_portal(
+                        send_emg_data_to_portal(
                             portal_participant_list[emg_data.subject_of_group.id],
                             portal_step_list[emg_data.data_configuration_tree.id],
                             portal_file_id_list,
                             list_of_emg_setting[emg_data.emg_setting.id],
                             emg_data)
 
-                    # tms data
+                    # Tms data
                     tms_data_files = TMSData.objects.filter(subject_of_group__group=group)
 
                     for tms_data_file in tms_data_files:
-                        portal_tms_data_file = send_tms_data_to_portal(
+                        send_tms_data_to_portal(
                             portal_participant_list[tms_data_file.subject_of_group.id],
                             portal_step_list[tms_data_file.data_configuration_tree.id],
                             list_of_tms_setting[tms_data_file.tms_setting.id],
                             tms_data_file)
 
-                    # digital game phase data
+                    # Digital game phase data
                     digital_game_phase_data_list = DigitalGamePhaseData.objects.filter(subject_of_group__group=group)
 
                     for digital_game_phase_data in digital_game_phase_data_list:
@@ -1096,98 +1253,66 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(digital_game_phase_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_digital_game_phase_data_file = send_digital_game_phase_data_to_portal(
+                        send_digital_game_phase_data_to_portal(
                             portal_participant_list[digital_game_phase_data.subject_of_group.id],
                             portal_step_list[digital_game_phase_data.data_configuration_tree.id],
                             portal_file_id_list,
                             digital_game_phase_data)
 
-                    # questionnaire response
+                    # Questionnaire response
                     surveys = Questionnaires()
                     if surveys.session_key:
 
-                        # questionnaire response
-                        questionnaire_responses = \
-                            QuestionnaireResponse.objects.filter(
-                                subject_of_group__group=group
-                            )
+                        # Questionnaire response
+                        questionnaire_responses = QuestionnaireResponse.objects.filter(subject_of_group__group=group)
 
                         for questionnaire_response in questionnaire_responses:
-                            component_id = \
-                                questionnaire_response.data_configuration_tree.\
-                                    component_configuration.component_id
-                            questionnaire = \
-                                Questionnaire.objects.get(pk=component_id)
+                            component_id = questionnaire_response.data_configuration_tree.component_configuration.component_id
+                            questionnaire = Questionnaire.objects.get(pk=component_id)
                             limesurvey_id = questionnaire.survey.lime_survey_id
-                            token = \
-                                surveys.get_participant_properties(
-                                    limesurvey_id,
-                                    questionnaire_response.token_id,
-                                    "token"
-                                )
-                            questionnaire_language = \
-                                get_questionnaire_language(
-                                    surveys, limesurvey_id, language_code
-                                )
-                            responses_string = \
-                                surveys.get_responses_by_token(
-                                    limesurvey_id,
-                                    token,
-                                    questionnaire_language
-                                )
-                            limesurvey_response = \
-                                {'questions': '', 'answers': ''}
+                            token = surveys.get_participant_properties(
+                                    limesurvey_id, questionnaire_response.token_id, "token")
+                            questionnaire_language = get_questionnaire_language(surveys, limesurvey_id, language_code)
+                            responses_string = surveys.get_responses_by_token(
+                                limesurvey_id, token, questionnaire_language)
+                            limesurvey_response = {'questions': '', 'answers': ''}
 
                             if isinstance(responses_string, bytes):
-                                reader = \
-                                    csv.reader(
-                                        StringIO(responses_string.decode()),
-                                        delimiter=','
-                                    )
+                                reader = csv.reader(StringIO(responses_string.decode()), delimiter=',')
                                 responses_list = []
                                 for row in reader:
                                     responses_list.append(row)
 
-                                # Need multiple choice questions types to
-                                # make replacement just below.
-                                question_list = \
-                                    QuestionnaireUtils.get_question_list(
-                                        surveys,
-                                        limesurvey_id,
-                                        questionnaire_language
-                                    )
+                                # Need multiple choice questions types to make replacement just below
+                                # TODO (NES-991): make a test for getting multiple choice questions
+                                error, question_list = QuestionnaireUtils.get_questions(
+                                        surveys, limesurvey_id, questionnaire_language)
                                 if question_list:
                                     # Import here because of ImportError
                                     # (cannot import name) exception
                                     # possibly due to circular import error.
-                                    # TODO: see answer in https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
+                                    # TODO: see answer in:
+                                    # https://stackoverflow.com/questions/744373/circular-or-cyclic-imports-in-python
                                     # TODO: for other solutions
-                                    from export.export import \
-                                        replace_multiple_question_answers
-                                    replace_multiple_question_answers(
-                                        responses_list, question_list
-                                    )
+                                    from export.export import replace_multiple_choice_question_answers
+                                    replace_multiple_choice_question_answers(responses_list, question_list)
 
                                 if len(responses_list) > 1:
-
-                                    # get fields to send
-                                    fields_to_send = \
-                                        [item.question_code
-                                         for item in
-                                         PortalSelectedQuestion.objects.filter(
-                                             experiment=group.experiment,
-                                             survey=questionnaire.survey)
+                                    # Get fields to send
+                                    fields_to_send = [
+                                        item.question_code for item in PortalSelectedQuestion.objects.filter(
+                                             experiment=group.experiment,survey=questionnaire.survey)
                                          ]
 
                                     limesurvey_response['questions'] = []
                                     limesurvey_response['answers'] = []
 
-                                    for question_index, question_name in  enumerate(responses_list[0]):
+                                    for question_index, question_name in enumerate(responses_list[0]):
                                         if question_name in fields_to_send:
                                             limesurvey_response['questions'].append(question_name)
                                             limesurvey_response['answers'].append(responses_list[1][question_index])
 
-                            portal_questionnaire_response = send_questionnaire_response_to_portal(
+                            send_questionnaire_response_to_portal(
                                 portal_participant_list[questionnaire_response.subject_of_group.id],
                                 portal_step_list[questionnaire_response.data_configuration_tree.id],
                                 json.dumps(limesurvey_response),
@@ -1217,9 +1342,9 @@ def send_all_experiments_to_portal():
                             additional_data
                         )
 
-                    # generic data collection data
-                    generic_data_collection_data_list = \
-                        GenericDataCollectionData.objects.filter(subject_of_group__group=group)
+                    # Generic data collection data
+                    generic_data_collection_data_list = GenericDataCollectionData.objects.filter(
+                        subject_of_group__group=group)
 
                     for generic_data_collection_data in generic_data_collection_data_list:
 
@@ -1228,31 +1353,29 @@ def send_all_experiments_to_portal():
                             portal_file = send_file_to_portal(generic_data_collection_file.file.name)
                             portal_file_id_list.append(portal_file['id'])
 
-                        portal_generic_data_collection_data_file = send_generic_data_collection_data_to_portal(
+                        send_generic_data_collection_data_to_portal(
                             portal_participant_list[generic_data_collection_data.subject_of_group.id],
                             portal_step_list[generic_data_collection_data.data_configuration_tree.id],
-                            portal_file_id_list,
-                            generic_data_collection_data)
+                            portal_file_id_list, generic_data_collection_data)
 
-                    send_experimental_protocol_to_portal(portal_group_id=portal_group['id'],
-                                                         textual_description=textual_description,
-                                                         image=image,
-                                                         root_step_id=root_step_id)
+                    send_experimental_protocol_to_portal(
+                        portal_group_id=portal_group['id'], textual_description=textual_description,
+                        image=image, root_step_id=root_step_id)
 
-            # end of sending
+            # End of sending
             send_experiment_end_message_to_portal(schedule_of_sending.experiment)
 
-            # update the schedule to 'sent'
-            schedule_of_sending.status = "sent"
+            # Update the schedule to 'sent'
+            schedule_of_sending.status = 'sent'
             schedule_of_sending.sending_datetime = datetime.now() + timedelta(seconds=5)
             schedule_of_sending.save()
 
-            # update the last sending date
+            # Update the last sending date
             experiment = schedule_of_sending.experiment
             experiment.last_sending = schedule_of_sending.sending_datetime
             experiment.save()
 
-            print('experiment sent.\n')
+            print('Experiment sent\n')
 
 
 @login_required
@@ -1284,19 +1407,13 @@ def group_create(request, experiment_id, template_name="experiment/group_registe
     return render(request, template_name, context)
 
 
-def recursively_create_list_of_questionnaires_and_statistics(block_id,
-                                                             list_of_questionnaires_configuration,
-                                                             surveys,
-                                                             num_participants,
-                                                             language_code):
+def recursively_create_list_of_questionnaires_and_statistics(
+        block_id, list_of_questionnaires_configuration, num_participants, language_code):
 
     for questionnaire_configuration in ComponentConfiguration.objects.filter(
-            parent_id=block_id, component__component_type="questionnaire"
-    ):
-
+            parent_id=block_id, component__component_type="questionnaire"):
         if questionnaire_configuration.number_of_repetitions is not None:
-            fills_per_participant = \
-                questionnaire_configuration.number_of_repetitions
+            fills_per_participant = questionnaire_configuration.number_of_repetitions
             total_fills_needed = num_participants * fills_per_participant
         else:
             fills_per_participant = "Ilimitado"
@@ -1304,34 +1421,32 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
 
         amount_of_completed_questionnaires = 0
 
-        questionnaire = Questionnaire.objects.get(
-            id=questionnaire_configuration.component.id
-        )
+        questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
         for subject_response in QuestionnaireResponse.objects.filter(
-                data_configuration_tree__component_configuration=
-                questionnaire_configuration
-        ):
-            response_result = surveys.get_participant_properties(
-                questionnaire.survey.lime_survey_id,
-                subject_response.token_id, "completed"
-            )
+                data_configuration_tree__component_configuration=questionnaire_configuration):
+            if subject_response.is_completed == "N" or subject_response.is_completed == "":
+                surveys = Questionnaires()
 
-            if response_result != "N" and response_result != "":
+                is_completed = surveys.get_participant_properties(
+                    questionnaire.survey.lime_survey_id,
+                    subject_response.token_id,
+                    "completed") or ""
+                subject_response.is_completed = is_completed
+
+                surveys.release_session_key()
+                subject_response.save()
+
+            if subject_response.is_completed != "N" and subject_response.is_completed != "":
                 amount_of_completed_questionnaires += 1
 
         list_of_questionnaires_configuration.append(
             {
-            "survey_title": surveys.get_survey_title(
-                questionnaire.survey.lime_survey_id,
-                get_questionnaire_language(
-                    surveys, questionnaire.survey.lime_survey_id, language_code
-                )
-            ),
-            "fills_per_participant": fills_per_participant,
-            "total_fills_needed": total_fills_needed,
-            "total_fills_done": amount_of_completed_questionnaires,
-            "id": questionnaire_configuration.id
+                "survey_title": find_questionnaire_name(questionnaire.survey, language_code)["name"],
+                "fills_per_participant": fills_per_participant,
+                "total_fills_needed": total_fills_needed,
+                "total_fills_done": amount_of_completed_questionnaires,
+                "id": questionnaire_configuration.id
             }
         )
 
@@ -1339,14 +1454,12 @@ def recursively_create_list_of_questionnaires_and_statistics(block_id,
             parent_id=block_id, component__component_type="block"
     ):
 
-        list_of_questionnaires_configuration = \
-            recursively_create_list_of_questionnaires_and_statistics(
-                Block.objects.get(id=block_configuration.component.id),
-                list_of_questionnaires_configuration,
-                surveys,
-                num_participants,
-                language_code
-            )
+        list_of_questionnaires_configuration = recursively_create_list_of_questionnaires_and_statistics(
+            Block.objects.get(id=block_configuration.component.id),
+            list_of_questionnaires_configuration,
+            num_participants,
+            language_code
+        )
 
     return list_of_questionnaires_configuration
 
@@ -1366,18 +1479,10 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
     # Navigate the components of the experimental protocol from the root to see if there is any questionnaire component
     # in this group.
     if group.experimental_protocol is not None:
-        surveys = Questionnaires()
-        # This method shows a message to the user if limesurvey is not available.
-        check_limesurvey_access(request, surveys)
-
         list_of_questionnaires_configuration = recursively_create_list_of_questionnaires_and_statistics(
-            group.experimental_protocol,
-            [],
-            surveys,
+            group.experimental_protocol, [],
             SubjectOfGroup.objects.filter(group_id=group_id).count(),
             request.LANGUAGE_CODE)
-
-        surveys.release_session_key()
     else:
         list_of_questionnaires_configuration = None
 
@@ -1422,7 +1527,9 @@ def group_view(request, group_id, template_name="experiment/group_register.html"
 
         tree = get_block_tree(group.experimental_protocol, request.LANGUAGE_CODE)
         experimental_protocol_description = get_description_from_experimental_protocol_tree(tree)
-        experimental_protocol_image = get_experimental_protocol_image(group.experimental_protocol, tree)
+        experimental_protocol_image = get_experimental_protocol_image(
+            group.experimental_protocol, tree, True
+        )
 
     context = {"can_change": can_change,
                "classification_of_diseases_list": group.classification_of_diseases.all(),
@@ -2378,46 +2485,6 @@ def eeg_electrode_position_setting_change_the_order(request, eeg_electrode_posit
     return HttpResponseRedirect(redirect_url)
 
 
-# TODO: check if this view is used
-# @login_required
-# @permission_required('experiment.change_experiment')
-# def equipment_view(request, eeg_setting_id, equipment_id,
-#                    template_name="experiment/add_equipment_to_eeg_setting.html"):
-#
-#     equipment = get_object_or_404(Equipment, pk=equipment_id)
-#     eeg_setting = get_object_or_404(EEGSetting, pk=eeg_setting_id)
-#
-#     check_can_change(request.user, eeg_setting.experiment.research_project)
-#
-#     equipment_list = Equipment.objects.filter(id=equipment_id)
-#     list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment=equipment)
-#
-#     equipment_form = EquipmentForm(
-#         request.POST or None, initial={'description': equipment.description,
-#                                        'serial_number': equipment.serial_number})
-#
-#     for field in equipment_form.fields:
-#         equipment_form.fields[field].widget.attrs['disabled'] = True
-#
-#     equipment_type_name = equipment.equipment_type
-#
-#     for type_element, type_name in Equipment.EQUIPMENT_TYPES:
-#         if type_element == equipment.equipment_type:
-#             equipment_type_name = type_name
-#
-#     context = {"creating": False,
-#                "editing": False,
-#                "eeg_setting": eeg_setting,
-#                "manufacturer_list": list_of_manufacturers,
-#                "equipment_list": equipment_list,
-#                "equipment_form": equipment_form,
-#                "equipment_type": equipment.equipment_type,
-#                "equipment_selected": equipment,
-#                "equipment_type_name": equipment_type_name}
-#
-#     return render(request, template_name, context)
-
-
 @login_required
 @permission_required('experiment.register_equipment')
 def manufacturer_list(request, template_name="experiment/manufacturer_list.html"):
@@ -2531,7 +2598,7 @@ def get_tag_ids_from_post(data_post):
 
 def equipment_tags_update(equipment_id, set_tags, model_name_str):
 
-    model_name = get_model('experiment', model_name_str)
+    model_name = apps.get_model('experiment', model_name_str)
     changed = False
 
     if model_name.objects.filter(id=equipment_id).exists():
@@ -2558,7 +2625,7 @@ def get_tags(equipment_id, model_name_str):
 
     tags = None
 
-    model_name = get_model('experiment', model_name_str)
+    model_name = apps.get_model('experiment', model_name_str)
 
     if model_name.objects.filter(id=equipment_id).exists():
 
@@ -4209,7 +4276,7 @@ def eegelectrodenet_update(request, eegelectrodenet_id, template_name="experimen
 
                     localization_system_id = item.split("_")[-1]
 
-                    if localization_system_id not in current_localization_systems:
+                    if int(localization_system_id) not in current_localization_systems:
 
                         # create a new net_system
                         eeg_electrode_net_system = EEGElectrodeNetSystem()
@@ -4441,7 +4508,7 @@ def ad_converter_list(request, template_name="experiment/ad_converter_list.html"
 @permission_required('experiment.register_equipment')
 def ad_converter_create(request, template_name="experiment/ad_converter_register.html"):
 
-    ad_converter_form = ADConverterRegisterForm(request.POST or None)
+    ad_converter_form = ADConverterRegisterForm(request.POST or None, initial={'equipment_type': 'ad_converter'})
 
     if request.method == "POST":
 
@@ -4450,6 +4517,7 @@ def ad_converter_create(request, template_name="experiment/ad_converter_register
             if ad_converter_form.is_valid():
 
                 ad_converter_added = ad_converter_form.save(commit=False)
+                ad_converter_added.equipment_type = 'ad_converter'
                 ad_converter_added.save()
 
                 messages.success(request, _('A/D converter created successfully.'))
@@ -4538,15 +4606,17 @@ def search_cid10_ajax(request):
         group_id = request.POST['group_id']
 
         if search_text:
-            cid_10_list = ClassificationOfDiseases.objects.filter(Q(abbreviated_description__icontains=search_text) |
-                                                                  Q(description__icontains=search_text) |
-                                                                  Q(code__icontains=search_text))
+            cid_10_list = ClassificationOfDiseases.objects.filter(
+                Q(abbreviated_description__icontains=search_text)
+                | Q(description__icontains=search_text)
+                | Q(code__icontains=search_text))
 
         if group_id:
-            return render_to_response('experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
+            return render_to_response(
+                'experiment/ajax_cid10.html', {'cid_10_list': cid_10_list, 'group_id': group_id})
         else:
-            return render_to_response('export/diagnoses.html',
-                                      {'classification_of_diseases_list': cid_10_list})
+            return render_to_response(
+                'export/diagnoses.html', {'classification_of_diseases_list': cid_10_list})
 
 
 @login_required
@@ -4586,9 +4656,10 @@ def questionnaire_view(request, group_id, component_configuration_id,
     questionnaire = Questionnaire.objects.get(id=questionnaire_configuration.component.id)
 
     surveys = Questionnaires()
-    lime_survey_id = Questionnaire.objects.get(id=questionnaire_configuration.component_id).survey.lime_survey_id
-    language = get_questionnaire_language(surveys, lime_survey_id, request.LANGUAGE_CODE)
-    questionnaire_title = surveys.get_survey_title(lime_survey_id, language)
+    survey = Questionnaire.objects.get(id=questionnaire_configuration.component_id).survey
+    lime_survey_id = survey.lime_survey_id
+
+    questionnaire_title = find_questionnaire_name(survey, request.LANGUAGE_CODE)["name"]
 
     limesurvey_available = check_limesurvey_access(request, surveys)
 
@@ -4602,11 +4673,16 @@ def questionnaire_view(request, group_id, component_configuration_id,
         questionnaire_responses_with_status = []
 
         for subject_response in subject_responses:
-            response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                                 subject_response.token_id, "completed")
+            if subject_response.is_completed == "N" or subject_response.is_completed == "":
+                is_completed = surveys.get_participant_properties(
+                    questionnaire.survey.lime_survey_id,
+                    subject_response.token_id,
+                    "completed") or ""
+                subject_response.is_completed = is_completed
+                subject_response.save()
             completed = False
 
-            if response_result != "N" and response_result != "":
+            if subject_response.is_completed != "N" and subject_response.is_completed != "":
                 amount_of_completed_questionnaires += 1
                 completed = True
 
@@ -4636,7 +4712,7 @@ def questionnaire_view(request, group_id, component_configuration_id,
             {'subject': subject_of_group.subject,
              'amount_of_completed_questionnaires': amount_of_completed_questionnaires,
              'denominator': denominator,
-             'percentage': percentage,
+             'percentage': int(percentage),
              'questionnaire_responses': questionnaire_responses_with_status})
 
     surveys.release_session_key()
@@ -4733,12 +4809,17 @@ def subjects(request, group_id, template_name="experiment/subjects.html"):
 
                     for subject_response in subject_responses:
                         # Check if completed
-                        response_result = surveys.get_participant_properties(
-                            Questionnaire.objects.get(
-                                id=questionnaire_configuration.component.id).survey.lime_survey_id,
-                            subject_response.token_id, "completed")
+                        if subject_response.is_completed == "N" or subject_response.is_completed == "":
+                            is_completed = surveys.get_participant_properties(
+                                Questionnaire.objects.get(
+                                    id=questionnaire_configuration.component.id).survey.lime_survey_id,
+                                subject_response.token_id,
+                                "completed") or ""
 
-                        if response_result == "N" or response_result == "":
+                            subject_response.is_completed = is_completed
+                            subject_response.save()
+
+                        if subject_response.is_completed == "N" or subject_response.is_completed == "":
                             # If there is an incomplete response for a questionnaire, this questionnaire is counted
                             # as not completed.
                             amount_of_completed_responses = 0
@@ -4965,18 +5046,21 @@ def get_data_collections_from_group(group, data_type=None):
              'icon_class': icon_class['experimental_protocol']}
         )
 
-    list_of_paths = create_list_of_trees(group.experimental_protocol,
-                                         data_type if data_type and data_type != "additional_data" else None)
+    list_of_paths = create_list_of_trees(
+        group.experimental_protocol,
+        data_type if data_type and data_type != "additional_data" else None
+    )
     for path in list_of_paths:
         component_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
-        data_configuration_tree_id = list_data_configuration_tree(component_configuration.id,
-                                                                  [item[0] for item in path])
-        participant_quantity = \
-            AdditionalData.objects.filter(
-                subject_of_group__group=group,
-                data_configuration_tree_id=data_configuration_tree_id).values(
-                'subject_of_group__subject').distinct().count() if data_type is None or \
-                                                                   data_type == "additional_data" else None
+        data_configuration_tree_id = list_data_configuration_tree(
+            component_configuration.id,
+            [item[0] for item in path]
+        )
+        participant_quantity = AdditionalData.objects.filter(
+            subject_of_group__group=group,
+            data_configuration_tree_id=data_configuration_tree_id
+        ).values('subject_of_group__subject').distinct().count() if \
+            data_type is None or data_type == "additional_data" else None
 
         data_list = [{'type': 'additional_data',
                       'icon_class': icon_class['additional_data'],
@@ -5102,28 +5186,20 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                 if "gender_checkbox" in request.POST and 'gender' in request.POST:
                     gender_list = request.POST.getlist('gender')
                     participants_list = participants_list.filter(gender__id__in=gender_list)
-                    # participants_list = [item for item in participants_list if str(item.gender.id) in gender_list]
 
                 if "marital_status_checkbox" in request.POST and 'marital_status' in request.POST:
                     marital_status_list = request.POST.getlist('marital_status')
                     participants_list = participants_list.filter(marital_status__id__in=marital_status_list)
-                    # participants_list = [item for item in participants_list if str(item.marital_status_id) in
-                    #                      marital_status_list]
 
                 if "age_checkbox" in request.POST and 'max_age' in request.POST and 'min_age' in request.POST:
                     date_birth_min = datetime.now() - relativedelta(years=int(request.POST['max_age']))
                     date_birth_max = datetime.now() - relativedelta(years=int(request.POST['min_age']))
                     participants_list = participants_list.filter(date_birth__range=(date_birth_min, date_birth_max))
-                    # participants_list = [item for item in participants_list if datetime.combine(item.date_birth, datetime.min.time()) in range(date_birth_min, date_birth_max)]
-                    # for participant in participants_list:
-                    #     date_birth = datetime.combine(participant.date_birth, datetime.min.time())
-                    #     # if date_birth in range():
 
                 if "location_checkbox" in request.POST:
                     if 'selected_locals' in request.POST:
                         locations_selected = request.POST.getlist('selected_locals')
                         participants_list = participants_list.filter(city__in=locations_selected)
-                        # participants_list = [item for item in participants_list if item.city in locations_selected]
 
                 if "diagnosis_checkbox" in request.POST:
                     classification_of_diseases_list = request.POST.getlist('selected_diagnoses')
@@ -5131,9 +5207,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                     participants_list = participants_list.filter(
                         medicalrecorddata__diagnosis__classification_of_diseases__in=classification_of_diseases_list). \
                         distinct()
-                    # participants_list = [item for item in participants_list if
-                    #                      item.medicalrecorddata__diagnosis__classification_of_diseases in
-                    #                      classification_of_diseases_list]
 
             # participants that not is in group
             filtered_participants_list = [item for item in participants_list if item.id not in patient_list]
@@ -5149,15 +5222,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
                 "group": group,
             }
             return render(request, "experiment/show_selected_participants.html", context)
-
-            # else:
-            #
-            #     context = {
-            #         "total_of_participants": len(participants_list),
-            #         "participants_list": participants_list,
-            #         "group": group,
-            #     }
-            #     return render(request, "experiment/show_selected_participants.html", context)
 
         if request.POST['action'] == 'previous-step-2':
             context = {
@@ -5206,7 +5270,6 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
         "can_change": get_can_change(request.user, group.experiment.research_project),
         'group': group,
         'subject_id': subject_id,
-        # "limesurvey_available": limesurvey_available,
         "experimental_protocol_info": experimental_protocol_info,
         "participant_selection_form": participant_selection_form,
         "age_interval_form": age_interval_form
@@ -5215,8 +5278,8 @@ def search_subjects(request, group_id, template_name="experiment/search_subjects
     return render(request, template_name, context)
 
 
-def subject_questionnaire_response_start_fill_questionnaire(request, subject_id, group_id, questionnaire_id,
-                                                            list_of_path):
+def subject_questionnaire_response_start_fill_questionnaire(
+        request, subject_id, group_id, questionnaire_id, list_of_path):
     questionnaire_response_form = QuestionnaireResponseForm(request.POST)
 
     data_configuration_tree_id = list_data_configuration_tree(questionnaire_id, list_of_path)
@@ -5307,20 +5370,12 @@ def subject_questionnaire_response_create(
 
     check_can_change(request.user, group.experiment.research_project)
 
-    questionnaire_config = get_object_or_404(
-        ComponentConfiguration, id=questionnaire_id
-    )
+    questionnaire_config = get_object_or_404(ComponentConfiguration, id=questionnaire_id)
     surveys = Questionnaires()
-    lime_survey_id = Questionnaire.objects.get(
-        id=questionnaire_config.component_id
-    ).survey.lime_survey_id
+    survey = Questionnaire.objects.get(id=questionnaire_config.component_id).survey
+    lime_survey_id = survey.lime_survey_id
 
-    survey_title = surveys.get_survey_title(
-        lime_survey_id,
-        get_questionnaire_language(
-            surveys, lime_survey_id, request.LANGUAGE_CODE
-        )
-    )
+    survey_title = find_questionnaire_name(survey, request.LANGUAGE_CODE)["name"]
     surveys.release_session_key()
 
     fail = None
@@ -5331,11 +5386,8 @@ def subject_questionnaire_response_create(
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            redirect_url, questionnaire_response_id = \
-                subject_questionnaire_response_start_fill_questionnaire(
-                    request, subject_id, group_id, questionnaire_id,
-                    list_of_path
-                )
+            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
+                    request, subject_id, group_id, questionnaire_id, list_of_path)
 
             fail = True if not redirect_url else False
 
@@ -5408,11 +5460,15 @@ def questionnaire_response_edit(request, questionnaire_response_id,
 
     surveys = Questionnaires()
 
-    language = get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE)
-    survey_title = surveys.get_survey_title(questionnaire.survey.lime_survey_id, language)
-    survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                           questionnaire_response.token_id,
-                                                           "completed") != "N")
+    survey_title = find_questionnaire_name(questionnaire.survey, request.LANGUAGE_CODE)["name"]
+    if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == '':
+        is_completed = surveys.get_participant_properties(
+            questionnaire.survey.lime_survey_id,
+            questionnaire_response.token_id,
+            "completed") or ""
+        questionnaire_response.is_completed = is_completed
+        questionnaire_response.save()
+    survey_completed = (questionnaire_response.is_completed != "N")
     surveys.release_session_key()
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
@@ -5451,9 +5507,8 @@ def questionnaire_response_edit(request, questionnaire_response_id,
 
                     # remove token from Limesurvey
                     surveys = Questionnaires()
-                    result = surveys.delete_participant(
-                        questionnaire.survey.lime_survey_id,
-                        questionnaire_response.token_id)
+                    result = surveys.delete_participants(
+                        questionnaire.survey.lime_survey_id, [questionnaire_response.token_id])
                     surveys.release_session_key()
 
                     if str(questionnaire_response.token_id) in result:
@@ -5531,9 +5586,8 @@ def get_number_of_uses(request):
 
 
 def check_required_fields(surveys, lime_survey_id):
-    """
-    método para verificar se o questionário tem as questões de identificação corretas
-    e se seus tipos também são corretos
+    """Verify if questionnaire have the identification questions
+    and if question types are correct
     """
 
     fields_to_validate = {
@@ -5550,7 +5604,7 @@ def check_required_fields(surveys, lime_survey_id):
     if 'status' not in groups:
 
         for group in groups:
-            question_list = surveys.list_questions(lime_survey_id, group['id']['gid'])
+            question_list = surveys.list_questions_ids(lime_survey_id, group['id']['gid'])
             for question in question_list:
                 question_properties = surveys.get_question_properties(question, None)
                 if question_properties['title'] in fields_to_validate:
@@ -5579,22 +5633,35 @@ def questionnaire_response_view(request, questionnaire_response_id,
     group = questionnaire_response.subject_of_group.group
     subject = questionnaire_response.subject_of_group.subject
 
-    surveys = Questionnaires()
-    survey_completed = (surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                           questionnaire_response.token_id,
-                                                           "completed") != "N")
-    surveys.release_session_key()
+    survey_completed = (questionnaire_response.is_completed != "N")
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
-    lime_survey_id = questionnaire.survey.lime_survey_id
+    limesurvey_id = questionnaire.survey.lime_survey_id
     token_id = questionnaire_response.token_id
     language_code = request.LANGUAGE_CODE
 
-    # Get the responses for each question of the questionnaire.
-    survey_title, groups_of_questions = get_questionnaire_responses(
-        language_code, lime_survey_id, token_id, request
-    )
+    survey_title_key = request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id) + "_survey_title"
+    groups_of_questions_key = \
+        request.LANGUAGE_CODE + "-" + str(limesurvey_id) + "-" + str(token_id) + "_group_of_questions"
+
+    # TODO (NES-991): BROKEN! Made a test and fix this before close this issue.
+    #  Before that we are putting a generic exception
+    try:
+        survey_title = cache.get(survey_title_key)
+        groups_of_questions = cache.get(groups_of_questions_key)
+    except:
+        survey_title = None
+        groups_of_questions = None
+
+    if not survey_title and not groups_of_questions:
+        # Get the responses for each question of the questionnaire.
+        survey_title, groups_of_questions = get_questionnaire_responses(
+            language_code, limesurvey_id, token_id, request)
+
+        # TODO (NES-991): see BROKEN! above
+        # cache.set(survey_title_key, survey_title)
+        # cache.set(groups_of_questions_key, groups_of_questions)
 
     origin = get_origin(request)
 
@@ -5648,20 +5715,19 @@ def questionnaire_response_view(request, questionnaire_response_id,
 def delete_questionnaire_response(questionnaire: Questionnaire,
                                   questionnaire_response: QuestionnaireResponse):
 
-    # checking if it is used by patient_questionnaire_response
+    # Checking if it is used by patient_questionnaire_response
     token_is_used_patient_questionnaire_response = \
-        PatientQuestionnaireResponse.objects.filter(patient=questionnaire_response.subject_of_group.subject.patient,
-                                                    survey=questionnaire.survey,
-                                                    token_id=questionnaire_response.token_id).exists()
+        PatientQuestionnaireResponse.objects.filter(
+            patient=questionnaire_response.subject_of_group.subject.patient,
+            survey=questionnaire.survey,
+            token_id=questionnaire_response.token_id).exists()
     can_delete = False
     if token_is_used_patient_questionnaire_response:
         can_delete = True
     else:
-        # remove token from LimeSurvey
+        # Remove token from LimeSurvey
         surveys = Questionnaires()
-        result = surveys.delete_participant(
-            questionnaire.survey.lime_survey_id,
-            questionnaire_response.token_id)
+        result = surveys.delete_participants(questionnaire.survey.lime_survey_id, [questionnaire_response.token_id])
         surveys.release_session_key()
 
         if str(questionnaire_response.token_id) in result:
@@ -5705,13 +5771,20 @@ def subject_questionnaire_view(request, group_id, subject_id,
 
         questionnaire_responses_with_status = []
         for questionnaire_response in questionnaire_responses:
-            response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                                 questionnaire_response.token_id,
-                                                                 "completed")
+            if questionnaire_response.is_completed == "N" or questionnaire_response.is_completed == "":
+                is_completed = surveys.get_participant_properties(
+                    questionnaire.survey.lime_survey_id,
+                    questionnaire_response.token_id,
+                    "completed") or ""
+
+                questionnaire_response.is_completed = is_completed
+                questionnaire_response.save()
+
             questionnaire_responses_with_status.append(
                 {'questionnaire_response': questionnaire_response,
-                 'completed': None if response_result is None else response_result != "N" and response_result != ""}
-            )
+                 'completed': None if questionnaire_response.is_completed is
+                                      None else questionnaire_response.is_completed != "N" and
+                                                questionnaire_response.is_completed != ""})
 
             # saving used tokens by questionnaire
             if questionnaire.survey.lime_survey_id not in used_tokens:
@@ -5724,10 +5797,7 @@ def subject_questionnaire_view(request, group_id, subject_id,
         subject_questionnaires.append(
             {'questionnaire_configuration': questionnaire_configuration,
              'questionnaire': questionnaire,
-             'title': surveys.get_survey_title(questionnaire.survey.lime_survey_id,
-                                               get_questionnaire_language(surveys,
-                                                                          questionnaire.survey.lime_survey_id,
-                                                                          request.LANGUAGE_CODE)),
+             'title': find_questionnaire_name(questionnaire.survey, request.LANGUAGE_CODE)["name"],
              'path': path,
              'questionnaire_responses': questionnaire_responses_with_status,
              }
@@ -5746,13 +5816,20 @@ def subject_questionnaire_view(request, group_id, subject_id,
                 survey=questionnaire.survey).exclude(token_id__in=tokens_already_used)
         patient_questionnaire_responses_with_status = []
         for patient_questionnaire_response in patient_questionnaire_responses:
-            response_result = surveys.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                                 patient_questionnaire_response.token_id,
-                                                                 "completed")
-            if response_result is not None and response_result != "":
+            if patient_questionnaire_response.is_completed == "N" or patient_questionnaire_response.is_completed == "":
+                is_completed = surveys.get_participant_properties(
+                    questionnaire.survey.lime_survey_id,
+                    patient_questionnaire_response.token_id,
+                    "completed") or ""
+
+                patient_questionnaire_response.is_completed = is_completed
+                patient_questionnaire_response.save()
+
+            if patient_questionnaire_response.is_completed is not None and \
+                    patient_questionnaire_response.is_completed != "":
                 patient_questionnaire_responses_with_status.append(
                     {'patient_questionnaire_response': patient_questionnaire_response,
-                     'completed': True if response_result != "N" else False}
+                     'completed': True if patient_questionnaire_response.is_completed != "N" else False}
                 )
         subject_questionnaire['patient_questionnaire_responses'] = patient_questionnaire_responses_with_status
 
@@ -5773,12 +5850,14 @@ def load_questionnaire_data(request, group_id):
     group = get_object_or_404(Group, id=group_id)
 
     number_of_imported_data = 0
-    list_of_paths = create_list_of_trees(group.experimental_protocol, "questionnaire")
+    list_of_paths = create_list_of_trees(
+        group.experimental_protocol, 'questionnaire'
+    )
 
     reused_tokens = {}
     # first loop: knowing tokens that was already reused
-    for path in list_of_paths:
-        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+    for path_ in list_of_paths:
+        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path_[-1][0])
         questionnaire_responses = \
             QuestionnaireResponse.objects.filter(
                 data_configuration_tree__component_configuration=questionnaire_configuration)
@@ -5790,15 +5869,15 @@ def load_questionnaire_data(request, group_id):
             update_list_of_reused_tokens(questionnaire_response, questionnaire, reused_tokens)
 
     # main loop: importing
-    for path in list_of_paths:
+    for path_ in list_of_paths:
 
-        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path[-1][0])
+        questionnaire_configuration = ComponentConfiguration.objects.get(pk=path_[-1][0])
 
         data_configuration_tree_id = \
-            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path])
+            list_data_configuration_tree(questionnaire_configuration.id, [item[0] for item in path_])
 
         if not data_configuration_tree_id:
-            data_configuration_tree_id = create_data_configuration_tree([item[0] for item in path])
+            data_configuration_tree_id = create_data_configuration_tree([item[0] for item in path_])
 
         data_configuration_tree = get_object_or_404(DataConfigurationTree, pk=data_configuration_tree_id)
 
@@ -5914,11 +5993,8 @@ def subject_eeg_view(request, group_id, subject_id,
                                                data_configuration_tree__id=data_configuration_tree_id)
 
         for eeg_data in eeg_data_list:
-
             eeg_data.eeg_file_list = []
-
             for eeg_file in eeg_data.eeg_files.all():
-
                 eeg_file.eeg_reading = eeg_data_reading(eeg_file, preload=False)
                 eeg_file.can_export_to_nwb = False
 
@@ -5935,18 +6011,19 @@ def subject_eeg_view(request, group_id, subject_id,
 
                 eeg_data.eeg_file_list.append(eeg_file)
 
-        eeg_collections.append(
-            {'eeg_configuration': eeg_configuration,
-             'path': path,
-             'eeg_data_list': eeg_data_list
-             }
-        )
+        eeg_collections.append({
+            'eeg_configuration': eeg_configuration,
+            'path': path,
+            'eeg_data_list': eeg_data_list
+        })
 
-    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
-               'group': group,
-               'subject': subject,
-               'eeg_collections': eeg_collections,
-               'process_requisition': int(random.random() * 10000)}
+    context = {
+        'can_change': get_can_change(request.user, group.experiment.research_project),
+        'group': group,
+        'subject': subject,
+        'eeg_collections': eeg_collections,
+        'process_requisition': int(random.random() * 10000)
+    }
 
     return render(request, template_name, context)
 
@@ -6092,15 +6169,11 @@ def subject_eeg_data_create(request, group_id, subject_id, eeg_configuration_id,
 
 # v1.5
 def get_sensors_position(eeg_data):
-    # Geração da imagem de localização dos electrodos
-    # Validate if EGI
-    # raw = mne.io.read_raw_egi(eeg_data.file.path, preload=False)
+    # Electrode localization image generation. Validate if EGI
     reading = None
     file_path = None
-    file_plot_path = None
-    file_power_espectral_path = None
 
-    # getting the eeg_file, if exists
+    # Getting the eeg_file, if exists
     eeg_files = eeg_data.eeg_files.all()
 
     if len(eeg_files) == 1:
@@ -6141,9 +6214,9 @@ def get_sensors_position(eeg_data):
                         i = i + 1
                         if i < 10:
                             label = 'EEG' + ' 00' + str(i)
-                        if i > 9 and i < 100:
+                        if 9 < i < 100:
                             label = 'EEG' + ' 0' + str(i)
-                        if i > 99 and i < channels:
+                        if 99 < i < channels:
                             label = 'EEG' + ' ' + str(i)
 
                         if ch_name == label:
@@ -6151,63 +6224,29 @@ def get_sensors_position(eeg_data):
                             list2.insert(i, ch_name)
 
                     list1.insert(i + 1, 'Cz')
-                    list2.insert(i + 1, 'EEG ' + str(channels))
+                    list2.insert(i + 1, 'E' + str(channels))
                     mapping = dict(zip(list2, list1))
 
                     raw.rename_channels(mapping)
             if nes_code == 'MNE-RawFromBrainVision':
                 montage = mne.channels.read_montage('standard_1020')
 
-            # label_names = montage.ch_names
-            if montage != "":
+            if montage != '':
 
                 raw.set_montage(montage)
 
                 file_name = 'sensors_position_' + str(eeg_data.id) + ".png"
-                # writing
                 errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
 
-                # the operation below ensures that the properly backend is set
+                # The operation below ensures that the properly backend is set
                 import matplotlib as mpl
                 mpl.use('agg')
 
-                fig = raw.plot_sensors(ch_type='eeg', show_names=True, show=False,
-                                       title="Sensor positions", ch_groups='position')
+                fig = raw.plot_sensors(
+                    ch_type='eeg', show_names=True, show=False, title="Sensor positions", ch_groups='position')
                 fig.savefig(path.join(path_complete, file_name))
 
-                file_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
-
-                # To visualize raw data
-                # As mentioned above, the unit of the raw data is in voltage, not micro-voltage, thus, the scaling
-                # for eeg is 20E-6"""
-                # scaling_dict = dict(mag=1e-12, grad=4e-11, eeg=20e-6, eog=150e-6, ecg=5e-4, emg=1e-3, ref_meg=1e-12,
-                #                     misc=1e-3, stim=1, resp=1, chpi=1e-4)
-
-                # if channels <= 40:
-                #     # fig_plot = raw.plot(title="Raw data visualization", n_channels=channels)
-                #     fig_plot = raw.plot(title="Raw data visualization",
-                #                         start=0.0,  # initial time to show
-                #                         duration=10.0,  # time window (sec) to plot in a given time
-                #                         n_channels=channels,  # number of channels to plot at once
-                #                         )  # scaling factor for traces. MNE-python documentation
-                # else:
-                #     fig_plot = raw.plot(title="Raw data visualization")
-                #
-                # file_plot_name = 'raw_plot_' + str(eeg_data.id) + ".png"
-                # # writing
-                # fig_plot.savefig(path.join(path_complete, file_plot_name))
-                # file_plot_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_plot_name)
-
-                # To visualize the power spectral density across data"""
-                # fig_psd = raw.plot_psd(tmin=0.0,  # initial time to show
-                #                        tmax=60.0,  # end time to show
-                #                        fmin=0.0,  # initial frequency to show
-                #                        fmax=200.0,  # end frequency to show
-                #                        area_mode='std',)  # change to 'range'
-                #
-                # file_power_espectral_name = 'power_spectral_' + str(eeg_data.id) + ".png"
-                # fig_psd.savefig(path.join(path_complete, file_power_espectral_name))
-                # file_power_espectral_path = path.join(path.join(settings.MEDIA_URL, "temp"), file_power_espectral_name)
+                file_path = path.join(settings.MEDIA_ROOT, 'temp', file_name)
 
     return file_path
 
@@ -6220,7 +6259,6 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False):
 
     # v1.5
     if eeg_file.eeg_data.file_format.nes_code == "MNE-RawFromEGI":
-
         eeg_reading.file_format = eeg_file.eeg_data.file_format
 
         try:
@@ -6237,7 +6275,7 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False):
 
         try:
             # Trying to read the segments
-            reading = mne.io.read_raw_brainvision(eeg_file.file.path, preload=preload)
+            reading = mne.io.read_raw_brainvision(eeg_file.file.path, preload=preload, stim_channel=False)
         except:
             reading = None
 
@@ -6249,11 +6287,8 @@ def eeg_data_reading(eeg_file: EEGFile, preload=False):
 @login_required
 @permission_required('experiment.change_experiment')
 def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_eeg_data_form.html"):
-
     eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
-
     eeg_data_form = EEGDataForm(request.POST or None, instance=eeg_data)
-
     eeg_step = get_object_or_404(EEG, id=eeg_data.data_configuration_tree.component_configuration.component.id)
 
     for field in eeg_data_form.fields:
@@ -6276,13 +6311,15 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
                 'status': True,  # 'status' indicates if the point exist at the DB
                 'worked': position_worked.worked
             })
-        if positions.__len__() > 0:
+        if len(positions) > 0:
             image = True
 
-    # Geração da imagem de localização dos electrodos
-    # v1.5
-    # sensors_positions_image = None
-    sensors_positions_image = get_sensors_position(eeg_data)
+    # Geração da imagem de localização dos electrodos (NES v1.5)
+    sensors_positions_filepath = get_sensors_position(eeg_data)
+    if sensors_positions_filepath:
+        sensors_positions_relativepath = path.join(settings.MEDIA_URL, 'temp', path.basename(sensors_positions_filepath))
+    else:
+        sensors_positions_relativepath = None
 
     if request.method == "POST":
 
@@ -6298,23 +6335,24 @@ def eeg_data_view(request, eeg_data_id, tab, template_name="experiment/subject_e
 
             eeg_data.delete()
             messages.success(request, _('EEG data removed successfully.'))
-            return redirect('subject_eeg_view',
-                            group_id=subject_of_group.group_id,
-                            subject_id=subject_of_group.subject_id)
+            return redirect(
+                'subject_eeg_view', group_id=subject_of_group.group_id,
+                subject_id=subject_of_group.subject_id)
 
-    context = {"can_change": get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project),
-               "editing": False,
-               "group": eeg_data.subject_of_group.group,
-               "subject": eeg_data.subject_of_group.subject,
-               "eeg_data_form": eeg_data_form,
-               "eeg_data": eeg_data,
-               "eeg_setting_default_id": eeg_step.eeg_setting_id,
-               "file_format_list": file_format_list,
-               "tab": tab,
-               "json_list": json.dumps(positions),
-               "image": image,
-               "sensors_image": sensors_positions_image,
-               }
+    context = {
+        "can_change": get_can_change(request.user, eeg_data.subject_of_group.group.experiment.research_project),
+        "editing": False,
+        "group": eeg_data.subject_of_group.group,
+        "subject": eeg_data.subject_of_group.subject,
+        "eeg_data_form": eeg_data_form,
+        "eeg_data": eeg_data,
+        "eeg_setting_default_id": eeg_step.eeg_setting_id,
+        "file_format_list": file_format_list,
+        "tab": tab,
+        "json_list": json.dumps(positions),
+        "image": image,
+        "sensors_image": sensors_positions_relativepath,
+    }
 
     return render(request, template_name, context)
 
@@ -6531,10 +6569,7 @@ def clean(input_string):
 @login_required
 @permission_required('experiment.change_experiment')
 def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
-
     update_process_requisition(request, process_requisition, 'reading_source_file', _('Reading source file'))
-
-    # eeg_data = get_object_or_404(EEGData, pk=eeg_data_id)
     eeg_file = get_object_or_404(EEGFile, pk=eeg_file_id)
 
     # Open and read signal
@@ -6542,7 +6577,6 @@ def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
 
     # Was it open properly?
     ok_opening = False
-    segments = None
 
     if eeg_reading:
 
@@ -6556,9 +6590,9 @@ def eeg_file_export_nwb(request, eeg_file_id, some_number, process_requisition):
             request,
             _("It was not possible to open the data file. Check if the number of channels configured is correct."))
 
-        return redirect('subject_eeg_view',
-                        group_id=eeg_file.eeg_data.subject_of_group.group_id,
-                        subject_id=eeg_file.eeg_data.subject_of_group.subject_id)
+        return redirect(
+            'subject_eeg_view', group_id=eeg_file.eeg_data.subject_of_group.group_id,
+            subject_id=eeg_file.eeg_data.subject_of_group.subject_id)
 
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "export_nwb")
     errors, path_complete = create_directory(path_complete, str(request.user.id))
@@ -6622,7 +6656,6 @@ def create_nwb_file(eeg_data, eeg_reading, process_requisition, request, filenam
     history_data = eeg_data.history.all().order_by('history_date')
     if history_data:
         experimenter = history_data.last().history_user
-        experimenter_description = ""
         if experimenter.last_name or experimenter.first_name:
             experimenter_description = experimenter.last_name + ', ' + experimenter.first_name
         else:
@@ -6796,6 +6829,7 @@ def get_nwb_eeg_amplifier_impedance_description(eeg_amplifier_setting):
     if eeg_amplifier_setting.eeg_amplifier.input_impedance_unit:
         response += " " + eeg_amplifier_setting.eeg_amplifier.input_impedance_unit
     return response
+
 
 
 @login_required
@@ -7384,6 +7418,37 @@ def group_goalkeeper_game_data(request, group_id, template_name="experiment/grou
     return render(request, template_name, context)
 
 
+def create_csv_for_goalkeeper(complete_filename, config, results):
+    header = ['player alias', 'group code', 'institution', 'id',
+              'soccer team', 'game', 'phase', 'session time(s)',
+              'relax time(s)', 'game data', 'game time', 'game random',
+              'limit plays', 'total correct', 'success rate',
+              'game mode', 'status', 'plays to relax',
+              'scoreboard', 'final scoreboard', 'animation type',
+              'min hits', 'playermachine',
+              'move', 'time until any key(s)', 'time until show again(s)', 'waited result',
+              'eh random?', 'option chosen', 'movement time(s)', 'decision time(s)',
+              'sequence executed']
+    rows_to_be_saved = list()
+    rows_to_be_saved.append(header)
+    for result in results:
+        rows_to_be_saved.append([config.playeralias, config.groupcode, config.institution, config.idresult,
+                                 config.soccerteam, config.game, config.phase, config.sessiontime,
+                                 config.relaxtime, config.gamedata, config.gametime, config.gamerandom,
+                                 config.limitplays, config.totalcorrect, config.successrate,
+                                 config.gamemode, config.status, config.playstorelax,
+                                 config.scoreboard, config.finalscoreboard, config.animationtype,
+                                 config.minhits, config.playermachine,
+                                 result.move, result.timeuntilanykey, result.timeuntilshowagain,result.waitedresult,
+                                 result.ehrandom, result.optionchoosen, result.movementtime, result.decisiontime,
+                                 config.sequexecuted])
+
+    with open(complete_filename.encode('utf-8'), 'w', newline='', encoding='UTF-8') as csv_file:
+        export_writer = csv.writer(csv_file, quotechar='"', quoting=csv.QUOTE_NONNUMERIC, delimiter=',')
+        for row in rows_to_be_saved:
+            export_writer.writerow(row)
+
+
 @login_required
 @permission_required('experiment.view_researchproject')
 def load_group_goalkeeper_game_data(request, group_id):
@@ -7426,6 +7491,9 @@ def load_group_goalkeeper_game_data(request, group_id):
                         if phase == None:
                             phase = 0
 
+                    # Create the folder to temporarily store the csv files to be saved as participant data collection
+                    errors, path_to_goalkeeper_files = create_directory(settings.MEDIA_ROOT, "temp_goalkeepergames")
+
                     # for each subject
                     for subject_of_group in group.subjectofgroup_set.all():
 
@@ -7440,10 +7508,10 @@ def load_group_goalkeeper_game_data(request, group_id):
 
                             for goalkeeper_game_configuration in goalkeeper_games:
 
-                                result = GoalkeeperGameResults.objects.using('goalkeeper').filter(
-                                    id=goalkeeper_game_configuration.idresult).first()
+                                results = GoalkeeperGameResults.objects.using('goalkeeper').filter(
+                                    idconfig=goalkeeper_game_configuration.idconfig).all()
 
-                                if result:
+                                if results:
 
                                     game_date = datetime.strptime(goalkeeper_game_configuration.gamedata, '%y%m%d')
                                     game_time = datetime.strptime(goalkeeper_game_configuration.gametime, '%H%M%S')
@@ -7476,7 +7544,7 @@ def load_group_goalkeeper_game_data(request, group_id):
                                                    subject_of_group.subject.patient.code)
 
                                         digital_game_phase_data.file_format = \
-                                            get_object_or_404(FileFormat, nes_code='txt')
+                                            get_object_or_404(FileFormat, nes_code='other')
 
                                         digital_game_phase_data.sequence_used_in_context_tree = \
                                             goalkeeper_game_configuration.sequexecuted
@@ -7484,9 +7552,18 @@ def load_group_goalkeeper_game_data(request, group_id):
                                         digital_game_phase_data.save()
 
                                         # Digital Game Phase File
-                                        file_name = "%s_%s.txt" % (group.code,
+                                        file_name = "%s_%s.csv" % (group.code,
                                                                    subject_of_group.subject.patient.code)
-                                        file_content = result.filecontent
+
+                                        complete_file_name = os.path.join(path_to_goalkeeper_files, file_name)
+
+                                        # CSV to be stored as data collection of the participant
+                                        create_csv_for_goalkeeper(complete_file_name,
+                                                                  goalkeeper_game_configuration,
+                                                                  results)
+
+                                        with open(complete_file_name, "r") as file:
+                                            file_content = file.read()
 
                                         digital_game_phase_file = DigitalGamePhaseFile(
                                             digital_game_phase_data=digital_game_phase_data)
@@ -7496,6 +7573,12 @@ def load_group_goalkeeper_game_data(request, group_id):
                                         digital_game_phase_file.save()
 
                                         number_of_imported_data += 1
+
+                                        # Delete the temporary file created
+                                        os.remove(complete_file_name)
+
+                    # Remove directory where the files of each subject were temporarily stored
+                    os.rmdir(path_to_goalkeeper_files)
 
         if number_of_imported_data:
             if number_of_imported_data == 1:
@@ -8024,7 +8107,6 @@ def data_collection_manage(request, group_id, path_of_configuration, data_type,
             return HttpResponseRedirect(redirect_url + '?per_steps_tab=active')
 
     context = {"group": group,
-               # "operation": operation,
                "data_type": data_type,
                "data_type_name": data_type_name[data_type],
                "path_of_configuration": path_of_configuration,
@@ -8442,15 +8524,21 @@ def split_node_identification_for_graph(identification):
     return '\n'.join(result)
 
 
-def get_experimental_protocol_image(experimental_protocol, tree):
+def get_experimental_protocol_image(experimental_protocol, tree, url=False):
 
     graph = pydot.Dot(graph_type='digraph')
 
     subgraph, first_node, last_node = get_subgraph(tree)
     graph.add_subgraph(subgraph)
 
-    initial_node = pydot.Node('initial_node', label='', style="filled", shape='circle', fillcolor='green')
-    ending_node = pydot.Node('ending_node', label='', style="filled", shape='circle', fillcolor='red')
+    initial_node = pydot.Node(
+        'initial_node', label='', style="filled", shape='circle',
+        fillcolor='green'
+    )
+    ending_node = pydot.Node(
+        'ending_node', label='', style="filled", shape='circle',
+        fillcolor='red'
+    )
     subgraph.add_node(initial_node)
     subgraph.add_node(ending_node)
     if first_node:
@@ -8459,17 +8547,21 @@ def get_experimental_protocol_image(experimental_protocol, tree):
         subgraph.add_edge(pydot.Edge(last_node, ending_node))
 
     # graph file name
-    file_name = "experimental_protocol_" + str(experimental_protocol.id) + ".png"
+    file_name = \
+        "experimental_protocol_" + str(experimental_protocol.id) + ".svg"
 
     # writing
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
 
     try:
-        graph.write_png(path.join(path_complete, file_name))
+        graph.write_svg(path.join(path_complete, file_name))
     except:
         return None
 
-    return path.join(path.join(settings.MEDIA_URL, "temp"), file_name)
+    return path.join(
+        settings.MEDIA_URL if url else settings.MEDIA_ROOT,
+        'temp', file_name
+    )
 
 
 def get_description_from_experimental_protocol_tree(component, component_configuration_attributes=[]):
@@ -8526,9 +8618,9 @@ def get_block_tree(component, language_code=None, numeration=''):
         counter = 1
         for configuration in configurations:
             component_configuration_attributes = get_component_configuration_attributes(configuration)
-            component_info = get_block_tree(configuration.component,
-                                            language_code,
-                                            (numeration + '.' if numeration else '') + str(counter))
+            component_info = get_block_tree(
+                configuration.component, language_code,
+                (numeration + '.' if numeration else '') + str(counter))
             list_of_component_configuration.append(
                 {'component_configuration_attributes': component_configuration_attributes,
                  'component': component_info,
@@ -8609,11 +8701,7 @@ def get_questionnaire_component_attributes(component, language_code):
     questionnaire = get_object_or_404(Questionnaire, id=component.id)
     attributes = [{_('LimeSurvey ID'): questionnaire.survey.lime_survey_id}]
 
-    surveys = Questionnaires()
-    questionnaire_title = surveys.get_survey_title(
-        questionnaire.survey.lime_survey_id,
-        get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, language_code))
-    surveys.release_session_key()
+    questionnaire_title = find_questionnaire_name(questionnaire.survey, language_code)["name"]
 
     attributes.append({_('Questionnaire title'): questionnaire_title})
 
@@ -8974,7 +9062,7 @@ def subjects_insert(request, group_id, patient_id):
         subject.patient = patient
         subject.save()
 
-    if not SubjectOfGroup.objects.all().filter(group=group, subject=subject):
+    if not SubjectOfGroup.objects.filter(group=group, subject=subject):
         SubjectOfGroup(subject=subject, group=group).save()
     else:
         messages.warning(request, _('Participant has already been inserted in this group.'))
@@ -9004,12 +9092,22 @@ def search_patients_ajax(request):
                     patient_list = \
                         Patient.objects.filter(cpf__icontains=search_text).exclude(removed=True).order_by('name')
 
+                subjects_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+                for subject in subjects_of_group:
+                    if subject.subject.patient in patient_list:
+                        patient_list = patient_list.exclude(id=subject.subject.patient.id)
+
             return render_to_response('experiment/ajax_search_patients.html',
                                       {'patients': patient_list, 'group_id': group_id})
         else:
             if search_text:
                 patient_list = \
                     Patient.objects.filter(code__iexact=search_text).exclude(removed=True).order_by('code')
+
+                subjects_of_group = SubjectOfGroup.objects.filter(group_id=group_id)
+                for subject in subjects_of_group:
+                    if subject.subject.patient in patient_list:
+                        patient_list = patient_list.exclude(id=subject.subject.patient.id)
 
             return render_to_response('experiment/ajax_search_patients_not_sensitive.html',
                                       {'patients': patient_list, 'group_id': group_id})
@@ -9206,8 +9304,16 @@ def component_create(request, experiment_id, component_type):
 
     template_name = "experiment/" + component_type + "_component.html"
     component_form = ComponentForm(request.POST or None)
-    # This is needed for the form to be able to validate the presence of a duration in a pause component only.
+    ###########################################################################
+    # This is needed for the form to be able to validate the presence of a
+    # duration in a pause component only. Since there is no creation of
+    # components (Component) without being an inherited model, eg: 'stimulus',
+    # 'instruction' etc., it does not make sense to create a ComponentForm
+    # just for model use Pause. It would make more sense to create a PauseForm
+    # as is the case for other types of components.
+
     component_form.component_type = component_type
+    ###########################################################################
     questionnaires_list = []
     specific_form = None
 
@@ -9222,7 +9328,7 @@ def component_create(request, experiment_id, component_type):
     elif component_type == 'tms':
         specific_form = TMSForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
-        questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
+        questionnaires_list = Survey.objects.all()
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         # component_form.fields['duration_value'].widget.attrs['disabled'] = True
@@ -9237,12 +9343,21 @@ def component_create(request, experiment_id, component_type):
 
         if component_form.is_valid():
             if component_type == 'questionnaire':
+                surveys = Questionnaires()
+                limesurvey_available = check_limesurvey_access(request, surveys)
+
                 new_specific_component = Questionnaire()
                 survey, created = Survey.objects.get_or_create(
                     lime_survey_id=request.POST['questionnaire_selected'])
                 if created:
                     survey.is_initial_evaluation = False
-                    survey.save()
+
+                if surveys.get_survey_properties(survey.lime_survey_id, 'active') == 'Y':
+                    new_specific_component.survey = survey
+                else:
+                    survey.is_active = False
+
+                survey.save()
                 new_specific_component.survey = survey
             elif component_type == 'pause':
                 new_specific_component = Pause()
@@ -9271,30 +9386,37 @@ def component_create(request, experiment_id, component_type):
                     redirect_url = reverse("component_list", args=(experiment_id,))
                 return HttpResponseRedirect(redirect_url)
 
+    questionnaires_with_names = []
+
+    for questionnaire in questionnaires_list:
+        questionnaires_with_names.append(
+            {'sid': questionnaire.lime_survey_id,
+             'name': find_questionnaire_name(questionnaire, request.LANGUAGE_CODE)["name"]})
+
     context = {"back_cancel_url": "/experiment/" + str(experiment.id) + "/components",
                "component_form": component_form,
                "creating": True,
                "can_change": can_change,
                "experiment": experiment,
-               "questionnaires_list": questionnaires_list,
+               "questionnaires_list": questionnaires_with_names,
                "specific_form": specific_form}
     return render(request, template_name, context)
 
 
-def find_active_questionnaires(language_code):
+def find_questionnaire_name(survey, language_code):
+    titles = {'pt-br': survey.pt_title, 'en': survey.en_title}
+    fallback_language = 'en' if language_code == 'pt-br' else 'pt-br'
 
-    surveys = Questionnaires()
+    if titles[language_code] is not None and titles[language_code] != "":
+        title = titles[language_code]
+    elif titles[fallback_language] is not None and titles[fallback_language] != "":
+        title = titles[fallback_language]
+    else:
+        surveys = Questionnaires()
+        title = surveys.get_survey_title(survey.lime_survey_id)
+        surveys.release_session_key()
 
-    questionnaires_list = surveys.find_all_active_questionnaires()
-
-    for questionnaire in questionnaires_list:
-        questionnaire_id = questionnaire["sid"]
-        language = get_questionnaire_language(surveys, questionnaire_id, language_code)
-        questionnaire['surveyls_title'] = surveys.get_survey_title(questionnaire_id, language)
-
-    surveys.release_session_key()
-
-    return questionnaires_list
+    return {'sid': survey.lime_survey_id, 'name': title}
 
 
 def create_list_of_breadcrumbs(list_of_ids_of_components_and_configurations):
@@ -9528,8 +9650,8 @@ def access_objects_for_view_and_update(request, path_of_the_components, updating
     back_cancel_url = create_back_cancel_url(component_type, component_configuration, path_of_the_components,
                                              list_of_ids_of_components_and_configurations, experiment, updating)
 
-    return component, component_configuration, component_form, configuration_form, experiment, component_type, \
-           template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group, \
+    return component, component_configuration, component_form, configuration_form, experiment, component_type,\
+           template_name, list_of_ids_of_components_and_configurations, list_of_breadcrumbs, group,\
            back_cancel_url
 
 
@@ -9689,9 +9811,13 @@ def get_uses_of_step_with_data(experiment):
             data_configuration_tree__component_configuration__component__experiment=experiment).values(
             'data_configuration_tree__component_configuration').distinct()]
 
-    return steps_questionnaire + \
-           steps_eeg + steps_emg + steps_tms + \
-           steps_goalkeeper_game + steps_additional_data + steps_generic_data_collection
+    return steps_questionnaire +\
+           steps_eeg +\
+           steps_emg +\
+           steps_tms +\
+           steps_goalkeeper_game +\
+           steps_additional_data +\
+           steps_generic_data_collection
 
 
 def clone_data_configuration_tree(dct, orig_and_clone):
@@ -9718,8 +9844,7 @@ def clone_electrode_positions(old_eeg_data, orig_and_clone):
         )
         new_eeg_electrode_position_setting = \
             EEGElectrodePositionSetting.objects.get(
-                pk=orig_and_clone['eeg_electrode_position_setting'][
-                eepcs.eeg_electrode_position_setting.id]
+                pk=orig_and_clone['eeg_electrode_position_setting'][eepcs.eeg_electrode_position_setting.id]
             )
         eepcs.eeg_data = new_eeg_data
         eepcs.eeg_electrode_position_setting = \
@@ -10101,8 +10226,8 @@ def copy_experiment(experiment, copy_data_collection=False):
 
     if copy_data_collection:
         # TODO: 1) check if groups has data collection before trying to copy or
-        # TODO: check this in template so the option to copy with data
-        # TODO: doesn't appear;
+        #  check this in template so the option to copy with data
+        #  doesn't appear;
         # TODO: 2) explain that orig_and_clone is modified in method
         dct_new_list = []
         for data_configuration_tree in DataConfigurationTree.objects.filter(
@@ -10351,7 +10476,6 @@ def copy_tms_setting(tms_setting, new_experiment):
 
 def create_component(component, new_experiment, orig_and_clone):
 
-    clone = None  # TODO: it's not necessary
     component_type = component.component_type
     file = None  # define variable that can be used in conditionals below
 
@@ -10777,7 +10901,6 @@ def component_update(request, path_of_the_components):
                             stimulus = get_object_or_404(Stimulus, pk=component.id)
                             specific_form = StimulusForm(request.POST or None, request.FILES, instance=stimulus)
 
-
                         # Only save if there was a change.
                         if component_form.has_changed() or specific_form.has_changed():
 
@@ -10829,18 +10952,8 @@ def component_update(request, path_of_the_components):
         questionnaire = get_object_or_404(Questionnaire, pk=component.id)
 
         questionnaire_id = questionnaire.survey.lime_survey_id
-        questionnaire_title = str(questionnaire.survey.lime_survey_id)
 
-        surveys = Questionnaires()
-
-        limesurvey_available = check_limesurvey_access(request, surveys)
-
-        if limesurvey_available:
-            questionnaire_title = surveys.get_survey_title(
-                questionnaire.survey.lime_survey_id,
-                get_questionnaire_language(surveys, questionnaire.survey.lime_survey_id, request.LANGUAGE_CODE))
-
-        surveys.release_session_key()
+        questionnaire_title = find_questionnaire_name(questionnaire.survey, request.LANGUAGE_CODE)["name"]
 
     type_of_the_parent_block = None
 
@@ -11010,7 +11123,7 @@ def component_add_new(request, path_of_the_components, component_type):
     elif component_type == 'tms':
         specific_form = TMSForm(request.POST or None, initial={'experiment': experiment})
     elif component_type == 'questionnaire':
-        questionnaires_list = find_active_questionnaires(request.LANGUAGE_CODE)
+        questionnaires_list = Survey.objects.all()
     elif component_type == 'block':
         specific_form = BlockForm(request.POST or None, initial={'number_of_mandatory_components': None})
         duration_string = "0"
@@ -11067,8 +11180,15 @@ def component_add_new(request, path_of_the_components, component_type):
             else:
                 if number_of_uses_form.is_valid():
                     if component_type == 'questionnaire':
-                        survey.save()
-                        new_specific_component.survey = survey
+                        surveys = Questionnaires()
+                        limesurvey_available = check_limesurvey_access(request, surveys)
+
+                        if surveys.get_survey_properties(survey.lime_survey_id, 'active') == 'Y':
+                            survey.save()
+                            new_specific_component.survey = survey
+                        else:
+                            survey.is_active = False
+                            survey.save()
 
                     new_specific_component.save()
 
@@ -11099,6 +11219,11 @@ def component_add_new(request, path_of_the_components, component_type):
 
                     return HttpResponseRedirect(redirect_url)
 
+    questionnaires_with_names=[]
+
+    for questionnaire in questionnaires_list:
+         questionnaires_with_names.append(find_questionnaire_name(questionnaire, request.LANGUAGE_CODE))
+
     context = {"back_cancel_url": back_cancel_url,
                "block": block,
                "block_duration": duration_string,
@@ -11112,7 +11237,7 @@ def component_add_new(request, path_of_the_components, component_type):
                "list_of_breadcrumbs": list_of_breadcrumbs,
                "number_of_uses_form": number_of_uses_form,
                "position": position,
-               "questionnaires_list": questionnaires_list,
+               "questionnaires_list": questionnaires_with_names,
                "path_of_the_components": path_of_the_components,
                "specific_form": specific_form,
                "can_change": True}
@@ -11365,6 +11490,45 @@ def eeg_electrode_position_change_the_order(request, eeg_electrode_position_id, 
 
     redirect_url = reverse("eeg_electrode_localization_system_view",
                            args=(eeg_electrode_position.eeg_electrode_localization_system_id,))
+
+    return HttpResponseRedirect(redirect_url)
+
+
+@login_required
+@permission_required('experiment.change_experiment')
+def experiment_research_change_order(request, collaborator_position_id, command):
+    position_status = get_object_or_404(ExperimentResearcher, pk=collaborator_position_id)
+
+    all_positions = ExperimentResearcher.objects.filter(experiment=position_status.experiment)
+
+    if command == "down":
+        position_to_change = all_positions.order_by('channel_index').filter(
+            channel_index__gt=position_status.channel_index).first()
+    else:
+        # position_to_change = all_positions.order_by('-channel_index').filter(
+        #     channel_index__gt=position_status.channel_index).first()
+        position_to_change = \
+            all_positions.filter(
+                channel_index__lt=position_status.channel_index
+            ).order_by('-channel_index').first()
+
+    bottom_position_setting = all_positions.order_by('-channel_index').first()
+    # bottom_position_setting = position_status.objects.order_by('-channel_index').first()
+
+    channel_index_current = position_status.channel_index
+    channel_index_to_change = position_to_change.channel_index
+
+    position_to_change.channel_index = bottom_position_setting.channel_index + 1
+    position_to_change.save()
+
+    position_status.channel_index = channel_index_to_change
+    position_status.save()
+
+    position_to_change.channel_index = channel_index_current
+    position_to_change.save()
+
+
+    redirect_url = reverse("experiment_view", args=(position_status.experiment.id,))
 
     return HttpResponseRedirect(redirect_url)
 
@@ -12778,6 +12942,8 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
 
     coil_model_form = CoilModelForm(request.POST or None, instance=coil_model_selected)
 
+    list_of_manufacturers = Manufacturer.objects.filter(set_of_equipment__equipment_type="tms_device").distinct()
+
     if request.method == "POST":
 
         if request.POST['action'] == "save":
@@ -12800,7 +12966,8 @@ def tms_setting_tms_device_edit(request, tms_setting_id, template_name="experime
                "tms_setting": tms_setting,
                "tms_device_setting_form": tms_device_setting_form,
                "equipment_form": equipment_form,
-               "coil_model_form": coil_model_form
+               "coil_model_form": coil_model_form,
+               "manufacturer_list": list_of_manufacturers
                }
 
     return render(request, template_name, context)

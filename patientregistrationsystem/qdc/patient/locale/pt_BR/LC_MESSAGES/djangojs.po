@@ -2,8 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -101,10 +100,6 @@ msgstr ""
 
 #: patient/forms.py:142
 msgid "Place of execution"
-msgstr ""
-
-#: patient/forms.py:163
-msgid "Fill date must be filled"
 msgstr ""
 
 #: patient/models.py:19
@@ -281,4 +276,8 @@ msgstr ""
 
 #: patient/views.py:1219
 msgid "Failed to generate token to answer the questionnaire. "
+msgstr ""
+
+#: patient/forms.py:176
+msgid "Fill date must be filled."
 msgstr ""

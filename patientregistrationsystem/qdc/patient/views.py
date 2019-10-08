@@ -15,16 +15,17 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.conf import settings
 from django.utils.translation import ugettext as _
+from django.core.cache import cache
 
 from experiment.models import Subject, SubjectOfGroup, QuestionnaireResponse as ExperimentQuestionnaireResponse, \
     Questionnaire
+from experiment.views import find_questionnaire_name
 
 from patient.forms import QuestionnaireResponseForm
 from patient.forms import PatientForm, TelephoneForm, SocialDemographicDataForm, SocialHistoryDataForm, \
     ComplementaryExamForm, ExamFileForm
 from patient.models import Patient, Telephone, SocialDemographicData, SocialHistoryData, MedicalRecordData, \
     ClassificationOfDiseases, Diagnosis, ExamFile, ComplementaryExam, QuestionnaireResponse
-from patient.quiz_widget import SelectBoxCountriesDisabled, SelectBoxStateDisabled
 
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
@@ -40,28 +41,24 @@ permission_required = partial(permission_required, raise_exception=True)
 @permission_required('patient.add_patient')
 def patient_create(request, template_name="patient/register_personal_data.html"):
     patient_form = PatientForm(request.POST or None)
-
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
     if request.method == "POST":
         patient_form.city = request.POST['city'] if 'city' in request.POST else ""
-        patient_form_is_valid = patient_form.is_valid()
-
         telephone_formset = telephone_inlineformset(request.POST, request.FILES)
-        telephone_formset_is_valid = telephone_formset.is_valid()
 
-        if patient_form_is_valid and telephone_formset_is_valid:
+        if patient_form.is_valid() and telephone_formset.is_valid():
             new_patient = patient_form.save(commit=False)
 
             # Remove leading and trailing white spaces to avoid problems with homonym search.
-            new_patient.name = new_patient.name.strip()
+            if new_patient.name:
+                new_patient.name = new_patient.name.strip()
 
             if not new_patient.cpf:
                 new_patient.cpf = None
 
             new_patient.changed_by = request.user
             new_patient.save()
-
             new_phone_list = telephone_formset.save(commit=False)
 
             for phone in new_phone_list:
@@ -71,6 +68,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
 
             messages.success(request, _('Personal data successfully written.'))
             return finish_handling_post(request, new_patient.id, 0)
+
         else:
             if request.POST['cpf']:
                 patient_found = Patient.objects.filter(cpf=request.POST['cpf'])
@@ -80,6 +78,7 @@ def patient_create(request, template_name="patient/register_personal_data.html")
                         patient_form.errors['cpf'][0] = _("Participant with this CPF has already removed.")
                     else:
                         patient_form.errors['cpf'][0] = _("There is already registered participant with this CPF.")
+
     else:
         telephone_formset = telephone_inlineformset()
 
@@ -88,7 +87,8 @@ def patient_create(request, template_name="patient/register_personal_data.html")
         'telephone_formset': telephone_formset,
         'editing': True,
         'inserting': True,
-        'currentTab': '0'}
+        'currentTab': '0'
+    }
 
     return render(request, template_name, context)
 
@@ -139,7 +139,7 @@ def patient_update_personal_data(request, patient, context):
 
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm)
 
-    if patient.name == '':
+    if not patient.name:
         patient_form.fields['anonymous'].widget.attrs['checked'] = True
 
     if request.method == "POST":
@@ -226,7 +226,7 @@ def patient_update_social_demographic_data(request, patient, context):
                         schooling=request.POST['schooling'])
 
                 else:
-                    new_social_demographic_data.social_class = None
+                    new_social_demographic_data.social_class = ""
 
                     # Show message only if any of the fields were filled. Nothing is shown or calculated if none of the
                     # fields were filled.
@@ -249,6 +249,8 @@ def patient_update_social_demographic_data(request, patient, context):
                 messages.success(request, _('Social demographic data successfully written.'))
 
             return finish_handling_post(request, patient.id, 1)
+        else:
+            social_demographic_form.social_class = ""
 
     context.update({
         'social_demographic_form': social_demographic_form,
@@ -270,13 +272,16 @@ def patient_update_social_history(request, patient, context):
     if request.method == "POST":
         if social_history_form.is_valid():
             if social_history_form.has_changed():
-                new_social_history_data = social_history_form.save(commit=False)
-                new_social_history_data.changed_by = request.user
-                new_social_history_data.save()
-                messages.success(request, _('Social history successfully recorded.'))
-
+                try:
+                    new_social_history_data = social_history_form.save(commit=False)
+                    new_social_history_data.changed_by = request.user
+                    new_social_history_data.save()
+                    messages.success(request, _('Social history successfully recorded.'))
+                except ValueError:
+                    messages.error(request, _('The combination is not allowed.'))
             return finish_handling_post(request, patient.id, 2)
-
+        else:
+            messages.error(request, _('The combination is not allowed.'))
     context.update({
         'social_history_form': social_history_form,
         'code': patient.code
@@ -368,7 +373,7 @@ def patient_view_personal_data(request, patient, context):
     telephone_inlineformset = inlineformset_factory(Patient, Telephone, form=TelephoneForm, extra=1)
     telephone_formset = telephone_inlineformset(instance=patient)
 
-    if patient.name == '':
+    if not patient.name:
         patient_form.fields['anonymous'].widget.attrs['checked'] = True
 
     for field in patient_form.fields:
@@ -377,11 +382,6 @@ def patient_view_personal_data(request, patient, context):
     for form in telephone_formset:
         for field in form.fields:
             form.fields[field].widget.attrs['disabled'] = True
-
-    patient_form.fields['country'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_country_state_address', 'data-flags': 'true', 'disabled': 'true'})
-    patient_form.fields['state'].widget = SelectBoxStateDisabled(
-        attrs={'data-country': 'id_country_state_address', 'id': 'id_chosen_state', 'disabled': 'true'})
 
     context.update({
         'code': patient.code,
@@ -402,8 +402,8 @@ def patient_view_social_demographic_data(request, patient, context):
     for field in social_demographic_form.fields:
         social_demographic_form.fields[field].widget.attrs['disabled'] = True
 
-    social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
-        attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
+    # social_demographic_form.fields['citizenship'].widget = SelectBoxCountriesDisabled(
+    #     attrs={'id': 'id_chosen_country', 'data-flags': 'true', 'disabled': 'true'})
 
     context.update({
         'social_demographic_form': social_demographic_form,
@@ -461,12 +461,11 @@ def patient_view_questionnaires(request, patient, context, is_update):
 
     for initial_evaluation in initial_evaluation_list:
 
-        language = get_questionnaire_language(surveys, initial_evaluation.lime_survey_id, language_code)
         patient_questionnaires_data_dictionary[initial_evaluation.lime_survey_id] = \
             {
                 'is_initial_evaluation': True,
                 'survey_id': initial_evaluation.pk,
-                'questionnaire_title': surveys.get_survey_title(initial_evaluation.lime_survey_id, language),
+                'questionnaire_title': find_questionnaire_name(initial_evaluation, language_code)["name"],
                 'questionnaire_responses': []
             }
 
@@ -480,17 +479,25 @@ def patient_view_questionnaires(request, patient, context, is_update):
         limesurvey_id = patient_questionnaire_response.survey.lime_survey_id
 
         if limesurvey_id not in patient_questionnaires_data_dictionary:
-            language = get_questionnaire_language(surveys, limesurvey_id, language_code)
             patient_questionnaires_data_dictionary[limesurvey_id] = \
                 {
                     'is_initial_evaluation': False,
                     'survey_id': patient_questionnaire_response.survey.pk,
-                    'questionnaire_title': surveys.get_survey_title(limesurvey_id, language),
+                    'questionnaire_title':
+                        find_questionnaire_name(patient_questionnaire_response.survey, language_code)["name"],
                     'questionnaire_responses': []
                 }
 
-        response_result = surveys.get_participant_properties(
-            limesurvey_id, patient_questionnaire_response.token_id, "completed")
+        if patient_questionnaire_response.is_completed == "N" or patient_questionnaire_response.is_completed == "":
+            is_completed = surveys.get_participant_properties(
+                limesurvey_id,
+                patient_questionnaire_response.token_id,
+                "completed") or ""
+
+            patient_questionnaire_response.is_completed = is_completed
+            patient_questionnaire_response.save()
+
+        response_result = patient_questionnaire_response.is_completed
 
         patient_questionnaires_data_dictionary[limesurvey_id]['questionnaire_responses'].append(
             {
@@ -503,13 +510,12 @@ def patient_view_questionnaires(request, patient, context, is_update):
         )
 
     patient_questionnaires_data_list = []
-
-    # transforming the dictionary to a list in order to sort
+    # Transforming the dictionary to a list in order to sort
     for key, dictionary in list(patient_questionnaires_data_dictionary.items()):
         dictionary['limesurvey_id'] = key
         patient_questionnaires_data_list.append(dictionary)
 
-    # sorting by questionnaire_title and is_initial_evaluation (reversed),
+    # Sorting by questionnaire_title and is_initial_evaluation (reversed),
     # where is_initial_evaluation is more relevant.
     patient_questionnaires_data_list = \
         sorted(patient_questionnaires_data_list, key=itemgetter('questionnaire_title'))
@@ -519,52 +525,41 @@ def patient_view_questionnaires(request, patient, context, is_update):
     # additional survey list
 
     additional_survey_list = []
-
     if is_update:
-
         for survey in Survey.objects.exclude(
                 lime_survey_id__in=[item['limesurvey_id'] for item in patient_questionnaires_data_list]):
+            additional_survey_list.append({
+                'id': survey.id, 'lime_survey_id': survey.lime_survey_id,
+                'title': find_questionnaire_name(survey, language_code)["name"]
+            })
 
-            language = get_questionnaire_language(surveys, survey.lime_survey_id, language_code)
-            additional_survey_list.append({'id': survey.id,
-                                           'lime_survey_id': survey.lime_survey_id,
-                                           'title': surveys.get_survey_title(survey.lime_survey_id, language)})
-
-    # Questionnaires filled in an experimental group
-
+    # Questionnaires filled in an experiment group
     questionnaires_data = []
-
     subject = Subject.objects.filter(patient=patient)
     subject_of_group_list = SubjectOfGroup.objects.filter(subject=subject)
-
     for subject_of_group in subject_of_group_list:
-
         experiment_questionnaire_response_list = \
             ExperimentQuestionnaireResponse.objects.filter(subject_of_group=subject_of_group)
-
         for questionnaire_response in experiment_questionnaire_response_list:
-
             component_configuration = questionnaire_response.data_configuration_tree.component_configuration
-
             limesurvey_id = component_configuration.component.questionnaire.survey.lime_survey_id
-
-            response_result = surveys.get_participant_properties(limesurvey_id,
-                                                                 questionnaire_response.token_id, "completed")
-
-            language = get_questionnaire_language(surveys, limesurvey_id, request.LANGUAGE_CODE)
-            questionnaires_data.append(
-                {
+            if questionnaire_response.is_completed == "N" or questionnaire_response.is_completed == "":
+                is_completed = surveys.get_participant_properties(
+                    limesurvey_id, questionnaire_response.token_id, "completed") \
+                               or ""
+                questionnaire_response.is_completed = is_completed
+                questionnaire_response.save()
+            response_result = questionnaire_response.is_completed
+            questionnaires_data.append({
                     'research_project_title': subject_of_group.group.experiment.research_project.title,
                     'experiment_title': subject_of_group.group.experiment.title,
                     'group_title': subject_of_group.group.title,
-                    'questionnaire_title': surveys.get_survey_title(limesurvey_id, language),
+                    'questionnaire_title': find_questionnaire_name(
+                            component_configuration.component.questionnaire.survey, language_code)["name"],
                     'questionnaire_response': questionnaire_response,
                     'completed': None if response_result is None else response_result != "N" and response_result != ""
-                }
-            )
-
+                })
     surveys.release_session_key()
-
     context.update({
         'patient_questionnaires_data_list': patient_questionnaires_data_list,
         'questionnaires_data': questionnaires_data,
@@ -902,19 +897,13 @@ def exam_create(request, patient_id, record_id, diagnosis_id, template_name="pat
                     new_file_data.save()
                     messages.success(request, _('Exam successfully saved.'))
 
-                if request.POST['action'] == "upload":
-                    redirect_url = reverse("exam_edit", args=(patient_id, record_id, new_complementary_exam.pk))
+                if new_medical_record:
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                else:
+                    redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
 
-                    return HttpResponseRedirect(redirect_url + "?status=" + status +
-                                                ("&mr=new" if new_medical_record else ""))
+                return HttpResponseRedirect(redirect_url + "?status=" + status)
 
-                elif request.POST['action'] == "save":
-                    if new_medical_record:
-                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                    else:
-                        redirect_url = reverse("medical_record_view", args=(patient_id, record_id, ))
-
-                    return HttpResponseRedirect(redirect_url + "?status=" + status)
         else:
             messages.error(request, _('It is not possible to save exam without files.'))
 
@@ -970,16 +959,10 @@ def exam_edit(request, patient_id, record_id, exam_id, template_name="patient/ex
                         new_file_data.exam = complementary_exam
                         new_file_data.save()
 
-                    if request.POST['action'] == "save":
-                        messages.success(request, _('Exam successfully saved.'))
+                    messages.success(request, _('Exam successfully saved.'))
+                    redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
+                    return HttpResponseRedirect(redirect_url + "?status=" + status)
 
-                        redirect_url = reverse("medical_record_edit", args=(patient_id, record_id, ))
-                        return HttpResponseRedirect(redirect_url + "?status=" + status)
-
-                    else:
-                        if request.POST['action'] == 'upload':
-                            exam_file_list = ExamFile.objects.filter(exam=exam_id)
-                            length = exam_file_list.__len__()
             else:
                 messages.error(request, _('It is not possible to save exam without files.'))
 
@@ -1104,14 +1087,18 @@ def get_origin(request):
 @login_required
 # TODO: associate the right permission
 # @permission_required('patient.add_medicalrecorddata')
-def questionnaire_response_create(request, patient_id, survey_id,
-                                  template_name="experiment/subject_questionnaire_response_form.html"):
+def questionnaire_response_create(
+        request, patient_id, survey_id,
+        template_name="experiment/subject_questionnaire_response_form.html"
+):
 
     patient = get_object_or_404(Patient, pk=patient_id)
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    language = get_questionnaire_language(
+        surveys, survey.lime_survey_id, request.LANGUAGE_CODE
+    )
     survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
     surveys.release_session_key()
 
@@ -1168,9 +1155,9 @@ def questionnaire_response_update(request, questionnaire_response_id,
     surveys = Questionnaires()
     language = get_questionnaire_language(surveys, questionnaire_response.survey.lime_survey_id, request.LANGUAGE_CODE)
     survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id, language)
-    survey_completed = (surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
-                                                           questionnaire_response.token_id,
-                                                           "completed") != "N")
+    survey_completed = surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
+                                                          questionnaire_response.token_id,
+                                                          "completed") != "N"
     surveys.release_session_key()
 
     patient = get_object_or_404(Patient, pk=questionnaire_response.patient_id)
@@ -1197,9 +1184,8 @@ def questionnaire_response_update(request, questionnaire_response_id,
         elif request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
                 surveys = Questionnaires()
-                result = surveys.delete_participant(
-                    questionnaire_response.survey.lime_survey_id,
-                    questionnaire_response.token_id)
+                result = surveys.delete_participants(
+                    questionnaire_response.survey.lime_survey_id, [questionnaire_response.token_id])
                 surveys.release_session_key()
 
                 can_delete = False
@@ -1279,8 +1265,8 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
             return None, None
 
         if not check_required_fields(questionnaire_lime_survey, survey.lime_survey_id):
-            messages.warning(request,
-                             _('Not available filling - questionnaire does not contain standard fields'))
+            messages.warning(
+                request, _('Not available filling - questionnaire does not contain standard fields'))
             return None, None
 
         result = questionnaire_lime_survey.add_participant(survey.lime_survey_id)
@@ -1309,8 +1295,8 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
 
 def check_required_fields(surveys, lime_survey_id):
     """
-    método para verificar se o questionário tem as questões de identificação corretas
-    e se seus tipos também são corretos
+    Verify if questionnaire have right identification questions
+    and question types
     """
 
     fields_to_validate = {
@@ -1327,7 +1313,7 @@ def check_required_fields(surveys, lime_survey_id):
     if 'status' not in groups:
 
         for group in groups:
-            question_list = surveys.list_questions(lime_survey_id, group['id']['gid'])
+            question_list = surveys.list_questions_ids(lime_survey_id, group['id']['gid'])
             for question in question_list:
                 question_properties = surveys.get_question_properties(question, None)
                 if question_properties['title'] in fields_to_validate:
@@ -1372,11 +1358,17 @@ def questionnaire_response_view(request, questionnaire_response_id,
     questionnaire_response = get_object_or_404(QuestionnaireResponse,
                                                pk=questionnaire_response_id)
 
-    surveys = Questionnaires()
-    survey_completed = (surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
-                                                           questionnaire_response.token_id,
-                                                           "completed") != "N")
-    surveys.release_session_key()
+    if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == "":
+        surveys = Questionnaires()
+        is_completed = surveys.get_participant_properties(
+            questionnaire_response.survey.lime_survey_id,
+            questionnaire_response.token_id,
+            "completed") or ""
+        questionnaire_response.is_completed = is_completed
+        questionnaire_response.save()
+        surveys.release_session_key()
+
+    survey_completed = (questionnaire_response.is_completed != "N")
 
     questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
 
@@ -1386,8 +1378,8 @@ def questionnaire_response_view(request, questionnaire_response_id,
         if request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
                 surveys = Questionnaires()
-                result = surveys.delete_participant(questionnaire_response.survey.lime_survey_id,
-                                                    questionnaire_response.token_id)
+                result = surveys.delete_participants(questionnaire_response.survey.lime_survey_id,
+                                                     [questionnaire_response.token_id])
                 surveys.release_session_key()
 
                 can_delete = False
@@ -1427,10 +1419,24 @@ def questionnaire_response_view(request, questionnaire_response_id,
                 token_id=questionnaire_response.token_id,
                 data_configuration_tree__component_configuration__component__in=questionnaire_component_list).exists()
 
-    survey_title, groups_of_questions = get_questionnaire_responses(request.LANGUAGE_CODE,
-                                                                    questionnaire_response.survey.lime_survey_id,
-                                                                    questionnaire_response.token_id,
-                                                                    request)
+    survey_title_key = \
+        request.LANGUAGE_CODE + "-" + str(questionnaire_response.survey.lime_survey_id) + \
+        "-" + str(questionnaire_response.token_id) + "_survey_title_participant"
+    groups_of_questions_key = \
+        request.LANGUAGE_CODE + "-" + str(questionnaire_response.survey.lime_survey_id) + \
+        "-" + str(questionnaire_response.token_id) + "_group_of_questions_participant"
+
+    survey_title = cache.get(survey_title_key)
+    groups_of_questions = cache.get(groups_of_questions_key)
+
+    if not survey_title and not groups_of_questions:
+        # Get the responses for each question of the questionnaire.
+        survey_title, groups_of_questions = get_questionnaire_responses(
+            request.LANGUAGE_CODE, questionnaire_response.survey.lime_survey_id,
+            questionnaire_response.token_id, request)
+
+        cache.set(survey_title_key, survey_title)
+        cache.set(groups_of_questions_key, groups_of_questions)
 
     context = {
         "questionnaire_response_form": questionnaire_response_form,
@@ -1449,7 +1455,9 @@ def questionnaire_response_view(request, questionnaire_response_id,
         "updating": True,
         "status": status,
         "response_is_reused_in_experiment": response_is_reused_in_experiment,
-        "can_change": True  # This is related to permission to change an experiment, which is not the case in here.
+        # This is related to permission to change an experiment, which is
+        # not the case here.
+        "can_change": True
     }
 
     return render(request, template_name, context)

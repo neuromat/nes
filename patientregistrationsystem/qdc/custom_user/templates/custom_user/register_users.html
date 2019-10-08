@@ -144,13 +144,25 @@
             </div>
 
             <div class="row">
+                <div class="col-xs-6 col-sm-6">
+                    <div class="form-group"  id="citation_name_id">
+                        <label>{% trans "Citation name" %}</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+                            {{ profile_form.citation_name }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-xs-10 col-sm-10">
                     <div class="form-group">
                         <input type="text" id="operation" value="{% if creating %}creating{% elif editing %}editing{% else %}viewing{% endif %}" hidden="hidden">
                         <label>{%  trans "Can this researcher access the system?" %}</label><br>
                         <ul id="optradio">
                             {% for radio in profile_form.login_enabled %}
-                                <li><label for="{{radio.id_for_label}}"><input id="{{radio.id_for_label}}" {% if profile_form.login_enabled.value|stringformat:"s" == radio.choice_value %}checked="checked"{% endif %} name="login_enabled" type="radio" value="{{radio.choice_value}}" {% if viewing %}disabled{% endif %} {% if profile_form.login_enabled.value == True and radio.choice_value == 'False' %}onchange="$('#modalDeactivate').modal('show')"{% endif %}> {{radio.choice_label}}</label></li>
+                                <li><label for="optradio_{{radio.id_for_label|last}}"><input id="optradio_{{radio.id_for_label|last}}" {% if radio.data.selected %}checked="checked"{% endif %} name="login_enabled" type="radio" value="{{radio.data.value}}" {% if viewing %}disabled{% endif %} {% if profile_form.login_enabled.value == True and radio.data.value == False %}onchange="$('#modalDeactivate').modal('show')"{% endif %}> {{radio.data.label}}</label></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -179,7 +191,8 @@
             </div>
 
             <div class="row" id="div_password">
-                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left" title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >
+{#                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left" title="{% trans "Password must contain at least 8 characters, including at least one uppercase letter, digit or special character." %}" >#}
+                <div class="col-xs-6 col-sm-6" data-toggle="tooltip" data-placement="left">
                     <div class="form-group {% if form.errors.password %}has-error{% endif %}" id="id_new_password1_form_group">
                         <label for="id_new_password1" class="control-label">{% trans "Password" %}<b style="color: red;">*</b></label>
                         <div class="input-group input-group-sm right-inner-addon">

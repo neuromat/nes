@@ -8,3 +8,5 @@ qdc/wsgi.py
 db.sqlite3
 __pycache__/
 geckodriver.log
+functional_tests
+.coverage*

@@ -5,7 +5,6 @@
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% block header %}
-    <script src="{% static 'quiz/js/research_project.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -174,9 +173,11 @@
                                 <tr>
                                     <th>{% trans "Title" %}</th>
                                     <th>{% trans "Description" %}</th>
-                                    <th style="text-align: center"><span class="fa fa-share-alt"></span> {% trans "Is public" %}</th>
-                                    <th style="text-align: center"><span class="fa fa-upload"></span> {% trans "Data acquisition is concluded" %}</th>
-                                    <th>{% trans 'Copy experiment' %}</th>
+                                    <th style="text-align: center">{% trans "Create PDF" %}</th>
+                                    <th style="text-align: center">{% trans 'Copy experiment' %}</th>
+                                    {% if not editing and can_change %}
+                                        <th style="text-align: center">{% trans 'Export experiment' %}</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -188,10 +189,13 @@
                                         {{ experiment.title }}
                                         {% endif %}
                                     <td>{{ experiment.description }}</td>
-                                    <td style="text-align: center">{% if experiment.is_public %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
-                                    <td style="text-align: center">{% if experiment.data_acquisition_is_concluded %}<span class="glyphicon glyphicon-ok" style="color: royalblue"></span> {% endif %}</td>
-                                    <td style="text-align: center"><a data-toggle="modal" data-experiment_id="{{ experiment.id }}"
+                                    <td style="text-align: center"><button type="submit" class="btn" name="action" value="create_pdf-{{ experiment.id }}" style="background:transparent; border:none"><i class="fa fa-file-pdf-o"></i></button></td>
+                                    <td style="text-align: center"><a class="btn" data-toggle="modal" data-experiment_id="{{ experiment.id }}"
                                             href="#modalCopyExperiment"><i class="fa fa-copy"></i></a></td>
+                                    {% if not editing and can_change %}
+                                        <td style="text-align: center"><a class="btn" data-toggle="modal" data-experiment_id="{{ experiment.id }}"
+                                                                          href="/experiment/{{ experiment.id }}/export"><i class="fa fa-download"></i></a></td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -200,6 +204,9 @@
                     {% if perms.experiment.add_experiment and can_change %}
                         <div class="btn-group pull-left">
                             <a href="/experiment/research_project/{{ research_project.id }}/new_experiment/" class="btn btn-primary">{% trans "Insert new" %}</a>
+                        </div>
+                        <div class="tn-group pull-right">
+                            <a href="/experiment/import/{{ research_project.id }}" class="btn btn-default"><i class="fa fa-upload"></i> {% trans "Import Experiment" %}</a>
                         </div>
                     {% endif %}
                 </div>
@@ -213,7 +220,7 @@
                 </div>
                 {% if editing %}
                     <div class="btn-group pull-right">
-                        <button type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
+                        <button id="id_save_button" type="submit" name="action" value="save" class="btn btn-primary">{% trans "Save" %}</button>
                     </div>
                     <div class="btn-group pull-right">
                         <a href="/experiment/research_project/{% if creating %}list{% else %}{{ research_project.id }}{% endif %}"
@@ -299,14 +306,17 @@
         </div>
     </div>
 
+{% block script %}
     <script>
         $("#modalCopyExperiment").on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var experiment_id = button.data('experiment_id');
             var modal = $(this);
             modal.find('#id_experiment_hidden').attr('value', experiment_id);
-        })
+        });
     </script>
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
+{% endblock %}
 
 {% endblock %}
 
