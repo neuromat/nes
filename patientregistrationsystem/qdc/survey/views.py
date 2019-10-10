@@ -333,12 +333,7 @@ def get_survey_header(surveys, survey, language, heading_type):
     responses_text = surveys.get_responses(
         survey.lime_survey_id, language, heading_type=heading_type
     )
-    header_fields = next(
-        # TODO (dev (merging)): 500 error in NES-INDC (see Internal Server Error message
-        #  in email) is due to responses_text.decode(). We are fixing this here to match
-        #  the fix I did in NES-INDC production environment directly at tag TAG-159.1.
-        reader(StringIO(responses_text.decode()), delimiter=',')
-    )
+    header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
     for field in header_fields:
         result.append(field)
     return result
@@ -939,8 +934,7 @@ def check_limesurvey_access(request, surveys):
     available = limesurvey_available(surveys)
     if not available:
         messages.warning(
-            request, _("LimeSurvey unavailable. System running partially.")
-        )
+            request, _("LimeSurvey unavailable. System running partially."))
 
     return available
 

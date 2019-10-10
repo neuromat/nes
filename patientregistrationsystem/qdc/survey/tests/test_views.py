@@ -388,7 +388,7 @@ class SurveyTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['questionnaires_list']), 0)
 
-        # Create an survey with a dummy lime survey id and without any code
+        # Create a survey with a dummy lime survey id and without any code
         survey = Survey.objects.create(lime_survey_id=-1)
         self.assertIsNone(survey.pt_title)
 

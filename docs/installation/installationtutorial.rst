@@ -8,7 +8,7 @@ In this guide, we will demonstrate how to install and configure NES in a Python 
 
 Important technical information
 -------------------------------
-* This guide walks through an installation by using packages available through Dwebian 9 (code name: Stretch), but can easily be adapted to other Unix operating systems.
+* This guide walks through an installation by using packages available through Debian 9 (code name: Stretch), but can easily be adapted to other Unix operating systems.
 * Using virtualenv to install NES is recommended. This is because when you use virtualenv, you create an isolated environment with its own installation directories.
 * Latest version of NES works only with Python 3.
 * For demonstration purposes, we will use the `/usr/local` directory to deploy NES. This directory seems to be the right place according to the `Linux Foundation <https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch04s09.html>`_. 
@@ -50,18 +50,6 @@ Initial setup
     cd nes/patientregistrationsystem/qdc/
 
     pip install -r requirements.txt
-
-    pip install -U mne
-
-8. Now you need to install the NWB package, that is installed from the source-code::
-
-    cd ../../..
-
-    git clone https://github.com/AllenInstitute/nwb-api.git
-
-    cd nwb-api/ainwb
-
-    python setup.py install
 
 .. _deploying-nes-with-apache-postgresql-and-mod-wsgi:
 
@@ -191,19 +179,19 @@ After, insert the following content remembering that the paths and the ServerNam
 
     python manage.py loaddata load_initial_data.json
 
-9. Managing img file::
+9. Managing static files::
 
-    mkdir img
+    mkdir static
 
     nano qdc/settings_local.py
 
 10. Edit the ``STATIC_ROOT line``::
 
-     STATIC_ROOT = '/usr/local/nes-system/nes/patientregistrationsystem/qdc/img'
+     STATIC_ROOT = '/usr/local/nes-system/nes/patientregistrationsystem/qdc/static'
 
-11. Collects the img files into ``STATIC_ROOT``::
+11. Collects the static files into ``STATIC_ROOT``::
 
-     python manage.py collectimg
+     python manage.py collecstatic
 
 12. Create the media directory::
 

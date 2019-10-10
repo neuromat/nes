@@ -6,6 +6,7 @@ import sys
 import tempfile
 
 from datetime import date, datetime
+from unittest import skip
 from unittest.mock import patch
 
 from xml.etree.ElementTree import XML
@@ -1467,9 +1468,10 @@ class QuestionnaireFormValidation(TestCase):
         completed = entrance_evaluation['questionnaire_responses'][0]['completed']
         self.assertTrue(not completed)  # questionnaire is not completed
 
-    # TODO: this is an integration test
+    # TODO: this is an integration test. TODO (NES-995): take it to its place
+    @skip
     def test_check_limesurvey_availability(self):
-        """Test to see if LimeSurvey is available under circumstances"""
+        """Test if LimeSurvey is available under circumstances"""
         patient = self.util.create_patient(self.user)
 
         request = self.factory.get(reverse(PATIENT_VIEW, args=[patient.pk]) + "?currentTab=4")
@@ -1482,7 +1484,7 @@ class QuestionnaireFormValidation(TestCase):
 
         surveys.release_session_key()
 
-        # test limesurvey not available
+        # Test limesurvey not available
         settings.LIMESURVEY['URL_API'] = 'https://surveys.numec.prp.usp.br/'  # with error
 
         surveys = Questionnaires()

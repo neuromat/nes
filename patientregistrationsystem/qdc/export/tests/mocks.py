@@ -638,20 +638,14 @@ def set_mocks4(mockServer):
         'NzUwNSIsIk9sw6EgTXVuZG8hIiwiSGFsbG8gV2VsdCEiLCIiLCIi'
     ]
     mockServer.return_value.list_groups.return_value = [
-        {
-            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'group_order': 2, 'gid': 1841,
-            'description': '', 'id': {'gid': 1841, 'language': 'en'}, 'group_name': 'First group', 'language': 'en'
-        },
-        {
-            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'group_order': 1, 'gid': 1840,
-            'description': '', 'id': {'gid': 1840, 'language': 'en'}, 'group_name': 'Identification',
-            'language': 'en'
-        },
-        {
-            'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'group_order': 1, 'gid': 1840,
-            'description': '', 'id': {'gid': 1840, 'language': 'pt-BR'}, 'group_name': 'Identification',
-            'language': 'pt-BR'
-        },
+        {'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'group_order': 2, 'gid': 1841,
+         'description': '', 'id': {'gid': 1841, 'language': 'en'}, 'group_name': 'First group', 'language': 'en'},
+        {'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'group_order': 1, 'gid': 1840,
+         'description': '', 'id': {'gid': 1840, 'language': 'en'}, 'group_name': 'Identification',
+         'language': 'en'},
+        {'randomization_group': '', 'grelevance': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'group_order': 1, 'gid': 1840,
+         'description': '', 'id': {'gid': 1840, 'language': 'pt-BR'}, 'group_name': 'Identification',
+         'language': 'pt-BR'},
     ]
     mockServer.return_value.list_questions.side_effect = [
         [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N', 'question_order': 3,
@@ -3929,7 +3923,7 @@ def set_mocks9(mock_server):
           'group_order': 1},
          {'id': {'language': 'en', 'gid': 1960}, 'language': 'en', 'grelevance': '', 'gid': 1960,
           'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 798261,
-                              'group_order': 2}],
+          'group_order': 2}],
         [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},
@@ -3939,7 +3933,7 @@ def set_mocks9(mock_server):
           'group_order': 1},
          {'id': {'language': 'en', 'gid': 1960}, 'language': 'en', 'grelevance': '', 'gid': 1960,
           'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 798261,
-                              'group_order': 2}],
+          'group_order': 2}],
         [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
           'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
           'group_order': 1},

@@ -45,7 +45,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
-from experiment.tests.tests_original import ObjectsFactory
+from experiment.tests.tests_helper import ObjectsFactory
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
     AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases, FleshTone, Payment, \
     Religion, Schooling, ExamFile

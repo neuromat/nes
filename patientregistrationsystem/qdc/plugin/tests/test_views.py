@@ -1,5 +1,4 @@
 import csv
-import io
 import os
 import re
 import shutil
@@ -18,7 +17,8 @@ from export import input_export
 from export.models import Export
 from export.tests.tests_helper import ExportTestCase
 from plugin.models import RandomForests
-from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks, update_limesurvey_api_mocks
+from plugin.tests.LimeSurveyAPI_mocks import set_limesurvey_api_mocks, update_limesurvey_api_mocks, \
+    set_limesurvey_api_mocks2
 from plugin.views import send_to_plugin
 from patient.tests.tests_orig import UtilTests
 from survey.models import Survey
@@ -36,14 +36,21 @@ class PluginTest(ExportTestCase):
         self.client.logout()
 
     def _create_basic_objects(self):
-        survey1 = create_survey()
-        survey2 = create_survey(505050)
+        self.survey1 = create_survey()
+        # Specify the survey code for matching with mocks.
+        # In code, export.process_per_participant sorts surveys by survey code, already.
+        # for matching the mocks. See comment in export.process_per_participant method.
+        self.survey1.code = 'Q212121'
+        self.survey1.save()
+        self.survey2 = create_survey(505050)
+        self.survey2.code = 'Q505050'
+        self.survey2.save()
         RandomForests.objects.create(
-            admission_assessment=survey1, surgical_evaluation=survey2, plugin_url='http://plugin_url')
-        UtilTests.create_response_survey(self.user, self.patient, survey1, 21)
-        UtilTests.create_response_survey(self.user, self.patient, survey2, 21)
+            admission_assessment=self.survey1, surgical_evaluation=self.survey2, plugin_url='http://plugin_url')
+        UtilTests.create_response_survey(self.user, self.patient, self.survey1, 21)
+        UtilTests.create_response_survey(self.user, self.patient, self.survey2, 21)
 
-    def test_GET_send_to_plugin_returns_correct_status_code(self):
+    def test_GET_send_to_plugin_returns_right_status_code(self):
         response = self.client.get(reverse('send-to-plugin'), follow=True)
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'plugin/send_to_plugin.html')
@@ -52,11 +59,36 @@ class PluginTest(ExportTestCase):
         view = resolve('/plugin/')
         self.assertEquals(view.func, send_to_plugin)
 
-    def test_GET_send_to_plugin_display_questionnaire_names_in_interface(self):
+    def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_display_message1(
+            self):
+        """Current language is pt-BR"""
+
         self._create_basic_objects()
+        random_forest = RandomForests.objects.get()
+        random_forest.admission_assessment.pt_title = None
+        random_forest.admission_assessment.save()
+        random_forest.surgical_evaluation.pt_title = None
+        random_forest.surgical_evaluation.save()
+
         response = self.client.get(reverse('send-to-plugin'))
-        for survey in Survey.objects.all():
-            self.assertContains(response, survey.pt_title)
+        self.assertContains(response, 'Título do Questionário Avaliação de Entrada não disponível em pt-BR')
+        self.assertContains(response, 'Título do Questionário Avaliação Cirúrgica não disponível em pt-BR')
+
+    @override_settings(LANGUAGE_CODE='en')
+    def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_display_message2(
+            self):
+        """Current language is en"""
+
+        self._create_basic_objects()
+        random_forest = RandomForests.objects.get()
+        random_forest.admission_assessment.en_title = None
+        random_forest.admission_assessment.save()
+        random_forest.surgical_evaluation.en_title = None
+        random_forest.surgical_evaluation.save()
+
+        response = self.client.get(reverse('send-to-plugin'))
+        self.assertContains(response, 'Questionnaire title for Unified Admission Assessment not available in en')
+        self.assertContains(response, 'Questionnaire title for Surgical Assessment not available in en')
 
     def test_does_not_define_plugin_url_attribute_does_not_display_plugin_entry_in_menu(self):
         self._create_basic_objects()
@@ -69,10 +101,25 @@ class PluginTest(ExportTestCase):
         response = self.client.get('home')
         self.assertNotIn('Plugin', response.content.decode('utf-8'))
 
-    def test_group_selected_list_in_request_session_removes_this_session_key(self):
-        # TODO (NES-995): simulate 'group_selected_list' in request session when sending
-        #  to Plugin
-        pass
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_group_selected_list_in_request_session_removes_session_key(self, mockServer):
+        # Simulate 'group_selected_list' already in request session when sending
+        # to Plugin in Per Participant way
+        self.append_session_variable('group_selected_list', 21)
+
+        set_limesurvey_api_mocks(mockServer)
+        self._create_basic_objects()
+
+        self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'headings': ['code'],
+                'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+
+        self.assertIsNone(self.client.session.get('group_selected_list', None))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -137,7 +184,7 @@ class PluginTest(ExportTestCase):
             in_items = [in_items.match(item) for item in list_items]
             in_items = [item for item in in_items if item is not None]
             self.assertEqual(2, len(in_items))
-            out_items = re.compile('NES_EXPORT/Per_participant/Participant_%s' % patient2.code)
+            out_items = re.compile('data/Per_participant/Participant_%s' % patient2.code)
             out_items = [out_items.match(item) for item in list_items]
             out_items = [item for item in out_items if item is not None]
             self.assertEqual(0, len(out_items))
@@ -145,7 +192,7 @@ class PluginTest(ExportTestCase):
             # Tests for Per_questionnaire subdir
             questionnaire1 = zipped_file.extract(
                 input_export.BASE_DIRECTORY +
-                '/Per_questionnaire/212121_admission-assessment-plugin/Responses_212121_en.csv',
+                '/Per_questionnaire/QA_unified_admission_assessment/Responses_QA_en.csv',
                 TEMP_MEDIA_ROOT)
             with open(questionnaire1) as q1_file:
                 reader = list(csv.reader(q1_file))
@@ -153,23 +200,23 @@ class PluginTest(ExportTestCase):
                 self.assertEqual(self.patient.code, reader[1][0])
             questionnaire2 = zipped_file.extract(
                 input_export.BASE_DIRECTORY +
-                '/Per_questionnaire/505050_surgical-evaluation-plugin/Responses_505050_en.csv',
+                '/Per_questionnaire/QS_surgical_evaluation/Responses_QS_en.csv',
                 TEMP_MEDIA_ROOT)
             with open(questionnaire2) as q2_file:
                 reader = list(csv.reader(q2_file))
                 self.assertEqual(2, len(reader))
                 self.assertEqual(self.patient.code, reader[1][0])
 
-    @skip  # TODO (NES-995): solve this before final commit
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_POST_send_to_plugin_redirect_to_send_to_plugin_view_with_plugin_url_session_key(self, mockServer):
+    def test_POST_send_to_plugin_adds_plugin_url_session_key_and_redirect_to_send_to_plugin_view(self, mockServer):
         set_limesurvey_api_mocks(mockServer)
 
         self._create_basic_objects()
         response = self.client.post(
             reverse('send-to-plugin'),
             data={
+                'headings': ['code'],
                 'opt_floresta': ['on'], 'patient_selected': ['age*age', 'gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
@@ -177,8 +224,8 @@ class PluginTest(ExportTestCase):
         export = Export.objects.last()
         plugin = RandomForests.objects.last()
         plugin_url = plugin.plugin_url + '?user_id=' + str(self.user.id) + '&export_id=' + str(export.id)
-        self.assertRedirects(response, reverse('send-to-plugin'))
         self.assertEqual(self.client.session.get('plugin_url'), plugin_url)
+        self.assertRedirects(response, reverse('send-to-plugin'))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -298,6 +345,65 @@ class PluginTest(ExportTestCase):
         self.assertRedirects(response, reverse('send-to-plugin'))
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, _('The Floresta Plugin needs to send at least Gender attribute'))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_write_files_and_dirs_the_right_way_and_always_in_english(self, mockServer):
+        set_limesurvey_api_mocks2(mockServer)
+
+        self._create_basic_objects()
+        self.client.post(
+            reverse('send-to-plugin'),
+            data={
+                'headings': ['code'],
+                'opt_floresta': ['on'], 'patient_selected': ['gender__name*gender'],
+                'patients_selected[]': [str(self.patient.id)]
+            })
+        export = Export.objects.last()
+        with open(os.path.join(
+                settings.MEDIA_ROOT, 'export', str(self.user.id), str(export.id), 'export.zip'), 'rb') as file:
+            zip_file = zipfile.ZipFile(file, 'r')
+            self.assertIsNone(zip_file.testzip())
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_questionnaire', 'QA_unified_admission_assessment', 'Responses_QA_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join('data/Per_questionnaire', 'QA_unified_admission_assessment', 'Responses_QA_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_questionnaire', 'QS_surgical_evaluation', 'Responses_QS_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join('data/Per_questionnaire', 'QS_surgical_evaluation', 'Responses_QS_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_unified_admission_assessment',
+                    'Responses_QA_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join(
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_unified_admission_assessment',
+                    'Responses_QA_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_surgical_evaluation',
+                    'Responses_QS_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join(
+                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_surgical_evaluation',
+                    'Responses_QS_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_make_subdirs_questionnaire_titles_in_english(self, mockServer):
+        pass
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_POST_send_to_plugin_write_csv_participant_data_in_english(self, mockServer):
+        pass
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
