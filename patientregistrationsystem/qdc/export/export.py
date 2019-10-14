@@ -223,12 +223,6 @@ class LogMessages:
 
 class ExportExecution:
 
-    def get_username(self, request):
-        self.user_name = None
-        if request.user.is_authenticated():
-            self.user_name = request.user.username
-        return self.user_name
-
     def __init__(self, user_id, export_id):
         self.files_to_zip_list = []
         self.directory_base = ''
@@ -246,6 +240,27 @@ class ExportExecution:
         self.participants_filtered_data = []
         self.per_group_data = {}
         self.questionnaire_utils = QuestionnaireUtils()
+
+    @staticmethod
+    def update_duplicates(fields):
+        """
+        Update duplicates in fields list by adding numbers for duplicates, started
+        in 1, then 2 etc.
+        :param fields: list
+        """
+        for field in fields:
+            duplicated_indexes = [i for i, duplicated_fields in enumerate(fields) if field == duplicated_fields]
+            if len(duplicated_indexes) > 1:
+                j = 1
+                for i in duplicated_indexes:
+                    fields[i] += str(j)
+                    j += 1
+
+    def get_username(self, request):
+        self.user_name = None
+        if request.user.is_authenticated():
+            self.user_name = request.user.username
+        return self.user_name
 
     def set_directory_base(self, user_id, export_id):
         self.directory_base = path.join(self.base_directory_name, str(user_id), str(export_id))
@@ -2582,7 +2597,7 @@ class ExportExecution:
 
         return export_rows_participants
 
-    def process_diagnosis_data(self, participants_output_fields, participants_list):
+    def process_diagnosis_data(self, participants_output_fields, participants_list, heading_type):
         headers, fields = self.get_headers_and_fields(participants_output_fields)
         model_to_export = getattr(modules['patient.models'], 'Patient')
         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
@@ -2590,9 +2605,12 @@ class ExportExecution:
 
         export_rows_participants = [headers]
 
-        # transform data
+        # Transform data
         for record in db_data:
             export_rows_participants.append([self.handle_exported_field(field) for field in record])
+
+        if heading_type == 'abbreviated':
+            self.update_duplicates(export_rows_participants[0])
 
         return export_rows_participants
 
@@ -2608,7 +2626,7 @@ class ExportExecution:
 
         return questionnaire_response_fields
 
-    def build_participant_export_data(self, per_experiment):
+    def build_participant_export_data(self, per_experiment, heading_type):
         error_msg = ''
         participants_filtered_list = self.get_participants_filtered_data()
         # Process participants/diagnosis (Per_participant directory)
@@ -2667,14 +2685,14 @@ class ExportExecution:
 
         if diagnosis_input_data['output_list'] and participants_filtered_list:
             export_rows_diagnosis = self.process_diagnosis_data(
-                diagnosis_input_data['output_list'], participants_filtered_list)
+                diagnosis_input_data['output_list'], participants_filtered_list, heading_type)
 
             # TODO (NES-987): refactor this as in other places
             file_extension = 'tsv' if 'tsv' in self.get_input_data('filesformat_type') else 'csv'
             export_filename = ('%s.' + file_extension) % self.get_input_data('diagnosis')['output_filename']
             complete_filename = path.join(base_export_directory, export_filename)
 
-            diagnosis_headers, diagnosis_field_types = self._set_diagnosis_fields()
+            diagnosis_field_types = self._set_diagnosis_fields()
 
             self.files_to_zip_list.append([
                 complete_filename, base_directory,
@@ -2684,7 +2702,7 @@ class ExportExecution:
                     'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
                     'profile': 'tabular-data-resource',
                     'schema': {
-                        'fields': self._set_datapackage_table_schema(diagnosis_headers, diagnosis_field_types)
+                        'fields': self._set_datapackage_table_schema(export_rows_diagnosis[0], diagnosis_field_types)
                     }
                 }
             ])
@@ -2710,7 +2728,7 @@ class ExportExecution:
         fields = []
         for header, field in zip(headers, model_fields):
             field_info = {
-                'name': slugify(header), 'title': header, 'format': 'default', 'type': self._get_type(field)
+                'name': header, 'title': header, 'format': 'default', 'type': self._get_type(field)
             }
             fields.append(field_info)
 
@@ -2767,13 +2785,11 @@ class ExportExecution:
             'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description':
                 ClassificationOfDiseases._meta.get_field('abbreviated_description').__class__
         }
-        diagnosis_headers = []
         diagnosis_field_types = []
         for field in self.get_input_data('diagnosis')['output_list']:
-            diagnosis_headers.append(field['header'])
             diagnosis_field_types.append(field_types[field['field']])
 
-        return diagnosis_headers, diagnosis_field_types
+        return diagnosis_field_types
 
     @staticmethod
     def _set_questionnaire_metadata_fields():

@@ -150,7 +150,8 @@ DIAGNOSIS_FIELDS = [
     },
     {
         'field': 'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description',
-        'header': 'classification_of_diseases_description', 'description': _('Disease Abbreviated Description'),
+        'header': 'classification_of_diseases_abbreviated_description',
+        'description': _('Disease Abbreviated Description'),
         'json_data_type': 'string'
     },
 ]
@@ -277,7 +278,8 @@ def export_create(
                 participants_input_data, participants_list, language_code, participants_plugin)
             export.get_input_data('participants')['data_list'] = export_rows_participants
             # Create file participants.csv and diagnosis.csv
-            error_msg = export.build_participant_export_data('group_selected_list' in request.session)
+            error_msg = export.build_participant_export_data(
+                'group_selected_list' in request.session, request.POST.get('headings'))
             if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)
