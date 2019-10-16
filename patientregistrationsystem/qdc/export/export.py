@@ -2824,7 +2824,7 @@ class ExportExecution:
                 if abbreviated_data(item[key], heading_type) == participant_field)
             fields.append({
                 # str(field_info[key]) needed because of PATIENT_FIELDS 'description' keys are localized
-                'name': field_info['header'],
+                'name': abbreviated_data(str(field_info[key]), heading_type),
                 'title': abbreviated_data(str(field_info[key]), heading_type), 'type': field_info['json_data_type'],
                 'format': 'default'
             })
@@ -2838,7 +2838,7 @@ class ExportExecution:
             type = QUESTION_TYPES[question['type']][1]
             title = question_header_questionnaire if heading_type != 'code' else question_field
             fields.append({
-                'name': slugify(question_field), 'title': title, 'type': type, 'format': 'default'
+                'name': title, 'title': title, 'type': type, 'format': 'default'
             })
 
         return fields
