@@ -2916,99 +2916,88 @@ class ExportFrictionlessDataTest(ExportTestCase):
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks6(mockServer)
-            if heading_type == 'full':
-                update_mocks6_full(mockServer)
-            if heading_type == 'abbreviated':
-                update_mocks6_abbreviated(mockServer)
-            data = {
-                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-                'headings': [heading_type],
-                'to_experiment[]': [
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
-                    + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
-                    + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
-                    ],
-                'patient_selected': ['age*age'], 'responses': ['short']
-            }
-            response = self.client.post(reverse('export_view'), data)
+        set_mocks6(mockServer)
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
+                ],
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
 
-            temp_dir = tempfile.mkdtemp()
-            json_data = self.get_datapackage_json_data(temp_dir, response)
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
-            code = self.questionnaire.survey.code
-            filename = 'Fields_' + code + '_en.csv'
-            unique_name = slugify('Fields_' + code)
-            title = 'Fields_' + code
+        code = self.questionnaire.survey.code
+        filename = 'Fields_' + code + '_en.csv'
+        unique_name = slugify('Fields_' + code)
+        title = 'Fields_' + code
 
-            questionnaire_metadata_resource = next(
-                item for item in json_data['resources'] if item['title'] == 'Fields_' + code)
-            # Remove schema field if it exists. The test was written before the
-            # test that drives adding schema field to datapackage.json
-            if 'schema' in questionnaire_metadata_resource:
-                questionnaire_metadata_resource.pop('schema')
-            test_dict = {
-                'name': unique_name, 'title': title,
-                'path': os.path.join(
-                    'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
-                    'Questionnaire_metadata', code + '_' + slugify(self.questionnaire.survey.en_title), filename),
-                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
-                'profile': 'tabular-data-resource',
-            }
-            self.assertEqual(
-                test_dict, questionnaire_metadata_resource,
-                'Failed for heading type ' + "'" + heading_type + "'\n"
-                + str(test_dict) + ' not equal ' + str(questionnaire_metadata_resource))
+        questionnaire_metadata_resource = next(
+            item for item in json_data['resources'] if item['title'] == 'Fields_' + code)
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in questionnaire_metadata_resource:
+            questionnaire_metadata_resource.pop('schema')
+        test_dict = {
+            'name': unique_name, 'title': title,
+            'path': os.path.join(
+                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                'Questionnaire_metadata', code + '_' + slugify(self.questionnaire.survey.en_title), filename),
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
+            'profile': 'tabular-data-resource',
+        }
+        self.assertEqual(
+            test_dict, questionnaire_metadata_resource,
+            str(test_dict) + ' not equal ' + str(questionnaire_metadata_resource))
 
-            shutil.rmtree(temp_dir)
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_adds_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
+    def test_export_per_experiment_adds_questionnaire_metadata_table_schema_info_to_questionnaire_metadata_resource(
             self, mockServer):
         self._create_questionnaire_export_data()
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks6(mockServer)
-            if heading_type == 'full':
-                update_mocks6_full(mockServer)
-            if heading_type == 'abbreviated':
-                update_mocks6_abbreviated(mockServer)
-            data = {
-                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-                'headings': [heading_type],
-                'to_experiment[]': [
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
-                    + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
-                    + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
-                    ],
-                'patient_selected': ['age*age'], 'responses': ['short']
-            }
+        set_mocks6(mockServer)
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': [
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
+                ],
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
 
-            response = self.client.post(reverse('export_view'), data)
+        response = self.client.post(reverse('export_view'), data)
 
-            temp_dir = tempfile.mkdtemp()
-            json_data = self.get_datapackage_json_data(temp_dir, response)
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
-            code = self.questionnaire.survey.code
-            questionnaire_metadata_resource = next(
-                item for item in json_data['resources'] if item['title'] == 'Fields_' + code)
+        code = self.questionnaire.survey.code
+        questionnaire_metadata_resource = next(
+            item for item in json_data['resources'] if item['title'] == 'Fields_' + code)
 
-            for item in HEADER_EXPLANATION_FIELDS:
-                self.assertIn(
-                    {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
-                    questionnaire_metadata_resource['schema']['fields'], 'Failed for heading type ' + heading_type)
+        for item in HEADER_EXPLANATION_FIELDS:
+            self.assertIn(
+                {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
+                questionnaire_metadata_resource['schema']['fields'])
 
-            report = validate(os.path.join(temp_dir, 'datapackage.json'))
-            self._assert_goodtables(report, heading_type)
+        report = validate(os.path.join(temp_dir, 'datapackage.json'))
+        self._assert_goodtables(report, 'code')
 
-            shutil.rmtree(temp_dir)
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3083,44 +3072,48 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        set_mocks7(mockServer)
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks7(mockServer)
+            if heading_type == 'full':
+                update_mocks7_full(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks7_abbreviated(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                # TODO (NES-991): do for 'full' and 'abbreviated'
+                'headings': [heading_type],
+                'to_experiment[]': to_experiment,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
 
-        data = {
-            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            # TODO (NES-991): do for 'full' and 'abbreviated'
-            'headings': ['code'],
-            'to_experiment[]': to_experiment,
-            'patient_selected': ['age*age'], 'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self.get_datapackage_json_data(temp_dir, response)
+            filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+            extension = '.csv'
+            unique_name = slugify(filename) + '_per-participant'
 
-        filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
-        extension = '.csv'
-        unique_name = slugify(filename) + '_per-participant'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['name'] == unique_name)
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            # TODO (NES-991): do this way for the other tests
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
+            test_dict = {
+                'name': unique_name, 'title': filename,
+                'path': os.path.join(
+                    'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                    'Per_participant', 'Participant_' + self.patient.code, 'Step_1_QUESTIONNAIRE', filename + extension),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                'profile': 'tabular-data-resource',
+            }
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
-        questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['name'] == unique_name)
-        # Remove schema field if it exists. The test was written before the
-        # test that drives adding schema field to datapackage.json
-        # TODO (NES-991): do this way for the other tests
-        if 'schema' in questionnaire_response_resource:
-            questionnaire_response_resource.pop('schema')
-        test_dict = {
-            'name': unique_name, 'title': filename,
-            'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
-                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_QUESTIONNAIRE', filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
-            'profile': 'tabular-data-resource',
-        }
-        self.assertEqual(
-            test_dict, questionnaire_response_resource,
-            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
-
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3245,47 +3238,41 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 '0*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks11(mockServer)
-            if heading_type == 'full':
-                update_mocks11_full(mockServer)
-            if heading_type == 'abbreviated':
-                update_mocks11_abbreviated(mockServer)
-            data = {
-                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-                'headings': [heading_type],
-                'to[]': to,
-                'patient_selected': ['age*age'], 'responses': ['short']
-            }
-            response = self.client.post(reverse('export_view'), data)
+        set_mocks11(mockServer)
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to[]': to,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
 
-            temp_dir = tempfile.mkdtemp()
-            json_data = self.get_datapackage_json_data(temp_dir, response)
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
-            filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
-            extension = '.csv'
+        filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
+        extension = '.csv'
 
-            questionnaire_response_resource = next(
-                item for item in json_data['resources'] if item['title'] == filename)
-            # Remove schema field if it exists. The test was written before the
-            # test that drives adding schema field to datapackage.json
-            # TODO (NES-991): do this way for the other tests
-            if 'schema' in questionnaire_response_resource:
-                questionnaire_response_resource.pop('schema')
-            test_dict = {
-                'name': slugify(filename), 'title': filename,
-                'path': os.path.join(
-                    'data', 'Participant_data', 'Questionnaire_metadata',
-                    str(self.survey.lime_survey_id) + '_' + slugify(self.survey.en_title), filename + extension),
-                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
-                'profile': 'tabular-data-resource'
-            }
-            self.assertEqual(
-                test_dict, questionnaire_response_resource,
-                'Failed for heading type ' + "'" + heading_type + "'\n"
-                + str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['title'] == filename)
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        # TODO (NES-991): do this way for the other tests
+        if 'schema' in questionnaire_response_resource:
+            questionnaire_response_resource.pop('schema')
+        test_dict = {
+            'name': slugify(filename), 'title': filename,
+            'path': os.path.join(
+                'data', 'Participant_data', 'Questionnaire_metadata',
+                str(self.survey.lime_survey_id) + '_' + slugify(self.survey.en_title), filename + extension),
+            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
+            'profile': 'tabular-data-resource'
+        }
+        self.assertEqual(
+            test_dict, questionnaire_response_resource,
+            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
-            shutil.rmtree(temp_dir)
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3305,33 +3292,31 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 '0*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks11(mockServer)
-            if heading_type == 'full':
-                update_mocks11_full(mockServer)
-            if heading_type == 'abbreviated':
-                update_mocks11_abbreviated(mockServer)
-            data = {
-                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-                'headings': [heading_type],
-                'to[]': to,
-                'patient_selected': ['age*age'], 'responses': ['short']
-            }
-            response = self.client.post(reverse('export_view'), data)
+        set_mocks11(mockServer)
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to[]': to,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
 
-            temp_dir = tempfile.mkdtemp()
-            json_data = self.get_datapackage_json_data(temp_dir, response)
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
-            filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
-            questionnaire_response_resource = next(
-                item for item in json_data['resources'] if item['title'] == filename)
-            for item in HEADER_EXPLANATION_FIELDS:
-                self.assertIn(
-                    {
-                        'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'
-                    }, questionnaire_response_resource['schema']['fields'])
+        filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['title'] == filename)
+        for item in HEADER_EXPLANATION_FIELDS:
+            self.assertIn(
+                {
+                    'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'
+                }, questionnaire_response_resource['schema']['fields'])
 
-            shutil.rmtree(temp_dir)
+        report = validate(os.path.join(temp_dir, 'datapackage.json'))
+        self._assert_goodtables(report, 'code')
+
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')

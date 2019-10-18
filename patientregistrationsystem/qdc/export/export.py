@@ -241,6 +241,11 @@ class ExportExecution:
         self.per_group_data = {}
         self.questionnaire_utils = QuestionnaireUtils()
 
+    def _temp_method_to_remove_undesirable_line(self, fields):
+        items = [item for item in fields if 'participant_code' in item]
+        for item in items:
+            fields.remove(item)
+
     @staticmethod
     def update_duplicates(fields):
         """
@@ -1318,6 +1323,10 @@ class ExportExecution:
                     questionnaire['prefix_filename_fields'], str(questionnaire_code), language)
                 # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
                 complete_filename = path.join(export_metadata_path, export_filename + '.' + filesformat_type)
+
+                # At this point of the championship, ... Fix it right here
+                self._temp_method_to_remove_undesirable_line(questionnaire_fields)
+
                 save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
                 self.files_to_zip_list.append([
@@ -1589,7 +1598,6 @@ class ExportExecution:
                                     prefix_filename_fields, 'QS', language, filesformat_type)
 
                         complete_filename = path.join(complete_export_metadata_path, export_filename)
-
                         save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
                         self.files_to_zip_list.append([
