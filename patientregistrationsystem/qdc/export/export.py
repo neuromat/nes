@@ -3555,7 +3555,7 @@ class ExportExecution:
         # Filter data (participants)
         questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
 
-        # Include new filter that come from advanced search
+        # Include new filter that comes from advanced search
         filtered_data = self.get_participants_filtered_data()
         questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
 
@@ -3597,7 +3597,7 @@ class ExportExecution:
                 if field in fill_list1[0]:
                     subscripts.append(fill_list1[0].index(field))
 
-            # if responses exits
+            # If responses exists
             if subscripts:
                 data_from_lime_survey = {}
 

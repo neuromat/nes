@@ -3119,6 +3119,76 @@ def set_mocks9(mock_server):
     ]
 
 
+def update_mocks9_full(mock_server):
+    mock_server.return_value.get_survey_properties.side_effect = [
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'admin': 'Jorge da Capadócia'}, {'adminemail': 'jorge@example.com'},
+        {'admin': 'Leonardo dos Santos'}, {'adminemail': 'leo@example.com'}
+    ]
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9u'
+        'ZGF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZWVpbnMiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhi'
+        'VWh0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyIKCg==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIl'
+        'RleHQgRnJhZ2UgRWlucyIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiMTZOaEZpekM2OGJVaHRUIiwiMiIsIjIwMjEtMDY'
+        'tMDggMDA6MDA6MDAiLCI2IiwiQW50d29ydCBFaW5zIgoK',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZXp3ZWkiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMm'
+        'N6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSIKCg==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUg'
+        'SWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIs'
+        'IlRleHQgRnJhZ2UgWndlaSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiWXlVekN1TlRzblUyY3plIiwiMiIsIjIwMjEt'
+        'MDYtMDggMDA6MDA6MDAiLCI2IiwiQW50d29ydCBad2VpIgoK'
+    ]
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+    ]
+
+
+def update_mocks9_abbreviated(mock_server):
+    mock_server.return_value.get_survey_properties.side_effect = [
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'admin': 'Jorge da Capadócia'}, {'adminemail': 'jorge@example.com'},
+        {'admin': 'Leonardo dos Santos'}, {'adminemail': 'leo@example.com'}
+    ]
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZWVpbnMiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhiVW'
+        'h0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyIKCg==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJUZXh0IEZyYWdlIEVpbnMiCiIxIiwiMTk4MC0wMS0wMS'
+        'AwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhiVWh0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyI'
+        'KCg==',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZXp3ZWkiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMm'
+        'N6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSIKCg==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJUZXh0IEZyYWdlIFp3ZWkiCiIxIiwiMTk4MC0wMS0wMS'
+        'AwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMmN6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSI'
+        'KCg=='
+    ]
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+    ]
+
+
 def set_mocks10(mock_server):
     mock_server.return_value.get_survey_properties.side_effect = [
         {'language': 'en', 'additional_languages': ''},
