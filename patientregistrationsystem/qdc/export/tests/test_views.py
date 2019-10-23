@@ -3498,7 +3498,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields'])
 
-            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), skip_checks=skip_checks)
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
             self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
@@ -3829,24 +3829,22 @@ class ExportFrictionlessDataTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
         data = {
-            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
-            'patient_selected': ['age*age'], 'license': '0',
-            'to[]': to
+            'license': '0', 'to[]': to
         }
-        # age field is already included in POST data. Include only the others
         patient_fields = PATIENT_FIELDS.copy()
-        age_field = next(item for item in patient_fields if item['field'] == 'age')
-        del (patient_fields[patient_fields.index(age_field)])
+        # participant_code field is included besides PATIENT_FIELDS
+        participant_code = next(item for item in patient_fields if item['field'] == 'code')
+        del (patient_fields[patient_fields.index(participant_code)])
         # Append all possible patient attributes in POST data
+        data['patient_selected'] = []
         for field in patient_fields:
             data['patient_selected'].append(field['field'] + '*' + field['header'])
 
         # Test for code, full, and abbreviated question texts
         # in Headings head, General information export tab
-        # TODO (NES-991): test for 'full' and 'abbreviated'. Manually passed with all patient attributes
-        #  Needed to change mock
-        for heading_type in ('abbreviated', ):
+        for heading_type in 'code', 'full', 'abbreviated':
             set_mocks9(mockServer)
             if heading_type == 'full':
                 update_mocks9_full(mockServer)
@@ -3863,6 +3861,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
             self.assertIn('fields', participants_resource['schema'])
             self._assert_participants_related_fields_table_schema(
                 participants_resource['schema'], heading_type, PATIENT_FIELDS)
+
+            report = validate(os.path.join(temp_dir, 'datapackage.json'))
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 

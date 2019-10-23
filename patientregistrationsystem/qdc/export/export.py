@@ -241,7 +241,8 @@ class ExportExecution:
         self.per_group_data = {}
         self.questionnaire_utils = QuestionnaireUtils()
 
-    def _temp_method_to_remove_undesirable_line(self, fields):
+    @staticmethod
+    def _temp_method_to_remove_undesirable_line(fields):
         items = [item for item in fields if 'participant_code' in item]
         for item in items:
             fields.remove(item)
@@ -1021,18 +1022,18 @@ class ExportExecution:
         return questionnaire_answer_list
 
     def merge_participants_data_per_questionnaire_process(self, fields_description, participant_list):
-        # get fields from patient
+        # Get fields from patient
         export_participant_row = self.process_participant_data(self.get_input_data('participants'), participant_list)
 
-        # merge fields from questionnaires and patient
+        # Merge fields from questionnaires and patient
         export_fields_list = []
-        # building the header
+        # Building the header
         export_row_list = fields_description[0][0:len(fields_description[0]) - 1]
         for field in export_participant_row[0]:
             export_row_list.append(field)
         export_fields_list.append(export_row_list)
 
-        # including the responses
+        # Including the responses
         for fields in fields_description[1:fields_description.__len__()]:
             participation_code = fields[len(fields) - 1]
             export_row_list = fields[0:len(fields) - 1]
@@ -1177,6 +1178,9 @@ class ExportExecution:
                     questionnaire['prefix_filename_fields'], str(questionnaire_code), language, filesformat_type)
 
                 complete_filename = path.join(export_metadata_path, export_filename)
+
+                # At this point of the championship, fix it right here
+                self._temp_method_to_remove_undesirable_line(questionnaire_fields)
 
                 save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
@@ -1324,7 +1328,7 @@ class ExportExecution:
                 # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
                 complete_filename = path.join(export_metadata_path, export_filename + '.' + filesformat_type)
 
-                # At this point of the championship, ... Fix it right here
+                # At this point of the championship, fix it right here
                 self._temp_method_to_remove_undesirable_line(questionnaire_fields)
 
                 save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
@@ -2594,7 +2598,7 @@ class ExportExecution:
 
         export_rows_participants = [headers]
 
-        # transform data
+        # Transform data
         for record in db_data:
             participant_rows = []
             for value in record:
@@ -2658,11 +2662,11 @@ class ExportExecution:
             # TODO (NES-987): change this like in other places
             file_extension = 'tsv'
             separator = '\t'
-            export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
         else:
             file_extension = 'csv'
             separator = ','
-            export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
+
+        export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
 
         complete_filename = path.join(base_export_directory, export_filename)
 
@@ -2845,7 +2849,9 @@ class ExportExecution:
             question = next(item for item in questions if item['title'] == question_cleared)
             type = QUESTION_TYPES[question['type']][1]
             title = question_header_questionnaire if heading_type != 'code' else question_field
-            fields.append({
+            # i + 2: currently in exportation, question headers are inserted between
+            # [participant_code, age] and the rest of participant fields when those exists
+            fields.insert(i + 2, {
                 'name': title, 'title': title, 'type': type, 'format': 'default'
             })
 
