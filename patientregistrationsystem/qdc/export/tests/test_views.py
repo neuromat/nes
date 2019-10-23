@@ -3946,7 +3946,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
         data = {
-            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
+            'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
             'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
             'diagnosis_selected': []
         }
@@ -3954,12 +3954,13 @@ class ExportFrictionlessDataTest(ExportTestCase):
         for field in DIAGNOSIS_FIELDS:  # TODO (NES-991): do the same in the other diagnosis test
             data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
-        # Test for Question code, Full question text and Abbreviated question text
-        # in Headings head, General informtion export tab
-        # TODO (NES-991): test for 'full' and 'abbreviated'. Needed to change mocks
-        #  Tested manually for all diagnosis fields for all types of Headings
-        for heading_type in ['code']:  # , 'full', 'abbreviated':
-            data['headings'] = [heading_type]
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks9(mockServer)
+            if heading_type == 'full':
+                update_mocks9_full(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks9_abbreviated(mockServer)
+            data['headings'] = heading_type
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
