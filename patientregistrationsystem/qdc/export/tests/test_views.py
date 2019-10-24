@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.test import override_settings
+from goodtables import validate
 
 from experiment.models import Component, ComponentConfiguration, \
     ComponentAdditionalFile, BrainAreaSystem, BrainArea, TMSLocalizationSystem, HotSpot, TMSData, \
@@ -23,13 +24,16 @@ from experiment.tests.tests_helper import ObjectsFactory
 from export import input_export
 from export.export import PROTOCOL_IMAGE_FILENAME, PROTOCOL_DESCRIPTION_FILENAME, EEG_DEFAULT_SETTING_FILENAME, \
     EEG_SETTING_FILENAME, TMS_DATA_FILENAME, HOTSPOT_MAP, EMG_SETTING_FILENAME, EMG_DEFAULT_SETTING, \
-    TMS_DEFAULT_SETTING_FILENAME, CONTEXT_TREE_DEFAULT
+    TMS_DEFAULT_SETTING_FILENAME, CONTEXT_TREE_DEFAULT, ExportExecution
 from export.export_utils import create_list_of_trees
 from export.models import Export
 from export.tests.mocks import set_mocks1, LIMESURVEY_SURVEY_ID_1, set_mocks2, set_mocks3, set_mocks4, \
-    set_mocks5, set_mocks6, set_mocks7, update_mocks1, update_mocks2, update_mocks3, \
-    LIMESURVEY_SURVEY_ID_2, set_mocks10, update_mocks4, update_mocks5, set_mocks11, set_mocks12, set_mocks13, \
-    update_mocks6, update_mocks7
+    set_mocks5, set_mocks6, set_mocks7, update_mocks4_full_and_abbreviated, update_mocks7_full, \
+    update_mocks7_abbreviated, \
+    LIMESURVEY_SURVEY_ID_2, set_mocks8, update_mocks10_full, update_mocks10_abbreviated, set_mocks9, set_mocks10, \
+    set_mocks11, \
+    update_mocks11_full, update_mocks11_abbreviated, update_mocks6_full, update_mocks6_abbreviated, update_mocks9_full, \
+    update_mocks9_abbreviated
 from export.tests.tests_helper import ExportTestCase
 from export.views import EXPORT_DIRECTORY, abbreviated_data, PATIENT_FIELDS, DIAGNOSIS_FIELDS
 from patient.tests.tests_orig import UtilTests
@@ -73,6 +77,91 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         return ObjectsFactory.create_data_configuration_tree(component_config)
 
+    def _asserts_elements_in_zipfile(self, zipped_file, group1, group2):
+        # Assertions for first group
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group1.title), 'Experimental_protocol'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group1.title), 'Experimental_Protocol'
+            ) +
+            'not in:' +
+            str(zipped_file.namelist())
+        )
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group1.title), 'Per_participant'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group1.title), 'Per_participant'
+            ) +
+            'not in:' +
+            str(zipped_file.namelist())
+        )
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group1.title), 'Per_questionnaire'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group1.title), 'Per_questionnaire'
+            ) +
+            'not in:' +
+            str(zipped_file.namelist())
+        )
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group1.title), 'Questionnaire_metadata'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group1.title), 'Questionnaire_metadata'
+            ) +
+            'not in:' +
+            str(zipped_file.namelist())
+        )
+
+        # Assertions for second group
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group2.title), 'Experimental_protocol'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group2.title), 'Experimental_Protocol'
+            ) +
+            ' not in:' +
+            str(zipped_file.namelist())
+        )
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group2.title), 'Per_participant'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group2.title), 'Per_participant'
+            ) +
+            'not in:' +
+            str(zipped_file.namelist())
+        )
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group2.title), 'Per_questionnaire'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group2.title), 'Per_questionnaire'
+            ) +
+            'not in:' +
+            str(zipped_file.namelist())
+        )
+        self.assertTrue(
+            any(os.path.join(
+                'Group_' + slugify(group2.title), 'Questionnaire_metadata'
+            ) in element for element in zipped_file.namelist()),
+            os.path.join(
+                'Group_' + slugify(group2.title), 'Questionnaire_metadata'
+            ) +
+            'not in:' +
+            str(zipped_file.namelist())
+        )
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_same_questionnaire_used_in_different_steps_return_correct_responses_content(self, mockServer):
@@ -81,7 +170,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         set_mocks1(mockServer)
 
         # Create questionnaire in NES
-        # TODO (attached to NES-991): já criado no setUp
+        # TODO (NES-991): already created in setUp
         dct = self._create_nes_questionnaire(self.root_component)
 
         # Create first patient/subject/subject_of_group besides those of setUp
@@ -273,89 +362,7 @@ class ExportQuestionnaireTest(ExportTestCase):
 
         zipped_file = self.get_zipped_file(response)
 
-        # assertions for first group
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + slugify(self.group.title), 'Experimental_protocol'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + slugify(self.group.title), 'Experimental_Protocol'
-            ) +
-            'not in:' +
-            str(zipped_file.namelist())
-        )
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + slugify(self.group.title), 'Per_participant'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + slugify(self.group.title), 'Per_participant'
-            ) +
-            'not in:' +
-            str(zipped_file.namelist())
-        )
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + slugify(self.group.title), 'Per_questionnaire'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + slugify(self.group.title), 'Per_questionnaire'
-            ) +
-            'not in:' +
-            str(zipped_file.namelist())
-        )
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + slugify(self.group.title), 'Questionnaire_metadata'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + slugify(self.group.title), 'Questionnaire_metadata'
-            ) +
-            'not in:' +
-            str(zipped_file.namelist())
-        )
-
-        # assertions for second group
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + slugify(group2.title), 'Experimental_protocol'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + slugify(group2.title), 'Experimental_Protocol'
-            ) +
-            ' not in:' +
-            str(zipped_file.namelist())
-        )
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + slugify(group2.title), 'Per_participant'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + slugify(group2.title), 'Per_participant'
-            ) +
-            'not in:' +
-            str(zipped_file.namelist())
-        )
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + slugify(group2.title), 'Per_questionnaire'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + slugify(group2.title), 'Per_questionnaire'
-            ) +
-            'not in:' +
-            str(zipped_file.namelist())
-        )
-        self.assertTrue(
-            any(os.path.join(
-                'Group_' + slugify(group2.title), 'Questionnaire_metadata'
-            ) in element for element in zipped_file.namelist()),
-            os.path.join(
-                'Group_' + slugify(group2.title), 'Questionnaire_metadata'
-            ) +
-            'not in:' +
-            str(zipped_file.namelist())
-        )
+        self._asserts_elements_in_zipfile(zipped_file, self.group, group2)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -369,7 +376,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         for heading_type in 'code', 'full', 'abbreviated':
             set_mocks4(mockServer)
             if heading_type != 'code':
-                update_mocks1(mockServer)
+                update_mocks4_full_and_abbreviated(mockServer)
             data = {
                 'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
                 'headings': [heading_type],
@@ -508,7 +515,7 @@ class ExportQuestionnaireTest(ExportTestCase):
         for heading_type in 'code', 'full', 'abbreviated':
             set_mocks4(mockServer)
             if heading_type != 'code':
-                update_mocks1(mockServer)
+                update_mocks4_full_and_abbreviated(mockServer)
             data = {
                 'per_participant': ['on'],
                 'per_questionnaire': ['on'],
@@ -1689,25 +1696,46 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
     def _assert_experiment_table_schema(self, resource_schema):
         self.assertIn(
-            {'name': 'study', 'title': 'Study', 'type': 'string', 'format': 'default'},
+            {'name': 'Study', 'title': 'Study', 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
         self.assertIn(
-            {'name': 'study-description', 'title': 'Study description', 'type': 'string', 'format': 'default'},
+            {'name': 'Study description', 'title': 'Study description', 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
         self.assertIn(
-            {'name': 'experiment-title', 'title': 'Experiment Title', 'type': 'string', 'format': 'default'},
+            {'name': 'Experiment Title', 'title': 'Experiment Title', 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
         self.assertIn(
             {
-                'name': 'experiment-description', 'title': 'Experiment description', 'type': 'string',
+                'name': 'Experiment description', 'title': 'Experiment description', 'type': 'string',
                 'format': 'default'
             }, resource_schema['fields'])
         self.assertIn(
-            {'name': 'start-date', 'title': 'Start date', 'type': 'string', 'format': 'default'},
+            {'name': 'Start date', 'title': 'Start date', 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
         self.assertIn(
-            {'name': 'end-date', 'title': 'End date', 'type': 'string', 'format': 'default'},
+            {'name': 'End date', 'title': 'End date', 'type': 'string', 'format': 'default'},
             resource_schema['fields'])
+
+    @staticmethod
+    def _set_validation_for_goodtables(path, heading_type):
+        skip_checks = ['duplicate-row']  # For questionnaire metadata files
+        if heading_type == 'full' or 'abbreviated':
+            # For questionnaire responses: that is one header repeated for one question type.
+            # We don't solve this by now.
+            skip_checks.append('duplicate-header')
+        return validate(path, skip_checks=skip_checks)
+
+    def _assert_goodtables(self, report, heading_type):
+        errors = report['errors'] if 'errors' in report else []
+        table_errors = []
+        for table in report['tables']:
+            if table['errors']:
+                table_errors.append((table['source'], table['errors']))
+        self.assertTrue(
+            report['valid'],
+            'Failed for heading type ' + "'" + heading_type + "'"
+            + '. Errors: ' + str(errors)
+            + '. Table errors: ' + str(table_errors))
 
     @staticmethod
     def _get_name_title(heading_type, field):
@@ -1719,19 +1747,29 @@ class ExportFrictionlessDataTest(ExportTestCase):
         elif heading_type == 'abbreviated':
             title = abbreviated_data(field['description'])
 
-        name = slugify(title)
+        # It's always 'participant_code' independently of heading type
+        if field['header'] == 'participant_code':
+            title = field['header']
 
-        return name, title
+        return title
 
-    def _assert_participants_table_schema(self, resource_schema, heading_type, fields=PATIENT_FIELDS):
+    def _assert_participants_related_fields_table_schema(self, resource_schema, heading_type, fields):
+        titles = []
+        types = []
+        # First append for testing later: when heading_type == 'abbreviated' it's
+        # necessary to update duplicates below
         for field in fields:
             dict_item = next(item for item in fields if item['header'] == field['header'])
-            name, title = self._get_name_title(heading_type, dict_item)
+            titles.append(self._get_name_title(heading_type, dict_item))
+            types.append(field['json_data_type'])
+
+        if heading_type == 'abbreviated':
+            ExportExecution.update_duplicates(titles)
+
+        for title, type in zip(titles, types):
             self.assertIn(
-                # TODO (NES-987): test for formats that are not default
-                {'name': name, 'title': title, 'type': field['json_data_type'], 'format': 'default'},
-                resource_schema['fields']
-            )
+                {'name': title, 'title': title, 'type': type, 'format': 'default'},
+                resource_schema['fields'], 'Failed for heading type ' + heading_type)
 
     @staticmethod
     def _set_post_data(*data_collections):
@@ -1739,7 +1777,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
         post_data = {
             'per_questionnaire': ['on'], 'per_participant': ['on'],
             'per_additional_data': ['on'],
-            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'], 'patient_selected': ['age*age'],
             'action': ['run'], 'responses': ['short']
         }
@@ -1764,7 +1801,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                  'code': 'listeradio', 'full': _('Liste (radio)'), 'abbreviated': _('Liste (radio)')
              }, 'L', 'string'),
             ({
-                 'code': 'listemitkommentar', 'full': _('Liste mit Kommentar'), 'abbreviated': _('Liste mit Komme.. ')
+                 'code': 'listemitkommentar', 'full': _('Liste mit Kommentar'), 'abbreviated': _('Liste mit Komme..')
              }, 'O', 'string'),
             ({
                  'code': 'listemitkommentar[comment]', 'full': _('Liste mit Kommentar [Comment]'),
@@ -1861,7 +1898,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
              }, '|', 'string'),
             ({
                  'code': 'dateiupload[filecount]', 'full': _('filecount - Datei-Upload'),
-                 'abbreviated': _('filecount - Dat.. ')
+                 'abbreviated': _('filecount - Dat..')
              }, '|', 'string'),
             ({
                  'code': 'geschlecht', 'full': _('Geschlecht'), 'abbreviated': _('Geschlecht')
@@ -2071,19 +2108,18 @@ class ExportFrictionlessDataTest(ExportTestCase):
         json_data = self.get_datapackage_json_data(temp_dir, response)
         experiment_resource = next(item for item in json_data['resources'] if item['name'] == 'Experiment')
 
-        # As Experiment.csv/tsv resource has 'schema' key, that is
-        # itself a dict with other data, we test key/value pairs for all
-        # keys except 'schema'.
-        # TODO (NES-987): will it have 'bytes' field?
-        # TODO (NES-987): test for tsv format
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in experiment_resource:
+            experiment_resource.pop('schema')
         test_dict = {
             'name': 'Experiment', 'title': 'Experiment', 'path': 'data/Experiment_data/Experiment.csv',
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8',
             'profile': 'tabular-data-resource'
         }
-        self.assertTrue(all(
-            item in experiment_resource.items() for item in test_dict.items()),
-            str(test_dict) + ' is not subdict of ' + str(experiment_resource))
+        self.assertEqual(
+            test_dict, experiment_resource,
+            str(test_dict) + ' not equal ' + str(experiment_resource))
 
         shutil.rmtree(temp_dir)
 
@@ -2104,11 +2140,13 @@ class ExportFrictionlessDataTest(ExportTestCase):
         self.assertIn('fields', experiment_resource['schema'])
         self._assert_experiment_table_schema(experiment_resource['schema'])
 
+        report = validate(os.path.join(temp_dir, 'datapackage.json'))
+        self.assertTrue(report['valid'])
+
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_per_experiment_adds_participant_data_file_info_to_datapackage_json_resources_field(self):
-        # TODO (NES-987): change method name to _create_eeg_export_data
         self._create_eeg_export_data()
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
@@ -2123,11 +2161,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         # test that drives adding schema field to datapackage.json
         if 'schema' in participants_resource:
             participants_resource.pop('schema')
-        # TODO (NES-987): will it have 'bytes' field?
-        # TODO (NES-987): test for tsv format? It's implemented already
-        # TODO (NES-991): test for 'full' and 'abbreviated'
         test_dict = {
-            # TODO (NES-987): Changes 'Participants.csv' to a constant in code
             'name': 'participants', 'title': 'Participants',
             'path': os.path.join('data', 'Participant_data', 'Participants.csv'),
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8',
@@ -2145,10 +2179,14 @@ class ExportFrictionlessDataTest(ExportTestCase):
         self.append_session_variable('license', '0')
 
         data = self._set_post_data()
-        # age field is already included in POST data. Include only the others
         patient_fields = PATIENT_FIELDS.copy()
+        # age field is already included in POST data. Include only the others
         age_field = next(item for item in patient_fields if item['field'] == 'age')
-        del(patient_fields[patient_fields.index(age_field)])
+        del patient_fields[patient_fields.index(age_field)]
+        # participant_code field is not posted in request
+        participant_code_field = next(item for item in patient_fields if item['field'] == 'code')
+        del patient_fields[patient_fields.index(participant_code_field)]
+
         # Append all possible patient attributes in POST data
         for field in patient_fields:
             data['patient_selected'].append(field['field'] + '*' + field['header'])
@@ -2165,7 +2203,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             self.assertIn('schema', participants_resource)
             self.assertIn('fields', participants_resource['schema'])
-            self._assert_participants_table_schema(participants_resource['schema'], heading_type[0])
+            self._assert_participants_related_fields_table_schema(
+                participants_resource['schema'], heading_type[0], PATIENT_FIELDS)
+
+            report = validate(os.path.join(temp_dir, 'datapackage.json'))
+            self.assertTrue(report['valid'])
 
             shutil.rmtree(temp_dir)
 
@@ -2176,16 +2218,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
         self.append_session_variable('license', '0')
 
         data = self._set_post_data()
-        # Add selected diagnosis (all here)
-        data['diagnosis_selected'] = [
-            'medicalrecorddata__diagnosis__date*diagnosis_date',
-            'medicalrecorddata__diagnosis__description*diagnosis_description',
-            'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
-            'medicalrecorddata__diagnosis__classification_of_diseases__description'
-            '*classification_of_diseases_description',
-            'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
-            '*classification_of_diseases_description'
-        ]
+        data['diagnosis_selected'] = []
+        # Append al possible diagnosis attributes in POST data
+        for field in DIAGNOSIS_FIELDS:
+            data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2217,13 +2253,13 @@ class ExportFrictionlessDataTest(ExportTestCase):
         data = self._set_post_data()
         data['diagnosis_selected'] = []
         # Append al possible diagnosis attributes in POST data
-        for field in DIAGNOSIS_FIELDS:  # TODO (NES-987): do the same in the other diagnosis test
+        for field in DIAGNOSIS_FIELDS:
             data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
-        # Test for Question code, Full question text and Abbreviated question text
-        # in Headings head, General informtion export tab
-        for heading_type in ['code'], ['full'], ['abbreviated']:
-            data['headings'] = heading_type
+        # Test for code, full and abbreviated question texts
+        # in Headings head, General information export tab
+        for heading_type in 'code', 'full', 'abbreviated':
+            data['headings'] = [heading_type]
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
@@ -2231,7 +2267,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
             diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
             self.assertIn('schema', diagnosis_resource)
             self.assertIn('fields', diagnosis_resource['schema'])
-            self._assert_participants_table_schema(diagnosis_resource['schema'], heading_type[0], DIAGNOSIS_FIELDS)
+            self._assert_participants_related_fields_table_schema(
+                diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
+
+            report = validate(os.path.join(temp_dir, 'datapackage.json'))
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -2350,7 +2390,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         i = 1  # For EEGData_<str(i)> subdirs
         for eeg_file in EEGFile.objects.order_by('id'):
             filename = os.path.basename(eeg_file.file.name)
-            unique_name = slugify(filename)  # TODO (NES-987): make unique
+            unique_name = slugify(filename)
             file_format_nes_code = eeg_file.eeg_data.file_format.nes_code
             eeg_file_resource = {
                 'name': unique_name, 'title': unique_name,
@@ -2390,7 +2430,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = 'sensor_position.png'
-        unique_name = slugify(filename)  # TODO (NES-987): make unique
+        unique_name = slugify(filename)
         eeg_sensor_position_resource = {
             'name': unique_name, 'title': 'sensor_position',
             'path': os.path.join(
@@ -2437,7 +2477,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         json_data = self.get_datapackage_json_data(temp_dir, response)
 
         filename = 'example.nwb'
-        unique_name = slugify(filename)  # TODO (NES-987): make unique
+        unique_name = slugify(filename)
         nwb_file_resource = {
             'name': unique_name, 'title': 'example',
             'path': os.path.join(
@@ -2704,49 +2744,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
         shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
-    def test_export_per_experiment_adds_generic_data_collection_file(self):
-        # Create generic data collection (gdc) component
-        it = ObjectsFactory.create_information_type()
-        gdc = ObjectsFactory.create_component(
-            self.experiment, Component.GENERIC_DATA_COLLECTION, kwargs={'it': it})
-
-        # Include gdc component in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(self.root_component, gdc)
-        dct = ObjectsFactory.create_data_configuration_tree(component_config)
-
-        # 'upload' generic data collection file
-        gdc_data = ObjectsFactory.create_generic_data_collection_data(
-            dct, self.subject_of_group)
-        gdcf = ObjectsFactory.create_generic_data_collection_file(gdc_data)
-
-        self.append_session_variable('group_selected_list', [str(self.group.id)])
-        self.append_session_variable('license', '0')
-
-        data = self._set_post_data('per_generic_data')
-
-        response = self.client.post(reverse('export_view'), data)
-
-        temp_dir = tempfile.mkdtemp()
-        json_data = self.get_datapackage_json_data(temp_dir, response)
-
-        filename = os.path.basename(gdcf.file.name)
-        unique_name = slugify(filename)
-        file_format_nes_code = gdcf.generic_data_collection_data.file_format.nes_code
-        gdc_resource = {
-            'name': unique_name, 'title': unique_name,
-            'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
-                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_GENERIC_DATA_COLLECTION',
-                'Generic_Data_Collection_1', filename),
-            'description': 'Data Collection (format: %s), information type: %s'
-                           % (file_format_nes_code, gdc.information_type.name)
-        }
-
-        self.assertIn(gdc_resource, json_data['resources'])
-
-        shutil.rmtree(temp_dir)
-
-    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_per_experiment_adds_goalkeeper_game_files(self):
         digital_game_phase_file = self._create_goalkeeper_game_export_data()
 
@@ -2825,7 +2822,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_export_per_experiment_adds_experimental_protocol_additional_file(self):
-        # TODO (NES-991): by now, additional data from Experimental Protocol (set of steps) appear to have not being
+        # TODO (NES-991): by now, additional data from Experimental Protocol (set of steps) appears to have not being
         #  exported
         pass
         # Create a file and add it as an additional file of the root component
@@ -2922,21 +2919,20 @@ class ExportFrictionlessDataTest(ExportTestCase):
     @patch('survey.abc_search_engine.Server')
     def test_export_per_experiment_adds_questionnaire_metadata_file_to_datapackage_json_file(self, mockServer):
         self._create_questionnaire_export_data()
-        set_mocks6(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
+        set_mocks6(mockServer)
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
-            ],
+                ],
             'patient_selected': ['age*age'], 'responses': ['short']
         }
         response = self.client.post(reverse('export_view'), data)
@@ -2951,6 +2947,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
         questionnaire_metadata_resource = next(
             item for item in json_data['resources'] if item['title'] == 'Fields_' + code)
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in questionnaire_metadata_resource:
+            questionnaire_metadata_resource.pop('schema')
         test_dict = {
             'name': unique_name, 'title': title,
             'path': os.path.join(
@@ -2959,31 +2959,31 @@ class ExportFrictionlessDataTest(ExportTestCase):
             'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
             'profile': 'tabular-data-resource',
         }
-        
-        self.assertTrue(all(
-            item in questionnaire_metadata_resource.items() for item in test_dict.items()),
-            str(test_dict) + ' is not subdict of ' + str(questionnaire_metadata_resource))
+        self.assertEqual(
+            test_dict, questionnaire_metadata_resource,
+            str(test_dict) + ' not equal ' + str(questionnaire_metadata_resource))
+
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_adds_questionnaire_metadata_table_schema_to_questionnaire_metadata_resource(
+    def test_export_per_experiment_adds_questionnaire_metadata_table_schema_info_to_questionnaire_metadata_resource(
             self, mockServer):
         self._create_questionnaire_export_data()
-        set_mocks6(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
+        set_mocks6(mockServer)
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            # TODO (NES-991): tests for 'full' and 'abbreviated'
             'headings': ['code'],
             'to_experiment[]': [
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
-            ],
+                ],
             'patient_selected': ['age*age'], 'responses': ['short']
         }
 
@@ -3001,54 +3001,65 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
                 questionnaire_metadata_resource['schema']['fields'])
 
+        report = validate(os.path.join(temp_dir, 'datapackage.json'))
+        self._assert_goodtables(report, 'code')
+
+        shutil.rmtree(temp_dir)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_per_experiment_adds_questionnaire_responses_file_to_datapackage_json_file1(self, mockServer):
         """In Per_questionnaire subdir"""
         self._create_questionnaire_export_data()
-        set_mocks6(mockServer)
 
         self.append_session_variable('group_selected_list', [str(self.group.id)])
         self.append_session_variable('license', '0')
 
-        data = {
-            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            # TODO (NES-991): tests for 'full' and 'abbreviated'
-            'headings': ['code'],
-            'to_experiment[]': [
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
-                + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
-                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
-                + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
-            ],
-            'patient_selected': ['age*age'], 'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks6(mockServer)
+            if heading_type == 'full':
+                update_mocks6_full(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks6_abbreviated(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to_experiment[]': [
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                    + '*' + self.questionnaire.survey.en_title + '*acquisitiondate*acquisitiondate',
+                    '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                    + '*' + self.questionnaire.survey.en_title + '*Textfrage*Textfrage',
+                ],
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self.get_datapackage_json_data(temp_dir, response)
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
 
-        filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
-        extension = '.csv'
+            filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+            extension = '.csv'
 
-        questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['title'] == filename)
-        # As this resource has 'schema' key, that is
-        # itself a dict with other data, we test key/value pairs for all
-        # keys except 'schema'.
-        test_dict = {
-            'name': slugify(filename), 'title': filename,
-            'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
-                'Per_questionnaire', 'Step_1_QUESTIONNAIRE', filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
-            'profile': 'tabular-data-resource',
-        }
-        self.assertTrue(all(
-            item in questionnaire_response_resource.items() for item in test_dict.items()),
-            str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
+            test_dict = {
+                'name': slugify(filename), 'title': filename,
+                'path': os.path.join(
+                    'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                    'Per_questionnaire', 'Step_1_QUESTIONNAIRE', filename + extension),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                'profile': 'tabular-data-resource',
+            }
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                'Failed for heading type ' + "'" + heading_type + "'\n"
+                + str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3068,47 +3079,51 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        set_mocks7(mockServer)
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks7(mockServer)
+            if heading_type == 'full':
+                update_mocks7_full(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks7_abbreviated(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to_experiment[]': to_experiment,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
 
-        data = {
-            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            'headings': ['code'],
-            'to_experiment[]': to_experiment,
-            'patient_selected': ['age*age'], 'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self.get_datapackage_json_data(temp_dir, response)
+            filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
+            extension = '.csv'
+            unique_name = slugify(filename) + '_per-participant'
 
-        filename = self.survey.code + '_' + slugify(self.survey.en_title) + '_en'
-        extension = '.csv'
-        unique_name = slugify(filename) + '_per-participant'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['name'] == unique_name)
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
+            test_dict = {
+                'name': unique_name, 'title': filename,
+                'path': os.path.join(
+                    'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
+                    'Per_participant', 'Participant_' + self.patient.code, 'Step_1_QUESTIONNAIRE', filename + extension),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                'profile': 'tabular-data-resource',
+            }
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
-        questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['name'] == unique_name)
-        # Remove schema field if it exists. The test was written before the
-        # test that drives adding schema field to datapackage.json
-        # TODO (NES-991): do this way for the other tests
-        if 'schema' in questionnaire_response_resource:
-            questionnaire_response_resource.pop('schema')
-        test_dict = {
-            'name': unique_name, 'title': filename,
-            'path': os.path.join(
-                'data', 'Experiment_data', 'Group_' + slugify(self.group.title).replace('-', '_'),
-                'Per_participant', 'Participant_' + self.patient.code, 'Step_1_QUESTIONNAIRE', filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
-            'profile': 'tabular-data-resource',
-        }
-        self.assertEqual(
-            test_dict, questionnaire_response_resource,
-            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
-
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_experiment_adds_questionnaire_responses_table_schema_info_to_datapackage1(self, mockServer):
+    def test_export_per_experiment_adds_questionnaire_responses_table_schema_info_to_datapackage_json_file1(
+            self, mockServer):
         """In Per_questionnaire subdir"""
 
         self._create_questionnaire_export_data()
@@ -3127,9 +3142,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
         for heading_type in 'code', 'full', 'abbreviated':
             set_mocks7(mockServer)
             if heading_type == 'full':
-                update_mocks2(mockServer)
+                update_mocks7_full(mockServer)
             if heading_type == 'abbreviated':
-                update_mocks3(mockServer)
+                update_mocks7_abbreviated(mockServer)
             data = {
                 'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
                 'headings': [heading_type],
@@ -3146,10 +3161,14 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 item for item in json_data['resources'] if item['title'] == filename)
             for item in questions:
                 self.assertIn(
-                        {
-                            'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
-                            'format': 'default'
-                        }, questionnaire_response_resource['schema']['fields'])
+                    {
+                        'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
+                        'format': 'default'
+                    }, questionnaire_response_resource['schema']['fields'],
+                    'Failed for heading type ' + "'" + heading_type + "'")
+
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -3175,9 +3194,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
         for heading_type in 'code', 'full', 'abbreviated':
             set_mocks7(mockServer)
             if heading_type == 'full':
-                update_mocks2(mockServer)
+                update_mocks7_full(mockServer)
             if heading_type == 'abbreviated':
-                update_mocks3(mockServer)
+                update_mocks7_abbreviated(mockServer)
             data = {
                 'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
                 'headings': [heading_type],
@@ -3196,9 +3215,12 @@ class ExportFrictionlessDataTest(ExportTestCase):
             for item in questions:
                 self.assertIn(
                     {
-                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields'])
+
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -3219,8 +3241,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 '0*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        set_mocks13(mockServer)
-
+        set_mocks11(mockServer)
         data = {
             'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
             'headings': ['code'],
@@ -3239,7 +3260,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
             item for item in json_data['resources'] if item['title'] == filename)
         # Remove schema field if it exists. The test was written before the
         # test that drives adding schema field to datapackage.json
-        # TODO (NES-991): do this way for the other tests
         if 'schema' in questionnaire_response_resource:
             questionnaire_response_resource.pop('schema')
         test_dict = {
@@ -3274,33 +3294,31 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 '0*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks13(mockServer)
-            if heading_type == 'full':
-                update_mocks6(mockServer)
-            if heading_type == 'abbreviated':
-                update_mocks7(mockServer)
-            data = {
-                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-                'headings': [heading_type],
-                'to[]': to,
-                'patient_selected': ['age*age'], 'responses': ['short']
-            }
-            response = self.client.post(reverse('export_view'), data)
+        set_mocks11(mockServer)
+        data = {
+            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to[]': to,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+        response = self.client.post(reverse('export_view'), data)
 
-            temp_dir = tempfile.mkdtemp()
-            json_data = self.get_datapackage_json_data(temp_dir, response)
+        temp_dir = tempfile.mkdtemp()
+        json_data = self.get_datapackage_json_data(temp_dir, response)
 
-            filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
-            questionnaire_response_resource = next(
-                item for item in json_data['resources'] if item['title'] == filename)
-            for item in HEADER_EXPLANATION_FIELDS:
-                self.assertIn(
-                    {
-                        'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'
-                    }, questionnaire_response_resource['schema']['fields'])
+        filename = 'Fields_' + str(self.survey.lime_survey_id) + '_en'
+        questionnaire_response_resource = next(
+            item for item in json_data['resources'] if item['title'] == filename)
+        for item in HEADER_EXPLANATION_FIELDS:
+            self.assertIn(
+                {
+                    'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'
+                }, questionnaire_response_resource['schema']['fields'])
 
-            shutil.rmtree(temp_dir)
+        report = validate(os.path.join(temp_dir, 'datapackage.json'), skip_checks=['duplicate-row'])
+        self._assert_goodtables(report, 'code')
+
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3321,43 +3339,47 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 '0*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        set_mocks13(mockServer)
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks11(mockServer)
+            if heading_type == 'full':
+                update_mocks11_full(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks11_abbreviated(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to[]': to,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
 
-        data = {
-            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            'headings': ['code'],
-            'to[]': to,
-            'patient_selected': ['age*age'], 'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self.get_datapackage_json_data(temp_dir, response)
+            filename = 'Responses_' + str(self.survey.lime_survey_id) + '_en'
+            extension = '.csv'
 
-        filename = 'Responses_' + str(self.survey.lime_survey_id) + '_en'
-        extension = '.csv'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
+            test_dict = {
+                'name': slugify(filename), 'title': filename,
+                'path': os.path.join(
+                    'data', 'Participant_data', 'Per_questionnaire',
+                    str(self.survey.lime_survey_id) + '_' + slugify(self.survey.en_title),
+                    filename + extension),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                'profile': 'tabular-data-resource',
+            }
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                'Failed for heading type ' + "'" + heading_type + "'\n"
+                + str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
-        questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['title'] == filename)
-        # Remove schema field if it exists. The test was written before the
-        # test that drives adding schema field to datapackage.json
-        # TODO (NES-991): do this way for the other tests
-        if 'schema' in questionnaire_response_resource:
-            questionnaire_response_resource.pop('schema')
-        test_dict = {
-            'name': slugify(filename), 'title': filename,
-            'path': os.path.join(
-                'data', 'Participant_data', 'Per_questionnaire',
-                str(self.survey.lime_survey_id) + '_' + slugify(self.survey.en_title),
-                filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
-            'profile': 'tabular-data-resource',
-        }
-        self.assertEqual(
-            test_dict, questionnaire_response_resource,
-            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
-
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3379,42 +3401,46 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 '0*' + str(LIMESURVEY_SURVEY_ID_1)
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
-        set_mocks13(mockServer)
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks11(mockServer)
+            if heading_type == 'full':
+                update_mocks11_full(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks11_abbreviated(mockServer)
+            data = {
+                'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
+                'headings': [heading_type],
+                'to[]': to,
+                'patient_selected': ['age*age'], 'responses': ['short']
+            }
+            response = self.client.post(reverse('export_view'), data)
 
-        data = {
-            'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-            'headings': ['code'],
-            'to[]': to,
-            'patient_selected': ['age*age'], 'responses': ['short']
-        }
-        response = self.client.post(reverse('export_view'), data)
+            temp_dir = tempfile.mkdtemp()
+            json_data = self.get_datapackage_json_data(temp_dir, response)
 
-        temp_dir = tempfile.mkdtemp()
-        json_data = self.get_datapackage_json_data(temp_dir, response)
+            filename = 'Responses_' + str(self.survey.code) + '_en'
+            extension = '.csv'
 
-        filename = 'Responses_' + str(self.survey.code) + '_en'
-        extension = '.csv'
+            questionnaire_response_resource = next(
+                item for item in json_data['resources'] if item['title'] == filename)
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
+            test_dict = {
+                'name': slugify(filename), 'title': filename,
+                'path': os.path.join(
+                    'data', 'Participant_data', 'Per_participant', 'Participant_' + self.patient.code,
+                    self.survey.code + '_' + slugify(self.survey.en_title), filename + extension),
+                'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
+                'profile': 'tabular-data-resource',
+            }
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                'Failed for heading type ' + "'" + heading_type + "'\n"
+                + str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
-        questionnaire_response_resource = next(
-            item for item in json_data['resources'] if item['title'] == filename)
-        # Remove schema field if it exists. The test was written before the
-        # test that drives adding schema field to datapackage.json
-        # TODO (NES-991): do this way for the other tests
-        if 'schema' in questionnaire_response_resource:
-            questionnaire_response_resource.pop('schema')
-        test_dict = {
-            'name': slugify(filename), 'title': filename,
-            'path': os.path.join(
-                'data', 'Participant_data', 'Per_participant', 'Participant_' + self.patient.code,
-                self.survey.code + '_' + slugify(self.survey.en_title), filename + extension),
-            'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
-            'profile': 'tabular-data-resource',
-        }
-        self.assertEqual(
-            test_dict, questionnaire_response_resource,
-            str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
-
-        shutil.rmtree(temp_dir)
+            shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3436,11 +3462,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
         for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks13(mockServer)
+            set_mocks11(mockServer)
             if heading_type == 'full':
-                update_mocks6(mockServer)
+                update_mocks11_full(mockServer)
             if heading_type == 'abbreviated':
-                update_mocks7(mockServer)
+                update_mocks11_abbreviated(mockServer)
             data = {
                 'per_participant': ['on'], 'per_questionnaire': ['on'], 'action': ['run'],
                 'headings': [heading_type],
@@ -3458,9 +3484,12 @@ class ExportFrictionlessDataTest(ExportTestCase):
             for item in questions:
                 self.assertIn(
                     {
-                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields'])
+
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -3485,11 +3514,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 + '*' + self.questionnaire.survey.en_title + '*' + question[0]['code'] + '*' + question[0]['code'])
 
         for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks13(mockServer)
+            set_mocks11(mockServer)
             if heading_type == 'full':
-                update_mocks6(mockServer)
+                update_mocks11_full(mockServer)
             if heading_type == 'abbreviated':
-                update_mocks7(mockServer)
+                update_mocks11_abbreviated(mockServer)
             data = {
                 'per_participant': ['on'], 'per_questionnaire': ['on'], 'action': ['run'],
                 'headings': [heading_type],
@@ -3507,9 +3536,12 @@ class ExportFrictionlessDataTest(ExportTestCase):
             for item in questions:
                 self.assertIn(
                     {
-                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields'])
+
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -3518,7 +3550,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
     def test_export_per_participant_creates_datapackage_json_file(self, mockServer):
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
-        set_mocks12(mockServer)
+        set_mocks10(mockServer)
 
         questions = self._set_all_questions()
         to = []
@@ -3544,7 +3576,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
     def test_export_per_participant_adds_basic_content_to_datapackage_json_file(self, mockServer):
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
-        set_mocks12(mockServer)
+        set_mocks10(mockServer)
 
         questions = self._set_all_questions()
         to = []
@@ -3580,7 +3612,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3626,7 +3658,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
     def test_export_per_participant_displays_license_options_in_form(self, mockServer):
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
-        set_mocks10(mockServer)
+        set_mocks8(mockServer)
 
         # Needed because if session expired this variable does not exist in request.session
         # anymore. See the view.
@@ -3651,7 +3683,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3690,7 +3722,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3730,7 +3762,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3779,7 +3811,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3788,25 +3819,28 @@ class ExportFrictionlessDataTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
         data = {
-            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
+            'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
-            'patient_selected': ['age*age'], 'license': '0',
-            'to[]': to
+            'license': '0', 'to[]': to
         }
-        # age field is already included in POST data. Include only the others
         patient_fields = PATIENT_FIELDS.copy()
-        age_field = next(item for item in patient_fields if item['field'] == 'age')
-        del (patient_fields[patient_fields.index(age_field)])
+        # participant_code field is included besides PATIENT_FIELDS
+        participant_code = next(item for item in patient_fields if item['field'] == 'code')
+        del (patient_fields[patient_fields.index(participant_code)])
         # Append all possible patient attributes in POST data
+        data['patient_selected'] = []
         for field in patient_fields:
             data['patient_selected'].append(field['field'] + '*' + field['header'])
 
         # Test for code, full, and abbreviated question texts
         # in Headings head, General information export tab
-        # TODO (NES-991): test for 'full' and 'abbreviated'. Manually passed with all patient attributes
-        #  Needed to change mock
-        for heading_type in ['code']:  # , ['full'], ['abbreviated']:
-            data['headings'] = [heading_type]
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks9(mockServer)
+            if heading_type == 'full':
+                update_mocks9_full(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks9_abbreviated(mockServer)
+            data['headings'] = heading_type
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
@@ -3815,7 +3849,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             self.assertIn('schema', participants_resource)
             self.assertIn('fields', participants_resource['schema'])
-            self._assert_participants_table_schema(participants_resource['schema'], heading_type)
+            self._assert_participants_related_fields_table_schema(
+                participants_resource['schema'], heading_type, PATIENT_FIELDS)
+
+            report = validate(os.path.join(temp_dir, 'datapackage.json'))
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -3833,7 +3871,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3841,18 +3879,14 @@ class ExportFrictionlessDataTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
-        data = {'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
-                'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
-                # Add selected diagnosis (all here)
-                'diagnosis_selected': [
-                    'medicalrecorddata__diagnosis__date*diagnosis_date',
-                    'medicalrecorddata__diagnosis__description*diagnosis_description',
-                    'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
-                    'medicalrecorddata__diagnosis__classification_of_diseases__description'
-                    '*classification_of_diseases_description',
-                    'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
-                    '*classification_of_diseases_description'
-                ]}
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
+            'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
+            'diagnosis_selected': []
+        }
+        # Append al possible diagnosis attributes in POST data
+        for field in DIAGNOSIS_FIELDS:
+            data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -3889,7 +3923,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3898,20 +3932,21 @@ class ExportFrictionlessDataTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
         data = {
-            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
+            'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
             'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
             'diagnosis_selected': []
         }
-        # Append al possible diagnosis attributes in POST data
-        for field in DIAGNOSIS_FIELDS:  # TODO (NES-991): do the same in the other diagnosis test
+        # Append all possible diagnosis attributes in POST data
+        for field in DIAGNOSIS_FIELDS:
             data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
-        # Test for Question code, Full question text and Abbreviated question text
-        # in Headings head, General informtion export tab
-        # TODO (NES-991): test for 'full' and 'abbreviated'. Needed to change mocks
-        #  Tested manually for all diagnosis fields for all types of Headings
-        for heading_type in ['code']:  # , 'full', 'abbreviated':
-            data['headings'] = [heading_type]
+        for heading_type in 'code', 'full', 'abbreviated':
+            set_mocks9(mockServer)
+            if heading_type == 'full':
+                update_mocks9_full(mockServer)
+            if heading_type == 'abbreviated':
+                update_mocks9_abbreviated(mockServer)
+            data['headings'] = heading_type
             response = self.client.post(reverse('export_view'), data)
 
             temp_dir = tempfile.mkdtemp()
@@ -3919,7 +3954,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
             diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
             self.assertIn('schema', diagnosis_resource)
             self.assertIn('fields', diagnosis_resource['schema'])
-            self._assert_participants_table_schema(diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
+            self._assert_participants_related_fields_table_schema(
+                diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
+
+            report = validate(os.path.join(temp_dir, 'datapackage.json'))
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -3936,7 +3975,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3961,6 +4000,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
             title = 'Fields_' + str(survey.lime_survey_id) + '_' + 'en'
 
             questionnaire_metadata_resource = next(item for item in json_data['resources'] if item['title'] == title)
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_metadata_resource:
+                questionnaire_metadata_resource.pop('schema')
             test_dict = {
                 'name': unique_name, 'title': title,
                 'path': os.path.join(
@@ -3969,10 +4012,12 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
                 'profile': 'tabular-data-resource',
             }
+            self.assertEqual(
+                test_dict, questionnaire_metadata_resource,
+                str(test_dict) + ' not equal ' + str(questionnaire_metadata_resource)
+            )
 
-            self.assertTrue(all(
-                item in questionnaire_metadata_resource.items() for item in test_dict.items()),
-                str(test_dict) + ' is not subdict of ' + str(questionnaire_metadata_resource))
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -3988,7 +4033,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -3996,10 +4041,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
-        # TODO (NES-991): tests for 'full' and 'abbreviated'.
-        #  Obs.: By now NES exports by code only even if the user
-        #  selects 'full' or 'abbreviated' for headings. Besides that
-        #  the codes are in English too, even for questionnaires in pt-BR.
         data = {
             'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
@@ -4020,6 +4061,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
                     questionnaire_metadata_resource['schema']['fields'])
 
+        report = validate(os.path.join(temp_dir, 'datapackage.json'))
+        self._assert_goodtables(report, 'code')
+
+        shutil.rmtree(temp_dir)
+
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_export_per_participant_adds_questionnaire_response_file_to_datapackage_json_file1(self, mockServer):
@@ -4035,7 +4081,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -4060,9 +4106,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             questionnaire_response_resource = next(
                 item for item in json_data['resources'] if item['title'] == filename)
-            # As this resource has 'schema' key, that is
-            # itself a dict with other data, we test key/value pairs for all
-            # keys except 'schema'.
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
             test_dict = {
                 'name': slugify(filename), 'title': filename,
                 'path': os.path.join(
@@ -4072,9 +4119,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
                 'profile': 'tabular-data-resource',
             }
-            self.assertTrue(all(
-                item in questionnaire_response_resource.items() for item in test_dict.items()),
-                str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
             shutil.rmtree(temp_dir)
 
@@ -4103,11 +4150,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
             'patient_selected': patient_selected, 'license': '0', 'to[]': to
         }
         for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks12(mockServer)
+            set_mocks10(mockServer)
             if heading_type == 'full':
-                update_mocks4(mockServer)
+                update_mocks10_full(mockServer)
             if heading_type == 'abbreviated':
-                update_mocks5(mockServer)
+                update_mocks10_abbreviated(mockServer)
             data['headings'] = [heading_type]
             response = self.client.post(reverse('export_view'), data)
 
@@ -4120,7 +4167,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
             for item in questions:
                 self.assertIn(
                     {
-                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields'])
             for patient_field_selected in patient_selected:
@@ -4135,10 +4182,13 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     title = abbreviated_data(patient_field['description'])
                 self.assertIn(
                     {
-                        'name': patient_field['header'], 'title': title, 'type': patient_field['json_data_type'],
+                        'name': title, 'title': title, 'type': patient_field['json_data_type'],
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields']
                 )
+
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -4157,7 +4207,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         survey2.code = 'Q2121'
         survey2.save()
         UtilTests.create_response_survey(self.user, self.patient, survey2, token_id=1)
-        set_mocks11(mockServer)
+        set_mocks9(mockServer)
 
         to = [
             '0*' + str(LIMESURVEY_SURVEY_ID_1) + '*' + survey1.en_title + '*acquisitiondate*acquisitiondate',
@@ -4185,9 +4235,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 survey.code + '_' + slugify(survey.en_title), filename + extension)
             questionnaire_response_resource = next(
                 item for item in json_data['resources'] if item['path'] == path_resource)
-            # As this resource has 'schema' key, that is
-            # itself a dict with other data, we test key/value pairs for all
-            # keys except 'schema'.
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
             test_dict = {
                 'name': slugify(filename), 'title': filename,
                 'path': os.path.join(
@@ -4196,9 +4247,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
                 'profile': 'tabular-data-resource',
             }
-            self.assertTrue(all(
-                item in questionnaire_response_resource.items() for item in test_dict.items()),
-                str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
             shutil.rmtree(temp_dir)
 
@@ -4228,11 +4279,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
         }
 
         for heading_type in 'code', 'full', 'abbreviated':
-            set_mocks12(mockServer)
+            set_mocks10(mockServer)
             if heading_type == 'full':
-                update_mocks4(mockServer)
+                update_mocks10_full(mockServer)
             if heading_type == 'abbreviated':
-                update_mocks5(mockServer)
+                update_mocks10_abbreviated(mockServer)
             data['headings'] = [heading_type]
             response = self.client.post(reverse('export_view'), data)
 
@@ -4249,7 +4300,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
             for item in questions:
                 self.assertIn(
                     {
-                        'name': slugify(item[0]['code']), 'title': item[0][heading_type], 'type': item[2],
+                        'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields'])
             for patient_field_selected in patient_selected:
@@ -4264,10 +4315,13 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     title = abbreviated_data(patient_field['description'])
                 self.assertIn(
                     {
-                        'name': patient_field['header'], 'title': title, 'type': patient_field['json_data_type'],
+                        'name': title, 'title': title, 'type': patient_field['json_data_type'],
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields']
                 )
+
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 

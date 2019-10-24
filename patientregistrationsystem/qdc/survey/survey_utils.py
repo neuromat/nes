@@ -79,14 +79,12 @@ class QuestionnaireUtils:
         if entrance_questionnaire:
             if questionnaire_id not in self.questionnaires_data:
                 self.questionnaires_data[questionnaire_id] = {}
-
             self.questionnaires_data[questionnaire_id]["header"] = headers
             self.questionnaires_data[questionnaire_id]["fields"] = fields
 
         else:
             if questionnaire_id not in self.questionnaires_experiment_data:
                 self.questionnaires_experiment_data[questionnaire_id] = {}
-
             self.questionnaires_experiment_data[questionnaire_id]["header"] = headers
             self.questionnaires_experiment_data[questionnaire_id]["fields"] = fields
 
@@ -146,8 +144,8 @@ class QuestionnaireUtils:
                 self.questionnaires_experiment_data[questionnaire_id]["header"]
         return header
 
-    def get_questionnaire_fields(self, questionnaire_id, entrance_questionnaire,
-                                 considers_questionnaires_from_experiments):
+    def get_questionnaire_fields(
+            self, questionnaire_id, entrance_questionnaire, considers_questionnaires_from_experiments):
         fields = []
         if entrance_questionnaire:
             if questionnaire_id in self.questionnaires_data:
@@ -281,7 +279,7 @@ class QuestionnaireUtils:
                 question_description = re.sub(
                     '{.*?}', '', re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
                 question_type = smart_str(properties['type'])
-                question_type_description = QUESTION_TYPES[question_type] if question_type in QUESTION_TYPES else ''
+                question_type_description = QUESTION_TYPES[question_type][0] if question_type in QUESTION_TYPES else ''
                 question_group = self.get_group_properties(
                         questionnaire_lime_survey, questionnaire_id, properties['gid'], language)
                 if question_group is None:

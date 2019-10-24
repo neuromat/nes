@@ -150,7 +150,8 @@ DIAGNOSIS_FIELDS = [
     },
     {
         'field': 'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description',
-        'header': 'classification_of_diseases_description', 'description': _('Disease Abbreviated Description'),
+        'header': 'classification_of_diseases_abbreviated_description',
+        'description': _('Disease Abbreviated Description'),
         'json_data_type': 'string'
     },
 ]
@@ -277,7 +278,8 @@ def export_create(
                 participants_input_data, participants_list, language_code, participants_plugin)
             export.get_input_data('participants')['data_list'] = export_rows_participants
             # Create file participants.csv and diagnosis.csv
-            error_msg = export.build_participant_export_data('group_selected_list' in request.session)
+            error_msg = export.build_participant_export_data(
+                'group_selected_list' in request.session, request.POST.get('headings'))
             if error_msg != '':
                 messages.error(request, error_msg)
                 return render(request, template_name)
@@ -776,14 +778,19 @@ def get_questionnaire_experiment_header(
     questionnaire_list = []
     language_new = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
     token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, 'token')
-    responses_string = questionnaire_lime_survey.get_header_response(
-        questionnaire_id, language_new, token)
+
+    responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, language_new, token)
 
     if not isinstance(responses_string, dict):
         questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
         responses_heading_type = questionnaire_lime_survey.get_header_response(
             questionnaire_id, language_new, token, heading_type=heading_type)
         questionnaire_questions_heading_type = QuestionnaireUtils.responses_to_csv(responses_heading_type)
+        if heading_type == 'abbreviated':
+            # Remove trailling spaces that are brought by get_header_response
+            questionnaire_questions_heading_type[0] = [
+                str.rstrip(item) for item in questionnaire_questions_heading_type[0]
+            ]
 
         questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
 
@@ -827,13 +834,9 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
             title = questionnaire[2]
 
             questionnaire_field_header = get_questionnaire_header(
-                questionnaire_lime_survey, questionnaire_id,
-                fields, heading_type, current_language
-            )
+                questionnaire_lime_survey, questionnaire_id, fields, heading_type, current_language)
 
-            questionnaire_list_updated.append(
-                [index, questionnaire_id, title, questionnaire_field_header]
-            )
+            questionnaire_list_updated.append([index, questionnaire_id, title, questionnaire_field_header])
 
     questionnaire_lime_survey.release_session_key()
 
@@ -841,7 +844,7 @@ def update_questionnaire_list(questionnaire_list, heading_type, experiment_quest
 
 
 def get_questionnaire_header(
-        questionnaire_lime_survey, questionnaire_id, fields, heading_type='code',current_language='pt-BR'):
+        questionnaire_lime_survey, questionnaire_id, fields, heading_type='code', current_language='pt-BR'):
 
     questionnaire_list = []
 
@@ -859,12 +862,14 @@ def get_questionnaire_header(
         if not isinstance(responses_string, dict):
 
             questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
-
-            responses_heading_type = questionnaire_lime_survey.get_header_response(questionnaire_id,
-                                                                                   language_new, token,
-                                                                                   heading_type=heading_type)
-
+            responses_heading_type = questionnaire_lime_survey.get_header_response(
+                questionnaire_id, language_new, token, heading_type=heading_type)
             questionnaire_questions_heading_type = QuestionnaireUtils.responses_to_csv(responses_heading_type)
+            if heading_type == 'abbreviated':
+                # Remove trailling spaces that are brought by get_header_response
+                questionnaire_questions_heading_type[0] = [
+                    str.rstrip(item) for item in questionnaire_questions_heading_type[0]
+                ]
 
             questionnaire_header = list(zip(questionnaire_questions_heading_type[0], questionnaire_questions[0]))
 
