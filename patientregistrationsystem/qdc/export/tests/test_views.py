@@ -2108,17 +2108,18 @@ class ExportFrictionlessDataTest(ExportTestCase):
         json_data = self.get_datapackage_json_data(temp_dir, response)
         experiment_resource = next(item for item in json_data['resources'] if item['name'] == 'Experiment')
 
-        # As Experiment.csv/tsv resource has 'schema' key, that is
-        # itself a dict with other data, we test key/value pairs for all
-        # keys except 'schema'.
+        # Remove schema field if it exists. The test was written before the
+        # test that drives adding schema field to datapackage.json
+        if 'schema' in experiment_resource:
+            experiment_resource.pop('schema')
         test_dict = {
             'name': 'Experiment', 'title': 'Experiment', 'path': 'data/Experiment_data/Experiment.csv',
             'format': 'csv', 'mediatype': 'text/csv', 'encoding': 'UTF-8',
             'profile': 'tabular-data-resource'
         }
-        self.assertTrue(all(
-            item in experiment_resource.items() for item in test_dict.items()),
-            str(test_dict) + ' is not subdict of ' + str(experiment_resource))
+        self.assertEqual(
+            test_dict, experiment_resource,
+            str(test_dict) + ' not equal ' + str(experiment_resource))
 
         shutil.rmtree(temp_dir)
 
@@ -2217,16 +2218,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
         self.append_session_variable('license', '0')
 
         data = self._set_post_data()
-        # Add selected diagnosis (all here)
-        data['diagnosis_selected'] = [
-            'medicalrecorddata__diagnosis__date*diagnosis_date',
-            'medicalrecorddata__diagnosis__description*diagnosis_description',
-            'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
-            'medicalrecorddata__diagnosis__classification_of_diseases__description'
-            '*classification_of_diseases_description',
-            'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
-            '*classification_of_diseases_description'
-        ]
+        data['diagnosis_selected'] = []
+        # Append al possible diagnosis attributes in POST data
+        for field in DIAGNOSIS_FIELDS:
+            data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -2258,7 +2253,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         data = self._set_post_data()
         data['diagnosis_selected'] = []
         # Append al possible diagnosis attributes in POST data
-        for field in DIAGNOSIS_FIELDS:  # TODO (NES-987): do the same in the other diagnosis test
+        for field in DIAGNOSIS_FIELDS:
             data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
         # Test for code, full and abbreviated question texts
@@ -3092,7 +3087,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 update_mocks7_abbreviated(mockServer)
             data = {
                 'per_participant': ['on'], 'action': ['run'], 'per_questionnaire': ['on'],
-                # TODO (NES-991): do for 'full' and 'abbreviated'
                 'headings': [heading_type],
                 'to_experiment[]': to_experiment,
                 'patient_selected': ['age*age'], 'responses': ['short']
@@ -3110,7 +3104,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 item for item in json_data['resources'] if item['name'] == unique_name)
             # Remove schema field if it exists. The test was written before the
             # test that drives adding schema field to datapackage.json
-            # TODO (NES-991): do this way for the other tests
             if 'schema' in questionnaire_response_resource:
                 questionnaire_response_resource.pop('schema')
             test_dict = {
@@ -3267,7 +3260,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
             item for item in json_data['resources'] if item['title'] == filename)
         # Remove schema field if it exists. The test was written before the
         # test that drives adding schema field to datapackage.json
-        # TODO (NES-991): do this way for the other tests
         if 'schema' in questionnaire_response_resource:
             questionnaire_response_resource.pop('schema')
         test_dict = {
@@ -3371,7 +3363,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 item for item in json_data['resources'] if item['title'] == filename)
             # Remove schema field if it exists. The test was written before the
             # test that drives adding schema field to datapackage.json
-            # TODO (NES-991): do this way for the other tests
             if 'schema' in questionnaire_response_resource:
                 questionnaire_response_resource.pop('schema')
             test_dict = {
@@ -3434,7 +3425,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 item for item in json_data['resources'] if item['title'] == filename)
             # Remove schema field if it exists. The test was written before the
             # test that drives adding schema field to datapackage.json
-            # TODO (NES-991): do this way for the other tests
             if 'schema' in questionnaire_response_resource:
                 questionnaire_response_resource.pop('schema')
             test_dict = {
@@ -3889,18 +3879,14 @@ class ExportFrictionlessDataTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
-        data = {'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
-                'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
-                # Add selected diagnosis (all here)
-                'diagnosis_selected': [
-                    'medicalrecorddata__diagnosis__date*diagnosis_date',
-                    'medicalrecorddata__diagnosis__description*diagnosis_description',
-                    'medicalrecorddata__diagnosis__classification_of_diseases__code*classification_of_diseases_code',
-                    'medicalrecorddata__diagnosis__classification_of_diseases__description'
-                    '*classification_of_diseases_description',
-                    'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description'
-                    '*classification_of_diseases_description'
-                ]}
+        data = {
+            'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'], 'files_format': ['csv'],
+            'action': ['run'], 'responses': ['short'], 'patient_selected': ['age*age'], 'license': '0', 'to[]': to,
+            'diagnosis_selected': []
+        }
+        # Append al possible diagnosis attributes in POST data
+        for field in DIAGNOSIS_FIELDS:
+            data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
         response = self.client.post(reverse('export_view'), data)
 
@@ -3951,7 +3937,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
             'diagnosis_selected': []
         }
         # Append all possible diagnosis attributes in POST data
-        for field in DIAGNOSIS_FIELDS:  # TODO (NES-991): do the same in the other diagnosis test
+        for field in DIAGNOSIS_FIELDS:
             data['diagnosis_selected'].append(field['field'] + '*' + field['header'])
 
         for heading_type in 'code', 'full', 'abbreviated':
@@ -3968,7 +3954,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
             diagnosis_resource = next(item for item in json_data['resources'] if item['name'] == 'diagnosis')
             self.assertIn('schema', diagnosis_resource)
             self.assertIn('fields', diagnosis_resource['schema'])
-            self._assert_participants_related_fields_table_schema(diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
+            self._assert_participants_related_fields_table_schema(
+                diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
+
+            report = validate(os.path.join(temp_dir, 'datapackage.json'))
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
@@ -4010,6 +4000,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
             title = 'Fields_' + str(survey.lime_survey_id) + '_' + 'en'
 
             questionnaire_metadata_resource = next(item for item in json_data['resources'] if item['title'] == title)
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_metadata_resource:
+                questionnaire_metadata_resource.pop('schema')
             test_dict = {
                 'name': unique_name, 'title': title,
                 'path': os.path.join(
@@ -4018,10 +4012,12 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire metadata',
                 'profile': 'tabular-data-resource',
             }
+            self.assertEqual(
+                test_dict, questionnaire_metadata_resource,
+                str(test_dict) + ' not equal ' + str(questionnaire_metadata_resource)
+            )
 
-            self.assertTrue(all(
-                item in questionnaire_metadata_resource.items() for item in test_dict.items()),
-                str(test_dict) + ' is not subdict of ' + str(questionnaire_metadata_resource))
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -4045,10 +4041,6 @@ class ExportFrictionlessDataTest(ExportTestCase):
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*acquisitiondate*acquisitiondate',
             '1*' + str(LIMESURVEY_SURVEY_ID_2) + '*' + survey2.en_title + '*textfragezwei*textfragezwei'
         ]
-        # TODO (NES-991): tests for 'full' and 'abbreviated'.
-        #  Obs.: By now NES exports by code only even if the user
-        #  selects 'full' or 'abbreviated' for headings. Besides that
-        #  the codes are in English too, even for questionnaires in pt-BR.
         data = {
             'headings': ['code'], 'per_participant': ['on'], 'per_questionnaire': ['on'],
             'files_format': ['csv'], 'action': ['run'], 'responses': ['short'],
@@ -4068,6 +4060,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 self.assertIn(
                     {'name': item[0], 'title': item[0], 'type': item[1], 'format': 'default'},
                     questionnaire_metadata_resource['schema']['fields'])
+
+        report = validate(os.path.join(temp_dir, 'datapackage.json'))
+        self._assert_goodtables(report, 'code')
+
+        shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
@@ -4109,9 +4106,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
             questionnaire_response_resource = next(
                 item for item in json_data['resources'] if item['title'] == filename)
-            # As this resource has 'schema' key, that is
-            # itself a dict with other data, we test key/value pairs for all
-            # keys except 'schema'.
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
             test_dict = {
                 'name': slugify(filename), 'title': filename,
                 'path': os.path.join(
@@ -4121,9 +4119,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
                 'profile': 'tabular-data-resource',
             }
-            self.assertTrue(all(
-                item in questionnaire_response_resource.items() for item in test_dict.items()),
-                str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
             shutil.rmtree(temp_dir)
 
@@ -4189,6 +4187,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     }, questionnaire_response_resource['schema']['fields']
                 )
 
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
+            self._assert_goodtables(report, heading_type)
+
             shutil.rmtree(temp_dir)
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -4234,9 +4235,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 survey.code + '_' + slugify(survey.en_title), filename + extension)
             questionnaire_response_resource = next(
                 item for item in json_data['resources'] if item['path'] == path_resource)
-            # As this resource has 'schema' key, that is
-            # itself a dict with other data, we test key/value pairs for all
-            # keys except 'schema'.
+            # Remove schema field if it exists. The test was written before the
+            # test that drives adding schema field to datapackage.json
+            if 'schema' in questionnaire_response_resource:
+                questionnaire_response_resource.pop('schema')
             test_dict = {
                 'name': slugify(filename), 'title': filename,
                 'path': os.path.join(
@@ -4245,9 +4247,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 'format': 'csv', 'mediatype': 'text/csv', 'description': 'Questionnaire response',
                 'profile': 'tabular-data-resource',
             }
-            self.assertTrue(all(
-                item in questionnaire_response_resource.items() for item in test_dict.items()),
-                str(test_dict) + ' is not subdict of ' + str(questionnaire_response_resource))
+            self.assertEqual(
+                test_dict, questionnaire_response_resource,
+                str(test_dict) + ' not equal ' + str(questionnaire_response_resource))
 
             shutil.rmtree(temp_dir)
 
@@ -4317,6 +4319,9 @@ class ExportFrictionlessDataTest(ExportTestCase):
                         'format': 'default'
                     }, questionnaire_response_resource['schema']['fields']
                 )
+
+            report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
+            self._assert_goodtables(report, heading_type)
 
             shutil.rmtree(temp_dir)
 
