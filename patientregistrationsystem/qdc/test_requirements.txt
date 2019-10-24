@@ -1,2 +1,0 @@
-goodtables==2.2.1
-Faker==0.8.17
