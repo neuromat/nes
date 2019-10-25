@@ -3655,7 +3655,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
-    def test_export_per_participant_displays_license_options_in_form(self, mockServer):
+    def test_export_per_participant_displays_license_options_in_form_with_default_to_creative_commons(self, mockServer):
         survey = create_survey(LIMESURVEY_SURVEY_ID_1)
         UtilTests.create_response_survey(self.user, self.patient, survey, token_id=1)
         set_mocks8(mockServer)
