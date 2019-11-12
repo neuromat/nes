@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 15:35-0300\n"
+"POT-Creation-Date: 2019-10-30 10:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -349,7 +349,7 @@ msgstr ""
 msgid "Gigaohm(s)"
 msgstr ""
 
-#: experiment/models.py:38 experiment/tests/tests_original.py:2499
+#: experiment/models.py:38 experiment/tests/tests_original.py:1703
 msgid "Date cannot be greater than today's date."
 msgstr "Data de preenchimento não pode ser maior que a data de hoje."
 
@@ -4871,29 +4871,29 @@ msgstr "Carregar"
 msgid "Are you sure you want to delete attachment?"
 msgstr "Tem certeza que deseja remover o anexo?"
 
-#: experiment/tests/tests_original.py:2664
-#: experiment/tests/tests_original.py:3161
-#: experiment/tests/tests_original.py:3281
-#: experiment/tests/tests_original.py:3349
-#: experiment/tests/tests_original.py:3426
-#: experiment/tests/tests_original.py:3503
-#: experiment/tests/tests_original.py:3580
-#: experiment/tests/tests_original.py:3653
-#: experiment/tests/tests_original.py:3723
-#: experiment/tests/tests_original.py:3793
-#: experiment/tests/tests_original.py:3866
-#: experiment/tests/tests_original.py:3938
-#: experiment/tests/tests_original.py:4008
-#: experiment/tests/tests_original.py:4076
-#: experiment/tests/tests_original.py:4149
-#: experiment/tests/tests_original.py:4277
-#: experiment/tests/tests_original.py:4350
-#: experiment/tests/tests_original.py:4422
-#: experiment/tests/tests_original.py:4497
-#: experiment/tests/tests_original.py:4569
-#: experiment/tests/tests_original.py:4648
-#: experiment/tests/tests_original.py:4976
-#: experiment/tests/tests_original.py:5130 experiment/views.py:203
+#: experiment/tests/tests_original.py:1868
+#: experiment/tests/tests_original.py:2365
+#: experiment/tests/tests_original.py:2485
+#: experiment/tests/tests_original.py:2553
+#: experiment/tests/tests_original.py:2630
+#: experiment/tests/tests_original.py:2707
+#: experiment/tests/tests_original.py:2784
+#: experiment/tests/tests_original.py:2857
+#: experiment/tests/tests_original.py:2927
+#: experiment/tests/tests_original.py:2997
+#: experiment/tests/tests_original.py:3070
+#: experiment/tests/tests_original.py:3142
+#: experiment/tests/tests_original.py:3212
+#: experiment/tests/tests_original.py:3280
+#: experiment/tests/tests_original.py:3353
+#: experiment/tests/tests_original.py:3481
+#: experiment/tests/tests_original.py:3554
+#: experiment/tests/tests_original.py:3626
+#: experiment/tests/tests_original.py:3701
+#: experiment/tests/tests_original.py:3773
+#: experiment/tests/tests_original.py:3852
+#: experiment/tests/tests_original.py:4180
+#: experiment/tests/tests_original.py:4334 experiment/views.py:203
 #: experiment/views.py:498 experiment/views.py:795 experiment/views.py:2516
 #: experiment/views.py:2692 experiment/views.py:2796 experiment/views.py:2899
 #: experiment/views.py:3006 experiment/views.py:3083 experiment/views.py:3265
@@ -4906,29 +4906,29 @@ msgstr "Tem certeza que deseja remover o anexo?"
 msgid "Action not available."
 msgstr "Ação não disponível"
 
-#: experiment/tests/tests_original.py:2675
-#: experiment/tests/tests_original.py:3153
-#: experiment/tests/tests_original.py:3273
-#: experiment/tests/tests_original.py:3341
-#: experiment/tests/tests_original.py:3417
-#: experiment/tests/tests_original.py:3494
-#: experiment/tests/tests_original.py:3571
-#: experiment/tests/tests_original.py:3645
-#: experiment/tests/tests_original.py:3715
-#: experiment/tests/tests_original.py:3785
-#: experiment/tests/tests_original.py:3858
-#: experiment/tests/tests_original.py:3930
-#: experiment/tests/tests_original.py:4000
-#: experiment/tests/tests_original.py:4068
-#: experiment/tests/tests_original.py:4141
-#: experiment/tests/tests_original.py:4269
-#: experiment/tests/tests_original.py:4342
-#: experiment/tests/tests_original.py:4414
-#: experiment/tests/tests_original.py:4489
-#: experiment/tests/tests_original.py:4561
-#: experiment/tests/tests_original.py:4639
-#: experiment/tests/tests_original.py:4986
-#: experiment/tests/tests_original.py:5140 experiment/views.py:200
+#: experiment/tests/tests_original.py:1879
+#: experiment/tests/tests_original.py:2357
+#: experiment/tests/tests_original.py:2477
+#: experiment/tests/tests_original.py:2545
+#: experiment/tests/tests_original.py:2621
+#: experiment/tests/tests_original.py:2698
+#: experiment/tests/tests_original.py:2775
+#: experiment/tests/tests_original.py:2849
+#: experiment/tests/tests_original.py:2919
+#: experiment/tests/tests_original.py:2989
+#: experiment/tests/tests_original.py:3062
+#: experiment/tests/tests_original.py:3134
+#: experiment/tests/tests_original.py:3204
+#: experiment/tests/tests_original.py:3272
+#: experiment/tests/tests_original.py:3345
+#: experiment/tests/tests_original.py:3473
+#: experiment/tests/tests_original.py:3546
+#: experiment/tests/tests_original.py:3618
+#: experiment/tests/tests_original.py:3693
+#: experiment/tests/tests_original.py:3765
+#: experiment/tests/tests_original.py:3843
+#: experiment/tests/tests_original.py:4190
+#: experiment/tests/tests_original.py:4344 experiment/views.py:200
 #: experiment/views.py:495 experiment/views.py:2513 experiment/views.py:2689
 #: experiment/views.py:2793 experiment/views.py:2896 experiment/views.py:3003
 #: experiment/views.py:3080 experiment/views.py:3262 experiment/views.py:3364
@@ -4940,12 +4940,12 @@ msgstr "Ação não disponível"
 msgid "Information not saved."
 msgstr "Informação não salva."
 
-#: experiment/tests/tests_original.py:5027 experiment/views.py:551
+#: experiment/tests/tests_original.py:4231 experiment/views.py:551
 msgid "Publication updated successfully."
 msgstr "Publicação alterada com sucesso."
 
-#: experiment/tests/tests_original.py:5032
-#: experiment/tests/tests_original.py:5181 experiment/views.py:368
+#: experiment/tests/tests_original.py:4236
+#: experiment/tests/tests_original.py:4385 experiment/views.py:368
 #: experiment/views.py:553 experiment/views.py:743 experiment/views.py:1584
 #: experiment/views.py:1703 experiment/views.py:2539 experiment/views.py:2719
 #: experiment/views.py:2821 experiment/views.py:2928 experiment/views.py:3034
@@ -4967,15 +4967,15 @@ msgstr "Publicação alterada com sucesso."
 msgid "There is no changes to save."
 msgstr "Não há alterações para salvar."
 
-#: experiment/tests/tests_original.py:5070 experiment/views.py:582
+#: experiment/tests/tests_original.py:4274 experiment/views.py:582
 msgid "Experiment included successfully."
 msgstr "Experimento incluído com sucesso."
 
-#: experiment/tests/tests_original.py:5077 experiment/views.py:578
+#: experiment/tests/tests_original.py:4281 experiment/views.py:578
 msgid "Experiment already included in the publication."
 msgstr "Experimento já incluído na publicação"
 
-#: experiment/tests/tests_original.py:5176 experiment/views.py:13174
+#: experiment/tests/tests_original.py:4380 experiment/views.py:13174
 msgid "Context tree updated successfully."
 msgstr "Árvore de contexto alterada com sucesso."
 

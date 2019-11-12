@@ -7552,15 +7552,14 @@ def load_group_goalkeeper_game_data(request, group_id):
                                         digital_game_phase_data.save()
 
                                         # Digital Game Phase File
-                                        file_name = "%s_%s.csv" % (group.code,
-                                                                   subject_of_group.subject.patient.code)
+                                        file_name = "%s_%s.csv" % (
+                                            group.code, subject_of_group.subject.patient.code)
 
                                         complete_file_name = os.path.join(path_to_goalkeeper_files, file_name)
 
                                         # CSV to be stored as data collection of the participant
-                                        create_csv_for_goalkeeper(complete_file_name,
-                                                                  goalkeeper_game_configuration,
-                                                                  results)
+                                        create_csv_for_goalkeeper(
+                                            complete_file_name, goalkeeper_game_configuration, results)
 
                                         with open(complete_file_name, "r") as file:
                                             file_content = file.read()

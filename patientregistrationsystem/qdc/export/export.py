@@ -2892,7 +2892,7 @@ class ExportExecution:
     def _build_participant_datapackage_dict(self, request):
         title = 'Questionnaires Answered by Participants Outside Experiment Scope'
         name = slugify(title)
-        description = 'Export made \"Per Participant\": the files contains metadata and responses of ' \
+        description = 'Export made \"Per Participant\": the files contain metadata and responses of ' \
                       'questionnaires filled outside any experiment in the system. They can be entrance ' \
                       'questionnaires.'
         date_created = str(datetime.now().replace(microsecond=0))

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 15:35-0300\n"
+"POT-Creation-Date: 2019-10-30 10:11-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "Anonymous participant?"
 msgstr "Participante anônimo?"
 
-#: patient/forms.py:35 patient/forms.py:68 patient/tests/tests_orig.py:639
+#: patient/forms.py:35 patient/forms.py:68 patient/tests/tests_orig.py:640
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
@@ -42,7 +42,7 @@ msgstr "Data de nascimento deve ser preenchida"
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:57 patient/tests/tests_orig.py:624
+#: patient/forms.py:57 patient/tests/tests_orig.py:625
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
@@ -1144,20 +1144,28 @@ msgstr "Nenhuma doença encontrada!"
 msgid "No participants found!"
 msgstr "Nenhum participante encontrado!"
 
-#: patient/templates/patient/busca.html:18
+#: patient/templates/patient/busca.html:41
 msgid "Search participant"
 msgstr "Buscar participante"
 
-#: patient/templates/patient/busca.html:20
+#: patient/templates/patient/busca.html:43
 #, python-format
 msgid " %(number_of_patients)s registered participants"
 msgstr " %(number_of_patients)s participantes cadastrados"
 
-#: patient/templates/patient/busca.html:24
+#: patient/templates/patient/busca.html:47
 msgid "Type the name, the CPF or the code to seek a participant"
 msgstr "Digite o nome, o CPF ou o código para buscar um participante"
 
-#: patient/templates/patient/busca.html:33
+#: patient/templates/patient/busca.html:53
+msgid "Previous"
+msgstr ""
+
+#: patient/templates/patient/busca.html:54
+msgid "Next"
+msgstr ""
+
+#: patient/templates/patient/busca.html:58
 msgid "Insert new"
 msgstr "Inserir novo"
 
@@ -1720,34 +1728,34 @@ msgstr "*Aparelho independente ou parte da geladeira duplex."
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: patient/tests/tests_orig.py:311
+#: patient/tests/tests_orig.py:312
 msgid " is not valid"
 msgstr " não é válido"
 
-#: patient/tests/tests_orig.py:451 patient/tests/tests_orig.py:470
-#: patient/tests/tests_orig.py:478
+#: patient/tests/tests_orig.py:452 patient/tests/tests_orig.py:471
+#: patient/tests/tests_orig.py:479
 msgid "Social class was not calculated"
 msgstr "Classe Social não calculada"
 
-#: patient/tests/tests_orig.py:468 patient/views.py:249
+#: patient/tests/tests_orig.py:469 patient/views.py:249
 msgid "Social demographic data successfully written."
 msgstr "Dados sociodemográficos gravados com sucesso."
 
-#: patient/tests/tests_orig.py:481 patient/tests/tests_orig.py:529
+#: patient/tests/tests_orig.py:482 patient/tests/tests_orig.py:530
 msgid "Less than 1 pack"
 msgstr "Menos de 1 maço"
 
-#: patient/tests/tests_orig.py:484 patient/tests/tests_orig.py:552
+#: patient/tests/tests_orig.py:485 patient/tests/tests_orig.py:553
 msgid "Sporadically"
 msgstr "Esporadicamente"
 
-#: patient/tests/tests_orig.py:487 patient/tests/tests_orig.py:575
+#: patient/tests/tests_orig.py:488 patient/tests/tests_orig.py:576
 msgid "Less than 1 year"
 msgstr "Menos de 1 ano"
 
-#: patient/tests/tests_orig.py:515 patient/tests/tests_orig.py:538
-#: patient/tests/tests_orig.py:561 patient/tests/tests_orig.py:584
-#: patient/tests/tests_orig.py:609 patient/views.py:279
+#: patient/tests/tests_orig.py:516 patient/tests/tests_orig.py:539
+#: patient/tests/tests_orig.py:562 patient/tests/tests_orig.py:585
+#: patient/tests/tests_orig.py:610 patient/views.py:279
 msgid "Social history successfully recorded."
 msgstr "História social gravada com sucesso."
 

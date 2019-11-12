@@ -1685,7 +1685,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
         title = 'Questionnaires Answered by Participants Outside Experiment Scope'
         name = slugify(title)
-        description = 'Export made \"Per Participant\": the files contains metadata and responses of ' \
+        description = 'Export made \"Per Participant\": the files contain metadata and responses of ' \
                       'questionnaires filled outside any experiment in the system. They can be entrance ' \
                       'questionnaires.'
         day = json_data['created'].split(' ')[0]  # Get only the day to avoid test not passing
@@ -1720,7 +1720,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
     def _set_validation_for_goodtables(path, heading_type):
         skip_checks = ['duplicate-row']  # For questionnaire metadata files
         if heading_type == 'full' or 'abbreviated':
-            # For questionnaire responses: that is one header repeated for one question type.
+            # For questionnaire responses: there is one header repeated for one question type.
             # We don't solve this by now.
             skip_checks.append('duplicate-header')
         return validate(path, skip_checks=skip_checks)
