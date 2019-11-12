@@ -2728,8 +2728,10 @@ class ExportExecution:
 
     @staticmethod
     def _get_type(model_field):
-        if model_field is CharField or model_field is TextField or model_field is DateField:
+        if model_field is CharField or model_field is TextField:
             return 'string'
+        elif model_field is DateField:
+            return 'date'
         elif model_field is FloatField:
             # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
             return 'number'

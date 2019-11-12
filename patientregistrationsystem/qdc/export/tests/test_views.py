@@ -1710,10 +1710,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 'format': 'default'
             }, resource_schema['fields'])
         self.assertIn(
-            {'name': 'Start date', 'title': 'Start date', 'type': 'string', 'format': 'default'},
+            {'name': 'Start date', 'title': 'Start date', 'type': 'date', 'format': 'default'},
             resource_schema['fields'])
         self.assertIn(
-            {'name': 'End date', 'title': 'End date', 'type': 'string', 'format': 'default'},
+            {'name': 'End date', 'title': 'End date', 'type': 'date', 'format': 'default'},
             resource_schema['fields'])
 
     @staticmethod
@@ -1725,7 +1725,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
             skip_checks.append('duplicate-header')
         return validate(path, skip_checks=skip_checks)
 
-    def _assert_goodtables(self, report, heading_type):
+    def _assert_goodtables(self, report):
         errors = report['errors'] if 'errors' in report else []
         table_errors = []
         for table in report['tables']:
@@ -1733,9 +1733,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 table_errors.append((table['source'], table['errors']))
         self.assertTrue(
             report['valid'],
-            'Failed for heading type ' + "'" + heading_type + "'"
-            + '. Errors: ' + str(errors)
-            + '. Table errors: ' + str(table_errors))
+            'Errors: ' + str(errors) + '. Table errors: ' + str(table_errors))
 
     @staticmethod
     def _get_name_title(heading_type, field):
@@ -2141,7 +2139,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         self._assert_experiment_table_schema(experiment_resource['schema'])
 
         report = validate(os.path.join(temp_dir, 'datapackage.json'))
-        self.assertTrue(report['valid'])
+        self._assert_goodtables(report)
 
         shutil.rmtree(temp_dir)
 
@@ -2271,7 +2269,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
 
             report = validate(os.path.join(temp_dir, 'datapackage.json'))
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 

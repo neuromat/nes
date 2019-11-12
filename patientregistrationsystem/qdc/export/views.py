@@ -133,7 +133,7 @@ PATIENT_FIELDS = [
 DIAGNOSIS_FIELDS = [
     {
         'field': 'medicalrecorddata__diagnosis__date', 'header': 'diagnosis_date', 'description': _('Date'),
-        'json_data_type': 'string'
+        'json_data_type': 'date'
     },
     {
         'field': 'medicalrecorddata__diagnosis__description', 'header': 'diagnosis_description',

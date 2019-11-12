@@ -42,7 +42,8 @@ class ObjectsFactory(object):
         research_project = ResearchProject.objects.create(
             title="Research project title",
             description="Research project description",
-            start_date=datetime.date.today(),
+            start_date=datetime.date.today() - datetime.timedelta(60),
+            end_date=datetime.date.today(),
             owner=owner
         )
         research_project.save()
