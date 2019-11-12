@@ -52,7 +52,7 @@ PATIENT_FIELDS = [
     {'field': 'code', 'header': 'participant_code', 'description': _('Participant code'), 'json_data_type': 'string'},
     {'field': 'age', 'header': 'age', 'description': _('Age'), 'json_data_type': 'number'},
     {'field': 'gender__name', 'header': 'gender', 'description': _('Gender'), 'json_data_type': 'string'},
-    {'field': 'date_birth', 'header': 'date_birth', 'description': _('Date of birth'), 'json_data_type': 'string'},
+    {'field': 'date_birth', 'header': 'date_birth', 'description': _('Date of birth'), 'json_data_type': 'date'},
     {
         'field': 'marital_status__name', 'header': 'marital_status', 'description': _('Marital status'),
         'json_data_type': 'string'

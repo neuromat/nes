@@ -3000,7 +3000,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 questionnaire_metadata_resource['schema']['fields'])
 
         report = validate(os.path.join(temp_dir, 'datapackage.json'))
-        self._assert_goodtables(report, 'code')
+        self._assert_goodtables(report)
 
         shutil.rmtree(temp_dir)
 
@@ -3166,7 +3166,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     'Failed for heading type ' + "'" + heading_type + "'")
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3218,7 +3218,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     }, questionnaire_response_resource['schema']['fields'])
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3314,7 +3314,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 }, questionnaire_response_resource['schema']['fields'])
 
         report = validate(os.path.join(temp_dir, 'datapackage.json'), skip_checks=['duplicate-row'])
-        self._assert_goodtables(report, 'code')
+        self._assert_goodtables(report)
 
         shutil.rmtree(temp_dir)
 
@@ -3487,7 +3487,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     }, questionnaire_response_resource['schema']['fields'])
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3539,7 +3539,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     }, questionnaire_response_resource['schema']['fields'])
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3851,7 +3851,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 participants_resource['schema'], heading_type, PATIENT_FIELDS)
 
             report = validate(os.path.join(temp_dir, 'datapackage.json'))
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3956,7 +3956,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
 
             report = validate(os.path.join(temp_dir, 'datapackage.json'))
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -4060,7 +4060,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     questionnaire_metadata_resource['schema']['fields'])
 
         report = validate(os.path.join(temp_dir, 'datapackage.json'))
-        self._assert_goodtables(report, 'code')
+        self._assert_goodtables(report)
 
         shutil.rmtree(temp_dir)
 
@@ -4186,7 +4186,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 )
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -4319,7 +4319,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 )
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
