@@ -910,15 +910,11 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
             index = 0
             for question in questionnaire_questions[0]:
                 if question not in QUESTIONNAIRE_EVALUATION_FIELDS_EXCLUDED:
-
                     description = questionnaire_questions_full[0][index]
-
                     record_question['output_list'].append({
                         'field': question, 'header': question, 'description': description
                     })
-
                 index += 1
-
             questionnaires_included.append(record_question)
 
     questionnaire_lime_survey.release_session_key()
@@ -978,7 +974,6 @@ def get_questionnaire_fields(questionnaire_code_list, current_language='pt-BR'):
 
 @login_required
 def filter_participants(request):
-
     participant_selection_form = ParticipantsSelectionForm(None)
     age_interval_form = AgeIntervalForm(None)
 
