@@ -2728,8 +2728,10 @@ class ExportExecution:
 
     @staticmethod
     def _get_type(model_field):
-        if model_field is CharField or model_field is TextField or model_field is DateField:
+        if model_field is CharField or model_field is TextField:
             return 'string'
+        elif model_field is DateField:
+            return 'date'
         elif model_field is FloatField:
             # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
             return 'number'
@@ -2847,12 +2849,13 @@ class ExportExecution:
             #  If they're not alowed fixes test. Questions 'q1', 'q2'
             question_cleared = re.search('([a-zA-Z0-9]+)(\[?)', question_field).group(1)
             question = next(item for item in questions if item['title'] == question_cleared)
-            type = QUESTION_TYPES[question['type']][1]
             title = question_header_questionnaire if heading_type != 'code' else question_field
+            type = QUESTION_TYPES[question['type']][1]
+            format = QUESTION_TYPES[question['type']][2]
             # i + 2: currently in exportation, question headers are inserted between
             # [participant_code, age] and the rest of participant fields when those exists
             fields.insert(i + 2, {
-                'name': title, 'title': title, 'type': type, 'format': 'default'
+                'name': title, 'title': title, 'type': type, 'format': format
             })
 
         return fields

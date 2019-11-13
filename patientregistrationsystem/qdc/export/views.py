@@ -52,7 +52,7 @@ PATIENT_FIELDS = [
     {'field': 'code', 'header': 'participant_code', 'description': _('Participant code'), 'json_data_type': 'string'},
     {'field': 'age', 'header': 'age', 'description': _('Age'), 'json_data_type': 'number'},
     {'field': 'gender__name', 'header': 'gender', 'description': _('Gender'), 'json_data_type': 'string'},
-    {'field': 'date_birth', 'header': 'date_birth', 'description': _('Date of birth'), 'json_data_type': 'string'},
+    {'field': 'date_birth', 'header': 'date_birth', 'description': _('Date of birth'), 'json_data_type': 'date'},
     {
         'field': 'marital_status__name', 'header': 'marital_status', 'description': _('Marital status'),
         'json_data_type': 'string'
@@ -133,7 +133,7 @@ PATIENT_FIELDS = [
 DIAGNOSIS_FIELDS = [
     {
         'field': 'medicalrecorddata__diagnosis__date', 'header': 'diagnosis_date', 'description': _('Date'),
-        'json_data_type': 'string'
+        'json_data_type': 'date'
     },
     {
         'field': 'medicalrecorddata__diagnosis__description', 'header': 'diagnosis_description',
@@ -910,15 +910,11 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
             index = 0
             for question in questionnaire_questions[0]:
                 if question not in QUESTIONNAIRE_EVALUATION_FIELDS_EXCLUDED:
-
                     description = questionnaire_questions_full[0][index]
-
                     record_question['output_list'].append({
                         'field': question, 'header': question, 'description': description
                     })
-
                 index += 1
-
             questionnaires_included.append(record_question)
 
     questionnaire_lime_survey.release_session_key()
@@ -978,7 +974,6 @@ def get_questionnaire_fields(questionnaire_code_list, current_language='pt-BR'):
 
 @login_required
 def filter_participants(request):
-
     participant_selection_form = ParticipantsSelectionForm(None)
     age_interval_form = AgeIntervalForm(None)
 

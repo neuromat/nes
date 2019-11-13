@@ -1710,10 +1710,10 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 'format': 'default'
             }, resource_schema['fields'])
         self.assertIn(
-            {'name': 'Start date', 'title': 'Start date', 'type': 'string', 'format': 'default'},
+            {'name': 'Start date', 'title': 'Start date', 'type': 'date', 'format': 'default'},
             resource_schema['fields'])
         self.assertIn(
-            {'name': 'End date', 'title': 'End date', 'type': 'string', 'format': 'default'},
+            {'name': 'End date', 'title': 'End date', 'type': 'date', 'format': 'default'},
             resource_schema['fields'])
 
     @staticmethod
@@ -1725,7 +1725,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
             skip_checks.append('duplicate-header')
         return validate(path, skip_checks=skip_checks)
 
-    def _assert_goodtables(self, report, heading_type):
+    def _assert_goodtables(self, report):
         errors = report['errors'] if 'errors' in report else []
         table_errors = []
         for table in report['tables']:
@@ -1733,9 +1733,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 table_errors.append((table['source'], table['errors']))
         self.assertTrue(
             report['valid'],
-            'Failed for heading type ' + "'" + heading_type + "'"
-            + '. Errors: ' + str(errors)
-            + '. Table errors: ' + str(table_errors))
+            'Errors: ' + str(errors) + '. Table errors: ' + str(table_errors))
 
     @staticmethod
     def _get_name_title(heading_type, field):
@@ -1788,188 +1786,106 @@ class ExportFrictionlessDataTest(ExportTestCase):
     @staticmethod
     def _set_all_questions():
         return [
-            ({
-                 'code': 'acquisitiondate', 'full': _('Acquisition date:'), 'abbreviated': _('Acquisition date:')
-             }, 'D', 'string'),
-            ({
-                 'code': 'funfpunktewahl', 'full': _('Fünf Punkte Wahl'), 'abbreviated': _('Fünf Punkte Wahl')
-             }, '5', 'string'),
-            ({
-                 'code': 'dropdownliste', 'full': _('Dropdown Liste'), 'abbreviated': _('Dropdown Liste')
-             }, '!', 'string'),
-            ({
-                 'code': 'listeradio', 'full': _('Liste (radio)'), 'abbreviated': _('Liste (radio)')
-             }, 'L', 'string'),
-            ({
-                 'code': 'listemitkommentar', 'full': _('Liste mit Kommentar'), 'abbreviated': _('Liste mit Komme..')
-             }, 'O', 'string'),
-            ({
-                 'code': 'listemitkommentar[comment]', 'full': _('Liste mit Kommentar [Comment]'),
-                 'abbreviated': _('Liste mit Komme..  [Comment]')
-             }, 'O', 'string'),
-            ({
-                 'code': 'array[SQ001]', 'full': _('Array [Unterfrage eins]'),
-                 'abbreviated': _('Array [Unterfrage eins]')
-             }, 'F', 'string'),
-            ({
-                 'code': 'array[SQ002]', 'full': _('Array [Unterfrage zwei]'),
-                 'abbreviated': _('Array [Unterfrage zwei]')
-             }, 'F', 'string'),
-            ({
-                 'code': 'arrayzehnpunktewahl[SQ001]', 'full': _('Array (Zehn Punkte Wahl) [Unterfrage eins]'),
-                 'abbreviated': _('Array (Zehn Pun..  [Unterfrage eins]')
-             }, 'B', 'string'),
-            ({
-                 'code': 'arrayzehnpunktewahl[SQ002]', 'full': _('Array (Zehn Punkte Wahl) [Unterfrage zwei]'),
-                 'abbreviated': _('Array (Zehn Pun..  [Unterfrage zwei]')
-             }, 'B', 'string'),
-            ({
-                 'code': 'arrayfunfpunktewahl[SQ001]', 'full': _('Array (Fünf Punkte Wahl) [Unterfrage eins]'),
-                 'abbreviated': _('Array (Fünf Pun..  [Unterfrage eins]')
-             }, 'A', 'string'),
-            ({
-                 'code': 'arrayfunfpunktewahl[SQ002]', 'full': _('Array (Fünf Punkte Wahl) [Unterfrage zwei]'),
-                 'abbreviated': _('Array (Fünf Pun..  [Unterfrage zwei]')
-             }, 'A', 'string'),
-            ({
-                 'code': 'arrayerhohengleichev[SQ001]', 'full': _('Array (Erhöhen/Gleiche/Verringern) [Unterfrage eins]'),
-                 'abbreviated': _('Array (Erhöhen/..  [Unterfrage eins]')
-             }, 'E', 'string'),
-            ({
-                 'code': 'arrayerhohengleichev[SQ002]', 'full': _('Array (Erhöhen/Gleiche/Verringern) [Unterfrage zwei]'),
-                 'abbreviated': _('Array (Erhöhen/..  [Unterfrage zwei]')
-             }, 'E', 'string'),
-            ({
-                 'code': 'arrayzahlen[SQ001_SQ001]', 'full': _('Array (Zahlen) [Unterfrage eins][Unterfrage eins]'),
-                 'abbreviated': _('Array (Zahlen) [Unterfrage eins][Unterfrage eins]')
-             }, ':', 'string'),
-            ({
-                 'code': 'arrayzahlen[SQ002_SQ001]', 'full': _('Array (Zahlen) [Unterfrage zwei][Unterfrage eins]'),
-                 'abbreviated': _('Array (Zahlen) [Unterfrage zwei][Unterfrage eins]')
-             }, ':', 'string'),
-            ({
-                 'code': 'arraytexte[SQ001_SQ001]', 'full': _('Array (Texte) [Unterfrage eins][Unterfrage eins]'),
-                 'abbreviated': _('Array (Texte) [Unterfrage eins][Unterfrage eins]')
-             }, ';', 'string'),
-            ({
-                 'code': 'arraytexte[SQ001_SQ002]', 'full': _('Array (Texte) [Unterfrage eins][Unterfrage zwei]'),
-                 'abbreviated': _('Array (Texte) [Unterfrage eins][Unterfrage zwei]')
-             }, ';', 'string'),
-            ({
-                 'code': 'arrayjaneinunsicher[SQ001]', 'full': _('Array (Ja/Nein/Unsicher) [Unterfrage eins]'),
-                 'abbreviated': _('Array (Ja/Nein/..  [Unterfrage eins]')
-             }, 'C', 'string'),
-            ({
-                 'code': 'arrayjaneinunsicher[SQ002]', 'full': _('Array (Ja/Nein/Unsicher) [Unterfrage zwei]'),
-                 'abbreviated': _('Array (Ja/Nein/..  [Unterfrage zwei]')
-             }, 'C', 'string'),
-            ({
-                 'code': 'arrayvonspalte[SQ001]', 'full': _('Array von Spalte [Unterfrage eins]'),
-                 'abbreviated': _('Array von Spalte [Unterfrage eins]')
-             }, 'H', 'string'),
-            ({
-                 'code': 'arrayvonspalte[SQ002]', 'full': _('Array von Spalte [Unterfrage zwei]'),
-                 'abbreviated': _('Array von Spalte [Unterfrage zwei]')
-             }, 'H', 'string'),
-            ({
-                 'code': 'arraydualeskala[SQ001][1]', 'full': _('Array Duale Skala [Unterfrage eins][Scale 1]'),
-                 'abbreviated': _('Array Duale Skala [Unterfrage eins][Scale 1]')
-             }, '1', 'string'),
-            ({
-                 'code': 'arraydualeskala[SQ001][2]', 'full': _('Array Duale Skala [Unterfrage eins][Scale 2]'),
-                 'abbreviated': _('Array Duale Skala [Unterfrage eins][Scale 2]')
-             }, '1', 'string'),
-            ({
-                 'code': 'arraydualeskala[SQ002][1]', 'full': _('Array Duale Skala [Unterfrage zwei][Scale 1]'),
-                 'abbreviated': _('Array Duale Skala [Unterfrage zwei][Scale 1]')
-             }, '1', 'string'),
-            ({
-                 'code': 'arraydualeskala[SQ002][2]', 'full': _('Array Duale Skala [Unterfrage zwei][Scale 2]'),
-                 'abbreviated': _('Array Duale Skala [Unterfrage zwei][Scale 2]')
-             }, '1', 'string'),
-            ({
-                 'code': 'terminzeit', 'full': _('Terminzeit'), 'abbreviated': _('Terminzeit')
-             }, 'D', 'string'),
-            ({
-                 'code': 'gleichung', 'full': _('Gleichung'), 'abbreviated': _('Gleichung')
-             }, '*', 'string'),
-            ({
-                 'code': 'dateiupload', 'full': _('Datei-Upload'), 'abbreviated': _('Datei-Upload')
-             }, '|', 'string'),
-            ({
-                 'code': 'dateiupload[filecount]', 'full': _('filecount - Datei-Upload'),
-                 'abbreviated': _('filecount - Dat..')
-             }, '|', 'string'),
-            ({
-                 'code': 'geschlecht', 'full': _('Geschlecht'), 'abbreviated': _('Geschlecht')
-             }, 'G', 'string'),
-            ({
-                 'code': 'sprachumschaltung', 'full': _('Sprachumschaltung'), 'abbreviated': _('Sprachumschaltung')
-             }, 'I', 'string'),
-            ({
-                 'code': 'mehrfachenumerischee[SQ001]', 'full': _('Mehrfache numerische Eingabe [Unterfrage eins]'),
-                 'abbreviated': _('Mehrfache numer..  [Unterfrage eins]')
-             }, 'K', 'number'),
-            ({
-                 'code': 'mehrfachenumerischee[SQ002]', 'full': _('Mehrfache numerische Eingabe [Unterfrage zwei]'),
-                 'abbreviated': _('Mehrfache numer..  [Unterfrage zwei]')
-             }, 'K', 'number'),
-            ({
-                 'code': 'numerischeeingabe', 'full': _('Numerische Eingabe'), 'abbreviated': _('Numerische Eingabe')
-             }, 'N', 'number'),
-            ({
-                 'code': 'rang[1]', 'full': _('Rang [Rank 1]'), 'abbreviated': _('Rang [Rank 1]')
-             }, 'R', 'string'),
-            ({
-                 'code': 'rang[2]', 'full': _('Rang [Rank 2]'), 'abbreviated': _('Rang [Rank 2]')
-             }, 'R', 'string'),
-            ({
-                 'code': 'textanzeige', 'full': _('Textanzeige'), 'abbreviated': _('Textanzeige')
-             }, 'X', 'string'),
-            ({
-                 'code': 'janein', 'full': _('Ja/Nein'), 'abbreviated': _('Ja/Nein')
-             }, 'Y', 'string'),
-            ({
-                 'code': 'reisigerfreitext', 'full': _('Reisiger Freitext'), 'abbreviated': _('Reisiger Freitext')
-             }, 'U', 'string'),
-            ({
-                 'code': 'langerfreiertext', 'full': _('Langer freier Text'), 'abbreviated': _('Langer freier Text')
-             }, 'T', 'string'),
-            ({
-                'code': 'mehrfacherkurztext[SQ001]', 'full': _('Mehrfacher Kurztext [Unterfrage eins]'),
-                 'abbreviated': _('Mehrfacher Kurz..  [Unterfrage eins]')
-             }, 'Q', 'string'),
-            ({
-                'code': 'mehrfacherkurztext[SQ002]', 'full': _('Mehrfacher Kurztext [Unterfrage zwei]'),
-                 'abbreviated': _('Mehrfacher Kurz..  [Unterfrage zwei]')
-             }, 'Q', 'string'),
-            ({
-                'code': 'kurzerfreitext', 'full': _('Kurzer Freitext'), 'abbreviated': _('Kurzer Freitext')
-             }, 'S', 'string'),
-            ({
-                'code': 'mehrfachauswahl[SQ001]', 'full': _('Mehrfachauswahl [Unterfrage eins]'),
-                 'abbreviated': _('Mehrfachauswahl [Unterfrage eins]')
-             }, 'M', 'string'),
-            ({
-                'code': 'mehrfachauswahl[SQ002]', 'full': _('Mehrfachauswahl [Unterfrage zwei]'),
-                 'abbreviated': _('Mehrfachauswahl [Unterfrage zwei]')
-             }, 'M', 'string'),
-            ({
-                'code': 'mehrfachauswahlmitko[SQ001]', 'full': _('Mehrfachauswahl mit Kommentaren [Unterfrage eins]'),
-                 'abbreviated': _('Mehrfachauswahl..  [Unterfrage eins]')
-             }, 'P', 'string'),
-            ({
-                'code': 'mehrfachauswahlmitko[SQ001comment]', 'full': _('Mehrfachauswahl mit Kommentaren [Comment]'),
-                 'abbreviated': _('Mehrfachauswahl..  [Comment]')
-             }, 'P', 'string'),
-            ({
-                'code': 'mehrfachauswahlmitko[SQ002]', 'full': _('Mehrfachauswahl mit Kommentaren [Unterfrage zwei]'),
-                 'abbreviated': _('Mehrfachauswahl..  [Unterfrage zwei]')
-             }, 'P', 'string'),
-            ({
-                 'code': 'mehrfachauswahlmitko[SQ002comment]', 'full': _('Mehrfachauswahl mit Kommentaren [Comment]'),
-                 'abbreviated': _('Mehrfachauswahl..  [Comment]')
-             }, 'P', 'string')
+            ({'code': 'acquisitiondate', 'full': _('Acquisition date:'), 'abbreviated': _('Acquisition date:')},
+             'D', 'datetime', '%Y-%m-%d %H:%M:%S'),
+            ({'code': 'funfpunktewahl', 'full': _('Fünf Punkte Wahl'), 'abbreviated': _('Fünf Punkte Wahl')},
+             '5', 'string', 'default'),
+            ({'code': 'dropdownliste', 'full': _('Dropdown Liste'), 'abbreviated': _('Dropdown Liste')},
+             '!', 'string', 'default'),
+            ({'code': 'listeradio', 'full': _('Liste (radio)'), 'abbreviated': _('Liste (radio)')},
+             'L', 'string', 'default'),
+            ({'code': 'listemitkommentar', 'full': _('Liste mit Kommentar'), 'abbreviated': _('Liste mit Komme..')},
+             'O', 'string', 'default'),
+            ({'code': 'listemitkommentar[comment]', 'full': _('Liste mit Kommentar [Comment]'), 'abbreviated': _('Liste mit Komme..  [Comment]')},
+             'O', 'string', 'default'),
+            ({'code': 'array[SQ001]', 'full': _('Array [Unterfrage eins]'), 'abbreviated': _('Array [Unterfrage eins]')},
+             'F', 'string', 'default'),
+            ({'code': 'array[SQ002]', 'full': _('Array [Unterfrage zwei]'), 'abbreviated': _('Array [Unterfrage zwei]')},
+             'F', 'string', 'default'),
+            ({'code': 'arrayzehnpunktewahl[SQ001]', 'full': _('Array (Zehn Punkte Wahl) [Unterfrage eins]'), 'abbreviated': _('Array (Zehn Pun..  [Unterfrage eins]')},
+             'B', 'string', 'default'),
+            ({'code': 'arrayzehnpunktewahl[SQ002]', 'full': _('Array (Zehn Punkte Wahl) [Unterfrage zwei]'), 'abbreviated': _('Array (Zehn Pun..  [Unterfrage zwei]')},
+             'B', 'string', 'default'),
+            ({'code': 'arrayfunfpunktewahl[SQ001]', 'full': _('Array (Fünf Punkte Wahl) [Unterfrage eins]'), 'abbreviated': _('Array (Fünf Pun..  [Unterfrage eins]')},
+             'A', 'string', 'default'),
+            ({'code': 'arrayfunfpunktewahl[SQ002]', 'full': _('Array (Fünf Punkte Wahl) [Unterfrage zwei]'), 'abbreviated': _('Array (Fünf Pun..  [Unterfrage zwei]')},
+             'A', 'string', 'default'),
+            ({'code': 'arrayerhohengleichev[SQ001]', 'full': _('Array (Erhöhen/Gleiche/Verringern) [Unterfrage eins]'), 'abbreviated': _('Array (Erhöhen/..  [Unterfrage eins]')},
+             'E', 'string', 'default'),
+            ({'code': 'arrayerhohengleichev[SQ002]', 'full': _('Array (Erhöhen/Gleiche/Verringern) [Unterfrage zwei]'), 'abbreviated': _('Array (Erhöhen/..  [Unterfrage zwei]')},
+             'E', 'string', 'default'),
+            ({'code': 'arrayzahlen[SQ001_SQ001]', 'full': _('Array (Zahlen) [Unterfrage eins][Unterfrage eins]'), 'abbreviated': _('Array (Zahlen) [Unterfrage eins][Unterfrage eins]')},
+             ':', 'string', 'default'),
+            ({'code': 'arrayzahlen[SQ002_SQ001]', 'full': _('Array (Zahlen) [Unterfrage zwei][Unterfrage eins]'), 'abbreviated': _('Array (Zahlen) [Unterfrage zwei][Unterfrage eins]')},
+             ':', 'string', 'default'),
+            ({'code': 'arraytexte[SQ001_SQ001]', 'full': _('Array (Texte) [Unterfrage eins][Unterfrage eins]'), 'abbreviated': _('Array (Texte) [Unterfrage eins][Unterfrage eins]')},
+             ';', 'string', 'default'),
+            ({'code': 'arraytexte[SQ001_SQ002]', 'full': _('Array (Texte) [Unterfrage eins][Unterfrage zwei]'), 'abbreviated': _('Array (Texte) [Unterfrage eins][Unterfrage zwei]')},
+             ';', 'string', 'default'),
+            ({'code': 'arrayjaneinunsicher[SQ001]', 'full': _('Array (Ja/Nein/Unsicher) [Unterfrage eins]'), 'abbreviated': _('Array (Ja/Nein/..  [Unterfrage eins]')},
+             'C', 'string', 'default'),
+            ({'code': 'arrayjaneinunsicher[SQ002]', 'full': _('Array (Ja/Nein/Unsicher) [Unterfrage zwei]'), 'abbreviated': _('Array (Ja/Nein/..  [Unterfrage zwei]')},
+             'C', 'string', 'default'),
+            ({'code': 'arrayvonspalte[SQ001]', 'full': _('Array von Spalte [Unterfrage eins]'), 'abbreviated': _('Array von Spalte [Unterfrage eins]')},
+             'H', 'string', 'default'),
+            ({'code': 'arrayvonspalte[SQ002]', 'full': _('Array von Spalte [Unterfrage zwei]'), 'abbreviated': _('Array von Spalte [Unterfrage zwei]')},
+             'H', 'string', 'default'),
+            ({'code': 'arraydualeskala[SQ001][1]', 'full': _('Array Duale Skala [Unterfrage eins][Scale 1]'), 'abbreviated': _('Array Duale Skala [Unterfrage eins][Scale 1]')},
+             '1', 'string', 'default'),
+            ({'code': 'arraydualeskala[SQ001][2]', 'full': _('Array Duale Skala [Unterfrage eins][Scale 2]'), 'abbreviated': _('Array Duale Skala [Unterfrage eins][Scale 2]')},
+             '1', 'string', 'default'),
+            ({'code': 'arraydualeskala[SQ002][1]', 'full': _('Array Duale Skala [Unterfrage zwei][Scale 1]'), 'abbreviated': _('Array Duale Skala [Unterfrage zwei][Scale 1]')},
+             '1', 'string', 'default'),
+            ({'code': 'arraydualeskala[SQ002][2]', 'full': _('Array Duale Skala [Unterfrage zwei][Scale 2]'), 'abbreviated': _('Array Duale Skala [Unterfrage zwei][Scale 2]')},
+             '1', 'string', 'default'),
+            ({'code': 'terminzeit', 'full': _('Terminzeit'), 'abbreviated': _('Terminzeit')},
+             'D', 'datetime', '%Y-%m-%d %H:%M:%S'),
+            ({'code': 'gleichung', 'full': _('Gleichung'), 'abbreviated': _('Gleichung')},
+             '*', 'string', 'default'),
+            ({'code': 'dateiupload', 'full': _('Datei-Upload'), 'abbreviated': _('Datei-Upload')},
+             '|', 'string', 'default'),
+            ({'code': 'dateiupload[filecount]', 'full': _('filecount - Datei-Upload'), 'abbreviated': _('filecount - Dat..')},
+             '|', 'string', 'default'),
+            ({'code': 'geschlecht', 'full': _('Geschlecht'), 'abbreviated': _('Geschlecht')},
+             'G', 'string', 'default'),
+            ({'code': 'sprachumschaltung', 'full': _('Sprachumschaltung'), 'abbreviated': _('Sprachumschaltung')},
+             'I', 'string', 'default'),
+            ({'code': 'mehrfachenumerischee[SQ001]', 'full': _('Mehrfache numerische Eingabe [Unterfrage eins]'), 'abbreviated': _('Mehrfache numer..  [Unterfrage eins]')},
+             'K', 'number', 'default'),
+            ({'code': 'mehrfachenumerischee[SQ002]', 'full': _('Mehrfache numerische Eingabe [Unterfrage zwei]'), 'abbreviated': _('Mehrfache numer..  [Unterfrage zwei]')},
+             'K', 'number', 'default'),
+            ({'code': 'numerischeeingabe', 'full': _('Numerische Eingabe'), 'abbreviated': _('Numerische Eingabe')},
+             'N', 'number', 'default'),
+            ({'code': 'rang[1]', 'full': _('Rang [Rank 1]'), 'abbreviated': _('Rang [Rank 1]')},
+             'R', 'string', 'default'),
+            ({'code': 'rang[2]', 'full': _('Rang [Rank 2]'), 'abbreviated': _('Rang [Rank 2]')},
+             'R', 'string', 'default'),
+            ({'code': 'textanzeige', 'full': _('Textanzeige'), 'abbreviated': _('Textanzeige')},
+             'X', 'string', 'default'),
+            ({'code': 'janein', 'full': _('Ja/Nein'), 'abbreviated': _('Ja/Nein')},
+             'Y', 'string', 'default'),
+            ({'code': 'reisigerfreitext', 'full': _('Reisiger Freitext'), 'abbreviated': _('Reisiger Freitext')},
+             'U', 'string', 'default'),
+            ({'code': 'langerfreiertext', 'full': _('Langer freier Text'), 'abbreviated': _('Langer freier Text')},
+             'T', 'string', 'default'),
+            ({'code': 'mehrfacherkurztext[SQ001]', 'full': _('Mehrfacher Kurztext [Unterfrage eins]'), 'abbreviated': _('Mehrfacher Kurz..  [Unterfrage eins]')},
+             'Q', 'string', 'default'),
+            ({'code': 'mehrfacherkurztext[SQ002]', 'full': _('Mehrfacher Kurztext [Unterfrage zwei]'), 'abbreviated': _('Mehrfacher Kurz..  [Unterfrage zwei]')},
+             'Q', 'string', 'default'),
+            ({'code': 'kurzerfreitext', 'full': _('Kurzer Freitext'), 'abbreviated': _('Kurzer Freitext')},
+             'S', 'string', 'default'),
+            ({'code': 'mehrfachauswahl[SQ001]', 'full': _('Mehrfachauswahl [Unterfrage eins]'), 'abbreviated': _('Mehrfachauswahl [Unterfrage eins]')},
+             'M', 'string', 'default'),
+            ({'code': 'mehrfachauswahl[SQ002]', 'full': _('Mehrfachauswahl [Unterfrage zwei]'), 'abbreviated': _('Mehrfachauswahl [Unterfrage zwei]')},
+             'M', 'string', 'default'),
+            ({'code': 'mehrfachauswahlmitko[SQ001]', 'full': _('Mehrfachauswahl mit Kommentaren [Unterfrage eins]'), 'abbreviated': _('Mehrfachauswahl..  [Unterfrage eins]')},
+             'P', 'string', 'default'),
+            ({'code': 'mehrfachauswahlmitko[SQ001comment]', 'full': _('Mehrfachauswahl mit Kommentaren [Comment]'), 'abbreviated': _('Mehrfachauswahl..  [Comment]')},
+             'P', 'string', 'default'),
+            ({'code': 'mehrfachauswahlmitko[SQ002]', 'full': _('Mehrfachauswahl mit Kommentaren [Unterfrage zwei]'), 'abbreviated': _('Mehrfachauswahl..  [Unterfrage zwei]')},
+             'P', 'string', 'default'),
+            ({'code': 'mehrfachauswahlmitko[SQ002comment]', 'full': _('Mehrfachauswahl mit Kommentaren [Comment]'), 'abbreviated': _('Mehrfachauswahl..  [Comment]')},
+             'P', 'string', 'default')
         ]
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -2141,7 +2057,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
         self._assert_experiment_table_schema(experiment_resource['schema'])
 
         report = validate(os.path.join(temp_dir, 'datapackage.json'))
-        self.assertTrue(report['valid'])
+        self._assert_goodtables(report)
 
         shutil.rmtree(temp_dir)
 
@@ -2271,7 +2187,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
 
             report = validate(os.path.join(temp_dir, 'datapackage.json'))
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3002,7 +2918,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 questionnaire_metadata_resource['schema']['fields'])
 
         report = validate(os.path.join(temp_dir, 'datapackage.json'))
-        self._assert_goodtables(report, 'code')
+        self._assert_goodtables(report)
 
         shutil.rmtree(temp_dir)
 
@@ -3163,12 +3079,12 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 self.assertIn(
                     {
                         'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
-                        'format': 'default'
+                        'format': item[3]
                     }, questionnaire_response_resource['schema']['fields'],
                     'Failed for heading type ' + "'" + heading_type + "'")
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3216,11 +3132,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 self.assertIn(
                     {
                         'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
-                        'format': 'default'
+                        'format': item[3]
                     }, questionnaire_response_resource['schema']['fields'])
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3316,7 +3232,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 }, questionnaire_response_resource['schema']['fields'])
 
         report = validate(os.path.join(temp_dir, 'datapackage.json'), skip_checks=['duplicate-row'])
-        self._assert_goodtables(report, 'code')
+        self._assert_goodtables(report)
 
         shutil.rmtree(temp_dir)
 
@@ -3485,11 +3401,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 self.assertIn(
                     {
                         'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
-                        'format': 'default'
+                        'format': item[3]
                     }, questionnaire_response_resource['schema']['fields'])
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3537,11 +3453,11 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 self.assertIn(
                     {
                         'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
-                        'format': 'default'
+                        'format': item[3]
                     }, questionnaire_response_resource['schema']['fields'])
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3853,7 +3769,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 participants_resource['schema'], heading_type, PATIENT_FIELDS)
 
             report = validate(os.path.join(temp_dir, 'datapackage.json'))
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -3958,7 +3874,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 diagnosis_resource['schema'], heading_type, DIAGNOSIS_FIELDS)
 
             report = validate(os.path.join(temp_dir, 'datapackage.json'))
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -4062,7 +3978,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                     questionnaire_metadata_resource['schema']['fields'])
 
         report = validate(os.path.join(temp_dir, 'datapackage.json'))
-        self._assert_goodtables(report, 'code')
+        self._assert_goodtables(report)
 
         shutil.rmtree(temp_dir)
 
@@ -4168,7 +4084,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 self.assertIn(
                     {
                         'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
-                        'format': 'default'
+                        'format': item[3]
                     }, questionnaire_response_resource['schema']['fields'])
             for patient_field_selected in patient_selected:
                 patient_field_selected = patient_field_selected.split('*')[0]
@@ -4188,7 +4104,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 )
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
@@ -4301,7 +4217,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 self.assertIn(
                     {
                         'name': item[0][heading_type], 'title': item[0][heading_type], 'type': item[2],
-                        'format': 'default'
+                        'format': item[3]
                     }, questionnaire_response_resource['schema']['fields'])
             for patient_field_selected in patient_selected:
                 patient_field_selected = patient_field_selected.split('*')[0]
@@ -4321,7 +4237,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
                 )
 
             report = self._set_validation_for_goodtables(os.path.join(temp_dir, 'datapackage.json'), heading_type)
-            self._assert_goodtables(report, heading_type)
+            self._assert_goodtables(report)
 
             shutil.rmtree(temp_dir)
 
