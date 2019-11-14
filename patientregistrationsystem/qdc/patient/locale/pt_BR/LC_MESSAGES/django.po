@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-30 10:11-0300\n"
+"POT-Creation-Date: 2019-11-14 14:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,8 +25,8 @@ msgstr "Participante anônimo?"
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
-#: patient/forms.py:40 patient/forms.py:152 patient/views.py:768
-#: patient/views.py:1285
+#: patient/forms.py:40 patient/forms.py:152 patient/forms.py:178
+#: patient/views.py:762 patient/views.py:1272
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
@@ -105,10 +105,6 @@ msgstr ""
 #: patient/forms.py:159
 msgid "Place of execution"
 msgstr "Local de realização"
-
-#: patient/forms.py:178
-msgid "%d/%m/%Y"
-msgstr "%d/%m/%Y"
 
 #: patient/forms.py:181
 msgid "Fill date must be filled."
@@ -1132,7 +1128,7 @@ msgstr "Escolaridade do chefe de família"
 msgid "The combination is not allowed."
 msgstr "Esta combinação é inválida."
 
-#: patient/models.py:657
+#: patient/models.py:655
 msgid "token id: "
 msgstr ""
 
@@ -1779,74 +1775,77 @@ msgstr ""
 "Classe Social não calculada, pois nem todos oscampos necessários para o "
 "cálculo foram preenchidos."
 
-#: patient/views.py:773
+#: patient/views.py:767
 msgid "Diagnosis details successfully changed."
 msgstr "Detalhes do diagnóstico alterados com sucesso."
 
-#: patient/views.py:779
+#: patient/views.py:773
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr "Data incorreta. Utilize o formato dd/mm/yyyy."
 
-#: patient/views.py:800
+#: patient/views.py:794
 msgid "Medical evaluation successfully deleted."
 msgstr "Avaliação médica removida com sucesso."
 
-#: patient/views.py:813
+#: patient/views.py:807
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr "Diagnóstico já existente nesta avaliação médica."
 
-#: patient/views.py:846
+#: patient/views.py:840
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr "Diagnóstico não pode ser removido. Remova os exames antes."
 
-#: patient/views.py:851
+#: patient/views.py:845
 msgid "Diagnosis successfully deleted."
 msgstr "Diagnóstico removido com sucesso."
 
-#: patient/views.py:898 patient/views.py:962
+#: patient/views.py:892 patient/views.py:956
 msgid "Exam successfully saved."
 msgstr "Exame salvo com sucesso."
 
-#: patient/views.py:908 patient/views.py:967
+#: patient/views.py:902 patient/views.py:961
 msgid "It is not possible to save exam without files."
 msgstr "Não é possível salvar exame sem arquivos."
 
-#: patient/views.py:1037
+#: patient/views.py:1031
 msgid "Exam successfully deleted."
 msgstr "Exame removido com sucesso."
 
-#: patient/views.py:1061
+#: patient/views.py:1055
 msgid "Attachment successfully deleted."
 msgstr "Anexo removido com sucesso."
 
-#: patient/views.py:1203 patient/views.py:1397
+#: patient/views.py:1190 patient/views.py:1384
 msgid "Fill deleted successfully"
 msgstr "Preenchimento removido com sucesso"
 
-#: patient/views.py:1205 patient/views.py:1399
+#: patient/views.py:1192 patient/views.py:1386
 msgid "Error trying to delete"
 msgstr "Erro ao deletar o preenchimento"
 
-#: patient/views.py:1259
+#: patient/views.py:1246
 msgid "Not available filling - tokens table not started"
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: patient/views.py:1264
+#: patient/views.py:1251
 msgid "Not available filling - questionnaire not active"
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: patient/views.py:1269
+#: patient/views.py:1256
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: patient/views.py:1278
+#: patient/views.py:1265
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
 msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
+
+#~ msgid "%d/%m/%Y"
+#~ msgstr "%d/%m/%Y"
 
 #~ msgid "Upload"
 #~ msgstr "Carregar"

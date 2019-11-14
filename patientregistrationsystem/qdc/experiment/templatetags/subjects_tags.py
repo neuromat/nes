@@ -16,3 +16,9 @@ def get_name_or_code(context, patient_id):
             return patient.code
     else:
         return patient.code
+
+
+@register.filter(name='add_attr')
+def add_attr(field, attr):
+    attrs = {'disabled': attr}
+    return field.as_widget(attrs=attrs)

@@ -5625,8 +5625,8 @@ def check_required_fields(surveys, lime_survey_id):
 
 @login_required
 @permission_required('experiment.view_questionnaireresponse')
-def questionnaire_response_view(request, questionnaire_response_id,
-                                template_name="experiment/subject_questionnaire_response_form.html"):
+def questionnaire_response_view(
+        request, questionnaire_response_id, template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire = Questionnaire.objects.get(
         id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
@@ -5693,21 +5693,23 @@ def questionnaire_response_view(request, questionnaire_response_id,
     if 'status' in request.GET:
         status = request.GET['status']
 
-    context = {"can_change": get_can_change(request.user, group.experiment.research_project),
-               "completed": survey_completed,
-               "creating": False,
-               "group": group,
-               "origin": origin,
-               "questionnaire_configuration": questionnaire_response.data_configuration_tree.component_configuration,
-               "questionnaire_response": questionnaire_response,
-               "questionnaire_response_form": questionnaire_response_form,
-               "questionnaire_response_id": questionnaire_response_id,
-               "groups_of_questions": groups_of_questions,
-               "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
-               "patient": subject.patient,  # This is needed when origin=subject
-               "status": status,
-               "subject": subject,
-               "survey_title": survey_title}
+    context = {
+        "can_change": get_can_change(request.user, group.experiment.research_project),
+        "completed": survey_completed,
+        "creating": False,
+        "group": group,
+        "origin": origin,
+        "questionnaire_configuration": questionnaire_response.data_configuration_tree.component_configuration,
+        "questionnaire_response": questionnaire_response,
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_response_id": questionnaire_response_id,
+        "groups_of_questions": groups_of_questions,
+        "questionnaire_responsible": questionnaire_response.questionnaire_responsible,
+        "patient": subject.patient,  # This is needed when origin=subject
+        "status": status,
+        "subject": subject,
+        "survey_title": survey_title
+    }
 
     return render(request, template_name, context)
 
@@ -5747,7 +5749,6 @@ def delete_questionnaire_response(questionnaire: Questionnaire,
 @permission_required('experiment.view_researchproject')
 def subject_questionnaire_view(request, group_id, subject_id,
                                template_name="experiment/subject_questionnaire_response_list.html"):
-
     subject_questionnaires = []
     surveys = Questionnaires()
     subject_of_group = get_object_or_404(SubjectOfGroup, group_id=group_id, subject_id=subject_id)
