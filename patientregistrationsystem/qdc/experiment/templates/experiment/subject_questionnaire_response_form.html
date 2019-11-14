@@ -197,9 +197,7 @@
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
                                     {% if completed or not creating %}
-                                        <input class="form-control" id="fill_date"
-                                               value="{{ questionnaire_response_form.date.value|date:"d/m/Y" }}" type="text"
-                                               disabled>
+                                        {{ questionnaire_response_form.date|add_attr:"disabled" }}
                                     {% else %}
                                         {{ questionnaire_response_form.date }}
                                     {% endif %}

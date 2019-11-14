@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-30 10:11-0300\n"
+"POT-Creation-Date: 2019-11-14 14:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,13 +53,10 @@ msgstr "Visualizar"
 
 #: survey/templates/survey/survey_list.html:65
 #: survey/templates/survey/survey_register.html:97
-#| msgid ""
-#| "Be aware that NES doesn't retrieve 'file upload' questions from "
-#| "LimeSurvey."
 msgid "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey."
 msgstr ""
-"O NES não importa arquivos carregados pelo Limesurvey "
-"através de questões do tipo 'Envio de arquivo'"
+"O NES não importa arquivos carregados pelo Limesurvey através de questões do "
+"tipo 'Envio de arquivo'"
 
 #: survey/templates/survey/survey_list.html:66
 #: survey/templates/survey/survey_register.html:98

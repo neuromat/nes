@@ -448,17 +448,12 @@ def patient_view_questionnaires(request, patient, context, is_update):
         return finish_handling_post(request, patient.id, 4)
 
     surveys = Questionnaires()
-
     limesurvey_available = check_limesurvey_access(request, surveys)
-
     patient_questionnaires_data_dictionary = {}
-
     initial_evaluation_list = Survey.objects.filter(is_initial_evaluation=True)
-
     language_code = request.LANGUAGE_CODE
 
-    # first, add initial evaluation...
-
+    # First, add initial evaluation...
     for initial_evaluation in initial_evaluation_list:
 
         patient_questionnaires_data_dictionary[initial_evaluation.lime_survey_id] = \
@@ -470,7 +465,6 @@ def patient_view_questionnaires(request, patient, context, is_update):
             }
 
     # ...after, add questionnaire responses
-
     patient_questionnaire_response_list = \
         QuestionnaireResponse.objects.filter(patient=patient).order_by('date')
 
@@ -1088,24 +1082,18 @@ def get_origin(request):
 # TODO: associate the right permission
 # @permission_required('patient.add_medicalrecorddata')
 def questionnaire_response_create(
-        request, patient_id, survey_id,
-        template_name="experiment/subject_questionnaire_response_form.html"
-):
-
+        request, patient_id, survey_id, template_name="experiment/subject_questionnaire_response_form.html"):
     patient = get_object_or_404(Patient, pk=patient_id)
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-    language = get_questionnaire_language(
-        surveys, survey.lime_survey_id, request.LANGUAGE_CODE
-    )
+    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
     survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
     surveys.release_session_key()
 
     fail = None
     redirect_url = None
     questionnaire_response_id = None
-
     showing = False
 
     questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
@@ -1147,17 +1135,16 @@ def questionnaire_response_create(
 
 @login_required
 @permission_required('patient.change_questionnaireresponse')
-def questionnaire_response_update(request, questionnaire_response_id,
-                                  template_name="experiment/subject_questionnaire_response_form.html"):
+def questionnaire_response_update(
+        request, questionnaire_response_id, template_name="experiment/subject_questionnaire_response_form.html"):
 
     questionnaire_response = get_object_or_404(QuestionnaireResponse, pk=questionnaire_response_id)
 
     surveys = Questionnaires()
     language = get_questionnaire_language(surveys, questionnaire_response.survey.lime_survey_id, request.LANGUAGE_CODE)
     survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id, language)
-    survey_completed = surveys.get_participant_properties(questionnaire_response.survey.lime_survey_id,
-                                                          questionnaire_response.token_id,
-                                                          "completed") != "N"
+    survey_completed = surveys.get_participant_properties(
+        questionnaire_response.survey.lime_survey_id, questionnaire_response.token_id, "completed") != "N"
     surveys.release_session_key()
 
     patient = get_object_or_404(Patient, pk=questionnaire_response.patient_id)
@@ -1353,10 +1340,10 @@ def get_limesurvey_response_url(questionnaire_response):
 
 @login_required
 @permission_required('patient.view_questionnaireresponse')
-def questionnaire_response_view(request, questionnaire_response_id,
-                                template_name="experiment/subject_questionnaire_response_form.html"):
-    questionnaire_response = get_object_or_404(QuestionnaireResponse,
-                                               pk=questionnaire_response_id)
+def questionnaire_response_view(
+        request, questionnaire_response_id, template_name="experiment/subject_questionnaire_response_form.html"):
+    questionnaire_response = get_object_or_404(
+        QuestionnaireResponse, pk=questionnaire_response_id)
 
     if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == "":
         surveys = Questionnaires()
