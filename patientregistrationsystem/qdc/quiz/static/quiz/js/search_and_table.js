@@ -1,6 +1,8 @@
-const RESULTS_PER_PAGE = 3;
-const list = $("#search-results-patients");
-const nameKey = $("#nameKey");
+const RESULTS_PER_PAGE = 14;
+const list = $("#list_results");
+const searchKey = $("#search_key");
+const nextBtn = $("#next_btn");
+const prevBtn = $("#prev_btn");
 let dataResults = [];
 let totalPages = 0;
 
@@ -37,18 +39,16 @@ function searchAndTable(url, ajaxExtras={}) {
     const defaultQuery = ' ';
 
     //Search for patient in search mode
-    nameKey.keyup( function(e) {
+    searchKey.keyup( function(e) {
         e.target.value !== '' ? searchRequest(url, e.target.value) : searchRequest(url, defaultQuery);
     });
 
     // Handle pagination control
-    $("#nextBtn, #prevBtn").click(function(e) {
-        if ((e.target.id === 'nextBtn') && (page !== totalPages)) {
-            page++;
-        } else if ((e.target.id === 'prevBtn') && (page !== 1)) {
-            page--;
-        }
-        list.html(pagination(dataResults, page));
+    nextBtn.click(function () {
+        if (page !== totalPages) list.html(pagination(dataResults, ++page));
+    });
+    prevBtn.click(function () {
+        if (page !== 1) list.html(pagination(dataResults, --page));
     });
 
     // Initial query

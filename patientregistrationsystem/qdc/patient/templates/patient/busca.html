@@ -36,15 +36,15 @@
                     <div class="text-right participant-count">{% blocktrans %} {{ number_of_patients }} registered participants{% endblocktrans %}</div>
                     <div class="input-group input-group-sm"><span class="input-group-addon"> <i class="glyphicon
                     glyphicon-search"></i></span>
-                        <input class="form-control" id="nameKey" type="text"
+                        <input id="search_key" class="form-control" type="text"
                                placeholder="{% trans "Type participant name, CPF or code" %}">
                     </div>
                     {% csrf_token %}
-                    <ul id="search-results-patients" class="participant-list"  style="list-style: none;">  </ul>
+                    <ul id="list_results" class="participant-list"  style="list-style: none;">  </ul>
                 </div>
                 <div style="width: 200px; float:left">
-                    <a class="btn btn-default" id="prevBtn">{% trans "Previous" %}</a>
-                    <a class="btn btn-default" id="nextBtn">{% trans "Next" %}</a>
+                    <a id="prev_btn" class="btn btn-default">{% trans "Previous" %}</a>
+                    <a id="next_btn" class="btn btn-default">{% trans "Next" %}</a>
                 </div>
                 <div class="btn-group pull-right">
                     {% if perms.patient.add_patient %}
