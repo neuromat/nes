@@ -18,7 +18,6 @@ $(document).ready(function () {
     }
 
     // Handle search requests
-
     const defaultQuery = ' ';
 
     //Search for patient in search mode

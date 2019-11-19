@@ -19,20 +19,25 @@ function searchSuccessPatient(data, textStatus, jqXHR) {
     list.html(pagination(dataResults, 1));
 }
 
-function searchRequest(url, query){
+function searchRequest(url, query, ajaxExtras=null){
+    let data = {
+        'search_text' : query,
+        'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
+    };
+    for (let el in ajaxExtras) {
+        if (ajaxExtras.hasOwnProperty(el)) data[el] = ajaxExtras[el];
+    }
+
     $.ajax({
         type: "POST",
         url: url,
-        data: {
-            'search_text' : query,
-            'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
-        },
+        data: data,
         success: searchSuccessPatient,
         dataType: 'html'
     });
 }
 
-function searchAndTable(url, ajaxExtras={}) {
+function searchAndTable(url, ajaxExtras=null) {
     let page = 1;
 
     // Handle search requests
@@ -40,7 +45,7 @@ function searchAndTable(url, ajaxExtras={}) {
 
     //Search for patient in search mode
     searchKey.keyup( function(e) {
-        e.target.value !== '' ? searchRequest(url, e.target.value) : searchRequest(url, defaultQuery);
+        e.target.value !== '' ? searchRequest(url, e.target.value, ajaxExtras) : searchRequest(url, defaultQuery, ajaxExtras);
     });
 
     // Handle pagination control
@@ -52,5 +57,5 @@ function searchAndTable(url, ajaxExtras={}) {
     });
 
     // Initial query
-    searchRequest(url, defaultQuery);
+    searchRequest(url, defaultQuery, ajaxExtras);
 }
