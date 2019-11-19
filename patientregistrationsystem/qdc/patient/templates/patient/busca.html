@@ -3,55 +3,48 @@
 {% load i18n admin_static %}
 
 {% block header %}
-
-    <script src="{% static 'quiz/js/patient_search.js' %}"></script>
-
+<style>
+    .participant-count {
+        margin-bottom: 10px;
+    }
+    .participant-list {
+        display: flex;
+        flex-direction: column;
+        margin: 10px 0 0 15px;
+        padding: 0;
+    }
+    .participant-list li {
+        padding: 6px;
+    }
+    .participant-list li:nth-child(even) {
+        background: #e7e7e7;
+    }
+    .participant-list li:hover {
+        background: #f5e79e;
+    }
+</style>
 {% endblock %}
 
 {% block activePatient %}class="active"{% endblock %}
 
 {% block content %}
-    <style>
-        .participant-count{
-            margin-bottom: 10px;
-        }
-
-        .participant-list{
-            display: flex;
-            flex-direction: column;
-            margin: 10px 0 0 15px;
-            padding: 0;
-        }
-
-        .participant-list li{
-            padding: 6px;
-        }
-
-        .participant-list li:nth-child(even){
-            background: #e7e7e7;
-        }
-
-        .participant-list li:hover{
-            background: #f5e79e;
-        }
-    </style>
     <div class="tab-pane fade in active" id="mainMenuSearchTab">
         <div class="col-md-10">
             <div class="container span6 offset3 well ">
                 <h4>{% trans "Search participant" %}</h4>
                 <div class="form-group">
                     <div class="text-right participant-count">{% blocktrans %} {{ number_of_patients }} registered participants{% endblocktrans %}</div>
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                        <input class="form-control" id="nameKey" type="text"
-                               placeholder="{% trans "Type the name, the CPF or the code to seek a participant" %}">
+                    <div class="input-group input-group-sm"><span class="input-group-addon"> <i class="glyphicon
+                    glyphicon-search"></i></span>
+                        <input id="search_key" class="form-control" type="text"
+                               placeholder="{% trans "Type participant name, CPF or code" %}">
                     </div>
                     {% csrf_token %}
-                    <ul class="participant-list" id="search-results-patients" style="list-style: none;">  </ul>
+                    <ul id="list_results" class="participant-list"  style="list-style: none;">  </ul>
                 </div>
                 <div style="width: 200px; float:left">
-                    <a class="btn btn-default" id="prevBtn">{% trans "Previous" %}</a>
-                    <a class="btn btn-default" id="nextBtn">{% trans "Next" %}</a>
+                    <a id="prev_btn" class="btn btn-default">{% trans "Previous" %}</a>
+                    <a id="next_btn" class="btn btn-default">{% trans "Next" %}</a>
                 </div>
                 <div class="btn-group pull-right">
                     {% if perms.patient.add_patient %}
@@ -62,6 +55,13 @@
             </div>
         </div>
     </div>
+{% endblock %}
 
-
+{% block script %}
+    <script src="{% static 'quiz/js/search_and_table.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            searchAndTable("/patient/search/");
+        });
+    </script>
 {% endblock %}

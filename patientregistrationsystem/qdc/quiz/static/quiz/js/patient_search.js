@@ -6,19 +6,18 @@ $(document).ready(function () {
     const list = $('#search-results-patients');
     let dataResults = [];
     let page = 1;
-    let resultsPerPage = 4;
+    let resultsPerPage = 14;
     let totalPages = 0;
 
     // Handle string results
     function searchSuccessPatient(data, textStatus, jqXHR) {
         dataResults = data.split(/<li>/).map(row => row = '<li>' + row);
         dataResults.shift();
-        totalPages = Math.round(dataResults.length / resultsPerPage);
+        totalPages = Math.ceil(dataResults.length / resultsPerPage);
         list.html(pagination(dataResults, page, resultsPerPage));
     }
 
     // Handle search requests
-
     const defaultQuery = ' ';
 
     //Search for patient in search mode
@@ -40,21 +39,18 @@ $(document).ready(function () {
     }
 
     // Handle results pagination
-    function pagination(data, page, resultsPerPage){
+    function pagination(data, page, resultsPerPage) {
         let start = (page - 1) * resultsPerPage ;
         let end = start + resultsPerPage;
         return data.slice(start, end);
     }
 
     // Handle pagination control
-    $('#nextBtn, #prevBtn').click(function(e){
-        if((e.target.id === 'nextBtn') && (page !== totalPages)){
+    $('#nextBtn, #prevBtn').click(function(e) {
+        if ((e.target.id === 'nextBtn') && (page !== totalPages)){
             page++;
-        } else {
-
-            if((e.target.id === 'prevBtn') && (page !== 1)){
-                page--;
-            }
+        } else if ((e.target.id === 'prevBtn') && (page !== 1)) {
+            page--;
         }
         list.html(pagination(dataResults, page, resultsPerPage));
     });

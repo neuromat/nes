@@ -8,7 +8,23 @@
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% block header %}
-    <script src="{% static 'quiz/js/subjects.js' %}"></script>
+    <style>
+        .participant-list{
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0 0 15px;
+            padding: 0;
+        }
+        .participant-list li{
+            padding: 6px;
+        }
+        .participant-list li:nth-child(even){
+            background: #e7e7e7;
+        }
+        .participant-list li:hover{
+            background: #f5e79e;
+        }
+    </style>
 {% endblock %}
 
 {% block form %}
@@ -81,14 +97,20 @@
                                         <label>{% trans "Add participant" %}</label>
 
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
-                                            <input class="form-control" {% if perms.patient.sensitive_data_patient %}
-                                            placeholder="{% trans "Type participant name, CPF or code" %}" {% else %} placeholder="{% trans "Type participant code" %}"
-                                        {% endif %} id="subject_name" type="text" autofocus="true">
+                                            <span class="input-group-addon"> <i class="glyphicon
+                                            glyphicon-search"></i></span>
+                                            <input id="search_key" class="form-control" {% if perms.patient.sensitive_data_patient %}
+                                            placeholder="{% trans "Type participant name, CPF or code" %}"
+                                            {% else %} placeholder="{% trans "Type participant code" %}"
+                                        {% endif %} type="text" autofocus="true">
                                         </div>
                                         {% csrf_token %}
-                                        <ul id="search-results-subjects" style="list-style: none;">
-                                        </ul>
+                                        <ul id="list_results" class="participant-list"
+                                            style="list-style:none;"></ul>
+                                    </div>
+                                    <div style="width: 200px; float:left">
+                                        <a class="btn btn-default" id="prev_btn">{% trans "Previous" %}</a>
+                                        <a class="btn btn-default" id="next_btn">{% trans "Next" %}</a>
                                     </div>
                                 </div>
                             </div>
@@ -428,15 +450,19 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'quiz/js/subjects.js' %}"></script>
+    <script src="{% static 'quiz/js/search_and_table.js' %}"></script>
     <script>
+        $(document).ready(function () {
+            searchAndTable("/experiment/subject/search/", {"group_id": $("#group_id").val()});
+        });
         if ("{{ per_steps_tab_active }}") {
             // make per_steps_of_experimental_protocol tab active if redirected from
             // remove or transfer data collections
             $("#per_participants_tab").removeAttr('class');
             $("#per_steps_tab").attr('class', 'active');
             $("#per_participants").attr('class', 'tab-pane fade');
-            $("#per_steps_of_experimental_protocol").attr("class", "tab-pane" +
-                " fade in active");
+            $("#per_steps_of_experimental_protocol").attr("class", "tab-pane fade in active");
 
             // clear url query substring used to redirect to this page with per_steps_tab active
             // see redirects in data_collection_manage view, post method sections
