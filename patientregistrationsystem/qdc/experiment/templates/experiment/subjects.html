@@ -8,7 +8,26 @@
 {% block activeAdvancedResearchProject %}class="active"{% endblock %}
 
 {% block header %}
-    <script src="{% static 'quiz/js/subjects.js' %}"></script>
+    <style>
+        .participant-list{
+            display: flex;
+            flex-direction: column;
+            margin: 10px 0 0 15px;
+            padding: 0;
+        }
+
+        .participant-list li{
+            padding: 6px;
+        }
+
+        .participant-list li:nth-child(even){
+            background: #e7e7e7;
+        }
+
+        .participant-list li:hover{
+            background: #f5e79e;
+        }
+    </style>
 {% endblock %}
 
 {% block form %}
@@ -81,14 +100,20 @@
                                         <label>{% trans "Add participant" %}</label>
 
                                         <div class="input-group input-group-sm">
-                                            <span class="input-group-addon"> <span class="glyphicon glyphicon-search"></span></span>
+                                            <span class="input-group-addon"> <i class="glyphicon
+                                            glyphicon-search"></i></span>
                                             <input class="form-control" {% if perms.patient.sensitive_data_patient %}
-                                            placeholder="{% trans "Type participant name, CPF or code" %}" {% else %} placeholder="{% trans "Type participant code" %}"
+                                            placeholder="{% trans "Type participant name, CPF or code" %}"
+                                            {% else %} placeholder="{% trans "Type participant code" %}"
                                         {% endif %} id="subject_name" type="text" autofocus="true">
                                         </div>
                                         {% csrf_token %}
-                                        <ul id="search-results-subjects" style="list-style: none;">
-                                        </ul>
+                                        <ul id="search-results-patients" class="participant-list"
+                                            style="list-style:none;"></ul>
+                                    </div>
+                                    <div style="width: 200px; float:left">
+                                        <a class="btn btn-default" id="prevBtn">{% trans "Previous" %}</a>
+                                        <a class="btn btn-default" id="nextBtn">{% trans "Next" %}</a>
                                     </div>
                                 </div>
                             </div>
@@ -428,6 +453,7 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'quiz/js/subjects.js' %}"></script>
     <script>
         if ("{{ per_steps_tab_active }}") {
             // make per_steps_of_experimental_protocol tab active if redirected from
