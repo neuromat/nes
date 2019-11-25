@@ -4,17 +4,17 @@ import os
 import shutil
 import sys
 import tempfile
-
 from datetime import date, datetime
 from unittest import skip
 from unittest.mock import patch
-
-from xml.etree.ElementTree import XML
 from xml.etree import ElementTree
+from xml.etree.ElementTree import XML
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.messages.api import MessageFailure
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
@@ -22,30 +22,24 @@ from django.core.management.base import CommandError
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TestCase, Client
+from django.test import override_settings
 from django.test.client import RequestFactory
 from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
-from django.test import override_settings
-from django.core.cache import cache
-
 from faker import Factory
 
 from experiment.models import Experiment, Group, Subject, \
     QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
     Questionnaire, Block, DataConfigurationTree
-
 from patient.management.commands.import_icd import import_classification_of_diseases
 from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
     Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse, Telephone, \
     MaritalStatus
+from patient.validation import CPF
 from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
     patient_update, patient_view, restore_patient, reverse, check_limesurvey_access
-from patient.validation import CPF
-
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
-
 from update_english_data import translate_fixtures_into_english, update_translated_data
 
 # Constants para testes de User
@@ -397,19 +391,18 @@ class PatientFormValidation(TestCase):
         Testa inclusao de participante com campos obrigatórios quando este paciente é anônimo
         """
 
-        data = {'anonymous': True,
-                'date_birth': '01/02/1995',
-                'gender': self.data["gender"],
-                'telephone_set-TOTAL_FORMS': '3',
-                'telephone_set-INITIAL_FORMS':'0',
-                'telephone_set-MAX_NUM_FORMS': ''}
+        data = {
+            'anonymous': True,
+            'date_birth': '01/02/1995',
+            'gender': self.data["gender"],
+            'telephone_set-TOTAL_FORMS': '3',
+            'telephone_set-INITIAL_FORMS': '0',
+            'telephone_set-MAX_NUM_FORMS': ''
+        }
 
         self.client.post(reverse(PATIENT_NEW), data, follow=True)
-        self.assertEqual(Patient.objects.filter(
-            date_birth='1995-02-01',
-            gender=self.data["gender"],
-            name=None,
-            cpf=None).count(), 1)
+        self.assertEqual(
+            Patient.objects.filter(date_birth='1995-02-01', gender=self.data["gender"], name='', cpf=None).count(), 1)
 
     def fill_social_demographic_data(self):
         """ Criar uma opcao de Schooling """
