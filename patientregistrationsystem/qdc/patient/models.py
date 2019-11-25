@@ -342,7 +342,7 @@ class AlcoholPeriod(models.Model):
 class Patient(models.Model):
     code = models.CharField(max_length=10, null=False, unique=True)
 
-    name = models.CharField(null=True, blank=True, max_length=50)
+    name = models.CharField(blank=True, max_length=50, default='')
     cpf = models.CharField(null=True, blank=True, max_length=15, unique=True, validators=[validate_cpf])
     origin = models.CharField(max_length=50, null=True, blank=True)
     medical_record = models.CharField(max_length=25, null=True, blank=True)
