@@ -4,18 +4,9 @@
 {% load qdc_tags %}
 
 {% block extrahead %}
-
     <title>{% trans "Neuroscience Experiments System - NES" %}</title>
-
-    <script src="{% static 'quiz/jquery/jquery-1.9.1.min.js' %}"></script>
-    <script src="{% static 'quiz/jquery/jquery-migrate-1.2.1.min.js' %}"></script>
-
-    <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
-    <script src="{% static 'quiz/js/quiz.js' %}"></script>
-
-    <script type="text/javascript" src="{% url 'javascript_catalog' %}"></script>
-
 {% endblock %}
+
 {% block extrastyle %}
 
     <link href="{% static 'quiz/toastr/toastr.css' %}" rel="stylesheet"/>
@@ -113,6 +104,11 @@
 
     </div>
 
+    <script src="{% static 'quiz/jquery/jquery-1.9.1.min.js' %}"></script>
+    <script src="{% static 'quiz/jquery/jquery-migrate-1.2.1.min.js' %}"></script>
+    <script src="{% static 'quiz/toastr/toastr.js' %}"></script>
+    <script src="{% static 'quiz/js/quiz.js' %}"></script>
+    <script type="text/javascript" src="{% url 'javascript_catalog' %}"></script>
     {% if form.non_field_errors %}
         <script type="text/javascript">
             {% for error in form.non_field_errors %}

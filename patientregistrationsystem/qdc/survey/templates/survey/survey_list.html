@@ -2,14 +2,6 @@
 
 {% load i18n admin_static %}
 
-{% block header %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-{% endblock %}
-
 {% block activeAdvancedSurvey %}class="active"{% endblock %}
 
 {% block content %}
@@ -87,4 +79,12 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+        <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}

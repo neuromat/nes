@@ -1342,8 +1342,7 @@ def get_limesurvey_response_url(questionnaire_response):
 @permission_required('patient.view_questionnaireresponse')
 def questionnaire_response_view(
         request, questionnaire_response_id, template_name="experiment/subject_questionnaire_response_form.html"):
-    questionnaire_response = get_object_or_404(
-        QuestionnaireResponse, pk=questionnaire_response_id)
+    questionnaire_response = get_object_or_404(QuestionnaireResponse, pk=questionnaire_response_id)
 
     if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == "":
         surveys = Questionnaires()
