@@ -5,14 +5,6 @@
 {% load i18n admin_static %}
 {% load subjects_tags %}
 
-{% block header %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="user_form" method="post" data-toggle="validator">
@@ -236,4 +228,12 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}

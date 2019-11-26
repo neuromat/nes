@@ -4,111 +4,6 @@
 {% load i18n admin_static %}
 {% load subjects_tags %}
 
-{% block header %}
-    {% load static %}
-
-    <script src="{% static 'quiz/js/research_project.js' %}"></script>
-
-    <script>
-        $(document).ready(function () {
-            var $id_file_format = $("#id_file_format");
-            var $id_file_format_description = $("#id_file_format_description");
-            var $div_file_format_description = $("#div-file-format-description");
-            var $id_file = $("#id_file");
-            var $other_code = null;
-            var $txt_code = null;
-            var $txt_extension = null;
-            var $raw_code = null;
-            var $raw_extension = null;
-            var $div_info_raw_data = $("#info_raw_data");
-
-            {% if file_format_list %}
-                {% for item in file_format_list %}
-                    {% if item.code == 'other' %}
-                        $other_code = {{ item.id }};
-                    {% elif item.code == 'txt' %}
-                        $txt_code = {{ item.id }};
-                        $txt_extension = "{{ item.extension }}";
-                    {% elif item.code == 'MNE-RawFromBrainVision' %}
-                        $raw_code = {{ item.id }};
-                        $raw_extension = "{{ item.extension }}";
-                    {% endif %}
-                {% endfor %}
-
-                $id_file_format.each((function() {
-                    if ($id_file_format.val() == $other_code)
-                    {
-                        $id_file.removeAttr("accept");
-                        {% if editing %}
-                            $id_file_format_description.prop( "disabled", false );
-                            $div_file_format_description.show();
-                        {% else %}
-                            $id_file_format_description.prop( "disabled", true );
-                            $div_file_format_description.show();
-                        {% endif %}
-                    }
-                    else if ($id_file_format.val() == $txt_code)
-                    {
-                        $id_file.attr("accept", $txt_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else if ($id_file_format.val() == $raw_code)
-                    {
-                        $id_file.attr("accept", $raw_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                }));
-
-                $id_file_format.on('change', (function() {
-                    if ($id_file_format.val() == $other_code)
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", false );
-                        $div_info_raw_data.hide();
-                        $div_file_format_description.show();
-                    }
-                    else if ($id_file_format.val() == $txt_code)
-                    {
-                        $id_file.attr("accept", $txt_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                        $div_info_raw_data.hide();
-                    }
-                    else if ($id_file_format.val() == $raw_code)
-                    {
-                        $id_file.attr("accept", $raw_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                        $div_info_raw_data.show();
-                        $div_info_raw_data.html("Upload the three files(.avg, .vhdr, .vmrk) to visualize the raw data" +
-                                " from Brain " +
-                                "Vision");
-                    }
-                    else
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                        $div_info_raw_data.hide();
-                    }
-                }));
-            {% else %}
-                $id_file_format_description.prop( "disabled", true );
-                $div_file_format_description.hide();
-            {% endif %}
-        });
-    </script>
-
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
@@ -317,4 +212,105 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            var $id_file_format = $("#id_file_format");
+            var $id_file_format_description = $("#id_file_format_description");
+            var $div_file_format_description = $("#div-file-format-description");
+            var $id_file = $("#id_file");
+            var $other_code = null;
+            var $txt_code = null;
+            var $txt_extension = null;
+            var $raw_code = null;
+            var $raw_extension = null;
+            var $div_info_raw_data = $("#info_raw_data");
+
+            {% if file_format_list %}
+                {% for item in file_format_list %}
+                    {% if item.code == 'other' %}
+                        $other_code = {{ item.id }};
+                    {% elif item.code == 'txt' %}
+                        $txt_code = {{ item.id }};
+                        $txt_extension = "{{ item.extension }}";
+                    {% elif item.code == 'MNE-RawFromBrainVision' %}
+                        $raw_code = {{ item.id }};
+                        $raw_extension = "{{ item.extension }}";
+                    {% endif %}
+                {% endfor %}
+
+                $id_file_format.each((function() {
+                    if ($id_file_format.val() == $other_code)
+                    {
+                        $id_file.removeAttr("accept");
+                        {% if editing %}
+                            $id_file_format_description.prop( "disabled", false );
+                            $div_file_format_description.show();
+                        {% else %}
+                            $id_file_format_description.prop( "disabled", true );
+                            $div_file_format_description.show();
+                        {% endif %}
+                    }
+                    else if ($id_file_format.val() == $txt_code)
+                    {
+                        $id_file.attr("accept", $txt_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                    else if ($id_file_format.val() == $raw_code)
+                    {
+                        $id_file.attr("accept", $raw_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                    else
+                    {
+                        $id_file.removeAttr("accept");
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                }));
+
+                $id_file_format.on('change', (function() {
+                    if ($id_file_format.val() == $other_code)
+                    {
+                        $id_file.removeAttr("accept");
+                        $id_file_format_description.prop( "disabled", false );
+                        $div_info_raw_data.hide();
+                        $div_file_format_description.show();
+                    }
+                    else if ($id_file_format.val() == $txt_code)
+                    {
+                        $id_file.attr("accept", $txt_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                        $div_info_raw_data.hide();
+                    }
+                    else if ($id_file_format.val() == $raw_code)
+                    {
+                        $id_file.attr("accept", $raw_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                        $div_info_raw_data.show();
+                        $div_info_raw_data.html("Upload the three files(.avg, .vhdr, .vmrk) to visualize the raw data" +
+                                " from Brain " +
+                                "Vision");
+                    }
+                    else
+                    {
+                        $id_file.removeAttr("accept");
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                        $div_info_raw_data.hide();
+                    }
+                }));
+            {% else %}
+                $id_file_format_description.prop( "disabled", true );
+                $div_file_format_description.hide();
+            {% endif %}
+        });
+    </script>
 {% endblock %}

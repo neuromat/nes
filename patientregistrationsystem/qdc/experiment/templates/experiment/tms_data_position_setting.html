@@ -1,12 +1,6 @@
 {% extends "experiment/subject_tms_data_form.html" %}
 {% load i18n admin_static %}
 
-{% block header %}
-    {% load static %}
-    <script src="{% static 'quiz/js/tms_position_setting.js' %}"></script>
-    <script src="{% static 'quiz/js/research_project.js' %}"></script>
-{% endblock %}
-
 {% block subcontent %}
 
     <div id="position_setting" class="tab-pane fade in active">
@@ -58,6 +52,10 @@
 
     </div>
 
+{% endblock %}
 
-
+{% block script %}
+{{ block.super }}
+    <script src="{% static 'quiz/js/tms_position_setting.js' %}"></script>
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
 {% endblock %}

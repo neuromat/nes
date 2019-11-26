@@ -5,68 +5,6 @@
 {% load subjects_tags %}
 
 {% block header %}
-    {% load static %}
-
-    <script src="{% static 'quiz/js/research_project.js' %}"></script>
-{#    <script src="{% static 'quiz/js/tms_position_setting.js' %}"></script>#}
-
-
-    <script>
-        $(document).ready(function () {
-            var select_tms_setting = $("#id_tms_setting");
-            var pulse_type = $("#pulse_type");
-            var div_paired_pulse = $("#div_paired_pulse");
-            var div_repetitive_pulse = $("#div_repetitive_pulse");
-            var div_interval_pulses = $("#div_interval_pulses");
-            var div_second_pulse_intensity = $("#second_pulse_intensity");
-
-            {% if tms_setting_default_id %}
-                var $tms_setting_default_id = {{ tms_setting_default_id }};
-            {% endif %}
-
-            if(pulse_type.val() == 'paired_pulse'){
-                div_paired_pulse.show();
-                div_second_pulse_intensity.show();
-            }else{
-                div_paired_pulse.hide();
-                div_second_pulse_intensity.hide();
-            }
-
-            if(pulse_type.val() == 'repetitive_pulse'){
-                div_repetitive_pulse.show();
-                div_interval_pulses.hide();
-            }else{
-                div_repetitive_pulse.hide();
-                div_interval_pulses.show();
-            }
-
-            select_tms_setting.change(function () {
-                tms_setting_id = $(this).val();
-                var url = "/experiment/get_pulse_by_tms_setting/" + tms_setting_id;
-
-                $.getJSON(url, function (pulse_stimulus) {
-                    document.getElementById('id_pulse_stimulus').innerHTML = pulse_stimulus['name'];
-                    if(pulse_stimulus['type'] == 'paired_pulse'){
-                        div_paired_pulse.show();
-                        div_second_pulse_intensity.show();
-                    }
-                    else{
-                        div_paired_pulse.hide();
-                        div_second_pulse_intensity.hide();
-                    }
-                    if(pulse_stimulus['type'] == 'repetitive_pulse'){
-                        div_repetitive_pulse.show();
-                        div_interval_pulses.hide();
-                    }else{
-                        div_repetitive_pulse.hide();
-                        div_interval_pulses.show();
-                    }
-                });
-
-            });
-        });
-    </script>
-
     <style>
         {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
         .header-fixed {
@@ -101,7 +39,6 @@
             float: left;
         }
     </style>
-
 {% endblock %}
 
 {% block form %}
@@ -444,4 +381,64 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+{{ block.super }}
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            var select_tms_setting = $("#id_tms_setting");
+            var pulse_type = $("#pulse_type");
+            var div_paired_pulse = $("#div_paired_pulse");
+            var div_repetitive_pulse = $("#div_repetitive_pulse");
+            var div_interval_pulses = $("#div_interval_pulses");
+            var div_second_pulse_intensity = $("#second_pulse_intensity");
+
+            {% if tms_setting_default_id %}
+                var $tms_setting_default_id = {{ tms_setting_default_id }};
+            {% endif %}
+
+            if(pulse_type.val() == 'paired_pulse'){
+                div_paired_pulse.show();
+                div_second_pulse_intensity.show();
+            }else{
+                div_paired_pulse.hide();
+                div_second_pulse_intensity.hide();
+            }
+
+            if(pulse_type.val() == 'repetitive_pulse'){
+                div_repetitive_pulse.show();
+                div_interval_pulses.hide();
+            }else{
+                div_repetitive_pulse.hide();
+                div_interval_pulses.show();
+            }
+
+            select_tms_setting.change(function () {
+                tms_setting_id = $(this).val();
+                var url = "/experiment/get_pulse_by_tms_setting/" + tms_setting_id;
+
+                $.getJSON(url, function (pulse_stimulus) {
+                    document.getElementById('id_pulse_stimulus').innerHTML = pulse_stimulus['name'];
+                    if(pulse_stimulus['type'] == 'paired_pulse'){
+                        div_paired_pulse.show();
+                        div_second_pulse_intensity.show();
+                    }
+                    else{
+                        div_paired_pulse.hide();
+                        div_second_pulse_intensity.hide();
+                    }
+                    if(pulse_stimulus['type'] == 'repetitive_pulse'){
+                        div_repetitive_pulse.show();
+                        div_interval_pulses.hide();
+                    }else{
+                        div_repetitive_pulse.hide();
+                        div_interval_pulses.show();
+                    }
+                });
+
+            });
+        });
+    </script>
 {% endblock %}

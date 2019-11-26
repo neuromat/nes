@@ -3,16 +3,6 @@
 {% load i18n admin_static %}
 {% load i18n %}
 
-{% block header %}
-    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
-    <script src="{% static 'quiz/js/participant_import.js' %}"></script>
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-{% endblock %}
-
 {% block form %}
 
 {% endblock %}
@@ -94,4 +84,14 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
+    <script src="{% static 'quiz/js/participant_import.js' %}"></script>
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}

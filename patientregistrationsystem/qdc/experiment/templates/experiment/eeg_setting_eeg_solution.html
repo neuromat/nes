@@ -2,6 +2,7 @@
 {% load i18n admin_static %}
 
 {% block selection %}
+{{ block.super }}
 
     <h4>{% trans "EEG solution settings" %}</h4>
 
@@ -55,9 +56,5 @@
             </div>
         </div>
     </div>
-
-{% endblock %}
-
-{% block settings %}
 
 {% endblock %}

@@ -1,11 +1,8 @@
 {% extends "experiment/eeg_setting_eeg_electrode_net_system_template.html" %}
 {% load i18n admin_static %}
 
-{% block specific_header %}
-{% endblock %}
-
 {% block subcontent %}
-
+{{ block.super }}
     <div id="electrode_model" class="tab-pane fade in active">
 
         <div style="width:100%;">

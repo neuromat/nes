@@ -2,7 +2,7 @@
 {% load i18n admin_static %}
 
 {% block selection %}
-
+{{ block.super }}
     <h4>{% trans "EEG electrode layout setting" %}</h4>
 
     <ul class="nav nav-tabs">
@@ -33,6 +33,7 @@
     <div class="tab-content">
 
         {% block subcontent %}
+        {{ block_super }}
         {% endblock %}
 
     </div>
@@ -40,4 +41,5 @@
 {% endblock %}
 
 {% block settings %}
+{{ block.super }}
 {% endblock %}

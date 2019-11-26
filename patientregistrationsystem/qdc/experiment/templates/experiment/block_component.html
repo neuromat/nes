@@ -2,13 +2,6 @@
 
 {% load i18n admin_static %}
 
-{% block specific_header %}
-
-    {% load static %}
-    <script src="{% static 'quiz/js/block_component.js' %}"></script>
-
-{% endblock %}
-
 {% block breadcrumb %}
 
     {% if creating %}
@@ -376,4 +369,8 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/block_component.js' %}"></script>
 {% endblock %}

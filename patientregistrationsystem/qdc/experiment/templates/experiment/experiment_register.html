@@ -3,11 +3,6 @@
 
 {% load i18n admin_static %}
 
-{% block header %}
-    <script src="{% static 'quiz/js/collaborators.js' %}"></script>
-    <script src="{% static 'quiz/js/block_component.js' %}"></script>
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
@@ -545,4 +540,9 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/collaborators.js' %}"></script>
+    <script src="{% static 'quiz/js/block_component.js' %}"></script>
 {% endblock %}
