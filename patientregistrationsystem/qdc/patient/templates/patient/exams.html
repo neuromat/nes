@@ -4,31 +4,6 @@
 
 {% block activePatient %}class="active"{% endblock %}
 
-{% block header %}
-    <script>
-        function show_modal_remove(exam_file_id){
-            var  modal_remove = document.getElementById('removeExam');
-            modal_remove.setAttribute("href", '/patient/exam_file/delete/' + exam_file_id + "/?status={{ status }}{% if new_medical_record %}&mr=new{% endif %}" );
-            $('#modalRemove').modal('show');
-        }
-        function show_modal_remove_for_complementary_exam (){
-            var part;
-            part = document.URL.split("exam/edit");
-            var  modal_remove = document.getElementById('removeExam');
-            modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
-            $('#modalRemove').modal('show');
-        }
-        function show_modal_remove_exam (){
-            var part;
-            part = document.URL.split("exam/edit");
-            var  modal_remove = document.getElementById('removeExam2');
-            modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
-            $('#modalRemoveExam').modal('show');
-        }
-        $(function(){$("[data-toggle=tooltip]").tooltip();})
-    </script>
-{% endblock %}
-
 {% block form %}
     <div class="row">
         <form id="form_exam" role="form" method="post" data-toggle="validator" enctype="multipart/form-data">
@@ -253,4 +228,29 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+        <script>
+        function show_modal_remove(exam_file_id){
+            var  modal_remove = document.getElementById('removeExam');
+            modal_remove.setAttribute("href", '/patient/exam_file/delete/' + exam_file_id + "/?status={{ status }}{% if new_medical_record %}&mr=new{% endif %}" );
+            $('#modalRemove').modal('show');
+        }
+        function show_modal_remove_for_complementary_exam (){
+            var part;
+            part = document.URL.split("exam/edit");
+            var  modal_remove = document.getElementById('removeExam');
+            modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
+            $('#modalRemove').modal('show');
+        }
+        function show_modal_remove_exam (){
+            var part;
+            part = document.URL.split("exam/edit");
+            var  modal_remove = document.getElementById('removeExam2');
+            modal_remove.setAttribute( "href", part[0]+'exam/remove'+part[1]);
+            $('#modalRemoveExam').modal('show');
+        }
+        $(function(){$("[data-toggle=tooltip]").tooltip();})
+    </script>
 {% endblock %}

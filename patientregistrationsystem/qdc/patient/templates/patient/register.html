@@ -5,9 +5,6 @@
 {% load l10n admin_static %}
 
 {% block header %}
-    <script type="text/javascript" src="{% static 'quiz/js/register.js' %}"></script>
-    <script type="text/javascript">$(function(){$("[data-toggle=tooltip]").tooltip();})</script>
-
     <style>
         div.alert-overflow {
             display: none; /* O alerta deve iniciar oculto */
@@ -191,4 +188,9 @@
 {% block end_form %}
         </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript" src="{% static 'quiz/js/register.js' %}"></script>
+    <script type="text/javascript">$(function(){$("[data-toggle=tooltip]").tooltip();})</script>
 {% endblock %}
