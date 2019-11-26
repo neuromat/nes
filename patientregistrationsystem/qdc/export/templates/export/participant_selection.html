@@ -2,26 +2,6 @@
 
 {% load i18n %}
 
-{% block header %}
-    {% load static %}
-    <script xmlns="http://www.w3.org/1999/html">
-    $(function () {
-{#        $("#get_diagnosis").autocomplete({#}
-{#            source: "/export/get_diagnoses",#}
-{#            minLength: 2,#}
-{#            select: function (event, ui) {#}
-{#                add_disease(ui.item.id, ui.item.value);#}
-{#            }#}
-{#        });#}
-
-    });
-    </script>
-    <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
-
-    {% block specific_header %}
-    {% endblock %}
-{% endblock %}
-
 {% block activeExport %}class="active"{% endblock %}
 
 {% block form %}
@@ -207,4 +187,8 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/participant_selection.js' %}"></script>
 {% endblock %}
