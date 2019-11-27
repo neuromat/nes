@@ -21,38 +21,38 @@ HEADER_EXPLANATION_FIELDS = [
 ]
 
 QUESTION_TYPES = {
-    '1': ('Array Dual Scale', 'string'),
-    '5': ('5 Point Choice', 'string'),
-    'A': ('Array (5 Point Choice)', 'string'),
-    'B': ('Array (10 Point Choice)', 'string'),
-    'C': ('Array (Yes/No/Uncertain)', 'string'),
-    'D': ('Date', 'string'),
-    'E': ('Array (Increase, Same, Decrease)', 'string'),
-    'F': ('Array (Flexible Labels)', 'string'),
-    'G': ('Gender', 'string'),
-    'H': ('Array (Flexible Labels) by Column', 'string'),
-    'I': ('Language Switch', 'string'),
-    'K': ('Multiple Numerical Input', 'number'),
-    'L': ('List (Radio)', 'string'),
-    'M': ('Multiple choice', 'string'),
-    'N': ('Numerical Input', 'number'),
-    'O': ('List With Comment', 'string'),
-    'P': ('Multiple choice with comments', 'string'),
-    'Q': ('Multiple Short Text', 'string'),
-    'R': ('Ranking', 'string'),
-    'S': ('Short Free Text', 'string'),
-    'T': ('Long Free Text', 'string'),
-    'U': ('Huge Free Text', 'string'),
+    '1': ('Array Dual Scale', 'string', 'default'),
+    '5': ('5 Point Choice', 'string', 'default'),
+    'A': ('Array (5 Point Choice)', 'string', 'default'),
+    'B': ('Array (10 Point Choice)', 'string', 'default'),
+    'C': ('Array (Yes/No/Uncertain)', 'string', 'default'),
+    'D': ('Date', 'datetime', '%Y-%m-%d %H:%M:%S'),
+    'E': ('Array (Increase, Same, Decrease)', 'string', 'default'),
+    'F': ('Array (Flexible Labels)', 'string', 'default'),
+    'G': ('Gender', 'string', 'default'),
+    'H': ('Array (Flexible Labels) by Column', 'string', 'default'),
+    'I': ('Language Switch', 'string', 'default'),
+    'K': ('Multiple Numerical Input', 'number', 'default'),
+    'L': ('List (Radio)', 'string', 'default'),
+    'M': ('Multiple choice', 'string', 'default'),
+    'N': ('Numerical Input', 'number', 'default'),
+    'O': ('List With Comment', 'string', 'default'),
+    'P': ('Multiple choice with comments', 'string', 'default'),
+    'Q': ('Multiple Short Text', 'string', 'default'),
+    'R': ('Ranking', 'string', 'default'),
+    'S': ('Short Free Text', 'string', 'default'),
+    'T': ('Long Free Text', 'string', 'default'),
+    'U': ('Huge Free Text', 'string', 'default'),
     # não encontrado na versão do Neuromat
-    'X': ('Boilerplate Question', 'string'),
-    'Y': ('Yes/No', 'string'),
-    '!': ('List (Dropdown)', 'string'),
+    'X': ('Boilerplate Question', 'string', 'default'),
+    'Y': ('Yes/No', 'string', 'default'),
+    '!': ('List (Dropdown)', 'string', 'default'),
     # não encontrado na versão atual do Neuromat
-    ':': ('Array (Flexible Labels) multiple drop down', 'string'),
+    ':': ('Array (Flexible Labels) multiple drop down', 'string', 'default'),
     # não( encontrado na versão atual do Neuromat
-    ';': ('Array (Flexible Labels) multiple texts', 'string'),
-    '|': ('File Upload', 'string'),
-    '*': ('Equation', 'string')
+    ';': ('Array (Flexible Labels) multiple texts', 'string', 'default'),
+    '|': ('File Upload', 'string', 'default'),
+    '*': ('Equation', 'string', 'default')
 }
 
 
@@ -79,14 +79,12 @@ class QuestionnaireUtils:
         if entrance_questionnaire:
             if questionnaire_id not in self.questionnaires_data:
                 self.questionnaires_data[questionnaire_id] = {}
-
             self.questionnaires_data[questionnaire_id]["header"] = headers
             self.questionnaires_data[questionnaire_id]["fields"] = fields
 
         else:
             if questionnaire_id not in self.questionnaires_experiment_data:
                 self.questionnaires_experiment_data[questionnaire_id] = {}
-
             self.questionnaires_experiment_data[questionnaire_id]["header"] = headers
             self.questionnaires_experiment_data[questionnaire_id]["fields"] = fields
 
@@ -146,8 +144,8 @@ class QuestionnaireUtils:
                 self.questionnaires_experiment_data[questionnaire_id]["header"]
         return header
 
-    def get_questionnaire_fields(self, questionnaire_id, entrance_questionnaire,
-                                 considers_questionnaires_from_experiments):
+    def get_questionnaire_fields(
+            self, questionnaire_id, entrance_questionnaire, considers_questionnaires_from_experiments):
         fields = []
         if entrance_questionnaire:
             if questionnaire_id in self.questionnaires_data:
@@ -281,7 +279,7 @@ class QuestionnaireUtils:
                 question_description = re.sub(
                     '{.*?}', '', re.sub('<.*?>', '', properties['question'])).replace('&nbsp;', '').strip()
                 question_type = smart_str(properties['type'])
-                question_type_description = QUESTION_TYPES[question_type] if question_type in QUESTION_TYPES else ''
+                question_type_description = QUESTION_TYPES[question_type][0] if question_type in QUESTION_TYPES else ''
                 question_group = self.get_group_properties(
                         questionnaire_lime_survey, questionnaire_id, properties['gid'], language)
                 if question_group is None:

@@ -2,14 +2,6 @@
 
 {% load i18n %}
 
-{% block header %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="user_form" method="post" data-toggle="validator" enctype="multipart/form-data">
@@ -96,4 +88,12 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}

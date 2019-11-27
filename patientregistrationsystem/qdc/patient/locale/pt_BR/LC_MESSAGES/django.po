@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 15:35-0300\n"
+"POT-Creation-Date: 2019-11-14 14:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,12 +21,12 @@ msgstr ""
 msgid "Anonymous participant?"
 msgstr "Participante anônimo?"
 
-#: patient/forms.py:35 patient/forms.py:68 patient/tests/tests_orig.py:639
+#: patient/forms.py:35 patient/forms.py:68 patient/tests/tests_orig.py:640
 msgid "Name must be included"
 msgstr "Nome deve ser preenchido"
 
-#: patient/forms.py:40 patient/forms.py:152 patient/views.py:768
-#: patient/views.py:1285
+#: patient/forms.py:40 patient/forms.py:152 patient/forms.py:178
+#: patient/views.py:762 patient/views.py:1272
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
@@ -42,7 +42,7 @@ msgstr "Data de nascimento deve ser preenchida"
 msgid "Gender must be filled"
 msgstr "Sexo deve ser preenchido"
 
-#: patient/forms.py:57 patient/tests/tests_orig.py:624
+#: patient/forms.py:57 patient/tests/tests_orig.py:625
 msgid "Incorrect e-mail"
 msgstr "E-mail incorreto"
 
@@ -105,10 +105,6 @@ msgstr ""
 #: patient/forms.py:159
 msgid "Place of execution"
 msgstr "Local de realização"
-
-#: patient/forms.py:178
-msgid "%d/%m/%Y"
-msgstr "%d/%m/%Y"
 
 #: patient/forms.py:181
 msgid "Fill date must be filled."
@@ -1132,7 +1128,7 @@ msgstr "Escolaridade do chefe de família"
 msgid "The combination is not allowed."
 msgstr "Esta combinação é inválida."
 
-#: patient/models.py:657
+#: patient/models.py:655
 msgid "token id: "
 msgstr ""
 
@@ -1144,20 +1140,28 @@ msgstr "Nenhuma doença encontrada!"
 msgid "No participants found!"
 msgstr "Nenhum participante encontrado!"
 
-#: patient/templates/patient/busca.html:18
+#: patient/templates/patient/busca.html:41
 msgid "Search participant"
 msgstr "Buscar participante"
 
-#: patient/templates/patient/busca.html:20
+#: patient/templates/patient/busca.html:43
 #, python-format
 msgid " %(number_of_patients)s registered participants"
 msgstr " %(number_of_patients)s participantes cadastrados"
 
-#: patient/templates/patient/busca.html:24
+#: patient/templates/patient/busca.html:47
 msgid "Type the name, the CPF or the code to seek a participant"
 msgstr "Digite o nome, o CPF ou o código para buscar um participante"
 
-#: patient/templates/patient/busca.html:33
+#: patient/templates/patient/busca.html:53
+msgid "Previous"
+msgstr ""
+
+#: patient/templates/patient/busca.html:54
+msgid "Next"
+msgstr ""
+
+#: patient/templates/patient/busca.html:58
 msgid "Insert new"
 msgstr "Inserir novo"
 
@@ -1720,34 +1724,34 @@ msgstr "*Aparelho independente ou parte da geladeira duplex."
 msgid "Calculated social class"
 msgstr "Classe social calculada"
 
-#: patient/tests/tests_orig.py:311
+#: patient/tests/tests_orig.py:312
 msgid " is not valid"
 msgstr " não é válido"
 
-#: patient/tests/tests_orig.py:451 patient/tests/tests_orig.py:470
-#: patient/tests/tests_orig.py:478
+#: patient/tests/tests_orig.py:452 patient/tests/tests_orig.py:471
+#: patient/tests/tests_orig.py:479
 msgid "Social class was not calculated"
 msgstr "Classe Social não calculada"
 
-#: patient/tests/tests_orig.py:468 patient/views.py:249
+#: patient/tests/tests_orig.py:469 patient/views.py:249
 msgid "Social demographic data successfully written."
 msgstr "Dados sociodemográficos gravados com sucesso."
 
-#: patient/tests/tests_orig.py:481 patient/tests/tests_orig.py:529
+#: patient/tests/tests_orig.py:482 patient/tests/tests_orig.py:530
 msgid "Less than 1 pack"
 msgstr "Menos de 1 maço"
 
-#: patient/tests/tests_orig.py:484 patient/tests/tests_orig.py:552
+#: patient/tests/tests_orig.py:485 patient/tests/tests_orig.py:553
 msgid "Sporadically"
 msgstr "Esporadicamente"
 
-#: patient/tests/tests_orig.py:487 patient/tests/tests_orig.py:575
+#: patient/tests/tests_orig.py:488 patient/tests/tests_orig.py:576
 msgid "Less than 1 year"
 msgstr "Menos de 1 ano"
 
-#: patient/tests/tests_orig.py:515 patient/tests/tests_orig.py:538
-#: patient/tests/tests_orig.py:561 patient/tests/tests_orig.py:584
-#: patient/tests/tests_orig.py:609 patient/views.py:279
+#: patient/tests/tests_orig.py:516 patient/tests/tests_orig.py:539
+#: patient/tests/tests_orig.py:562 patient/tests/tests_orig.py:585
+#: patient/tests/tests_orig.py:610 patient/views.py:279
 msgid "Social history successfully recorded."
 msgstr "História social gravada com sucesso."
 
@@ -1771,74 +1775,77 @@ msgstr ""
 "Classe Social não calculada, pois nem todos oscampos necessários para o "
 "cálculo foram preenchidos."
 
-#: patient/views.py:773
+#: patient/views.py:767
 msgid "Diagnosis details successfully changed."
 msgstr "Detalhes do diagnóstico alterados com sucesso."
 
-#: patient/views.py:779
+#: patient/views.py:773
 msgid "Incorrect date. Use format: mm/dd/yyyy"
 msgstr "Data incorreta. Utilize o formato dd/mm/yyyy."
 
-#: patient/views.py:800
+#: patient/views.py:794
 msgid "Medical evaluation successfully deleted."
 msgstr "Avaliação médica removida com sucesso."
 
-#: patient/views.py:813
+#: patient/views.py:807
 msgid "Diagnosis has already exist in this medical assessment."
 msgstr "Diagnóstico já existente nesta avaliação médica."
 
-#: patient/views.py:846
+#: patient/views.py:840
 msgid "Diagnosis can not be deleted. You must delete exams before."
 msgstr "Diagnóstico não pode ser removido. Remova os exames antes."
 
-#: patient/views.py:851
+#: patient/views.py:845
 msgid "Diagnosis successfully deleted."
 msgstr "Diagnóstico removido com sucesso."
 
-#: patient/views.py:898 patient/views.py:962
+#: patient/views.py:892 patient/views.py:956
 msgid "Exam successfully saved."
 msgstr "Exame salvo com sucesso."
 
-#: patient/views.py:908 patient/views.py:967
+#: patient/views.py:902 patient/views.py:961
 msgid "It is not possible to save exam without files."
 msgstr "Não é possível salvar exame sem arquivos."
 
-#: patient/views.py:1037
+#: patient/views.py:1031
 msgid "Exam successfully deleted."
 msgstr "Exame removido com sucesso."
 
-#: patient/views.py:1061
+#: patient/views.py:1055
 msgid "Attachment successfully deleted."
 msgstr "Anexo removido com sucesso."
 
-#: patient/views.py:1203 patient/views.py:1397
+#: patient/views.py:1190 patient/views.py:1384
 msgid "Fill deleted successfully"
 msgstr "Preenchimento removido com sucesso"
 
-#: patient/views.py:1205 patient/views.py:1399
+#: patient/views.py:1192 patient/views.py:1386
 msgid "Error trying to delete"
 msgstr "Erro ao deletar o preenchimento"
 
-#: patient/views.py:1259
+#: patient/views.py:1246
 msgid "Not available filling - tokens table not started"
 msgstr "Preenchimento não disponível - Tabela de tokens não iniciada"
 
-#: patient/views.py:1264
+#: patient/views.py:1251
 msgid "Not available filling - questionnaire not active"
 msgstr "Preenchimento não disponível - Questionário não está ativo"
 
-#: patient/views.py:1269
+#: patient/views.py:1256
 msgid "Not available filling - questionnaire does not contain standard fields"
 msgstr ""
 "Preenchimento não disponível - Questionário não contém campos padronizados"
 
-#: patient/views.py:1278
+#: patient/views.py:1265
 msgid ""
 "Failed to generate token to answer the questionnaire. Make sure the "
 "questionnaire is active"
 msgstr ""
 "Falha ao gerar token para responder questionário. Verifique se o "
 "questionário está ativo"
+
+#~ msgid "%d/%m/%Y"
+#~ msgstr "%d/%m/%Y"
 
 #~ msgid "Upload"
 #~ msgstr "Carregar"

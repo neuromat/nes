@@ -2,14 +2,6 @@
 
 {% load i18n admin_static %}
 
-{% block header %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-{% endblock %}
-
 {% block activeAdvancedSurvey %}class="active"{% endblock %}
 
 {% block content %}
@@ -62,7 +54,7 @@
                     </table>
                 </div>
                 <div class="form-group">
-                    <label class="control-label"><b style="color: red;"><big>!</big> {% trans "Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                    <label class="control-label"><b style="color: red;"><big>!</big> {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
                         (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
                 </div>
                 {% if perms.survey.add_survey %}
@@ -87,4 +79,12 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+        <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}

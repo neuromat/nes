@@ -61,15 +61,14 @@ class GroupForm(ModelForm):
 class QuestionnaireResponseForm(ModelForm):
     class Meta:
         model = QuestionnaireResponse
-        fields = [
-            'date',
-        ]
+        fields = ['date']
 
         widgets = {
-            'date': DateInput(format=_("%m/%d/%Y"),
-                              attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
-                                     'required': "",
-                                     'data-error': _("Fill date must be filled.")}, )
+            'date': DateInput(
+                format=_("%m/%d/%Y"),
+                attrs={'class': 'form-control datepicker', 'placeholder': _('mm/dd/yyyy'),
+                       'required': "",
+                       'data-error': _("Fill date must be filled.")}, )
         }
 
 
@@ -81,12 +80,12 @@ class FileForm(ModelForm):
 
 class ComponentForm(ModelForm):
     # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
-    # queryset.
-    # This is needed because we want an empty_label different from "--------".
-    # duration_unit = ModelChoiceField(
-    #     required=False,
-    #     empty_label="Escolha unidade",
-    #     widget=Select(attrs={'class': 'form-control'}))
+    #  queryset.
+    #  This is needed because we want an empty_label different from "--------".
+    #  duration_unit = ModelChoiceField(
+    #      required=False,
+    #      empty_label="Escolha unidade",
+    #      widget=Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Component

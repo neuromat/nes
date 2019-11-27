@@ -4,11 +4,6 @@
 
 {% block activeSetup %}class="active"{% endblock %}
 
-{% block header %}
-    <script src="{% static 'quiz/js/equipment.js' %}"></script>
-    <script src="{% static 'quiz/js/eeg_electrode_net_register.js' %}"></script>
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="user_form" method="post" data-toggle="validator">
@@ -287,27 +282,14 @@
         </div>
     </div>
 
-{#    <div class="modal fade" id="modalRemoveCapSize" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"#}
-{#         aria-hidden="true">#}
-{#        <div class="modal-dialog">#}
-{#            <div class="modal-content">#}
-{#                <div class="modal-body">#}
-{#                    {% trans "Are you sure you want to delete cap size?" %}#}
-{#                </div>#}
-{#                <div class="modal-footer">#}
-{#                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="disableRemoveButton()">{% trans "Cancel" %}</button>#}
-{#                    <button type="submit" class="btn btn-danger" id="remove_button" value="remove_cap_size" disabled name="action">{% trans "Delete" %}</button>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-
-
-
-
 {% endblock %}
 
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/equipment.js' %}"></script>
+    <script src="{% static 'quiz/js/eeg_electrode_net_register.js' %}"></script>
 {% endblock %}

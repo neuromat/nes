@@ -5,128 +5,6 @@
 {% load subjects_tags %}
 
 {% block header %}
-    {% load static %}
-
-    <script src="{% static 'quiz/js/research_project.js' %}"></script>
-    <script src="{% static 'quiz/js/subject_digital_game_phase_data_form.js' %}"></script>
-    <script src="{% static 'quiz/js/digital_game_phase_electrode_worked_setted.js' %}"></script>
-
-    <script>
-        $(document).ready(function () {
-            var $id_file_format = $("#id_file_format");
-            var $id_file_format_description = $("#id_file_format_description");
-            var $div_file_format_description = $("#div-file-format-description");
-            var $id_file = $("#id_file");
-            var $div_reason_for_change = $("#div-reason-for-change");
-            var $id_digital_game_phase_setting_reason_for_change = $("#id_digital_game_phase_setting_reason_for_change");
-            var $id_digital_game_phase_setting = $("#id_digital_game_phase_setting");
-
-            {% if digital_game_phase_setting_default_id %}
-                var $digital_game_phase_setting_default_id = {{ digital_game_phase_setting_default_id }};
-            {% endif %}
-
-            var $other_code = null;
-            var $txt_code = null;
-            var $txt_extension = null;
-            var $raw_code = null;
-            var $raw_extension = null;
-
-            {% if file_format_list %}
-                {% for item in file_format_list %}
-                    {% if item.code == 'other' %}
-                        $other_code = {{ item.id }};
-                    {% elif item.code == 'txt' %}
-                        $txt_code = {{ item.id }};
-                        $txt_extension = "{{ item.extension }}";
-                    {% elif item.code == 'NEO-RawBinarySignalIO' %}
-                        $raw_code = {{ item.id }};
-                        $raw_extension = "{{ item.extension }}";
-                    {% endif %}
-                {% endfor %}
-
-                $id_file_format.each((function() {
-                    if ($id_file_format.val() == $other_code)
-                    {
-                        $id_file.removeAttr("accept");
-                        {% if editing %}
-                            $id_file_format_description.prop( "disabled", false );
-                            $div_file_format_description.show();
-                        {% else %}
-                            $id_file_format_description.prop( "disabled", true );
-                            $div_file_format_description.show();
-                        {% endif %}
-                    }
-                    else if ($id_file_format.val() == $txt_code)
-                    {
-                        $id_file.attr("accept", $txt_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else if ($id_file_format.val() == $raw_code)
-                    {
-                        $id_file.attr("accept", $raw_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                }));
-
-                $id_file_format.on('change', (function() {
-                    if ($id_file_format.val() == $other_code)
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", false );
-                        $div_file_format_description.show();
-                    }
-                    else if ($id_file_format.val() == $txt_code)
-                    {
-                        $id_file.attr("accept", $txt_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else if ($id_file_format.val() == $raw_code)
-                    {
-                        $id_file.attr("accept", $raw_extension);
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                    else
-                    {
-                        $id_file.removeAttr("accept");
-                        $id_file_format_description.prop( "disabled", true );
-                        $div_file_format_description.hide();
-                    }
-                }));
-            {% else %}
-                $id_file_format_description.prop( "disabled", true );
-                $div_file_format_description.hide();
-            {% endif %}
-
-            $id_digital_game_phase_setting.each((function() {
-                    if ($id_digital_game_phase_setting.val() == $digital_game_phase_setting_default_id){
-                        $id_digital_game_phase_setting_reason_for_change.prop( "disabled", true );
-                        $div_reason_for_change.hide();
-                    }
-            }));
-
-            $id_digital_game_phase_setting.on('change', (function() {
-                if ($id_digital_game_phase_setting.val() == $digital_game_phase_setting_default_id){
-                    $id_digital_game_phase_setting_reason_for_change.prop( "disabled", true );
-                    $div_reason_for_change.hide();
-                }
-                else {
-                    $id_digital_game_phase_setting_reason_for_change.prop( "disabled", false );
-                    $div_reason_for_change.show();
-                }
-            }));
-        });
-    </script>
-
     <style>
         {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
         .header-fixed {
@@ -161,7 +39,6 @@
             float: left;
         }
     </style>
-
 {% endblock %}
 
 {% block form %}
@@ -404,4 +281,125 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/research_project.js' %}"></script>
+    <script src="{% static 'quiz/js/subject_digital_game_phase_data_form.js' %}"></script>
+    <script src="{% static 'quiz/js/digital_game_phase_electrode_worked_setted.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            var $id_file_format = $("#id_file_format");
+            var $id_file_format_description = $("#id_file_format_description");
+            var $div_file_format_description = $("#div-file-format-description");
+            var $id_file = $("#id_file");
+            var $div_reason_for_change = $("#div-reason-for-change");
+            var $id_digital_game_phase_setting_reason_for_change = $("#id_digital_game_phase_setting_reason_for_change");
+            var $id_digital_game_phase_setting = $("#id_digital_game_phase_setting");
+
+            {% if digital_game_phase_setting_default_id %}
+                var $digital_game_phase_setting_default_id = {{ digital_game_phase_setting_default_id }};
+            {% endif %}
+
+            var $other_code = null;
+            var $txt_code = null;
+            var $txt_extension = null;
+            var $raw_code = null;
+            var $raw_extension = null;
+
+            {% if file_format_list %}
+                {% for item in file_format_list %}
+                    {% if item.code == 'other' %}
+                        $other_code = {{ item.id }};
+                    {% elif item.code == 'txt' %}
+                        $txt_code = {{ item.id }};
+                        $txt_extension = "{{ item.extension }}";
+                    {% elif item.code == 'NEO-RawBinarySignalIO' %}
+                        $raw_code = {{ item.id }};
+                        $raw_extension = "{{ item.extension }}";
+                    {% endif %}
+                {% endfor %}
+
+                $id_file_format.each((function() {
+                    if ($id_file_format.val() == $other_code)
+                    {
+                        $id_file.removeAttr("accept");
+                        {% if editing %}
+                            $id_file_format_description.prop( "disabled", false );
+                            $div_file_format_description.show();
+                        {% else %}
+                            $id_file_format_description.prop( "disabled", true );
+                            $div_file_format_description.show();
+                        {% endif %}
+                    }
+                    else if ($id_file_format.val() == $txt_code)
+                    {
+                        $id_file.attr("accept", $txt_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                    else if ($id_file_format.val() == $raw_code)
+                    {
+                        $id_file.attr("accept", $raw_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                    else
+                    {
+                        $id_file.removeAttr("accept");
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                }));
+
+                $id_file_format.on('change', (function() {
+                    if ($id_file_format.val() == $other_code)
+                    {
+                        $id_file.removeAttr("accept");
+                        $id_file_format_description.prop( "disabled", false );
+                        $div_file_format_description.show();
+                    }
+                    else if ($id_file_format.val() == $txt_code)
+                    {
+                        $id_file.attr("accept", $txt_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                    else if ($id_file_format.val() == $raw_code)
+                    {
+                        $id_file.attr("accept", $raw_extension);
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                    else
+                    {
+                        $id_file.removeAttr("accept");
+                        $id_file_format_description.prop( "disabled", true );
+                        $div_file_format_description.hide();
+                    }
+                }));
+            {% else %}
+                $id_file_format_description.prop( "disabled", true );
+                $div_file_format_description.hide();
+            {% endif %}
+
+            $id_digital_game_phase_setting.each((function() {
+                    if ($id_digital_game_phase_setting.val() == $digital_game_phase_setting_default_id){
+                        $id_digital_game_phase_setting_reason_for_change.prop( "disabled", true );
+                        $div_reason_for_change.hide();
+                    }
+            }));
+
+            $id_digital_game_phase_setting.on('change', (function() {
+                if ($id_digital_game_phase_setting.val() == $digital_game_phase_setting_default_id){
+                    $id_digital_game_phase_setting_reason_for_change.prop( "disabled", true );
+                    $div_reason_for_change.hide();
+                }
+                else {
+                    $id_digital_game_phase_setting_reason_for_change.prop( "disabled", false );
+                    $div_reason_for_change.show();
+                }
+            }));
+        });
+    </script>
 {% endblock %}

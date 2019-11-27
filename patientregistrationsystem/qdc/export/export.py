@@ -223,12 +223,6 @@ class LogMessages:
 
 class ExportExecution:
 
-    def get_username(self, request):
-        self.user_name = None
-        if request.user.is_authenticated():
-            self.user_name = request.user.username
-        return self.user_name
-
     def __init__(self, user_id, export_id):
         self.files_to_zip_list = []
         self.directory_base = ''
@@ -246,6 +240,33 @@ class ExportExecution:
         self.participants_filtered_data = []
         self.per_group_data = {}
         self.questionnaire_utils = QuestionnaireUtils()
+
+    @staticmethod
+    def _temp_method_to_remove_undesirable_line(fields):
+        items = [item for item in fields if 'participant_code' in item]
+        for item in items:
+            fields.remove(item)
+
+    @staticmethod
+    def update_duplicates(fields):
+        """
+        Update duplicates in fields list by adding numbers for duplicates, started
+        in 1, then 2 etc.
+        :param fields: list
+        """
+        for field in fields:
+            duplicated_indexes = [i for i, duplicated_fields in enumerate(fields) if field == duplicated_fields]
+            if len(duplicated_indexes) > 1:
+                j = 1
+                for i in duplicated_indexes:
+                    fields[i] += str(j)
+                    j += 1
+
+    def get_username(self, request):
+        self.user_name = None
+        if request.user.is_authenticated():
+            self.user_name = request.user.username
+        return self.user_name
 
     def set_directory_base(self, user_id, export_id):
         self.directory_base = path.join(self.base_directory_name, str(user_id), str(export_id))
@@ -1001,18 +1022,18 @@ class ExportExecution:
         return questionnaire_answer_list
 
     def merge_participants_data_per_questionnaire_process(self, fields_description, participant_list):
-        # get fields from patient
+        # Get fields from patient
         export_participant_row = self.process_participant_data(self.get_input_data('participants'), participant_list)
 
-        # merge fields from questionnaires and patient
+        # Merge fields from questionnaires and patient
         export_fields_list = []
-        # building the header
+        # Building the header
         export_row_list = fields_description[0][0:len(fields_description[0]) - 1]
         for field in export_participant_row[0]:
             export_row_list.append(field)
         export_fields_list.append(export_row_list)
 
-        # including the responses
+        # Including the responses
         for fields in fields_description[1:fields_description.__len__()]:
             participation_code = fields[len(fields) - 1]
             export_row_list = fields[0:len(fields) - 1]
@@ -1157,6 +1178,9 @@ class ExportExecution:
                     questionnaire['prefix_filename_fields'], str(questionnaire_code), language, filesformat_type)
 
                 complete_filename = path.join(export_metadata_path, export_filename)
+
+                # At this point of the championship, fix it right here
+                self._temp_method_to_remove_undesirable_line(questionnaire_fields)
 
                 save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
@@ -1303,6 +1327,10 @@ class ExportExecution:
                     questionnaire['prefix_filename_fields'], str(questionnaire_code), language)
                 # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
                 complete_filename = path.join(export_metadata_path, export_filename + '.' + filesformat_type)
+
+                # At this point of the championship, fix it right here
+                self._temp_method_to_remove_undesirable_line(questionnaire_fields)
+
                 save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
                 self.files_to_zip_list.append([
@@ -1574,7 +1602,6 @@ class ExportExecution:
                                     prefix_filename_fields, 'QS', language, filesformat_type)
 
                         complete_filename = path.join(complete_export_metadata_path, export_filename)
-
                         save_to_csv(complete_filename, questionnaire_fields, filesformat_type)
 
                         self.files_to_zip_list.append([
@@ -1892,7 +1919,6 @@ class ExportExecution:
                             per_participant_rows = self.merge_questionnaire_answer_list_per_participant(
                                 export_rows_participants[1], answer_list[1: len(answer_list)])
 
-                            # TODO (NES-991): answer_list changes
                             field_type = 'fields' if heading_type == 'code' else 'header_questionnaire'
                             header = self.build_header_questionnaire_per_participant(
                                 export_rows_participants[0], answer_list[0][field_type])
@@ -2572,7 +2598,7 @@ class ExportExecution:
 
         export_rows_participants = [headers]
 
-        # transform data
+        # Transform data
         for record in db_data:
             participant_rows = []
             for value in record:
@@ -2583,7 +2609,7 @@ class ExportExecution:
 
         return export_rows_participants
 
-    def process_diagnosis_data(self, participants_output_fields, participants_list):
+    def process_diagnosis_data(self, participants_output_fields, participants_list, heading_type):
         headers, fields = self.get_headers_and_fields(participants_output_fields)
         model_to_export = getattr(modules['patient.models'], 'Patient')
         db_data = model_to_export.objects.filter(id__in=participants_list).values_list(*fields).extra(
@@ -2591,9 +2617,12 @@ class ExportExecution:
 
         export_rows_participants = [headers]
 
-        # transform data
+        # Transform data
         for record in db_data:
             export_rows_participants.append([self.handle_exported_field(field) for field in record])
+
+        if heading_type == 'abbreviated':
+            self.update_duplicates(export_rows_participants[0])
 
         return export_rows_participants
 
@@ -2609,7 +2638,7 @@ class ExportExecution:
 
         return questionnaire_response_fields
 
-    def build_participant_export_data(self, per_experiment):
+    def build_participant_export_data(self, per_experiment, heading_type):
         error_msg = ''
         participants_filtered_list = self.get_participants_filtered_data()
         # Process participants/diagnosis (Per_participant directory)
@@ -2633,11 +2662,11 @@ class ExportExecution:
             # TODO (NES-987): change this like in other places
             file_extension = 'tsv'
             separator = '\t'
-            export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
         else:
             file_extension = 'csv'
             separator = ','
-            export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
+
+        export_filename = '%s.%s' % (self.get_input_data('participants')['output_filename'], file_extension)
 
         complete_filename = path.join(base_export_directory, export_filename)
 
@@ -2668,14 +2697,14 @@ class ExportExecution:
 
         if diagnosis_input_data['output_list'] and participants_filtered_list:
             export_rows_diagnosis = self.process_diagnosis_data(
-                diagnosis_input_data['output_list'], participants_filtered_list)
+                diagnosis_input_data['output_list'], participants_filtered_list, heading_type)
 
             # TODO (NES-987): refactor this as in other places
             file_extension = 'tsv' if 'tsv' in self.get_input_data('filesformat_type') else 'csv'
             export_filename = ('%s.' + file_extension) % self.get_input_data('diagnosis')['output_filename']
             complete_filename = path.join(base_export_directory, export_filename)
 
-            diagnosis_headers, diagnosis_field_types = self._set_diagnosis_fields()
+            diagnosis_field_types = self._set_diagnosis_fields()
 
             self.files_to_zip_list.append([
                 complete_filename, base_directory,
@@ -2685,7 +2714,7 @@ class ExportExecution:
                     'format': file_extension, 'mediatype': 'text/%s' % file_extension, 'encoding': 'UTF-8',
                     'profile': 'tabular-data-resource',
                     'schema': {
-                        'fields': self._set_datapackage_table_schema(diagnosis_headers, diagnosis_field_types)
+                        'fields': self._set_datapackage_table_schema(export_rows_diagnosis[0], diagnosis_field_types)
                     }
                 }
             ])
@@ -2699,8 +2728,10 @@ class ExportExecution:
 
     @staticmethod
     def _get_type(model_field):
-        if model_field is CharField or model_field is TextField or model_field is DateField:
+        if model_field is CharField or model_field is TextField:
             return 'string'
+        elif model_field is DateField:
+            return 'date'
         elif model_field is FloatField:
             # TODO (NES-987): change for 'number' cf. https://tools.ietf.org/html/draft-zyp-json-schema-03#section-5.1
             return 'number'
@@ -2711,7 +2742,7 @@ class ExportExecution:
         fields = []
         for header, field in zip(headers, model_fields):
             field_info = {
-                'name': slugify(header), 'title': header, 'format': 'default', 'type': self._get_type(field)
+                'name': header, 'title': header, 'format': 'default', 'type': self._get_type(field)
             }
             fields.append(field_info)
 
@@ -2768,13 +2799,11 @@ class ExportExecution:
             'medicalrecorddata__diagnosis__classification_of_diseases__abbreviated_description':
                 ClassificationOfDiseases._meta.get_field('abbreviated_description').__class__
         }
-        diagnosis_headers = []
         diagnosis_field_types = []
         for field in self.get_input_data('diagnosis')['output_list']:
-            diagnosis_headers.append(field['header'])
             diagnosis_field_types.append(field_types[field['field']])
 
-        return diagnosis_headers, diagnosis_field_types
+        return diagnosis_field_types
 
     @staticmethod
     def _set_questionnaire_metadata_fields():
@@ -2809,7 +2838,7 @@ class ExportExecution:
                 if abbreviated_data(item[key], heading_type) == participant_field)
             fields.append({
                 # str(field_info[key]) needed because of PATIENT_FIELDS 'description' keys are localized
-                'name': field_info['header'],
+                'name': abbreviated_data(str(field_info[key]), heading_type),
                 'title': abbreviated_data(str(field_info[key]), heading_type), 'type': field_info['json_data_type'],
                 'format': 'default'
             })
@@ -2820,10 +2849,13 @@ class ExportExecution:
             #  If they're not alowed fixes test. Questions 'q1', 'q2'
             question_cleared = re.search('([a-zA-Z0-9]+)(\[?)', question_field).group(1)
             question = next(item for item in questions if item['title'] == question_cleared)
-            type = QUESTION_TYPES[question['type']][1]
             title = question_header_questionnaire if heading_type != 'code' else question_field
-            fields.append({
-                'name': slugify(question_field), 'title': title, 'type': type, 'format': 'default'
+            type = QUESTION_TYPES[question['type']][1]
+            format = QUESTION_TYPES[question['type']][2]
+            # i + 2: currently in exportation, question headers are inserted between
+            # [participant_code, age] and the rest of participant fields when those exists
+            fields.insert(i + 2, {
+                'name': title, 'title': title, 'type': type, 'format': format
             })
 
         return fields
@@ -2863,7 +2895,7 @@ class ExportExecution:
     def _build_participant_datapackage_dict(self, request):
         title = 'Questionnaires Answered by Participants Outside Experiment Scope'
         name = slugify(title)
-        description = 'Export made \"Per Participant\": the files contains metadata and responses of ' \
+        description = 'Export made \"Per Participant\": the files contain metadata and responses of ' \
                       'questionnaires filled outside any experiment in the system. They can be entrance ' \
                       'questionnaires.'
         date_created = str(datetime.now().replace(microsecond=0))
@@ -3532,7 +3564,7 @@ class ExportExecution:
         # Filter data (participants)
         questionnaire_responses = QuestionnaireResponse.objects.filter(survey__lime_survey_id=questionnaire_id)
 
-        # Include new filter that come from advanced search
+        # Include new filter that comes from advanced search
         filtered_data = self.get_participants_filtered_data()
         questionnaire_responses = questionnaire_responses.filter(patient_id__in=filtered_data)
 
@@ -3574,7 +3606,7 @@ class ExportExecution:
                 if field in fill_list1[0]:
                     subscripts.append(fill_list1[0].index(field))
 
-            # if responses exits
+            # If responses exists
             if subscripts:
                 data_from_lime_survey = {}
 

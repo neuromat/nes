@@ -3,13 +3,6 @@
 
 {% load i18n admin_static %}
 
-{% block header %}
-    {% load static %}
-{#    <script src="{% static 'quiz/js/add_description_to_emg_setting.js' %}"></script>#}
-    {% block specific_header %}
-    {% endblock %}
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="tms_setting_form" method="post" data-toggle="validator">

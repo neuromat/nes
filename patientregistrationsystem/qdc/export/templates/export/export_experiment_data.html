@@ -4,17 +4,6 @@
 
 {% block activeExport %}class="active"{% endblock %}
 
-{% block header %}
-    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
-    <script src="{% static 'quiz/js/questionnaire_export.js' %}"></script>
-    <script>
-        $(document).ready(function () {
-            $('[data-toggle="tooltip"]').tooltip();
-        });
-    </script>
-
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="export_form" method="post" data-toggle="validator">
@@ -315,7 +304,8 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label"><b style="color: red;">{% trans "Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                                        <label class="control-label"><b style="color: red;">
+                                            {% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
                                             (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
                                     </div>
                                 </div>
@@ -422,7 +412,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label"><b style="color: red;">{% trans "Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
+                                        <label class="control-label"><b style="color: red;">{% trans "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey." %}
                                             (<small>{% trans "See more details in" %} <a href="https://nes.readthedocs.io/en/latest/limesurvey/bestpractices.html#best-pratices-and-recommendations"><i>Best Practices and Recommendations</i></a></small>)</b></label>
                                     </div>
                                 </div>
@@ -494,4 +484,14 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/multiselect/multiselect.min.js' %}"></script>
+    <script src="{% static 'quiz/js/questionnaire_export.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 {% endblock %}

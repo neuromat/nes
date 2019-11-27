@@ -2,13 +2,6 @@
 
 {% load i18n %}
 
-{% block header %}
-    {% load static %}
-    <script src="{% static 'quiz/js/experiment_selection.js' %}"></script>
-    {% block specific_header %}
-    {% endblock %}
-{% endblock %}
-
 {% block activeExport %}class="active"{% endblock %}
 
 {% block form %}
@@ -97,9 +90,9 @@
                         <div class="col-xs-12 col-xs-12">
                             <p><strong>{% trans "License" %}</strong></p>
                             <input type="radio" name="license" id="license1" value="0" checked>
-                            <label for="license1">Copyright</label><br>
+                            <label for="license1">Creative Commons</label><br>
                             <input type="radio" name="license" id="license2" value="1">
-                            <label for="license2">Creative Commons</label>
+                            <label for="license2">Copyright</label>
                         </div>
                     </div>
                 </div>
@@ -126,4 +119,9 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    {% load static %}
+    <script src="{% static 'quiz/js/experiment_selection.js' %}"></script>
 {% endblock %}

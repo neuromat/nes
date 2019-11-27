@@ -3,14 +3,6 @@
 
 {% load i18n admin_static %}
 
-{% block header %}
-    {% load static %}
-    <script src="{% static 'quiz/js/add_equipment_to_eeg_setting.js' %}"></script>
-
-    {% block specific_header %}
-    {% endblock %}
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="eeg_setting_form" method="post" data-toggle="validator">
@@ -128,4 +120,8 @@
 {% block end_form %}
     </form>
 </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/add_equipment_to_eeg_setting.js' %}"></script>
 {% endblock %}

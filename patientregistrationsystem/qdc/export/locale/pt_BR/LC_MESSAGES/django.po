@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 15:35-0300\n"
+"POT-Creation-Date: 2019-11-14 14:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,20 +16,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export/export.py:78 export/export.py:79 export/views.py:52
+#: export/export.py:79 export/export.py:80 export/views.py:52
 msgid "Participant code"
 msgstr "Código de Participante"
 
-#: export/export.py:184 export/tests/test_views.py:1400
+#: export/export.py:185 export/tests/test_views.py:1407
 #: export/tests/tests_orig.py:161
 msgid "Base path does not exist"
 msgstr "Diretório base não existe"
 
-#: export/export.py:2445 export/export.py:3627 export/views.py:1175
+#: export/export.py:2481 export/export.py:3688 export/views.py:1175
 msgid "Yes"
 msgstr "Sim"
 
-#: export/export.py:2445 export/export.py:3627 export/views.py:1175
+#: export/export.py:2481 export/export.py:3688 export/views.py:1175
 msgid "No"
 msgstr "Não"
 
@@ -61,15 +61,15 @@ msgstr "Valores separados por vírgula"
 msgid "Tab separated values"
 msgstr "Valores separados por tabulação"
 
-#: export/forms.py:49
+#: export/forms.py:44
 msgid "Response must be selected"
 msgstr "Resposta deve ser selecionada"
 
-#: export/forms.py:103
+#: export/forms.py:94
 msgid "Min age must be filled."
 msgstr "Idade mínima deve ser preenchida."
 
-#: export/forms.py:106
+#: export/forms.py:97
 msgid "Max age must be filled."
 msgstr "Idade máxima deve ser preenchida."
 
@@ -118,15 +118,15 @@ msgstr "Grupos"
 #: export/templates/export/experiment_selection.html:91
 #: export/templates/export/export_data.html:262
 #: export/templates/export/export_data.html:284
-#: export/templates/export/export_experiment_data.html:450
-#: export/templates/export/export_experiment_data.html:472
+#: export/templates/export/export_experiment_data.html:451
+#: export/templates/export/export_experiment_data.html:473
 msgid "* use ctrl-click to select more than one field. (command-click on Mac)"
 msgstr ""
 "* use control-click para selecionar mais do que um campo. (command-click em "
 "Mac)"
 
 #: export/templates/export/experiment_selection.html:98
-#: export/templates/export/export_data.html:147 export/tests/test_views.py:3629
+#: export/templates/export/export_data.html:147 export/tests/test_views.py:3585
 msgid "License"
 msgstr "Licença"
 
@@ -138,7 +138,7 @@ msgstr "Próximo"
 
 #: export/templates/export/experiment_selection.html:116
 #: export/templates/export/export_data.html:297
-#: export/templates/export/export_experiment_data.html:482
+#: export/templates/export/export_experiment_data.html:483
 #: export/templates/export/participant_selection.html:197
 #: export/templates/export/show_selected_participants.html:100
 msgid "Cancel"
@@ -190,7 +190,7 @@ msgstr "Formato dos arquivos: "
 
 #: export/templates/export/export_data.html:157
 #: export/templates/export/export_experiment_data.html:237
-#: export/templates/export/export_experiment_data.html:337
+#: export/templates/export/export_experiment_data.html:338
 msgid "Questionnaire information"
 msgstr "Informações de questionários"
 
@@ -200,55 +200,55 @@ msgstr "Questionários - Respondidos pelos participantes"
 
 #: export/templates/export/export_data.html:179
 #: export/templates/export/export_experiment_data.html:255
-#: export/templates/export/export_experiment_data.html:358
+#: export/templates/export/export_experiment_data.html:359
 msgid "Fields available:"
 msgstr "Campos disponíveis:"
 
 #: export/templates/export/export_data.html:184
 #: export/templates/export/export_experiment_data.html:260
-#: export/templates/export/export_experiment_data.html:363
+#: export/templates/export/export_experiment_data.html:364
 msgid "Please, select a questionnaire from the list."
 msgstr "Por favor, selecione um questionário da lista"
 
 #: export/templates/export/export_data.html:215
 #: export/templates/export/export_experiment_data.html:291
-#: export/templates/export/export_experiment_data.html:394
+#: export/templates/export/export_experiment_data.html:395
 msgid "Fields chosen:"
 msgstr "Campos escolhidos:"
 
 #: export/templates/export/export_data.html:247
-#: export/templates/export/export_experiment_data.html:437
+#: export/templates/export/export_experiment_data.html:438
 msgid "Participants"
 msgstr "Participantes"
 
 #: export/templates/export/export_data.html:253
-#: export/templates/export/export_experiment_data.html:441
+#: export/templates/export/export_experiment_data.html:442
 msgid "Participant fields"
 msgstr "Campos de participante"
 
 #: export/templates/export/export_data.html:256
-#: export/templates/export/export_experiment_data.html:444
+#: export/templates/export/export_experiment_data.html:445
 msgid "Please, select a patient field from the list."
 msgstr "Por favor, selecione um participante da lista"
 
 #: export/templates/export/export_data.html:270
-#: export/templates/export/export_experiment_data.html:458
+#: export/templates/export/export_experiment_data.html:459
 #: export/templates/export/participant_selection.html:124
 msgid "Diagnosis"
 msgstr "Diagnóstico"
 
 #: export/templates/export/export_data.html:275
-#: export/templates/export/export_experiment_data.html:463
+#: export/templates/export/export_experiment_data.html:464
 msgid "Diagnosis fields"
 msgstr "Campos de diagnóstico"
 
 #: export/templates/export/export_data.html:278
-#: export/templates/export/export_experiment_data.html:466
+#: export/templates/export/export_experiment_data.html:467
 msgid "Please, select a diagnosis field from the list."
 msgstr "Por favor, selecione um campo de diagnóstico da lista"
 
 #: export/templates/export/export_data.html:293
-#: export/templates/export/export_experiment_data.html:486
+#: export/templates/export/export_experiment_data.html:487
 msgid "Run"
 msgstr "Executar"
 
@@ -320,20 +320,17 @@ msgstr "Dados de estímulo"
 msgid "Generic Data"
 msgstr "Dados de coleta genérica"
 
-#: export/templates/export/export_experiment_data.html:318
-#: export/templates/export/export_experiment_data.html:425
-msgid ""
-"Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey."
-msgstr ""
-"Esteja ciente que o NES não importa arquivos carregados em questões no "
-"Limesurvey"
-
 #: export/templates/export/export_experiment_data.html:319
 #: export/templates/export/export_experiment_data.html:426
+msgid "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey."
+msgstr "O NES não importa arquivos carregados em questões no Limesurvey"
+
+#: export/templates/export/export_experiment_data.html:320
+#: export/templates/export/export_experiment_data.html:427
 msgid "See more details in"
 msgstr "Veja mais detalhes em"
 
-#: export/templates/export/export_experiment_data.html:325
+#: export/templates/export/export_experiment_data.html:326
 msgid "There is no questionnaires for the filtered participants"
 msgstr "Não há questionários para os participantes selecionados"
 
@@ -389,7 +386,7 @@ msgstr "Entre com um diagnóstico"
 
 #: export/templates/export/participant_selection.html:157
 #: export/templates/export/show_selected_participants.html:49
-#: export/tests/test_views.py:413 export/views.py:53
+#: export/tests/test_views.py:420 export/views.py:53
 msgid "Age"
 msgstr "Idade"
 
@@ -432,295 +429,295 @@ msgstr "Cidade"
 msgid "Previous"
 msgstr "Anterior"
 
-#: export/tests/test_views.py:413 export/tests/test_views.py:1751
+#: export/tests/test_views.py:420 export/tests/test_views.py:1789
 #, fuzzy
 #| msgid "Question code"
 msgid "Acquisition date:"
 msgstr "Código da questão"
 
-#: export/tests/test_views.py:413
+#: export/tests/test_views.py:420
 #, fuzzy
 #| msgid "Filters selection"
 msgid "First Question"
 msgstr "Seleção de filtros"
 
-#: export/tests/test_views.py:414
+#: export/tests/test_views.py:421
 msgid "Second Question"
 msgstr ""
 
-#: export/tests/test_views.py:414
+#: export/tests/test_views.py:421
 msgid "File Upload"
 msgstr ""
 
-#: export/tests/test_views.py:1421 export/views.py:254
+#: export/tests/test_views.py:1428 export/views.py:255
 msgid "Inconsistent data read from json file"
 msgstr "Dados inconsistentes do arquivo de entrada"
 
-#: export/tests/test_views.py:1466 export/views.py:412
+#: export/tests/test_views.py:1473 export/views.py:414
 msgid "Please select at least one patient attribute"
 msgstr "Por favor, selecione pelo meno um atributo de participante"
 
-#: export/tests/test_views.py:1754
+#: export/tests/test_views.py:1791
 msgid "Fünf Punkte Wahl"
 msgstr ""
 
-#: export/tests/test_views.py:1757
+#: export/tests/test_views.py:1793
 msgid "Dropdown Liste"
 msgstr ""
 
-#: export/tests/test_views.py:1760
+#: export/tests/test_views.py:1795
 msgid "Liste (radio)"
 msgstr ""
 
-#: export/tests/test_views.py:1763
+#: export/tests/test_views.py:1797
 msgid "Liste mit Kommentar"
 msgstr ""
 
-#: export/tests/test_views.py:1763
-msgid "Liste mit Komme.. "
-msgstr ""
-
-#: export/tests/test_views.py:1766
-msgid "Liste mit Kommentar [Comment]"
-msgstr ""
-
-#: export/tests/test_views.py:1767
-msgid "Liste mit Komme..  [Comment]"
-msgstr ""
-
-#: export/tests/test_views.py:1770 export/tests/test_views.py:1771
-msgid "Array [Unterfrage eins]"
-msgstr ""
-
-#: export/tests/test_views.py:1774 export/tests/test_views.py:1775
-msgid "Array [Unterfrage zwei]"
-msgstr ""
-
-#: export/tests/test_views.py:1778
-msgid "Array (Zehn Punkte Wahl) [Unterfrage eins]"
-msgstr ""
-
-#: export/tests/test_views.py:1779
-msgid "Array (Zehn Pun..  [Unterfrage eins]"
-msgstr ""
-
-#: export/tests/test_views.py:1782
-msgid "Array (Zehn Punkte Wahl) [Unterfrage zwei]"
-msgstr ""
-
-#: export/tests/test_views.py:1783
-msgid "Array (Zehn Pun..  [Unterfrage zwei]"
-msgstr ""
-
-#: export/tests/test_views.py:1786
-msgid "Array (Fünf Punkte Wahl) [Unterfrage eins]"
-msgstr ""
-
-#: export/tests/test_views.py:1787
-msgid "Array (Fünf Pun..  [Unterfrage eins]"
-msgstr ""
-
-#: export/tests/test_views.py:1790
-msgid "Array (Fünf Punkte Wahl) [Unterfrage zwei]"
-msgstr ""
-
-#: export/tests/test_views.py:1791
-msgid "Array (Fünf Pun..  [Unterfrage zwei]"
-msgstr ""
-
-#: export/tests/test_views.py:1794
-msgid "Array (Erhöhen/Gleiche/Verringern) [Unterfrage eins]"
-msgstr ""
-
-#: export/tests/test_views.py:1795
-msgid "Array (Erhöhen/..  [Unterfrage eins]"
-msgstr ""
-
-#: export/tests/test_views.py:1798
-msgid "Array (Erhöhen/Gleiche/Verringern) [Unterfrage zwei]"
+#: export/tests/test_views.py:1797
+msgid "Liste mit Komme.."
 msgstr ""
 
 #: export/tests/test_views.py:1799
+msgid "Liste mit Kommentar [Comment]"
+msgstr ""
+
+#: export/tests/test_views.py:1799
+msgid "Liste mit Komme..  [Comment]"
+msgstr ""
+
+#: export/tests/test_views.py:1801
+msgid "Array [Unterfrage eins]"
+msgstr ""
+
+#: export/tests/test_views.py:1803
+msgid "Array [Unterfrage zwei]"
+msgstr ""
+
+#: export/tests/test_views.py:1805
+msgid "Array (Zehn Punkte Wahl) [Unterfrage eins]"
+msgstr ""
+
+#: export/tests/test_views.py:1805
+msgid "Array (Zehn Pun..  [Unterfrage eins]"
+msgstr ""
+
+#: export/tests/test_views.py:1807
+msgid "Array (Zehn Punkte Wahl) [Unterfrage zwei]"
+msgstr ""
+
+#: export/tests/test_views.py:1807
+msgid "Array (Zehn Pun..  [Unterfrage zwei]"
+msgstr ""
+
+#: export/tests/test_views.py:1809
+msgid "Array (Fünf Punkte Wahl) [Unterfrage eins]"
+msgstr ""
+
+#: export/tests/test_views.py:1809
+msgid "Array (Fünf Pun..  [Unterfrage eins]"
+msgstr ""
+
+#: export/tests/test_views.py:1811
+msgid "Array (Fünf Punkte Wahl) [Unterfrage zwei]"
+msgstr ""
+
+#: export/tests/test_views.py:1811
+msgid "Array (Fünf Pun..  [Unterfrage zwei]"
+msgstr ""
+
+#: export/tests/test_views.py:1813
+msgid "Array (Erhöhen/Gleiche/Verringern) [Unterfrage eins]"
+msgstr ""
+
+#: export/tests/test_views.py:1813
+msgid "Array (Erhöhen/..  [Unterfrage eins]"
+msgstr ""
+
+#: export/tests/test_views.py:1815
+msgid "Array (Erhöhen/Gleiche/Verringern) [Unterfrage zwei]"
+msgstr ""
+
+#: export/tests/test_views.py:1815
 msgid "Array (Erhöhen/..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1802 export/tests/test_views.py:1803
+#: export/tests/test_views.py:1817
 msgid "Array (Zahlen) [Unterfrage eins][Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1806 export/tests/test_views.py:1807
+#: export/tests/test_views.py:1819
 msgid "Array (Zahlen) [Unterfrage zwei][Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1810 export/tests/test_views.py:1811
+#: export/tests/test_views.py:1821
 msgid "Array (Texte) [Unterfrage eins][Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1814 export/tests/test_views.py:1815
+#: export/tests/test_views.py:1823
 msgid "Array (Texte) [Unterfrage eins][Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1818
+#: export/tests/test_views.py:1825
 msgid "Array (Ja/Nein/Unsicher) [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1819
+#: export/tests/test_views.py:1825
 msgid "Array (Ja/Nein/..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1822
+#: export/tests/test_views.py:1827
 msgid "Array (Ja/Nein/Unsicher) [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1823
+#: export/tests/test_views.py:1827
 msgid "Array (Ja/Nein/..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1826 export/tests/test_views.py:1827
+#: export/tests/test_views.py:1829
 msgid "Array von Spalte [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1830 export/tests/test_views.py:1831
+#: export/tests/test_views.py:1831
 msgid "Array von Spalte [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1834 export/tests/test_views.py:1835
+#: export/tests/test_views.py:1833
 msgid "Array Duale Skala [Unterfrage eins][Scale 1]"
 msgstr ""
 
-#: export/tests/test_views.py:1838 export/tests/test_views.py:1839
+#: export/tests/test_views.py:1835
 msgid "Array Duale Skala [Unterfrage eins][Scale 2]"
 msgstr ""
 
-#: export/tests/test_views.py:1842 export/tests/test_views.py:1843
+#: export/tests/test_views.py:1837
 msgid "Array Duale Skala [Unterfrage zwei][Scale 1]"
 msgstr ""
 
-#: export/tests/test_views.py:1846 export/tests/test_views.py:1847
+#: export/tests/test_views.py:1839
 msgid "Array Duale Skala [Unterfrage zwei][Scale 2]"
 msgstr ""
 
-#: export/tests/test_views.py:1850
+#: export/tests/test_views.py:1841
 msgid "Terminzeit"
 msgstr ""
 
-#: export/tests/test_views.py:1853
+#: export/tests/test_views.py:1843
 msgid "Gleichung"
 msgstr ""
 
-#: export/tests/test_views.py:1856
+#: export/tests/test_views.py:1845
 msgid "Datei-Upload"
 msgstr ""
 
-#: export/tests/test_views.py:1859
+#: export/tests/test_views.py:1847
 msgid "filecount - Datei-Upload"
 msgstr ""
 
-#: export/tests/test_views.py:1860
-msgid "filecount - Dat.. "
+#: export/tests/test_views.py:1847
+msgid "filecount - Dat.."
 msgstr ""
 
-#: export/tests/test_views.py:1863
+#: export/tests/test_views.py:1849
 msgid "Geschlecht"
 msgstr ""
 
-#: export/tests/test_views.py:1866
+#: export/tests/test_views.py:1851
 msgid "Sprachumschaltung"
 msgstr ""
 
-#: export/tests/test_views.py:1869
+#: export/tests/test_views.py:1853
 msgid "Mehrfache numerische Eingabe [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1870
+#: export/tests/test_views.py:1853
 msgid "Mehrfache numer..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1873
+#: export/tests/test_views.py:1855
 msgid "Mehrfache numerische Eingabe [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1874
+#: export/tests/test_views.py:1855
 msgid "Mehrfache numer..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1877
+#: export/tests/test_views.py:1857
 msgid "Numerische Eingabe"
 msgstr ""
 
-#: export/tests/test_views.py:1880
+#: export/tests/test_views.py:1859
 msgid "Rang [Rank 1]"
 msgstr ""
 
-#: export/tests/test_views.py:1883
+#: export/tests/test_views.py:1861
 msgid "Rang [Rank 2]"
 msgstr ""
 
-#: export/tests/test_views.py:1886
+#: export/tests/test_views.py:1863
 msgid "Textanzeige"
 msgstr ""
 
-#: export/tests/test_views.py:1889
+#: export/tests/test_views.py:1865
 msgid "Ja/Nein"
 msgstr ""
 
-#: export/tests/test_views.py:1892
+#: export/tests/test_views.py:1867
 msgid "Reisiger Freitext"
 msgstr ""
 
-#: export/tests/test_views.py:1895
+#: export/tests/test_views.py:1869
 msgid "Langer freier Text"
 msgstr ""
 
-#: export/tests/test_views.py:1898
+#: export/tests/test_views.py:1871
 msgid "Mehrfacher Kurztext [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1899
+#: export/tests/test_views.py:1871
 msgid "Mehrfacher Kurz..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1902
+#: export/tests/test_views.py:1873
 msgid "Mehrfacher Kurztext [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1903
+#: export/tests/test_views.py:1873
 msgid "Mehrfacher Kurz..  [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1906
+#: export/tests/test_views.py:1875
 msgid "Kurzer Freitext"
 msgstr ""
 
-#: export/tests/test_views.py:1909 export/tests/test_views.py:1910
+#: export/tests/test_views.py:1877
 msgid "Mehrfachauswahl [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1913 export/tests/test_views.py:1914
+#: export/tests/test_views.py:1879
 msgid "Mehrfachauswahl [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1917
+#: export/tests/test_views.py:1881
 msgid "Mehrfachauswahl mit Kommentaren [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1918
+#: export/tests/test_views.py:1881
 msgid "Mehrfachauswahl..  [Unterfrage eins]"
 msgstr ""
 
-#: export/tests/test_views.py:1921 export/tests/test_views.py:1929
+#: export/tests/test_views.py:1883 export/tests/test_views.py:1887
 msgid "Mehrfachauswahl mit Kommentaren [Comment]"
 msgstr ""
 
-#: export/tests/test_views.py:1922 export/tests/test_views.py:1930
+#: export/tests/test_views.py:1883 export/tests/test_views.py:1887
 msgid "Mehrfachauswahl..  [Comment]"
 msgstr ""
 
-#: export/tests/test_views.py:1925
+#: export/tests/test_views.py:1885
 msgid "Mehrfachauswahl mit Kommentaren [Unterfrage zwei]"
 msgstr ""
 
-#: export/tests/test_views.py:1926
+#: export/tests/test_views.py:1885
 msgid "Mehrfachauswahl..  [Unterfrage zwei]"
 msgstr ""
 
@@ -823,19 +820,19 @@ msgstr "Código da doença (CID)"
 msgid "Disease Description"
 msgstr "Descrição da doença"
 
-#: export/views.py:153
+#: export/views.py:154
 msgid "Disease Abbreviated Description"
 msgstr "Descrição da doença abreviada"
 
-#: export/views.py:532
+#: export/views.py:534
 msgid "Export was finished correctly"
 msgstr "Exportação foi finalizada com sucesso"
 
-#: export/views.py:539
+#: export/views.py:541
 msgid "Export data was not generated."
 msgstr "Exportação não foi gerada."
 
-#: export/views.py:556
+#: export/views.py:558
 msgid "No data was select. Export data was not generated."
 msgstr "Nenhum dado foi selecionado. Exportação não foi gerada."
 

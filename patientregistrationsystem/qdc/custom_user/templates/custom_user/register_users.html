@@ -26,11 +26,6 @@
             font-weight: normal !important;
         }
     </style>
-
-    <script src="{% static 'quiz/js/custom_user.js' %}"></script>
-    <script src="{% static 'quiz/js/password.js' %}"></script>
-    <script src="{% static 'quiz/js/password_register.js' %}"></script>
-    <script src="{% static 'quiz/js/custom_user_validation.js' %}"></script>
 {% endblock %}
 
 {% block form %}
@@ -326,4 +321,11 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/custom_user.js' %}"></script>
+    <script src="{% static 'quiz/js/password.js' %}"></script>
+    <script src="{% static 'quiz/js/password_register.js' %}"></script>
+    <script src="{% static 'quiz/js/custom_user_validation.js' %}"></script>
 {% endblock %}

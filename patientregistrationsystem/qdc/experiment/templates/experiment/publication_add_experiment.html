@@ -2,13 +2,6 @@
 
 {% load i18n %}
 
-{% block header %}
-    {% load static %}
-    <script src="{% static 'quiz/js/publication_add_experiment.js' %}"></script>
-    {% block specific_header %}
-    {% endblock %}
-{% endblock %}
-
 {% block activeExport %}class="active"{% endblock %}
 
 {% block form %}
@@ -94,4 +87,9 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    {% load static %}
+    <script src="{% static 'quiz/js/publication_add_experiment.js' %}"></script>
 {% endblock %}

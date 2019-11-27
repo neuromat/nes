@@ -474,10 +474,10 @@ def set_mocks3(mockServer):
     mockServer.return_value.get_participant_properties.side_effect = 3 * [
         {'completed': '2019-06-26'}
     ] + [
-                                                                         {'token': 'pO9iPqlkQzD4zwG'},
-                                                                         {'completed': '2019-06-26'},
-                                                                         {'token': 'g7GaPTLHc2rB6TV'}
-                                                                     ]
+        {'token': 'pO9iPqlkQzD4zwG'},
+        {'completed': '2019-06-26'},
+        {'token': 'g7GaPTLHc2rB6TV'}
+    ]
     mockServer.return_value.export_responses.return_value = \
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9u' \
         'ZGF0ZSIsInN1YmplY3RpZCIsImZpcnN0UXVlc3Rpb24iLCJzZWNvbmRRdWVzdGlvbiIsImZpbGVVcGxvYWQiLCJmaWxlVXBsb2FkW2ZpbGVj' \
@@ -795,6 +795,205 @@ def set_mocks4(mockServer):
     mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Test questionnaire'}
 
 
+def update_mocks4_full_and_abbreviated(mock_server):
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': 'obyBy4HizUhe3j0'},
+        {'completed': '2019-06-26'},
+        {'completed': '2019-06-26'},
+        {'token': 'obyBy4HizUhe3j0'}
+    ]
+    mock_server.return_value.list_questions.side_effect = [
+        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5823, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
+          'relevance': '1',
+          'title': 'fileUpload'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 2,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5822, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
+          'relevance': '1',
+          'title': 'secondQuestion'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5821, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
+          'relevance': '1',
+          'title': 'firstQuestion'}],
+        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5820, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
+          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
+         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5819, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
+          'title': 'acquisitiondate'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 0,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5818, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
+          'question': 'Responsible Identification number:',
+          'relevance': '1', 'title': 'responsibleid'}],
+        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5823, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
+          'relevance': '1',
+          'title': 'fileUpload'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 2,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5822, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
+          'relevance': '1',
+          'title': 'secondQuestion'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5821, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
+          'relevance': '1',
+          'title': 'firstQuestion'}],
+        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5820, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
+          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
+         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5819, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
+          'title': 'acquisitiondate'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 0,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5818, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
+          'question': 'Responsible Identification number:',
+          'relevance': '1', 'title': 'responsibleid'}],
+        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5823, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
+          'relevance': '1',
+          'title': 'fileUpload'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 2,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5822, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
+          'relevance': '1',
+          'title': 'secondQuestion'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5821, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
+          'relevance': '1',
+          'title': 'firstQuestion'}],
+        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5820, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
+          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
+         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5819, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
+          'title': 'acquisitiondate'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 0,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5818, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
+          'question': 'Responsible Identification number:',
+          'relevance': '1', 'title': 'responsibleid'}],
+        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5823, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
+          'relevance': '1',
+          'title': 'fileUpload'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 2,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5822, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
+          'relevance': '1',
+          'title': 'secondQuestion'},
+         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5821, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
+          'relevance': '1',
+          'title': 'firstQuestion'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 3,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5820, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
+          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
+         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 1,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5819, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
+          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
+          'title': 'acquisitiondate'},
+         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
+          'question_order': 0,
+          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5818, 'language': 'en', 'help': '',
+          'parent_qid': 0,
+          'preg': '',
+          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
+          'question': 'Responsible Identification number:',
+          'relevance': '1', 'title': 'responsibleid'}]
+    ]
+
+
 def set_mocks5(mockServer):
     mockServer.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
     mockServer.return_value.get_participant_properties.side_effect = [{'token': 'ceBAtUYdVXOF3ie'}]
@@ -899,16 +1098,18 @@ def set_mocks5(mockServer):
     ]
 
 
-def set_mocks6(mockServer):
-    mockServer.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
-    mockServer.return_value.get_participant_properties.side_effect = [
-        {'completed': '2019-08-02 15:48'}, {'completed': '2019-08-02 15:48'}, {'token': 'q3qEpwISYsxsOHf'}
+def set_mocks6(mock_server):
+    mock_server.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'completed': '2019-08-02 15:48'},
+        {'completed': '2019-08-02 15:48'},
+        {'token': 'q3qEpwISYsxsOHf'}
     ]
-    mockServer.return_value.export_responses.return_value = \
+    mock_server.return_value.export_responses.return_value = \
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9u' \
         'ZGF0ZSIsInN1YmplY3RpZCIsIlRleHRmcmFnZSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwicTNxRXB3SVNZc3hzT0hm' \
         'IiwiMiIsIjIwMTktMDItMDggMDA6MDA6MDAiLCIyIiwiRWluZmFjaCBBbnR3b3J0IgoK'
-    mockServer.return_value.list_groups.return_value = [
+    mock_server.return_value.list_groups.return_value = [
         {'description': '', 'group_name': 'Gruppe Eins', 'gid': 1950, 'sid': LIMESURVEY_SURVEY_ID_1,
          'id': {'language': 'en', 'gid': 1950}, 'group_order': 2, 'language': 'en', 'grelevance': '',
          'randomization_group': ''},
@@ -919,7 +1120,7 @@ def set_mocks6(mockServer):
          'id': {'language': 'en', 'gid': 1949}, 'group_order': 1, 'language': 'en', 'grelevance': '',
          'randomization_group': ''}
     ]
-    mockServer.return_value.list_questions.side_effect = [
+    mock_server.return_value.list_questions.side_effect = [
         [{'scale_id': 0, 'id': {'language': 'en', 'qid': 6155}, 'modulename': None, 'parent_qid': 0, 'other': 'N',
           'help': '', 'question': 'Responsible Identification number:', 'preg': '', 'title': 'responsibleid',
           'type': 'N', 'question_order': 0, 'same_default': 0, 'relevance': '1', 'sid': LIMESURVEY_SURVEY_ID_1,
@@ -1021,7 +1222,7 @@ def set_mocks6(mockServer):
           'mandatory': 'Y',
           'gid': 1949, 'qid': 6157, 'language': 'en'}]
     ]
-    mockServer.return_value.get_question_properties.side_effect = 2 * [
+    mock_server.return_value.get_question_properties.side_effect = 2 * [
         {'question_order': 1, 'title': 'Textfrage', 'other': 'N', 'gid': 1950,
          'attributes_lang': 'No available attributes', 'subquestions': 'No available answers',
          'question': '', 'answeroptions': 'No available answer options', 'type': 'S',
@@ -1039,10 +1240,48 @@ def set_mocks6(mockServer):
          'question': 'Participant Identification number<b>:</b>', 'answeroptions': 'No available answer options',
          'type': 'N', 'attributes': {'hidden': '1'}},
     ]
-    mockServer.return_value.get_language_properties.return_value = {'surveyls_title': 'Einfacher Fragebogen'}
+    mock_server.return_value.get_language_properties.return_value = {'surveyls_title': 'Einfacher Fragebogen'}
+
+
+def update_mocks6_full(mock_server):
+    """Update mocks for set_mocks6 for full questions export
+    :param mock_server: mock object created from jsonrpc_requests.Server object
+    """
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': 'q3qEpwISYsxsOHf'},
+        {'completed': '2019-08-02 15:48'},
+        {'completed': '2019-08-02 15:48'},
+        {'token': 'q3qEpwISYsxsOHf'},
+    ]
+    mock_server.return_value.export_responses_by_token.return_value = \
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjc' \
+        'XVpc2l0aW9uZGF0ZSIsInN1YmplY3RpZCIsIlRleHRmcmFnZSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIi' \
+        'wicTNxRXB3SVNZc3hzT0hmIiwiMiIsIjIwMTktMDItMDggMDA6MDA6MDAiLCIyIiwiRWluZmFjaCBBbnR3b3J0IgoK'
+
+
+def update_mocks6_abbreviated(mock_server):
+    """Update mocks for set_mocks6 for abbreviated questions export
+    :param mock_server: mock object created from jsonrpc_requests.Server object
+    """
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': 'q3qEpwISYsxsOHf'},
+        {'completed': '2019-08-02 15:48'},
+        {'completed': '2019-08-02 15:48'},
+        {'token': 'q3qEpwISYsxsOHf'},
+    ]
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjc'
+        'XVpc2l0aW9uZGF0ZSIsInN1YmplY3RpZCIsIlRleHRmcmFnZSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIi'
+        'wicTNxRXB3SVNZc3hzT0hmIiwiMiIsIjIwMTktMDItMDggMDA6MDA6MDAiLCIyIiwiRWluZmFjaCBBbnR3b3J0IgoK',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzc'
+        'G9uc2libGUgSWRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJUZXh0IEZyYWdlIgoiMS'
+        'IsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyIiwiZW4iLCJxM3FFcHdJU1lzeHNPSGYiLCIyIiwiMjAxOS0wMi0wOCAwMDowMDo'
+        'wMCIsIjIiLCJFaW5mYWNoIEFudHdvcnQiCgo='
+    ]
 
 
 def set_mocks7(mock_server):
+    # TODO (NES-991): put docstrings here and in other functions
     mock_server.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
     mock_server.return_value.get_participant_properties.side_effect = [
         {'completed': '2019-08-05 17:33'},
@@ -2499,10 +2738,73 @@ def set_mocks7(mock_server):
     ]
 
 
-def set_mocks8(mock_server):
-    mock_server.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
-    mock_server.return_value.get_participant_properties.return_value = {'token': 'SacEKy2OnQDkBwa'}
-    mock_server.return_value.export_responses.side_effect = [
+def update_mocks7_full(mock_server):
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': 'MHwQ04bv2DQYisN'},
+        {'completed': '2019-08-05 17:33'},
+        {'completed': '2019-08-05 17:33'},
+        {'token': 'MHwQ04bv2DQYisN'}
+    ]
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhci'
+        'IsImxpc3RlbWl0a29tbWVudGFyW2NvbW1lbnRdIiwiYXJyYXlbU1EwMDFdIiwiYXJyYXlbU1EwMDJdIiwiYXJyYXl6ZWhucHVua3Rld2FobFt'
+        'TUTAwMV0iLCJhcnJheXplaG5wdW5rdGV3YWhsW1NRMDAyXSIsImFycmF5ZnVuZnB1bmt0ZXdhaGxbU1EwMDFdIiwiYXJyYXlmdW5mcHVua3Rl'
+        'd2FobFtTUTAwMl0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMV0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMl0iLCJhcnJheXpha'
+        'GxlbltTUTAwMV9TUTAwMV0iLCJhcnJheXphaGxlbltTUTAwMl9TUTAwMV0iLCJhcnJheXRleHRlW1NRMDAxX1NRMDAxXSIsImFycmF5dGV4dG'
+        'VbU1EwMDFfU1EwMDJdIiwiYXJyYXlqYW5laW51bnNpY2hlcltTUTAwMV0iLCJhcnJheWphbmVpbnVuc2ljaGVyW1NRMDAyXSIsImFycmF5dm9'
+        'uc3BhbHRlW1NRMDAxXSIsImFycmF5dm9uc3BhbHRlW1NRMDAyXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMV1bMV0iLCJhcnJheWR1YWxlc2th'
+        'bGFbU1EwMDFdWzJdIiwiYXJyYXlkdWFsZXNrYWxhW1NRMDAyXVsxXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMl1bMl0iLCJ0ZXJtaW56ZWl0I'
+        'iwiZ2xlaWNodW5nIiwiZGF0ZWl1cGxvYWQiLCJkYXRlaXVwbG9hZFtmaWxlY291bnRdIiwiZ2VzY2hsZWNodCIsInNwcmFjaHVtc2NoYWx0dW'
+        '5nIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDFdIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDJdIiwibnVtZXJpc2NoZWVpbmdhYmU'
+        'iLCJyYW5nWzFdIiwicmFuZ1syXSIsInRleHRhbnplaWdlIiwiamFuZWluIiwicmVpc2lnZXJmcmVpdGV4dCIsImxhbmdlcmZyZWllcnRleHQi'
+        'LCJtZWhyZmFjaGVya3VyenRleHRbU1EwMDFdIiwibWVocmZhY2hlcmt1cnp0ZXh0W1NRMDAyXSIsImt1cnplcmZyZWl0ZXh0IiwibWVocmZhY'
+        '2hhdXN3YWhsW1NRMDAxXSIsIm1laHJmYWNoYXVzd2FobFtTUTAwMl0iLCJtZWhyZmFjaGF1c3dhaGxtaXRrb1tTUTAwMV0iLCJtZWhyZmFjaG'
+        'F1c3dhaGxtaXRrb1tTUTAwMWNvbW1lbnRdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1EwMDJdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1E'
+        'wMDJjb21tZW50XSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiTUh3UTA0YnYyRFFZaXNOIiwiMiIsIjIwMTktMDUtMDgg'
+        'MDA6MDA6MDAiLCIzIiwiNSIsIkExIiwiQTEiLCJBMiIsIkVpbiBLb21tZW50YXIiLCJBMiIsIkExIiwiNiIsIjEiLCIyIiwiNCIsIkQiLCJTI'
+        'iwiNCIsIjkiLCJhIiwiYiIsIk4iLCJZIiwiQTEiLCJBMiIsIiIsIkExIiwiQTEiLCIiLCIyMDE5LTA4LTA1IDAwOjAwOjAwIiwiR2xlaWNodW'
+        '5nIiwiIiwiMCIsIk0iLCJlbiIsIjEiLCIyIiwiMTMiLCJBMSIsIiIsIiIsIk4iLCJFaW4gcmVpc2lnZXIgRnJlaXRleHQiLCJFaW4gbGFuZ2V'
+        'yIGZyZWllciBUZXh0IiwiYSIsImIiLCJhIiwiWSIsIiIsIlkiLCJjIiwiWSIsImQiCgo =',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIk'
+        'bDvG5mIFB1bmt0ZSBXYWhsIiwiRHJvcGRvd24gTGlzdGUiLCJMaXN0ZSAocmFkaW8pIiwiTGlzdGUgbWl0IEtvbW1lbnRhciIsIkxpc3RlIG1'
+        'pdCBLb21tZW50YXIgW0NvbW1lbnRdIiwiQXJyYXkgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5'
+        'IChaZWhuIFB1bmt0ZSBXYWhsKSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IChaZWhuIFB1bmt0ZSBXYWhsKSBbVW50ZXJmcmFnZSB6d2VpX'
+        'SIsIkFycmF5IChGw7xuZiBQdW5rdGUgV2FobCkgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSAoRsO8bmYgUHVua3RlIFdhaGwpIFtVbnRlcm'
+        'ZyYWdlIHp3ZWldIiwiQXJyYXkgKEVyaMO2aGVuL0dsZWljaGUvVmVycmluZ2VybikgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSAoRXJow7Z'
+        'oZW4vR2xlaWNoZS9WZXJyaW5nZXJuKSBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5IChaYWhsZW4pIFtVbnRlcmZyYWdlIGVpbnNdW1VudGVy'
+        'ZnJhZ2UgZWluc10iLCJBcnJheSAoWmFobGVuKSBbVW50ZXJmcmFnZSB6d2VpXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbV'
+        'W50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIHp3ZW'
+        'ldIiwiQXJyYXkgKEphL05laW4vVW5zaWNoZXIpIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEphL05laW4vVW5zaWNoZXIpIFtVbnRlcmZ'
+        'yYWdlIHp3ZWldIiwiQXJyYXkgdm9uIFNwYWx0ZSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IHZvbiBTcGFsdGUgW1VudGVyZnJhZ2Ugendl'
+        'aV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZXJmcmFnZSBlaW5zXVtTY2FsZSAxXSIsIkFycmF5IER1YWxlIFNrYWxhIFtVbnRlcmZyYWdlI'
+        'GVpbnNdW1NjYWxlIDJdIiwiQXJyYXkgRHVhbGUgU2thbGEgW1VudGVyZnJhZ2UgendlaV1bU2NhbGUgMV0iLCJBcnJheSBEdWFsZSBTa2FsYS'
+        'BbVW50ZXJmcmFnZSB6d2VpXVtTY2FsZSAyXSIsIlRlcm1pbnplaXQiLCJHbGVpY2h1bmciLCJEYXRlaS1VcGxvYWQiLCJmaWxlY291bnQgLSB'
+        'EYXRlaS1VcGxvYWQiLCJHZXNjaGxlY2h0IiwiU3ByYWNodW1zY2hhbHR1bmciLCJNZWhyZmFjaGUgbnVtZXJpc2NoZSBFaW5nYWJlIFtVbnRl'
+        'cmZyYWdlIGVpbnNdIiwiTWVocmZhY2hlIG51bWVyaXNjaGUgRWluZ2FiZSBbVW50ZXJmcmFnZSB6d2VpXSIsIk51bWVyaXNjaGUgRWluZ2FiZ'
+        'SIsIlJhbmcgW1JhbmsgMV0iLCJSYW5nIFtSYW5rIDJdIiwiVGV4dGFuemVpZ2UiLCJKYS9OZWluIiwiUmVpc2lnZXIgRnJlaXRleHQiLCJMYW'
+        '5nZXIgZnJlaWVyIFRleHQiLCJNZWhyZmFjaGVyIEt1cnp0ZXh0IFtVbnRlcmZyYWdlIGVpbnNdIiwiTWVocmZhY2hlciBLdXJ6dGV4dCBbVW5'
+        '0ZXJmcmFnZSB6d2VpXSIsIkt1cnplciBGcmVpdGV4dCIsIk1laHJmYWNoYXVzd2FobCBbVW50ZXJmcmFnZSBlaW5zXSIsIk1laHJmYWNoYXVz'
+        'd2FobCBbVW50ZXJmcmFnZSB6d2VpXSIsIk1laHJmYWNoYXVzd2FobCBtaXQgS29tbWVudGFyZW4gW1VudGVyZnJhZ2UgZWluc10iLCJNZWhyZ'
+        'mFjaGF1c3dhaGwgbWl0IEtvbW1lbnRhcmVuIFtDb21tZW50XSIsIk1laHJmYWNoYXVzd2FobCBtaXQgS29tbWVudGFyZW4gW1VudGVyZnJhZ2'
+        'UgendlaV0iLCJNZWhyZmFjaGF1c3dhaGwgbWl0IEtvbW1lbnRhcmVuIFtDb21tZW50XSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiI'
+        'sImVuIiwiTUh3UTA0YnYyRFFZaXNOIiwiMiIsIjIwMTktMDUtMDggMDA6MDA6MDAiLCIzIiwiNSIsIkExIiwiQTEiLCJBMiIsIkVpbiBLb21t'
+        'ZW50YXIiLCJBMiIsIkExIiwiNiIsIjEiLCIyIiwiNCIsIkQiLCJTIiwiNCIsIjkiLCJhIiwiYiIsIk4iLCJZIiwiQTEiLCJBMiIsIiIsIkExI'
+        'iwiQTEiLCIiLCIyMDE5LTA4LTA1IDAwOjAwOjAwIiwiR2xlaWNodW5nIiwiIiwiMCIsIk0iLCJlbiIsIjEiLCIyIiwiMTMiLCJBMSIsIiIsIi'
+        'IsIk4iLCJFaW4gcmVpc2lnZXIgRnJlaXRleHQiLCJFaW4gbGFuZ2VyIGZyZWllciBUZXh0IiwiYSIsImIiLCJhIiwiWSIsIiIsIlkiLCJjIiw'
+        'iWSIsImQiCgo='
+    ]
+
+
+def update_mocks7_abbreviated(mock_server):
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': 'MHwQ04bv2DQYisN'},
+        {'completed': '2019-08-05 17:33'},
+        {'completed': '2019-08-05 17:33'},
+        {'token': 'MHwQ04bv2DQYisN'}
+    ]
+    mock_server.return_value.export_responses_by_token.side_effect = [
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZG'
         'F0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhciIs'
         'Imxpc3RlbWl0a29tbWVudGFyW2NvbW1lbnRdIiwiYXJyYXlbU1EwMDFdIiwiYXJyYXlbU1EwMDJdIiwiYXJyYXl6ZWhucHVua3Rld2FobFtTUT'
@@ -2522,1586 +2824,36 @@ def set_mocks8(mock_server):
         'IiwiNSIsIkExIiwiQTEiLCJBMiIsIkVpbiBLb21tZW50YXIiLCJBMiIsIkExIiwiNiIsIjEiLCIyIiwiNCIsIkQiLCJTIiwiNCIsIjkiLCJhIi'
         'wiYiIsIk4iLCJZIiwiQTEiLCJBMiIsIiIsIkExIiwiQTEiLCIiLCIyMDE5LTA4LTA1IDAwOjAwOjAwIiwiR2xlaWNodW5nIiwiIiwiMCIsIk0i'
         'LCJlbiIsIjEiLCIyIiwiMTMiLCJBMSIsIiIsIiIsIk4iLCJFaW4gcmVpc2lnZXIgRnJlaXRleHQiLCJFaW4gbGFuZ2VyIGZyZWllciBUZXh0Ii'
-        'wiYSIsImIiLCJhIiwiWSIsIiIsIlkiLCJjIiwiWSIsImQiCiIyIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIlNhY0VLeTJPblFE'
-        'a0J3YSIsIjEiLCIyMDIxLTA1LTA4IDAwOjAwOjAwIiwiNSIsIjQiLCJBMSIsIkEyIiwiQTEiLCIiLCJBMiIsIiIsIjYiLCI1IiwiNSIsIjEiLC'
-        'JEIiwiSSIsIjMiLCI4IiwiYSIsImIiLCJZIiwiVSIsIkEyIiwiQTEiLCIiLCJBMSIsIiIsIiIsIjIwMTktMDgtMjEgMDA6MDA6MDAiLCJHbGVp'
-        'Y2h1bmciLCIiLCIwIiwiTSIsImVuIiwiMSIsIjIiLCI0IiwiQTIiLCJBMSIsIiIsIlkiLCJhYmMiLCJhYmMiLCJhIiwiYiIsImFiYyIsIlkiLC'
-        'IiLCJZIiwiYSIsIiIsIiIKCg=='
-    ]
-    mock_server.return_value.get_language_properties.return_value = {
-        'surveyls_title': 'Fragebogen mit allen Fragetypen'
-    }
-    mock_server.return_value.list_groups.side_effect = [
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'randomization_group': '', 'language': 'en', 'group_order': 1, 'id': {'language': 'en', 'gid': 1951},
-          'gid': 1951, 'sid': LIMESURVEY_SURVEY_ID_1, 'grelevance': '', 'description': '',
-          'group_name': 'Identification'},
-
-         {'randomization_group': '', 'language': 'pt-BR', 'group_order': 1, 'id': {'language': 'pt-BR', 'gid': 1951},
-          'gid': 1951, 'sid': LIMESURVEY_SURVEY_ID_1, 'grelevance': '', 'description': '',
-          'group_name': 'Identification'},
-
-         {'randomization_group': '', 'language': 'en', 'group_order': 2, 'id': {'language': 'en', 'gid': 1952},
-          'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1, 'grelevance': '', 'description': '',
-          'group_name': 'Gruppe mit allen Fragetypen'}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-        [{'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'en'},
-          'gid': 1951, 'group_name': 'Identification', 'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'pt-BR', 'group_order': 1, 'grelevance': '',
-          'id': {'gid': 1951, 'language': 'pt-BR'}, 'gid': 1951, 'group_name': 'Identification',
-          'randomization_group': '', 'description': ''},
-         {'sid': LIMESURVEY_SURVEY_ID_1, 'language': 'en', 'group_order': 2, 'grelevance': '',
-          'id': {'gid': 1952, 'language': 'en'},
-          'gid': 1952, 'group_name': 'Gruppe mit allen Fragetypen', 'randomization_group': '', 'description': ''}],
-
-    ]
-    mock_server.return_value.list_questions.side_effect = [
-        [{'id': {'language': 'en', 'qid': 6159}, 'title': 'responsibleid', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6159, 'preg': '', 'mandatory': 'Y', 'question': 'Responsible Identification number:',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1951, 'question_order': 0,
-          'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'N'},
-         {'id': {'language': 'en', 'qid': 6160}, 'title': 'acquisitiondate', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6160, 'preg': '', 'mandatory': 'Y',
-          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'gid': 1951, 'question_order': 1, 'help': '', 'scale_id': 0, 'modulename': None, 'type': 'D'},
-         {'id': {'language': 'en', 'qid': 6161}, 'title': 'subjectid', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6161, 'preg': '', 'mandatory': 'Y', 'question': 'Participant Identification number<b>:</b>',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1951, 'question_order': 3,
-          'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'N'}],
-        [{'id': {'language': 'en', 'qid': 6197}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6169, 'other': 'N',
-          'qid': 6197, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6162}, 'title': 'funfpunktewahl', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6162, 'preg': '', 'mandatory': 'N', 'question': 'Fünf Punkte Wahl', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': '5'},
-         {'id': {'language': 'en', 'qid': 6163}, 'title': 'dropdownliste', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6163, 'preg': '', 'mandatory': 'N', 'question': 'Dropdown Liste', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': '!'},
-         {'id': {'language': 'en', 'qid': 6164}, 'title': 'listeradio', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6164, 'preg': '', 'mandatory': 'N', 'question': 'Liste (radio)', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 3, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'L'},
-         {'id': {'language': 'en', 'qid': 6165}, 'title': 'listemitkommentar', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6165, 'preg': '', 'mandatory': 'N', 'question': 'Liste mit Kommentar', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 4, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'O'},
-         {'id': {'language': 'en', 'qid': 6166}, 'title': 'array', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6166, 'preg': '', 'mandatory': 'N', 'question': 'Array', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 5, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'F'},
-         {'id': {'language': 'en', 'qid': 6167}, 'title': 'arrayzehnpunktewahl', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6167, 'preg': '', 'mandatory': 'N', 'question': 'Array (Zehn Punkte Wahl)',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 6,
-          'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'B'},
-         {'id': {'language': 'en', 'qid': 6168}, 'title': 'arrayfunfpunktewahl', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6168, 'preg': '', 'mandatory': 'N', 'question': 'Array (Fünf Punkte Wahl)',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 7,
-          'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'A'},
-         {'id': {'language': 'en', 'qid': 6169}, 'title': 'arrayerhohengleichev', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6169, 'preg': '', 'mandatory': 'N', 'question': 'Array (Erhöhen/Gleiche/Verringern)',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 8,
-          'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'E'},
-         {'id': {'language': 'en', 'qid': 6170}, 'title': 'arrayzahlen', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6170, 'preg': '', 'mandatory': 'N', 'question': 'Array (Zahlen)', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 9, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': ':'},
-         {'id': {'language': 'en', 'qid': 6171}, 'title': 'arraytexte', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6171, 'preg': '', 'mandatory': 'N', 'question': 'Array (Texte)', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 10, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': ';'},
-         {'id': {'language': 'en', 'qid': 6172}, 'title': 'arrayjaneinunsicher', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6172, 'preg': '', 'mandatory': 'N', 'question': 'Array (Ja/Nein/Unsicher)',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 11, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'C'},
-         {'id': {'language': 'en', 'qid': 6173}, 'title': 'arrayvonspalte', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6173, 'preg': '', 'mandatory': 'N', 'question': 'Array von Spalte', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 12, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'H'},
-         {'id': {'language': 'en', 'qid': 6174}, 'title': 'arraydualeskala', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6174, 'preg': '', 'mandatory': 'N', 'question': 'Array Duale Skala', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 13, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': '1'},
-         {'id': {'language': 'en', 'qid': 6175}, 'title': 'terminzeit', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6175, 'preg': '', 'mandatory': 'N', 'question': 'Terminzeit', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 14, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'D'},
-         {'id': {'language': 'en', 'qid': 6176}, 'title': 'gleichung', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6176, 'preg': '', 'mandatory': 'N', 'question': 'Gleichung', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 15, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': '*'},
-         {'id': {'language': 'en', 'qid': 6177}, 'title': 'dateiupload', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6177, 'preg': '', 'mandatory': 'N', 'question': 'Datei-Upload', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 16, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': '|'},
-         {'id': {'language': 'en', 'qid': 6178}, 'title': 'geschlecht', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6178, 'preg': '', 'mandatory': 'N', 'question': 'Geschlecht', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 17, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'G'},
-         {'id': {'language': 'en', 'qid': 6179}, 'title': 'sprachumschaltung', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6179, 'preg': '', 'mandatory': 'N', 'question': 'Sprachumschaltung', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 18, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'I'},
-         {'id': {'language': 'en', 'qid': 6180}, 'title': 'mehrfachenumerischee', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6180, 'preg': '', 'mandatory': 'N', 'question': 'Mehrfache numerische Eingabe',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 19, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'K'},
-         {'id': {'language': 'en', 'qid': 6181}, 'title': 'numerischeeingabe', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6181, 'preg': '', 'mandatory': 'N', 'question': 'Numerische Eingabe', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 20, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'N'},
-         {'id': {'language': 'en', 'qid': 6182}, 'title': 'rang', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6182, 'preg': '', 'mandatory': 'N', 'question': 'Rang', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 21, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'R'},
-         {'id': {'language': 'en', 'qid': 6183}, 'title': 'textanzeige', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6183, 'preg': '', 'mandatory': 'N', 'question': 'Textanzeige', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 22, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'X'},
-         {'id': {'language': 'en', 'qid': 6184}, 'title': 'janein', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6184, 'preg': '', 'mandatory': 'N', 'question': 'Ja/Nein', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 23, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'Y'},
-         {'id': {'language': 'en', 'qid': 6185}, 'title': 'reisigerfreitext', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6185, 'preg': '', 'mandatory': 'N', 'question': 'Reisiger Freitext', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 24, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'U'},
-         {'id': {'language': 'en', 'qid': 6186}, 'title': 'langerfreiertext', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6186, 'preg': '', 'mandatory': 'N', 'question': 'Langer freier Text', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 25, 'help': '',
-          'scale_id': 0,
-          'modulename': '', 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6187}, 'title': 'mehrfacherkurztext', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6187, 'preg': '', 'mandatory': 'N', 'question': 'Mehrfacher Kurztext', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 26, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'Q'},
-         {'id': {'language': 'en', 'qid': 6188}, 'title': 'kurzerfreitext', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6188, 'preg': '', 'mandatory': 'N', 'question': 'Kurzer Freitext', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 27, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'S'},
-         {'id': {'language': 'en', 'qid': 6189}, 'title': 'mehrfachauswahl', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6189, 'preg': '', 'mandatory': 'N', 'question': 'Mehrfachauswahl', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 28, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'M'},
-         {'id': {'language': 'en', 'qid': 6190}, 'title': 'mehrfachauswahlmitko', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6190, 'preg': '', 'mandatory': 'N', 'question': 'Mehrfachauswahl mit Kommentaren',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 29, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'P'},
-         {'id': {'language': 'en', 'qid': 6191}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6166, 'other': 'N',
-          'qid': 6191, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6192}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6166, 'other': 'N',
-          'qid': 6192, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6193}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6167, 'other': 'N',
-          'qid': 6193, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6194}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6167, 'other': 'N',
-          'qid': 6194, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6195}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6168, 'other': 'N',
-          'qid': 6195, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6196}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6168, 'other': 'N',
-          'qid': 6196, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6198}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6169, 'other': 'N',
-          'qid': 6198, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6199}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6170, 'other': 'N',
-          'qid': 6199, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6200}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6170, 'other': 'N',
-          'qid': 6200, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None, 'scale_id': 1,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6201}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6170, 'other': 'N',
-          'qid': 6201, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6202}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6171, 'other': 'N',
-          'qid': 6202, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6203}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6171, 'other': 'N',
-          'qid': 6203, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None, 'scale_id': 1,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6204}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6171, 'other': 'N',
-          'qid': 6204, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None, 'scale_id': 1,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6205}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6172, 'other': 'N',
-          'qid': 6205, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6206}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6172, 'other': 'N',
-          'qid': 6206, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6207}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6173, 'other': 'N',
-          'qid': 6207, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6208}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6173, 'other': 'N',
-          'qid': 6208, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6209}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6174, 'other': 'N',
-          'qid': 6209, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6210}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6174, 'other': 'N',
-          'qid': 6210, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6211}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6180, 'other': 'N',
-          'qid': 6211, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6212}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6180, 'other': 'N',
-          'qid': 6212, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6213}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6187, 'other': 'N',
-          'qid': 6213, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6214}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6187, 'other': 'N',
-          'qid': 6214, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6215}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6189, 'other': 'N',
-          'qid': 6215, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6216}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6189, 'other': 'N',
-          'qid': 6216, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6217}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6190, 'other': 'N',
-          'qid': 6217, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6218}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6190, 'other': 'N',
-          'qid': 6218, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'}],
-        [{'help': '', 'qid': 6159, 'type': 'N', 'language': 'en', 'id': {'qid': 6159, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'responsibleid', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Responsible Identification number:', 'mandatory': 'Y', 'gid': 1951,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 0},
-         {'help': '', 'qid': 6160, 'type': 'D', 'language': 'en', 'id': {'qid': 6160, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'acquisitiondate', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Acquisition date<strong>:</strong><br />\n', 'mandatory': 'Y', 'gid': 1951,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 1},
-         {'help': '', 'qid': 6161, 'type': 'N', 'language': 'en', 'id': {'qid': 6161, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'subjectid', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Participant Identification number<b>:</b>', 'mandatory': 'Y', 'gid': 1951,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 3}],
-        [{'help': None, 'qid': 6197, 'type': 'T', 'language': 'en', 'id': {'qid': 6197, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6169, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': '', 'qid': 6162, 'type': '5', 'language': 'en', 'id': {'qid': 6162, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'funfpunktewahl', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Fünf Punkte Wahl', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': '', 'qid': 6163, 'type': '!', 'language': 'en', 'id': {'qid': 6163, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'dropdownliste', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Dropdown Liste', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': '', 'qid': 6164, 'type': 'L', 'language': 'en', 'id': {'qid': 6164, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'listeradio', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Liste (radio)', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 3},
-         {'help': '', 'qid': 6165, 'type': 'O', 'language': 'en', 'id': {'qid': 6165, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'listemitkommentar', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Liste mit Kommentar', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 4},
-         {'help': '', 'qid': 6166, 'type': 'F', 'language': 'en', 'id': {'qid': 6166, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'array', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Array', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 5},
-         {'help': '', 'qid': 6167, 'type': 'B', 'language': 'en', 'id': {'qid': 6167, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'arrayzehnpunktewahl', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Array (Zehn Punkte Wahl)', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 6},
-         {'help': '', 'qid': 6168, 'type': 'A', 'language': 'en', 'id': {'qid': 6168, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'arrayfunfpunktewahl', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Array (Fünf Punkte Wahl)', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 7},
-         {'help': '', 'qid': 6169, 'type': 'E', 'language': 'en', 'id': {'qid': 6169, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'arrayerhohengleichev', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Array (Erhöhen/Gleiche/Verringern)', 'mandatory': 'N',
-          'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 8},
-         {'help': '', 'qid': 6170, 'type': ':', 'language': 'en', 'id': {'qid': 6170, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'arrayzahlen', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Array (Zahlen)', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 9},
-         {'help': '', 'qid': 6171, 'type': ';', 'language': 'en', 'id': {'qid': 6171, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'arraytexte', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Array (Texte)', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 10},
-         {'help': '', 'qid': 6172, 'type': 'C', 'language': 'en', 'id': {'qid': 6172, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'arrayjaneinunsicher', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Array (Ja/Nein/Unsicher)', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 11},
-         {'help': '', 'qid': 6173, 'type': 'H', 'language': 'en', 'id': {'qid': 6173, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'arrayvonspalte', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Array von Spalte', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 12},
-         {'help': '', 'qid': 6174, 'type': '1', 'language': 'en', 'id': {'qid': 6174, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'arraydualeskala', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Array Duale Skala', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 13},
-         {'help': '', 'qid': 6175, 'type': 'D', 'language': 'en', 'id': {'qid': 6175, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'terminzeit', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Terminzeit', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 14},
-         {'help': '', 'qid': 6176, 'type': '*', 'language': 'en', 'id': {'qid': 6176, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'gleichung', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Gleichung', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 15},
-         {'help': '', 'qid': 6177, 'type': '|', 'language': 'en', 'id': {'qid': 6177, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'dateiupload', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Datei-Upload', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 16},
-         {'help': '', 'qid': 6178, 'type': 'G', 'language': 'en', 'id': {'qid': 6178, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'geschlecht', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Geschlecht', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 17},
-         {'help': '', 'qid': 6179, 'type': 'I', 'language': 'en', 'id': {'qid': 6179, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'sprachumschaltung', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Sprachumschaltung', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 18},
-         {'help': '', 'qid': 6180, 'type': 'K', 'language': 'en', 'id': {'qid': 6180, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'mehrfachenumerischee', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Mehrfache numerische Eingabe', 'mandatory': 'N',
-          'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 19},
-         {'help': '', 'qid': 6181, 'type': 'N', 'language': 'en', 'id': {'qid': 6181, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'numerischeeingabe', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Numerische Eingabe', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 20},
-         {'help': '', 'qid': 6182, 'type': 'R', 'language': 'en', 'id': {'qid': 6182, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'rang', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Rang', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 21},
-         {'help': '', 'qid': 6183, 'type': 'X', 'language': 'en', 'id': {'qid': 6183, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'textanzeige', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Textanzeige', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 22},
-         {'help': '', 'qid': 6184, 'type': 'Y', 'language': 'en', 'id': {'qid': 6184, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'janein', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Ja/Nein', 'mandatory': 'N', 'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 23},
-         {'help': '', 'qid': 6185, 'type': 'U', 'language': 'en', 'id': {'qid': 6185, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'reisigerfreitext', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Reisiger Freitext', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 24},
-         {'help': '', 'qid': 6186, 'type': 'T', 'language': 'en', 'id': {'qid': 6186, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'langerfreiertext', 'preg': '', 'parent_qid': 0, 'modulename': '',
-          'same_default': 0, 'question': 'Langer freier Text', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 25},
-         {'help': '', 'qid': 6187, 'type': 'Q', 'language': 'en', 'id': {'qid': 6187, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'mehrfacherkurztext', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Mehrfacher Kurztext', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 26},
-         {'help': '', 'qid': 6188, 'type': 'S', 'language': 'en', 'id': {'qid': 6188, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'kurzerfreitext', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Kurzer Freitext', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 27},
-         {'help': '', 'qid': 6189, 'type': 'M', 'language': 'en', 'id': {'qid': 6189, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'mehrfachauswahl', 'preg': '', 'parent_qid': 0, 'modulename': None,
-          'same_default': 0, 'question': 'Mehrfachauswahl', 'mandatory': 'N', 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 28},
-         {'help': '', 'qid': 6190, 'type': 'P', 'language': 'en', 'id': {'qid': 6190, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'mehrfachauswahlmitko', 'preg': '', 'parent_qid': 0,
-          'modulename': None, 'same_default': 0, 'question': 'Mehrfachauswahl mit Kommentaren', 'mandatory': 'N',
-          'gid': 1952, 'sid': LIMESURVEY_SURVEY_ID_1, 'question_order': 29},
-         {'help': None, 'qid': 6191, 'type': 'T', 'language': 'en', 'id': {'qid': 6191, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6166, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6192, 'type': 'T', 'language': 'en', 'id': {'qid': 6192, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6166, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6193, 'type': 'T', 'language': 'en', 'id': {'qid': 6193, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6167, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6194, 'type': 'T', 'language': 'en', 'id': {'qid': 6194, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6167, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6195, 'type': 'T', 'language': 'en', 'id': {'qid': 6195, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6168, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6196, 'type': 'T', 'language': 'en', 'id': {'qid': 6196, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6168, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6198, 'type': 'T', 'language': 'en', 'id': {'qid': 6198, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6169, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6199, 'type': 'T', 'language': 'en', 'id': {'qid': 6199, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6170, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6200, 'type': 'T', 'language': 'en', 'id': {'qid': 6200, 'language': 'en'}, 'other': 'N',
-          'scale_id': 1, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6170, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6201, 'type': 'T', 'language': 'en', 'id': {'qid': 6201, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6170, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6202, 'type': 'T', 'language': 'en', 'id': {'qid': 6202, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6171, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6203, 'type': 'T', 'language': 'en', 'id': {'qid': 6203, 'language': 'en'}, 'other': 'N',
-          'scale_id': 1, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6171, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6204, 'type': 'T', 'language': 'en', 'id': {'qid': 6204, 'language': 'en'}, 'other': 'N',
-          'scale_id': 1, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6171, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6205, 'type': 'T', 'language': 'en', 'id': {'qid': 6205, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6172, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6206, 'type': 'T', 'language': 'en', 'id': {'qid': 6206, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6172, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6207, 'type': 'T', 'language': 'en', 'id': {'qid': 6207, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6173, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6208, 'type': 'T', 'language': 'en', 'id': {'qid': 6208, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6173, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6209, 'type': 'T', 'language': 'en', 'id': {'qid': 6209, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6174, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6210, 'type': 'T', 'language': 'en', 'id': {'qid': 6210, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6174, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6211, 'type': 'T', 'language': 'en', 'id': {'qid': 6211, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6180, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6212, 'type': 'T', 'language': 'en', 'id': {'qid': 6212, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6180, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6213, 'type': 'T', 'language': 'en', 'id': {'qid': 6213, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6187, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6214, 'type': 'T', 'language': 'en', 'id': {'qid': 6214, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6187, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6215, 'type': 'T', 'language': 'en', 'id': {'qid': 6215, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6189, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6216, 'type': 'T', 'language': 'en', 'id': {'qid': 6216, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6189, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2},
-         {'help': None, 'qid': 6217, 'type': 'T', 'language': 'en', 'id': {'qid': 6217, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '1', 'title': 'SQ001', 'preg': None, 'parent_qid': 6190, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage eins', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 1},
-         {'help': None, 'qid': 6218, 'type': 'T', 'language': 'en', 'id': {'qid': 6218, 'language': 'en'}, 'other': 'N',
-          'scale_id': 0, 'relevance': '', 'title': 'SQ002', 'preg': None, 'parent_qid': 6190, 'modulename': None,
-          'same_default': 0, 'question': 'Unterfrage zwei', 'mandatory': None, 'gid': 1952,
-          'sid': LIMESURVEY_SURVEY_ID_1,
-          'question_order': 2}],
-        [{'id': {'language': 'en', 'qid': 6159}, 'title': 'responsibleid', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6159, 'preg': '', 'mandatory': 'Y', 'question': 'Responsible Identification number:',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1951, 'question_order': 0, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'N'},
-         {'id': {'language': 'en', 'qid': 6160}, 'title': 'acquisitiondate', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6160, 'preg': '', 'mandatory': 'Y',
-          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1,
-          'gid': 1951, 'question_order': 1, 'help': '', 'scale_id': 0, 'modulename': None, 'type': 'D'},
-         {'id': {'language': 'en', 'qid': 6197}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6169, 'other': 'N',
-          'qid': 6197, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6161}, 'title': 'subjectid', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6161, 'preg': '', 'mandatory': 'Y', 'question': 'Participant Identification number<b>:</b>',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1951, 'question_order': 3, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'N'},
-         {'id': {'language': 'en', 'qid': 6162}, 'title': 'funfpunktewahl', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6162, 'preg': '', 'mandatory': 'N', 'question': 'Fünf Punkte Wahl', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': '5'},
-         {'id': {'language': 'en', 'qid': 6163}, 'title': 'dropdownliste', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6163, 'preg': '', 'mandatory': 'N', 'question': 'Dropdown Liste', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': '!'},
-         {'id': {'language': 'en', 'qid': 6164}, 'title': 'listeradio', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6164, 'preg': '', 'mandatory': 'N', 'question': 'Liste (radio)', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 3, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'L'},
-         {'id': {'language': 'en', 'qid': 6165}, 'title': 'listemitkommentar', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6165, 'preg': '', 'mandatory': 'N', 'question': 'Liste mit Kommentar', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 4, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'O'},
-         {'id': {'language': 'en', 'qid': 6166}, 'title': 'array', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6166, 'preg': '', 'mandatory': 'N', 'question': 'Array', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 5, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'F'},
-         {'id': {'language': 'en', 'qid': 6167}, 'title': 'arrayzehnpunktewahl', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6167, 'preg': '', 'mandatory': 'N', 'question': 'Array (Zehn Punkte Wahl)',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 6, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'B'},
-         {'id': {'language': 'en', 'qid': 6168}, 'title': 'arrayfunfpunktewahl', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6168, 'preg': '', 'mandatory': 'N', 'question': 'Array (Fünf Punkte Wahl)',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 7, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'A'},
-         {'id': {'language': 'en', 'qid': 6169}, 'title': 'arrayerhohengleichev', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6169, 'preg': '', 'mandatory': 'N', 'question': 'Array (Erhöhen/Gleiche/Verringern)',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 8, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'E'},
-         {'id': {'language': 'en', 'qid': 6170}, 'title': 'arrayzahlen', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6170, 'preg': '', 'mandatory': 'N', 'question': 'Array (Zahlen)', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 9, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': ':'},
-         {'id': {'language': 'en', 'qid': 6171}, 'title': 'arraytexte', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6171, 'preg': '', 'mandatory': 'N', 'question': 'Array (Texte)', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 10, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': ';'},
-         {'id': {'language': 'en', 'qid': 6172}, 'title': 'arrayjaneinunsicher', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6172, 'preg': '', 'mandatory': 'N', 'question': 'Array (Ja/Nein/Unsicher)',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 11, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'C'},
-         {'id': {'language': 'en', 'qid': 6173}, 'title': 'arrayvonspalte', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6173, 'preg': '', 'mandatory': 'N', 'question': 'Array von Spalte', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 12, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'H'},
-         {'id': {'language': 'en', 'qid': 6174}, 'title': 'arraydualeskala', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6174, 'preg': '', 'mandatory': 'N', 'question': 'Array Duale Skala', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 13, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': '1'},
-         {'id': {'language': 'en', 'qid': 6175}, 'title': 'terminzeit', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6175, 'preg': '', 'mandatory': 'N', 'question': 'Terminzeit', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 14, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'D'},
-         {'id': {'language': 'en', 'qid': 6176}, 'title': 'gleichung', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6176, 'preg': '', 'mandatory': 'N', 'question': 'Gleichung', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 15, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': '*'},
-         {'id': {'language': 'en', 'qid': 6177}, 'title': 'dateiupload', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6177, 'preg': '', 'mandatory': 'N', 'question': 'Datei-Upload', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 16, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': '|'},
-         {'id': {'language': 'en', 'qid': 6178}, 'title': 'geschlecht', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6178, 'preg': '', 'mandatory': 'N', 'question': 'Geschlecht', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 17, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'G'},
-         {'id': {'language': 'en', 'qid': 6179}, 'title': 'sprachumschaltung', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6179, 'preg': '', 'mandatory': 'N', 'question': 'Sprachumschaltung', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 18, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'I'},
-         {'id': {'language': 'en', 'qid': 6180}, 'title': 'mehrfachenumerischee', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6180, 'preg': '', 'mandatory': 'N', 'question': 'Mehrfache numerische Eingabe',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 19, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'K'},
-         {'id': {'language': 'en', 'qid': 6181}, 'title': 'numerischeeingabe', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6181, 'preg': '', 'mandatory': 'N', 'question': 'Numerische Eingabe', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 20, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'N'},
-         {'id': {'language': 'en', 'qid': 6182}, 'title': 'rang', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6182, 'preg': '', 'mandatory': 'N', 'question': 'Rang', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 21, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'R'},
-         {'id': {'language': 'en', 'qid': 6183}, 'title': 'textanzeige', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6183, 'preg': '', 'mandatory': 'N', 'question': 'Textanzeige', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 22, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'X'},
-         {'id': {'language': 'en', 'qid': 6184}, 'title': 'janein', 'language': 'en', 'parent_qid': 0, 'other': 'N',
-          'qid': 6184, 'preg': '', 'mandatory': 'N', 'question': 'Ja/Nein', 'relevance': '1', 'same_default': 0,
-          'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 23, 'help': '', 'scale_id': 0,
-          'modulename': None, 'type': 'Y'},
-         {'id': {'language': 'en', 'qid': 6185}, 'title': 'reisigerfreitext', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6185, 'preg': '', 'mandatory': 'N', 'question': 'Reisiger Freitext', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 24, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'U'},
-         {'id': {'language': 'en', 'qid': 6186}, 'title': 'langerfreiertext', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6186, 'preg': '', 'mandatory': 'N', 'question': 'Langer freier Text', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 25, 'help': '',
-          'scale_id': 0,
-          'modulename': '', 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6187}, 'title': 'mehrfacherkurztext', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6187, 'preg': '', 'mandatory': 'N', 'question': 'Mehrfacher Kurztext', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 26, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'Q'},
-         {'id': {'language': 'en', 'qid': 6188}, 'title': 'kurzerfreitext', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6188, 'preg': '', 'mandatory': 'N', 'question': 'Kurzer Freitext', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 27, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'S'},
-         {'id': {'language': 'en', 'qid': 6189}, 'title': 'mehrfachauswahl', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6189, 'preg': '', 'mandatory': 'N', 'question': 'Mehrfachauswahl', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 28, 'help': '',
-          'scale_id': 0,
-          'modulename': None, 'type': 'M'},
-         {'id': {'language': 'en', 'qid': 6190}, 'title': 'mehrfachauswahlmitko', 'language': 'en', 'parent_qid': 0,
-          'other': 'N', 'qid': 6190, 'preg': '', 'mandatory': 'N', 'question': 'Mehrfachauswahl mit Kommentaren',
-          'relevance': '1', 'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 29, 'help': '',
-          'scale_id': 0, 'modulename': None, 'type': 'P'},
-         {'id': {'language': 'en', 'qid': 6191}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6166, 'other': 'N',
-          'qid': 6191, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6192}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6166, 'other': 'N',
-          'qid': 6192, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6193}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6167, 'other': 'N',
-          'qid': 6193, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6194}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6167, 'other': 'N',
-          'qid': 6194, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6195}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6168, 'other': 'N',
-          'qid': 6195, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6196}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6168, 'other': 'N',
-          'qid': 6196, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6198}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6169, 'other': 'N',
-          'qid': 6198, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6199}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6170, 'other': 'N',
-          'qid': 6199, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6200}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6170, 'other': 'N',
-          'qid': 6200, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None, 'scale_id': 1,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6201}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6170, 'other': 'N',
-          'qid': 6201, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6202}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6171, 'other': 'N',
-          'qid': 6202, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6203}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6171, 'other': 'N',
-          'qid': 6203, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None, 'scale_id': 1,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6204}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6171, 'other': 'N',
-          'qid': 6204, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None, 'scale_id': 1,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6205}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6172, 'other': 'N',
-          'qid': 6205, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6206}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6172, 'other': 'N',
-          'qid': 6206, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6207}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6173, 'other': 'N',
-          'qid': 6207, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6208}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6173, 'other': 'N',
-          'qid': 6208, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6209}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6174, 'other': 'N',
-          'qid': 6209, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6210}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6174, 'other': 'N',
-          'qid': 6210, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6211}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6180, 'other': 'N',
-          'qid': 6211, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6212}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6180, 'other': 'N',
-          'qid': 6212, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6213}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6187, 'other': 'N',
-          'qid': 6213, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6214}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6187, 'other': 'N',
-          'qid': 6214, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6215}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6189, 'other': 'N',
-          'qid': 6215, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6216}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6189, 'other': 'N',
-          'qid': 6216, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6217}, 'title': 'SQ001', 'language': 'en', 'parent_qid': 6190, 'other': 'N',
-          'qid': 6217, 'preg': None, 'mandatory': None, 'question': 'Unterfrage eins', 'relevance': '1',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 1, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'},
-         {'id': {'language': 'en', 'qid': 6218}, 'title': 'SQ002', 'language': 'en', 'parent_qid': 6190, 'other': 'N',
-          'qid': 6218, 'preg': None, 'mandatory': None, 'question': 'Unterfrage zwei', 'relevance': '',
-          'same_default': 0, 'sid': LIMESURVEY_SURVEY_ID_1, 'gid': 1952, 'question_order': 2, 'help': None,
-          'scale_id': 0,
-          'modulename': None, 'type': 'T'}]
-    ]
-    mock_server.return_value.get_question_properties.side_effect = [
-        {'title': 'responsibleid', 'question_order': 0, 'other': 'N', 'attributes': {'hidden': '1'}, 'gid': 1951,
-         'attributes_lang': 'No available attributes', 'question': 'Responsible Identification number:',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'N'},
-        {'title': 'acquisitiondate', 'question_order': 1, 'other': 'N', 'attributes': {'hidden': '1'}, 'gid': 1951,
-         'attributes_lang': 'No available attributes', 'question': 'Acquisition date<strong>:</strong><br />\n',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'D'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'subjectid', 'question_order': 3, 'other': 'N', 'attributes': {'hidden': '1'}, 'gid': 1951,
-         'attributes_lang': 'No available attributes', 'question': 'Participant Identification number<b>:</b>',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'N'},
-        {'title': 'funfpunktewahl', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Fünf Punkte Wahl',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': '5'},
-        {'title': 'dropdownliste', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Dropdown Liste',
-         'subquestions': 'No available answers',
-         'answeroptions': {'A2': {'assessment_value': 0, 'answer': 'Option zwei', 'order': 2, 'scale_id': 0},
-                           'A1': {'assessment_value': 0, 'answer': 'Option eins', 'order': 1, 'scale_id': 0}},
-         'type': '!'},
-        {'title': 'listeradio', 'question_order': 3, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Liste (radio)',
-         'subquestions': 'No available answers',
-         'answeroptions': {'A2': {'assessment_value': 0, 'answer': 'Option zwei', 'order': 2, 'scale_id': 0},
-                           'A1': {'assessment_value': 0, 'answer': 'Option eins', 'order': 1, 'scale_id': 0}},
-         'type': 'L'},
-        {'title': 'listemitkommentar', 'question_order': 4, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Liste mit Kommentar',
-         'subquestions': 'No available answers',
-         'answeroptions': {'A2': {'assessment_value': 0, 'answer': 'Option zwei', 'order': 2, 'scale_id': 0},
-                           'A1': {'assessment_value': 0, 'answer': 'Option eins', 'order': 1, 'scale_id': 0}},
-         'type': 'O'},
-        {'title': 'array', 'question_order': 5, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Array',
-         'subquestions': {'6192': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0},
-                          '6191': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0}},
-         'answeroptions': {'A2': {'assessment_value': 0, 'answer': 'Antwort zwei', 'order': 2, 'scale_id': 0},
-                           'A1': {'assessment_value': 0, 'answer': 'Antwort eins', 'order': 1, 'scale_id': 0}},
-         'type': 'F'},
-        {'title': 'arrayzehnpunktewahl', 'question_order': 6, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Array (Zehn Punkte Wahl)',
-         'subquestions': {'6193': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0},
-                          '6194': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': 'B'},
-        {'title': 'arrayfunfpunktewahl', 'question_order': 7, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Array (Fünf Punkte Wahl)',
-         'subquestions': {'6196': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0},
-                          '6195': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': 'A'},
-        {'title': 'arrayerhohengleichev', 'question_order': 8, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Array (Erhöhen/Gleiche/Verringern)',
-         'subquestions': {'6197': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0},
-                          '6198': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': 'E'},
-        {'title': 'arrayzahlen', 'question_order': 9, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Array (Zahlen)',
-         'subquestions': {'6199': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0},
-                          '6201': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0},
-                          '6200': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 1}},
-         'answeroptions': 'No available answer options', 'type': ':'},
-        {'title': 'arraytexte', 'question_order': 10, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Array (Texte)',
-         'subquestions': {'6204': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 1},
-                          '6203': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 1},
-                          '6202': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': ';'},
-        {'title': 'arrayjaneinunsicher', 'question_order': 11, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Array (Ja/Nein/Unsicher)',
-         'subquestions': {'6205': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0},
-                          '6206': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': 'C'},
-        {'title': 'arrayvonspalte', 'question_order': 12, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Array von Spalte',
-         'subquestions': {'6208': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0},
-                          '6207': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0}},
-         'answeroptions': {'A2': {'assessment_value': 0, 'answer': 'Antwort zwei', 'order': 2, 'scale_id': 0},
-                           'A1': {'assessment_value': 0, 'answer': 'Antwort eins', 'order': 1, 'scale_id': 0}},
-         'type': 'H'},
-        {'title': 'arraydualeskala', 'question_order': 13, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Array Duale Skala',
-         'subquestions': {'6210': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0},
-                          '6209': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0}},
-         'answeroptions': {'A1': {'assessment_value': 0, 'answer': 'Antwort zwei', 'order': 1, 'scale_id': 1}},
-         'type': '1'},
-        {'title': 'terminzeit', 'question_order': 14, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Terminzeit',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'D'},
-        {'title': 'gleichung', 'question_order': 15, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Gleichung', 'subquestions': 'No available answers',
-         'answeroptions': 'No available answer options', 'type': '*'},
-        {'title': 'dateiupload', 'question_order': 16, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Datei-Upload',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': '|'},
-        {'title': 'geschlecht', 'question_order': 17, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Geschlecht',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'G'},
-        {'title': 'sprachumschaltung', 'question_order': 18, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Sprachumschaltung',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'I'},
-        {'title': 'mehrfachenumerischee', 'question_order': 19, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Mehrfache numerische Eingabe',
-         'subquestions': {'6211': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0},
-                          '6212': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': 'K'},
-        {'title': 'numerischeeingabe', 'question_order': 20, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Numerische Eingabe',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'N'},
-        {'title': 'rang', 'question_order': 21, 'other': 'N', 'attributes': {'max_subquestions': '2'}, 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Rang', 'subquestions': 'No available answers',
-         'answeroptions': {'A2': {'assessment_value': 0, 'answer': 'Antwort zwei', 'order': 2, 'scale_id': 0},
-                           'A1': {'assessment_value': 0, 'answer': 'Antwort eins', 'order': 1, 'scale_id': 0}},
-         'type': 'R'},
-        {'title': 'textanzeige', 'question_order': 22, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Textanzeige',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'X'},
-        {'title': 'janein', 'question_order': 23, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Ja/Nein', 'subquestions': 'No available answers',
-         'answeroptions': 'No available answer options', 'type': 'Y'},
-        {'title': 'reisigerfreitext', 'question_order': 24, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Reisiger Freitext',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'U'},
-        {'title': 'langerfreiertext', 'question_order': 25, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Langer freier Text',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'mehrfacherkurztext', 'question_order': 26, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Mehrfacher Kurztext',
-         'subquestions': {'6213': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0},
-                          '6214': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': 'Q'},
-        {'title': 'kurzerfreitext', 'question_order': 27, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Kurzer Freitext',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'S'},
-        {'title': 'mehrfachauswahl', 'question_order': 28, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Mehrfachauswahl',
-         'subquestions': {'6216': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0},
-                          '6215': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': 'M'},
-        {'title': 'mehrfachauswahlmitko', 'question_order': 29, 'other': 'N', 'attributes': 'No available attributes',
-         'gid': 1952, 'attributes_lang': 'No available attributes', 'question': 'Mehrfachauswahl mit Kommentaren',
-         'subquestions': {'6217': {'title': 'SQ001', 'question': 'Unterfrage eins', 'scale_id': 0},
-                          '6218': {'title': 'SQ002', 'question': 'Unterfrage zwei', 'scale_id': 0}},
-         'answeroptions': 'No available answer options', 'type': 'P'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ001', 'question_order': 1, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage eins',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
-        {'title': 'SQ002', 'question_order': 2, 'other': 'N', 'attributes': 'No available attributes', 'gid': 1952,
-         'attributes_lang': 'No available attributes', 'question': 'Unterfrage zwei',
-         'subquestions': 'No available answers', 'answeroptions': 'No available answer options', 'type': 'T'},
+        'wiYSIsImIiLCJhIiwiWSIsIiIsIlkiLCJjIiwiWSIsImQiCgo=',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgSW'
+        'RlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJGw7xuZiBQdW5rdGUgV2FobCIsIkRyb3Bkb3duIExpc3Rl'
+        'IiwiTGlzdGUgKHJhZGlvKSIsIkxpc3RlIG1pdCBLb21tZS4uICIsIkxpc3RlIG1pdCBLb21tZS4uICBbQ29tbWVudF0iLCJBcnJheSBbVW50ZX'
+        'JmcmFnZSBlaW5zXSIsIkFycmF5IFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKFplaG4gUHVuLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJy'
+        'YXkgKFplaG4gUHVuLi4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKEbDvG5mIFB1bi4uICBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IC'
+        'hGw7xuZiBQdW4uLiAgW1VudGVyZnJhZ2UgendlaV0iLCJBcnJheSAoRXJow7ZoZW4vLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEVy'
+        'aMO2aGVuLy4uICBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5IChaYWhsZW4pIFtVbnRlcmZyYWdlIGVpbnNdW1VudGVyZnJhZ2UgZWluc10iLC'
+        'JBcnJheSAoWmFobGVuKSBbVW50ZXJmcmFnZSB6d2VpXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5z'
+        'XVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKEphL0'
+        '5laW4vLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEphL05laW4vLi4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgdm9uIFNwYWx0'
+        'ZSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IHZvbiBTcGFsdGUgW1VudGVyZnJhZ2UgendlaV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZX'
+        'JmcmFnZSBlaW5zXVtTY2FsZSAxXSIsIkFycmF5IER1YWxlIFNrYWxhIFtVbnRlcmZyYWdlIGVpbnNdW1NjYWxlIDJdIiwiQXJyYXkgRHVhbGUg'
+        'U2thbGEgW1VudGVyZnJhZ2UgendlaV1bU2NhbGUgMV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZXJmcmFnZSB6d2VpXVtTY2FsZSAyXSIsIl'
+        'Rlcm1pbnplaXQiLCJHbGVpY2h1bmciLCJEYXRlaS1VcGxvYWQiLCJmaWxlY291bnQgLSBEYXQuLiAiLCJHZXNjaGxlY2h0IiwiU3ByYWNodW1z'
+        'Y2hhbHR1bmciLCJNZWhyZmFjaGUgbnVtZXIuLiAgW1VudGVyZnJhZ2UgZWluc10iLCJNZWhyZmFjaGUgbnVtZXIuLiAgW1VudGVyZnJhZ2Ugen'
+        'dlaV0iLCJOdW1lcmlzY2hlIEVpbmdhYmUiLCJSYW5nIFtSYW5rIDFdIiwiUmFuZyBbUmFuayAyXSIsIlRleHRhbnplaWdlIiwiSmEvTmVpbiIs'
+        'IlJlaXNpZ2VyIEZyZWl0ZXh0IiwiTGFuZ2VyIGZyZWllciBUZXh0IiwiTWVocmZhY2hlciBLdXJ6Li4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiTW'
+        'VocmZhY2hlciBLdXJ6Li4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiS3VyemVyIEZyZWl0ZXh0IiwiTWVocmZhY2hhdXN3YWhsIFtVbnRlcmZyYWdl'
+        'IGVpbnNdIiwiTWVocmZhY2hhdXN3YWhsIFtVbnRlcmZyYWdlIHp3ZWldIiwiTWVocmZhY2hhdXN3YWhsLi4gIFtVbnRlcmZyYWdlIGVpbnNdIi'
+        'wiTWVocmZhY2hhdXN3YWhsLi4gIFtDb21tZW50XSIsIk1laHJmYWNoYXVzd2FobC4uICBbVW50ZXJmcmFnZSB6d2VpXSIsIk1laHJmYWNoYXVz'
+        'd2FobC4uICBbQ29tbWVudF0iCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIk1Id1EwNGJ2MkRRWWlzTiIsIjIiLCIyMDE5LT'
+        'A1LTA4IDAwOjAwOjAwIiwiMyIsIjUiLCJBMSIsIkExIiwiQTIiLCJFaW4gS29tbWVudGFyIiwiQTIiLCJBMSIsIjYiLCIxIiwiMiIsIjQiLCJE'
+        'IiwiUyIsIjQiLCI5IiwiYSIsImIiLCJOIiwiWSIsIkExIiwiQTIiLCIiLCJBMSIsIkExIiwiIiwiMjAxOS0wOC0wNSAwMDowMDowMCIsIkdsZW'
+        'ljaHVuZyIsIiIsIjAiLCJNIiwiZW4iLCIxIiwiMiIsIjEzIiwiQTEiLCIiLCIiLCJOIiwiRWluIHJlaXNpZ2VyIEZyZWl0ZXh0IiwiRWluIGxh'
+        'bmdlciBmcmVpZXIgVGV4dCIsImEiLCJiIiwiYSIsIlkiLCIiLCJZIiwiYyIsIlkiLCJkIgoK'
     ]
 
 
-def set_mocks9(mock_server):
-    mock_server.return_value.get_survey_properties.side_effect = [
-        {'additional_languages': '', 'language': 'en'},
-        {'additional_languages': '', 'language': 'en'},
-        {'additional_languages': '', 'language': 'en'},
-        {'additional_languages': '', 'language': 'en'},
-        {'admin': 'Jorge da Capadócia'}, {'adminemail': 'jorge@example.com'},
-        {'admin': 'Leonardo dos Santos'}, {'adminemail': 'leo@example.com'}
-    ]
-    mock_server.return_value.get_participant_properties.side_effect = [
-        {'token': '16NhFizC68bUhtT'},
-        {'token': 'YyUzCuNTsnU2cze'}
-    ]
-    mock_server.return_value.export_responses.side_effect = [
-        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
-        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZWVpbnMiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhiVW'
-        'h0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyIKCg==',
-        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
-        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZXp3ZWkiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMm'
-        'N6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSIKCg=='
-    ]
-    mock_server.return_value.get_language_properties.side_effect = [
-        {'surveyls_title': 'Einfacher Fragebogen Eins'},
-        {'surveyls_title': 'Einfacher Fragebogen Zwei'}
-    ]
-    mock_server.return_value.list_groups.side_effect = [
-        [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 1},
-
-         {'id': {'language': 'pt-BR', 'gid': 1959}, 'language': 'pt-BR', 'grelevance': '', 'gid': 1959,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 1},
-         {'id': {'language': 'en', 'gid': 1960}, 'language': 'en', 'grelevance': '', 'gid': 1960,
-          'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 2}],
-        [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 1},
-
-         {'id': {'language': 'pt-BR', 'gid': 1959}, 'language': 'pt-BR', 'grelevance': '', 'gid': 1959,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 1},
-         {'id': {'language': 'en', 'gid': 1960}, 'language': 'en', 'grelevance': '', 'gid': 1960,
-          'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 2}],
-        [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 1},
-
-         {'id': {'language': 'pt-BR', 'gid': 1959}, 'language': 'pt-BR', 'grelevance': '', 'gid': 1959,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 1},
-         {'id': {'language': 'en', 'gid': 1960}, 'language': 'en', 'grelevance': '', 'gid': 1960,
-          'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 2}],
-        [{'id': {'language': 'en', 'gid': 1959}, 'language': 'en', 'grelevance': '', 'gid': 1959,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 1},
-
-         {'id': {'language': 'pt-BR', 'gid': 1959}, 'language': 'pt-BR', 'grelevance': '', 'gid': 1959,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 1},
-         {'id': {'language': 'en', 'gid': 1960}, 'language': 'en', 'grelevance': '', 'gid': 1960,
-          'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 798261,
-          'group_order': 2}],
-        [{'id': {'language': 'en', 'gid': 1961}, 'language': 'en', 'grelevance': '', 'gid': 1961,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 689143,
-          'group_order': 1}, {'id': {'language': 'en', 'gid': 1962}, 'language': 'en', 'grelevance': '', 'gid': 1962,
-                              'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 689143,
-                              'group_order': 2}],
-        [{'id': {'language': 'en', 'gid': 1961}, 'language': 'en', 'grelevance': '', 'gid': 1961,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 689143,
-          'group_order': 1}, {'id': {'language': 'en', 'gid': 1962}, 'language': 'en', 'grelevance': '', 'gid': 1962,
-                              'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 689143,
-                              'group_order': 2}],
-        [{'id': {'language': 'en', 'gid': 1961}, 'language': 'en', 'grelevance': '', 'gid': 1961,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 689143,
-          'group_order': 1}, {'id': {'language': 'en', 'gid': 1962}, 'language': 'en', 'grelevance': '', 'gid': 1962,
-                              'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 689143,
-                              'group_order': 2}],
-        [{'id': {'language': 'en', 'gid': 1961}, 'language': 'en', 'grelevance': '', 'gid': 1961,
-          'group_name': 'Identification', 'randomization_group': '', 'description': '', 'sid': 689143,
-          'group_order': 1}, {'id': {'language': 'en', 'gid': 1962}, 'language': 'en', 'grelevance': '', 'gid': 1962,
-                              'group_name': 'Gruppe Eins', 'randomization_group': '', 'description': '', 'sid': 689143,
-                              'group_order': 2}]
-    ]
-    mock_server.return_value.list_questions.side_effect = [
-        [{'question_order': 3, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7938, 'language': 'en'},
-          'modulename': None, 'title': 'subjectid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Participant Identification number<b>:</b>', 'language': 'en',
-          'other': 'N', 'qid': 7938, 'mandatory': 'Y'},
-         {'question_order': 1, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7937, 'language': 'en'},
-          'modulename': None, 'title': 'acquisitiondate', 'same_default': 0, 'help': '', 'type': 'D', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Acquisition date<strong>:</strong><br />\n', 'language': 'en',
-          'other': 'N', 'qid': 7937, 'mandatory': 'Y'},
-         {'question_order': 0, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7936, 'language': 'en'},
-          'modulename': None, 'title': 'responsibleid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Responsible Identification number:', 'language': 'en',
-          'other': 'N', 'qid': 7936, 'mandatory': 'Y'}],
-        [{'question_order': 1, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7939, 'language': 'en'},
-          'modulename': None, 'title': 'textfrageeins', 'same_default': 0, 'help': '', 'type': 'S', 'scale_id': 0,
-          'relevance': '1', 'gid': 1960, 'question': 'Text Frage Eins', 'language': 'en', 'other': 'N', 'qid': 7939,
-          'mandatory': 'N'}],
-        [{'question_order': 3, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7938, 'language': 'en'},
-          'modulename': None, 'title': 'subjectid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Participant Identification number<b>:</b>', 'language': 'en',
-          'other': 'N', 'qid': 7938, 'mandatory': 'Y'},
-         {'question_order': 1, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7937, 'language': 'en'},
-          'modulename': None, 'title': 'acquisitiondate', 'same_default': 0, 'help': '', 'type': 'D', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Acquisition date<strong>:</strong><br />\n', 'language': 'en',
-          'other': 'N', 'qid': 7937, 'mandatory': 'Y'},
-         {'question_order': 0, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7936, 'language': 'en'},
-          'modulename': None, 'title': 'responsibleid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Responsible Identification number:', 'language': 'en',
-          'other': 'N', 'qid': 7936, 'mandatory': 'Y'}],
-        [{'question_order': 1, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7939, 'language': 'en'},
-          'modulename': None, 'title': 'textfrageeins', 'same_default': 0, 'help': '', 'type': 'S', 'scale_id': 0,
-          'relevance': '1', 'gid': 1960, 'question': 'Text Frage Eins', 'language': 'en', 'other': 'N', 'qid': 7939,
-          'mandatory': 'N'}],
-        [{'question_order': 1, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7939, 'language': 'en'},
-          'modulename': None, 'title': 'textfrageeins', 'same_default': 0, 'help': '', 'type': 'S', 'scale_id': 0,
-          'relevance': '1', 'gid': 1960, 'question': 'Text Frage Eins', 'language': 'en', 'other': 'N', 'qid': 7939,
-          'mandatory': 'N'},
-         {'question_order': 3, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7938, 'language': 'en'},
-          'modulename': None, 'title': 'subjectid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Participant Identification number<b>:</b>', 'language': 'en',
-          'other': 'N', 'qid': 7938, 'mandatory': 'Y'},
-         {'question_order': 1, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7937, 'language': 'en'},
-          'modulename': None, 'title': 'acquisitiondate', 'same_default': 0, 'help': '', 'type': 'D', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Acquisition date<strong>:</strong><br />\n', 'language': 'en',
-          'other': 'N', 'qid': 7937, 'mandatory': 'Y'},
-         {'question_order': 0, 'parent_qid': 0, 'sid': 798261, 'preg': '', 'id': {'qid': 7936, 'language': 'en'},
-          'modulename': None, 'title': 'responsibleid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1959, 'question': 'Responsible Identification number:', 'language': 'en',
-          'other': 'N', 'qid': 7936, 'mandatory': 'Y'}],
-        [{'question_order': 3, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7942, 'language': 'en'},
-          'modulename': None, 'title': 'subjectid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Participant Identification number<b>:</b>', 'language': 'en',
-          'other': 'N', 'qid': 7942, 'mandatory': 'Y'},
-         {'question_order': 1, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7941, 'language': 'en'},
-          'modulename': None, 'title': 'acquisitiondate', 'same_default': 0, 'help': '', 'type': 'D', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Acquisition date<strong>:</strong><br />\n', 'language': 'en',
-          'other': 'N', 'qid': 7941, 'mandatory': 'Y'},
-         {'question_order': 0, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7940, 'language': 'en'},
-          'modulename': None, 'title': 'responsibleid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Responsible Identification number:', 'language': 'en',
-          'other': 'N', 'qid': 7940, 'mandatory': 'Y'}],
-        [{'question_order': 1, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7943, 'language': 'en'},
-          'modulename': None, 'title': 'textfragezwei', 'same_default': 0, 'help': '', 'type': 'S', 'scale_id': 0,
-          'relevance': '1', 'gid': 1962, 'question': 'Text Frage Zwei', 'language': 'en', 'other': 'N', 'qid': 7943,
-          'mandatory': 'N'}],
-        [{'question_order': 3, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7942, 'language': 'en'},
-          'modulename': None, 'title': 'subjectid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Participant Identification number<b>:</b>', 'language': 'en',
-          'other': 'N', 'qid': 7942, 'mandatory': 'Y'},
-         {'question_order': 1, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7941, 'language': 'en'},
-          'modulename': None, 'title': 'acquisitiondate', 'same_default': 0, 'help': '', 'type': 'D', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Acquisition date<strong>:</strong><br />\n', 'language': 'en',
-          'other': 'N', 'qid': 7941, 'mandatory': 'Y'},
-         {'question_order': 0, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7940, 'language': 'en'},
-          'modulename': None, 'title': 'responsibleid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Responsible Identification number:', 'language': 'en',
-          'other': 'N', 'qid': 7940, 'mandatory': 'Y'}],
-        [{'question_order': 1, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7943, 'language': 'en'},
-          'modulename': None, 'title': 'textfragezwei', 'same_default': 0, 'help': '', 'type': 'S', 'scale_id': 0,
-          'relevance': '1', 'gid': 1962, 'question': 'Text Frage Zwei', 'language': 'en', 'other': 'N', 'qid': 7943,
-          'mandatory': 'N'}],
-        [{'question_order': 1, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7943, 'language': 'en'},
-          'modulename': None, 'title': 'textfragezwei', 'same_default': 0, 'help': '', 'type': 'S', 'scale_id': 0,
-          'relevance': '1', 'gid': 1962, 'question': 'Text Frage Zwei', 'language': 'en', 'other': 'N', 'qid': 7943,
-          'mandatory': 'N'},
-         {'question_order': 3, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7942, 'language': 'en'},
-          'modulename': None, 'title': 'subjectid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Participant Identification number<b>:</b>', 'language': 'en',
-          'other': 'N', 'qid': 7942, 'mandatory': 'Y'},
-         {'question_order': 1, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7941, 'language': 'en'},
-          'modulename': None, 'title': 'acquisitiondate', 'same_default': 0, 'help': '', 'type': 'D', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Acquisition date<strong>:</strong><br />\n', 'language': 'en',
-          'other': 'N', 'qid': 7941, 'mandatory': 'Y'},
-         {'question_order': 0, 'parent_qid': 0, 'sid': 689143, 'preg': '', 'id': {'qid': 7940, 'language': 'en'},
-          'modulename': None, 'title': 'responsibleid', 'same_default': 0, 'help': '', 'type': 'N', 'scale_id': 0,
-          'relevance': '1', 'gid': 1961, 'question': 'Responsible Identification number:', 'language': 'en',
-          'other': 'N', 'qid': 7940, 'mandatory': 'Y'}],
-    ]
-    mock_server.return_value.get_question_properties.side_effect = [
-        {'answeroptions': 'No available answer options', 'gid': 1960, 'subquestions': 'No available answers',
-         'attributes': 'No available attributes', 'other': 'N', 'question': 'Text Frage Eins', 'title': 'textfrageeins',
-         'question_order': 1, 'attributes_lang': 'No available attributes', 'type': 'S'},
-        {'answeroptions': 'No available answer options', 'gid': 1959, 'subquestions': 'No available answers',
-         'attributes': {'hidden': '1'}, 'other': 'N', 'question': 'Participant Identification number<b>:</b>',
-         'title': 'subjectid', 'question_order': 3, 'attributes_lang': 'No available attributes', 'type': 'N'},
-        {'answeroptions': 'No available answer options', 'gid': 1959, 'subquestions': 'No available answers',
-         'attributes': {'hidden': '1'}, 'other': 'N', 'question': 'Acquisition date<strong>:</strong><br />\n',
-         'title': 'acquisitiondate', 'question_order': 1, 'attributes_lang': 'No available attributes', 'type': 'D'},
-        {'answeroptions': 'No available answer options', 'gid': 1959, 'subquestions': 'No available answers',
-         'attributes': {'hidden': '1'}, 'other': 'N', 'question': 'Responsible Identification number:',
-         'title': 'responsibleid', 'question_order': 0, 'attributes_lang': 'No available attributes', 'type': 'N'},
-        {'answeroptions': 'No available answer options', 'gid': 1962, 'subquestions': 'No available answers',
-         'attributes': 'No available attributes', 'other': 'N', 'question': 'Text Frage Zwei', 'title': 'textfragezwei',
-         'question_order': 1, 'attributes_lang': 'No available attributes', 'type': 'S'},
-        {'answeroptions': 'No available answer options', 'gid': 1961, 'subquestions': 'No available answers',
-         'attributes': {'hidden': '1'}, 'other': 'N', 'question': 'Participant Identification number<b>:</b>',
-         'title': 'subjectid', 'question_order': 3, 'attributes_lang': 'No available attributes', 'type': 'N'},
-        {'answeroptions': 'No available answer options', 'gid': 1961, 'subquestions': 'No available answers',
-         'attributes': {'hidden': '1'}, 'other': 'N', 'question': 'Acquisition date<strong>:</strong><br />\n',
-         'title': 'acquisitiondate', 'question_order': 1, 'attributes_lang': 'No available attributes', 'type': 'D'},
-        {'answeroptions': 'No available answer options', 'gid': 1961, 'subquestions': 'No available answers',
-         'attributes': {'hidden': '1'}, 'other': 'N', 'question': 'Responsible Identification number:',
-         'title': 'responsibleid', 'question_order': 0, 'attributes_lang': 'No available attributes', 'type': 'N'}
-    ]
-
-
-def set_mocks10(mock_server):
+def set_mocks8(mock_server):
     mock_server.return_value.get_participant_properties.side_effect = [
         {'completed': '2019-08-13 08:27'},
         {'token': 'RNBWehixzt8SEeF'}
@@ -4126,8 +2878,7 @@ def set_mocks10(mock_server):
     mock_server.return_value.get_summary.return_value = 1
 
 
-def set_mocks11(mock_server):
-    # TODO (NES-991): see if it's possible to reuse set_mocks9
+def set_mocks9(mock_server):
     mock_server.return_value.get_survey_properties.side_effect = [
         {'language': 'en', 'additional_languages': ''},
         {'language': 'en', 'additional_languages': ''},
@@ -4368,7 +3119,77 @@ def set_mocks11(mock_server):
     ]
 
 
-def set_mocks12(mock_server):
+def update_mocks9_full(mock_server):
+    mock_server.return_value.get_survey_properties.side_effect = [
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'admin': 'Jorge da Capadócia'}, {'adminemail': 'jorge@example.com'},
+        {'admin': 'Leonardo dos Santos'}, {'adminemail': 'leo@example.com'}
+    ]
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9u'
+        'ZGF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZWVpbnMiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhi'
+        'VWh0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyIKCg==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIl'
+        'RleHQgRnJhZ2UgRWlucyIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiMTZOaEZpekM2OGJVaHRUIiwiMiIsIjIwMjEtMDY'
+        'tMDggMDA6MDA6MDAiLCI2IiwiQW50d29ydCBFaW5zIgoK',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZXp3ZWkiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMm'
+        'N6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSIKCg==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUg'
+        'SWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIs'
+        'IlRleHQgRnJhZ2UgWndlaSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiWXlVekN1TlRzblUyY3plIiwiMiIsIjIwMjEt'
+        'MDYtMDggMDA6MDA6MDAiLCI2IiwiQW50d29ydCBad2VpIgoK'
+    ]
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+    ]
+
+
+def update_mocks9_abbreviated(mock_server):
+    mock_server.return_value.get_survey_properties.side_effect = [
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'language': 'en', 'additional_languages': ''},
+        {'admin': 'Jorge da Capadócia'}, {'adminemail': 'jorge@example.com'},
+        {'admin': 'Leonardo dos Santos'}, {'adminemail': 'leo@example.com'}
+    ]
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZWVpbnMiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhiVW'
+        'h0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyIKCg==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJUZXh0IEZyYWdlIEVpbnMiCiIxIiwiMTk4MC0wMS0wMS'
+        'AwMDowMDowMCIsIjIiLCJlbiIsIjE2TmhGaXpDNjhiVWh0VCIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgRWlucyI'
+        'KCg==',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsInRleHRmcmFnZXp3ZWkiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMm'
+        'N6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSIKCg==',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJUZXh0IEZyYWdlIFp3ZWkiCiIxIiwiMTk4MC0wMS0wMS'
+        'AwMDowMDowMCIsIjIiLCJlbiIsIll5VXpDdU5Uc25VMmN6ZSIsIjIiLCIyMDIxLTA2LTA4IDAwOjAwOjAwIiwiNiIsIkFudHdvcnQgWndlaSI'
+        'KCg=='
+    ]
+    mock_server.return_value.get_participant_properties.side_effect = [
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+        {'token': '16NhFizC68bUhtT'},
+        {'token': 'YyUzCuNTsnU2cze'},
+    ]
+
+
+def set_mocks10(mock_server):
     mock_server.return_value.get_survey_properties.side_effect = [
         {'language': 'en', 'additional_languages': ''},
         {'language': 'en', 'additional_languages': ''},
@@ -6845,7 +5666,107 @@ def set_mocks12(mock_server):
     ]
 
 
-def set_mocks13(mock_server):
+def update_mocks10_full(mock_server):
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhci'
+        'IsImxpc3RlbWl0a29tbWVudGFyW2NvbW1lbnRdIiwiYXJyYXlbU1EwMDFdIiwiYXJyYXlbU1EwMDJdIiwiYXJyYXl6ZWhucHVua3Rld2FobFt'
+        'TUTAwMV0iLCJhcnJheXplaG5wdW5rdGV3YWhsW1NRMDAyXSIsImFycmF5ZnVuZnB1bmt0ZXdhaGxbU1EwMDFdIiwiYXJyYXlmdW5mcHVua3Rl'
+        'd2FobFtTUTAwMl0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMV0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMl0iLCJhcnJheXpha'
+        'GxlbltTUTAwMV9TUTAwMV0iLCJhcnJheXphaGxlbltTUTAwMl9TUTAwMV0iLCJhcnJheXRleHRlW1NRMDAxX1NRMDAxXSIsImFycmF5dGV4dG'
+        'VbU1EwMDFfU1EwMDJdIiwiYXJyYXlqYW5laW51bnNpY2hlcltTUTAwMV0iLCJhcnJheWphbmVpbnVuc2ljaGVyW1NRMDAyXSIsImFycmF5dm9'
+        'uc3BhbHRlW1NRMDAxXSIsImFycmF5dm9uc3BhbHRlW1NRMDAyXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMV1bMV0iLCJhcnJheWR1YWxlc2th'
+        'bGFbU1EwMDFdWzJdIiwiYXJyYXlkdWFsZXNrYWxhW1NRMDAyXVsxXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMl1bMl0iLCJ0ZXJtaW56ZWl0I'
+        'iwiZ2xlaWNodW5nIiwiZGF0ZWl1cGxvYWQiLCJkYXRlaXVwbG9hZFtmaWxlY291bnRdIiwiZ2VzY2hsZWNodCIsInNwcmFjaHVtc2NoYWx0dW'
+        '5nIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDFdIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDJdIiwibnVtZXJpc2NoZWVpbmdhYmU'
+        'iLCJyYW5nWzFdIiwicmFuZ1syXSIsInRleHRhbnplaWdlIiwiamFuZWluIiwicmVpc2lnZXJmcmVpdGV4dCIsImxhbmdlcmZyZWllcnRleHQi'
+        'LCJtZWhyZmFjaGVya3VyenRleHRbU1EwMDFdIiwibWVocmZhY2hlcmt1cnp0ZXh0W1NRMDAyXSIsImt1cnplcmZyZWl0ZXh0IiwibWVocmZhY'
+        '2hhdXN3YWhsW1NRMDAxXSIsIm1laHJmYWNoYXVzd2FobFtTUTAwMl0iLCJtZWhyZmFjaGF1c3dhaGxtaXRrb1tTUTAwMV0iLCJtZWhyZmFjaG'
+        'F1c3dhaGxtaXRrb1tTUTAwMWNvbW1lbnRdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1EwMDJdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1E'
+        'wMDJjb21tZW50XSIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiU2FjRUt5Mk9uUURrQndhIiwiMSIsIjIwMjEtMDUtMDgg'
+        'MDA6MDA6MDAiLCI1IiwiNCIsIkExIiwiQTIiLCJBMSIsIiIsIkEyIiwiIiwiNiIsIjUiLCI1IiwiMSIsIkQiLCJJIiwiMyIsIjgiLCJhIiwiY'
+        'iIsIlkiLCJVIiwiQTIiLCJBMSIsIiIsIkExIiwiIiwiIiwiMjAxOS0wOC0yMSAwMDowMDowMCIsIkdsZWljaHVuZyIsIiIsIjAiLCJNIiwiZW'
+        '4iLCIxIiwiMiIsIjQiLCJBMiIsIkExIiwiIiwiWSIsImFiYyIsImFiYyIsImEiLCJiIiwiYWJjIiwiWSIsIiIsIlkiLCJhIiwiIiwiIgoK',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIk'
+        'bDvG5mIFB1bmt0ZSBXYWhsIiwiRHJvcGRvd24gTGlzdGUiLCJMaXN0ZSAocmFkaW8pIiwiTGlzdGUgbWl0IEtvbW1lbnRhciIsIkxpc3RlIG1'
+        'pdCBLb21tZW50YXIgW0NvbW1lbnRdIiwiQXJyYXkgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5'
+        'IChaZWhuIFB1bmt0ZSBXYWhsKSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IChaZWhuIFB1bmt0ZSBXYWhsKSBbVW50ZXJmcmFnZSB6d2VpX'
+        'SIsIkFycmF5IChGw7xuZiBQdW5rdGUgV2FobCkgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSAoRsO8bmYgUHVua3RlIFdhaGwpIFtVbnRlcm'
+        'ZyYWdlIHp3ZWldIiwiQXJyYXkgKEVyaMO2aGVuL0dsZWljaGUvVmVycmluZ2VybikgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSAoRXJow7Z'
+        'oZW4vR2xlaWNoZS9WZXJyaW5nZXJuKSBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5IChaYWhsZW4pIFtVbnRlcmZyYWdlIGVpbnNdW1VudGVy'
+        'ZnJhZ2UgZWluc10iLCJBcnJheSAoWmFobGVuKSBbVW50ZXJmcmFnZSB6d2VpXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbV'
+        'W50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIHp3ZW'
+        'ldIiwiQXJyYXkgKEphL05laW4vVW5zaWNoZXIpIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEphL05laW4vVW5zaWNoZXIpIFtVbnRlcmZ'
+        'yYWdlIHp3ZWldIiwiQXJyYXkgdm9uIFNwYWx0ZSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IHZvbiBTcGFsdGUgW1VudGVyZnJhZ2Ugendl'
+        'aV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZXJmcmFnZSBlaW5zXVtTY2FsZSAxXSIsIkFycmF5IER1YWxlIFNrYWxhIFtVbnRlcmZyYWdlI'
+        'GVpbnNdW1NjYWxlIDJdIiwiQXJyYXkgRHVhbGUgU2thbGEgW1VudGVyZnJhZ2UgendlaV1bU2NhbGUgMV0iLCJBcnJheSBEdWFsZSBTa2FsYS'
+        'BbVW50ZXJmcmFnZSB6d2VpXVtTY2FsZSAyXSIsIlRlcm1pbnplaXQiLCJHbGVpY2h1bmciLCJEYXRlaS1VcGxvYWQiLCJmaWxlY291bnQgLSB'
+        'EYXRlaS1VcGxvYWQiLCJHZXNjaGxlY2h0IiwiU3ByYWNodW1zY2hhbHR1bmciLCJNZWhyZmFjaGUgbnVtZXJpc2NoZSBFaW5nYWJlIFtVbnRl'
+        'cmZyYWdlIGVpbnNdIiwiTWVocmZhY2hlIG51bWVyaXNjaGUgRWluZ2FiZSBbVW50ZXJmcmFnZSB6d2VpXSIsIk51bWVyaXNjaGUgRWluZ2FiZ'
+        'SIsIlJhbmcgW1JhbmsgMV0iLCJSYW5nIFtSYW5rIDJdIiwiVGV4dGFuemVpZ2UiLCJKYS9OZWluIiwiUmVpc2lnZXIgRnJlaXRleHQiLCJMYW'
+        '5nZXIgZnJlaWVyIFRleHQiLCJNZWhyZmFjaGVyIEt1cnp0ZXh0IFtVbnRlcmZyYWdlIGVpbnNdIiwiTWVocmZhY2hlciBLdXJ6dGV4dCBbVW5'
+        '0ZXJmcmFnZSB6d2VpXSIsIkt1cnplciBGcmVpdGV4dCIsIk1laHJmYWNoYXVzd2FobCBbVW50ZXJmcmFnZSBlaW5zXSIsIk1laHJmYWNoYXVz'
+        'd2FobCBbVW50ZXJmcmFnZSB6d2VpXSIsIk1laHJmYWNoYXVzd2FobCBtaXQgS29tbWVudGFyZW4gW1VudGVyZnJhZ2UgZWluc10iLCJNZWhyZ'
+        'mFjaGF1c3dhaGwgbWl0IEtvbW1lbnRhcmVuIFtDb21tZW50XSIsIk1laHJmYWNoYXVzd2FobCBtaXQgS29tbWVudGFyZW4gW1VudGVyZnJhZ2'
+        'UgendlaV0iLCJNZWhyZmFjaGF1c3dhaGwgbWl0IEtvbW1lbnRhcmVuIFtDb21tZW50XSIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiI'
+        'sImVuIiwiU2FjRUt5Mk9uUURrQndhIiwiMSIsIjIwMjEtMDUtMDggMDA6MDA6MDAiLCI1IiwiNCIsIkExIiwiQTIiLCJBMSIsIiIsIkEyIiwi'
+        'IiwiNiIsIjUiLCI1IiwiMSIsIkQiLCJJIiwiMyIsIjgiLCJhIiwiYiIsIlkiLCJVIiwiQTIiLCJBMSIsIiIsIkExIiwiIiwiIiwiMjAxOS0wO'
+        'C0yMSAwMDowMDowMCIsIkdsZWljaHVuZyIsIiIsIjAiLCJNIiwiZW4iLCIxIiwiMiIsIjQiLCJBMiIsIkExIiwiIiwiWSIsImFiYyIsImFiYy'
+        'IsImEiLCJiIiwiYWJjIiwiWSIsIiIsIlkiLCJhIiwiIiwiIgoK'
+    ]
+
+
+def update_mocks10_abbreviated(mock_server):
+    mock_server.return_value.export_responses_by_token.side_effect = [
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
+        'GF0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhci'
+        'IsImxpc3RlbWl0a29tbWVudGFyW2NvbW1lbnRdIiwiYXJyYXlbU1EwMDFdIiwiYXJyYXlbU1EwMDJdIiwiYXJyYXl6ZWhucHVua3Rld2FobFt'
+        'TUTAwMV0iLCJhcnJheXplaG5wdW5rdGV3YWhsW1NRMDAyXSIsImFycmF5ZnVuZnB1bmt0ZXdhaGxbU1EwMDFdIiwiYXJyYXlmdW5mcHVua3Rl'
+        'd2FobFtTUTAwMl0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMV0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMl0iLCJhcnJheXpha'
+        'GxlbltTUTAwMV9TUTAwMV0iLCJhcnJheXphaGxlbltTUTAwMl9TUTAwMV0iLCJhcnJheXRleHRlW1NRMDAxX1NRMDAxXSIsImFycmF5dGV4dG'
+        'VbU1EwMDFfU1EwMDJdIiwiYXJyYXlqYW5laW51bnNpY2hlcltTUTAwMV0iLCJhcnJheWphbmVpbnVuc2ljaGVyW1NRMDAyXSIsImFycmF5dm9'
+        'uc3BhbHRlW1NRMDAxXSIsImFycmF5dm9uc3BhbHRlW1NRMDAyXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMV1bMV0iLCJhcnJheWR1YWxlc2th'
+        'bGFbU1EwMDFdWzJdIiwiYXJyYXlkdWFsZXNrYWxhW1NRMDAyXVsxXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMl1bMl0iLCJ0ZXJtaW56ZWl0I'
+        'iwiZ2xlaWNodW5nIiwiZGF0ZWl1cGxvYWQiLCJkYXRlaXVwbG9hZFtmaWxlY291bnRdIiwiZ2VzY2hsZWNodCIsInNwcmFjaHVtc2NoYWx0dW'
+        '5nIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDFdIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDJdIiwibnVtZXJpc2NoZWVpbmdhYmU'
+        'iLCJyYW5nWzFdIiwicmFuZ1syXSIsInRleHRhbnplaWdlIiwiamFuZWluIiwicmVpc2lnZXJmcmVpdGV4dCIsImxhbmdlcmZyZWllcnRleHQi'
+        'LCJtZWhyZmFjaGVya3VyenRleHRbU1EwMDFdIiwibWVocmZhY2hlcmt1cnp0ZXh0W1NRMDAyXSIsImt1cnplcmZyZWl0ZXh0IiwibWVocmZhY'
+        '2hhdXN3YWhsW1NRMDAxXSIsIm1laHJmYWNoYXVzd2FobFtTUTAwMl0iLCJtZWhyZmFjaGF1c3dhaGxtaXRrb1tTUTAwMV0iLCJtZWhyZmFjaG'
+        'F1c3dhaGxtaXRrb1tTUTAwMWNvbW1lbnRdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1EwMDJdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1E'
+        'wMDJjb21tZW50XSIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiU2FjRUt5Mk9uUURrQndhIiwiMSIsIjIwMjEtMDUtMDgg'
+        'MDA6MDA6MDAiLCI1IiwiNCIsIkExIiwiQTIiLCJBMSIsIiIsIkEyIiwiIiwiNiIsIjUiLCI1IiwiMSIsIkQiLCJJIiwiMyIsIjgiLCJhIiwiY'
+        'iIsIlkiLCJVIiwiQTIiLCJBMSIsIiIsIkExIiwiIiwiIiwiMjAxOS0wOC0yMSAwMDowMDowMCIsIkdsZWljaHVuZyIsIiIsIjAiLCJNIiwiZW'
+        '4iLCIxIiwiMiIsIjQiLCJBMiIsIkExIiwiIiwiWSIsImFiYyIsImFiYyIsImEiLCJiIiwiYWJjIiwiWSIsIiIsIlkiLCJhIiwiIiwiIgoK',
+        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
+        'WRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJGw7xuZiBQdW5rdGUgV2FobCIsIkRyb3Bkb3duIExpc3'
+        'RlIiwiTGlzdGUgKHJhZGlvKSIsIkxpc3RlIG1pdCBLb21tZS4uICIsIkxpc3RlIG1pdCBLb21tZS4uICBbQ29tbWVudF0iLCJBcnJheSBbVW5'
+        '0ZXJmcmFnZSBlaW5zXSIsIkFycmF5IFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKFplaG4gUHVuLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwi'
+        'QXJyYXkgKFplaG4gUHVuLi4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKEbDvG5mIFB1bi4uICBbVW50ZXJmcmFnZSBlaW5zXSIsIkFyc'
+        'mF5IChGw7xuZiBQdW4uLiAgW1VudGVyZnJhZ2UgendlaV0iLCJBcnJheSAoRXJow7ZoZW4vLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYX'
+        'kgKEVyaMO2aGVuLy4uICBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5IChaYWhsZW4pIFtVbnRlcmZyYWdlIGVpbnNdW1VudGVyZnJhZ2UgZWl'
+        'uc10iLCJBcnJheSAoWmFobGVuKSBbVW50ZXJmcmFnZSB6d2VpXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFn'
+        'ZSBlaW5zXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyY'
+        'XkgKEphL05laW4vLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEphL05laW4vLi4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgdm'
+        '9uIFNwYWx0ZSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IHZvbiBTcGFsdGUgW1VudGVyZnJhZ2UgendlaV0iLCJBcnJheSBEdWFsZSBTa2F'
+        'sYSBbVW50ZXJmcmFnZSBlaW5zXVtTY2FsZSAxXSIsIkFycmF5IER1YWxlIFNrYWxhIFtVbnRlcmZyYWdlIGVpbnNdW1NjYWxlIDJdIiwiQXJy'
+        'YXkgRHVhbGUgU2thbGEgW1VudGVyZnJhZ2UgendlaV1bU2NhbGUgMV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZXJmcmFnZSB6d2VpXVtTY'
+        '2FsZSAyXSIsIlRlcm1pbnplaXQiLCJHbGVpY2h1bmciLCJEYXRlaS1VcGxvYWQiLCJmaWxlY291bnQgLSBEYXQuLiAiLCJHZXNjaGxlY2h0Ii'
+        'wiU3ByYWNodW1zY2hhbHR1bmciLCJNZWhyZmFjaGUgbnVtZXIuLiAgW1VudGVyZnJhZ2UgZWluc10iLCJNZWhyZmFjaGUgbnVtZXIuLiAgW1V'
+        'udGVyZnJhZ2UgendlaV0iLCJOdW1lcmlzY2hlIEVpbmdhYmUiLCJSYW5nIFtSYW5rIDFdIiwiUmFuZyBbUmFuayAyXSIsIlRleHRhbnplaWdl'
+        'IiwiSmEvTmVpbiIsIlJlaXNpZ2VyIEZyZWl0ZXh0IiwiTGFuZ2VyIGZyZWllciBUZXh0IiwiTWVocmZhY2hlciBLdXJ6Li4gIFtVbnRlcmZyY'
+        'WdlIGVpbnNdIiwiTWVocmZhY2hlciBLdXJ6Li4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiS3VyemVyIEZyZWl0ZXh0IiwiTWVocmZhY2hhdXN3YW'
+        'hsIFtVbnRlcmZyYWdlIGVpbnNdIiwiTWVocmZhY2hhdXN3YWhsIFtVbnRlcmZyYWdlIHp3ZWldIiwiTWVocmZhY2hhdXN3YWhsLi4gIFtVbnR'
+        'lcmZyYWdlIGVpbnNdIiwiTWVocmZhY2hhdXN3YWhsLi4gIFtDb21tZW50XSIsIk1laHJmYWNoYXVzd2FobC4uICBbVW50ZXJmcmFnZSB6d2Vp'
+        'XSIsIk1laHJmYWNoYXVzd2FobC4uICBbQ29tbWVudF0iCiIyIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIlNhY0VLeTJPblFEa'
+        '0J3YSIsIjEiLCIyMDIxLTA1LTA4IDAwOjAwOjAwIiwiNSIsIjQiLCJBMSIsIkEyIiwiQTEiLCIiLCJBMiIsIiIsIjYiLCI1IiwiNSIsIjEiLC'
+        'JEIiwiSSIsIjMiLCI4IiwiYSIsImIiLCJZIiwiVSIsIkEyIiwiQTEiLCIiLCJBMSIsIiIsIiIsIjIwMTktMDgtMjEgMDA6MDA6MDAiLCJHbGV'
+        'pY2h1bmciLCIiLCIwIiwiTSIsImVuIiwiMSIsIjIiLCI0IiwiQTIiLCJBMSIsIiIsIlkiLCJhYmMiLCJhYmMiLCJhIiwiYiIsImFiYyIsIlki'
+        'LCIiLCJZIiwiYSIsIiIsIiIKCg=='
+    ]
+
+
+def set_mocks11(mock_server):
     mock_server.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
     mock_server.return_value.get_participant_properties.return_value = {'token': 'MCWSI30IZ5nhn1H'}
     mock_server.return_value.export_responses.return_value = \
@@ -8293,421 +7214,7 @@ def set_mocks13(mock_server):
     ]
 
 
-def update_mocks1(mock_server):
-    mock_server.return_value.get_participant_properties.side_effect = [
-        {'token': 'obyBy4HizUhe3j0'},
-        {'completed': '2019-06-26'},
-        {'completed': '2019-06-26'},
-        {'token': 'obyBy4HizUhe3j0'}
-    ]
-    mock_server.return_value.list_questions.side_effect = [
-        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
-          'question_order': 3,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5823, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
-          'relevance': '1',
-          'title': 'fileUpload'},
-         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 2,
-          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5822, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
-          'relevance': '1',
-          'title': 'secondQuestion'},
-         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 1,
-          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5821, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
-          'relevance': '1',
-          'title': 'firstQuestion'}],
-        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 3,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5820, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
-          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
-         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 1,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5819, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
-          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
-          'title': 'acquisitiondate'},
-         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 0,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5818, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
-          'question': 'Responsible Identification number:',
-          'relevance': '1', 'title': 'responsibleid'}],
-        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
-          'question_order': 3,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5823, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
-          'relevance': '1',
-          'title': 'fileUpload'},
-         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 2,
-          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5822, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
-          'relevance': '1',
-          'title': 'secondQuestion'},
-         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 1,
-          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5821, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
-          'relevance': '1',
-          'title': 'firstQuestion'}],
-        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 3,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5820, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
-          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
-         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 1,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5819, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
-          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
-          'title': 'acquisitiondate'},
-         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 0,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5818, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
-          'question': 'Responsible Identification number:',
-          'relevance': '1', 'title': 'responsibleid'}],
-        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
-          'question_order': 3,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5823, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
-          'relevance': '1',
-          'title': 'fileUpload'},
-         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 2,
-          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5822, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
-          'relevance': '1',
-          'title': 'secondQuestion'},
-         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 1,
-          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5821, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
-          'relevance': '1',
-          'title': 'firstQuestion'}],
-        [{'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 3,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5820, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
-          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
-         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 1,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5819, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
-          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
-          'title': 'acquisitiondate'},
-         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 0,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5818, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
-          'question': 'Responsible Identification number:',
-          'relevance': '1', 'title': 'responsibleid'}],
-        [{'same_default': 0, 'type': '|', 'other': 'N', 'scale_id': 0, 'mandatory': 'N',
-          'question_order': 3,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5823, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5823, 'language': 'en'}, 'question': 'Has fileupload?',
-          'relevance': '1',
-          'title': 'fileUpload'},
-         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 2,
-          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5822, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5822, 'language': 'en'}, 'question': 'Second question',
-          'relevance': '1',
-          'title': 'secondQuestion'},
-         {'same_default': 0, 'type': 'T', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 1,
-          'modulename': '', 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5821, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1841, 'id': {'qid': 5821, 'language': 'en'}, 'question': 'First question',
-          'relevance': '1',
-          'title': 'firstQuestion'},
-         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 3,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5820, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5820, 'language': 'en'},
-          'question': 'Participant Identification number<b>:</b>', 'relevance': '1', 'title': 'subjectid'},
-         {'same_default': 0, 'type': 'D', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 1,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5819, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5819, 'language': 'en'},
-          'question': 'Acquisition date<strong>:</strong><br />\n', 'relevance': '1',
-          'title': 'acquisitiondate'},
-         {'same_default': 0, 'type': 'N', 'other': 'N', 'scale_id': 0, 'mandatory': 'Y',
-          'question_order': 0,
-          'modulename': None, 'sid': LIMESURVEY_SURVEY_ID_1, 'qid': 5818, 'language': 'en', 'help': '',
-          'parent_qid': 0,
-          'preg': '',
-          'gid': 1840, 'id': {'qid': 5818, 'language': 'en'},
-          'question': 'Responsible Identification number:',
-          'relevance': '1', 'title': 'responsibleid'}]
-    ]
-
-
-def update_mocks2(mock_server):
-    mock_server.return_value.get_participant_properties.side_effect = [
-        {'token': 'MHwQ04bv2DQYisN'},
-        {'completed': '2019-08-05 17:33'},
-        {'completed': '2019-08-05 17:33'},
-        {'token': 'MHwQ04bv2DQYisN'}
-    ]
-    mock_server.return_value.export_responses_by_token.side_effect = [
-        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
-        'GF0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhci'
-        'IsImxpc3RlbWl0a29tbWVudGFyW2NvbW1lbnRdIiwiYXJyYXlbU1EwMDFdIiwiYXJyYXlbU1EwMDJdIiwiYXJyYXl6ZWhucHVua3Rld2FobFt'
-        'TUTAwMV0iLCJhcnJheXplaG5wdW5rdGV3YWhsW1NRMDAyXSIsImFycmF5ZnVuZnB1bmt0ZXdhaGxbU1EwMDFdIiwiYXJyYXlmdW5mcHVua3Rl'
-        'd2FobFtTUTAwMl0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMV0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMl0iLCJhcnJheXpha'
-        'GxlbltTUTAwMV9TUTAwMV0iLCJhcnJheXphaGxlbltTUTAwMl9TUTAwMV0iLCJhcnJheXRleHRlW1NRMDAxX1NRMDAxXSIsImFycmF5dGV4dG'
-        'VbU1EwMDFfU1EwMDJdIiwiYXJyYXlqYW5laW51bnNpY2hlcltTUTAwMV0iLCJhcnJheWphbmVpbnVuc2ljaGVyW1NRMDAyXSIsImFycmF5dm9'
-        'uc3BhbHRlW1NRMDAxXSIsImFycmF5dm9uc3BhbHRlW1NRMDAyXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMV1bMV0iLCJhcnJheWR1YWxlc2th'
-        'bGFbU1EwMDFdWzJdIiwiYXJyYXlkdWFsZXNrYWxhW1NRMDAyXVsxXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMl1bMl0iLCJ0ZXJtaW56ZWl0I'
-        'iwiZ2xlaWNodW5nIiwiZGF0ZWl1cGxvYWQiLCJkYXRlaXVwbG9hZFtmaWxlY291bnRdIiwiZ2VzY2hsZWNodCIsInNwcmFjaHVtc2NoYWx0dW'
-        '5nIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDFdIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDJdIiwibnVtZXJpc2NoZWVpbmdhYmU'
-        'iLCJyYW5nWzFdIiwicmFuZ1syXSIsInRleHRhbnplaWdlIiwiamFuZWluIiwicmVpc2lnZXJmcmVpdGV4dCIsImxhbmdlcmZyZWllcnRleHQi'
-        'LCJtZWhyZmFjaGVya3VyenRleHRbU1EwMDFdIiwibWVocmZhY2hlcmt1cnp0ZXh0W1NRMDAyXSIsImt1cnplcmZyZWl0ZXh0IiwibWVocmZhY'
-        '2hhdXN3YWhsW1NRMDAxXSIsIm1laHJmYWNoYXVzd2FobFtTUTAwMl0iLCJtZWhyZmFjaGF1c3dhaGxtaXRrb1tTUTAwMV0iLCJtZWhyZmFjaG'
-        'F1c3dhaGxtaXRrb1tTUTAwMWNvbW1lbnRdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1EwMDJdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1E'
-        'wMDJjb21tZW50XSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiTUh3UTA0YnYyRFFZaXNOIiwiMiIsIjIwMTktMDUtMDgg'
-        'MDA6MDA6MDAiLCIzIiwiNSIsIkExIiwiQTEiLCJBMiIsIkVpbiBLb21tZW50YXIiLCJBMiIsIkExIiwiNiIsIjEiLCIyIiwiNCIsIkQiLCJTI'
-        'iwiNCIsIjkiLCJhIiwiYiIsIk4iLCJZIiwiQTEiLCJBMiIsIiIsIkExIiwiQTEiLCIiLCIyMDE5LTA4LTA1IDAwOjAwOjAwIiwiR2xlaWNodW'
-        '5nIiwiIiwiMCIsIk0iLCJlbiIsIjEiLCIyIiwiMTMiLCJBMSIsIiIsIiIsIk4iLCJFaW4gcmVpc2lnZXIgRnJlaXRleHQiLCJFaW4gbGFuZ2V'
-        'yIGZyZWllciBUZXh0IiwiYSIsImIiLCJhIiwiWSIsIiIsIlkiLCJjIiwiWSIsImQiCgo =',
-        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
-        'WRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIk'
-        'bDvG5mIFB1bmt0ZSBXYWhsIiwiRHJvcGRvd24gTGlzdGUiLCJMaXN0ZSAocmFkaW8pIiwiTGlzdGUgbWl0IEtvbW1lbnRhciIsIkxpc3RlIG1'
-        'pdCBLb21tZW50YXIgW0NvbW1lbnRdIiwiQXJyYXkgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5'
-        'IChaZWhuIFB1bmt0ZSBXYWhsKSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IChaZWhuIFB1bmt0ZSBXYWhsKSBbVW50ZXJmcmFnZSB6d2VpX'
-        'SIsIkFycmF5IChGw7xuZiBQdW5rdGUgV2FobCkgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSAoRsO8bmYgUHVua3RlIFdhaGwpIFtVbnRlcm'
-        'ZyYWdlIHp3ZWldIiwiQXJyYXkgKEVyaMO2aGVuL0dsZWljaGUvVmVycmluZ2VybikgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSAoRXJow7Z'
-        'oZW4vR2xlaWNoZS9WZXJyaW5nZXJuKSBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5IChaYWhsZW4pIFtVbnRlcmZyYWdlIGVpbnNdW1VudGVy'
-        'ZnJhZ2UgZWluc10iLCJBcnJheSAoWmFobGVuKSBbVW50ZXJmcmFnZSB6d2VpXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbV'
-        'W50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIHp3ZW'
-        'ldIiwiQXJyYXkgKEphL05laW4vVW5zaWNoZXIpIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEphL05laW4vVW5zaWNoZXIpIFtVbnRlcmZ'
-        'yYWdlIHp3ZWldIiwiQXJyYXkgdm9uIFNwYWx0ZSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IHZvbiBTcGFsdGUgW1VudGVyZnJhZ2Ugendl'
-        'aV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZXJmcmFnZSBlaW5zXVtTY2FsZSAxXSIsIkFycmF5IER1YWxlIFNrYWxhIFtVbnRlcmZyYWdlI'
-        'GVpbnNdW1NjYWxlIDJdIiwiQXJyYXkgRHVhbGUgU2thbGEgW1VudGVyZnJhZ2UgendlaV1bU2NhbGUgMV0iLCJBcnJheSBEdWFsZSBTa2FsYS'
-        'BbVW50ZXJmcmFnZSB6d2VpXVtTY2FsZSAyXSIsIlRlcm1pbnplaXQiLCJHbGVpY2h1bmciLCJEYXRlaS1VcGxvYWQiLCJmaWxlY291bnQgLSB'
-        'EYXRlaS1VcGxvYWQiLCJHZXNjaGxlY2h0IiwiU3ByYWNodW1zY2hhbHR1bmciLCJNZWhyZmFjaGUgbnVtZXJpc2NoZSBFaW5nYWJlIFtVbnRl'
-        'cmZyYWdlIGVpbnNdIiwiTWVocmZhY2hlIG51bWVyaXNjaGUgRWluZ2FiZSBbVW50ZXJmcmFnZSB6d2VpXSIsIk51bWVyaXNjaGUgRWluZ2FiZ'
-        'SIsIlJhbmcgW1JhbmsgMV0iLCJSYW5nIFtSYW5rIDJdIiwiVGV4dGFuemVpZ2UiLCJKYS9OZWluIiwiUmVpc2lnZXIgRnJlaXRleHQiLCJMYW'
-        '5nZXIgZnJlaWVyIFRleHQiLCJNZWhyZmFjaGVyIEt1cnp0ZXh0IFtVbnRlcmZyYWdlIGVpbnNdIiwiTWVocmZhY2hlciBLdXJ6dGV4dCBbVW5'
-        '0ZXJmcmFnZSB6d2VpXSIsIkt1cnplciBGcmVpdGV4dCIsIk1laHJmYWNoYXVzd2FobCBbVW50ZXJmcmFnZSBlaW5zXSIsIk1laHJmYWNoYXVz'
-        'd2FobCBbVW50ZXJmcmFnZSB6d2VpXSIsIk1laHJmYWNoYXVzd2FobCBtaXQgS29tbWVudGFyZW4gW1VudGVyZnJhZ2UgZWluc10iLCJNZWhyZ'
-        'mFjaGF1c3dhaGwgbWl0IEtvbW1lbnRhcmVuIFtDb21tZW50XSIsIk1laHJmYWNoYXVzd2FobCBtaXQgS29tbWVudGFyZW4gW1VudGVyZnJhZ2'
-        'UgendlaV0iLCJNZWhyZmFjaGF1c3dhaGwgbWl0IEtvbW1lbnRhcmVuIFtDb21tZW50XSIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiI'
-        'sImVuIiwiTUh3UTA0YnYyRFFZaXNOIiwiMiIsIjIwMTktMDUtMDggMDA6MDA6MDAiLCIzIiwiNSIsIkExIiwiQTEiLCJBMiIsIkVpbiBLb21t'
-        'ZW50YXIiLCJBMiIsIkExIiwiNiIsIjEiLCIyIiwiNCIsIkQiLCJTIiwiNCIsIjkiLCJhIiwiYiIsIk4iLCJZIiwiQTEiLCJBMiIsIiIsIkExI'
-        'iwiQTEiLCIiLCIyMDE5LTA4LTA1IDAwOjAwOjAwIiwiR2xlaWNodW5nIiwiIiwiMCIsIk0iLCJlbiIsIjEiLCIyIiwiMTMiLCJBMSIsIiIsIi'
-        'IsIk4iLCJFaW4gcmVpc2lnZXIgRnJlaXRleHQiLCJFaW4gbGFuZ2VyIGZyZWllciBUZXh0IiwiYSIsImIiLCJhIiwiWSIsIiIsIlkiLCJjIiw'
-        'iWSIsImQiCgo='
-    ]
-
-
-def update_mocks3(mock_server):
-    mock_server.return_value.get_participant_properties.side_effect = [
-        {'token': 'MHwQ04bv2DQYisN'},
-        {'completed': '2019-08-05 17:33'},
-        {'completed': '2019-08-05 17:33'},
-        {'token': 'MHwQ04bv2DQYisN'}
-    ]
-    mock_server.return_value.export_responses_by_token.side_effect = [
-        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZG'
-        'F0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhciIs'
-        'Imxpc3RlbWl0a29tbWVudGFyW2NvbW1lbnRdIiwiYXJyYXlbU1EwMDFdIiwiYXJyYXlbU1EwMDJdIiwiYXJyYXl6ZWhucHVua3Rld2FobFtTUT'
-        'AwMV0iLCJhcnJheXplaG5wdW5rdGV3YWhsW1NRMDAyXSIsImFycmF5ZnVuZnB1bmt0ZXdhaGxbU1EwMDFdIiwiYXJyYXlmdW5mcHVua3Rld2Fo'
-        'bFtTUTAwMl0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMV0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMl0iLCJhcnJheXphaGxlbl'
-        'tTUTAwMV9TUTAwMV0iLCJhcnJheXphaGxlbltTUTAwMl9TUTAwMV0iLCJhcnJheXRleHRlW1NRMDAxX1NRMDAxXSIsImFycmF5dGV4dGVbU1Ew'
-        'MDFfU1EwMDJdIiwiYXJyYXlqYW5laW51bnNpY2hlcltTUTAwMV0iLCJhcnJheWphbmVpbnVuc2ljaGVyW1NRMDAyXSIsImFycmF5dm9uc3BhbH'
-        'RlW1NRMDAxXSIsImFycmF5dm9uc3BhbHRlW1NRMDAyXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMV1bMV0iLCJhcnJheWR1YWxlc2thbGFbU1Ew'
-        'MDFdWzJdIiwiYXJyYXlkdWFsZXNrYWxhW1NRMDAyXVsxXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMl1bMl0iLCJ0ZXJtaW56ZWl0IiwiZ2xlaW'
-        'NodW5nIiwiZGF0ZWl1cGxvYWQiLCJkYXRlaXVwbG9hZFtmaWxlY291bnRdIiwiZ2VzY2hsZWNodCIsInNwcmFjaHVtc2NoYWx0dW5nIiwibWVo'
-        'cmZhY2hlbnVtZXJpc2NoZWVbU1EwMDFdIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDJdIiwibnVtZXJpc2NoZWVpbmdhYmUiLCJyYW5nWz'
-        'FdIiwicmFuZ1syXSIsInRleHRhbnplaWdlIiwiamFuZWluIiwicmVpc2lnZXJmcmVpdGV4dCIsImxhbmdlcmZyZWllcnRleHQiLCJtZWhyZmFj'
-        'aGVya3VyenRleHRbU1EwMDFdIiwibWVocmZhY2hlcmt1cnp0ZXh0W1NRMDAyXSIsImt1cnplcmZyZWl0ZXh0IiwibWVocmZhY2hhdXN3YWhsW1'
-        'NRMDAxXSIsIm1laHJmYWNoYXVzd2FobFtTUTAwMl0iLCJtZWhyZmFjaGF1c3dhaGxtaXRrb1tTUTAwMV0iLCJtZWhyZmFjaGF1c3dhaGxtaXRr'
-        'b1tTUTAwMWNvbW1lbnRdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1EwMDJdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1EwMDJjb21tZW50XS'
-        'IKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiTUh3UTA0YnYyRFFZaXNOIiwiMiIsIjIwMTktMDUtMDggMDA6MDA6MDAiLCIz'
-        'IiwiNSIsIkExIiwiQTEiLCJBMiIsIkVpbiBLb21tZW50YXIiLCJBMiIsIkExIiwiNiIsIjEiLCIyIiwiNCIsIkQiLCJTIiwiNCIsIjkiLCJhIi'
-        'wiYiIsIk4iLCJZIiwiQTEiLCJBMiIsIiIsIkExIiwiQTEiLCIiLCIyMDE5LTA4LTA1IDAwOjAwOjAwIiwiR2xlaWNodW5nIiwiIiwiMCIsIk0i'
-        'LCJlbiIsIjEiLCIyIiwiMTMiLCJBMSIsIiIsIiIsIk4iLCJFaW4gcmVpc2lnZXIgRnJlaXRleHQiLCJFaW4gbGFuZ2VyIGZyZWllciBUZXh0Ii'
-        'wiYSIsImIiLCJhIiwiWSIsIiIsIlkiLCJjIiwiWSIsImQiCgo=',
-        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgSW'
-        'RlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJGw7xuZiBQdW5rdGUgV2FobCIsIkRyb3Bkb3duIExpc3Rl'
-        'IiwiTGlzdGUgKHJhZGlvKSIsIkxpc3RlIG1pdCBLb21tZS4uICIsIkxpc3RlIG1pdCBLb21tZS4uICBbQ29tbWVudF0iLCJBcnJheSBbVW50ZX'
-        'JmcmFnZSBlaW5zXSIsIkFycmF5IFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKFplaG4gUHVuLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJy'
-        'YXkgKFplaG4gUHVuLi4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKEbDvG5mIFB1bi4uICBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IC'
-        'hGw7xuZiBQdW4uLiAgW1VudGVyZnJhZ2UgendlaV0iLCJBcnJheSAoRXJow7ZoZW4vLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEVy'
-        'aMO2aGVuLy4uICBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5IChaYWhsZW4pIFtVbnRlcmZyYWdlIGVpbnNdW1VudGVyZnJhZ2UgZWluc10iLC'
-        'JBcnJheSAoWmFobGVuKSBbVW50ZXJmcmFnZSB6d2VpXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5z'
-        'XVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKEphL0'
-        '5laW4vLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEphL05laW4vLi4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgdm9uIFNwYWx0'
-        'ZSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IHZvbiBTcGFsdGUgW1VudGVyZnJhZ2UgendlaV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZX'
-        'JmcmFnZSBlaW5zXVtTY2FsZSAxXSIsIkFycmF5IER1YWxlIFNrYWxhIFtVbnRlcmZyYWdlIGVpbnNdW1NjYWxlIDJdIiwiQXJyYXkgRHVhbGUg'
-        'U2thbGEgW1VudGVyZnJhZ2UgendlaV1bU2NhbGUgMV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZXJmcmFnZSB6d2VpXVtTY2FsZSAyXSIsIl'
-        'Rlcm1pbnplaXQiLCJHbGVpY2h1bmciLCJEYXRlaS1VcGxvYWQiLCJmaWxlY291bnQgLSBEYXQuLiAiLCJHZXNjaGxlY2h0IiwiU3ByYWNodW1z'
-        'Y2hhbHR1bmciLCJNZWhyZmFjaGUgbnVtZXIuLiAgW1VudGVyZnJhZ2UgZWluc10iLCJNZWhyZmFjaGUgbnVtZXIuLiAgW1VudGVyZnJhZ2Ugen'
-        'dlaV0iLCJOdW1lcmlzY2hlIEVpbmdhYmUiLCJSYW5nIFtSYW5rIDFdIiwiUmFuZyBbUmFuayAyXSIsIlRleHRhbnplaWdlIiwiSmEvTmVpbiIs'
-        'IlJlaXNpZ2VyIEZyZWl0ZXh0IiwiTGFuZ2VyIGZyZWllciBUZXh0IiwiTWVocmZhY2hlciBLdXJ6Li4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiTW'
-        'VocmZhY2hlciBLdXJ6Li4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiS3VyemVyIEZyZWl0ZXh0IiwiTWVocmZhY2hhdXN3YWhsIFtVbnRlcmZyYWdl'
-        'IGVpbnNdIiwiTWVocmZhY2hhdXN3YWhsIFtVbnRlcmZyYWdlIHp3ZWldIiwiTWVocmZhY2hhdXN3YWhsLi4gIFtVbnRlcmZyYWdlIGVpbnNdIi'
-        'wiTWVocmZhY2hhdXN3YWhsLi4gIFtDb21tZW50XSIsIk1laHJmYWNoYXVzd2FobC4uICBbVW50ZXJmcmFnZSB6d2VpXSIsIk1laHJmYWNoYXVz'
-        'd2FobC4uICBbQ29tbWVudF0iCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIk1Id1EwNGJ2MkRRWWlzTiIsIjIiLCIyMDE5LT'
-        'A1LTA4IDAwOjAwOjAwIiwiMyIsIjUiLCJBMSIsIkExIiwiQTIiLCJFaW4gS29tbWVudGFyIiwiQTIiLCJBMSIsIjYiLCIxIiwiMiIsIjQiLCJE'
-        'IiwiUyIsIjQiLCI5IiwiYSIsImIiLCJOIiwiWSIsIkExIiwiQTIiLCIiLCJBMSIsIkExIiwiIiwiMjAxOS0wOC0wNSAwMDowMDowMCIsIkdsZW'
-        'ljaHVuZyIsIiIsIjAiLCJNIiwiZW4iLCIxIiwiMiIsIjEzIiwiQTEiLCIiLCIiLCJOIiwiRWluIHJlaXNpZ2VyIEZyZWl0ZXh0IiwiRWluIGxh'
-        'bmdlciBmcmVpZXIgVGV4dCIsImEiLCJiIiwiYSIsIlkiLCIiLCJZIiwiYyIsIlkiLCJkIgoK'
-    ]
-
-
-def update_mocks4(mock_server):
-    mock_server.return_value.export_responses_by_token.side_effect = [
-        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
-        'GF0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhci'
-        'IsImxpc3RlbWl0a29tbWVudGFyW2NvbW1lbnRdIiwiYXJyYXlbU1EwMDFdIiwiYXJyYXlbU1EwMDJdIiwiYXJyYXl6ZWhucHVua3Rld2FobFt'
-        'TUTAwMV0iLCJhcnJheXplaG5wdW5rdGV3YWhsW1NRMDAyXSIsImFycmF5ZnVuZnB1bmt0ZXdhaGxbU1EwMDFdIiwiYXJyYXlmdW5mcHVua3Rl'
-        'd2FobFtTUTAwMl0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMV0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMl0iLCJhcnJheXpha'
-        'GxlbltTUTAwMV9TUTAwMV0iLCJhcnJheXphaGxlbltTUTAwMl9TUTAwMV0iLCJhcnJheXRleHRlW1NRMDAxX1NRMDAxXSIsImFycmF5dGV4dG'
-        'VbU1EwMDFfU1EwMDJdIiwiYXJyYXlqYW5laW51bnNpY2hlcltTUTAwMV0iLCJhcnJheWphbmVpbnVuc2ljaGVyW1NRMDAyXSIsImFycmF5dm9'
-        'uc3BhbHRlW1NRMDAxXSIsImFycmF5dm9uc3BhbHRlW1NRMDAyXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMV1bMV0iLCJhcnJheWR1YWxlc2th'
-        'bGFbU1EwMDFdWzJdIiwiYXJyYXlkdWFsZXNrYWxhW1NRMDAyXVsxXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMl1bMl0iLCJ0ZXJtaW56ZWl0I'
-        'iwiZ2xlaWNodW5nIiwiZGF0ZWl1cGxvYWQiLCJkYXRlaXVwbG9hZFtmaWxlY291bnRdIiwiZ2VzY2hsZWNodCIsInNwcmFjaHVtc2NoYWx0dW'
-        '5nIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDFdIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDJdIiwibnVtZXJpc2NoZWVpbmdhYmU'
-        'iLCJyYW5nWzFdIiwicmFuZ1syXSIsInRleHRhbnplaWdlIiwiamFuZWluIiwicmVpc2lnZXJmcmVpdGV4dCIsImxhbmdlcmZyZWllcnRleHQi'
-        'LCJtZWhyZmFjaGVya3VyenRleHRbU1EwMDFdIiwibWVocmZhY2hlcmt1cnp0ZXh0W1NRMDAyXSIsImt1cnplcmZyZWl0ZXh0IiwibWVocmZhY'
-        '2hhdXN3YWhsW1NRMDAxXSIsIm1laHJmYWNoYXVzd2FobFtTUTAwMl0iLCJtZWhyZmFjaGF1c3dhaGxtaXRrb1tTUTAwMV0iLCJtZWhyZmFjaG'
-        'F1c3dhaGxtaXRrb1tTUTAwMWNvbW1lbnRdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1EwMDJdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1E'
-        'wMDJjb21tZW50XSIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiU2FjRUt5Mk9uUURrQndhIiwiMSIsIjIwMjEtMDUtMDgg'
-        'MDA6MDA6MDAiLCI1IiwiNCIsIkExIiwiQTIiLCJBMSIsIiIsIkEyIiwiIiwiNiIsIjUiLCI1IiwiMSIsIkQiLCJJIiwiMyIsIjgiLCJhIiwiY'
-        'iIsIlkiLCJVIiwiQTIiLCJBMSIsIiIsIkExIiwiIiwiIiwiMjAxOS0wOC0yMSAwMDowMDowMCIsIkdsZWljaHVuZyIsIiIsIjAiLCJNIiwiZW'
-        '4iLCIxIiwiMiIsIjQiLCJBMiIsIkExIiwiIiwiWSIsImFiYyIsImFiYyIsImEiLCJiIiwiYWJjIiwiWSIsIiIsIlkiLCJhIiwiIiwiIgoK',
-        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
-        'WRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIk'
-        'bDvG5mIFB1bmt0ZSBXYWhsIiwiRHJvcGRvd24gTGlzdGUiLCJMaXN0ZSAocmFkaW8pIiwiTGlzdGUgbWl0IEtvbW1lbnRhciIsIkxpc3RlIG1'
-        'pdCBLb21tZW50YXIgW0NvbW1lbnRdIiwiQXJyYXkgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5'
-        'IChaZWhuIFB1bmt0ZSBXYWhsKSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IChaZWhuIFB1bmt0ZSBXYWhsKSBbVW50ZXJmcmFnZSB6d2VpX'
-        'SIsIkFycmF5IChGw7xuZiBQdW5rdGUgV2FobCkgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSAoRsO8bmYgUHVua3RlIFdhaGwpIFtVbnRlcm'
-        'ZyYWdlIHp3ZWldIiwiQXJyYXkgKEVyaMO2aGVuL0dsZWljaGUvVmVycmluZ2VybikgW1VudGVyZnJhZ2UgZWluc10iLCJBcnJheSAoRXJow7Z'
-        'oZW4vR2xlaWNoZS9WZXJyaW5nZXJuKSBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5IChaYWhsZW4pIFtVbnRlcmZyYWdlIGVpbnNdW1VudGVy'
-        'ZnJhZ2UgZWluc10iLCJBcnJheSAoWmFobGVuKSBbVW50ZXJmcmFnZSB6d2VpXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbV'
-        'W50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIHp3ZW'
-        'ldIiwiQXJyYXkgKEphL05laW4vVW5zaWNoZXIpIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEphL05laW4vVW5zaWNoZXIpIFtVbnRlcmZ'
-        'yYWdlIHp3ZWldIiwiQXJyYXkgdm9uIFNwYWx0ZSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IHZvbiBTcGFsdGUgW1VudGVyZnJhZ2Ugendl'
-        'aV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZXJmcmFnZSBlaW5zXVtTY2FsZSAxXSIsIkFycmF5IER1YWxlIFNrYWxhIFtVbnRlcmZyYWdlI'
-        'GVpbnNdW1NjYWxlIDJdIiwiQXJyYXkgRHVhbGUgU2thbGEgW1VudGVyZnJhZ2UgendlaV1bU2NhbGUgMV0iLCJBcnJheSBEdWFsZSBTa2FsYS'
-        'BbVW50ZXJmcmFnZSB6d2VpXVtTY2FsZSAyXSIsIlRlcm1pbnplaXQiLCJHbGVpY2h1bmciLCJEYXRlaS1VcGxvYWQiLCJmaWxlY291bnQgLSB'
-        'EYXRlaS1VcGxvYWQiLCJHZXNjaGxlY2h0IiwiU3ByYWNodW1zY2hhbHR1bmciLCJNZWhyZmFjaGUgbnVtZXJpc2NoZSBFaW5nYWJlIFtVbnRl'
-        'cmZyYWdlIGVpbnNdIiwiTWVocmZhY2hlIG51bWVyaXNjaGUgRWluZ2FiZSBbVW50ZXJmcmFnZSB6d2VpXSIsIk51bWVyaXNjaGUgRWluZ2FiZ'
-        'SIsIlJhbmcgW1JhbmsgMV0iLCJSYW5nIFtSYW5rIDJdIiwiVGV4dGFuemVpZ2UiLCJKYS9OZWluIiwiUmVpc2lnZXIgRnJlaXRleHQiLCJMYW'
-        '5nZXIgZnJlaWVyIFRleHQiLCJNZWhyZmFjaGVyIEt1cnp0ZXh0IFtVbnRlcmZyYWdlIGVpbnNdIiwiTWVocmZhY2hlciBLdXJ6dGV4dCBbVW5'
-        '0ZXJmcmFnZSB6d2VpXSIsIkt1cnplciBGcmVpdGV4dCIsIk1laHJmYWNoYXVzd2FobCBbVW50ZXJmcmFnZSBlaW5zXSIsIk1laHJmYWNoYXVz'
-        'd2FobCBbVW50ZXJmcmFnZSB6d2VpXSIsIk1laHJmYWNoYXVzd2FobCBtaXQgS29tbWVudGFyZW4gW1VudGVyZnJhZ2UgZWluc10iLCJNZWhyZ'
-        'mFjaGF1c3dhaGwgbWl0IEtvbW1lbnRhcmVuIFtDb21tZW50XSIsIk1laHJmYWNoYXVzd2FobCBtaXQgS29tbWVudGFyZW4gW1VudGVyZnJhZ2'
-        'UgendlaV0iLCJNZWhyZmFjaGF1c3dhaGwgbWl0IEtvbW1lbnRhcmVuIFtDb21tZW50XSIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiI'
-        'sImVuIiwiU2FjRUt5Mk9uUURrQndhIiwiMSIsIjIwMjEtMDUtMDggMDA6MDA6MDAiLCI1IiwiNCIsIkExIiwiQTIiLCJBMSIsIiIsIkEyIiwi'
-        'IiwiNiIsIjUiLCI1IiwiMSIsIkQiLCJJIiwiMyIsIjgiLCJhIiwiYiIsIlkiLCJVIiwiQTIiLCJBMSIsIiIsIkExIiwiIiwiIiwiMjAxOS0wO'
-        'C0yMSAwMDowMDowMCIsIkdsZWljaHVuZyIsIiIsIjAiLCJNIiwiZW4iLCIxIiwiMiIsIjQiLCJBMiIsIkExIiwiIiwiWSIsImFiYyIsImFiYy'
-        'IsImEiLCJiIiwiYWJjIiwiWSIsIiIsIlkiLCJhIiwiIiwiIgoK'
-    ]
-
-
-def update_mocks5(mock_server):
-    mock_server.return_value.export_responses_by_token.side_effect = [
-        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
-        'GF0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhci'
-        'IsImxpc3RlbWl0a29tbWVudGFyW2NvbW1lbnRdIiwiYXJyYXlbU1EwMDFdIiwiYXJyYXlbU1EwMDJdIiwiYXJyYXl6ZWhucHVua3Rld2FobFt'
-        'TUTAwMV0iLCJhcnJheXplaG5wdW5rdGV3YWhsW1NRMDAyXSIsImFycmF5ZnVuZnB1bmt0ZXdhaGxbU1EwMDFdIiwiYXJyYXlmdW5mcHVua3Rl'
-        'd2FobFtTUTAwMl0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMV0iLCJhcnJheWVyaG9oZW5nbGVpY2hldltTUTAwMl0iLCJhcnJheXpha'
-        'GxlbltTUTAwMV9TUTAwMV0iLCJhcnJheXphaGxlbltTUTAwMl9TUTAwMV0iLCJhcnJheXRleHRlW1NRMDAxX1NRMDAxXSIsImFycmF5dGV4dG'
-        'VbU1EwMDFfU1EwMDJdIiwiYXJyYXlqYW5laW51bnNpY2hlcltTUTAwMV0iLCJhcnJheWphbmVpbnVuc2ljaGVyW1NRMDAyXSIsImFycmF5dm9'
-        'uc3BhbHRlW1NRMDAxXSIsImFycmF5dm9uc3BhbHRlW1NRMDAyXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMV1bMV0iLCJhcnJheWR1YWxlc2th'
-        'bGFbU1EwMDFdWzJdIiwiYXJyYXlkdWFsZXNrYWxhW1NRMDAyXVsxXSIsImFycmF5ZHVhbGVza2FsYVtTUTAwMl1bMl0iLCJ0ZXJtaW56ZWl0I'
-        'iwiZ2xlaWNodW5nIiwiZGF0ZWl1cGxvYWQiLCJkYXRlaXVwbG9hZFtmaWxlY291bnRdIiwiZ2VzY2hsZWNodCIsInNwcmFjaHVtc2NoYWx0dW'
-        '5nIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDFdIiwibWVocmZhY2hlbnVtZXJpc2NoZWVbU1EwMDJdIiwibnVtZXJpc2NoZWVpbmdhYmU'
-        'iLCJyYW5nWzFdIiwicmFuZ1syXSIsInRleHRhbnplaWdlIiwiamFuZWluIiwicmVpc2lnZXJmcmVpdGV4dCIsImxhbmdlcmZyZWllcnRleHQi'
-        'LCJtZWhyZmFjaGVya3VyenRleHRbU1EwMDFdIiwibWVocmZhY2hlcmt1cnp0ZXh0W1NRMDAyXSIsImt1cnplcmZyZWl0ZXh0IiwibWVocmZhY'
-        '2hhdXN3YWhsW1NRMDAxXSIsIm1laHJmYWNoYXVzd2FobFtTUTAwMl0iLCJtZWhyZmFjaGF1c3dhaGxtaXRrb1tTUTAwMV0iLCJtZWhyZmFjaG'
-        'F1c3dhaGxtaXRrb1tTUTAwMWNvbW1lbnRdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1EwMDJdIiwibWVocmZhY2hhdXN3YWhsbWl0a29bU1E'
-        'wMDJjb21tZW50XSIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIiwiU2FjRUt5Mk9uUURrQndhIiwiMSIsIjIwMjEtMDUtMDgg'
-        'MDA6MDA6MDAiLCI1IiwiNCIsIkExIiwiQTIiLCJBMSIsIiIsIkEyIiwiIiwiNiIsIjUiLCI1IiwiMSIsIkQiLCJJIiwiMyIsIjgiLCJhIiwiY'
-        'iIsIlkiLCJVIiwiQTIiLCJBMSIsIiIsIkExIiwiIiwiIiwiMjAxOS0wOC0yMSAwMDowMDowMCIsIkdsZWljaHVuZyIsIiIsIjAiLCJNIiwiZW'
-        '4iLCIxIiwiMiIsIjQiLCJBMiIsIkExIiwiIiwiWSIsImFiYyIsImFiYyIsImEiLCJiIiwiYWJjIiwiWSIsIiIsIlkiLCJhIiwiIiwiIgoK',
-        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2libGUgS'
-        'WRlLi4gIiwiQWNxdWlzaXRpb24gZGF0ZToiLCJQYXJ0aWNpcGFudCBJZGUuLiAiLCJGw7xuZiBQdW5rdGUgV2FobCIsIkRyb3Bkb3duIExpc3'
-        'RlIiwiTGlzdGUgKHJhZGlvKSIsIkxpc3RlIG1pdCBLb21tZS4uICIsIkxpc3RlIG1pdCBLb21tZS4uICBbQ29tbWVudF0iLCJBcnJheSBbVW5'
-        '0ZXJmcmFnZSBlaW5zXSIsIkFycmF5IFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKFplaG4gUHVuLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwi'
-        'QXJyYXkgKFplaG4gUHVuLi4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgKEbDvG5mIFB1bi4uICBbVW50ZXJmcmFnZSBlaW5zXSIsIkFyc'
-        'mF5IChGw7xuZiBQdW4uLiAgW1VudGVyZnJhZ2UgendlaV0iLCJBcnJheSAoRXJow7ZoZW4vLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYX'
-        'kgKEVyaMO2aGVuLy4uICBbVW50ZXJmcmFnZSB6d2VpXSIsIkFycmF5IChaYWhsZW4pIFtVbnRlcmZyYWdlIGVpbnNdW1VudGVyZnJhZ2UgZWl'
-        'uc10iLCJBcnJheSAoWmFobGVuKSBbVW50ZXJmcmFnZSB6d2VpXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFn'
-        'ZSBlaW5zXVtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKFRleHRlKSBbVW50ZXJmcmFnZSBlaW5zXVtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyY'
-        'XkgKEphL05laW4vLi4gIFtVbnRlcmZyYWdlIGVpbnNdIiwiQXJyYXkgKEphL05laW4vLi4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiQXJyYXkgdm'
-        '9uIFNwYWx0ZSBbVW50ZXJmcmFnZSBlaW5zXSIsIkFycmF5IHZvbiBTcGFsdGUgW1VudGVyZnJhZ2UgendlaV0iLCJBcnJheSBEdWFsZSBTa2F'
-        'sYSBbVW50ZXJmcmFnZSBlaW5zXVtTY2FsZSAxXSIsIkFycmF5IER1YWxlIFNrYWxhIFtVbnRlcmZyYWdlIGVpbnNdW1NjYWxlIDJdIiwiQXJy'
-        'YXkgRHVhbGUgU2thbGEgW1VudGVyZnJhZ2UgendlaV1bU2NhbGUgMV0iLCJBcnJheSBEdWFsZSBTa2FsYSBbVW50ZXJmcmFnZSB6d2VpXVtTY'
-        '2FsZSAyXSIsIlRlcm1pbnplaXQiLCJHbGVpY2h1bmciLCJEYXRlaS1VcGxvYWQiLCJmaWxlY291bnQgLSBEYXQuLiAiLCJHZXNjaGxlY2h0Ii'
-        'wiU3ByYWNodW1zY2hhbHR1bmciLCJNZWhyZmFjaGUgbnVtZXIuLiAgW1VudGVyZnJhZ2UgZWluc10iLCJNZWhyZmFjaGUgbnVtZXIuLiAgW1V'
-        'udGVyZnJhZ2UgendlaV0iLCJOdW1lcmlzY2hlIEVpbmdhYmUiLCJSYW5nIFtSYW5rIDFdIiwiUmFuZyBbUmFuayAyXSIsIlRleHRhbnplaWdl'
-        'IiwiSmEvTmVpbiIsIlJlaXNpZ2VyIEZyZWl0ZXh0IiwiTGFuZ2VyIGZyZWllciBUZXh0IiwiTWVocmZhY2hlciBLdXJ6Li4gIFtVbnRlcmZyY'
-        'WdlIGVpbnNdIiwiTWVocmZhY2hlciBLdXJ6Li4gIFtVbnRlcmZyYWdlIHp3ZWldIiwiS3VyemVyIEZyZWl0ZXh0IiwiTWVocmZhY2hhdXN3YW'
-        'hsIFtVbnRlcmZyYWdlIGVpbnNdIiwiTWVocmZhY2hhdXN3YWhsIFtVbnRlcmZyYWdlIHp3ZWldIiwiTWVocmZhY2hhdXN3YWhsLi4gIFtVbnR'
-        'lcmZyYWdlIGVpbnNdIiwiTWVocmZhY2hhdXN3YWhsLi4gIFtDb21tZW50XSIsIk1laHJmYWNoYXVzd2FobC4uICBbVW50ZXJmcmFnZSB6d2Vp'
-        'XSIsIk1laHJmYWNoYXVzd2FobC4uICBbQ29tbWVudF0iCiIyIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsIlNhY0VLeTJPblFEa'
-        '0J3YSIsIjEiLCIyMDIxLTA1LTA4IDAwOjAwOjAwIiwiNSIsIjQiLCJBMSIsIkEyIiwiQTEiLCIiLCJBMiIsIiIsIjYiLCI1IiwiNSIsIjEiLC'
-        'JEIiwiSSIsIjMiLCI4IiwiYSIsImIiLCJZIiwiVSIsIkEyIiwiQTEiLCIiLCJBMSIsIiIsIiIsIjIwMTktMDgtMjEgMDA6MDA6MDAiLCJHbGV'
-        'pY2h1bmciLCIiLCIwIiwiTSIsImVuIiwiMSIsIjIiLCI0IiwiQTIiLCJBMSIsIiIsIlkiLCJhYmMiLCJhYmMiLCJhIiwiYiIsImFiYyIsIlki'
-        'LCIiLCJZIiwiYSIsIiIsIiIKCg=='
-    ]
-
-
-def update_mocks6(mock_server):
+def update_mocks11_full(mock_server):
     mock_server.return_value.export_responses_by_token.side_effect = [
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZ'
         'GF0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhci'
@@ -8758,7 +7265,7 @@ def update_mocks6(mock_server):
     ]
 
 
-def update_mocks7(mock_server):
+def update_mocks11_abbreviated(mock_server):
     mock_server.return_value.export_responses_by_token.side_effect = [
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZG'
         'F0ZSIsInN1YmplY3RpZCIsImZ1bmZwdW5rdGV3YWhsIiwiZHJvcGRvd25saXN0ZSIsImxpc3RlcmFkaW8iLCJsaXN0ZW1pdGtvbW1lbnRhciIs'

@@ -4,8 +4,6 @@
 {% load subjects_tags %}
 
 {% block header %}
-    <script src="{% static 'quiz/js/eeg_electrode_worked_setted.js' %}"></script>
-
     <style>
         {#  based on tip from http://stackoverflow.com/questions/21168521/scrollable-table-with-fixed-header-in-bootstrap #}
         .header-fixed {
@@ -155,4 +153,8 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/eeg_electrode_worked_setted.js' %}"></script>
 {% endblock %}

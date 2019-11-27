@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 15:35-0300\n"
+"POT-Creation-Date: 2019-11-14 14:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -775,7 +775,13 @@ msgstr ""
 "    "
 
 #: templates/registration/password_define_email.html:16
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Your username: %(user.usernae)s\n"
+#| "\n"
+#| "    Thank you for using our site!\n"
+#| "\n"
+#| "    Neuromat Team."
 msgid ""
 "Your username: %(user.username)s\n"
 "\n"

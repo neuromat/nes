@@ -1990,62 +1990,37 @@ class SEP_Pause_FormTest(TestCase):
                          ["Certifique-se que este valor seja maior ou igual a 1."])
 
 
-class SEP_Questionnaire_FormTest(TestCase):
+class SepQuestionnaireFormTest(TestCase):
 
     @classmethod
     def setUp(cls):
-        cls.data = {
-            'name': 'Experimento TOC',
-            'description': 'Experimento TOC',
-        }
+        cls.data = {'name': 'Experimento TOC', 'description': 'Experimento TOC'}
 
         cls.research_project = ResearchProject.objects.create(
             title="Research project title", start_date=datetime.date.today(),
-            description="Research project description"
-        )
+            description="Research project description")
 
         cls.experiment = Experiment.objects.create(
-            research_project_id=cls.research_project.id,
-            title="Experimento-Update",
-            description="Descricao do Experimento-Update",
-            source_code_url="http://www.if.usp.br",
+            research_project_id=cls.research_project.id, title="Experimento-Update",
+            description="Descricao do Experimento-Update", source_code_url="http://www.if.usp.br",
             ethics_committee_project_url="http://www.fm.usp.br",
             ethics_committee_project_file="/users/celsovi/documents/unit_tests/links.rtf",
-            is_public=True,
-            data_acquisition_is_concluded=True)
+            is_public=True, data_acquisition_is_concluded=True)
 
-        cls.component = Component.objects.create(experiment=cls.experiment,
-                                                 identification="Identification",
-                                                 component_type="questionnaire"
-                                                 )
-
-        # Conecta no Lime Survey
-        cls.lime_survey = Questionnaires()
-
-        # Checa se conseguiu conectar no limeSurvey com as credenciais fornecidas no settings.py
-        cls.assertIsNotNone(cls.lime_survey.session_key,
-                            'Failed to connect LimeSurvey')
-
-        # Cria uma survey no Lime Survey
-        # TODO (NES-991): mock LimeSurvey
-        cls.survey_id = cls.lime_survey.add_survey(9999,
-                                                   'Questionario de teste - DjangoTests',
-                                                   'en', 'G')
-        # Deleta a survey gerada no Lime Survey
-        # TODO (NES-991): after mock above this is not necessary
-        status = cls.lime_survey.delete_survey(cls.survey_id)
+        cls.component = Component.objects.create(
+            experiment=cls.experiment, identification="Identification",
+            component_type="questionnaire")
 
     def test_SEP_Questionnaire_is_valid(self):
         duration_value = "5"
         identification = "Identification"
         experiment = self.experiment
 
-        # new_specific_component = Questionnaire()
-
-        sep_questionnaire_form = ComponentForm(data={'identification': identification,
-                                                     'duration_value': duration_value,
-                                                     'experiment': experiment
-                                                     })
+        sep_questionnaire_form = ComponentForm(
+            data={
+                'identification': identification, 'duration_value': duration_value,
+                'experiment': experiment
+            })
         sep_questionnaire_form.component_type = self.component.component_type  # jury-rig
         self.assertTrue(sep_questionnaire_form.is_valid())
 
@@ -2067,23 +2042,23 @@ class SEP_Questionnaire_FormTest(TestCase):
     def test_SEP_Questionnaire_Fix_Random_is_valid(self):
         number_of_uses_to_insert = 1  # valor inicial >=1
 
-        number_of_uses_SEP_Questionnaire_Fix_Random_form = NumberOfUsesToInsertForm(
+        number_of_uses_sep_questionnaire_fix_random_form = NumberOfUsesToInsertForm(
             data={'number_of_uses_to_insert': number_of_uses_to_insert}
         )
-        self.assertTrue(number_of_uses_SEP_Questionnaire_Fix_Random_form.is_valid())
+        self.assertTrue(number_of_uses_sep_questionnaire_fix_random_form.is_valid())
 
     def test_SEP_Questionnaire_Fix_Random_is_not_valid_number_of_uses_to_insert(self):
         number_of_uses_to_insert = 0  # valor inicial >=1
 
-        number_of_uses_SEP_Questionnaire_Fix_Random_form = NumberOfUsesToInsertForm(
+        number_of_uses_sep_questionnaire_fix_random_form = NumberOfUsesToInsertForm(
             data={'number_of_uses_to_insert': number_of_uses_to_insert}
         )
-        self.assertFalse(number_of_uses_SEP_Questionnaire_Fix_Random_form.is_valid())
-        self.assertEqual(number_of_uses_SEP_Questionnaire_Fix_Random_form.errors["number_of_uses_to_insert"],
+        self.assertFalse(number_of_uses_sep_questionnaire_fix_random_form.is_valid())
+        self.assertEqual(number_of_uses_sep_questionnaire_fix_random_form.errors["number_of_uses_to_insert"],
                          ["Certifique-se que este valor seja maior ou igual a 1."])
 
 
-class SEP_Stimulus_FormTest(TestCase):
+class SepStimulusFormTest(TestCase):
 
     @classmethod
     def setUp(cls):

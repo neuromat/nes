@@ -2,10 +2,6 @@
 
 {% load i18n admin_static %}
 
-{% block header %}
-    <script src="{% static 'quiz/js/equipment.js' %}"></script>
-{% endblock %}
-
 {% block activeSetup %}class="active"{% endblock %}
 
 {% block form %}
@@ -206,4 +202,8 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz/js/equipment.js' %}"></script>
 {% endblock %}

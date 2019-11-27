@@ -6,15 +6,6 @@
 {% load i18n admin_static %}
 {% load subjects_tags %}
 
-{% block header %}
-    <script type="text/javascript">
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-    <script src="{% static 'quiz/js/subject_questionnaire_response_form.js' %}"></script>
-{% endblock %}
-
 {% block form %}
     <div class="row">
     <form id="subject_form" method="post" data-toggle="validator">
@@ -117,120 +108,117 @@
     {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
-    <div class="col-md-10">
+        <div class="col-md-10">
 
-        {% if completed %}
-            <div style="text-align: right; color: steelblue">
-                <input type="checkbox" id="id_show_unanswered_checkbox"> <label >{% trans "show unanswered questions" %}</label>
-            </div>
-        {% endif %}
-
-        <ul class="nav nav-tabs">
-            <!-- Link to the header of the questionnaire fill -->
-            <li {% if not groups_of_questions %}class="active"{% endif %}>
-                <a data-toggle="tab" href="#page-top">{% trans "Fill information" %}</a>
-            </li>
-
-            <!-- Links to the groups of questions -->
             {% if completed %}
-                {% for group_of_questions in groups_of_questions %}
-                    <li {% if forloop.first %}class="active"{% endif %}>
-                        <a data-toggle="tab" href="#group-{{ group_of_questions.id }}">{{ group_of_questions.name }}</a>
-                    </li>
-                {% endfor %}
+                <div style="text-align: right; color: steelblue">
+                    <input type="checkbox" id="id_show_unanswered_checkbox"> <label >{% trans "show unanswered questions" %}</label>
+                </div>
             {% endif %}
 
-        </ul>
-        <div class="tab-content">
+            <ul class="nav nav-tabs">
+                <!-- Link to the header of the questionnaire fill -->
+                <li {% if not groups_of_questions %}class="active"{% endif %}>
+                    <a data-toggle="tab" href="#page-top">{% trans "Fill information" %}</a>
+                </li>
 
-            <div id="page-top" class="tab-pane fade {% if not groups_of_questions %}in active{% endif %}">
+                <!-- Links to the groups of questions -->
+                {% if completed %}
+                    {% for group_of_questions in groups_of_questions %}
+                        <li {% if forloop.first %}class="active"{% endif %}>
+                            <a data-toggle="tab" href="#group-{{ group_of_questions.id }}">{{ group_of_questions.name }}</a>
+                        </li>
+                    {% endfor %}
+                {% endif %}
 
-                <!-- Header of the questionnaire fill -->
-                <br/>
-                <div class="container span6 offset3 well ">
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-6">
-                            <div class="form-group">
-                                <label>{% trans "Questionnaire" %}</label>
+            </ul>
+            <div class="tab-content">
 
-                                <div class="input-group input-group-sm">
+                <div id="page-top" class="tab-pane fade {% if not groups_of_questions %}in active{% endif %}">
+                    <!-- Header of the questionnaire fill -->
+                    <br/>
+                    <div class="container span6 offset3 well ">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="form-group">
+                                    <label>{% trans "Questionnaire" %}</label>
+
+                                    <div class="input-group input-group-sm">
                                     <span class="input-group-addon"><span
                                             class="glyphicon glyphicon-folder-open"></span></span>
-                                    <input class="form-control" id="id_survey_title" name="survey_title"
-                                           value="{{ survey_title }}"
-                                           type="text" disabled>
+                                        <input class="form-control" id="id_survey_title" name="survey_title"
+                                               value="{{ survey_title }}"
+                                               type="text" disabled>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-xs-12 col-sm-6">
-                            <div class="form-group">
-                                <label>{% trans "Participant" %}</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
-                                    {% if origin == 'subject' %}
-                                        <input class="form-control" id="id_subject" name="subject"
-                                               value="{{ patient.name }}" type="text" disabled>
-                                    {% else %}
-                                        <input class="form-control" id="id_subject" name="subject"
-                                               value="{% get_name_or_code subject.patient.id %}" type="text" disabled>
-                                    {% endif %}
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="form-group">
+                                    <label>{% trans "Participant" %}</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                                        {% if origin == 'subject' %}
+                                            <input class="form-control" id="id_subject" name="subject"
+                                                   value="{{ patient.name }}" type="text" disabled>
+                                        {% else %}
+                                            <input class="form-control" id="id_subject" name="subject"
+                                                   value="{% get_name_or_code subject.patient.id %}" type="text" disabled>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-xs-12 col-sm-6">
-                            <div class="form-group">
-                                <label>{% trans "Responsible for fill" %}</label>
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="form-group">
+                                    <label>{% trans "Responsible for fill" %}</label>
 
-                                <div class="input-group input-group-sm">
+                                    <div class="input-group input-group-sm">
                                         <span class="input-group-addon"><span
                                                 class="glyphicon glyphicon-user"></span></span>
-                                    <input class="form-control" id="id_responsible" name="responsible"
-                                           value="{{ questionnaire_responsible }}" type="text" disabled>
+                                        <input class="form-control" id="id_responsible" name="responsible"
+                                               value="{{ questionnaire_responsible }}" type="text" disabled>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-xs-12 col-sm-6">
-                            <div class="form-group {% if questionnaire_response_form.errors.date %}has-error{% endif %}">
-                                <label for="fill_date" class="control-label">{% trans "Fill date" %}<b
-                                        style="color: red;">*</b></label>
+                            <div class="col-xs-12 col-sm-6">
+                                <div class="form-group {% if questionnaire_response_form.errors.date %}has-error{% endif %}">
+                                    <label for="fill_date" class="control-label">{% trans "Fill date" %}<b
+                                            style="color: red;">*</b></label>
 
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
-                                    {% if completed or not creating %}
-                                        <input class="form-control" id="fill_date"
-                                               value="{{ questionnaire_response_form.date.value|date:"d/m/Y" }}" type="text"
-                                               disabled>
-                                    {% else %}
-                                        {{ questionnaire_response_form.date }}
-                                    {% endif %}
-                                </div>
-                                <div class="help-block with-errors">
-                                    {% if questionnaire_response_form.date.errors %}
-                                        <span>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
+                                        {% if completed or not creating %}
+                                            {{ questionnaire_response_form.date|add_attr:"disabled" }}
+                                        {% else %}
+                                            {{ questionnaire_response_form.date }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="help-block with-errors">
+                                        {% if questionnaire_response_form.date.errors %}
+                                            <span>
                                             {% for error in questionnaire_response_form.date.errors %}
                                                 {{ error }}{% endfor %}
                                         </span>
-                                    {% endif %}
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
-            </div>
+                {% if completed %}
 
-            {% if completed %}
+                    {% for group_of_questions in groups_of_questions %}
 
-                {% for group_of_questions in groups_of_questions %}
+                        <br/>
+                        <div id="group-{{ group_of_questions.id }}" class="tab-pane fade {% if forloop.first %} in active{% endif %}">
 
-                    <br/>
-                    <div id="group-{{ group_of_questions.id }}" class="tab-pane fade {% if forloop.first %} in active{% endif %}">
+                            <div class="container span6 offset3 well ">
+                                <div class="col-md-10">
 
-                        <div class="container span6 offset3 well ">
-                            <div class="col-md-10">
-
-                                <h4><span class="glyphicon glyphicon-tag"></span> {{ group_of_questions.name }}</h4>
-                                <br/>
+                                    <h4><span class="glyphicon glyphicon-tag"></span> {{ group_of_questions.name }}</h4>
+                                    <br/>
 
                                 {% for question_response in group_of_questions.questionnaire_responses %}
                                     <div class="row{% if question_response.no_response_flag %} no-response{% endif %}">
@@ -288,50 +276,50 @@
                 {% endfor %}
             {% endif %}
 
-        </div>
-
-        <div class="btn-toolbar">
-            <div class="btn-group pull-left" {% if response_is_reused_in_experiment %}data-toggle="tooltip" data-placement="right" title="{% trans "This response cannot be deleted because it is used in an experiment." %}{% endif %}">
-                {% if not creating and can_change %}
-                    {% if origin == 'experiment_subject' and perms.experiment.delete_questionnaireresponse or origin == 'subject' and perms.patient.delete_questionnaireresponse %}
-                        <button type="button" id="id_remove_button" class="btn btn-danger"
-                                {% if response_is_reused_in_experiment %}disabled{% endif %}
-                                onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
-                    {% endif %}
-                {% endif %}
             </div>
 
-            <div class="btn-group pull-right">
-                {% if not completed %}
-                    {% if can_change %}
-                        {% if creating %}
-                            {% if perms.experiment.add_questionnaireresponse %}
-                                <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">{% trans "New fill" %}</button>
-                            {% endif %}
-                        {% else %}
-                            {% if perms.experiment.change_questionnaireresponse %}
-                                <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">{% trans "Continue filling" %}</button>
+            <div class="btn-toolbar">
+                <div class="btn-group pull-left" {% if response_is_reused_in_experiment %}data-toggle="tooltip" data-placement="right" title="{% trans "This response cannot be deleted because it is used in an experiment." %}{% endif %}">
+                    {% if not creating and can_change %}
+                        {% if origin == 'experiment_subject' and perms.experiment.delete_questionnaireresponse or origin == 'subject' and perms.patient.delete_questionnaireresponse %}
+                            <button type="button" id="id_remove_button" class="btn btn-danger"
+                                    {% if response_is_reused_in_experiment %}disabled{% endif %}
+                                    onclick="$('#modalRemove').modal('show')">{% trans "Delete" %}</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="btn-group pull-right">
+                    {% if not completed %}
+                        {% if can_change %}
+                            {% if creating %}
+                                {% if perms.experiment.add_questionnaireresponse %}
+                                    <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">{% trans "New fill" %}</button>
+                                {% endif %}
+                            {% else %}
+                                {% if perms.experiment.change_questionnaireresponse %}
+                                    <button type="submit" id="id_fill_button" name="action" value="save" class="btn btn-primary">{% trans "Continue filling" %}</button>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     {% endif %}
-                {% endif %}
-            </div>
-            <div class="btn-group pull-right">
-                {% if origin == 'subject' %}
-                    <a href="/patient{% if status == 'edit' %}/edit{% endif %}/{{ patient.id }}/?currentTab=4" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
-                {% else %}
-                    {% if origin == 'experiment_subject' %}
-                        <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}" class="btn"
-                           style="background-color: #f5f5f5">{% trans "Back" %}</a>
-                    {% else %} {# origin == 'experiment_questionnaire' #}
-                        <a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}"
-                           class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                </div>
+                <div class="btn-group pull-right">
+                    {% if origin == 'subject' %}
+                        <a href="/patient{% if status == 'edit' %}/edit{% endif %}/{{ patient.id }}/?currentTab=4" class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                    {% else %}
+                        {% if origin == 'experiment_subject' %}
+                            <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}" class="btn"
+                               style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                        {% else %} {# origin == 'experiment_questionnaire' #}
+                            <a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}"
+                               class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
+                </div>
             </div>
-        </div>
 
-    </div>
+        </div>
     </div>
 
     {% if not creating and perms.experiment.delete_questionnaireresponse and can_change %}
@@ -356,4 +344,13 @@
 {% block end_form %}
     </form>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
+    <script src="{% static 'quiz/js/subject_questionnaire_response_form.js' %}"></script>
 {% endblock %}

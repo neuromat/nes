@@ -2,14 +2,6 @@
 
 {% load i18n %}
 
-{% block header %}
-    <script>
-        $(function(){
-            $("[data-toggle=tooltip]").tooltip();
-        });
-    </script>
-{% endblock %}
-
 {% block activeSetup %}class="active"{% endblock %}
 
 {% block content %}
@@ -103,4 +95,12 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function(){
+            $("[data-toggle=tooltip]").tooltip();
+        });
+    </script>
 {% endblock %}

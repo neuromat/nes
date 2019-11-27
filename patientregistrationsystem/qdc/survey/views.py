@@ -331,9 +331,8 @@ def get_survey_header(surveys, survey, language, heading_type):
     """
     result = []
     responses_text = surveys.get_responses(
-        survey.lime_survey_id, language, heading_type=heading_type
-    )
-    header_fields = next(reader(StringIO(responses_text.decode()), delimiter=','))
+        survey.lime_survey_id, language, heading_type=heading_type)
+    header_fields = next(reader(StringIO(responses_text), delimiter=','))
     for field in header_fields:
         result.append(field)
     return result

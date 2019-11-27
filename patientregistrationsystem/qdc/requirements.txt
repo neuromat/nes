@@ -1,7 +1,7 @@
 pip>=18.1
 setuptools>=40.6.3
 
-Django==1.11.20
+Django==1.11.23
 django-jenkins==0.19.0
 django-modeltranslation==0.12.2
 django-simple-history==1.9.0
@@ -28,3 +28,7 @@ networkx==2.2
 
 mne==0.17.2
 -e "git+https://github.com/AllenInstitute/nwb-api.git#egg=nwb&subdirectory=ainwb"
+
+# For testing
+goodtables==2.2.1
+Faker==0.8.17

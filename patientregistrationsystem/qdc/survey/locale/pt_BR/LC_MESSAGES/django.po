@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 15:35-0300\n"
+"POT-Creation-Date: 2019-11-14 14:00-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: survey/survey_utils.py:425 survey/survey_utils.py:431
+#: survey/survey_utils.py:423 survey/survey_utils.py:429
 msgid "Could not get list of groups from LimeSurvey"
 msgstr "Não foi possível obter a lista dos grupos no LimeSurvey"
 
-#: survey/survey_utils.py:428
+#: survey/survey_utils.py:426
 msgid "There's no group with name Identification."
 msgstr "Não há um grupo com o nome Identificação."
 
-#: survey/survey_utils.py:434
+#: survey/survey_utils.py:432
 #, python-format
 msgid "There's no question with name %s"
 msgstr "Não há um questionráio com o nome %s"
@@ -53,11 +53,10 @@ msgstr "Visualizar"
 
 #: survey/templates/survey/survey_list.html:65
 #: survey/templates/survey/survey_register.html:97
-msgid ""
-"Be aware that NES doesn't retrieve 'file upload' questions from LimeSurvey."
+msgid "Obs.: NES doesn't retrieve 'file upload' questions from LimeSurvey."
 msgstr ""
-"Esteja ciente que o NES não importa arquivos carregados pelo Limesurvey "
-"através de questões do tipo 'Envio de arquivo'"
+"O NES não importa arquivos carregados pelo Limesurvey através de questões do "
+"tipo 'Envio de arquivo'"
 
 #: survey/templates/survey/survey_list.html:66
 #: survey/templates/survey/survey_register.html:98
@@ -241,11 +240,11 @@ msgstr "Não há alterações para salvar."
 msgid "Questionnaire was updated successfully."
 msgstr "Questionário atualizado com sucesso."
 
-#: survey/views.py:605
+#: survey/views.py:600
 msgid "Questionnaire deleted successfully."
 msgstr "Questionário removido com sucesso."
 
-#: survey/views.py:608
+#: survey/views.py:603
 msgid ""
 "It was not possible to delete questionnaire, because there are experimental "
 "answers or steps associated."
@@ -253,23 +252,23 @@ msgstr ""
 "Não foi possível excluir o questionário, pois há respostas ou passos de "
 "experimento associados."
 
-#: survey/views.py:722
+#: survey/views.py:717
 msgid "Other"
 msgstr "Outros"
 
-#: survey/views.py:757
+#: survey/views.py:752
 msgid "Formula"
 msgstr "Fórmula"
 
-#: survey/views.py:822 survey/views.py:836 survey/views.py:864
+#: survey/views.py:817 survey/views.py:831 survey/views.py:859
 msgid "No answer"
 msgstr "Sem resposta"
 
-#: survey/views.py:899
+#: survey/views.py:894
 msgid "LimeSurvey did not find fill data for this questionnaire."
 msgstr ""
 "O LimeSurvey não encontrou dados de preenchimento para este questionário."
 
-#: survey/views.py:942
+#: survey/views.py:937
 msgid "LimeSurvey unavailable. System running partially."
 msgstr "LimeSurvey indisponível. Sistema funcionando parcialmente."

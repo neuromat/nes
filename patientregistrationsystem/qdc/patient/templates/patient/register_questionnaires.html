@@ -2,12 +2,6 @@
 
 {% load i18n admin_static %}
 
-{% block header_continuation %}
-
-    <script src="{% static 'quiz/js/patient_questinonaires.js' %}"></script>
-
-{% endblock %}
-
 {% block sub_content %}
 
     <div class="tab-pane {% if currentTab == '4' %}active{% endif %}" id="tab5">
@@ -201,4 +195,9 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block script %}
+{{ block.super }}
+    <script src="{% static 'quiz/js/patient_questinonaires.js' %}"></script>
 {% endblock %}

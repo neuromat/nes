@@ -180,9 +180,7 @@ class LoadGameKeeperTest(TestCase):
             ObjectsFactory.create_research_project(self.user)
         )
         self.root_component = ObjectsFactory.create_block(self.experiment)
-        self.group = ObjectsFactory.create_group(
-            self.experiment, self.root_component
-        )
+        self.group = ObjectsFactory.create_group(self.experiment, self.root_component)
 
         # create patient/subject/subject_of_group
         self.patient = UtilTests().create_patient(changed_by=self.user)
