@@ -36,7 +36,7 @@
                     {% if origin == 'experiment_subject' %}
                         <li><a href="/experiment/group/{{ group.id }}/subjects/">{% trans "Participant" %}</a></li>
                         <li><a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}">{% get_name_or_code subject.patient.id %}</a></li>
-                    {% else %}  {# origin == "experiment_questionnaire" #}
+                    {% else %}
                         <li><a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}">{{ survey_title }}</a></li>
                     {% endif %}
                 {% endif %}
@@ -45,67 +45,6 @@
             </ol>
         </div>
     </div>
-
-    {% if messages %}
-        {% for message in messages %}
-
-            {% if message.tags == "success" %}
-                <script>showSuccessMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "warning" %}
-                <script>showWarningMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "error" %}
-                <script>showErrorMessage('{{ message }}')</script>
-            {% endif %}
-
-            {% if message.tags == "info" %}
-                <script>showInfoMessage('{{ message }}')</script>
-            {% endif %}
-
-        {% endfor %}
-    {% endif %}
-
-    {% if FAIL == False %}
-        <script>
-            $(document).ready(function () {
-                var elem_remove_button = undefined;
-                var elem_fill_button;
-
-                // Remove button may not exist.
-                if (document.getElementById('button1') != undefined) {
-                    elem_remove_button = document.getElementById('id_remove_button');
-                }
-
-                elem_fill_button = document.getElementById('id_fill_button');
-                var new_window = window.open("{{ URL }}", "");
-
-                if (new_window) {
-                    if (elem_remove_button != undefined) {
-                        elem_remove_button.style.display = 'none';
-                    }
-
-                    elem_fill_button.style.display = 'none';
-                    new_window.focus();
-                } else {
-                    showErrorMessage(gettext("It was not possible to open the questionnaire. Please, enable pop-ups for this site."));
-
-                    {# If already in the edit response page, there is no need to redirect #}
-                    if (window.location.href.indexOf('edit') == -1) {
-                        {# Wait 3 seconds before redirecting, so that the user can read the message. #}
-                        window.setTimeout(redirect, 3000);
-                    }
-                }
-            });
-
-            function redirect() {
-                window.open("/experiment/questionnaire_response/edit/{{ questionnaire_response_id }}", "_self");
-            }
-
-        </script>
-    {% endif %}
 
     <div class="tab-pane fade in active" id="menuUserTab">
         <div class="col-md-10">
@@ -311,7 +250,7 @@
                         {% if origin == 'experiment_subject' %}
                             <a href="/experiment/group/{{ group.id }}/subject/{{ subject.id }}" class="btn"
                                style="background-color: #f5f5f5">{% trans "Back" %}</a>
-                        {% else %} {# origin == 'experiment_questionnaire' #}
+                        {% else %}
                             <a href="/experiment/group/{{ group.id }}/questionnaire/{{ questionnaire_configuration.id }}"
                                class="btn" style="background-color: #f5f5f5">{% trans "Back" %}</a>
                         {% endif %}
@@ -353,4 +292,58 @@
         });
     </script>
     <script src="{% static 'quiz/js/subject_questionnaire_response_form.js' %}"></script>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <script>showSuccessMessage('{{ message }}')</script>
+            {% endif %}
+            {% if message.tags == "warning" %}
+                <script>showWarningMessage('{{ message }}')</script>
+            {% endif %}
+            {% if message.tags == "error" %}
+                <script>showErrorMessage('{{ message }}')</script>
+            {% endif %}
+            {% if message.tags == "info" %}
+                <script>showInfoMessage('{{ message }}')</script>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if FAIL == False %}
+        <script>
+            $(document).ready(function () {
+                var elem_remove_button = undefined;
+                var elem_fill_button;
+
+                // Remove button may not exist.
+                if (document.getElementById('button1') != undefined) {
+                    elem_remove_button = document.getElementById('id_remove_button');
+                }
+
+                elem_fill_button = document.getElementById('id_fill_button');
+                var new_window = window.open("{{ URL }}", "");
+
+                if (new_window) {
+                    if (elem_remove_button != undefined) {
+                        elem_remove_button.style.display = 'none';
+                    }
+
+                    elem_fill_button.style.display = 'none';
+                    new_window.focus();
+                } else {
+                    showErrorMessage(gettext("It was not possible to open the questionnaire. Please, enable pop-ups for this site."));
+
+                    {# If already in the edit response page, there is no need to redirect #}
+                    if (window.location.href.indexOf('edit') == -1) {
+                        {# Wait 3 seconds before redirecting, so that the user can read the message. #}
+                        window.setTimeout(redirect, 3000);
+                    }
+                }
+            });
+
+            function redirect() {
+                window.open("/experiment/questionnaire_response/edit/{{ questionnaire_response_id }}", "_self");
+            }
+
+        </script>
+    {% endif %}
 {% endblock %}
