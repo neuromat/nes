@@ -281,7 +281,7 @@ class ExportExecution:
 
     def get_export_directory(self):
 
-        # MEDIA_ROOT/export/username_id/export_id/NES_EXPORT
+        # MEDIA_ROOT/export/username_id/export_id/data
         return self.base_export_directory
 
     def read_configuration_data(self, json_file, update_input_data=True):
@@ -1097,20 +1097,20 @@ class ExportExecution:
                 else:
                     path_questionnaire = 'QS_surgical_evaluation'
 
-            # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa
+            # Path ex. data/Per_questionnaire/Q123_aaa
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
             if error_msg != '':
                 return error_msg
 
-            # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa/
+            # Path ex. data/Per_questionnaire/Q123_aaa/
             export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
 
-            # Path ex. NES_EXPORT/Questionnaire_metadata/Q123_aaa
+            # Path ex. data/Questionnaire_metadata/Q123_aaa
             error_msg, export_metadata_path = create_directory(path_per_questionnaire_metadata, path_questionnaire)
             if error_msg != '':
                 return error_msg
 
-            # Path: /NES_EXPORT/Questionnaire_metadata/Q123_aaa
+            # Path: /data/Questionnaire_metadata/Q123_aaa
             export_questionnaire_metadata_directory = path.join(export_metadata_directory, path_questionnaire)
 
             for language in language_list:
@@ -1131,7 +1131,7 @@ class ExportExecution:
                         else:
                             export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QS_en')
 
-                    # Path ex. NES_EXPORT/Per_questionnaire/Q123_aaa/Responses_Q123.csv
+                    # Path ex. data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, result, filesformat_type)
 
@@ -1211,34 +1211,34 @@ class ExportExecution:
             self.get_input_data('participant_data_directory')
         )
         if not path.exists(path_participant_data):
-            # path ex. NES_EXPORT/Participant_data
+            # path ex. data/Participant_data
             error_msg, path_participant_data = create_directory(
                 self.get_export_directory(), self.get_input_data('participant_data_directory'))
             if error_msg != '':
                 return error_msg
 
-        # path ex. NES_EXPORT/Participant_data/Per_questionnaire
+        # path ex. data/Participant_data/Per_questionnaire
         error_msg, path_per_questionnaire = create_directory(
             path_participant_data, self.get_input_data('per_questionnaire_directory'))
         if error_msg != '':
             return error_msg
 
-        # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata
+        # Path ex. data/Participant_data/Questionnaire_metadata
         error_msg, path_per_questionnaire_metadata = create_directory(
             path_participant_data, self.get_input_data('questionnaire_metadata_directory'))
         if error_msg != '':
             return error_msg
 
-        # path ex. NES_EXPORT/Participant_data/
+        # path ex. data/Participant_data/
         export_per_entrance_questionnaire_directory = path.join(
             self.get_input_data('base_directory'),
             self.get_input_data('participant_data_directory'))
-        # path ex. NES_EXPORT/Participant_data/Per_questionnaire/
+        # path ex. data/Participant_data/Per_questionnaire/
         export_per_questionnaire_directory = path.join(
             export_per_entrance_questionnaire_directory,
             self.get_input_data('per_questionnaire_directory'))
 
-        # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/
+        # Path ex. data/Participant_data/Questionnaire_metadata/
         export_metadata_directory = path.join(
             export_per_entrance_questionnaire_directory,
             self.get_input_data('questionnaire_metadata_directory'))
@@ -1254,19 +1254,19 @@ class ExportExecution:
             path_questionnaire = \
                 '%s_%s' % (str(questionnaire_code), questionnaire_title)
 
-            # Path ex. NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/
+            # Path ex. data/Participant_data/Per_questionnaire/Q123_aaa/
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
             if error_msg != '':
                 return error_msg
-            # Path ex. NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/
+            # Path ex. data/Participant_data/Per_questionnaire/Q123_aaa/
             export_directory = path.join(export_per_questionnaire_directory, path_questionnaire)
 
-            # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa
+            # Path ex. data/Participant_data/Questionnaire_metadata/Q123_aaa
             error_msg, export_metadata_path = create_directory(path_per_questionnaire_metadata, path_questionnaire)
             if error_msg != '':
                 return error_msg
 
-            # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/
+            # Path ex. data/Participant_data/Questionnaire_metadata/Q123_aaa/
             export_questionnaire_metadata_directory = path.join(export_metadata_directory, path_questionnaire)
 
             # Defining language to be displayed
@@ -1295,7 +1295,7 @@ class ExportExecution:
                 if self.get_input_data('export_per_questionnaire') and (len(fields_description) > 1):
                     export_filename = '%s_%s_%s' % (
                         questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
-                    # /NES_EXPORT/Participant_data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
+                    # /data/Participant_data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, fields_description, filesformat_type)
 
@@ -1325,7 +1325,7 @@ class ExportExecution:
                         questionnaire_id, language, questionnaire_lime_survey, fields, entrance_questionnaire)
                 export_filename = '%s_%s_%s' % (
                     questionnaire['prefix_filename_fields'], str(questionnaire_code), language)
-                # Path ex. NES_EXPORT/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
+                # Path ex. data/Participant_data/Questionnaire_metadata/Q123_aaa/Fields_Q123.csv'
                 complete_filename = path.join(export_metadata_path, export_filename + '.' + filesformat_type)
 
                 # At this point of the championship, fix it right here
@@ -1353,13 +1353,13 @@ class ExportExecution:
         return error_msg
 
     def create_group_data_directory(self):
-        # path ex. NES_EXPORT/Experiment_data
+        # path ex. data/Experiment_data
         error_msg, path_experiment_data = create_directory(
             self.get_export_directory(), self.get_input_data('experiment_data_directory'))
         if error_msg != '':
             return error_msg
 
-        # path ex. NES_EXPORT/Experiment_data
+        # path ex. data/Experiment_data
         export_experiment_data = path.join(self.get_input_data('base_directory'),
                                            self.get_input_data('experiment_data_directory'))
 
@@ -1367,12 +1367,12 @@ class ExportExecution:
             group_title = self.per_group_data[group_id]['group']['title']
             directory_group_name = 'Group_' + group_title
 
-            # path ex. NES_EXPORT/Experiment_data/Group_xxx
+            # path ex. data/Experiment_data/Group_xxx
             error_msg, directory_group = create_directory(path_experiment_data, directory_group_name)
             if error_msg != '':
                 return error_msg
 
-            # path ex. NES_EXPORT/Experiment_data/Group_xxx
+            # path ex. data/Experiment_data/Group_xxx
             export_directory_group = path.join(export_experiment_data, directory_group_name)
 
             self.per_group_data[group_id]['group']['directory'] = directory_group
@@ -1380,22 +1380,22 @@ class ExportExecution:
 
             if self.per_group_data[group_id]['questionnaires_per_group']:
                 # path ex.
-                # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire
+                # data/Experiment_data/Group_xxx/Per_questionnaire
                 error_msg, directory_questionnaire_data = create_directory(
                     directory_group, self.get_input_data('per_questionnaire_directory'))
                 if error_msg != '':
                     return error_msg
-                # path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/
+                # path ex. data/Experiment_data/Group_xxx/Per_questionnaire/
                 export_directory_questionnaire_data = path.join(
                     export_directory_group, self.get_input_data('per_questionnaire_directory'))
 
-                # path ex. NES_EXPORT/Experiment_data/Group_xxx
+                # path ex. data/Experiment_data/Group_xxx
                 # /Questionnaire_metadata
                 error_msg, directory_questionnaire_metadata = create_directory(
                     directory_group, self.get_input_data('questionnaire_metadata_directory'))
                 if error_msg != '':
                     return error_msg
-                # path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/
+                # path ex. data/Experiment_data/Group_xxx/Questionnaire_metadata/
                 export_directory__questionnaire_metadata = path.join(
                     export_directory_group, self.get_input_data('questionnaire_metadata_directory'))
 
@@ -1409,12 +1409,12 @@ class ExportExecution:
                     'questionnaire_metadata_export_directory'] = export_directory__questionnaire_metadata
 
             if self.per_group_data[group_id]['data_per_participant']:
-                # path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant
+                # path ex. data/Experiment_data/Group_xxx/Per_participant
                 error_msg, directory_participant_data = create_directory(
                     directory_group, self.get_input_data('per_participant_directory'))
                 if error_msg != '':
                     return error_msg
-                # path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/
+                # path ex. data/Experiment_data/Group_xxx/Per_participant/
                 participant_data_export_directory = path.join(
                     export_directory_group, self.get_input_data('per_participant_directory'))
 
@@ -1424,12 +1424,12 @@ class ExportExecution:
                     'participant_data_export_directory'] = participant_data_export_directory
 
             if self.get_input_data('component_list')['per_goalkeeper_game_data']:
-                # path ex. NES_EXPORT/Experiment_data/Group_xxx/Goalkeeper_game_data
+                # path ex. data/Experiment_data/Group_xxx/Goalkeeper_game_data
                 error_msg, directory_participant_data = create_directory(
                     directory_group, self.get_input_data('goalkeeper_game_data_directory'))
                 if error_msg != '':
                     return error_msg
-                # path ex. NES_EXPORT/Experiment_data/Group_xxx/Goalkeeper_game_data/
+                # path ex. data/Experiment_data/Group_xxx/Goalkeeper_game_data/
                 participant_data_export_directory = path.join(
                     export_directory_group, self.get_input_data('goalkeeper_game_data_directory'))
 
@@ -1476,13 +1476,13 @@ class ExportExecution:
                             directory_questionnaire_name = 'QS_surgical_evaluation'
 
                     # Metadata directory for export
-                    # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/
+                    # Path ex. data/Experiment_data/Group_xxx/Questionnaire_metadata/
                     metadata_directory = self.per_group_data[group_id]['group']['questionnaire_metadata_directory']
-                    # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
+                    # Path ex. data/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
                     export_metadata_directory = path.join(
                         self.per_group_data[group_id]['group']['questionnaire_metadata_export_directory'],
                         directory_questionnaire_name)
-                    # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
+                    # Path ex. data/Experiment_data/Group_xxx/Questionnaire_metadata/Q123_aaa/
                     error_msg, complete_export_metadata_path = create_directory(
                         metadata_directory, directory_questionnaire_name)
                     if error_msg != '':
@@ -1526,7 +1526,7 @@ class ExportExecution:
                                     export_filename = 'QA_unified_admission_assessment_en'
                                 elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                     export_filename = 'QS_surgical_evaluation_en'
-                            # NES_EXPORT/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/
+                            # data/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/
                             # Q123_<questionnaire_title>_<lang>.csv
                             complete_filename = path.join(
                                 complete_export_path, export_filename + '.' + filesformat_type)
@@ -1628,14 +1628,14 @@ class ExportExecution:
         error_msg = ''
 
         if self.get_input_data('export_per_participant'):
-            # Path ex. NES_EXPORT/Per_participant/
+            # Path ex. data/Per_participant/
             error_msg, path_per_participant = create_directory(
                 self.get_export_directory(), self.get_input_data('per_participant_directory'))
             if error_msg != '':
                 return error_msg
 
             prefix_filename_participant = 'Participant_'
-            # Path ex. NES_EXPORT/Per_participant/
+            # Path ex. data/Per_participant/
             export_directory_base = path.join(
                 self.get_input_data('base_directory'), self.get_input_data('per_participant_directory'))
 
@@ -1644,7 +1644,7 @@ class ExportExecution:
             for participant_code in self.get_per_participant_data():
                 # path ex. Participant_P123
                 path_participant = prefix_filename_participant + str(participant_code)
-                # path ex. NES_EXPORT/Per_participant/Participant_P123/
+                # path ex. data/Per_participant/Participant_P123/
                 error_msg, participant_path = create_directory(path_per_participant, path_participant)
                 if error_msg != '':
                     return error_msg
@@ -1667,9 +1667,9 @@ class ExportExecution:
                         elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                             questionnaire_directory_name = 'QS_surgical_evaluation'
                     # Create questionnaire directory
-                    # path ex. NES_EXPORT/Per_participant/Participant_<participant_code>/questionnaire_code_Title/
+                    # path ex. data/Per_participant/Participant_<participant_code>/questionnaire_code_Title/
                     error_msg, path_per_questionnaire = create_directory(participant_path, questionnaire_directory_name)
-                    # path ex. NES_EXPORT/Per_participant/QCode_Title/
+                    # path ex. data/Per_participant/QCode_Title/
                     export_questionnaire_directory = path.join(
                         path.join(export_directory_base, path_participant), questionnaire_directory_name)
 
@@ -1696,7 +1696,7 @@ class ExportExecution:
                                 export_filename = 'Responses_QA_en'
                             elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                 export_filename = 'Responses_QS_en'
-                        # Path ex. NES_EXPORT/Per_participant/Participant_P123/QCode_Title/Responses_Q123_aaa.csv
+                        # Path ex. data/Per_participant/Participant_P123/QCode_Title/Responses_Q123_aaa.csv
                         complete_filename = path.join(path_per_questionnaire, export_filename + '.' + filesformat_type)
 
                         participant_rows = self.get_per_participant_data(
@@ -1734,11 +1734,11 @@ class ExportExecution:
         return error_msg
 
     def process_per_participant_per_entrance_questionnaire(self, heading_type):
-        # Path ex. NES_EXPORT/Participant_data/
+        # Path ex. data/Participant_data/
         path_participant_data = path.join(
             self.get_export_directory(),
             self.get_input_data('participant_data_directory'))
-        # Path ex. NES_EXPORT/Participant_data/Per_participant/
+        # Path ex. data/Participant_data/Per_participant/
         error_msg, path_per_participant = create_directory(
             path_participant_data,
             self.get_input_data('per_participant_directory'))
@@ -1746,11 +1746,11 @@ class ExportExecution:
             return error_msg
 
         prefix_filename_participant = 'Participant_'
-        # Path ex. NES_EXPORT/Participant_data/Per_participant/
+        # Path ex. data/Participant_data/Per_participant/
         export_participant_data = path.join(
             self.get_input_data('base_directory'),
             self.get_input_data('participant_data_directory'))
-        # Path ex. NES_EXPORT/Participant_data/Per_participant/
+        # Path ex. data/Participant_data/Per_participant/
         export_directory_base = path.join(export_participant_data, self.get_input_data('per_participant_directory'))
 
         filesformat_type = self.get_input_data('filesformat_type')
@@ -1760,7 +1760,7 @@ class ExportExecution:
         for participant_code in self.get_per_participant_data():
             patient_id = Patient.objects.filter(code=participant_code).values('id')[0]['id']
             path_participant = prefix_filename_participant + str(participant_code)
-            # /NES_EXPORT/Participant_data/Per_participant/Participant_P123/
+            # /data/Participant_data/Per_participant/Participant_P123/
             error_msg, participant_path = create_directory(path_per_participant, path_participant)
             if error_msg != '':
                 return error_msg
@@ -1782,19 +1782,19 @@ class ExportExecution:
                                     language_list = [questionnaire_language['output_language']]
                                 # Create questionnaire directory
                                 path_questionnaire = '%s_%s' % (str(questionnaire_code), title)
-                                # /NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
+                                # /data/Participant_data/Per_participant/Participant_P123/Q123_title
                                 error_msg, questionnaire_path_directory = create_directory(
                                     participant_path, path_questionnaire)
                                 if error_msg != '':
                                     return error_msg
                                 export_participant_directory = path.join(export_directory_base, path_participant)
-                                # NES_EXPORT/Participant_data/Per_participant/Participant_P123/Q123_title
+                                # data/Participant_data/Per_participant/Participant_P123/Q123_title
                                 export_directory = path.join(export_participant_directory, path_questionnaire)
 
                                 for language in language_list:
                                     export_filename = '%s_%s_%s' % (
                                         questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
-                                    # Path ex. NES_EXPORT/Participant_data/Per_participant/Q123_title
+                                    # Path ex. data/Participant_data/Per_participant/Q123_title
                                     complete_filename = path.join(
                                         questionnaire_path_directory, export_filename + '.' + filesformat_type)
 
@@ -1855,15 +1855,15 @@ class ExportExecution:
                 # Ex. Participant_P123
                 participant_name = prefix_filename_participant + str(participant_code)
                 participant_data_directory = self.per_group_data[group_id]['group']['participant_data_directory']
-                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                 path_per_participant = path.join(participant_data_directory, participant_name)
 
-                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                 participant_data_export_directory = self.per_group_data[group_id]['group'][
                     'participant_data_export_directory']
                 participant_export_directory = path.join(participant_data_export_directory, participant_name)
                 if 'token_list' in participant_list[participant_code] and self.get_input_data('export_per_participant'):
-                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
@@ -1874,13 +1874,13 @@ class ExportExecution:
                         questionnaire_id = token_data['questionnaire_id']
                         questionnaire_title = self.get_input_data(
                             'questionnaires_from_experiments')[group_id][str(questionnaire_id)]['questionnaire_name']
-                        # ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
+                        # ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         error_msg, directory_step_participant = create_directory(
                             path_per_participant, token_data['directory_step_name'])
                         if error_msg != '':
                             return error_msg
 
-                        # Ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
+                        # Ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_Questionnaire
                         step_participant_export_directory = path.join(
                             participant_export_directory, token_data['directory_step_name'])
                         # Select questionnaire language
@@ -1906,7 +1906,7 @@ class ExportExecution:
                                     export_filename = 'QS_surgical_evaluation_en'
                                 response_english_plugin_done = True
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_xxx/Per_participant/Participant_P123/Step_X_aaa
+                            # Path ex. data/Experiment_data/Group_xxx/Per_participant/Participant_P123/Step_X_aaa
                             complete_filename = path.join(
                                 directory_step_participant, export_filename + '.' + filesformat_type)
 
@@ -1949,7 +1949,7 @@ class ExportExecution:
 
                 # For component_list
                 if 'eeg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
@@ -1962,27 +1962,27 @@ class ExportExecution:
                             directory_step_name = eeg_data['directory_step_name']
                             path_per_eeg_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_eeg_participant):
-                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_a
+                                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_a
                                 error_msg, path_per_eeg_participant = create_directory(
                                     path_per_participant, directory_step_name)
                                 if error_msg != '':
                                     return error_msg
 
-                            # NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_a
+                            # data/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_a
                             export_eeg_step_directory = path.join(participant_export_directory, directory_step_name)
 
                             # To create EEGData directory
                             directory_data_name = eeg_data['eeg_data_directory_name']
                             path_per_eeg_data = path.join(path_per_eeg_participant, directory_data_name)
                             if not path.exists(path_per_eeg_data):
-                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/EEGDATA_#
                                 error_msg, path_per_eeg_data = create_directory(
                                     path_per_eeg_participant, directory_data_name)
                                 if error_msg != '':
                                     return error_msg
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_a
+                            # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_a
                             # /EEGData_#
                             export_eeg_data_directory = path.join(export_eeg_step_directory, directory_data_name)
 
@@ -1990,7 +1990,7 @@ class ExportExecution:
 
                             if eeg_setting_description:
                                 filename, extension = EEG_SETTING_FILENAME.split('.')
-                                # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/eeg_setting_description.json
+                                # Path ex. data/Experiment_data/Group_xxxx/eeg_setting_description.json
                                 complete_setting_filename = path.join(path_per_eeg_data, EEG_SETTING_FILENAME)
                                 self.files_to_zip_list.append([
                                     complete_setting_filename, export_eeg_data_directory,
@@ -2084,7 +2084,7 @@ class ExportExecution:
                                             return error_msg
 
                 if 'emg_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
@@ -2097,28 +2097,28 @@ class ExportExecution:
                             directory_step_name = emg_data['directory_step_name']
                             path_per_emg_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_emg_participant):
-                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa
                                 error_msg, path_per_emg_participant = create_directory(
                                     path_per_participant, directory_step_name)
                                 if error_msg != '':
                                     return error_msg
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                            # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_emg_step_directory = path.join(participant_export_directory, directory_step_name)
 
                             # To create EMGData directory
                             directory_data_name = emg_data['emg_data_directory_name']
                             path_per_emg_data = path.join(path_per_emg_participant, directory_data_name)
                             if not path.exists(path_per_emg_data):
-                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/EMGDATA_#
                                 error_msg, path_per_emg_data = create_directory(
                                     path_per_emg_participant, directory_data_name)
                                 if error_msg != '':
                                     return error_msg
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                            # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             # /EMGData_#
                             export_emg_data_directory = path.join(export_emg_step_directory, directory_data_name)
 
@@ -2159,7 +2159,7 @@ class ExportExecution:
 
                             if emg_setting_description:
                                 filename, extension = EMG_SETTING_FILENAME.split('.')
-                                # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/emg_setting_description.txt 
+                                # Path ex. data/Experiment_data/Group_xxxx/emg_setting_description.txt 
                                 complete_setting_filename = path.join(path_per_emg_data, EMG_SETTING_FILENAME)
                                 self.files_to_zip_list.append([
                                     complete_setting_filename, export_emg_data_directory,
@@ -2176,7 +2176,7 @@ class ExportExecution:
                                     json.dump(emg_setting_description, outfile, indent=4)
 
                 if 'tms_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
@@ -2190,18 +2190,18 @@ class ExportExecution:
                             directory_step_name = tms_data['directory_step_name']
                             path_per_tms_participant = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_per_tms_participant):
-                                # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa
                                 error_msg, path_per_tms_participant = create_directory(
                                     path_per_participant, directory_step_name)
                                 if error_msg != '':
                                     return error_msg
 
-                            # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
+                            # path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123/Step_X_aaa
                             export_tms_step_directory = path.join(participant_export_directory, directory_step_name)
 
                             filename, extension = TMS_DATA_FILENAME.split('.')
-                            # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/tms_data_description.txt
+                            # Path ex. data/Experiment_data/Group_xxxx/tms_data_description.txt
                             complete_data_filename = path.join(path_per_tms_participant, TMS_DATA_FILENAME)
                             self.files_to_zip_list.append([
                                 complete_data_filename, export_tms_step_directory,
@@ -2244,7 +2244,7 @@ class ExportExecution:
                                     ])
 
                 if 'digital_game_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
@@ -2265,14 +2265,14 @@ class ExportExecution:
                             directory_step_name = goalkeeper_game_data['directory_step_name']
                             path_goalkeeper_game_data = path.join(path_per_participant, directory_step_name)
                             if not path.exists(path_goalkeeper_game_data):
-                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_COMPONENT_TYPE
                                 error_msg, path_goalkeeper_game_data = create_directory(path_per_participant,
                                                                                         directory_step_name)
                                 if error_msg != '':
                                     return error_msg
 
-                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_COMPONENT_TYPE
                                 export_goalkeeper_game_directory = path.join(participant_export_directory,
                                                                              directory_step_name)
@@ -2283,14 +2283,14 @@ class ExportExecution:
                                 path_per_goalkeeper_game_data = path.join(
                                     path_goalkeeper_game_data, directory_data_name)
                                 if not path.exists(path_per_goalkeeper_game_data):
-                                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123 
+                                    # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123 
                                     #  /Step_X_aaa/GoalkeeperDATA_
                                     error_msg, path_per_goalkeeper_game_data = create_directory(
                                         path_goalkeeper_game_data, directory_data_name)
                                     if error_msg != '':
                                         return error_msg
 
-                                # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                                # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                                 # /Step_X_aaa/GoalkeeperDATA_
                                 export_goalkeeper_data_directory = path.join(
                                     export_goalkeeper_game_directory, directory_data_name)
@@ -2305,7 +2305,7 @@ class ExportExecution:
                                     file_name_digital = filename.split('_')[0]
                                     unique_name2 = slugify(file_name_digital)
 
-                                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant
+                                    # Path ex. data/Experiment_data/Group_XXX/Per_participant
                                     #  /Participant_123/Step_X_COMPONENT_TYPE/file_name.format_type
                                     complete_goalkeeper_game_filename = path.join(
                                         path_per_goalkeeper_game_data, filename)
@@ -2408,7 +2408,7 @@ class ExportExecution:
                             ])
 
                 if 'additional_data_list' in self.per_group_data[group_id]['data_per_participant'][participant_code]:
-                    # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                    # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                     if not path.exists(path_per_participant):
                         error_msg, path_per_participant = create_directory(participant_data_directory, participant_name)
                         if error_msg != '':
@@ -2422,7 +2422,7 @@ class ExportExecution:
                         directory_step_name = additional_data['directory_step_name']
                         path_additional_data = path.join(path_per_participant, directory_step_name)
                         if not path.exists(path_additional_data):
-                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123
+                            # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123
                             # /Step_X_COMPONENT_TYPE
                             error_msg, path_additional_data = create_directory(
                                 path_per_participant, directory_step_name)
@@ -2430,7 +2430,7 @@ class ExportExecution:
                             if error_msg != '':
                                 return error_msg
 
-                        # Path ex. NES_EXPORT/Experiment_data/Group_XX/Per_participant/Participant_123/Step_X_COMP._TYPE
+                        # Path ex. data/Experiment_data/Group_XX/Per_participant/Participant_123/Step_X_COMP._TYPE
                         export_step_additional_data_directory = path.join(
                             participant_export_directory, directory_step_name)
 
@@ -2453,7 +2453,7 @@ class ExportExecution:
                             unique_name = slugify(filename)
                             file_format_nes_code = additional_file_object.additional_data.file_format.nes_code
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_XXX/Per_participant/Participant_123/
+                            # Path ex. data/Experiment_data/Group_XXX/Per_participant/Participant_123/
                             # Step_X_COMPONENT_TYPE/file_name.format_type
                             complete_additional_data_filename = path.join(path_per_additional_data, filename)
                             with open(path_additional_data_file, 'rb') as f:
@@ -2642,16 +2642,16 @@ class ExportExecution:
         error_msg = ''
         participants_filtered_list = self.get_participants_filtered_data()
         # Process participants/diagnosis (Per_participant directory)
-        # Path ex. Users/.../NES_EXPORT/
+        # Path ex. Users/.../data/
         base_export_directory = self.get_export_directory()
-        # /NES_EXPORT/
+        # /data/
         base_directory = self.get_input_data('base_directory')
         # Participant_data directory
         participant_data_directory = self.get_input_data('participant_data_directory')
         if per_experiment:
-            # Path ex. Users/.../NES_EXPORT/Participant_data/
+            # Path ex. Users/.../data/Participant_data/
             participant_base_export_directory = path.join(base_export_directory, participant_data_directory)
-            # /NES_EXPORT/Participant_data
+            # /data/Participant_data
             base_directory = path.join(base_directory, participant_data_directory)
             if not path.exists(participant_base_export_directory):
                 error_msg, base_export_directory = create_directory(base_export_directory, participant_data_directory)
@@ -2971,15 +2971,15 @@ class ExportExecution:
         file_extension = 'tsv' if 'tsv' in self.get_input_data('filesformat_type') else 'csv'
         filename_experiment_resume = 'Experiment' + '.' + file_extension
 
-        # path ex. NES_EXPORT/Experiment_data
+        # path ex. data/Experiment_data
         export_experiment_data = path.join(
             self.get_input_data('base_directory'), self.get_input_data('experiment_data_directory'))
 
-        # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data
+        # path ex. User/.../qdc/media/.../data/Experiment_data
         experiment_resume_directory = path.join(
             self.get_export_directory(), self.get_input_data('experiment_data_directory'))
 
-        # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Experiment.csv
+        # User/.../qdc/media/.../data/Experiment_data/Experiment.csv
         complete_filename_experiment_resume = path.join(experiment_resume_directory, filename_experiment_resume)
 
         experiment_description_fields = []
@@ -3016,20 +3016,20 @@ class ExportExecution:
                                    + group.description + '\n'
                     # group_directory_name = 'Group_' + group.title
                     filename_group_for_export = '%s.txt' % 'Experimental_protocol_description'
-                    # path ex. User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/
+                    # path ex. User/.../qdc/media/.../data/Experiment_data/Group_xxxx/
                     group_file_directory = self.per_group_data[group_id]['group']['directory']
-                    # path ex. NES_EXPORT/Experiment_data/Group_xxxx/
+                    # path ex. data/Experiment_data/Group_xxxx/
                     export_group_directory = self.per_group_data[group_id]['group']['export_directory']
-                    # path ex. NES_EXPORT/Experiment_data/Group_xxx/Experimental_protocol
+                    # path ex. data/Experiment_data/Group_xxx/Experimental_protocol
                     error_msg, directory_experimental_protocol = create_directory(
                         group_file_directory, 'Experimental_protocol')
                     if error_msg != '':
                         return error_msg
 
-                    # path ex. NES_EXPORT/Experiment_data/Group_xxx
+                    # path ex. data/Experiment_data/Group_xxx
                     export_directory_experimental_protocol = path.join(export_group_directory, 'Experimental_protocol')
 
-                    # User/.../qdc/media/.../NES_EXPORT/Experiment_data/Group_xxxx/Experimental_protocol/
+                    # User/.../qdc/media/.../data/Experiment_data/Group_xxxx/Experimental_protocol/
                     # Experimental_protocol_description.txt
                     complete_group_filename = path.join(directory_experimental_protocol, filename_group_for_export)
 
@@ -3228,7 +3228,7 @@ class ExportExecution:
                     stimulus_data_list = self.per_group_data[group_id]['stimulus_data']
                     for stimulus_data in stimulus_data_list:
                         if stimulus_data['stimulus_file']:
-                            # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
+                            # Path ex. data/Experiment_data/Group_xxxx/Step_X_STIMULUS
                             path_stimulus_data = path.join(group_file_directory, stimulus_data['directory_step_name'])
                             if not path.exists(path_stimulus_data):
                                 error_msg, directory_stimulus_data = create_directory(
@@ -3236,7 +3236,7 @@ class ExportExecution:
                                 if error_msg != '':
                                     return error_msg
 
-                            # Path ex. NES_EXPORT/Experiment_data/Group_xxxx/Step_X_STIMULUS
+                            # Path ex. data/Experiment_data/Group_xxxx/Step_X_STIMULUS
                             export_directory_stimulus_data = path.join(
                                 export_group_directory, stimulus_data['directory_step_name'])
                             path_stimulus_filename = path.join(

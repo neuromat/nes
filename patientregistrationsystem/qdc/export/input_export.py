@@ -43,7 +43,7 @@ class InputExport:
             dump(self.data, outfile)
 
     def build_header(self, export_per_experiment):
-        # /NES_EXPORT
+        # /data
         self.data["base_directory"] = BASE_DIRECTORY
         self.data["per_participant_directory"] = PER_PARTICIPANT_DIRECTORY
         self.data["per_questionnaire_directory"] = PER_QUESTIONNAIRE_DIRECTORY

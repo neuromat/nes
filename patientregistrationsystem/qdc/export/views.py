@@ -255,8 +255,6 @@ def export_create(
             messages.error(request, _('Inconsistent data read from json file'))
             return render(request, template_name)
 
-        # Create directory base for export: NES_EXPORT
-        # TODO (NES-987): change NES_EXPORT dir in comments to data dir
         error_msg = export.create_export_directory()
         if error_msg != '':
             messages.error(request, error_msg)

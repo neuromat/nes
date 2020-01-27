@@ -1,5 +1,5 @@
 {
-  "base_directory": "NES_EXPORT",
+  "base_directory": "data",
   "export_per_participant": 1,
   "export_per_questionnaire": 1,
   "per_participant_directory": "Per_participant",
