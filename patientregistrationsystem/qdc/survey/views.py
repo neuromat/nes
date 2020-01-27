@@ -64,7 +64,7 @@ def get_survey_title_based_on_the_user_language(survey, language_code, update=Fa
             return titles[fallback_language]
 
     surveys = Questionnaires()
-    pt_title = surveys.get_survey_title(survey.lime_survey_id, 'pt-BR')
+    pt_title = surveys.get_survey_title(survey.lime_survey_id, 'pt-br')
     en_title = surveys.get_survey_title(survey.lime_survey_id, 'en')
 
     if language_code == 'pt-br' and pt_title:
