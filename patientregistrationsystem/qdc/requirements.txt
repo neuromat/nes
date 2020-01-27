@@ -12,11 +12,17 @@ pyflakes==0.9.2
 pylint==1.5.4
 pep8==1.7.0
 python-dateutil==2.5.2
-numpy==1.11.0
-scipy==0.17.1
-h5py==2.6.0
+
+# Changes for installation with python 3.7.3
+# Obs.: error -> ERROR: botocore 1.14.7 has requirement docutils<0.16,>=0.10, but you'll have docutils 0.16 which is incompatible.
+# But installed
+# Refers to installation of goodtables==2.2.1 below
+numpy>=1.11.0
+scipy>=0.17.1
+h5py>=2.6.0
+matplotlib>=1.5.3
+
 pydot==1.2.3
-matplotlib==1.5.3
 django-solo==1.1.2
 coreapi==2.3.1
 GitPython==2.1.8

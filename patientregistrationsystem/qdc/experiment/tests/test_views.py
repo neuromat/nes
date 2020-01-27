@@ -1746,14 +1746,15 @@ class ImportExperimentTest(TestCase):
         export.export_all()
         file_path = export.get_file_path()
 
-        # dictionary to test against new objects created bellow
+        # Dictionary to test against new objects created bellow
         old_objects_count = Component.objects.count()
-        # dictionary to test against new groups created bellow
+        # Dictionary to test against new groups created bellow
         old_groups_count = ExperimentGroup.objects.count()
 
         with open(file_path, 'rb') as file:
-            response = self.client.post(reverse('experiment_import', args=(research_project.id,)),
-                                        {'file': file}, follow=True)
+            response = self.client.post(
+                reverse('experiment_import', args=(research_project.id,)),
+                {'file': file}, follow=True)
         self.assertRedirects(response, reverse('import_log'))
         new_components = Component.objects.exclude(id__in=[rootcomponent.id, component.id])
         new_groups = ExperimentGroup.objects.exclude(id__in=[group1.id, group2.id])
