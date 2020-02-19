@@ -10882,7 +10882,7 @@ def component_update(request, path_of_the_components):
                         additional_file = ComponentAdditionalFile(component=component, file=file_to_upload)
                         additional_file.save()
 
-                    # There is no specific form for a these component types.
+                    # There is no specific form for these component types.
                     if component.component_type in ["questionnaire", "task", "task_experiment", 'pause']:
                         if component_form.is_valid():
                             # Only save if there was a change.

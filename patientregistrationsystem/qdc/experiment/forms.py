@@ -127,7 +127,7 @@ class ComponentConfigurationForm(ModelForm):
                                        widget=RadioSelect(attrs={'id': 'id_random_position'}))
 
     # TODO Replace "--------" by "Escolha unidade". The old code does not work because ModelChoiceField requires a
-    # queryset.
+    #  queryset.
     # This is needed because we want an empty_label different from "--------".
     # interval_between_repetitions_unit = ModelChoiceField(
     #     required=False,
@@ -142,7 +142,7 @@ class ComponentConfigurationForm(ModelForm):
 
         widgets = {
             'name': TextInput(attrs={'class': 'form-control'}),
-            'number_of_repetitions': TextInput(attrs={'class': 'form-control', 'required': "",
+            'number_of_repetitions': TextInput(attrs={'class': 'form-control',
                                                       'data-error': _('Quantity of repetitions must be filled.')}),
             'interval_between_repetitions_value': TextInput(attrs={'class': 'form-control', 'required': "",
                                                                    'data-error': _('Interval must be filled.'),

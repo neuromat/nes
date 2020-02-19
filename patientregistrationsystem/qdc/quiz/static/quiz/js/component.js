@@ -52,9 +52,9 @@ $(document).ready(function () {
 
     function fix_bootstrap_error_message_interval() {
         setTimeout(function () {
-            $("#div_form_interval_between_repetitions_value").removeClass("has-error")
+            $("#div_form_interval_between_repetitions_value").removeClass("has-error");
             $("#div_for_errors_in_interval_between_repetitions_value").children("ul").remove();
-            $("#div_form_interval_between_repetitions_unit").removeClass("has-error")
+            $("#div_form_interval_between_repetitions_unit").removeClass("has-error");
             $("#div_for_errors_in_interval_between_repetitions_unit").children("ul").remove();
             $("#submit_button").removeClass("disabled");
         }, 500);
@@ -62,16 +62,16 @@ $(document).ready(function () {
 
     function fix_bootstrap_error_message_repetitions() {
         setTimeout(function () {
-            $("#div_form_number_of_repetitions").removeClass("has-error")
-            $("#div_for_errors_in_number_of_repetitions").children("ul").remove();
-            $("#submit_button").removeClass("disabled");
+            $("#div_form_number_of_repetitions").removeClass('has-error');
+            $("#div_for_errors_in_number_of_repetitions").children('ul').remove();
+            $("#submit_button").removeClass('disabled');
         }, 500);
     }
 
     unlimited_number_of_repetitions.click(function () {
         manage_interval_disable_flag();
-        id_number_of_repetitions.prop('value', "");
-        id_number_of_repetitions.prop('disabled', true);
+        id_number_of_repetitions.prop('value', '');
+        id_number_of_repetitions.prop('readonly', true);
         fix_bootstrap_error_message_repetitions();
     });
 
