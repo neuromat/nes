@@ -854,7 +854,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                                         answer_option = answer_options[responses_list[1][index]]
                                                         answer = answer_option['answer']
                                                     else:
-                                                        # no answer
                                                         answer = _('No answer')
                                                         no_response_flag = True
                                             else:
@@ -870,6 +869,17 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
 
                                                     answer = responses_list[1][index]
 
+                                                    # if question is
+                                                    # "Multiple choice with
+                                                    # comments" the answer is
+                                                    # what is in the comment
+                                                    # if it exists,
+                                                    # else keep 'Y' as the
+                                                    # answer
+                                                    if question['type'] == 'P' and answer == 'Y' \
+                                                            and responses_list[1][index+1]:
+                                                        answer = responses_list[1][index+1]
+
                                                     # type "M" means "Multiple choice"
                                                     if question['type'] == 'M':
                                                         if question['other']:
@@ -879,7 +889,7 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                                             if answer != 'Y':
                                                                 no_response_flag = True
 
-                                        # not show fileupload questions
+                                        # does not show fileupload questions
                                         if question['type'] != '|':
                                             groups_of_questions = add_questionnaire_response_to_group(
                                                 groups_of_questions, question, answer, link, no_response_flag)
