@@ -17,7 +17,7 @@ RUN apk update && \
 			php7-ctype \
 			apache2
 
-ARG LIMESURVEY_URL_DOWNLOAD=https://github.com/LimeSurvey/LimeSurvey/archive/2.73.0+171219.tar.gz
+ARG LIMESURVEY_URL_DOWNLOAD=https://github.com/LimeSurvey/LimeSurvey/archive/2.73.1+171220.tar.gz
 ARG LIMESURVEY_DIR=/var/www/limesurvey
 ENV LIMESURVEY_DIR=$LIMESURVEY_DIR
 ENV APACHE2_CONF_DIR="${LIMESURVEY_DIR}/application/config"
