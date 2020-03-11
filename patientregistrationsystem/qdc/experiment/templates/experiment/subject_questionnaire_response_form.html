@@ -335,8 +335,8 @@
 
                     {# If already in the edit response page, there is no need to redirect #}
                     if (window.location.href.indexOf('edit') == -1) {
-                        {# Wait 3 seconds before redirecting, so that the user can read the message. #}
-                        window.setTimeout(redirect, 3000);
+                        {# Wait 10 seconds before redirecting, so that the user can read the message. #}
+                        window.setTimeout(redirect, 10000);
                     }
                 }
             });
