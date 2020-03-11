@@ -799,20 +799,16 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                 answer = ''
                                 no_response_flag = False
 
-                                # type 'X' means "Text display"
                                 if not question['type'] == 'X':
-                                    # type "1" means "Array dual scale"
                                     if question['type'] == '1':
                                         answer_list = []
                                         if question['question_id'] + "[1]" in responses_list[0]:
                                             index = responses_list[0].index(question['question_id'] + "[1]")
                                             answer_options = question['answer_options']
-                                            answer = question['question_id'] + "[1]: "
                                             if responses_list[1][index] in answer_options:
                                                 answer_option = answer_options[responses_list[1][index]]
-                                                answer += answer_option['answer']
+                                                answer = answer_option['answer']
                                             else:
-                                                # Sem resposta
                                                 answer += _('No answer')
                                                 no_response_flag = True
 
@@ -821,13 +817,11 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                         if question['question_id'] + "[2]" in responses_list[0]:
                                             index = responses_list[0].index(question['question_id'] + "[2]")
                                             answer_options = question['answer_options']
-                                            answer = question['question_id'] + "[2]: "
                                             if responses_list[1][index] in answer_options:
                                                 answer_option = answer_options[responses_list[1][index]]
-                                                answer += answer_option['answer']
+                                                answer = answer_option['answer']
                                             else:
-                                                # no answer
-                                                answer += _('No answer')
+                                                answer = _('No answer')
                                                 no_response_flag = True
 
                                         answer_list.append(answer)
@@ -840,7 +834,6 @@ def get_questionnaire_responses(language_code, lime_survey_id, token_id, request
                                             index = responses_list[0].index(question['question_id'])
                                             answer_options = question['answer_options']
                                             if isinstance(answer_options, dict):
-                                                # type "M" means "Multiple choice"
                                                 if question['type'] == 'M':
                                                     answer = responses_list[1][index]
                                                     if question['other']:
