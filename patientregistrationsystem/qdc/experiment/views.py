@@ -1006,6 +1006,12 @@ def experiment_schedule_of_sending(request, experiment_id,
             new_schedule.experiment = experiment
             new_schedule.responsible = request.user
             new_schedule.status = "scheduled"
+            # TODO: Error on sending "Enviar para o Portal":
+            #  After schedulling sending to portal and clicking on button
+            #  "Enviar para o Portal" gives error. Something like
+            #  "'on' must be True or False". Appears to get 'on' from 
+            #  'send_age' from form, and when saving new_schedule the value
+            #  end_participante_age shoud be True or False
             send_age = request.POST.get('send_age')
             new_schedule.send_participant_age = send_age if send_age else False
             new_schedule.save()
@@ -8554,7 +8560,7 @@ def get_experimental_protocol_image(experimental_protocol, tree, url=False):
     errors, path_complete = create_directory(settings.MEDIA_ROOT, "temp")
 
     try:
-        graph.write_svg(path.join(path_complete, file_name))
+        graph.write(path.join(path_complete, file_name), format='png')
     except:
         return None
 
