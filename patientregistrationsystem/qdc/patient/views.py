@@ -497,7 +497,7 @@ def patient_view_questionnaires(request, patient, context, is_update):
             {
                 'questionnaire_response':
                 patient_questionnaire_response,
-
+                'token_id': patient_questionnaire_response.token_id,
                 'completed':
                 None if response_result is None else response_result != "N" and response_result != ""
             }
@@ -551,6 +551,7 @@ def patient_view_questionnaires(request, patient, context, is_update):
                     'questionnaire_title': find_questionnaire_name(
                             component_configuration.component.questionnaire.survey, language_code)["name"],
                     'questionnaire_response': questionnaire_response,
+                    'token_id': questionnaire_response.token_id,
                     'completed': None if response_result is None else response_result != "N" and response_result != ""
                 })
     surveys.release_session_key()
