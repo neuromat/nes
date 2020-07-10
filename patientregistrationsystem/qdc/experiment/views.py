@@ -11260,7 +11260,6 @@ def component_reuse(request, path_of_the_components, component_id):
     list_of_ids_of_components_and_configurations, back_cancel_url = \
         access_objects_for_add_new_and_reuse(component_type, path_of_the_components)
 
-    # check_can_change(request.user, experiment.research_project)
     can_change = get_can_change(request.user, experiment.research_project)
 
     # Fixed or random
