@@ -154,7 +154,9 @@ def replace_multiple_choice_question_answers(responses, question_list):
     while i < m:
         question_match = re.match('(^.+)\[', responses[0][i])
         question = question_match.group(1) if question_match else None
-        if question and question in question_list:
+        if question and question in [
+            q['title'] for q in question_list if q['title'] == question
+        ]:
             index_subquestions = []
             while i < m and question in responses[0][i]:
                 index_subquestions.append(i)
@@ -3348,7 +3350,8 @@ class ExportExecution:
                         # Multiple choice answers need replacement
                         # TODO (NES-991): make a test for getting multiple choice questions
                         error, multiple_choice_questions = QuestionnaireUtils.get_questions(
-                            questionnaire_lime_survey, questionnaire_id, language)
+                            questionnaire_lime_survey, questionnaire_id,
+                            language, ['M', 'P'])
                         replace_multiple_choice_question_answers(fill_list1, multiple_choice_questions)
 
                         # Read 'long' information, if necessary

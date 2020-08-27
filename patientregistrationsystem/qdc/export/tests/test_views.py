@@ -4257,7 +4257,7 @@ class ExportFrictionlessDataTest(ExportTestCase):
 
         eeg_emg_resources = [
             resource for resource in json_data['resources']
-            if os.path.basename(resource['path']) == 'file.bin'
+            if 'file' in os.path.basename(resource['path'])
         ]
 
         self.assertNotEqual(eeg_emg_resources[0]['name'], eeg_emg_resources[1]['name'])

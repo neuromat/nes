@@ -27,6 +27,7 @@ class ABCSearchEngine(ABC):
             self.session_key = None if isinstance(self.session_key, dict) else self.session_key
         except TransportError:
             self.session_key = None
+        # TODO: catch user/password exception
 
     def release_session_key(self):
         if self.session_key:
