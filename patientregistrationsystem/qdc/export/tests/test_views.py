@@ -70,12 +70,133 @@ class ExportQuestionnaireTest(ExportTestCase):
         :param root_component: Block(Component) model instance
         :return: DataConfigurationTree model instance
         """
-        questionnaire = ObjectsFactory.create_component(
+        self.questionnaire = ObjectsFactory.create_component(
             self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': self.survey})
         # Include questionnaire in experimental protocol
-        component_config = ObjectsFactory.create_component_configuration(root_component, questionnaire)
+        component_config = ObjectsFactory.create_component_configuration(
+            root_component, self.questionnaire)
 
         return ObjectsFactory.create_data_configuration_tree(component_config)
+
+    def _create_questionnaire_export_data(self):
+        # Create questionnaire data collection in NES
+        # TODO: use method already existent in patient.tests. See other places
+        self.survey = create_survey(LIMESURVEY_SURVEY_ID_1)
+        self.questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': self.survey})
+        # Include questionnaire in experimental protocol
+        component_config = ObjectsFactory.create_component_configuration(self.root_component, self.questionnaire)
+        dct = ObjectsFactory.create_data_configuration_tree(component_config)
+
+        # Add response's participant to limesurvey survey and the references
+        # in our db
+        ObjectsFactory.create_questionnaire_response(
+            dct=dct, responsible=self.user, token_id=1, subject_of_group=self.subject_of_group)
+    
+    @staticmethod
+    def _set_all_questions():
+        return [
+            ({'code': 'acquisitiondate', 'full': _('Acquisition date:'), 'abbreviated': _('Acquisition date:')},
+             'D', 'datetime', '%Y-%m-%d %H:%M:%S'),
+            ({'code': 'funfpunktewahl', 'full': _('Fünf Punkte Wahl'), 'abbreviated': _('Fünf Punkte Wahl')},
+             '5', 'string', 'default'),
+            ({'code': 'dropdownliste', 'full': _('Dropdown Liste'), 'abbreviated': _('Dropdown Liste')},
+             '!', 'string', 'default'),
+            ({'code': 'listeradio', 'full': _('Liste (radio)'), 'abbreviated': _('Liste (radio)')},
+             'L', 'string', 'default'),
+            ({'code': 'listemitkommentar', 'full': _('Liste mit Kommentar'), 'abbreviated': _('Liste mit Komme..')},
+             'O', 'string', 'default'),
+            ({'code': 'listemitkommentar[comment]', 'full': _('Liste mit Kommentar [Comment]'), 'abbreviated': _('Liste mit Komme..  [Comment]')},
+             'O', 'string', 'default'),
+            ({'code': 'array[SQ001]', 'full': _('Array [Unterfrage eins]'), 'abbreviated': _('Array [Unterfrage eins]')},
+             'F', 'string', 'default'),
+            ({'code': 'array[SQ002]', 'full': _('Array [Unterfrage zwei]'), 'abbreviated': _('Array [Unterfrage zwei]')},
+             'F', 'string', 'default'),
+            ({'code': 'arrayzehnpunktewahl[SQ001]', 'full': _('Array (Zehn Punkte Wahl) [Unterfrage eins]'), 'abbreviated': _('Array (Zehn Pun..  [Unterfrage eins]')},
+             'B', 'string', 'default'),
+            ({'code': 'arrayzehnpunktewahl[SQ002]', 'full': _('Array (Zehn Punkte Wahl) [Unterfrage zwei]'), 'abbreviated': _('Array (Zehn Pun..  [Unterfrage zwei]')},
+             'B', 'string', 'default'),
+            ({'code': 'arrayfunfpunktewahl[SQ001]', 'full': _('Array (Fünf Punkte Wahl) [Unterfrage eins]'), 'abbreviated': _('Array (Fünf Pun..  [Unterfrage eins]')},
+             'A', 'string', 'default'),
+            ({'code': 'arrayfunfpunktewahl[SQ002]', 'full': _('Array (Fünf Punkte Wahl) [Unterfrage zwei]'), 'abbreviated': _('Array (Fünf Pun..  [Unterfrage zwei]')},
+             'A', 'string', 'default'),
+            ({'code': 'arrayerhohengleichev[SQ001]', 'full': _('Array (Erhöhen/Gleiche/Verringern) [Unterfrage eins]'), 'abbreviated': _('Array (Erhöhen/..  [Unterfrage eins]')},
+             'E', 'string', 'default'),
+            ({'code': 'arrayerhohengleichev[SQ002]', 'full': _('Array (Erhöhen/Gleiche/Verringern) [Unterfrage zwei]'), 'abbreviated': _('Array (Erhöhen/..  [Unterfrage zwei]')},
+             'E', 'string', 'default'),
+            ({'code': 'arrayzahlen[SQ001_SQ001]', 'full': _('Array (Zahlen) [Unterfrage eins][Unterfrage eins]'), 'abbreviated': _('Array (Zahlen) [Unterfrage eins][Unterfrage eins]')},
+             ':', 'string', 'default'),
+            ({'code': 'arrayzahlen[SQ002_SQ001]', 'full': _('Array (Zahlen) [Unterfrage zwei][Unterfrage eins]'), 'abbreviated': _('Array (Zahlen) [Unterfrage zwei][Unterfrage eins]')},
+             ':', 'string', 'default'),
+            ({'code': 'arraytexte[SQ001_SQ001]', 'full': _('Array (Texte) [Unterfrage eins][Unterfrage eins]'), 'abbreviated': _('Array (Texte) [Unterfrage eins][Unterfrage eins]')},
+             ';', 'string', 'default'),
+            ({'code': 'arraytexte[SQ001_SQ002]', 'full': _('Array (Texte) [Unterfrage eins][Unterfrage zwei]'), 'abbreviated': _('Array (Texte) [Unterfrage eins][Unterfrage zwei]')},
+             ';', 'string', 'default'),
+            ({'code': 'arrayjaneinunsicher[SQ001]', 'full': _('Array (Ja/Nein/Unsicher) [Unterfrage eins]'), 'abbreviated': _('Array (Ja/Nein/..  [Unterfrage eins]')},
+             'C', 'string', 'default'),
+            ({'code': 'arrayjaneinunsicher[SQ002]', 'full': _('Array (Ja/Nein/Unsicher) [Unterfrage zwei]'), 'abbreviated': _('Array (Ja/Nein/..  [Unterfrage zwei]')},
+             'C', 'string', 'default'),
+            ({'code': 'arrayvonspalte[SQ001]', 'full': _('Array von Spalte [Unterfrage eins]'), 'abbreviated': _('Array von Spalte [Unterfrage eins]')},
+             'H', 'string', 'default'),
+            ({'code': 'arrayvonspalte[SQ002]', 'full': _('Array von Spalte [Unterfrage zwei]'), 'abbreviated': _('Array von Spalte [Unterfrage zwei]')},
+             'H', 'string', 'default'),
+            ({'code': 'arraydualeskala[SQ001][1]', 'full': _('Array Duale Skala [Unterfrage eins][Scale 1]'), 'abbreviated': _('Array Duale Skala [Unterfrage eins][Scale 1]')},
+             '1', 'string', 'default'),
+            ({'code': 'arraydualeskala[SQ001][2]', 'full': _('Array Duale Skala [Unterfrage eins][Scale 2]'), 'abbreviated': _('Array Duale Skala [Unterfrage eins][Scale 2]')},
+             '1', 'string', 'default'),
+            ({'code': 'arraydualeskala[SQ002][1]', 'full': _('Array Duale Skala [Unterfrage zwei][Scale 1]'), 'abbreviated': _('Array Duale Skala [Unterfrage zwei][Scale 1]')},
+             '1', 'string', 'default'),
+            ({'code': 'arraydualeskala[SQ002][2]', 'full': _('Array Duale Skala [Unterfrage zwei][Scale 2]'), 'abbreviated': _('Array Duale Skala [Unterfrage zwei][Scale 2]')},
+             '1', 'string', 'default'),
+            ({'code': 'terminzeit', 'full': _('Terminzeit'), 'abbreviated': _('Terminzeit')},
+             'D', 'datetime', '%Y-%m-%d %H:%M:%S'),
+            ({'code': 'gleichung', 'full': _('Gleichung'), 'abbreviated': _('Gleichung')},
+             '*', 'string', 'default'),
+            ({'code': 'dateiupload', 'full': _('Datei-Upload'), 'abbreviated': _('Datei-Upload')},
+             '|', 'string', 'default'),
+            ({'code': 'dateiupload[filecount]', 'full': _('filecount - Datei-Upload'), 'abbreviated': _('filecount - Dat..')},
+             '|', 'string', 'default'),
+            ({'code': 'geschlecht', 'full': _('Geschlecht'), 'abbreviated': _('Geschlecht')},
+             'G', 'string', 'default'),
+            ({'code': 'sprachumschaltung', 'full': _('Sprachumschaltung'), 'abbreviated': _('Sprachumschaltung')},
+             'I', 'string', 'default'),
+            ({'code': 'mehrfachenumerischee[SQ001]', 'full': _('Mehrfache numerische Eingabe [Unterfrage eins]'), 'abbreviated': _('Mehrfache numer..  [Unterfrage eins]')},
+             'K', 'number', 'default'),
+            ({'code': 'mehrfachenumerischee[SQ002]', 'full': _('Mehrfache numerische Eingabe [Unterfrage zwei]'), 'abbreviated': _('Mehrfache numer..  [Unterfrage zwei]')},
+             'K', 'number', 'default'),
+            ({'code': 'numerischeeingabe', 'full': _('Numerische Eingabe'), 'abbreviated': _('Numerische Eingabe')},
+             'N', 'number', 'default'),
+            ({'code': 'rang[1]', 'full': _('Rang [Rank 1]'), 'abbreviated': _('Rang [Rank 1]')},
+             'R', 'string', 'default'),
+            ({'code': 'rang[2]', 'full': _('Rang [Rank 2]'), 'abbreviated': _('Rang [Rank 2]')},
+             'R', 'string', 'default'),
+            ({'code': 'textanzeige', 'full': _('Textanzeige'), 'abbreviated': _('Textanzeige')},
+             'X', 'string', 'default'),
+            ({'code': 'janein', 'full': _('Ja/Nein'), 'abbreviated': _('Ja/Nein')},
+             'Y', 'string', 'default'),
+            ({'code': 'reisigerfreitext', 'full': _('Reisiger Freitext'), 'abbreviated': _('Reisiger Freitext')},
+             'U', 'string', 'default'),
+            ({'code': 'langerfreiertext', 'full': _('Langer freier Text'), 'abbreviated': _('Langer freier Text')},
+             'T', 'string', 'default'),
+            ({'code': 'mehrfacherkurztext[SQ001]', 'full': _('Mehrfacher Kurztext [Unterfrage eins]'), 'abbreviated': _('Mehrfacher Kurz..  [Unterfrage eins]')},
+             'Q', 'string', 'default'),
+            ({'code': 'mehrfacherkurztext[SQ002]', 'full': _('Mehrfacher Kurztext [Unterfrage zwei]'), 'abbreviated': _('Mehrfacher Kurz..  [Unterfrage zwei]')},
+             'Q', 'string', 'default'),
+            ({'code': 'kurzerfreitext', 'full': _('Kurzer Freitext'), 'abbreviated': _('Kurzer Freitext')},
+             'S', 'string', 'default'),
+            ({'code': 'mehrfachauswahl[SQ001]', 'full': _('Mehrfachauswahl [Unterfrage eins]'), 'abbreviated': _('Mehrfachauswahl [Unterfrage eins]')},
+             'M', 'string', 'default'),
+            ({'code': 'mehrfachauswahl[SQ002]', 'full': _('Mehrfachauswahl [Unterfrage zwei]'), 'abbreviated': _('Mehrfachauswahl [Unterfrage zwei]')},
+             'M', 'string', 'default'),
+            ({'code': 'mehrfachauswahlmitko[SQ001]', 'full': _('Mehrfachauswahl mit Kommentaren [Unterfrage eins]'), 'abbreviated': _('Mehrfachauswahl..  [Unterfrage eins]')},
+             'P', 'string', 'default'),
+            ({'code': 'mehrfachauswahlmitko[SQ001comment]', 'full': _('Mehrfachauswahl mit Kommentaren [Comment]'), 'abbreviated': _('Mehrfachauswahl..  [Comment]')},
+             'P', 'string', 'default'),
+            ({'code': 'mehrfachauswahlmitko[SQ002]', 'full': _('Mehrfachauswahl mit Kommentaren [Unterfrage zwei]'), 'abbreviated': _('Mehrfachauswahl..  [Unterfrage zwei]')},
+             'P', 'string', 'default'),
+            ({'code': 'mehrfachauswahlmitko[SQ002comment]', 'full': _('Mehrfachauswahl mit Kommentaren [Comment]'), 'abbreviated': _('Mehrfachauswahl..  [Comment]')},
+             'P', 'string', 'default')
+        ]
 
     def _asserts_elements_in_zipfile(self, zipped_file, group1, group2):
         # Assertions for first group
@@ -574,7 +695,8 @@ class ExportQuestionnaireTest(ExportTestCase):
         questionnaire_response.date = date(2016, 4, 17)
         questionnaire_response.save()
 
-        # Post data to view: data style that is posted to export_view in template
+        # Post data to view: data style that is posted to export_view in
+        # template
         data = {
             'per_participant': ['on'],
             'per_questionnaire': ['on'],
@@ -676,6 +798,80 @@ class ExportQuestionnaireTest(ExportTestCase):
             self.assertEqual(dialect.delimiter, ",")
 
         shutil.rmtree(temp_dir)
+
+    @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
+    @patch('survey.abc_search_engine.Server')
+    def test_responses_type_equals_answer_code_creates_responses_csv_file_with_na_if_question_is_disabled(self, mockServer):
+        """Limesurvey exports responses without N/A if export responses type
+        selected is "short" so the user can't distinguish if the response
+        was not selected by the questionaire responder or the question was
+        not exposed to him by the questionnaire conditions structure. So we
+        sinalize this from NES"""
+
+        self.append_session_variable('group_selected_list',
+                                     [str(self.group.id)])
+        self.append_session_variable('license', '0')
+
+        questions = self._set_all_questions()
+
+        to_experiment = []
+        for question in questions:
+            to_experiment.append(
+                '0*' + str(self.group.id) + '*' + str(LIMESURVEY_SURVEY_ID_1)
+                + '*' + self.questionnaire.survey.en_title + '*' + question[0][
+                    'code'] + '*' + question[0]['code'])
+
+        set_mocks7(mockServer)
+
+        # Post data to view: data style that is posted to export_view in
+        # template
+        data = {
+            'per_participant': ['on'], 'action': ['run'],
+            'per_questionnaire': ['on'],
+            'headings': ['code'],
+            'to_experiment[]': to_experiment,
+            'patient_selected': ['age*age'], 'responses': ['short']
+        }
+
+        response = self.client.post(reverse('export_view'), data)
+
+        temp_dir = tempfile.mkdtemp()
+        zipped_file = self.get_zipped_file(response)
+        zipped_file.extract(
+            os.path.join(
+                input_export.BASE_DIRECTORY,
+                'Experiment_data',
+                'Group_' + self.group.title.lower(),
+                'Per_questionnaire', 'Step_1_QUESTIONNAIRE',
+                self.survey.code + '_' + slugify(self.survey.en_title) +
+                '_en.csv'
+            ),
+            temp_dir
+        )
+
+        with open(
+                os.path.join(
+                    temp_dir,
+                    input_export.BASE_DIRECTORY,
+                    'Experiment_data',
+                    'Group_' + self.group.title.lower(),
+                    'Per_questionnaire',
+                    'Step_1_QUESTIONNAIRE',
+                    self.survey.code + '_' + slugify(self.survey.en_title) +
+                    '_en.csv'
+                )
+        ) as file:
+            csvreader = csv.reader(file)
+            rows = []
+            for row in csvreader:
+                rows.append(row)
+            self.assertEqual(
+                rows[1][1],
+                'N/A'
+            )
+
+        shutil.rmtree(temp_dir)
+
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
