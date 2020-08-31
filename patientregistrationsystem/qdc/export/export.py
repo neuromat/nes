@@ -142,8 +142,9 @@ def replace_multiple_choice_question_answers(responses_short, responses_full,
     get_responses_by_token or get_responses limesurvey api methods - that
     are multiple choices/multiple choices with comments question types (from
     question_list), and replaces the options that was not selected by
-    participants with a 'N' (options that was selected have 'Y' - or 'S'
-    in Portuguese - filled.
+    participants with a 'N' (options that was selected have 'Y' -- or 'S'
+    in Portuguese -- filled).
+    If the question is irrelevant fill up with 'N/A'.
     :param responses_short: double array with questions in first line and answers
     in the other lines
     :param question_list: list of multiple choice/multiple choice with
@@ -163,19 +164,11 @@ def replace_multiple_choice_question_answers(responses_short, responses_full,
                 index_subquestions.append(i)
                 i += 1
             for j in range(1, len(responses_short) - 1):
-                filled = False
                 for k in index_subquestions:
-                    if responses_short[j][k] != '':
-                        filled = True
-                        break
-                if filled:
-                    for k in index_subquestions:
-                        if responses_short[j][k] == '':
-                            responses_short[j][k] = 'N'
-                if not filled:
-                    for k in index_subquestions:
-                        if responses_full[j][k] == 'N/A':
-                            responses_short[j][k] = 'N/A'
+                    if responses_full[j][k] == 'N/A':
+                        responses_short[j][k] = 'N/A'
+                    elif responses_short[j][k] == '':
+                        responses_short[j][k] = 'N'
         else:
             i += 1
 
