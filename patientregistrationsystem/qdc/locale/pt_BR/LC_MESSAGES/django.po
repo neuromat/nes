@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-14 14:00-0300\n"
+"POT-Creation-Date: 2020-08-31 16:04-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -676,7 +676,7 @@ msgstr "Pesquisador sênior"
 msgid "Administrator"
 msgstr "Administrador"
 
-#: templates/404.html:14 templates/registration/change_password_custom.html:142
+#: templates/404.html:14 templates/registration/change_password_custom.html:123
 #: templates/registration/logged_out.html:4
 msgid "Home"
 msgstr "Home"
@@ -705,18 +705,18 @@ msgstr "Administração QDC"
 msgid "Access is not authorized"
 msgstr "Acesso não autorizado"
 
-#: templates/registration/change_password_custom.html:10
-#: templates/registration/login.html:8
+#: templates/registration/change_password_custom.html:9
+#: templates/registration/login.html:7
 #: templates/registration/password_reset_form.html:9
 msgid "Neuroscience Experiments System - NES"
 msgstr "Sistema de Experimentos de Neurociência - NES"
 
-#: templates/registration/change_password_custom.html:97
+#: templates/registration/change_password_custom.html:78
 msgid "Password change"
 msgstr "Alterar senha"
 
-#: templates/registration/change_password_custom.html:114
-#: templates/registration/password_reset_confirm.html:146
+#: templates/registration/change_password_custom.html:95
+#: templates/registration/password_reset_confirm.html:84
 msgid ""
 "Password must contain at least 8 characters, including at least one "
 "uppercase letter, digit or special character."
@@ -724,11 +724,11 @@ msgstr ""
 "Senha deve conter pelo menos 8 caracteres, incluindo ao menos uma letra "
 "maiúscula, dígito ou caractere especial."
 
-#: templates/registration/change_password_custom.html:137
+#: templates/registration/change_password_custom.html:118
 msgid "Save"
 msgstr "Salvar"
 
-#: templates/registration/change_password_custom.html:144
+#: templates/registration/change_password_custom.html:125
 msgid "Logout"
 msgstr ""
 
@@ -740,19 +740,19 @@ msgstr "Obrigado por passar momentos de qualidade com o site hoje."
 msgid "Log in again"
 msgstr "Faça login novamente"
 
-#: templates/registration/login.html:90
+#: templates/registration/login.html:81
 msgid "User"
 msgstr "Usuário"
 
-#: templates/registration/login.html:94
+#: templates/registration/login.html:85
 msgid "Password"
 msgstr "Senha"
 
-#: templates/registration/login.html:96
+#: templates/registration/login.html:87
 msgid "Login"
 msgstr "Fazer login"
 
-#: templates/registration/login.html:102
+#: templates/registration/login.html:93
 msgid "I forgot my password"
 msgstr "Esqueci minha senha"
 
@@ -787,7 +787,8 @@ msgid ""
 "\n"
 "    Thank you for using our site!\n"
 "\n"
-"    Neuromat Team."
+"    Neuromat Team.\n"
+"    "
 msgstr ""
 "O seu nome de usuário: %(user.username)s\n"
 "\n"
@@ -795,7 +796,7 @@ msgstr ""
 "\n"
 "    Equipe Neuromat."
 
-#: templates/registration/password_reset_complete.html:17
+#: templates/registration/password_reset_complete.html:13
 msgid ""
 "Your password was configured successfully.\n"
 "           Access the system using your new credentials."
@@ -803,32 +804,32 @@ msgstr ""
 "Sua senha foi configurada com sucesso.\n"
 "            Acesse o sistema utilizando suas novas credenciais."
 
-#: templates/registration/password_reset_complete.html:22
+#: templates/registration/password_reset_complete.html:16
 msgid "Access"
 msgstr "Acessar"
 
-#: templates/registration/password_reset_confirm.html:143
-#: templates/registration/password_reset_form.html:88
+#: templates/registration/password_reset_confirm.html:81
+#: templates/registration/password_reset_form.html:77
 msgid "Reset password"
 msgstr "Redefinir senha"
 
-#: templates/registration/password_reset_confirm.html:147
+#: templates/registration/password_reset_confirm.html:85
 msgid "New password"
 msgstr "Nova senha"
 
-#: templates/registration/password_reset_confirm.html:150
+#: templates/registration/password_reset_confirm.html:88
 msgid "Confirm password"
 msgstr "Confirmar senha"
 
-#: templates/registration/password_reset_confirm.html:152
+#: templates/registration/password_reset_confirm.html:90
 msgid "Confirm"
 msgstr "Confirmar"
 
-#: templates/registration/password_reset_confirm.html:155
+#: templates/registration/password_reset_confirm.html:93
 msgid "Password reset failed."
 msgstr "Redefinição de senha falhou."
 
-#: templates/registration/password_reset_confirm.html:156
+#: templates/registration/password_reset_confirm.html:94
 msgid ""
 "Invalid link for password reset, possibly because this link has already been "
 "used previously. <br/>\n"
@@ -882,12 +883,12 @@ msgstr ""
 "\n"
 "    Equipe Neuromat."
 
-#: templates/registration/password_reset_form.html:72
+#: templates/registration/password_reset_form.html:61
 msgid "Please enter your e-mail to receive instructions for password reset."
 msgstr ""
 "Especifique seu e-mail para receber as instruções para redefinição de senha."
 
-#: templates/registration/password_reset_form.html:83
+#: templates/registration/password_reset_form.html:72
 msgid "E-mail"
 msgstr "E-mail"
 
