@@ -73,20 +73,24 @@ def build_questionnaires_list(language_code, groups=None):
     """
     random_forests = get_object_or_404(RandomForests)
     surveys = [
-        random_forests.admission_assessment.lime_survey_id, random_forests.surgical_evaluation.lime_survey_id
+        random_forests.admission_assessment.lime_survey_id,
+        random_forests.surgical_evaluation.lime_survey_id,
+        random_forests.followup_assessment.lime_survey_id
     ]
-    limesurvey_error, questionnaires = get_questionnaire_fields(surveys, language_code)
+    limesurvey_error, questionnaires = get_questionnaire_fields(
+        surveys, language_code)
     if limesurvey_error:
         return limesurvey_error, questionnaires
-    # Transform questionnaires (to get the format of build_complete_export_structure
-    # questionnaires list argument)
+    # Transform questionnaires (to get the format of build_complete_export
+    # structure questionnaires list argument)
     for i, questionnaire in enumerate(questionnaires):
         questionnaire['index'] = str(i)
     questionnaires = [
         [
             dict0['index'], dict0['sid'], dict0['title'],
             [
-                (dict1['header'], dict1['field']) for index1, dict1 in enumerate(dict0['output_list'])
+                (dict1['header'], dict1['field'])
+                for index1, dict1 in enumerate(dict0['output_list'])
             ]
         ]
         for index, dict0 in enumerate(questionnaires)
@@ -94,14 +98,16 @@ def build_questionnaires_list(language_code, groups=None):
 
     if groups is not None:
         # TODO (NES-995): break at least this part in another method.
-        #  Keep attentiont to the principle of (sic) one method -> do one thing.
-        # If questionnaires list is for experiment questionnaires, update questionnaires list
+        #  Keep attention to the principle of (sic) one method -> do one thing.
+        # If questionnaires list is for experiment questionnaires,
+        # update questionnaires list
         for questionnaire in questionnaires:
             del questionnaire[0]
 
         new_questionnaires = []
         admission_survey = questionnaires[0]
         surgical_survey = questionnaires[1]
+        followup_assessment = questionnaires[2]
         for group_id in groups:
             group_id = str(group_id)
             copy_admission = admission_survey.copy()
@@ -112,6 +118,11 @@ def build_questionnaires_list(language_code, groups=None):
                 copy_surgical = surgical_survey.copy()
                 copy_surgical.insert(0, group_id)
                 new_questionnaires.append(copy_surgical)
+            if has_questionnaire(group.experimental_protocol,
+                                 random_forests.followup_assessment):
+                copy_followup = followup_assessment.copy()
+                copy_followup.insert(0, group_id)
+                new_questionnaires.append(copy_followup)
 
         for i, questionnaire in enumerate(new_questionnaires):
             questionnaire.insert(0, str(i))
@@ -278,34 +289,51 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
 
     admission_participants = {}
     surgical_participants = {}
+    followup_participants = {}
     admission_title = None
     surgical_title = None
+    followup_title = None
 
-    # Patients that answered the admission assessment questionnaire and surgical evaluation questionnaire
-    if random_forests and random_forests.admission_assessment and random_forests.surgical_evaluation:
+    # Patients that answered the admission assessment,
+    # surgical evaluation and followup assessment questionnaires
+    if random_forests and random_forests.admission_assessment \
+            and random_forests.surgical_evaluation \
+            and random_forests.followup_assessment:
         admission = Survey.objects.get(pk=random_forests.admission_assessment.pk)
         admission_participants = participants_dict(admission)
         surgical = Survey.objects.get(pk=random_forests.surgical_evaluation.pk)
         surgical_participants = participants_dict(surgical)
+        followup = Survey.objects.get(pk=random_forests.followup_assessment.pk)
+        followup_participants = participants_dict(followup)
         if admission:
-            admission_title = admission.en_title if request.LANGUAGE_CODE == 'en' else admission.pt_title
+            admission_title = admission.en_title \
+                if request.LANGUAGE_CODE == 'en' else admission.pt_title
         if surgical:
-            surgical_title = surgical.en_title if request.LANGUAGE_CODE == 'en' else surgical.pt_title
+            surgical_title = surgical.en_title \
+                if request.LANGUAGE_CODE == 'en' else surgical.pt_title
+        if followup:
+            followup_title = followup.en_title \
+                if request.LANGUAGE_CODE == 'en' else followup.pt_title
 
-    # The intersection of admission assessment and surgical evaluation questionnaires
+    # The intersection of admission assessment, surgical evaluation and
+    # followup questionnaires
     intersection_dict = {}
     for i in admission_participants:
-        if i in surgical_participants and admission_participants[i] == surgical_participants[i]:
+        if i in surgical_participants and i in followup_participants \
+                and admission_participants[i] == surgical_participants[i] \
+                and admission_participants[i] == followup_participants[i]:
             intersection_dict[i] = admission_participants[i]
 
-    # Transform the intersection dictionary into a list, so that we can sort it by patient name
+    # Transform the intersection dictionary into a list, so that we can sort
+    # it by patient name
     participants_headers = []
 
     for key, dictionary in list(intersection_dict.items()):
         dictionary['patient_id'] = key
         participants_headers.append(dictionary)
 
-    participants_headers = sorted(participants_headers, key=itemgetter('patient_name'))
+    participants_headers = sorted(
+        participants_headers, key=itemgetter('patient_name'))
 
     # Exclude PATIENT_FIELDS item correspondent to patient code
     # Did that as of NES-987 issue refactorings (this was a major refactoring)
@@ -317,11 +345,14 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
         'participants': participants_headers,
         'patient_fields': patient_fields,
         'admission_title': admission_title,
-        'surgical_title': surgical_title
+        'surgical_title': surgical_title,
+        'followup_title': followup_title
     }
 
     # START - Here goes the selections for Sending by Experiment
-    if random_forests and random_forests.admission_assessment and random_forests.surgical_evaluation:
+    if random_forests and random_forests.admission_assessment \
+            and random_forests.surgical_evaluation \
+            and random_forests.followup_assessment:
         admission = Survey.objects.get(pk=random_forests.admission_assessment.pk)
         questionnaires = Questionnaire.objects.filter(survey=admission)
         questionnaire_responses = ExperimentResponse.objects.filter(
@@ -352,7 +383,10 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
 
         export_form = ExportForm(
             request.POST or None,
-            initial={'title': 'title', 'responses': ['short'], 'headings': 'code', 'filesformat': 'csv'})
+            initial={
+                'title': 'title', 'responses': ['short'], 'headings': 'code',
+                'filesformat': 'csv'
+            })
 
         context['export_form'] = export_form
     # END - Here goes the selections for Sending by Experiment

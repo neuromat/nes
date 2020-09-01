@@ -83,6 +83,12 @@
                             {% else %}
                                 <li><strong>{{ surgical_title }}</strong></li>
                             {% endif %}
+                            {% if not followup_title %}
+                                <li><em>
+                                    {% trans 'Questionnaire title for Follow-Up Assessment not available in en' %}</em></li>
+                            {% else %}
+                                <li><strong>{{ followup_title }}</strong></li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

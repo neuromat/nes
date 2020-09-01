@@ -3,9 +3,15 @@ def set_limesurvey_api_mocks(mock_server):
     mock_server.return_value.get_survey_properties.return_value = {'language': 'en', 'additional_languages': ''}
     mock_server.return_value.export_responses.side_effect = [
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0'
-        'aW9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndw'
-        'YTJRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwi'
-        'MiIsImVuIiwiV1JGVUFnVGVtenV1OG5EIiwiMiIsIjIwMjAtMDktMDUgMDA6MDA6MDAiLCI5NTkxNyIsImNiYSIsIkEyIgoK',
+        'aW9uZGF0ZSIsInN1YmplY3RpZCIsInExW1NRMDAxXSIsInExW1NRMDAyXSIsInEyIgoiMSIsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyI'
+        'iwiZW4iLCJPU1NNYUZWZXdWbDhEMEoiLCIyIiwiMjAyMC0wOS0wNSAwMDowMDowMCIsIjk1OTE2IiwiQTEiLCJBMiIsIjQiCiIyIiwiMT'
+        'k4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsImZGUG5Uc05VSndSeWUzZyIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTc'
+        'iLCJBMiIsIkExIiwiMSIKCg==',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0'
+        'aW9uZGF0ZSIsInN1YmplY3RpZCIsInExW1NRMDAxXSIsInExW1NRMDAyXSIsInEyIgoiMSIsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyI'
+        'iwiZW4iLCJPU1NNYUZWZXdWbDhEMEoiLCIyIiwiMjAyMC0wOS0wNSAwMDowMDowMCIsIjk1OTE2IiwiQTEiLCJBMiIsIjQiCiIyIiwiMT'
+        'k4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsImZGUG5Uc05VSndSeWUzZyIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTc'
+        'iLCJBMiIsIkExIiwiMSIKCg==',
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0'
         'aW9uZGF0ZSIsInN1YmplY3RpZCIsInExW1NRMDAxXSIsInExW1NRMDAyXSIsInEyIgoiMSIsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyI'
         'iwiZW4iLCJPU1NNYUZWZXdWbDhEMEoiLCIyIiwiMjAyMC0wOS0wNSAwMDowMDowMCIsIjk1OTE2IiwiQTEiLCJBMiIsIjQiCiIyIiwiMT'
@@ -16,17 +22,21 @@ def set_limesurvey_api_mocks(mock_server):
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0a'
         'W9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndwYT'
         'JRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKCg==',
-        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2lib'
-        'GUgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYm'
-        'VyOiIsIlF1ZXN0w6NvIDEiLCJRdWVzdMOjbyAyIgoiMSIsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyIiwiZW4iLCJzSWJqM2d3anZ3cGE'
-        'yUVkiLCIyIiwiMjAyMC0wOS0wNSAwMDowMDowMCIsIjk1OTE2IiwiYWJjIiwiQTEiCgo=',
         'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0a'
-        'W9uZGF0ZSIsInN1YmplY3RpZCIsInExW1NRMDAxXSIsInExW1NRMDAyXSIsInEyIgoiMSIsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyIi'
-        'wiZW4iLCJPU1NNYUZWZXdWbDhEMEoiLCIyIiwiMjAyMC0wOS0wNSAwMDowMDowMCIsIjk1OTE2IiwiQTEiLCJBMiIsIjQiCgo=',
-        'IlJlc3BvbnNlIElEIiwiRGF0ZSBzdWJtaXR0ZWQiLCJMYXN0IHBhZ2UiLCJTdGFydCBsYW5ndWFnZSIsIlRva2VuIiwiUmVzcG9uc2lib'
-        'GUgSWRlbnRpZmljYXRpb24gbnVtYmVyOiIsIkFjcXVpc2l0aW9uIGRhdGU6IiwiUGFydGljaXBhbnQgSWRlbnRpZmljYXRpb24gbnVtYm'
-        'VyOiIsIlF1ZXN0w6NvIDEgW09rXSIsIlF1ZXN0w6NvIDEgW05vT2tdIiwiUXVlc3TDo28gMiIKIjEiLCIxOTgwLTAxLTAxIDAwOjAwOjA'
-        'wIiwiMiIsImVuIiwiT1NTTWFGVmV3Vmw4RDBKIiwiMiIsIjIwMjAtMDktMDUgMDA6MDA6MDAiLCI5NTkxNiIsIkExIiwiQTIiLCI0IgoK'
+        'W9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndwYT'
+        'JRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKCg==',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0a'
+        'W9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndwYT'
+        'JRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKCg==',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0a'
+        'W9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndwYT'
+        'JRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKCg==',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0a'
+        'W9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndwYT'
+        'JRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKCg==',
+        'ImlkIiwic3VibWl0ZGF0ZSIsImxhc3RwYWdlIiwic3RhcnRsYW5ndWFnZSIsInRva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0a'
+        'W9uZGF0ZSIsInN1YmplY3RpZCIsInExIiwicTIiCiIxIiwiMTk4MC0wMS0wMSAwMDowMDowMCIsIjIiLCJlbiIsInNJYmozZ3dqdndwYT'
+        'JRWSIsIjIiLCIyMDIwLTA5LTA1IDAwOjAwOjAwIiwiOTU5MTYiLCJhYmMiLCJBMSIKCg==',
     ]
     mock_server.return_value.list_groups.side_effect = \
         5 * [[
@@ -206,6 +216,178 @@ def set_limesurvey_api_mocks(mock_server):
              'sid': 888656, 'modulename': '', 'parent_qid': 0, 'qid': 5017, 'mandatory': 'N', 'other': 'N',
              'question': 'Questão 2', 'scale_id': 0, 'id': {'language': 'en', 'qid': 5017}, 'relevance': '1',
              'question_order': 3}
+        ],
+        [
+            {'type': 'F', 'same_default': 0, 'help': '', 'gid': 1579,
+             'preg': '', 'language': 'en', 'title': 'q1',
+             'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5014,
+             'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 1', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5014}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579,
+             'preg': None, 'language': 'en',
+             'title': 'SQ001', 'sid': 888656, 'modulename': None,
+             'parent_qid': 5014, 'qid': 5015, 'mandatory': None,
+             'other': 'N', 'question': 'Ok', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5015}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579,
+             'preg': None, 'language': 'en',
+             'title': 'SQ002', 'sid': 888656, 'modulename': None,
+             'parent_qid': 5014, 'qid': 5016, 'mandatory': None,
+             'other': 'N', 'question': 'NoOk', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5016}, 'relevance': '',
+             'question_order': 2},
+            {'type': '5', 'same_default': 0, 'help': '', 'gid': 1579,
+             'preg': '', 'language': 'en', 'title': 'q2',
+             'sid': 888656, 'modulename': '', 'parent_qid': 0, 'qid': 5017,
+             'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 2', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5017}, 'relevance': '1',
+             'question_order': 3}
+        ],
+        [
+            {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1578,
+             'preg': '', 'language': 'en',
+             'title': 'responsibleid', 'sid': 888656, 'modulename': None,
+             'parent_qid': 0, 'qid': 5011,
+             'mandatory': 'Y', 'other': 'N',
+             'question': 'Responsible Identification number:', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5011}, 'relevance': '1',
+             'question_order': 0},
+            {'type': 'D', 'same_default': 0, 'help': '', 'gid': 1578,
+             'preg': '', 'language': 'en',
+             'title': 'acquisitiondate', 'sid': 888656, 'modulename': None,
+             'parent_qid': 0, 'qid': 5012,
+             'mandatory': 'Y', 'other': 'N',
+             'question': 'Acquisition date<strong>:</strong><br />\n',
+             'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5012}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1578,
+             'preg': '', 'language': 'en',
+             'title': 'subjectid', 'sid': 888656, 'modulename': None,
+             'parent_qid': 0, 'qid': 5013, 'mandatory': 'Y',
+             'other': 'N',
+             'question': 'Participant Identification number<b>:</b>',
+             'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5013}, 'relevance': '1',
+             'question_order': 3},
+            {'type': 'F', 'same_default': 0, 'help': '', 'gid': 1579,
+             'preg': '', 'language': 'en', 'title': 'q1',
+             'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5014,
+             'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 1', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5014}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579,
+             'preg': None, 'language': 'en',
+             'title': 'SQ001', 'sid': 888656, 'modulename': None,
+             'parent_qid': 5014, 'qid': 5015, 'mandatory': None,
+             'other': 'N', 'question': 'Ok', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5015}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579,
+             'preg': None, 'language': 'en',
+             'title': 'SQ002', 'sid': 888656, 'modulename': None,
+             'parent_qid': 5014, 'qid': 5016, 'mandatory': None,
+             'other': 'N', 'question': 'NoOk', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5016}, 'relevance': '',
+             'question_order': 2},
+            {'type': '5', 'same_default': 0, 'help': '', 'gid': 1579,
+             'preg': '', 'language': 'en', 'title': 'q2',
+             'sid': 888656, 'modulename': '', 'parent_qid': 0, 'qid': 5017,
+             'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 2', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5017}, 'relevance': '1',
+             'question_order': 3}
+        ],
+        [
+            {'type': 'F', 'same_default': 0, 'help': '', 'gid': 1579,
+             'preg': '', 'language': 'en', 'title': 'q1',
+             'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5014,
+             'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 1', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5014}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579,
+             'preg': None, 'language': 'en',
+             'title': 'SQ001', 'sid': 888656, 'modulename': None,
+             'parent_qid': 5014, 'qid': 5015, 'mandatory': None,
+             'other': 'N', 'question': 'Ok', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5015}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579,
+             'preg': None, 'language': 'en',
+             'title': 'SQ002', 'sid': 888656, 'modulename': None,
+             'parent_qid': 5014, 'qid': 5016, 'mandatory': None,
+             'other': 'N', 'question': 'NoOk', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5016}, 'relevance': '',
+             'question_order': 2},
+            {'type': '5', 'same_default': 0, 'help': '', 'gid': 1579,
+             'preg': '', 'language': 'en', 'title': 'q2',
+             'sid': 888656, 'modulename': '', 'parent_qid': 0, 'qid': 5017,
+             'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 2', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5017}, 'relevance': '1',
+             'question_order': 3}
+        ],
+        [
+            {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1578,
+             'preg': '', 'language': 'en',
+             'title': 'responsibleid', 'sid': 888656, 'modulename': None,
+             'parent_qid': 0, 'qid': 5011,
+             'mandatory': 'Y', 'other': 'N',
+             'question': 'Responsible Identification number:', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5011}, 'relevance': '1',
+             'question_order': 0},
+            {'type': 'D', 'same_default': 0, 'help': '', 'gid': 1578,
+             'preg': '', 'language': 'en',
+             'title': 'acquisitiondate', 'sid': 888656, 'modulename': None,
+             'parent_qid': 0, 'qid': 5012,
+             'mandatory': 'Y', 'other': 'N',
+             'question': 'Acquisition date<strong>:</strong><br />\n',
+             'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5012}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'N', 'same_default': 0, 'help': '', 'gid': 1578,
+             'preg': '', 'language': 'en',
+             'title': 'subjectid', 'sid': 888656, 'modulename': None,
+             'parent_qid': 0, 'qid': 5013, 'mandatory': 'Y',
+             'other': 'N',
+             'question': 'Participant Identification number<b>:</b>',
+             'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5013}, 'relevance': '1',
+             'question_order': 3},
+            {'type': 'F', 'same_default': 0, 'help': '', 'gid': 1579,
+             'preg': '', 'language': 'en', 'title': 'q1',
+             'sid': 888656, 'modulename': None, 'parent_qid': 0, 'qid': 5014,
+             'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 1', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5014}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579,
+             'preg': None, 'language': 'en',
+             'title': 'SQ001', 'sid': 888656, 'modulename': None,
+             'parent_qid': 5014, 'qid': 5015, 'mandatory': None,
+             'other': 'N', 'question': 'Ok', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5015}, 'relevance': '1',
+             'question_order': 1},
+            {'type': 'T', 'same_default': 0, 'help': None, 'gid': 1579,
+             'preg': None, 'language': 'en',
+             'title': 'SQ002', 'sid': 888656, 'modulename': None,
+             'parent_qid': 5014, 'qid': 5016, 'mandatory': None,
+             'other': 'N', 'question': 'NoOk', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5016}, 'relevance': '',
+             'question_order': 2},
+            {'type': '5', 'same_default': 0, 'help': '', 'gid': 1579,
+             'preg': '', 'language': 'en', 'title': 'q2',
+             'sid': 888656, 'modulename': '', 'parent_qid': 0, 'qid': 5017,
+             'mandatory': 'N', 'other': 'N',
+             'question': 'Questão 2', 'scale_id': 0,
+             'id': {'language': 'en', 'qid': 5017}, 'relevance': '1',
+             'question_order': 3}
         ]
     ]
     mock_server.return_value.get_question_properties.side_effect = [
@@ -266,8 +448,10 @@ def set_limesurvey_api_mocks(mock_server):
     mock_server.return_value.get_language_properties.side_effect = [
         {'surveyls_title': 'Admission Assessment Plugin'},
         {'surveyls_title': 'Surgical Evaluation Plugin'},
+        {'surveyls_title': 'Follow-up Assessment Plugin'},
         {'surveyls_title': 'Admission Assessment Plugin'},
-        {'surveyls_title': 'Surgical Evaluation Plugin'}
+        {'surveyls_title': 'Surgical Evaluation Plugin'},
+        {'surveyls_title': 'Follow-up Assessment Plugin'}
     ]
 
 

@@ -1094,8 +1094,15 @@ class ExportExecution:
                 random_forest = RandomForests.objects.first()
                 if questionnaire_id == random_forest.admission_assessment.lime_survey_id:
                     path_questionnaire = 'QA_unified_admission_assessment'
-                else:
+                elif questionnaire_id == \
+                        random_forest.surgical_evaluation.lime_survey_id:
                     path_questionnaire = 'QS_surgical_evaluation'
+                elif questionnaire_id == \
+                        random_forest.followup_assessment.lime_survey_id:
+                    path_questionnaire = 'QS_unified_followup_assessment'
+                else:
+                    # TODO: error
+                    pass
 
             # Path ex. data/Per_questionnaire/Q123_aaa
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)

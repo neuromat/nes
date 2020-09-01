@@ -45,10 +45,20 @@ class PluginTest(ExportTestCase):
         self.survey2 = create_survey(505050)
         self.survey2.code = 'Q505050'
         self.survey2.save()
+        self.survey3 = create_survey(717171)
+        self.survey3.code = 'Q717171'
+        self.survey3.save()
         RandomForests.objects.create(
-            admission_assessment=self.survey1, surgical_evaluation=self.survey2, plugin_url='http://plugin_url')
-        UtilTests.create_response_survey(self.user, self.patient, self.survey1, 21)
-        UtilTests.create_response_survey(self.user, self.patient, self.survey2, 21)
+            admission_assessment=self.survey1,
+            surgical_evaluation=self.survey2,
+            followup_assessment=self.survey3,
+            plugin_url='http://plugin_url')
+        UtilTests.create_response_survey(
+            self.user, self.patient, self.survey1, 21)
+        UtilTests.create_response_survey(
+            self.user, self.patient, self.survey2, 21)
+        UtilTests.create_response_survey(
+            self.user, self.patient, self.survey3, 21)
 
     def test_GET_send_to_plugin_returns_right_status_code(self):
         response = self.client.get(reverse('send-to-plugin'), follow=True)
@@ -69,10 +79,19 @@ class PluginTest(ExportTestCase):
         random_forest.admission_assessment.save()
         random_forest.surgical_evaluation.pt_title = None
         random_forest.surgical_evaluation.save()
+        random_forest.followup_assessment.pt_title = None
+        random_forest.followup_assessment.save()
 
         response = self.client.get(reverse('send-to-plugin'))
-        self.assertContains(response, 'Título do Questionário Avaliação de Entrada não disponível em pt-BR')
-        self.assertContains(response, 'Título do Questionário Avaliação Cirúrgica não disponível em pt-BR')
+        self.assertContains(
+            response, 'Título do Questionário Avaliação de Entrada não '
+                      'disponível em pt-BR')
+        self.assertContains(
+            response, 'Título do Questionário Avaliação Cirúrgica não '
+                      'disponível em pt-BR')
+        self.assertContains(
+            response, 'Título do Questionário Avaliação de Seguimento não '
+                      'disponível em pt-BR')
 
     @override_settings(LANGUAGE_CODE='en')
     def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_display_message2(
@@ -85,27 +104,62 @@ class PluginTest(ExportTestCase):
         random_forest.admission_assessment.save()
         random_forest.surgical_evaluation.en_title = None
         random_forest.surgical_evaluation.save()
+        random_forest.followup_assessment.en_title = None
+        random_forest.followup_assessment.save()
 
         response = self.client.get(reverse('send-to-plugin'))
         self.assertContains(response, 'Questionnaire title for Unified Admission Assessment not available in en')
         self.assertContains(response, 'Questionnaire title for Surgical Assessment not available in en')
 
+    def test_does_not_define_admission_questionnaire_attribute_does_not_display_plugin_entry_in_menu(self):
+        self._create_basic_objects()
+
+        plugin = RandomForests.objects.last()
+        plugin.admission_assessment = None
+        plugin.save()
+
+        response = self.client.get('home')
+        self.assertNotIn('Plugin', response.content.decode('utf-8'),
+                         'Plugin appears')
+
+    def test_does_not_define_surgical_questionnaire_attribute_does_not_display_plugin_entry_in_menu(self):
+        self._create_basic_objects()
+
+        plugin = RandomForests.objects.last()
+        plugin.surgical_evaluation = None
+        plugin.save()
+
+        response = self.client.get('home')
+        self.assertNotIn('Plugin', response.content.decode('utf-8'),
+                         'Plugin appears')
+
+    def test_does_not_define_followup_questionnaire_attribute_does_not_display_plugin_entry_in_menu(self):
+        self._create_basic_objects()
+
+        plugin = RandomForests.objects.last()
+        plugin.followup_assessment = None
+        plugin.save()
+
+        response = self.client.get('home')
+        self.assertNotIn('Plugin', response.content.decode('utf-8'),
+                         'Plugin appears')
+
     def test_does_not_define_plugin_url_attribute_does_not_display_plugin_entry_in_menu(self):
         self._create_basic_objects()
 
-        # Unset plugin url to test bellow
         plugin = RandomForests.objects.last()
         plugin.plugin_url = ''
         plugin.save()
 
         response = self.client.get('home')
-        self.assertNotIn('Plugin', response.content.decode('utf-8'))
+        self.assertNotIn('Plugin', response.content.decode('utf-8'),
+                         'Plugin appears')
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_group_selected_list_in_request_session_removes_session_key(self, mockServer):
-        # Simulate 'group_selected_list' already in request session when sending
-        # to Plugin in Per Participant way
+        # Simulate 'group_selected_list' already in request session when
+        # sending to Plugin in Per Participant way
         self.append_session_variable('group_selected_list', 21)
 
         set_limesurvey_api_mocks(mockServer)
