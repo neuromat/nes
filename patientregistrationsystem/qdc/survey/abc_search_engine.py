@@ -223,6 +223,8 @@ class ABCSearchEngine(ABC):
         """Obtain responses from a determined token.
         Limesurvey returns a string that, when b65decoded, has two new lines at the end.
         We eliminate that new lines.
+        If doctype == 'csv-allanswer' try to export. The plugin may by not
+        installed.
         :param sid: survey ID
         :param token: token
         :param doctype: type of coded string ('csv', 'json, ...)
@@ -230,12 +232,25 @@ class ABCSearchEngine(ABC):
         :param fields: fields array, using SGQA identifier
         :return: responses in the txt format
         """
+        responses = {}
         if fields:
-            responses = self.server.export_responses_by_token(
-                self.session_key, sid, doctype, token, language, 'complete', 'code', 'short', fields)
+            if doctype == 'csv-allanswer':
+                try:
+                    responses = self.server.export_responses_by_token(
+                        self.session_key, sid, doctype, token, language, 'complete', 'code', 'short', fields)
+                except:
+                    responses = self.server.export_responses_by_token(
+                        self.session_key, sid, 'csv', token, language,
+                        'complete', 'code', 'short', fields)
         else:
-            responses = self.server.export_responses_by_token(
-                self.session_key, sid, doctype, token, language, 'complete')
+            if doctype == 'csv-allanswer':
+                try:
+                    responses = self.server.export_responses_by_token(
+                        self.session_key, sid, doctype, token, language, 'complete')
+                except:
+                    responses = self.server.export_responses_by_token(
+                        self.session_key, sid, 'csv', token, language,
+                        'complete')
 
         if isinstance(responses, dict):
             return None
@@ -245,7 +260,9 @@ class ABCSearchEngine(ABC):
 
     @abstractmethod
     def get_responses(self, sid, language, response_type, fields, heading_type):
-        """ Obtains responses from a determined survey
+        """ Obtains responses from a determined survey.
+        If doctype == 'csv-allanswer' try to export. The plugin may by not
+        installed.
         :param sid: survey ID
         :param language: language
         :param response_type: (optional)'short' or 'long'
@@ -255,30 +272,53 @@ class ABCSearchEngine(ABC):
         Optional defaults to 'code'
         :return: responses in txt format
         """
-        responses = self.server.export_responses(
-            self.session_key, sid, 'csv', language, 'complete', heading_type, response_type)
+        if response_type == 'long':
+            responses = self.server.export_responses(
+                self.session_key, sid, 'csv', language, 'complete',
+                heading_type, response_type)
+        else:
+            try:
+                responses = self.server.export_responses(
+                    self.session_key, sid, 'csv-allanswer', language,
+                    'complete', heading_type, response_type)
+            except AttributeError:
+                responses = self.server.export_responses(
+                    self.session_key, sid, 'csv', language, 'complete',
+                    heading_type, response_type)
 
         return None if isinstance(responses, dict) else b64decode(responses).decode()
 
     def get_header_response(self, sid, language, token, heading_type):
-        """Obtain header responses
+        """Obtain header responses.
+        If doctype == 'csv-allanswer' try to export. The plugin may by not
+        installed.
         :param sid: survey ID
         :param language: language
         :param token: token
         :param heading_type: heading type (can be 'code' or 'full')
         :return: str - responses in the txt format in case of success, else None
         """
-
-        responses = self.server.export_responses_by_token(
-            self.session_key, sid, 'csv', token, language, 'complete', heading_type, 'short')
+        try:
+            responses = self.server.export_responses_by_token(
+                self.session_key, sid, 'csv-allanswer', token, language, 'complete', heading_type, 'short')
+        except:
+            # TODO: sid: 843661
+            responses = self.server.export_responses_by_token(
+                self.session_key, sid, 'csv', token, language,
+                'complete', heading_type, 'short')
 
         # For compatibility with export view call: when export_responses returns
         # {'status': 'No Response found by Token'} export view call export_responses,
         # that returns a string to responses variable and can mount the screen with the
         # possible data to export
         if isinstance(responses, dict) and responses['status'] == 'No Response found for Token':
-            responses = self.server.export_responses(
-                self.session_key, sid, 'csv', language, 'complete', heading_type, 'short')
+            try:
+                responses = self.server.export_responses(
+                    self.session_key, sid, 'csv-allanswer', language, 'complete', heading_type, 'short')
+            except:
+                responses = self.server.export_responses(
+                    self.session_key, sid, 'csv', language,
+                    'complete', heading_type, 'short')
 
         return None if isinstance(responses, dict) else b64decode(responses).decode()
 

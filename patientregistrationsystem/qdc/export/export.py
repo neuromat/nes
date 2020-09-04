@@ -136,15 +136,13 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
             export_writer.writerow(row)
 
 
-def replace_multiple_choice_question_answers(responses_short, responses_full,
-                                             question_list):
+def replace_multiple_choice_question_answers(responses_short, question_list):
     """Get responses list - after limesurvey participants answers obtained from
     get_responses_by_token or get_responses limesurvey api methods - that
     are multiple choices/multiple choices with comments question types (from
     question_list), and replaces the options that was not selected by
-    participants with a 'N' (options that was selected have 'Y' -- or 'S'
-    in Portuguese -- filled).
-    If the question is irrelevant fill up with 'N/A'.
+    participants with a 'N' (options that was selected have 'Y' - or 'S'
+    in Portuguese - filled.
     :param responses_short: double array with questions in first line and answers
     in the other lines
     :param question_list: list of multiple choice/multiple choice with
@@ -164,13 +162,40 @@ def replace_multiple_choice_question_answers(responses_short, responses_full,
                 index_subquestions.append(i)
                 i += 1
             for j in range(1, len(responses_short) - 1):
+                filled = False
                 for k in index_subquestions:
-                    if responses_full[j][k] == 'N/A':
-                        responses_short[j][k] = 'N/A'
-                    elif responses_short[j][k] == '':
-                        responses_short[j][k] = 'N'
+                    if responses_short[j][k] != '':
+                        filled = True
+                        break
+                if filled:
+                    for k in index_subquestions:
+                        if responses_short[j][k] == '':
+                            responses_short[j][k] = 'N'
         else:
             i += 1
+
+
+def replace_yes_or_no_question_answers(responses_short, questions):
+    """Take effect only when using exportCompleteAnswers LimeSurvey plugin.
+    As of 2020-09-04 the plugin has a bug that returns 'No' (when in 'en'
+    language, and other strings in other languages) even the export answer
+    type is 'code'.
+    :param responses_short:  array -> double array with questions in first
+    line and answers in the other lines
+    :param questions: list of multiple choice/multiple choice with
+    comments questions types
+    """
+    responses_row_length = len(responses_short)
+    responses_col_length = len(responses_short[0])
+    for question1 in questions:
+        for col in range(responses_col_length):
+            if question1['title'] == responses_short[0][col]:
+                for row in range(1, responses_row_length - 1):
+                    if responses_short[row][col] != 'Y' \
+                            and responses_short[row][col] != 'N/A' \
+                            and responses_short[row][col] != '':
+                        responses_short[row][col] = 'N'
+
 
 
 def create_directory(basedir, path_to_create):
@@ -3342,17 +3367,6 @@ class ExportExecution:
                         responses_string1 = questionnaire_lime_survey.get_responses(
                             questionnaire_id, language, response_type[0])
                         fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
-                        # We get all responses in full type here to use in
-                        # replace_multiple_choice_question_answers so we can
-                        # substitute answers for multiple choice questions
-                        # with N/A if the question is disabled for the
-                        # participant -- LimeSurvey only indicates N/A in
-                        # this case if the responses are exported in 'full'
-                        # type.
-                        responses_string2 = questionnaire_lime_survey.get_responses(
-                            questionnaire_id, language, 'long')
-                        fill_list2 = QuestionnaireUtils.responses_to_csv(
-                            responses_string2)
 
                         # Multiple choice answers need replacement
                         # TODO (NES-991): make a test for getting multiple choice questions
@@ -3360,17 +3374,48 @@ class ExportExecution:
                             questionnaire_lime_survey, questionnaire_id,
                             language, ['M', 'P'])
                         replace_multiple_choice_question_answers(
-                            fill_list1, fill_list2, multiple_choice_questions)
+                            fill_list1, multiple_choice_questions)
+
+                        # If using exportCompleteAnswers plugin replace 'Y'
+                        # question type answers when the answer is 'N',
+                        # as at the current date 2020-09-04 the plugin has
+                        # a bug that returns 'No' for the 'Y' questions even
+                        # when the export is by answer codes (valid at least
+                        # for en and pt-BR languages
+                        error, yes_or_no_questions = \
+                            QuestionnaireUtils.get_questions(
+                                questionnaire_lime_survey,
+                                questionnaire_id, language, ['Y'])
+                        if len(response_type) == 1 \
+                                and response_type[0] == 'short':
+                            replace_yes_or_no_question_answers(
+                                fill_list1, yes_or_no_questions)
 
                         # Read 'long' information, if necessary
                         if len(response_type) > 1:
+                            responses_string2 = questionnaire_lime_survey.get_responses(
+                                questionnaire_id, language, response_type[1])
+                            fill_list2 = QuestionnaireUtils.responses_to_csv(
+                                responses_string2)
                             # Multiple choice answers need replacement
                             # TODO (NES-991): make a test for getting multiple choice questions
                             error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                                 questionnaire_lime_survey, questionnaire_id, language)
                             replace_multiple_choice_question_answers(
-                                fill_list1, fill_list2,
-                                multiple_choice_questions)
+                                fill_list2, multiple_choice_questions)
+
+                            # If using exportCompleteAnswers plugin replace 'Y'
+                            # question type answers when the answer is 'N',
+                            # as at the current date 2020-09-04 the plugin has
+                            # a bug that returns 'No' for the 'Y' questions even
+                            # when the export is by answer codes (valid at least
+                            # for en and pt-BR languages
+                            error, yes_or_no_questions = \
+                                QuestionnaireUtils.get_questions(
+                                    questionnaire_lime_survey,
+                                    questionnaire_id, language, ['Y'])
+                            replace_yes_or_no_question_answers(
+                                fill_list1, yes_or_no_questions)
                         else:
                             fill_list2 = fill_list1
 
@@ -3585,16 +3630,6 @@ class ExportExecution:
                 return Questionnaires.ERROR_CODE
 
             fill_list1 = QuestionnaireUtils.responses_to_csv(result)
-            # We get all responses in full type here to use in
-            # replace_multiple_choice_question_answers so we can
-            # substitute answers for multiple choice questions
-            # with N/A if the question is disabled for the
-            # participant -- LimeSurvey only indicates N/A in
-            # this case if the responses are exported in 'full'
-            # type.
-            responses_string2 = questionnaire_lime_survey.get_responses(
-                questionnaire_id, language, 'long')
-            fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
 
             # Multiple choice answers need replacement
             # TODO (NES-991): make a test for getting multiple choice questions
@@ -3602,17 +3637,49 @@ class ExportExecution:
                 questionnaire_lime_survey, questionnaire_id, language, ['M', 'P'])
             if error:
                 return error
-            replace_multiple_choice_question_answers(fill_list1, fill_list2,
-                                                     multiple_choice_questions)
+            replace_multiple_choice_question_answers(
+                fill_list1, multiple_choice_questions)
+
+            # If using exportCompleteAnswers plugin replace 'Y'
+            # question type answers when the answer is 'N',
+            # as at the current date 2020-09-04 the plugin has
+            # a bug that returns 'No' for the 'Y' questions even
+            # when the export is by answer codes (valid at least
+            # for en and pt-BR languages
+            error, yes_or_no_questions = \
+                QuestionnaireUtils.get_questions(
+                    questionnaire_lime_survey,
+                    questionnaire_id, language, ['Y'])
+            if len(response_type) == 1 \
+                    and response_type[0] == 'short':
+                replace_yes_or_no_question_answers(
+                    fill_list1, yes_or_no_questions)
 
             # Read 'long' information, if necessary
             if len(response_type) > 1:
+                responses_string2 = questionnaire_lime_survey.get_responses(
+                    questionnaire_id, language, response_type[1])
+                fill_list2 = QuestionnaireUtils.responses_to_csv(
+                    responses_string2)
                 # Multiple choice answers need replacement
                 # TODO (NES-991): make a test for getting multiple choice questions
                 error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                     questionnaire_lime_survey, questionnaire_id, language)
                 replace_multiple_choice_question_answers(
-                    fill_list1, fill_list2, multiple_choice_questions)
+                    fill_list1, multiple_choice_questions)
+
+                # If using exportCompleteAnswers plugin replace 'Y'
+                # question type answers when the answer is 'N',
+                # as at the current date 2020-09-04 the plugin has
+                # a bug that returns 'No' for the 'Y' questions even
+                # when the export is by answer codes (valid at least
+                # for en and pt-BR languages
+                error, yes_or_no_questions = \
+                    QuestionnaireUtils.get_questions(
+                        questionnaire_lime_survey,
+                        questionnaire_id, language, ['Y'])
+                replace_yes_or_no_question_answers(
+                    fill_list1, yes_or_no_questions)
             else:
                 fill_list2 = fill_list1
 
