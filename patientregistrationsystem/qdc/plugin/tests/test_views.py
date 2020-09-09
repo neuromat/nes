@@ -45,10 +45,20 @@ class PluginTest(ExportTestCase):
         self.survey2 = create_survey(505050)
         self.survey2.code = 'Q505050'
         self.survey2.save()
+        self.survey3 = create_survey(717171)
+        self.survey3.code = 'Q717171'
+        self.survey3.save()
         RandomForests.objects.create(
-            admission_assessment=self.survey1, surgical_evaluation=self.survey2, plugin_url='http://plugin_url')
-        UtilTests.create_response_survey(self.user, self.patient, self.survey1, 21)
-        UtilTests.create_response_survey(self.user, self.patient, self.survey2, 21)
+            admission_assessment=self.survey1,
+            surgical_evaluation=self.survey2,
+            followup_assessment=self.survey3,
+            plugin_url='http://plugin_url')
+        UtilTests.create_response_survey(
+            self.user, self.patient, self.survey1, 21)
+        UtilTests.create_response_survey(
+            self.user, self.patient, self.survey2, 21)
+        UtilTests.create_response_survey(
+            self.user, self.patient, self.survey3, 21)
 
     def test_GET_send_to_plugin_returns_right_status_code(self):
         response = self.client.get(reverse('send-to-plugin'), follow=True)
@@ -69,10 +79,19 @@ class PluginTest(ExportTestCase):
         random_forest.admission_assessment.save()
         random_forest.surgical_evaluation.pt_title = None
         random_forest.surgical_evaluation.save()
+        random_forest.followup_assessment.pt_title = None
+        random_forest.followup_assessment.save()
 
         response = self.client.get(reverse('send-to-plugin'))
-        self.assertContains(response, 'Título do Questionário Avaliação de Entrada não disponível em pt-BR')
-        self.assertContains(response, 'Título do Questionário Avaliação Cirúrgica não disponível em pt-BR')
+        self.assertContains(
+            response, 'Título do Questionário Avaliação de Entrada não '
+                      'disponível em pt-BR')
+        self.assertContains(
+            response, 'Título do Questionário Avaliação Cirúrgica não '
+                      'disponível em pt-BR')
+        self.assertContains(
+            response, 'Título do Questionário Avaliação de Seguimento não '
+                      'disponível em pt-BR')
 
     @override_settings(LANGUAGE_CODE='en')
     def test_GET_send_to_plugin_display_questionnaire_names_in_interface_in_current_language_or_display_message2(
@@ -85,27 +104,62 @@ class PluginTest(ExportTestCase):
         random_forest.admission_assessment.save()
         random_forest.surgical_evaluation.en_title = None
         random_forest.surgical_evaluation.save()
+        random_forest.followup_assessment.en_title = None
+        random_forest.followup_assessment.save()
 
         response = self.client.get(reverse('send-to-plugin'))
         self.assertContains(response, 'Questionnaire title for Unified Admission Assessment not available in en')
         self.assertContains(response, 'Questionnaire title for Surgical Assessment not available in en')
 
+    def test_does_not_define_admission_questionnaire_attribute_does_not_display_plugin_entry_in_menu(self):
+        self._create_basic_objects()
+
+        plugin = RandomForests.objects.last()
+        plugin.admission_assessment = None
+        plugin.save()
+
+        response = self.client.get('home')
+        self.assertNotIn('Plugin', response.content.decode('utf-8'),
+                         'Plugin appears')
+
+    def test_does_not_define_surgical_questionnaire_attribute_does_not_display_plugin_entry_in_menu(self):
+        self._create_basic_objects()
+
+        plugin = RandomForests.objects.last()
+        plugin.surgical_evaluation = None
+        plugin.save()
+
+        response = self.client.get('home')
+        self.assertNotIn('Plugin', response.content.decode('utf-8'),
+                         'Plugin appears')
+
+    def test_does_not_define_followup_questionnaire_attribute_does_not_display_plugin_entry_in_menu(self):
+        self._create_basic_objects()
+
+        plugin = RandomForests.objects.last()
+        plugin.followup_assessment = None
+        plugin.save()
+
+        response = self.client.get('home')
+        self.assertNotIn('Plugin', response.content.decode('utf-8'),
+                         'Plugin appears')
+
     def test_does_not_define_plugin_url_attribute_does_not_display_plugin_entry_in_menu(self):
         self._create_basic_objects()
 
-        # Unset plugin url to test bellow
         plugin = RandomForests.objects.last()
         plugin.plugin_url = ''
         plugin.save()
 
         response = self.client.get('home')
-        self.assertNotIn('Plugin', response.content.decode('utf-8'))
+        self.assertNotIn('Plugin', response.content.decode('utf-8'),
+                         'Plugin appears')
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     @patch('survey.abc_search_engine.Server')
     def test_group_selected_list_in_request_session_removes_session_key(self, mockServer):
-        # Simulate 'group_selected_list' already in request session when sending
-        # to Plugin in Per Participant way
+        # Simulate 'group_selected_list' already in request session when
+        # sending to Plugin in Per Participant way
         self.append_session_variable('group_selected_list', 21)
 
         set_limesurvey_api_mocks(mockServer)
@@ -157,7 +211,8 @@ class PluginTest(ExportTestCase):
         # selected
         mockServer.return_value.get_participant_properties.side_effect = [
             {'token': 'sIbj3gwjvwpa2QY'}, {'token': 'OSSMaFVewVl8D0J'},
-            {'token': 'WRFUAgTemzuu8nD'}, {'token': 'fFPnTsNUJwRye3g'}
+            {'token': 'OSSMaFVewVl8D0J'}, {'token': 'fFPnTsNUJwRye3g'},
+            {'token': 'fFPnTsNUJwRye3g'}, {'token': 'fFPnTsNUJwRye3g'},
         ]
 
         self._create_basic_objects()
@@ -183,7 +238,7 @@ class PluginTest(ExportTestCase):
             in_items = re.compile(input_export.BASE_DIRECTORY + '/Per_participant/Participant_%s' % self.patient.code)
             in_items = [in_items.match(item) for item in list_items]
             in_items = [item for item in in_items if item is not None]
-            self.assertEqual(2, len(in_items))
+            self.assertEqual(3, len(in_items))
             out_items = re.compile('data/Per_participant/Participant_%s' % patient2.code)
             out_items = [out_items.match(item) for item in list_items]
             out_items = [item for item in out_items if item is not None]
@@ -202,8 +257,16 @@ class PluginTest(ExportTestCase):
                 input_export.BASE_DIRECTORY +
                 '/Per_questionnaire/QS_surgical_evaluation/Responses_QS_en.csv',
                 TEMP_MEDIA_ROOT)
-            with open(questionnaire2) as q2_file:
-                reader = list(csv.reader(q2_file))
+            with open(questionnaire2) as q3_file:
+                reader = list(csv.reader(q3_file))
+                self.assertEqual(2, len(reader))
+                self.assertEqual(self.patient.code, reader[1][0])
+            questionnaire3 = zipped_file.extract(
+                input_export.BASE_DIRECTORY +
+                '/Per_questionnaire/QF_unified_followup_assessment/Responses_QF_en.csv',
+                TEMP_MEDIA_ROOT)
+            with open(questionnaire3) as q3_file:
+                reader = list(csv.reader(q3_file))
                 self.assertEqual(2, len(reader))
                 self.assertEqual(self.patient.code, reader[1][0])
 
@@ -356,43 +419,81 @@ class PluginTest(ExportTestCase):
             reverse('send-to-plugin'),
             data={
                 'headings': ['code'],
-                'opt_floresta': ['on'], 'patient_selected': ['gender__name*gender'],
+                'opt_floresta': ['on'],
+                'patient_selected': ['gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
         export = Export.objects.last()
         with open(os.path.join(
-                settings.MEDIA_ROOT, 'export', str(self.user.id), str(export.id), 'export.zip'), 'rb') as file:
+                settings.MEDIA_ROOT, 'export', str(self.user.id),
+                str(export.id), 'export.zip'), 'rb') as file:
             zip_file = zipfile.ZipFile(file, 'r')
             self.assertIsNone(zip_file.testzip())
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_questionnaire', 'QA_unified_admission_assessment', 'Responses_QA_en.csv')
+                    'data/Per_questionnaire',
+                    'QA_unified_admission_assessment', 'Responses_QA_en.csv')
                     in element for element in zip_file.namelist()),
-                os.path.join('data/Per_questionnaire', 'QA_unified_admission_assessment', 'Responses_QA_en.csv')
+                os.path.join(
+                    'data/Per_questionnaire',
+                    'QA_unified_admission_assessment', 'Responses_QA_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_questionnaire', 'QS_surgical_evaluation', 'Responses_QS_en.csv')
+                    'data/Per_questionnaire', 'QS_surgical_evaluation',
+                    'Responses_QS_en.csv')
                     in element for element in zip_file.namelist()),
-                os.path.join('data/Per_questionnaire', 'QS_surgical_evaluation', 'Responses_QS_en.csv')
+                os.path.join('data/Per_questionnaire',
+                             'QS_surgical_evaluation', 'Responses_QS_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_unified_admission_assessment',
+                    'data/Per_questionnaire',
+                    'QF_unified_followup_assessment', 'Responses_QF_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join('data/Per_questionnaire',
+                             'QF_unified_followup_assessment',
+                             'Responses_QF_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QA_unified_admission_assessment',
                     'Responses_QA_en.csv')
                     in element for element in zip_file.namelist()),
                 os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_unified_admission_assessment',
+                    'data/Per_participant', 
+                    'Participant_' + self.patient.code,
+                    'QA_unified_admission_assessment',
                     'Responses_QA_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_surgical_evaluation',
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QS_surgical_evaluation',
                     'Responses_QS_en.csv')
                     in element for element in zip_file.namelist()),
                 os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_surgical_evaluation',
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QS_surgical_evaluation',
                     'Responses_QS_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QF_unified_followup_assessment',
+                    'Responses_QF_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join(
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QF_unified_followup_assessment',
+                    'Responses_QF_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)

@@ -1094,8 +1094,15 @@ class ExportExecution:
                 random_forest = RandomForests.objects.first()
                 if questionnaire_id == random_forest.admission_assessment.lime_survey_id:
                     path_questionnaire = 'QA_unified_admission_assessment'
-                else:
+                elif questionnaire_id == \
+                        random_forest.surgical_evaluation.lime_survey_id:
                     path_questionnaire = 'QS_surgical_evaluation'
+                elif questionnaire_id == \
+                        random_forest.followup_assessment.lime_survey_id:
+                    path_questionnaire = 'QF_unified_followup_assessment'
+                else:
+                    # TODO: error
+                    pass
 
             # Path ex. data/Per_questionnaire/Q123_aaa
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
@@ -1126,10 +1133,18 @@ class ExportExecution:
                         export_filename = '%s_%s_%s' % (
                             questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
                     else:
-                        if questionnaire_id == RandomForests.objects.first().admission_assessment.lime_survey_id:
+                        if questionnaire_id == \
+                                RandomForests.objects.first().admission_assessment.lime_survey_id:
                             export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QA_en')
-                        else:
+                        elif questionnaire_id == \
+                                RandomForests.objects.first().surgical_evaluation.lime_survey_id:
                             export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QS_en')
+                        elif questionnaire_id == \
+                                RandomForests.objects.first().followup_assessment.lime_survey_id:
+                            export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QF_en')
+                        else:
+                            # TODO: error
+                            pass
 
                     # Path ex. data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
@@ -1474,6 +1489,10 @@ class ExportExecution:
                             directory_questionnaire_name = 'QA_unified_admission_assessment'
                         elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                             directory_questionnaire_name = 'QS_surgical_evaluation'
+                        elif questionnaire_id == \
+                                randomforests.followup_assessment.lime_survey_id:
+                            directory_questionnaire_name = \
+                                'QF_unified_followup_assessment'
 
                     # Metadata directory for export
                     # Path ex. data/Experiment_data/Group_xxx/Questionnaire_metadata/
@@ -1526,6 +1545,13 @@ class ExportExecution:
                                     export_filename = 'QA_unified_admission_assessment_en'
                                 elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                     export_filename = 'QS_surgical_evaluation_en'
+                                elif questionnaire_id == \
+                                        randomforests.followup_assessment.lime_survey_id:
+                                    export_filename = \
+                                        'QF_unified_followup_assessment_en'
+                                else:
+                                    # TODO: error
+                                    pass
                             # data/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/
                             # Q123_<questionnaire_title>_<lang>.csv
                             complete_filename = path.join(
@@ -1666,6 +1692,13 @@ class ExportExecution:
                             questionnaire_directory_name = 'QA_unified_admission_assessment'
                         elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                             questionnaire_directory_name = 'QS_surgical_evaluation'
+                        elif questionnaire_id == \
+                                randomforests.followup_assessment.lime_survey_id:
+                            questionnaire_directory_name = \
+                                'QF_unified_followup_assessment'
+                        else:
+                            # TODO: error
+                            pass
                     # Create questionnaire directory
                     # path ex. data/Per_participant/Participant_<participant_code>/questionnaire_code_Title/
                     error_msg, path_per_questionnaire = create_directory(participant_path, questionnaire_directory_name)
@@ -1696,6 +1729,12 @@ class ExportExecution:
                                 export_filename = 'Responses_QA_en'
                             elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                 export_filename = 'Responses_QS_en'
+                            elif questionnaire_id == \
+                                    randomforests.followup_assessment.lime_survey_id:
+                                export_filename = 'Responses_QF_en'
+                            else:
+                                # TODO: error
+                                pass
                         # Path ex. data/Per_participant/Participant_P123/QCode_Title/Responses_Q123_aaa.csv
                         complete_filename = path.join(path_per_questionnaire, export_filename + '.' + filesformat_type)
 
@@ -1904,6 +1943,13 @@ class ExportExecution:
                                     export_filename = 'QA_unified_admission_assessment_en'
                                 elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                     export_filename = 'QS_surgical_evaluation_en'
+                                elif questionnaire_id == \
+                                        randomforests.followup_assessment.lime_survey_id:
+                                    export_filename = \
+                                        'QF_unified_followup_assessment_en'
+                                else:
+                                    # TODO: error
+                                    pass
                                 response_english_plugin_done = True
 
                             # Path ex. data/Experiment_data/Group_xxx/Per_participant/Participant_P123/Step_X_aaa
