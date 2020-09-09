@@ -11,4 +11,5 @@ def create_survey(sid=212121):
     faker = Factory.create()
 
     return Survey.objects.create(
-        lime_survey_id=sid, en_title=faker.text(max_nb_chars=100), pt_title=faker.text(max_nb_chars=100))
+        lime_survey_id=sid, en_title=faker.text(max_nb_chars=100),
+        pt_title=faker.text(max_nb_chars=100))
