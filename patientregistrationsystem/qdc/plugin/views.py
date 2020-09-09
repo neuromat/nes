@@ -54,9 +54,11 @@ def update_patient_attributes(participants):
     return participants
 
 
-def has_questionnaire(experimental_protocol, survey):
-    components = get_block_tree(experimental_protocol, language_code='en')
+def has_questionnaire(components, survey):
     for component in components['list_of_component_configuration']:
+        if component['component']['component_type'] == 'block':
+            if has_questionnaire(component['component'], survey):
+                return True
         if component['component']['component_type'] == Component.QUESTIONNAIRE:
             questionnaire = Questionnaire.objects.get(id=component['component']['component'].id)
             if questionnaire.survey == survey:
@@ -114,11 +116,14 @@ def build_questionnaires_list(language_code, groups=None):
             copy_admission.insert(0, group_id)
             new_questionnaires.append(copy_admission)
             group = Group.objects.get(id=group_id)
-            if has_questionnaire(group.experimental_protocol, random_forests.surgical_evaluation):
+            components = get_block_tree(
+                group.experimental_protocol, language_code='en')
+            if has_questionnaire(components,
+                                 random_forests.surgical_evaluation):
                 copy_surgical = surgical_survey.copy()
                 copy_surgical.insert(0, group_id)
                 new_questionnaires.append(copy_surgical)
-            if has_questionnaire(group.experimental_protocol,
+            if has_questionnaire(components,
                                  random_forests.followup_assessment):
                 copy_followup = followup_assessment.copy()
                 copy_followup.insert(0, group_id)
@@ -192,7 +197,7 @@ def select_participants(request, experiment_id):
     if participants:
         json_participants = json.dumps(participants)
     else:
-        json_participants = []
+        json_participants = json.dumps({})
 
     return HttpResponse(json_participants, content_type='application/json')
 
@@ -354,7 +359,10 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
             and random_forests.surgical_evaluation \
             and random_forests.followup_assessment:
         admission = Survey.objects.get(pk=random_forests.admission_assessment.pk)
-        questionnaires = Questionnaire.objects.filter(survey=admission)
+        surgical = Survey.objects.get(pk=random_forests.surgical_evaluation.pk)
+        followup = Survey.objects.get(pk=random_forests.followup_assessment.pk)
+        questionnaires = Questionnaire.objects.filter(
+            survey__in=[admission, surgical, followup])
         questionnaire_responses = ExperimentResponse.objects.filter(
             data_configuration_tree__component_configuration__component__in=questionnaires)
         experiments = Experiment.objects.filter(

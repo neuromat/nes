@@ -211,7 +211,8 @@ class PluginTest(ExportTestCase):
         # selected
         mockServer.return_value.get_participant_properties.side_effect = [
             {'token': 'sIbj3gwjvwpa2QY'}, {'token': 'OSSMaFVewVl8D0J'},
-            {'token': 'WRFUAgTemzuu8nD'}, {'token': 'fFPnTsNUJwRye3g'}
+            {'token': 'OSSMaFVewVl8D0J'}, {'token': 'fFPnTsNUJwRye3g'},
+            {'token': 'fFPnTsNUJwRye3g'}, {'token': 'fFPnTsNUJwRye3g'},
         ]
 
         self._create_basic_objects()
@@ -237,7 +238,7 @@ class PluginTest(ExportTestCase):
             in_items = re.compile(input_export.BASE_DIRECTORY + '/Per_participant/Participant_%s' % self.patient.code)
             in_items = [in_items.match(item) for item in list_items]
             in_items = [item for item in in_items if item is not None]
-            self.assertEqual(2, len(in_items))
+            self.assertEqual(3, len(in_items))
             out_items = re.compile('data/Per_participant/Participant_%s' % patient2.code)
             out_items = [out_items.match(item) for item in list_items]
             out_items = [item for item in out_items if item is not None]
@@ -256,8 +257,16 @@ class PluginTest(ExportTestCase):
                 input_export.BASE_DIRECTORY +
                 '/Per_questionnaire/QS_surgical_evaluation/Responses_QS_en.csv',
                 TEMP_MEDIA_ROOT)
-            with open(questionnaire2) as q2_file:
-                reader = list(csv.reader(q2_file))
+            with open(questionnaire2) as q3_file:
+                reader = list(csv.reader(q3_file))
+                self.assertEqual(2, len(reader))
+                self.assertEqual(self.patient.code, reader[1][0])
+            questionnaire3 = zipped_file.extract(
+                input_export.BASE_DIRECTORY +
+                '/Per_questionnaire/QF_unified_followup_assessment/Responses_QF_en.csv',
+                TEMP_MEDIA_ROOT)
+            with open(questionnaire3) as q3_file:
+                reader = list(csv.reader(q3_file))
                 self.assertEqual(2, len(reader))
                 self.assertEqual(self.patient.code, reader[1][0])
 
@@ -410,43 +419,81 @@ class PluginTest(ExportTestCase):
             reverse('send-to-plugin'),
             data={
                 'headings': ['code'],
-                'opt_floresta': ['on'], 'patient_selected': ['gender__name*gender'],
+                'opt_floresta': ['on'],
+                'patient_selected': ['gender__name*gender'],
                 'patients_selected[]': [str(self.patient.id)]
             })
         export = Export.objects.last()
         with open(os.path.join(
-                settings.MEDIA_ROOT, 'export', str(self.user.id), str(export.id), 'export.zip'), 'rb') as file:
+                settings.MEDIA_ROOT, 'export', str(self.user.id),
+                str(export.id), 'export.zip'), 'rb') as file:
             zip_file = zipfile.ZipFile(file, 'r')
             self.assertIsNone(zip_file.testzip())
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_questionnaire', 'QA_unified_admission_assessment', 'Responses_QA_en.csv')
+                    'data/Per_questionnaire',
+                    'QA_unified_admission_assessment', 'Responses_QA_en.csv')
                     in element for element in zip_file.namelist()),
-                os.path.join('data/Per_questionnaire', 'QA_unified_admission_assessment', 'Responses_QA_en.csv')
+                os.path.join(
+                    'data/Per_questionnaire',
+                    'QA_unified_admission_assessment', 'Responses_QA_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_questionnaire', 'QS_surgical_evaluation', 'Responses_QS_en.csv')
+                    'data/Per_questionnaire', 'QS_surgical_evaluation',
+                    'Responses_QS_en.csv')
                     in element for element in zip_file.namelist()),
-                os.path.join('data/Per_questionnaire', 'QS_surgical_evaluation', 'Responses_QS_en.csv')
+                os.path.join('data/Per_questionnaire',
+                             'QS_surgical_evaluation', 'Responses_QS_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_unified_admission_assessment',
+                    'data/Per_questionnaire',
+                    'QF_unified_followup_assessment', 'Responses_QF_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join('data/Per_questionnaire',
+                             'QF_unified_followup_assessment',
+                             'Responses_QF_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QA_unified_admission_assessment',
                     'Responses_QA_en.csv')
                     in element for element in zip_file.namelist()),
                 os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QA_unified_admission_assessment',
+                    'data/Per_participant', 
+                    'Participant_' + self.patient.code,
+                    'QA_unified_admission_assessment',
                     'Responses_QA_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
             self.assertTrue(
                 any(os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_surgical_evaluation',
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QS_surgical_evaluation',
                     'Responses_QS_en.csv')
                     in element for element in zip_file.namelist()),
                 os.path.join(
-                    'data/Per_participant', 'Participant_' + self.patient.code, 'QS_surgical_evaluation',
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QS_surgical_evaluation',
                     'Responses_QS_en.csv')
+                + ' not in: ' + str(zip_file.namelist()))
+            self.assertTrue(
+                any(os.path.join(
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QF_unified_followup_assessment',
+                    'Responses_QF_en.csv')
+                    in element for element in zip_file.namelist()),
+                os.path.join(
+                    'data/Per_participant',
+                    'Participant_' + self.patient.code,
+                    'QF_unified_followup_assessment',
+                    'Responses_QF_en.csv')
                 + ' not in: ' + str(zip_file.namelist()))
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
