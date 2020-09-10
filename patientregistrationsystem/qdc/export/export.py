@@ -175,29 +175,6 @@ def replace_multiple_choice_question_answers(responses_short, question_list):
             i += 1
 
 
-def replace_yes_or_no_question_answers(responses_short, questions):
-    """Take effect only when using exportCompleteAnswers LimeSurvey plugin.
-    As of 2020-09-04 the plugin has a bug that returns 'No' (when in 'en'
-    language, and other strings in other languages) even the export answer
-    type is 'code'.
-    :param responses_short:  array -> double array with questions in first
-    line and answers in the other lines
-    :param questions: list of multiple choice/multiple choice with
-    comments questions types
-    """
-    responses_row_length = len(responses_short)
-    responses_col_length = len(responses_short[0])
-    for question1 in questions:
-        for col in range(responses_col_length):
-            if question1['title'] == responses_short[0][col]:
-                for row in range(1, responses_row_length - 1):
-                    if responses_short[row][col] != 'Y' \
-                            and responses_short[row][col] != 'N/A' \
-                            and responses_short[row][col] != '':
-                        responses_short[row][col] = 'N'
-
-
-
 def create_directory(basedir, path_to_create):
     """Create a directory
     :param basedir: directory that already exists (parent path where new path must be included)
@@ -3422,21 +3399,6 @@ class ExportExecution:
                         replace_multiple_choice_question_answers(
                             fill_list1, multiple_choice_questions)
 
-                        # If using exportCompleteAnswers plugin replace 'Y'
-                        # question type answers when the answer is 'N',
-                        # as at the current date 2020-09-04 the plugin has
-                        # a bug that returns 'No' for the 'Y' questions even
-                        # when the export is by answer codes (valid at least
-                        # for en and pt-BR languages
-                        error, yes_or_no_questions = \
-                            QuestionnaireUtils.get_questions(
-                                questionnaire_lime_survey,
-                                questionnaire_id, language, ['Y'])
-                        if len(response_type) == 1 \
-                                and response_type[0] == 'short':
-                            replace_yes_or_no_question_answers(
-                                fill_list1, yes_or_no_questions)
-
                         # Read 'long' information, if necessary
                         if len(response_type) > 1:
                             responses_string2 = questionnaire_lime_survey.get_responses(
@@ -3449,19 +3411,6 @@ class ExportExecution:
                                 questionnaire_lime_survey, questionnaire_id, language)
                             replace_multiple_choice_question_answers(
                                 fill_list2, multiple_choice_questions)
-
-                            # If using exportCompleteAnswers plugin replace 'Y'
-                            # question type answers when the answer is 'N',
-                            # as at the current date 2020-09-04 the plugin has
-                            # a bug that returns 'No' for the 'Y' questions even
-                            # when the export is by answer codes (valid at least
-                            # for en and pt-BR languages
-                            error, yes_or_no_questions = \
-                                QuestionnaireUtils.get_questions(
-                                    questionnaire_lime_survey,
-                                    questionnaire_id, language, ['Y'])
-                            replace_yes_or_no_question_answers(
-                                fill_list1, yes_or_no_questions)
                         else:
                             fill_list2 = fill_list1
 
@@ -3686,21 +3635,6 @@ class ExportExecution:
             replace_multiple_choice_question_answers(
                 fill_list1, multiple_choice_questions)
 
-            # If using exportCompleteAnswers plugin replace 'Y'
-            # question type answers when the answer is 'N',
-            # as at the current date 2020-09-04 the plugin has
-            # a bug that returns 'No' for the 'Y' questions even
-            # when the export is by answer codes (valid at least
-            # for en and pt-BR languages
-            error, yes_or_no_questions = \
-                QuestionnaireUtils.get_questions(
-                    questionnaire_lime_survey,
-                    questionnaire_id, language, ['Y'])
-            if len(response_type) == 1 \
-                    and response_type[0] == 'short':
-                replace_yes_or_no_question_answers(
-                    fill_list1, yes_or_no_questions)
-
             # Read 'long' information, if necessary
             if len(response_type) > 1:
                 responses_string2 = questionnaire_lime_survey.get_responses(
@@ -3713,19 +3647,6 @@ class ExportExecution:
                     questionnaire_lime_survey, questionnaire_id, language)
                 replace_multiple_choice_question_answers(
                     fill_list1, multiple_choice_questions)
-
-                # If using exportCompleteAnswers plugin replace 'Y'
-                # question type answers when the answer is 'N',
-                # as at the current date 2020-09-04 the plugin has
-                # a bug that returns 'No' for the 'Y' questions even
-                # when the export is by answer codes (valid at least
-                # for en and pt-BR languages
-                error, yes_or_no_questions = \
-                    QuestionnaireUtils.get_questions(
-                        questionnaire_lime_survey,
-                        questionnaire_id, language, ['Y'])
-                replace_yes_or_no_question_answers(
-                    fill_list1, yes_or_no_questions)
             else:
                 fill_list2 = fill_list1
 
