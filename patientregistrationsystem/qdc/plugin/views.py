@@ -32,10 +32,12 @@ def participants_dict(survey):
     """
     participants = {}
 
-    for response in IndependentResponse.objects.filter(survey=survey).filter(patient__removed=False):
+    for response in IndependentResponse.objects.filter(
+            survey=survey).filter(patient__removed=False):
         participants[response.patient.id] = {
             'patient_id': response.patient.id,
-            'patient_name': response.patient.name if response.patient.name else response.patient.code,
+            'patient_name': response.patient.name if response.patient.name
+            else response.patient.code,
         }
 
     return participants
@@ -323,11 +325,12 @@ def send_to_plugin(request, template_name='plugin/send_to_plugin.html'):
     # The intersection of admission assessment, surgical evaluation and
     # followup questionnaires
     intersection_dict = {}
-    for i in admission_participants:
-        if i in surgical_participants and i in followup_participants \
-                and admission_participants[i] == surgical_participants[i] \
-                and admission_participants[i] == followup_participants[i]:
-            intersection_dict[i] = admission_participants[i]
+    for patient_id in admission_participants:
+        if patient_id in surgical_participants \
+                and patient_id in followup_participants \
+                and admission_participants[patient_id] == surgical_participants[patient_id] \
+                and admission_participants[patient_id] == followup_participants[patient_id]:
+            intersection_dict[patient_id] = admission_participants[patient_id]
 
     # Transform the intersection dictionary into a list, so that we can sort
     # it by patient name
