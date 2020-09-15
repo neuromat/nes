@@ -1416,7 +1416,7 @@ def questionnaire_response_view(
     survey_title = cache.get(survey_title_key)
     groups_of_questions = cache.get(groups_of_questions_key)
 
-    if not survey_title and not groups_of_questions:
+    if not survey_title or not groups_of_questions:
         survey_title, groups_of_questions = get_questionnaire_responses(
             request.LANGUAGE_CODE, questionnaire_response.survey.lime_survey_id,
             questionnaire_response.token_id, request)

@@ -101,6 +101,8 @@ class ABCSearchEngine(ABC):
         :return: on success, a dict of deletion status for each participant; on failure, status dict.
         """
         result = self.server.delete_participants(self.session_key, survey_id, tokens_ids)
+        # TODO: verify if there exists participants table. The questionnary
+        #  may be deactivated but NES keep tracking it.
 
         # In case of success RPC returs a list, otherwise a dict with error status
         return result if 'status' not in result else None
@@ -223,8 +225,9 @@ class ABCSearchEngine(ABC):
         """Obtain responses from a determined token.
         Limesurvey returns a string that, when b65decoded, has two new lines at the end.
         We eliminate that new lines.
-        If doctype == 'csv-allanswer' try to export. The plugin may by not
-        installed.
+        If doctype == 'csv-allanswer' export as 'csv'. The
+        exportCompleteAnswers plugin may be not installed. See
+        https://gitlab.com/SondagesPro/ExportAndStats/exportCompleteAnswers
         :param sid: survey ID
         :param token: token
         :param doctype: type of coded string ('csv', 'json, ...)
@@ -234,20 +237,22 @@ class ABCSearchEngine(ABC):
         """
         responses = {}
         if fields:
-            if doctype == 'csv-allanswer':
-                try:
-                    responses = self.server.export_responses_by_token(
-                        self.session_key, sid, doctype, token, language, 'complete', 'code', 'short', fields)
-                except:
+            try:
+                responses = self.server.export_responses_by_token(
+                    self.session_key, sid, doctype, token, language,
+                    'complete', 'code', 'short', fields)
+            except AttributeError:
+                if doctype == 'csv-allanswer':
                     responses = self.server.export_responses_by_token(
                         self.session_key, sid, 'csv', token, language,
                         'complete', 'code', 'short', fields)
         else:
-            if doctype == 'csv-allanswer':
-                try:
-                    responses = self.server.export_responses_by_token(
-                        self.session_key, sid, doctype, token, language, 'complete')
-                except:
+            try:
+                responses = self.server.export_responses_by_token(
+                    self.session_key, sid, doctype, token, language,
+                    'complete')
+            except AttributeError:
+                if doctype == 'csv-allanswer':
                     responses = self.server.export_responses_by_token(
                         self.session_key, sid, 'csv', token, language,
                         'complete')
@@ -290,7 +295,7 @@ class ABCSearchEngine(ABC):
 
     def get_header_response(self, sid, language, token, heading_type):
         """Obtain header responses.
-        If doctype == 'csv-allanswer' try to export. The plugin may by not
+        If doctype == 'csv-allanswer' try to export. The plugin may be not
         installed.
         :param sid: survey ID
         :param language: language
@@ -301,7 +306,7 @@ class ABCSearchEngine(ABC):
         try:
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, 'csv-allanswer', token, language, 'complete', heading_type, 'short')
-        except:
+        except AttributeError:
             # TODO: sid: 843661
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, 'csv', token, language,
@@ -315,7 +320,7 @@ class ABCSearchEngine(ABC):
             try:
                 responses = self.server.export_responses(
                     self.session_key, sid, 'csv-allanswer', language, 'complete', heading_type, 'short')
-            except:
+            except AttributeError:
                 responses = self.server.export_responses(
                     self.session_key, sid, 'csv', language,
                     'complete', heading_type, 'short')
