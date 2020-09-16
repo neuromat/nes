@@ -15,7 +15,6 @@ from patient.tests.tests_orig import UtilTests
 class ExportTestCase(TestCase):
 
     def setUp(self):
-
         # create the groups of users and their permissions
         exec(open('add_initial_data.py').read())
 

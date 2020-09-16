@@ -5,10 +5,10 @@ import tempfile
 import zipfile
 
 from django.apps import apps
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group as UserGroup
 from django.core.files import File
 from django.db import IntegrityError
-from django.test import RequestFactory
+from django.test import RequestFactory, TestCase
 from faker import Factory
 
 from custom_user.tests_helper import create_user
@@ -25,7 +25,33 @@ from experiment.models import ResearchProject, Experiment, ExperimentResearcher,
     TMSLocalizationSystem, EMGFile, DigitalGamePhaseData, DigitalGamePhaseFile, AdditionalData, AdditionalDataFile, \
     StimulusType, Stimulus
 from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile
+from patient.tests.tests_orig import UtilTests
 from survey.tests.tests_helper import create_survey
+
+
+class ExperimentTestCase(TestCase):
+
+    def setUp(self):
+        super(ExperimentTestCase, self).setUp()
+
+        # create the groups of users and their permissions
+        exec(open('add_initial_data.py').read())
+
+        self.user, self.user_passwd = create_user(UserGroup.objects.all())
+
+        self.research_project = ObjectsFactory.create_research_project(
+            self.user)
+        self.experiment = ObjectsFactory.create_experiment(
+            self.research_project)
+        self.root_component = ObjectsFactory.create_block(self.experiment)
+        self.group = ObjectsFactory.create_group(
+            self.experiment, self.root_component)
+
+        self.patient = UtilTests().create_patient(changed_by=self.user)
+        subject = ObjectsFactory.create_subject(self.patient)
+        self.subject_of_group = ObjectsFactory.create_subject_of_group(
+            self.group, subject)
+
 
 USER_USERNAME = 'myadmin'
 USER_PWD = 'mypassword'
