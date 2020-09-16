@@ -5,6 +5,7 @@ import sys
 import tempfile
 import zipfile
 import os
+from datetime import datetime
 from unittest import skip
 from unittest.mock import patch, call
 
@@ -45,7 +46,7 @@ from experiment.models import Keyword, GoalkeeperGameConfig, \
 from experiment.models import Group as ExperimentGroup
 from configuration.models import LocalInstitution
 from custom_user.models import Institution
-from experiment.tests.tests_helper import ObjectsFactory
+from experiment.tests.tests_helper import ObjectsFactory, ExperimentTestCase
 from patient.models import Patient, Telephone, SocialDemographicData, AmountCigarettes, AlcoholFrequency, \
     AlcoholPeriod, SocialHistoryData, MedicalRecordData, Diagnosis, ClassificationOfDiseases, FleshTone, Payment, \
     Religion, Schooling, ExamFile
@@ -321,7 +322,6 @@ class CollaboratorTest(TestCase):
         )
         user_profile = self.user.user_profile
         user_profile.login_enabled = True
-
         user_profile.force_password_change = False
         user_profile.save()
 
@@ -329,11 +329,8 @@ class CollaboratorTest(TestCase):
             group.user_set.add(self.user)
 
         self.client.login(username=self.user.username, password='passwd')
-
         self.research_project = ObjectsFactory.create_research_project()
-
         self.experiment = ObjectsFactory.create_experiment(self.research_project)
-
         self.researcher = ObjectsFactory.create_experiment_researcher(self.experiment)
 
         # create experiment/experimental protocol/group
@@ -5283,3 +5280,59 @@ class ImportExperimentTest(TestCase):
 
         message = str(list(get_messages(response.wsgi_request))[0])
         self.assertEqual(message, 'Não foi possível atualizar todas as respostas.')
+
+
+class ExperimentQuestionnaireTest(ExperimentTestCase):
+
+    def setUp(self):
+        super(ExperimentQuestionnaireTest, self).setUp()
+
+        # Create questionnaire data collection in NES
+        # TODO: use method already existent in patient.tests. See other places
+        survey = create_survey(212121)
+        self.component_config = self._create_nes_questionnaire(
+            self.root_component, survey)
+
+        self.client.login(
+            username=self.user.username, password=self.user_passwd)
+
+    def tearDown(self):
+        self.client.logout()
+
+    def _create_nes_questionnaire(self, root_component, survey):
+        """Create questionnaire component in experimental protocol and return
+        data configuration tree associated to that questionnaire component
+        :param root_component: Block(Component) model instance
+        :return: DataConfigurationTree model instance
+        """
+        questionnaire = ObjectsFactory.create_component(
+            self.experiment, Component.QUESTIONNAIRE, kwargs={'survey': survey})
+        component_config = ObjectsFactory.create_component_configuration(
+            root_component, questionnaire)
+        ObjectsFactory.create_data_configuration_tree(component_config)
+
+        return component_config
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    def test_create_questionnaire_response_sent_patient_id_in_redirect_url(
+            self, mockCheckRequiredFields, mockServer):
+        mockServer.return_value.get_session_key.return_value = 'abc'
+        mockServer.return_value.get_summary.return_value = 1
+        mockServer.return_value.add_participants.return_value = [
+            {'token': 'abc', 'tid': 1}
+        ]
+        mockCheckRequiredFields.return_value = True
+
+        response = self.client.post(
+            reverse('subject_questionnaire_response',
+                    kwargs={
+                        'group_id':  self.group.id,
+                        'subject_id': self.subject_of_group.subject_id,
+                        'questionnaire_id': self.component_config.id
+                    }),
+            data={'action': 'save', 'date': datetime.now().strftime(
+                '%d/%m/%Y'), })
+
+        redirect_url = response.context['URL']
+        self.assertIn(str(self.patient.id), redirect_url)
