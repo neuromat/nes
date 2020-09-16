@@ -8,30 +8,17 @@ from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from custom_user.tests_helper import create_user
-from experiment.tests.tests_helper import ObjectsFactory
+from experiment.tests.tests_helper import ObjectsFactory, ExperimentTestCase
 from patient.tests.tests_orig import UtilTests
 
 
-class ExportTestCase(TestCase):
+class ExportTestCase(ExperimentTestCase):
 
     def setUp(self):
-        # create the groups of users and their permissions
-        exec(open('add_initial_data.py').read())
+        super(ExportTestCase, self).setUp()
 
-        # return user password to use when necessary in subclasses
-        self.user, self.user_passwd = create_user(Group.objects.all())
-        self.client.login(username=self.user.username, password=self.user_passwd)
-
-        # create experiment/experimental protocol/group
-        self.research_project = ObjectsFactory.create_research_project(self.user)
-        self.experiment = ObjectsFactory.create_experiment(self.research_project)
-        self.root_component = ObjectsFactory.create_block(self.experiment)
-        self.group = ObjectsFactory.create_group(self.experiment, self.root_component)
-
-        # create patient/subject/subject_of_group
-        self.patient = UtilTests().create_patient(changed_by=self.user)
-        subject = ObjectsFactory.create_subject(self.patient)
-        self.subject_of_group = ObjectsFactory.create_subject_of_group(self.group, subject)
+        self.client.login(username=self.user.username,
+                          password=self.user_passwd)
 
     def append_session_variable(self, key, value):
         """See:
