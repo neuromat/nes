@@ -922,9 +922,12 @@ def get_questionnaire_experiment_fields(questionnaire_code_list, language_curren
 
 def get_questionnaire_fields(questionnaire_code_list, current_language='pt-BR'):
     """
-    :param questionnaire_code_list: list with questionnaire id to be formatted with json file
-    :param current_language: current language used by the caller, indicating the preferred language
-    :return: 1 list: questionnaires_included - questionnaire_id that was included in the .txt file
+    :param questionnaire_code_list: list with questionnaire id to be
+    formatted with json file
+    :param current_language: current language used by the caller, indicating
+    the preferred language
+    :return: 1 list: questionnaires_included -- questionnaire_id that was
+    included in the .txt file
     """
 
     questionnaires_included = []
@@ -933,13 +936,13 @@ def get_questionnaire_fields(questionnaire_code_list, current_language='pt-BR'):
     if questionnaire_lime_survey.session_key is None:
         return Questionnaires.ERROR_CODE, []
     for questionnaire_id in questionnaire_code_list:
-        result = get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, current_language)
+        result = get_questionnaire_language(
+            questionnaire_lime_survey, questionnaire_id, current_language)
         if result == Questionnaires.ERROR_CODE:
             return Questionnaires.ERROR_CODE, []
-        # Get a valid token (anyone)
-        survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
-        token_id = QuestionnaireResponse.objects.filter(survey=survey).first().token_id
-        token = questionnaire_lime_survey.get_participant_properties(questionnaire_id, token_id, 'token')
+        # NES-1024 Assumes that there's at least a response for the
+        # questionnaire
+        token = get_some_token(questionnaire_lime_survey, questionnaire_id)
         responses_string = questionnaire_lime_survey.get_header_response(questionnaire_id, result, token)
         if token is None:
             # (NES-971) In current version of export views responses_string accepts None token.
@@ -948,13 +951,17 @@ def get_questionnaire_fields(questionnaire_code_list, current_language='pt-BR'):
                 return Questionnaires.ERROR_CODE, []
         questionnaire_title = questionnaire_lime_survey.get_survey_title(questionnaire_id, result)
         if not isinstance(responses_string, dict):
-            record_question = {'sid': questionnaire_id, 'title': questionnaire_title, 'output_list': []}
+            record_question = {
+                'sid': questionnaire_id, 'title': questionnaire_title,
+                'output_list': []
+            }
             questionnaire_questions = QuestionnaireUtils.responses_to_csv(responses_string)
             responses_full = questionnaire_lime_survey.get_header_response(
                 questionnaire_id, result, token, heading_type='full')
             if responses_full is None:
                 return Questionnaires.ERROR_CODE, []
-            questionnaire_questions_full = QuestionnaireUtils.responses_to_csv(responses_full)
+            questionnaire_questions_full = QuestionnaireUtils.responses_to_csv(
+                responses_full)
             index = 0
             # line 0 - header information
             for question in questionnaire_questions[0]:
@@ -965,9 +972,25 @@ def get_questionnaire_fields(questionnaire_code_list, current_language='pt-BR'):
                     })
                 index += 1
             questionnaires_included.append(record_question)
+
     questionnaire_lime_survey.release_session_key()
 
     return 0, questionnaires_included
+
+
+def get_some_token(questionnaire_lime_survey, questionnaire_id):
+    survey = Survey.objects.filter(lime_survey_id=questionnaire_id).first()
+    some_patient_response = QuestionnaireResponse.objects.filter(
+            survey=survey).first()
+    if not some_patient_response:
+        some_patient_response = \
+            ExperimentQuestionnaireResponse.objects.filter(
+                data_configuration_tree__component_configuration__component__questionnaire__survey_id
+                =survey.id).first()
+
+    token = questionnaire_lime_survey.get_participant_properties(
+        questionnaire_id, some_patient_response.token_id, 'token')
+    return token
 
 
 @login_required

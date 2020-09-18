@@ -57,7 +57,7 @@ $(document).ready(function () {
         // Get participants for RandomForests Plugin
         select_experiment_participants_from.html('<option></option>');
         if (experiment_id != 0) {
-            // Fill multiselect "from" with a suit ajax loading gif
+            // Fill multiselect "from" with a suitable ajax loading gif
             select_experiment_participants_from.html('<option></option>');
             $('#loading_box').css('display', 'flex');
             select_experiment_participants_from.prop('disabled', true);

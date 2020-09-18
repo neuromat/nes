@@ -213,7 +213,7 @@ class QuestionnaireUtils:
                 new_header_questionnaire.append(header_questionnaire[fields.index(item)])
                 new_fields.append(fields_saved[fields.index(item)])
 
-        self.questionnaires_experiment_data[questionnaire_id]["header"] = header_list
+        self.questionnaires_experiment_data[questionnaire_id]["header"] = new_header_questionnaire
         self.questionnaires_experiment_data[questionnaire_id]["header_questionnaire"] = new_header_questionnaire
         self.questionnaires_experiment_data[questionnaire_id]["fields"] = new_fields
 

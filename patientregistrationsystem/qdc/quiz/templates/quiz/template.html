@@ -212,7 +212,7 @@
                 {% endif %}
 
                 {% get_solo 'plugin.RandomForests' as random_forests %}
-                {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.plugin_url %}
+                {% if perms.plugin.can_send_data_to_plugin and random_forests.admission_assessment and random_forests.surgical_evaluation and random_forests.followup_assessment and random_forests.plugin_url %}
                     <li {% block activePlugin %}{% endblock %}>
                         <a href="/plugin/">
                             <span class="glyphicon glyphicon-cloud-upload"></span>

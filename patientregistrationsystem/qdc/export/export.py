@@ -136,39 +136,41 @@ def save_to_csv(complete_filename, rows_to_be_saved, filesformat_type, mode='w')
             export_writer.writerow(row)
 
 
-def replace_multiple_choice_question_answers(responses, question_list):
+def replace_multiple_choice_question_answers(responses_short, question_list):
     """Get responses list - after limesurvey participants answers obtained from
     get_responses_by_token or get_responses limesurvey api methods - that
     are multiple choices/multiple choices with comments question types (from
     question_list), and replaces the options that was not selected by
     participants with a 'N' (options that was selected have 'Y' - or 'S'
     in Portuguese - filled.
-    :param responses: double array with questions in first line and answers
+    :param responses_short: double array with questions in first line and answers
     in the other lines
     :param question_list: list of multiple choice/multiple choice with
     comments questions types
     Obs.: modifies responses list
     """
     i = 0
-    m = len(responses[0])
+    m = len(responses_short[0])
     while i < m:
-        question_match = re.match('(^.+)\[', responses[0][i])
+        question_match = re.match('(^.+)\[', responses_short[0][i])
         question = question_match.group(1) if question_match else None
-        if question and question in question_list:
+        if question and question in [
+            q['title'] for q in question_list if q['title'] == question
+        ]:
             index_subquestions = []
-            while i < m and question in responses[0][i]:
+            while i < m and question in responses_short[0][i]:
                 index_subquestions.append(i)
                 i += 1
-            for j in range(1, len(responses) - 1):
+            for j in range(1, len(responses_short) - 1):
                 filled = False
                 for k in index_subquestions:
-                    if responses[j][k] != '':
+                    if responses_short[j][k] != '':
                         filled = True
                         break
                 if filled:
                     for k in index_subquestions:
-                        if responses[j][k] == '':
-                            responses[j][k] = 'N'
+                        if responses_short[j][k] == '':
+                            responses_short[j][k] = 'N'
         else:
             i += 1
 
@@ -1094,8 +1096,15 @@ class ExportExecution:
                 random_forest = RandomForests.objects.first()
                 if questionnaire_id == random_forest.admission_assessment.lime_survey_id:
                     path_questionnaire = 'QA_unified_admission_assessment'
-                else:
+                elif questionnaire_id == \
+                        random_forest.surgical_evaluation.lime_survey_id:
                     path_questionnaire = 'QS_surgical_evaluation'
+                elif questionnaire_id == \
+                        random_forest.followup_assessment.lime_survey_id:
+                    path_questionnaire = 'QF_unified_followup_assessment'
+                else:
+                    # TODO: error
+                    pass
 
             # Path ex. data/Per_questionnaire/Q123_aaa
             error_msg, export_path = create_directory(path_per_questionnaire, path_questionnaire)
@@ -1126,10 +1135,18 @@ class ExportExecution:
                         export_filename = '%s_%s_%s' % (
                             questionnaire['prefix_filename_responses'], str(questionnaire_code), language)
                     else:
-                        if questionnaire_id == RandomForests.objects.first().admission_assessment.lime_survey_id:
+                        if questionnaire_id == \
+                                RandomForests.objects.first().admission_assessment.lime_survey_id:
                             export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QA_en')
-                        else:
+                        elif questionnaire_id == \
+                                RandomForests.objects.first().surgical_evaluation.lime_survey_id:
                             export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QS_en')
+                        elif questionnaire_id == \
+                                RandomForests.objects.first().followup_assessment.lime_survey_id:
+                            export_filename = '%s_%s' % (questionnaire['prefix_filename_responses'], 'QF_en')
+                        else:
+                            # TODO: error
+                            pass
 
                     # Path ex. data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
                     complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
@@ -1474,6 +1491,10 @@ class ExportExecution:
                             directory_questionnaire_name = 'QA_unified_admission_assessment'
                         elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                             directory_questionnaire_name = 'QS_surgical_evaluation'
+                        elif questionnaire_id == \
+                                randomforests.followup_assessment.lime_survey_id:
+                            directory_questionnaire_name = \
+                                'QF_unified_followup_assessment'
 
                     # Metadata directory for export
                     # Path ex. data/Experiment_data/Group_xxx/Questionnaire_metadata/
@@ -1526,6 +1547,13 @@ class ExportExecution:
                                     export_filename = 'QA_unified_admission_assessment_en'
                                 elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                     export_filename = 'QS_surgical_evaluation_en'
+                                elif questionnaire_id == \
+                                        randomforests.followup_assessment.lime_survey_id:
+                                    export_filename = \
+                                        'QF_unified_followup_assessment_en'
+                                else:
+                                    # TODO: error
+                                    pass
                             # data/Experiment_data/Group_xxx/Per_questionnaire/Step_x_QUESTIONNAIRE/
                             # Q123_<questionnaire_title>_<lang>.csv
                             complete_filename = path.join(
@@ -1666,6 +1694,13 @@ class ExportExecution:
                             questionnaire_directory_name = 'QA_unified_admission_assessment'
                         elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                             questionnaire_directory_name = 'QS_surgical_evaluation'
+                        elif questionnaire_id == \
+                                randomforests.followup_assessment.lime_survey_id:
+                            questionnaire_directory_name = \
+                                'QF_unified_followup_assessment'
+                        else:
+                            # TODO: error
+                            pass
                     # Create questionnaire directory
                     # path ex. data/Per_participant/Participant_<participant_code>/questionnaire_code_Title/
                     error_msg, path_per_questionnaire = create_directory(participant_path, questionnaire_directory_name)
@@ -1696,6 +1731,12 @@ class ExportExecution:
                                 export_filename = 'Responses_QA_en'
                             elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                 export_filename = 'Responses_QS_en'
+                            elif questionnaire_id == \
+                                    randomforests.followup_assessment.lime_survey_id:
+                                export_filename = 'Responses_QF_en'
+                            else:
+                                # TODO: error
+                                pass
                         # Path ex. data/Per_participant/Participant_P123/QCode_Title/Responses_Q123_aaa.csv
                         complete_filename = path.join(path_per_questionnaire, export_filename + '.' + filesformat_type)
 
@@ -1904,6 +1945,13 @@ class ExportExecution:
                                     export_filename = 'QA_unified_admission_assessment_en'
                                 elif questionnaire_id == randomforests.surgical_evaluation.lime_survey_id:
                                     export_filename = 'QS_surgical_evaluation_en'
+                                elif questionnaire_id == \
+                                        randomforests.followup_assessment.lime_survey_id:
+                                    export_filename = \
+                                        'QF_unified_followup_assessment_en'
+                                else:
+                                    # TODO: error
+                                    pass
                                 response_english_plugin_done = True
 
                             # Path ex. data/Experiment_data/Group_xxx/Per_participant/Participant_P123/Step_X_aaa
@@ -3339,28 +3387,30 @@ class ExportExecution:
                 if limesurvey_available(questionnaire_lime_survey):
                     data_from_lime_survey = {}
                     for language in language_list:
-                        # Read all data for questionnaire_id from LimeSurvey
                         responses_string1 = questionnaire_lime_survey.get_responses(
                             questionnaire_id, language, response_type[0])
-                        # All the answer from the questionnaire_id in csv format
                         fill_list1 = QuestionnaireUtils.responses_to_csv(responses_string1)
 
                         # Multiple choice answers need replacement
                         # TODO (NES-991): make a test for getting multiple choice questions
                         error, multiple_choice_questions = QuestionnaireUtils.get_questions(
-                            questionnaire_lime_survey, questionnaire_id, language)
-                        replace_multiple_choice_question_answers(fill_list1, multiple_choice_questions)
+                            questionnaire_lime_survey, questionnaire_id,
+                            language, ['M', 'P'])
+                        replace_multiple_choice_question_answers(
+                            fill_list1, multiple_choice_questions)
 
                         # Read 'long' information, if necessary
                         if len(response_type) > 1:
                             responses_string2 = questionnaire_lime_survey.get_responses(
-                                questionnaire_id, language,response_type[1])
-                            fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
+                                questionnaire_id, language, response_type[1])
+                            fill_list2 = QuestionnaireUtils.responses_to_csv(
+                                responses_string2)
                             # Multiple choice answers need replacement
                             # TODO (NES-991): make a test for getting multiple choice questions
                             error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                                 questionnaire_lime_survey, questionnaire_id, language)
-                            replace_multiple_choice_question_answers(fill_list2, multiple_choice_questions)
+                            replace_multiple_choice_question_answers(
+                                fill_list2, multiple_choice_questions)
                         else:
                             fill_list2 = fill_list1
 
@@ -3396,8 +3446,8 @@ class ExportExecution:
                         questionnaire_id, header_filtered, fields, headers)
 
                     # "And" part is inserted because when exporting from plugin, all groups
-                    # are being processed independently of participant has reponses in the
-                    # too questionnaires or not.
+                    # are being processed independently of participant has
+                    # responses in the two questionnaires or not.
                     if self.per_group_data[group_id]['questionnaires_per_group'] \
                             and int(questionnaire_id) in self.per_group_data[group_id]['questionnaires_per_group']:
                         questionnaire_list = self.per_group_data[
@@ -3576,26 +3626,27 @@ class ExportExecution:
 
             fill_list1 = QuestionnaireUtils.responses_to_csv(result)
 
-            # Need types of questions to make replacement just below
+            # Multiple choice answers need replacement
             # TODO (NES-991): make a test for getting multiple choice questions
             error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                 questionnaire_lime_survey, questionnaire_id, language, ['M', 'P'])
             if error:
                 return error
-
-            replace_multiple_choice_question_answers(fill_list1, multiple_choice_questions)
+            replace_multiple_choice_question_answers(
+                fill_list1, multiple_choice_questions)
 
             # Read 'long' information, if necessary
             if len(response_type) > 1:
                 responses_string2 = questionnaire_lime_survey.get_responses(
                     questionnaire_id, language, response_type[1])
-                fill_list2 = QuestionnaireUtils.responses_to_csv(responses_string2)
-                # need types of questions to make replacement just
-                # below
+                fill_list2 = QuestionnaireUtils.responses_to_csv(
+                    responses_string2)
+                # Multiple choice answers need replacement
                 # TODO (NES-991): make a test for getting multiple choice questions
                 error, multiple_choice_questions = QuestionnaireUtils.get_questions(
                     questionnaire_lime_survey, questionnaire_id, language)
-                replace_multiple_choice_question_answers(fill_list2, multiple_choice_questions)
+                replace_multiple_choice_question_answers(
+                    fill_list1, multiple_choice_questions)
             else:
                 fill_list2 = fill_list1
 

@@ -5347,8 +5347,9 @@ def get_limesurvey_response_url(questionnaire_response):
         id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
 
     questionnaire_lime_survey = Questionnaires()
-    token = questionnaire_lime_survey.get_participant_properties(questionnaire.survey.lime_survey_id,
-                                                                 questionnaire_response.token_id, "token")
+    token = questionnaire_lime_survey.get_participant_properties(
+        questionnaire.survey.lime_survey_id,
+        questionnaire_response.token_id, "token")
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
@@ -5359,7 +5360,7 @@ def get_limesurvey_response_url(questionnaire_response):
             token,
             str(questionnaire_response.questionnaire_responsible.id),
             questionnaire_response.date.strftime('%d-%m-%Y'),
-            str(questionnaire_response.subject_of_group.subject.id))
+            str(questionnaire_response.subject_of_group.subject.patient.id))
 
     return redirect_url
 
@@ -5456,8 +5457,9 @@ def subject_questionnaire_response_reuse(request, group_id, subject_id, question
 
 @login_required
 @permission_required('experiment.change_questionnaireresponse')
-def questionnaire_response_edit(request, questionnaire_response_id,
-                                template_name="experiment/subject_questionnaire_response_form.html"):
+def questionnaire_response_edit(
+        request, questionnaire_response_id,
+        template_name="experiment/subject_questionnaire_response_form.html"):
     questionnaire_response = get_object_or_404(QuestionnaireResponse, id=questionnaire_response_id)
     questionnaire = Questionnaire.objects.get(
         id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
