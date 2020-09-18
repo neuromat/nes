@@ -25,6 +25,10 @@ SECRET_KEY = ''
 DEBUG = False
 DEBUG404 = False
 
+# Put this line in local settings to put in maintenance mode, or uncomment, and
+# restart application server
+#MAINTENANCE_MODE = True
+
 # SECURITY WARNING: don't run with "is testing" in production
 IS_TESTING = True
 
@@ -48,7 +52,8 @@ INSTALLED_APPS = (
     'simple_history',
     'jsonrpc_requests',
     'solo',
-    'fixture_magic'
+    'fixture_magic',
+    'maintenance_mode'
 )
 
 PROJECT_APPS = (
@@ -74,7 +79,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'qdc.middleware.PasswordChangeMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'maintenance_mode.middleware.MaintenanceModeMiddleware'
 )
+
+CONTEXT_PROCESSORS = {
+    'maintenance_mode.context_processors.maintenance_mode'
+}
 
 TEMPLATES = [
     {
