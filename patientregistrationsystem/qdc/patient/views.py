@@ -1155,8 +1155,8 @@ def questionnaire_response_update(
     fail = None
     redirect_url = None
     questionnaire_response_id = None
-
     showing = True
+
     questionnaire = questionnaire_response.survey
     questionnaire_title = survey_title
 
