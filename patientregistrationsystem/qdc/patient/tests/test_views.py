@@ -23,7 +23,7 @@ class QuestionnaireFillTest(TestCase):
         self.assertEqual(logged, True)
 
     @patch('survey.abc_search_engine.Server')
-    def test_entrance_evaluation_response_create_does_not_display_fill_date_input_field(
+    def test_create_entrance_evaluation_response_does_not_display_fill_date_input_field(
             self, mockServer):
         # NES-981 Setting default mocks just passed the test. Not sure if mocks
         # are overloaded
