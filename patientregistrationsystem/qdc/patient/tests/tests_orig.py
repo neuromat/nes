@@ -28,19 +28,26 @@ from django.utils.translation import ugettext as _
 from faker import Factory
 
 from experiment.models import Experiment, Group, Subject, \
-    QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, ComponentConfiguration, ResearchProject, \
+    QuestionnaireResponse as ExperimentQuestionnaireResponse, SubjectOfGroup, \
+    ComponentConfiguration, ResearchProject, \
     Questionnaire, Block, DataConfigurationTree
-from patient.management.commands.import_icd import import_classification_of_diseases
-from patient.models import ClassificationOfDiseases, MedicalRecordData, Diagnosis, ComplementaryExam, ExamFile, \
-    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, AmountCigarettes, QuestionnaireResponse, Telephone, \
+from patient.management.commands.import_icd import \
+    import_classification_of_diseases
+from patient.models import ClassificationOfDiseases, MedicalRecordData, \
+    Diagnosis, ComplementaryExam, ExamFile, \
+    Gender, Schooling, Patient, AlcoholFrequency, AlcoholPeriod, \
+    AmountCigarettes, QuestionnaireResponse, Telephone, \
     MaritalStatus
 from patient.validation import CPF
-from patient.views import medical_record_view, medical_record_update, diagnosis_create, \
+from patient.views import medical_record_view, medical_record_update, \
+    diagnosis_create, \
     medical_record_create_diagnosis_create, exam_create, exam_view, \
-    patient_update, patient_view, restore_patient, reverse, check_limesurvey_access
+    patient_update, patient_view, restore_patient, reverse, \
+    check_limesurvey_access
 from survey.abc_search_engine import Questionnaires
 from survey.models import Survey
-from update_english_data import translate_fixtures_into_english, update_translated_data
+from update_english_data import translate_fixtures_into_english, \
+    update_translated_data
 
 # Constants para testes de User
 USER_EDIT = 'user_edit'
@@ -269,9 +276,10 @@ class PatientFormValidation(TestCase):
     util = UtilTests()
 
     def setUp(self):
-        """Set up authentication and variables to start each test
-        """
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        """Set up authentication and variables to start each test"""
+
+        self.user = User.objects.create_user(
+            username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
@@ -1252,7 +1260,8 @@ class QuestionnaireFormValidation(TestCase):
     util = UtilTests()
 
     def setUp(self):
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user = User.objects.create_user(
+            username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
@@ -1264,7 +1273,8 @@ class QuestionnaireFormValidation(TestCase):
 
     @staticmethod
     def _set_mocks(mockServer):
-        mockServer.return_value.get_session_key.return_value = 'gvq89d8y3nn8m9um5makg6qiixkqwai9'
+        mockServer.return_value.get_session_key.return_value = \
+            'gvq89d8y3nn8m9um5makg6qiixkqwai9'
         mockServer.return_value.add_participants.return_value = [
             {
                 'completed': 'N', 'email': '', 'mpid': None, 'lastname': '', 'participant_id': None,
@@ -1490,7 +1500,6 @@ class QuestionnaireFormValidation(TestCase):
         settings.LIMESURVEY['URL_API'] = 'https://survey.numec.prp.usp.br/'  # without error
 
     @patch('survey.abc_search_engine.Server')
-    # def test_entrance_evaluation_response_create(self):
     def test_entrance_evaluation_response_create(self, mockServer):
         """Test inclusion of questionnaire response to a clear survey
         of the type: entrance evaluation questionnaire
@@ -1508,11 +1517,11 @@ class QuestionnaireFormValidation(TestCase):
         self.data['initial-date'] = '2015-09-02'
 
         url = reverse(QUESTIONNAIRE_NEW, args=(patient.pk, survey.pk,))
-        response = self.client.post(url + "?origin=subject", self.data, follow=True)
+        response = self.client.post(
+            url + "?origin=subject", self.data, follow=True)
         self.assertEqual(response.status_code, 200)
 
     @patch('survey.abc_search_engine.Server')
-    # def test_entrance_evaluation_response_update(self):
     def test_entrance_evaluation_response_update(self, mockServer):
         """Test update of questionnaire response to a clear survey
         of the type: entrance evaluation questionnaire
@@ -1530,7 +1539,9 @@ class QuestionnaireFormValidation(TestCase):
         survey = self.util.create_survey(CLEAN_QUESTIONNAIRE, True)
         response_survey = self.util.create_response_survey(self.user, patient, survey, 21)
 
-        url1 = reverse(QUESTIONNAIRE_EDIT, args=[response_survey.pk], current_app='patient')
+        url1 = reverse(
+            QUESTIONNAIRE_EDIT, args=[response_survey.pk],
+            current_app='patient')
         url2 = url1.replace('experiment', 'patient')
         response = self.client.get(url2 + "?origin=subject&status=edit")
         self.assertEqual(response.status_code, 200)

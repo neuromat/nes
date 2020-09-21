@@ -38,6 +38,52 @@ permission_required = partial(permission_required, raise_exception=True)
 
 
 @login_required
+@permission_required('patient.view_patient')
+def patient_view(request, patient_id):
+    current_tab = get_current_tab(request)
+    patient = get_object_or_404(Patient, pk=patient_id)
+
+    if request.method == "POST":
+        redirect_url = reverse("search_patient")
+
+        if 'action' in request.POST:
+            if request.POST['action'] == "remove":
+                patient.removed = True
+                patient.save()
+            elif request.POST['action'] == "show_previous":
+                redirect_url = reverse("patient_view", args=(patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(int(current_tab) - 1))
+            elif request.POST['action'] == "show_next":
+                redirect_url = reverse("patient_view", args=(patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(int(current_tab) + 1))
+            else:
+                redirect_url = reverse("patient_edit", args=(patient_id,))
+                return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
+
+        return HttpResponseRedirect(redirect_url)
+
+    if patient and not patient.removed:
+        context = {
+            'editing': False,
+            'currentTab': current_tab,
+            'patient_id': patient_id}
+
+        if current_tab == '0':
+            return patient_view_personal_data(request, patient, context)
+        elif current_tab == '1':
+            return patient_view_social_demographic_data(request, patient, context)
+        elif current_tab == '2':
+            return patient_view_social_history(request, patient, context)
+        elif current_tab == '3':
+            return patient_view_medical_record(request, patient, context)
+        else:  # current_tab == '4':
+            if request.user.has_perm('survey.view_survey'):
+                return patient_view_questionnaires(request, patient, context, False)
+            else:
+                raise PermissionDenied
+
+
+@login_required
 @permission_required('patient.add_patient')
 def patient_create(request, template_name="patient/register_personal_data.html"):
     patient_form = PatientForm(request.POST or None)
@@ -319,52 +365,6 @@ def finish_handling_post(request, patient_id, current_tab):
 
     redirect_url = reverse("patient_view", args=(patient_id,))
     return HttpResponseRedirect(redirect_url + "?currentTab=" + str(current_tab))
-
-
-@login_required
-@permission_required('patient.view_patient')
-def patient_view(request, patient_id):
-    current_tab = get_current_tab(request)
-    patient = get_object_or_404(Patient, pk=patient_id)
-
-    if request.method == "POST":
-        redirect_url = reverse("search_patient")
-
-        if 'action' in request.POST:
-            if request.POST['action'] == "remove":
-                patient.removed = True
-                patient.save()
-            elif request.POST['action'] == "show_previous":
-                redirect_url = reverse("patient_view", args=(patient_id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(int(current_tab) - 1))
-            elif request.POST['action'] == "show_next":
-                redirect_url = reverse("patient_view", args=(patient_id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=" + str(int(current_tab) + 1))
-            else:
-                redirect_url = reverse("patient_edit", args=(patient_id,))
-                return HttpResponseRedirect(redirect_url + "?currentTab=" + current_tab)
-
-        return HttpResponseRedirect(redirect_url)
-
-    if patient and not patient.removed:
-        context = {
-            'editing': False,
-            'currentTab': current_tab,
-            'patient_id': patient_id}
-
-        if current_tab == '0':
-            return patient_view_personal_data(request, patient, context)
-        elif current_tab == '1':
-            return patient_view_social_demographic_data(request, patient, context)
-        elif current_tab == '2':
-            return patient_view_social_history(request, patient, context)
-        elif current_tab == '3':
-            return patient_view_medical_record(request, patient, context)
-        else:  # current_tab == '4':
-            if request.user.has_perm('survey.view_survey'):
-                return patient_view_questionnaires(request, patient, context, False)
-            else:
-                raise PermissionDenied
 
 
 def patient_view_personal_data(request, patient, context):
@@ -1078,17 +1078,130 @@ def get_origin(request):
 
     return origin
 
+@login_required
+@permission_required('patient.view_questionnaireresponse')
+def questionnaire_response_view(
+        request, questionnaire_response_id,
+        template_name="experiment/subject_questionnaire_response_form.html"):
+    questionnaire_response = get_object_or_404(
+        QuestionnaireResponse, pk=questionnaire_response_id)
+
+    if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == "":
+        surveys = Questionnaires()
+        is_completed = surveys.get_participant_properties(
+            questionnaire_response.survey.lime_survey_id,
+            questionnaire_response.token_id,
+            "completed") or ""
+        questionnaire_response.is_completed = is_completed
+        questionnaire_response.save()
+        surveys.release_session_key()
+
+    survey_completed = (questionnaire_response.is_completed != "N")
+
+    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
+
+    showing = True
+
+    if request.method == "POST":
+        if request.POST['action'] == "remove":
+            if request.user.has_perm('patient.delete_questionnaireresponse'):
+                surveys = Questionnaires()
+                result = surveys.delete_participants(questionnaire_response.survey.lime_survey_id,
+                                                     [questionnaire_response.token_id])
+                surveys.release_session_key()
+
+                can_delete = False
+
+                if str(questionnaire_response.token_id) in result:
+                    result = result[str(questionnaire_response.token_id)]
+                    if result == 'Deleted' or result == 'Invalid token ID':
+                        can_delete = True
+                else:
+                    if 'status' in result and result['status'] == 'Error: Invalid survey ID':
+                        can_delete = True
+
+                if can_delete:
+                    questionnaire_response.delete()
+                    messages.success(request, _('Fill deleted successfully'))
+                else:
+                    messages.error(request, _("Error trying to delete"))
+
+                redirect_url = reverse("patient_edit", args=(questionnaire_response.patient.id,)) + "?currentTab=4"
+                return HttpResponseRedirect(redirect_url)
+            else:
+                raise PermissionDenied
+
+    origin = get_origin(request)
+
+    status = ""
+    if 'status' in request.GET:
+        status = request.GET['status']
+
+    response_is_reused_in_experiment = False
+    # steps that use this survey
+    questionnaire_component_list = Questionnaire.objects.filter(survey=questionnaire_response.survey)
+    if questionnaire_component_list:
+        # experiment questionnaire responses that reused this token
+        response_is_reused_in_experiment = \
+            ExperimentQuestionnaireResponse.objects.filter(
+                token_id=questionnaire_response.token_id,
+                data_configuration_tree__component_configuration__component__in=questionnaire_component_list).exists()
+
+    survey_title_key = \
+        request.LANGUAGE_CODE + "-" + str(questionnaire_response.survey.lime_survey_id) + \
+        "-" + str(questionnaire_response.token_id) + "_survey_title_participant"
+    groups_of_questions_key = \
+        request.LANGUAGE_CODE + "-" + str(questionnaire_response.survey.lime_survey_id) + \
+        "-" + str(questionnaire_response.token_id) + "_group_of_questions_participant"
+
+    survey_title = cache.get(survey_title_key)
+    groups_of_questions = cache.get(groups_of_questions_key)
+
+    if not survey_title or not groups_of_questions:
+        survey_title, groups_of_questions = get_questionnaire_responses(
+            request.LANGUAGE_CODE, questionnaire_response.survey.lime_survey_id,
+            questionnaire_response.token_id, request)
+
+        cache.set(survey_title_key, survey_title)
+        cache.set(groups_of_questions_key, groups_of_questions)
+
+    context = {
+        "questionnaire_response_form": questionnaire_response_form,
+        "questionnaire_configuration": None,
+        "questionnaire_response": questionnaire_response,
+        "survey_title": survey_title,
+        "questionnaire_responsible": questionnaire_response.questionnaire_responsible.username,
+        "creating": False,
+        "completed": survey_completed,
+        "origin": origin,
+        "patient": questionnaire_response.patient,
+        "questionnaire": questionnaire_response.survey,
+        "groups_of_questions": groups_of_questions,
+        "questionnaire_title": survey_title,
+        "showing": showing,
+        "updating": True,
+        "status": status,
+        "response_is_reused_in_experiment": response_is_reused_in_experiment,
+        # This is related to permission to change an experiment, which is
+        # not the case here.
+        "can_change": True
+    }
+
+    return render(request, template_name, context)
+
 
 @login_required
 # TODO: associate the right permission
 # @permission_required('patient.add_medicalrecorddata')
 def questionnaire_response_create(
-        request, patient_id, survey_id, template_name="experiment/subject_questionnaire_response_form.html"):
+        request, patient_id, survey_id,
+        template_name="experiment/subject_questionnaire_response_form.html"):
     patient = get_object_or_404(Patient, pk=patient_id)
     survey = get_object_or_404(Survey, pk=survey_id)
 
     surveys = Questionnaires()
-    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    language = get_questionnaire_language(
+        surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
     survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
     surveys.release_session_key()
 
@@ -1137,9 +1250,10 @@ def questionnaire_response_create(
 @login_required
 @permission_required('patient.change_questionnaireresponse')
 def questionnaire_response_update(
-        request, questionnaire_response_id, template_name="experiment/subject_questionnaire_response_form.html"):
-
-    questionnaire_response = get_object_or_404(QuestionnaireResponse, pk=questionnaire_response_id)
+        request, questionnaire_response_id,
+        template_name="experiment/subject_questionnaire_response_form.html"):
+    questionnaire_response = get_object_or_404(
+        QuestionnaireResponse, pk=questionnaire_response_id)
 
     surveys = Questionnaires()
     language = get_questionnaire_language(surveys, questionnaire_response.survey.lime_survey_id, request.LANGUAGE_CODE)
@@ -1270,7 +1384,6 @@ def questionnaire_response_start_fill_questionnaire(request, patient_id, survey)
         questionnaire_response.patient = patient
         questionnaire_response.survey = survey
         questionnaire_response.token_id = result['tid']
-        questionnaire_response.date = datetime.datetime.strptime(request.POST['date'], _('%m/%d/%Y'))
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
@@ -1333,117 +1446,8 @@ def get_limesurvey_response_url(questionnaire_response):
             questionnaire_response.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
-            questionnaire_response.date.strftime('%d-%m-%Y'),
+            questionnaire_response.date.strftime('%m-%d-%Y'),
             str(questionnaire_response.patient.id))
 
     return redirect_url
 
-
-@login_required
-@permission_required('patient.view_questionnaireresponse')
-def questionnaire_response_view(
-        request, questionnaire_response_id, template_name="experiment/subject_questionnaire_response_form.html"):
-    questionnaire_response = get_object_or_404(QuestionnaireResponse, pk=questionnaire_response_id)
-
-    if questionnaire_response.is_completed == 'N' or questionnaire_response.is_completed == "":
-        surveys = Questionnaires()
-        is_completed = surveys.get_participant_properties(
-            questionnaire_response.survey.lime_survey_id,
-            questionnaire_response.token_id,
-            "completed") or ""
-        questionnaire_response.is_completed = is_completed
-        questionnaire_response.save()
-        surveys.release_session_key()
-
-    survey_completed = (questionnaire_response.is_completed != "N")
-
-    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
-
-    showing = True
-
-    if request.method == "POST":
-        if request.POST['action'] == "remove":
-            if request.user.has_perm('patient.delete_questionnaireresponse'):
-                surveys = Questionnaires()
-                result = surveys.delete_participants(questionnaire_response.survey.lime_survey_id,
-                                                     [questionnaire_response.token_id])
-                surveys.release_session_key()
-
-                can_delete = False
-
-                if str(questionnaire_response.token_id) in result:
-                    result = result[str(questionnaire_response.token_id)]
-                    if result == 'Deleted' or result == 'Invalid token ID':
-                        can_delete = True
-                else:
-                    if 'status' in result and result['status'] == 'Error: Invalid survey ID':
-                        can_delete = True
-
-                if can_delete:
-                    questionnaire_response.delete()
-                    messages.success(request, _('Fill deleted successfully'))
-                else:
-                    messages.error(request, _("Error trying to delete"))
-
-                redirect_url = reverse("patient_edit", args=(questionnaire_response.patient.id,)) + "?currentTab=4"
-                return HttpResponseRedirect(redirect_url)
-            else:
-                raise PermissionDenied
-
-    origin = get_origin(request)
-
-    status = ""
-    if 'status' in request.GET:
-        status = request.GET['status']
-
-    response_is_reused_in_experiment = False
-    # steps that use this survey
-    questionnaire_component_list = Questionnaire.objects.filter(survey=questionnaire_response.survey)
-    if questionnaire_component_list:
-        # experiment questionnaire responses that reused this token
-        response_is_reused_in_experiment = \
-            ExperimentQuestionnaireResponse.objects.filter(
-                token_id=questionnaire_response.token_id,
-                data_configuration_tree__component_configuration__component__in=questionnaire_component_list).exists()
-
-    survey_title_key = \
-        request.LANGUAGE_CODE + "-" + str(questionnaire_response.survey.lime_survey_id) + \
-        "-" + str(questionnaire_response.token_id) + "_survey_title_participant"
-    groups_of_questions_key = \
-        request.LANGUAGE_CODE + "-" + str(questionnaire_response.survey.lime_survey_id) + \
-        "-" + str(questionnaire_response.token_id) + "_group_of_questions_participant"
-
-    survey_title = cache.get(survey_title_key)
-    groups_of_questions = cache.get(groups_of_questions_key)
-
-    if not survey_title or not groups_of_questions:
-        survey_title, groups_of_questions = get_questionnaire_responses(
-            request.LANGUAGE_CODE, questionnaire_response.survey.lime_survey_id,
-            questionnaire_response.token_id, request)
-
-        cache.set(survey_title_key, survey_title)
-        cache.set(groups_of_questions_key, groups_of_questions)
-
-    context = {
-        "questionnaire_response_form": questionnaire_response_form,
-        "questionnaire_configuration": None,
-        "questionnaire_response": questionnaire_response,
-        "survey_title": survey_title,
-        "questionnaire_responsible": questionnaire_response.questionnaire_responsible.username,
-        "creating": False,
-        "completed": survey_completed,
-        "origin": origin,
-        "patient": questionnaire_response.patient,
-        "questionnaire": questionnaire_response.survey,
-        "groups_of_questions": groups_of_questions,
-        "questionnaire_title": survey_title,
-        "showing": showing,
-        "updating": True,
-        "status": status,
-        "response_is_reused_in_experiment": response_is_reused_in_experiment,
-        # This is related to permission to change an experiment, which is
-        # not the case here.
-        "can_change": True
-    }
-
-    return render(request, template_name, context)
