@@ -121,16 +121,19 @@
                             </div>
                             <div class="col-xs-12 col-sm-6">
                                 <div class="form-group {% if questionnaire_response_form.errors.date %}has-error{% endif %}">
-                                    <label for="fill_date" class="control-label">{% trans "Fill date" %}<b
-                                            style="color: red;">*</b></label>
+{#                                    Commented since we hide date input field on the fly (NES-1033). TODO: remove code #}
+{#                                    <label for="fill_date" class="control-label">{% trans "Fill date" %}<b#}
+{#                                            style="color: red;">*</b></label>#}
 
                                     <div class="input-group input-group-sm">
-                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>
-                                        {% if completed or not creating %}
-                                            {{ questionnaire_response_form.date|add_attr:"disabled" }}
-                                        {% else %}
-                                            {{ questionnaire_response_form.date }}
-                                        {% endif %}
+{#                                        Commented since we hide date input field on the fly (NES-1033). TODO: remove code #}
+{#                                        <span class="input-group-addon"> <span class="glyphicon glyphicon-th"></span></span>#}
+{#                                        {% if completed or not creating %}#}
+{#                                            {{ questionnaire_response_form.date.as_hidden|add_attr:"disabled" }}#}
+{#                                        {% else %}#}
+                                            {{ questionnaire_response_form.date.as_hidden }}
+{#                                        Commented since we hide date input field on the fly (NES-1033). TODO: remove code #}
+{#                                        {% endif %}#}
                                     </div>
                                     <div class="help-block with-errors">
                                         {% if questionnaire_response_form.date.errors %}

@@ -297,28 +297,24 @@ class MedicalRecordFormValidation(TestCase):
 # Briefly, this class tests the form of the tab 4 of app Patient
 class QuestionnaireResponseFormValidation(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
+        self.user = User.objects.create_user(
+            username=USER_USERNAME, email='test@dummy.com', password=USER_PWD)
         self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
 
-        self.data = {
-            'date': '01/02/1995'
-        }
+        self.data = {'date': '01/02/1995'}
 
-    # Test if the form with the fields filles is valid
-    def test_Questionnaires_Response_is_valid(self):
-        questionnaireresponse = QuestionnaireResponseForm(data=self.data)
-        self.assertTrue(questionnaireresponse.is_valid())
+    def test_questionnaire_response_is_valid(self):
+        questionnaire_response = QuestionnaireResponseForm(data=self.data)
+        self.assertTrue(questionnaire_response.is_valid())
 
-    # Test if the form without the date is not valid
-    def test_Questionnaires_Response_is_not_valid_without_date(self):
+    def test_questionnaire_response_is_not_valid_without_date(self):
         self.data['date'] = ''
-        questionnaireresponse = QuestionnaireResponseForm(data=self.data)
-        self.assertFalse(questionnaireresponse.is_valid())
+        questionnaire_response = QuestionnaireResponseForm(data=self.data)
+        self.assertFalse(questionnaire_response.is_valid())
 
-    # Test if the form with a future date is not valid
-    def test_Questionnaires_Response_is_not_valid_with_future_date(self):
+    def test_questionnaire_response_is_not_valid_with_future_date(self):
         self.data['date'] = str(datetime.date.today() + datetime.timedelta(1))
-        questionnaireresponse = QuestionnaireResponseForm(data=self.data)
-        self.assertFalse(questionnaireresponse.is_valid())
+        questionnaire_response = QuestionnaireResponseForm(data=self.data)
+        self.assertFalse(questionnaire_response.is_valid())

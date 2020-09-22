@@ -1210,7 +1210,8 @@ class DataCollection(models.Model):
 
 class QuestionnaireResponse(DataCollection):
     token_id = models.IntegerField(null=False)
-    questionnaire_responsible = models.ForeignKey(User, null=False, related_name="+")
+    questionnaire_responsible = models.ForeignKey(
+        User, null=False, related_name="+")
     history = HistoricalRecords()
     is_completed = models.CharField(max_length=50, default="")
 
