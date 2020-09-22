@@ -1106,8 +1106,9 @@ def questionnaire_response_view(
         if request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
                 surveys = Questionnaires()
-                result = surveys.delete_participants(questionnaire_response.survey.lime_survey_id,
-                                                     [questionnaire_response.token_id])
+                result = surveys.delete_participants(
+                    questionnaire_response.survey.lime_survey_id,
+                    [questionnaire_response.token_id])
                 surveys.release_session_key()
 
                 can_delete = False
@@ -1256,15 +1257,20 @@ def questionnaire_response_update(
         QuestionnaireResponse, pk=questionnaire_response_id)
 
     surveys = Questionnaires()
-    language = get_questionnaire_language(surveys, questionnaire_response.survey.lime_survey_id, request.LANGUAGE_CODE)
-    survey_title = surveys.get_survey_title(questionnaire_response.survey.lime_survey_id, language)
+    language = get_questionnaire_language(
+        surveys, questionnaire_response.survey.lime_survey_id,
+        request.LANGUAGE_CODE)
+    survey_title = surveys.get_survey_title(
+        questionnaire_response.survey.lime_survey_id, language)
     survey_completed = surveys.get_participant_properties(
-        questionnaire_response.survey.lime_survey_id, questionnaire_response.token_id, "completed") != "N"
+        questionnaire_response.survey.lime_survey_id,
+        questionnaire_response.token_id, "completed") != "N"
     surveys.release_session_key()
 
     patient = get_object_or_404(Patient, pk=questionnaire_response.patient_id)
 
-    questionnaire_response_form = QuestionnaireResponseForm(None, instance=questionnaire_response)
+    questionnaire_response_form = QuestionnaireResponseForm(
+        None, instance=questionnaire_response)
 
     fail = None
     redirect_url = None
@@ -1278,16 +1284,14 @@ def questionnaire_response_update(
         if request.POST['action'] == "save":
             redirect_url = get_limesurvey_response_url(questionnaire_response)
 
-            if not redirect_url:
-                fail = True
-            else:
-                fail = False
+            fail = False if not redirect_url else True
 
         elif request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
                 surveys = Questionnaires()
                 result = surveys.delete_participants(
-                    questionnaire_response.survey.lime_survey_id, [questionnaire_response.token_id])
+                    questionnaire_response.survey.lime_survey_id,
+                    [questionnaire_response.token_id])
                 surveys.release_session_key()
 
                 can_delete = False
@@ -1297,7 +1301,8 @@ def questionnaire_response_update(
                     if result == 'Deleted' or result == 'Invalid token ID':
                         can_delete = True
                 else:
-                    if 'status' in result and result['status'] == 'Error: Invalid survey ID':
+                    if 'status' in result and result['status'] == \
+                            'Error: Invalid survey ID':
                         can_delete = True
 
                 if can_delete:
@@ -1306,16 +1311,13 @@ def questionnaire_response_update(
                 else:
                     messages.error(request, _("Error trying to delete"))
 
-                redirect_url = reverse("patient_edit", args=(patient.id,)) + "?currentTab=4"
+                redirect_url = reverse(
+                    "patient_edit", args=(patient.id,)) + "?currentTab=4"
                 return HttpResponseRedirect(redirect_url)
             else:
                 raise PermissionDenied
 
     origin = get_origin(request)
-
-    status = ""
-    if 'status' in request.GET:
-        status = request.GET['status']
 
     context = {
         "FAIL": fail,
@@ -1337,7 +1339,7 @@ def questionnaire_response_update(
         "questionnaire_title": questionnaire_title,
         "showing": showing,
         "updating": True,
-        "status": status,
+        "status": request.GET.get('status', ''),
         "can_change": True
     }
 
