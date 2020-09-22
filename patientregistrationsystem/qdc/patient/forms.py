@@ -169,15 +169,13 @@ class ExamFileForm(ModelForm):
 class QuestionnaireResponseForm(ModelForm):
     class Meta:
         model = QuestionnaireResponse
-        fields = [
-            'date',
-        ]
+        fields = ['date']
 
         widgets = {
             'date': DateInput(
                 format=_("%m/%d/%Y"),
                 attrs={'class': 'form-control datepicker',
-                       'placeholder': _('mm/dd/yyyy'), 'required': "",
-                       'data-error': _("Fill date must be filled.")},
+                       'placeholder': _('mm/dd/yyyy'), 'required': '',
+                       'data-error': _('Fill date must be filled.')},
             )
         }

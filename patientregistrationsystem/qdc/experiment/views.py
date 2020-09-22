@@ -5329,9 +5329,6 @@ def subject_questionnaire_response_start_fill_questionnaire(
         questionnaire_response.subject_of_group = subject_of_group
         questionnaire_response.component_configuration = questionnaire_config
         questionnaire_response.token_id = result['tid']
-        questionnaire_response.date = datetime.strptime(
-            request.POST['date'], _('%m/%d/%Y')
-        )
         questionnaire_response.questionnaire_responsible = request.user
         questionnaire_response.save()
 
@@ -5359,7 +5356,7 @@ def get_limesurvey_response_url(questionnaire_response):
             questionnaire.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
-            questionnaire_response.date.strftime('%d-%m-%Y'),
+            questionnaire_response.date.strftime('%m-%d-%Y'),
             str(questionnaire_response.subject_of_group.subject.patient.id))
 
     return redirect_url

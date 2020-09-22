@@ -5336,3 +5336,8 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
 
         redirect_url = response.context['URL']
         self.assertIn(str(self.patient.id), redirect_url)
+
+    def test_create_questionnaire_response_does_not_display_fill_date_input_field(self):
+        # By now this test is contemplated by
+        # patient.tests.test_views.QuestionnaireFillTest.test_create_entrance_evaluation_response_does_not_display_fill_date_input_field
+        pass
