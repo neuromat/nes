@@ -300,32 +300,42 @@ class ABCSearchEngine(ABC):
         :param sid: survey ID
         :param language: language
         :param token: token
-        :param heading_type: heading type (can be 'code' or 'full')
+        :param heading_type: heading type (can be 'code', 'abbreviated',
+        'full')
         :return: str - responses in the txt format in case of success, else None
         """
-        try:
-            responses = self.server.export_responses_by_token(
-                self.session_key, sid, 'csv-allanswer', token, language, 'complete', heading_type, 'short')
-        except AttributeError:
-            # TODO: sid: 843661
+        if heading_type != 'abbreviated':
+            try:
+                responses = self.server.export_responses_by_token(
+                    self.session_key, sid, 'csv-allanswer', token, language,
+                    'complete', heading_type, 'short')
+            except AttributeError:
+                # TODO: sid: 843661
+                responses = self.server.export_responses_by_token(
+                    self.session_key, sid, 'csv', token, language,
+                    'complete', heading_type, 'short')
+        else:
             responses = self.server.export_responses_by_token(
                 self.session_key, sid, 'csv', token, language,
                 'complete', heading_type, 'short')
 
-        # For compatibility with export view call: when export_responses returns
-        # {'status': 'No Response found by Token'} export view call export_responses,
-        # that returns a string to responses variable and can mount the screen with the
-        # possible data to export
-        if isinstance(responses, dict) and responses['status'] == 'No Response found for Token':
+        # For compatibility with export view call: when export_responses
+        # returns {'status': 'No Response found by Token'} export view call
+        # export_responses, that returns a string to responses variable and
+        # can mount the screen with the possible data to export
+        if isinstance(responses, dict) \
+                and responses['status'] == 'No Response found for Token':
             try:
                 responses = self.server.export_responses(
-                    self.session_key, sid, 'csv-allanswer', language, 'complete', heading_type, 'short')
+                    self.session_key, sid, 'csv-allanswer', language,
+                    'complete', heading_type, 'short')
             except AttributeError:
                 responses = self.server.export_responses(
                     self.session_key, sid, 'csv', language,
                     'complete', heading_type, 'short')
 
-        return None if isinstance(responses, dict) else b64decode(responses).decode()
+        return None if isinstance(responses, dict) \
+            else b64decode(responses).decode()
 
     @abstractmethod
     def get_summary(self, sid, stat_name):
