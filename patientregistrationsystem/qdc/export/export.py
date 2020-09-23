@@ -2895,12 +2895,13 @@ class ExportExecution:
             question_fields['fields'][i], question_fields['header'][i], question_fields['header_questionnaire'][i]
             # TODO (NES-991): improve regex; see if numbers are allowed in LimeSurvey.
             #  If they're not alowed fixes test. Questions 'q1', 'q2'
-            question_cleared = re.search('([a-zA-Z0-9]+)(\[?)', question_field).group(1)
+            question_cleared = re.search(
+                '([a-zA-Z0-9_]+)(\[?)', question_field).group(1)
             question = next(item for item in questions if item['title'] == question_cleared)
             title = question_header_questionnaire if heading_type != 'code' else question_field
             type = QUESTION_TYPES[question['type']][1]
             format = QUESTION_TYPES[question['type']][2]
-            # i + 2: currently in exportation, question headers are inserted between
+            # i + 2: currently in export, question headers are inserted between
             # [participant_code, age] and the rest of participant fields when those exists
             fields.insert(i + 2, {
                 'name': title, 'title': title, 'type': type, 'format': format
