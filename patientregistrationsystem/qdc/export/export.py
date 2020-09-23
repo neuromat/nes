@@ -1149,30 +1149,43 @@ class ExportExecution:
                             pass
 
                     # Path ex. data/Per_questionnaire/Q123_aaa/Responses_Q123.csv
-                    complete_filename = path.join(export_path, export_filename + '.' + filesformat_type)
+                    complete_filename = path.join(
+                        export_path, export_filename + '.' + filesformat_type)
                     save_to_csv(complete_filename, result, filesformat_type)
 
                     # TODO (NES-911): extends conditional to the other parts
                     if not plugin:
-                        # Get data for datapackage resource questionnaire response table schema
-                        rows_participant_data = self.get_input_data('participants')['data_list']
-                        answer_list = {'fields': [], 'header': [], 'header_questionnaire': []}
+                        # Get data for datapackage resource questionnaire
+                        # response table schema
+                        rows_participant_data = \
+                            self.get_input_data('participants')['data_list']
+                        answer_list = {
+                            'fields': [], 'header': [], 'header_questionnaire': []
+                        }
                         for question in questionnaire['output_list']:
                             answer_list['fields'].append(question['field'])
                             answer_list['header'].append(question['header'])
-                            answer_list['header_questionnaire'].append(question['header'])
+                            answer_list['header_questionnaire'].append(
+                                question['header'])
                         # TODO (NES-991): treat error!
                         error, questions = QuestionnaireUtils.get_questions(
-                            questionnaire_lime_survey, questionnaire_id, language)
+                            questionnaire_lime_survey, questionnaire_id,
+                            language)
                         datapackage_json = {
-                            'name': slugify(export_filename), 'title': export_filename,
-                            'path': path.join(export_directory, export_filename + '.' + filesformat_type),
-                            'format': filesformat_type, 'mediatype': 'text/' + filesformat_type,
+                            'name': slugify(export_filename),
+                            'title': export_filename,
+                            'path': path.join(
+                                export_directory, export_filename + '.'
+                                                  + filesformat_type),
+                            'format': filesformat_type,
+                            'mediatype': 'text/' + filesformat_type,
                             'description': 'Questionnaire response',
                             'profile': 'tabular-data-resource',
                             'schema': {
-                                'fields': self._set_questionnaire_response_fields(
-                                    heading_type, rows_participant_data[0], answer_list, questions)
+                                'fields':
+                                    self._set_questionnaire_response_fields(
+                                        heading_type, rows_participant_data[0],
+                                        answer_list, questions)
                             }
                         }
                     else:
@@ -2892,22 +2905,35 @@ class ExportExecution:
             })
         for i in range(len(question_fields['fields'])):
             question_field, question_header, question_header_questionnaire = \
-            question_fields['fields'][i], question_fields['header'][i], question_fields['header_questionnaire'][i]
-            # TODO (NES-991): improve regex; see if numbers are allowed in LimeSurvey.
-            #  If they're not alowed fixes test. Questions 'q1', 'q2'
-            question_cleared = re.search(
-                '([a-zA-Z0-9_]+)(\[?)', question_field).group(1)
-            question = next(item for item in questions if item['title'] == question_cleared)
-            title = question_header_questionnaire if heading_type != 'code' else question_field
+            question_fields['fields'][i], question_fields['header'][i], \
+            question_fields['header_questionnaire'][i]
+            question_cleared = ExportExecution._get_parent_question(
+                question_field)
+            question = next(
+                item for item in questions
+                if item['title'] == question_cleared)
+            title = question_header_questionnaire \
+                if heading_type != 'code' else question_field
             type = QUESTION_TYPES[question['type']][1]
             format = QUESTION_TYPES[question['type']][2]
             # i + 2: currently in export, question headers are inserted between
-            # [participant_code, age] and the rest of participant fields when those exists
+            # [participant_code, age] and the rest of participant fields
+            # when those exists
             fields.insert(i + 2, {
                 'name': title, 'title': title, 'type': type, 'format': format
             })
 
         return fields
+
+    @staticmethod
+    def _get_parent_question(field):
+        """Some types of LimeSurvey questions are of the the form
+        'question21[subquestion]'. Return only 'question21' part if this is the
+        case.
+        :param field: str, LimeSurvey question
+        :return: str, substring of field
+        """
+        return re.search('([a-zA-Z0-9_]+)(\[?)', field).group(1)
 
     @staticmethod
     def _randomword(length):
