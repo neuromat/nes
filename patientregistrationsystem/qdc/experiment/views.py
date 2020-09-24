@@ -5301,15 +5301,22 @@ def subject_questionnaire_response_start_fill_questionnaire(
         lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
 
         if not questionnaire_lime_survey.survey_has_token_table(lime_survey_id):
-            messages.warning(request, _('Fill not available - Table of tokens was not started.'))
+            messages.warning(
+                request,
+                _('Fill not available - Table of tokens was not started.'))
             return None, None
 
         if questionnaire_lime_survey.get_survey_properties(lime_survey_id, 'active') == 'N':
-            messages.warning(request, _('Fill not available - Questionnaire is not activated.'))
+            messages.warning(
+                request,
+                _('Fill not available - Questionnaire is not activated.'))
             return None, None
 
         if not check_required_fields(questionnaire_lime_survey, lime_survey_id):
-            messages.warning(request, _('Fill not available - Questionnaire does not contain standard fields.'))
+            messages.warning(
+                request,
+                _('Fill not available - Questionnaire does not contain '
+                  'standard fields.'))
             return None, None
 
         result = questionnaire_lime_survey.add_participant(lime_survey_id)
@@ -5340,13 +5347,20 @@ def subject_questionnaire_response_start_fill_questionnaire(
 
 
 def get_limesurvey_response_url(questionnaire_response):
-    questionnaire = Questionnaire.objects.get(
-        id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
+    survey_component = questionnaire_response.data_configuration_tree\
+        .component_configuration.component
+    questionnaire = Questionnaire.objects.get(id=survey_component.id)
 
     questionnaire_lime_survey = Questionnaires()
     token = questionnaire_lime_survey.get_participant_properties(
         questionnaire.survey.lime_survey_id,
         questionnaire_response.token_id, "token")
+
+    survey_base_lang = questionnaire_lime_survey.get_survey_properties(
+        questionnaire.survey.lime_survey_id, 'language')
+    date_format = '%m-%d-%Y' if survey_base_lang == 'en' \
+        else '%d-%m-%Y'
+
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
@@ -5356,7 +5370,7 @@ def get_limesurvey_response_url(questionnaire_response):
             questionnaire.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
-            questionnaire_response.date.strftime('%m-%d-%Y'),
+            questionnaire_response.date.strftime(date_format),
             str(questionnaire_response.subject_of_group.subject.patient.id))
 
     return redirect_url
@@ -5386,12 +5400,15 @@ def subject_questionnaire_response_create(
     redirect_url = None
     questionnaire_response_id = None
 
-    questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
+    questionnaire_response_form = QuestionnaireResponseForm(
+        request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
-                    request, subject_id, group_id, questionnaire_id, list_of_path)
+            redirect_url, questionnaire_response_id = \
+                subject_questionnaire_response_start_fill_questionnaire(
+                    request, subject_id, group_id, questionnaire_id,
+                    list_of_path)
 
             fail = True if not redirect_url else False
 
@@ -5408,7 +5425,8 @@ def subject_questionnaire_response_create(
                "questionnaire_responsible": request.user.get_username(),
                "subject": get_object_or_404(Subject, pk=subject_id),
                "survey_title": survey_title,
-               "URL": redirect_url}
+               "URL": redirect_url
+               }
 
     return render(request, template_name, context)
 

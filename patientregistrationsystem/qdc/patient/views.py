@@ -1225,7 +1225,9 @@ def questionnaire_response_create(
 
                 showing = True
                 for field in questionnaire_response_form.fields:
-                    questionnaire_response_form.fields[field].widget.attrs['disabled'] = True
+                    questionnaire_response_form.fields[
+                        field
+                    ].widget.attrs['disabled'] = True
 
     origin = get_origin(request)
 
@@ -1284,7 +1286,7 @@ def questionnaire_response_update(
         if request.POST['action'] == "save":
             redirect_url = get_limesurvey_response_url(questionnaire_response)
 
-            fail = False if not redirect_url else True
+            fail = True if not redirect_url else False
 
         elif request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
@@ -1440,16 +1442,23 @@ def get_limesurvey_response_url(questionnaire_response):
     token = questionnaire_lime_survey.get_participant_properties(
         questionnaire_response.survey.lime_survey_id,
         questionnaire_response.token_id, "token")
-    questionnaire_lime_survey.release_session_key()
+
+    survey_base_lang = questionnaire_lime_survey.get_survey_properties(
+        questionnaire_response.survey.lime_survey_id, 'language')
+    date_format = '%m-%d-%Y' if survey_base_lang == 'en'\
+        else '%d-%m-%Y'
 
     redirect_url = \
-        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/subjectid/%s/newtest/Y' % (
+        '%s/index.php/%s/token/%s/responsibleid/%s/acquisitiondate/%s/' \
+        'subjectid/%s/newtest/Y' % (
             settings.LIMESURVEY['URL_WEB'],
             questionnaire_response.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
-            questionnaire_response.date.strftime('%m-%d-%Y'),
+            questionnaire_response.date.strftime(date_format),
             str(questionnaire_response.patient.id))
+
+    questionnaire_lime_survey.release_session_key()
 
     return redirect_url
 

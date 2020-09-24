@@ -5334,10 +5334,38 @@ class ExperimentQuestionnaireTest(ExperimentTestCase):
             data={'action': 'save', 'date': datetime.now().strftime(
                 '%d/%m/%Y'), })
 
-        redirect_url = response.context['URL']
-        self.assertIn(str(self.patient.id), redirect_url)
+        self.assertIn(str(self.patient.id), response.context['URL'])
 
     def test_create_questionnaire_response_does_not_display_fill_date_input_field(self):
         # By now this test is contemplated by
-        # patient.tests.test_views.QuestionnaireFillTest.test_create_entrance_evaluation_response_does_not_display_fill_date_input_field
+        # patient.tests.test_views.QuestionnaireFillTest.\
+        # test_create_entrance_evaluation_response_does_not_display_fill_date_input_field
         pass
+
+    @patch('survey.abc_search_engine.Server')
+    @patch('experiment.views.check_required_fields')
+    def test_create_questionnaire_response_build_limesurvey_url_with_correct_date_format(
+            self, mockCheckRequiredFields, mockServer):
+        for lang in ['en', 'pt_BR']:
+            mockServer.return_value.get_session_key.return_value = 'abc'
+            mockServer.return_value.get_summary.return_value = 1
+            mockServer.return_value.add_participants.return_value = [
+                {'token': 'abc', 'tid': 1}
+            ]
+            mockServer.return_value.get_survey_properties.side_effect = \
+                [{'active': True}, {'language': lang}]
+            mockCheckRequiredFields.return_value = True
+
+            date = '24/09/2020'
+            date_limesurvey = '09-24-2020' if lang == 'en' else '24-09-2020'
+
+            response = self.client.post(
+                reverse('subject_questionnaire_response',
+                        kwargs={
+                            'group_id':  self.group.id,
+                            'subject_id': self.subject_of_group.subject_id,
+                            'questionnaire_id': self.component_config.id
+                        }),
+                data={'action': 'save', 'date': date})
+
+            self.assertIn(date_limesurvey, response.context['URL'])

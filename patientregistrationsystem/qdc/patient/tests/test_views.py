@@ -46,3 +46,30 @@ class QuestionnaireFillTest(TestCase):
                 'questionnaire_response_form'
             ].fields['date'].hidden_widget.input_type, 'hidden')
         self.assertNotContains(response, 'Data de preenchimento')
+
+    @patch('survey.abc_search_engine.Server')
+    def test_create_entrance_evalution_response_build_limesurvey_url_with_correct_date_format(
+            self, mockServer):
+        patient = UtilTests.create_patient(self.user)
+        survey = UtilTests.create_survey(212121, True)
+
+        for lang in ['en', 'pt_BR']:
+            QuestionnaireFormValidation._set_mocks(mockServer)
+
+            mockServer.return_value.get_summary.return_value = 1
+            mockServer.return_value.get_survey_properties.side_effect = \
+                [{'active': True}, {'language': lang}, {'language': lang}]
+
+            date = '01/09/2014'
+            date_limesurvey = '09-01-2014' if lang == 'en' else '01-09-2014'
+            data = {
+                'date': date, 'action': 'save',
+                'initial-date': '2015-09-02'
+            }
+
+            url = reverse(
+                'questionnaire_response_create', args=(patient.pk, survey.pk,))
+            response = self.client.post(
+                url + "?origin=subject", data, follow=True)
+
+            self.assertIn(date_limesurvey, response.context['URL'])
