@@ -1026,7 +1026,6 @@ class SubjectTest(TestCase):
 
     @patch('survey.abc_search_engine.Server')
     def test_questionnaire_fill(self, mockServer):
-        """Test of a questionnaire fill"""
 
         mockServer.return_value.get_session_key.return_value = 'fmhcr2qv7tz37b3zpkhfz3t6rjj26eri'
         mockServer.return_value.get_language_properties.side_effect = [
@@ -1044,7 +1043,10 @@ class SubjectTest(TestCase):
             {'surveyls_title': 'NES-TestCase (used by automated tests)'}
         ]
         mockServer.return_value.get_summary.side_effect = [1, {'status': 'No available data'}, 0, 0]
-        mockServer.return_value.get_survey_properties.side_effect = [{'active': 'Y'}, {'active': 'N'}, {'active': 'Y'}]
+        mockServer.return_value.get_survey_properties.side_effect = [
+            {'active': 'Y'}, {'language': 'en'}, {'active': 'N'},
+            {'language': 'en'}, {'active': 'Y'}, {'language': 'en'}
+        ]
         mockServer.return_value.list_groups.side_effect = [
             [{'group_order': 1, 'language': 'pt-BR', 'sid': 828636, 'description': 'Teste de dominância manual '
                                                                                    'baseado em Oldfield (1971)', 'id': {'language': 'pt-BR', 'gid': 1118}, 'randomization_group': '', 'grelevance': '', 'group_name': 'Teste de Lateralidade (Oldfield)', 'gid': 1118}, {'group_order': 0, 'language': 'pt-BR', 'sid': 828636, 'description': '', 'id': {'language': 'pt-BR', 'gid': 1119}, 'randomization_group': '', 'grelevance': '', 'group_name': 'Identification', 'gid': 1119}],
@@ -1645,7 +1647,6 @@ class SubjectTest(TestCase):
 
     @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
     def test_eeg_data_file(self):
-        """Test of an EEG data file upload"""
 
         research_project = ObjectsFactory.create_research_project()
 

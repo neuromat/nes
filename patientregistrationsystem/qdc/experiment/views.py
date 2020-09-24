@@ -5340,13 +5340,20 @@ def subject_questionnaire_response_start_fill_questionnaire(
 
 
 def get_limesurvey_response_url(questionnaire_response):
-    questionnaire = Questionnaire.objects.get(
-        id=questionnaire_response.data_configuration_tree.component_configuration.component.id)
+    survey_component = questionnaire_response.data_configuration_tree\
+        .component_configuration.component
+    questionnaire = Questionnaire.objects.get(id=survey_component.id)
 
     questionnaire_lime_survey = Questionnaires()
     token = questionnaire_lime_survey.get_participant_properties(
         questionnaire.survey.lime_survey_id,
         questionnaire_response.token_id, "token")
+
+    survey_base_lang = questionnaire_lime_survey.get_survey_properties(
+        questionnaire.survey.lime_survey_id, 'language')
+    date_format = '%m-%d-%Y' if survey_base_lang == 'en' \
+        else '%d-%m-%Y'
+
     questionnaire_lime_survey.release_session_key()
 
     redirect_url = \
@@ -5356,7 +5363,7 @@ def get_limesurvey_response_url(questionnaire_response):
             questionnaire.survey.lime_survey_id,
             token,
             str(questionnaire_response.questionnaire_responsible.id),
-            questionnaire_response.date.strftime('%m-%d-%Y'),
+            questionnaire_response.date.strftime(date_format),
             str(questionnaire_response.subject_of_group.subject.patient.id))
 
     return redirect_url
@@ -5408,7 +5415,8 @@ def subject_questionnaire_response_create(
                "questionnaire_responsible": request.user.get_username(),
                "subject": get_object_or_404(Subject, pk=subject_id),
                "survey_title": survey_title,
-               "URL": redirect_url}
+               "URL": redirect_url
+               }
 
     return render(request, template_name, context)
 
