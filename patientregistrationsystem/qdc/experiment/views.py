@@ -5301,15 +5301,22 @@ def subject_questionnaire_response_start_fill_questionnaire(
         lime_survey_id = Questionnaire.objects.get(id=questionnaire_config.component_id).survey.lime_survey_id
 
         if not questionnaire_lime_survey.survey_has_token_table(lime_survey_id):
-            messages.warning(request, _('Fill not available - Table of tokens was not started.'))
+            messages.warning(
+                request,
+                _('Fill not available - Table of tokens was not started.'))
             return None, None
 
         if questionnaire_lime_survey.get_survey_properties(lime_survey_id, 'active') == 'N':
-            messages.warning(request, _('Fill not available - Questionnaire is not activated.'))
+            messages.warning(
+                request,
+                _('Fill not available - Questionnaire is not activated.'))
             return None, None
 
         if not check_required_fields(questionnaire_lime_survey, lime_survey_id):
-            messages.warning(request, _('Fill not available - Questionnaire does not contain standard fields.'))
+            messages.warning(
+                request,
+                _('Fill not available - Questionnaire does not contain '
+                  'standard fields.'))
             return None, None
 
         result = questionnaire_lime_survey.add_participant(lime_survey_id)
@@ -5393,12 +5400,15 @@ def subject_questionnaire_response_create(
     redirect_url = None
     questionnaire_response_id = None
 
-    questionnaire_response_form = QuestionnaireResponseForm(request.POST or None)
+    questionnaire_response_form = QuestionnaireResponseForm(
+        request.POST or None)
 
     if request.method == "POST":
         if request.POST['action'] == "save":
-            redirect_url, questionnaire_response_id = subject_questionnaire_response_start_fill_questionnaire(
-                    request, subject_id, group_id, questionnaire_id, list_of_path)
+            redirect_url, questionnaire_response_id = \
+                subject_questionnaire_response_start_fill_questionnaire(
+                    request, subject_id, group_id, questionnaire_id,
+                    list_of_path)
 
             fail = True if not redirect_url else False
 

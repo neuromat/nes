@@ -1225,7 +1225,9 @@ def questionnaire_response_create(
 
                 showing = True
                 for field in questionnaire_response_form.fields:
-                    questionnaire_response_form.fields[field].widget.attrs['disabled'] = True
+                    questionnaire_response_form.fields[
+                        field
+                    ].widget.attrs['disabled'] = True
 
     origin = get_origin(request)
 
@@ -1284,7 +1286,7 @@ def questionnaire_response_update(
         if request.POST['action'] == "save":
             redirect_url = get_limesurvey_response_url(questionnaire_response)
 
-            fail = False if not redirect_url else True
+            fail = True if not redirect_url else False
 
         elif request.POST['action'] == "remove":
             if request.user.has_perm('patient.delete_questionnaireresponse'):
