@@ -10,3 +10,6 @@ __pycache__/
 geckodriver.log
 functional_tests
 .coverage*
+
+# file created by django-maintenance-mode package
+qdc/maintenance_mode_state.txt
