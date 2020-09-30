@@ -550,13 +550,14 @@ def create_patients_questionnaire_data_list(survey, surveys):
             }
 
         response_result = surveys.get_participant_properties(
-            response.survey.lime_survey_id, response.token_id, "completed")
+            response.survey.lime_survey_id, response.token_id, 'completed')
 
         patients_questionnaire_data_dictionary[
-            response.patient.id]['questionnaire_responses'].append({
-                'questionnaire_response': response,
-                'completed': None if response_result is None
-                else response_result != "N" and response_result != ""
+            response.patient.id
+        ]['questionnaire_responses'].append({
+            'questionnaire_response': response,
+            'completed': None if response_result is None
+            else response_result != 'N' and response_result != ''
         })
 
     # Add to the dictionary patients that have not answered any questionnaire
@@ -610,11 +611,11 @@ def update_acquisitiondate(tokens, ls_responses, nes_responses):
             ls_response = next((
                 ls_response for ls_response in ls_responses
                 if ls_response['token'] == token), None)
-            if ls_response is not None \
-                    and response.date != ls_response['acquisitiondate']:
-                response.date = \
-                    datetime.datetime.strptime(
+            if ls_response is not None:
+                new_date = datetime.datetime.strptime(
                         ls_response['acquisitiondate'], '%Y-%m-%d %H:%M:%S')
+                if response.date != new_date:
+                    response.date = new_date
                 response.save()
 
 

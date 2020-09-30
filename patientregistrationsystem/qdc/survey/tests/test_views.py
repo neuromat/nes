@@ -330,7 +330,8 @@ class SurveyTest(TestCase):
 
         # Get questionnaire_response again as questionnaire_response before
         # is not updated
-        questionnaire_response = PatientQuestionnaireResponse.objects.first()
+        questionnaire_response = \
+            PatientQuestionnaireResponse.objects.get(token_id=1)
 
         self.assertEqual(
             questionnaire_response.date.strftime('%m/%d/%Y'),
@@ -495,7 +496,8 @@ class SurveyTest(TestCase):
         self.assertNotEqual(Survey.objects.last().pt_title, pt_title_survey)
 
         # Simulate clicking to update the list with new limesurvey information
-        self.client.post(reverse('survey_list'), {'action': 'update'}, follow=True)
+        self.client.post(
+            reverse('survey_list'), {'action': 'update'}, follow=True)
 
         # Check if the pt_title was updated properly
         self.assertEqual(Survey.objects.last().pt_title, pt_title_survey)
@@ -522,4 +524,6 @@ class SurveyTest(TestCase):
             'Rva2VuIiwicmVzcG9uc2libGVpZCIsImFjcXVpc2l0aW9uZGF0ZSIsInN1Ympl' \
             'Y3RpZCIsImFiYyIKIjIiLCIxOTgwLTAxLTAxIDAwOjAwOjAwIiwiMiIsImVuIi' \
             'wiZ2R1ZTFIbFR2Z0tCeDJnIiwiMiIsIjIwMjEtMDMtMDkgMDA6MDA6MDAiLCI0' \
-            'IiwiYWJjIgoK'
+            'IiwiYWJjIgoiNCIsIjE5ODAtMDEtMDEgMDA6MDA6MDAiLCIyIiwiZW4iLCJsaV' \
+            'ZnOGFOdnRYcEVGWFAiLCIyIiwiMjAyMS0wNC0wOSAwMDowMDowMCIsIjYiLCJh' \
+            'YmMiCgo='
