@@ -10,7 +10,7 @@ from patient.models import QuestionnaireResponse as \
     PatientQuestionnaireResponse
 from survey.models import Survey
 from survey.tests.tests_helper import create_survey
-from survey.views import survey_update, update_survey_acquisitiondate
+from survey.views import survey_update
 from survey.abc_search_engine import Questionnaires
 
 from custom_user.views import User
@@ -306,11 +306,17 @@ class SurveyTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_survey_view(self):
-        survey, created = Survey.objects.get_or_create(
-            lime_survey_id=LIME_SURVEY_ID)
+        survey = create_survey()
 
         response = self.client.get(reverse('survey_view', args=(survey.pk,)))
         self.assertEqual(response.status_code, 200)
+
+    def test_GET_survey_view_display_update_acquisitiondate_button(self):
+        survey = create_survey()
+
+        response = self.client.get(reverse('survey_view', args=(survey.pk,)))
+        self.assertContains(
+            response, 'Atualizar data de preenchimento do LimeSurvey')
 
     @patch('survey.abc_search_engine.Server')
     def test_update_acquisitiondate_from_limesurvey(self, mockServer):
@@ -326,7 +332,8 @@ class SurveyTest(TestCase):
         new_acquisitiondate = '03/09/2021'
         questionnaire_response.is_completed = datetime.datetime.now()
         questionnaire_response.save()
-        update_survey_acquisitiondate(survey)
+        self.client.get(reverse(
+            'update_survey_acquisitiondate', args=(survey.pk,)))
 
         # Get questionnaire_response again as questionnaire_response before
         # is not updated
@@ -336,6 +343,17 @@ class SurveyTest(TestCase):
         self.assertEqual(
             questionnaire_response.date.strftime('%m/%d/%Y'),
             new_acquisitiondate)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_GET_update_survey_acquisitiondate_view_redirects_to_survey_view(
+            self, mockServer):
+        self._set_mocks(mockServer)
+        survey = create_survey()
+
+        response = self.client.get(reverse(
+            'update_survey_acquisitiondate', args=(survey.pk,)))
+        survey_view_url = reverse('survey_view', args=(survey.pk,))
+        self.assertRedirects(response, survey_view_url, 302)
 
     @patch('survey.abc_search_engine.Server')
     def test_survey_without_pt_title_gets_pt_title_filled_with_limesurvey_code_when_there_is_not_en_title(

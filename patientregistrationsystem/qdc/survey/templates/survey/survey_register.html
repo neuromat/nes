@@ -153,7 +153,13 @@
                             <thead>
                                 <tr>
                                     <th>{% trans "Participant" %}</th>
-                                    <th>{% trans "Fills" %}</th>
+                                    <th>{% trans "Fills" %} &nbsp;&nbsp;
+                                        &nbsp;<button
+                                                class="btn btn-primary"
+                                                data-toggle="tooltip"
+                                                title="{% trans "Update LimeSurvey Fill date" %}"><span
+                                            class="glyphicon
+                                            glyphicon-refresh"></span></button></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -173,6 +179,7 @@
                                                         <td class="col-xs-4 col-md-8">
                                                             {{ response.questionnaire_response.date }}
                                                         </td>
+{#                                                        Just for debbugging: remove it!#}
 {#                                                        <td>{{ response.questionnaire_response.token_id }}</td>#}
                                                         <td class="col-xs-4 col-md-4">
                                                             {% if limesurvey_available and response.completed != None %}

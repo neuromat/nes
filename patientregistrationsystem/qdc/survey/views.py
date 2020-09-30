@@ -586,7 +586,10 @@ def create_patients_questionnaire_data_list(survey, surveys):
     return patients_questionnaire_data_list
 
 
-def update_survey_acquisitiondate(survey):
+@login_required
+@permission_required('survey.view_survey')
+def update_survey_acquisitiondate_view(request, survey_id):
+    survey = get_object_or_404(Survey, pk=survey_id)
     ls = Questionnaires()
     languages = ls.get_survey_languages(survey.lime_survey_id)
     tokens = ls.find_tokens_by_questionnaire(survey.lime_survey_id)
@@ -599,6 +602,8 @@ def update_survey_acquisitiondate(survey):
         update_acquisitiondate(tokens, ls_responses, nes_responses)
 
     ls.release_session_key()
+
+    return HttpResponseRedirect(reverse('survey_view', args=(survey.pk,)))
 
 
 def update_acquisitiondate(tokens, ls_responses, nes_responses):
