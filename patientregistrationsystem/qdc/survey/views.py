@@ -508,31 +508,40 @@ def create_experiments_questionnaire_data_list(survey, surveys):
                 'patients': {}  # There is no answers.
             })
 
-    # Sort by experiment title, group title, parent identification, step identification, and name of the use of step.
-    # We considered the lower case version of the strings in the sorting
-    # Empty strings appear after not-empty strings.
-    # Reference: http://stackoverflow.com/questions/9386501/sorting-in-python-and-empty-strings
-    experiments_questionnaire_data_list = sorted(experiments_questionnaire_data_list,
-                                                 key=lambda x: (x['experiment_title'].lower(),
-                                                                x['group_title'] == "",
-                                                                x['group_title'].lower(),
-                                                                x['parent_identification'] == "",
-                                                                x['parent_identification'].lower(),
-                                                                x['component_identification'].lower(),
-                                                                x['use_name'] == "",
-                                                                x['use_name'].lower()))
+    # Sort by experiment title, group title, parent identification, step
+    # identification, and name of the use of step. We considered the lower
+    # case version of the strings in the sorting Empty strings appear after
+    # not-empty strings.
+    # Reference:
+    # http://stackoverflow.com/questions/9386501/sorting-in-python-and-empty-strings
+    experiments_questionnaire_data_list = sorted(
+        experiments_questionnaire_data_list, key=lambda x: (
+            x['experiment_title'].lower(),
+            x['group_title'] == '',
+            x['group_title'].lower(),
+            x['parent_identification'] == '',
+            x['parent_identification'].lower(),
+            x['component_identification'].lower(),
+            x['use_name'] == '',
+            x['use_name'].lower()))
 
     return experiments_questionnaire_data_list
 
 
 def create_patients_questionnaire_data_list(survey, surveys):
-    """Create a list of patients by looking to the answers of this questionnaire. We do this way instead of looking for
-    patients and then looking for answers of each patient to reduce the number of access to the data base.
-    We use a dictionary because it is useful for filtering out duplicate patients from the list.
+    """Create a list of patients by looking to the answers of this
+    questionnaire. We do this way instead of looking for patients and then
+    looking for answers of each patient to reduce the number of access to the
+    data base. Uses a dictionary because it is useful for filtering out
+    duplicate patients from the list.
     """
     patients_questionnaire_data_dictionary = {}
 
-    for response in PatientQuestionnaireResponse.objects.filter(survey=survey).filter(patient__removed=False):
+    # Continue (NES-1032): get token list and responses list from LS and use
+    # the two lists to get de acquisitiondate field for each patient.
+
+    for response in PatientQuestionnaireResponse.objects.filter(
+            survey=survey).filter(patient__removed=False):
         if response.patient.id not in patients_questionnaire_data_dictionary:
             patients_questionnaire_data_dictionary[response.patient.id] = {
                 'patient_id': response.patient.id,
@@ -543,12 +552,15 @@ def create_patients_questionnaire_data_list(survey, surveys):
         response_result = surveys.get_participant_properties(
             response.survey.lime_survey_id, response.token_id, "completed")
 
-        patients_questionnaire_data_dictionary[response.patient.id]['questionnaire_responses'].append({
-            'questionnaire_response': response,
-            'completed': None if response_result is None else response_result != "N" and response_result != ""
+        patients_questionnaire_data_dictionary[
+            response.patient.id]['questionnaire_responses'].append({
+                'questionnaire_response': response,
+                'completed': None if response_result is None
+                else response_result != "N" and response_result != ""
         })
 
-    # Add to the dictionary patients that have not answered any questionnaire yet.
+    # Add to the dictionary patients that have not answered any questionnaire
+    # yet.
     if survey.is_initial_evaluation:
         patients = Patient.objects.filter(removed=False)
 
@@ -559,16 +571,60 @@ def create_patients_questionnaire_data_list(survey, surveys):
                     'questionnaire_responses': []
                 }
 
-    # Transform the dictionary into a list, so that we can sort it by patient name.
+    # Transform the dictionary into a list, so that we can sort it by patient
+    # name.
     patients_questionnaire_data_list = []
 
     for key, dictionary in list(patients_questionnaire_data_dictionary.items()):
         dictionary['patient_id'] = key
         patients_questionnaire_data_list.append(dictionary)
 
-    patients_questionnaire_data_list = sorted(patients_questionnaire_data_list, key=itemgetter('patient_name'))
+    patients_questionnaire_data_list = sorted(
+        patients_questionnaire_data_list, key=itemgetter('patient_name'))
 
     return patients_questionnaire_data_list
+
+
+def update_survey_acquisitiondate(survey):
+    ls = Questionnaires()
+    languages = ls.get_survey_languages(survey.lime_survey_id)
+    tokens = ls.find_tokens_by_questionnaire(survey.lime_survey_id)
+    default_language = languages['language']
+    additional_language = languages['additional_languages']
+    nes_responses = PatientQuestionnaireResponse.objects.filter(
+        survey=survey).exclude(is_completed='N').exclude(is_completed='')
+    for lang in [default_language, additional_language]:
+        ls_responses = ls.get_responses(survey.lime_survey_id, lang)
+        update_acquisitiondate(tokens, ls_responses, nes_responses)
+
+    ls.release_session_key()
+
+
+def update_acquisitiondate(tokens, ls_responses, nes_responses):
+    ls_responses = csv_to_list(ls_responses)
+    for response in nes_responses:
+        token = next((
+            item['token'] for item in tokens
+            if item['tid'] == response.token_id), None)
+        if token is not None:
+            ls_response = next((
+                ls_response for ls_response in ls_responses
+                if ls_response['token'] == token), None)
+            if ls_response is not None \
+                    and response.date != ls_response['acquisitiondate']:
+                response.date = \
+                    datetime.datetime.strptime(
+                        ls_response['acquisitiondate'], '%Y-%m-%d %H:%M:%S')
+                response.save()
+
+
+def csv_to_list(responses):
+    responses_csv = StringIO(responses)
+    responses_list = []
+    for row in csv.DictReader(responses_csv):
+        responses_list.append(row)
+
+    return responses_list
 
 
 @login_required
@@ -579,40 +635,49 @@ def survey_view(request, survey_id, template_name="survey/survey_register.html")
     surveys = Questionnaires()
 
     limesurvey_available = check_limesurvey_access(request, surveys)
-    language = get_questionnaire_language(surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
+    language = get_questionnaire_language(
+        surveys, survey.lime_survey_id, request.LANGUAGE_CODE)
     survey_title = surveys.get_survey_title(survey.lime_survey_id, language)
 
-    # There is no need to use "request.POST or None" because the data will never be changed here. In fact we have to
-    # use "None" only, because request.POST does not contain any value because the fields are disabled, and this results
-    # in the form being created without considering the initial value.
-    survey_form = SurveyForm(None,
-                             instance=survey,
-                             initial={'title': str(survey.lime_survey_id) + ' - ' + survey_title})
+    # There is no need to use "request.POST or None" because the data will
+    # never be changed here. In fact we have to use "None" only, because
+    # request.POST does not contain any value because the fields are disabled,
+    # and this results in the form being created without considering the
+    # initial value.
+    survey_form = SurveyForm(
+        None, instance=survey, initial={
+            'title': str(survey.lime_survey_id) + ' - ' + survey_title
+        })
 
     for field in survey_form.fields:
         survey_form.fields[field].widget.attrs['disabled'] = True
 
-    if request.method == "POST":
-        if request.POST['action'] == "remove":
-            try:
-                survey.delete()
-                messages.success(request, _('Questionnaire deleted successfully.'))
-                return redirect('survey_list')
-            except ProtectedError:
-                messages.error(request, _("It was not possible to delete questionnaire, because there are experimental "
-                                          "answers or steps associated."))
+    if request.method == "POST" and request.POST['action'] == "remove":
+        try:
+            survey.delete()
+            messages.success(
+                request, _('Questionnaire deleted successfully.'))
+            return redirect('survey_list')
+        except ProtectedError:
+            messages.error(
+                request,
+                _("It was not possible to delete questionnaire, because"
+                  "there are experimental answers or steps associated."))
 
-    patients_questionnaire_data_list = create_patients_questionnaire_data_list(survey, surveys)
+    patients_questionnaire_data_list = create_patients_questionnaire_data_list(
+        survey, surveys)
 
     if request.user.has_perm("experiment.view_researchproject"):
-        experiments_questionnaire_data_list = create_experiments_questionnaire_data_list(survey, surveys)
+        experiments_questionnaire_data_list = \
+            create_experiments_questionnaire_data_list(survey, surveys)
     else:
         experiments_questionnaire_data_list = []
 
     context = {
         "limesurvey_available": limesurvey_available,
         "patients_questionnaire_data_list": patients_questionnaire_data_list,
-        "experiments_questionnaire_data_list": experiments_questionnaire_data_list,
+        "experiments_questionnaire_data_list":
+            experiments_questionnaire_data_list,
         "survey": survey,
         "survey_form": survey_form,
         "survey_title": survey_title,
@@ -965,11 +1030,16 @@ def get_questionnaire_language(questionnaire_lime_survey, questionnaire_id, lang
             if language.lower() != language_code.lower() and result['additional_languages']:
 
                 # search for the right language in addional languages,
-                # considering that the LimeSurvey uses upper case in the two-letter language code, like en-US and pt-BR.
-                additional_languages_list = result['additional_languages'].split(' ')
-                additional_languages_list_lower = [item.lower() for item in additional_languages_list]
+                # considering that the LimeSurvey uses upper case in the
+                # two-letter language code, like en-US and pt-BR.
+                additional_languages_list = \
+                    result['additional_languages'].split(' ')
+                additional_languages_list_lower = [
+                    item.lower() for item in additional_languages_list
+                ]
                 if language_code.lower() in additional_languages_list_lower:
-                    index = additional_languages_list_lower.index(language_code.lower())
+                    index = additional_languages_list_lower.index(
+                        language_code.lower())
                     language = additional_languages_list[index]
 
     return language

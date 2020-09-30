@@ -90,18 +90,21 @@ class UtilTests:
     def create_patient(changed_by):
         faker = Factory.create()
 
-        # TODO:
-        # create gender before create patient in other helper method
+        # TODO: create gender before create patient in other helper method
         try:
             gender = Gender.objects.get(name='Masculino')
         except ObjectDoesNotExist:
             gender = Gender.objects.create(name='Masculino')
 
-        # TODO: make loop to guarantee unique patient cpf
-        return Patient.objects.create(
-            name=faker.name(), date_birth=faker.date(), cpf=faker.ssn(), gender=gender, changed_by=changed_by,
-            marital_status=MaritalStatus.objects.create(name=faker.word())
-        )
+        while True:
+            try:
+                return Patient.objects.create(
+                    name=faker.name(), date_birth=faker.date(), cpf=faker.ssn(),
+                    gender=gender, changed_by=changed_by,
+                    marital_status=MaritalStatus.objects.create(name=faker.word())
+                )
+            except:  #TODO: exception derived from non-unique cpf
+                pass
 
     @staticmethod
     def create_telephone(patient, changed_by):
@@ -140,12 +143,13 @@ class UtilTests:
             medical_record_data=medical_record, classification_of_diseases=cid10
         )
 
+    # TODO (NES-1032): removes from here. Creates in Survey tests helper (
+    #  already exists)
     @staticmethod
     def create_survey(survey_id, is_initial_evaluation):
-        survey = Survey(lime_survey_id=survey_id, is_initial_evaluation=is_initial_evaluation)
-        survey.save()
-
-        return survey
+        return Survey.objects.create(
+            lime_survey_id=survey_id,
+            is_initial_evaluation=is_initial_evaluation)
 
     @staticmethod
     def create_token_id(survey):
@@ -163,8 +167,8 @@ class UtilTests:
 
     @staticmethod
     def create_response_survey(responsible, patient, survey, token_id=None):
-        if not token_id:
-            token_id = UtilTests.create_token_id(survey)
+        if token_id is None:
+            token_id = 21
 
         return QuestionnaireResponse.objects.create(
             patient=patient, survey=survey, token_id=token_id,
