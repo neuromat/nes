@@ -1,4 +1,5 @@
 import datetime
+from base64 import b64decode
 from unittest.mock import patch
 
 from django.core.urlresolvers import reverse
@@ -10,7 +11,7 @@ from patient.models import QuestionnaireResponse as \
     PatientQuestionnaireResponse
 from survey.models import Survey
 from survey.tests.tests_helper import create_survey
-from survey.views import survey_update
+from survey.views import survey_update, update_acquisitiondate
 from survey.abc_search_engine import Questionnaires
 
 from custom_user.views import User
@@ -324,9 +325,9 @@ class SurveyTest(TestCase):
 
         patient = UtilTests.create_patient(self.user)
         survey = create_survey()
-
         questionnaire_response = UtilTests.create_response_survey(
             self.user, patient, survey, token_id=1)
+
         # This date is in export_responses mock for the acquisitiondate
         # field in the decoded responses
         new_acquisitiondate = '03/09/2021'
@@ -354,6 +355,28 @@ class SurveyTest(TestCase):
             'update_survey_acquisitiondate', args=(survey.pk,)))
         survey_view_url = reverse('survey_view', args=(survey.pk,))
         self.assertRedirects(response, survey_view_url, 302)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_update_acquisitiondate_from_limesurvey_returns_responses_updated1(
+            self, mockServer):
+        self._set_mocks(mockServer)
+
+        patient = UtilTests.create_patient(self.user)
+        survey = create_survey()
+        questionnaire_response = UtilTests.create_response_survey(
+            self.user, patient, survey, token_id=1)
+
+        questionnaire_response.is_completed = datetime.datetime.now()
+        questionnaire_response.save()
+
+        tokens = mockServer.return_value.list_participants.return_value
+        ls_responses = b64decode(mockServer.return_value.export_responses\
+                                 .return_value).decode()
+        nes_responses = PatientQuestionnaireResponse.objects.all()
+
+        responses = update_acquisitiondate(tokens, ls_responses, nes_responses)
+
+        self.assertEqual(len(responses), 1)
 
     @patch('survey.abc_search_engine.Server')
     def test_survey_without_pt_title_gets_pt_title_filled_with_limesurvey_code_when_there_is_not_en_title(

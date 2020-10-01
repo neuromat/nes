@@ -154,12 +154,12 @@
                                 <tr>
                                     <th>{% trans "Participant" %}</th>
                                     <th>{% trans "Fills" %} &nbsp;&nbsp;
-                                        &nbsp;<button
-                                                class="btn btn-primary"
-                                                data-toggle="tooltip"
-                                                title="{% trans "Update LimeSurvey Fill date" %}"><span
+                                        &nbsp;
+                                        <a href="/survey/update_acquisitiondate/{{ survey.id }}"
+                                           class="btn btn-primary"
+                                                data-toggle="tooltip" data- title="{% trans "Update LimeSurvey Fill date" %}"><span
                                             class="glyphicon
-                                            glyphicon-refresh"></span></button></th>
+                                            glyphicon-refresh"></span></a></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -258,6 +258,8 @@
                                                                     <td class="col-xs-8 col-md-8">
                                                                         {{ response.questionnaire_response.date }}
                                                                     </td>
+{#                                                                    Just for debbugging: remove it!#}
+{#                                                                    <td>{{ response.questionnaire_response.token_id }}</td>#}
                                                                     <td class="col-xs-4 col-md-4">
                                                                         {% if limesurvey_available and response.completed != None %}
                                                                             {% if response.completed %}

@@ -608,6 +608,7 @@ def update_survey_acquisitiondate_view(request, survey_id):
 
 def update_acquisitiondate(tokens, ls_responses, nes_responses):
     ls_responses = csv_to_list(ls_responses)
+    responses_updated = []
     for response in nes_responses:
         token = next((
             item['token'] for item in tokens
@@ -621,7 +622,10 @@ def update_acquisitiondate(tokens, ls_responses, nes_responses):
                         ls_response['acquisitiondate'], '%Y-%m-%d %H:%M:%S')
                 if response.date != new_date:
                     response.date = new_date
+                    responses_updated.append(response)
                 response.save()
+
+    return responses_updated
 
 
 def csv_to_list(responses):
