@@ -620,6 +620,7 @@ def update_acquisitiondate(tokens, ls_responses, nes_responses):
             if ls_response is not None:
                 new_date = datetime.datetime.strptime(
                         ls_response['acquisitiondate'], '%Y-%m-%d %H:%M:%S')
+                new_date = new_date.date()
                 if response.date != new_date:
                     response.date = new_date
                     responses_updated.append(response)

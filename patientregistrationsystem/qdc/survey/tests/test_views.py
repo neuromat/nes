@@ -325,14 +325,13 @@ class SurveyTest(TestCase):
 
         patient = UtilTests.create_patient(self.user)
         survey = create_survey()
-        questionnaire_response = UtilTests.create_response_survey(
+        UtilTests.create_response_survey(
             self.user, patient, survey, token_id=1)
 
         # This date is in export_responses mock for the acquisitiondate
         # field in the decoded responses
         new_acquisitiondate = '03/09/2021'
-        questionnaire_response.is_completed = datetime.datetime.now()
-        questionnaire_response.save()
+
         self.client.get(reverse(
             'update_survey_acquisitiondate', args=(survey.pk,)))
 
@@ -359,24 +358,62 @@ class SurveyTest(TestCase):
     @patch('survey.abc_search_engine.Server')
     def test_update_acquisitiondate_from_limesurvey_returns_responses_updated1(
             self, mockServer):
+        """Two responses are updated"""
+
         self._set_mocks(mockServer)
 
-        patient = UtilTests.create_patient(self.user)
+        patient1 = UtilTests.create_patient(self.user)
+        patient2 = UtilTests.create_patient(self.user)
         survey = create_survey()
-        questionnaire_response = UtilTests.create_response_survey(
-            self.user, patient, survey, token_id=1)
-
-        questionnaire_response.is_completed = datetime.datetime.now()
-        questionnaire_response.save()
+        UtilTests.create_response_survey(
+            self.user, patient1, survey, token_id=1)
+        UtilTests.create_response_survey(
+            self.user, patient2, survey, token_id=2)
 
         tokens = mockServer.return_value.list_participants.return_value
-        ls_responses = b64decode(mockServer.return_value.export_responses\
-                                 .return_value).decode()
+        ls_responses = b64decode(
+            mockServer.return_value.export_responses.return_value).decode()
         nes_responses = PatientQuestionnaireResponse.objects.all()
 
         responses = update_acquisitiondate(tokens, ls_responses, nes_responses)
 
-        self.assertEqual(len(responses), 1)
+        # The 2 responses in ls_responses have dates differentes from the
+        # dates created in questionnaire responses, so the dates were updated
+        self.assertEqual(len(responses), 2)
+
+    @patch('survey.abc_search_engine.Server')
+    def test_update_acquisitiondate_from_limesurvey_returns_responses_updated2(
+            self, mockServer):
+        """Just one response is updated"""
+
+        self._set_mocks(mockServer)
+
+        patient1 = UtilTests.create_patient(self.user)
+        patient2 = UtilTests.create_patient(self.user)
+        survey = create_survey()
+
+        questionnaire_response_1 = UtilTests.create_response_survey(
+            self.user, patient1, survey, token_id=1)
+        # The date in ls_responses for the first token
+        questionnaire_response_1.date = '2021-03-09'
+        questionnaire_response_1.save()
+
+        questionnaire_response_2 = UtilTests.create_response_survey(
+            self.user, patient2, survey, token_id=2)
+        # The date in ls_responses for the first token
+        questionnaire_response_2.date = '2021-04-09'
+        questionnaire_response_2.save()
+
+        tokens = mockServer.return_value.list_participants.return_value
+        ls_responses = b64decode(
+            mockServer.return_value.export_responses.return_value).decode()
+        nes_responses = PatientQuestionnaireResponse.objects.all()
+
+        responses = update_acquisitiondate(tokens, ls_responses, nes_responses)
+
+        # The 2 responses in ls_responses have dates differentes from the
+        # dates created in questionnaire responses, so the dates were updated
+        self.assertEqual(len(responses), 0)
 
     @patch('survey.abc_search_engine.Server')
     def test_survey_without_pt_title_gets_pt_title_filled_with_limesurvey_code_when_there_is_not_en_title(

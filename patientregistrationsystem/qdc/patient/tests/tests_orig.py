@@ -166,13 +166,17 @@ class UtilTests:
         return result
 
     @staticmethod
-    def create_response_survey(responsible, patient, survey, token_id=None):
+    def create_response_survey(
+            responsible, patient, survey, token_id=None,
+            is_completed=datetime.now()):
         if token_id is None:
             token_id = 21
 
+        is_completed = is_completed if is_completed else datetime.now()
+
         return QuestionnaireResponse.objects.create(
             patient=patient, survey=survey, token_id=token_id,
-            questionnaire_responsible=responsible)
+            questionnaire_responsible=responsible, is_completed=is_completed)
 
 
 class CpfValidationTest(TestCase):
